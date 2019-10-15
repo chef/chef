@@ -43,6 +43,7 @@ class Chef
 
       def check_resource_semantics!
         return if Process.euid == 0
+
         etype = Chef::Exceptions::Cron
         begin
           nuid = Etc.getpwnam(new_resource.user).uid
@@ -50,13 +51,13 @@ class Chef
           emessage = "Error in #{new_resource.name}, #{new_resource.user} does not exists on this system."
           events.provider_requirement_failed(new_resource.action, new_resource.name, etype, emessage)
           if why_run?
-            events.whyrun_assumption(new_resource.action,
-                                     new_resource.name, "Assuming user #{new_resource.user} would have been acted upon.")
+            events.whyrun_assumption(new_resource.action, new_resource.name, "Assuming user #{new_resource.user} would have been acted upon.")
           else
             raise etype, emessage
           end
         end
         return if nuid == Process.euid
+
         emessage = "Error in #{new_resource.name}, Chef can't modify another user crontab when not running as root."
         events.provider_requirement_failed(new_resource.action, new_resource.name, etype, emessage)
         raise etype, emessage
@@ -223,7 +224,7 @@ class Chef
       end
 
       def read_crontab
-        specify_user="-u #{new_resource.user}" if Process.euid === 0
+        specify_user = "-u #{new_resource.user}" if Process.euid === 0
         so = shell_out!("crontab -l #{specify_user}", returns: [0, 1])
         return nil if so.exitstatus == 1
 
@@ -234,7 +235,7 @@ class Chef
 
       def write_crontab(crontab)
         write_exception = false
-        specify_user="-u #{new_resource.user}" if Process.euid === 0
+        specify_user = "-u #{new_resource.user}" if Process.euid === 0
         so = shell_out!("crontab #{specify_user} -", input: crontab)
       rescue => e
         raise Chef::Exceptions::Cron, "Error updating state of #{new_resource.name}, error: #{e}"

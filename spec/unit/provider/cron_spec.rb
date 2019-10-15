@@ -151,7 +151,7 @@ describe Chef::Provider::Cron do
   describe "when examining the current system state" do
     context "when run as non root for root crontab" do
       before do
-        mock_struct = OpenStruct.new(:uid => 0)
+        mock_struct = OpenStruct.new(uid: 0)
         allow(Process).to receive(:euid).and_return(42)
         allow(Etc).to receive(:getpwnam).with("root").and_return(mock_struct)
       end
@@ -167,7 +167,7 @@ describe Chef::Provider::Cron do
     context "when run as non root for another user crontab" do
       before do
         @new_resource.user "foo"
-        mock_struct = OpenStruct.new(:uid => 56)
+        mock_struct = OpenStruct.new(uid: 56)
         allow(Etc).to receive(:getpwnam).with("foo").and_return(mock_struct)
         allow(Process).to receive(:euid).and_return(42)
       end
@@ -184,7 +184,7 @@ describe Chef::Provider::Cron do
     context "when run as non root for same user crontab" do
       before do
         @new_resource.user "bar"
-        mock_struct = OpenStruct.new(:uid => 42)
+        mock_struct = OpenStruct.new(uid: 42)
         allow(Etc).to receive(:getpwnam).with("bar").and_return(mock_struct)
         allow(Process).to receive(:euid).and_return(42)
         allow(@provider).to receive(:read_crontab).and_return(nil)
@@ -195,11 +195,11 @@ describe Chef::Provider::Cron do
         allow(Process).to receive(:euid).and_call_original
       end
 
-       it "should not raise exception" do
+      it "should not raise exception" do
         expect { @provider.load_current_resource }.to_not raise_error
       end
     end
-    
+
     context "with no crontab for the user" do
       before :each do
         allow(@provider).to receive(:read_crontab).and_return(nil)
