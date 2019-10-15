@@ -72,7 +72,7 @@ The `windows_service` resource no longer updates the service and triggers notifi
 
 ### windows_share
 
-The `windows_share` resource is now fully idemptonent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+The `windows_share` resource is now fully idempotent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
 
 ## Security Updates
 
