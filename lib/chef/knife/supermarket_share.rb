@@ -151,11 +151,11 @@ class Chef
 
       def tar_cmd
         unless @tar_cmd
-          @tar_cmd = "tar"
+          @tar_cmd = "tar --numeric-owner --uid 0 --gid 0"
           begin
             # Unix and Mac only - prefer gnutar
             if shell_out("which gnutar").exitstatus.equal?(0)
-              @tar_cmd = "gnutar"
+              @tar_cmd = "gnutar --numeric-owner --owner 0 --group 0"
             end
           rescue Errno::ENOENT
           end
