@@ -59,7 +59,7 @@ class Chef
 
       property :workgroup_name, String,
         description: "Specifies the name of a workgroup to which the computer is added to when it is removed from the domain. The default value is WORKGROUP. This property is only applicable to the :leave action.",
-        introduced: "15.0"
+        introduced: "15.4"
 
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
