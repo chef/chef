@@ -302,7 +302,7 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private' -InterfaceType 'any' -Enabled 'true'")
       end
 
-      it "sets multiple Profiles" do
+      it "sets multiple Profiles (must be comma-plus-space delimited for PowerShell to treat as an array)" do
         resource.profile(%i{private public})
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private', 'public' -InterfaceType 'any' -Enabled 'true'")
       end
@@ -371,7 +371,7 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
-      it "sets multiple LocalPorts" do
+      it "sets multiple LocalPorts (must be comma-plus-space delimited for PowerShell to treat as an array)" do
         resource.local_port(%w{80 8080})
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80', '8080' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
@@ -391,7 +391,7 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
-      it "sets multiple RemotePorts" do
+      it "sets multiple RemotePorts (must be comma-plus-space delimited for PowerShell to treat as an array)" do
         resource.remote_port(%w{443 445})
         expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
