@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.4.46 -->
+## [v15.4.46](https://github.com/chef/chef/tree/v15.4.46) (2019-10-17)
+
+#### Merged Pull Requests
+- Sync over resource documentation from the docs site [#8999](https://github.com/chef/chef/pull/8999) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.4.45 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Sync over resource documentation from the docs site [#8999](https://github.com/chef/chef/pull/8999) ([tas50](https://github.com/tas50)) <!-- 15.4.46 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
