@@ -82,14 +82,12 @@ Get-Location
 # ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 $Env:FORCE_FFI_YAJL = "ext"
 
-# chocolatey functional tests fail so delete the chocolatey binary to avoid triggering them
-Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyContinue
-
 # some tests need winrm configured
 winrm quickconfig -quiet
 
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional
+# chocolatey functional tests fail so disable that tag directly
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation --tag ~choco_installed spec/functional
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
