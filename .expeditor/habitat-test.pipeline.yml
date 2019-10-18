@@ -3,7 +3,18 @@ steps:
 
 - label: ":linux: Validate Habitat Builds of Chef Infra"
   commands:
-    - hab pkg install chef/chef-infra-client
+    - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
+    - powershell -File "./habitat/tests/test.sh" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":linux: :two: Validate Habitat Builds of Chef Infra"
+  commands:
+    - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
+    - powershell -File "./habitat/tests/test.sh" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
   expeditor:
     executor:
       linux:
@@ -12,10 +23,10 @@ steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
-    - hab pkg install chef/chef-infra-client
+    - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
+    - powershell -File "./habitat/tests/test.ps1" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
   expeditor:
     executor:
       windows:
-        os-version: 2016
         privileged: true
         single-use: true
