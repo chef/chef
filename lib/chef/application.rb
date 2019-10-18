@@ -146,6 +146,7 @@ class Chef
       end
       extra_config_options = config.delete(:config_option)
       chef_config.merge!(config)
+      chef_config[:file_cache_path] = File.expand_path(chef_config[:file_cache_path])
       apply_extra_config_options(extra_config_options)
     end
 

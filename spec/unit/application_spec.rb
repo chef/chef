@@ -130,6 +130,7 @@ describe Chef::Application do
 
         before do
           @app.config[:config_file] = config_location
+          @app.config[:file_cache_path] = "/root/.chef/local-mode-cache/cache"
 
           # force let binding to get evaluated or else we stub Pathname.new before we try to use it.
           config_location_pathname
@@ -521,6 +522,7 @@ describe Chef::Application do
 
       default :test_config_1, "config default"
       default :test_config_2, "config default"
+      default :file_cache_path, "/root/.chef/local-mode-cache/cache"
     end
 
     class MyAppClass < Chef::Application
@@ -576,6 +578,12 @@ describe Chef::Application do
       @app.parse_options
       @app.load_config_file
       expect(MyTestConfig[:test_config_2]).to eql("cli-setting")
+    end
+
+    it "should be expanded the file_cache_path" do
+      expect(fake_config_fetcher).to receive(:read_config).and_return(%q{file_cache_path "~/test/.chef/cache"})
+      @app.load_config_file
+      expect(MyTestConfig[:file_cache_path]).to eql("/root/test/.chef/cache")
     end
   end
 end
