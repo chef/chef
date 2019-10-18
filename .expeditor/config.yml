@@ -26,7 +26,7 @@ pipelines:
   - verify:
       public: true
   - habitat/build
-  - habitat/test:
+  - habitat-test:
       definition: .expeditor/habitat-test.pipeline.yml
   - omnibus/release
   - omnibus/adhoc:
