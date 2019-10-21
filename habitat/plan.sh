@@ -105,6 +105,8 @@ do_build() {
 
 do_install() {
   ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
+    build_line "** fixing binstub shebangs"
+    sed -i "s%^#\!/usr/bin/env ruby$%#\!$(hab pkg path 'core/ruby26')/bin/ruby%" vendor/bin/*
     export BUNDLE_GEMFILE="$CACHE_PATH/Gemfile"
     for gem in chef-bin chef inspec-core-bin ohai; do
       build_line "** generating binstubs for $gem with precise version pins"
