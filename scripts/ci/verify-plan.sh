@@ -9,6 +9,11 @@
 
 set -eou pipefail
 
+echo "--- :8ball: :linux: Verifying chef-infra-client"
+
+HAB_LICENSE="accept-no-persist"
+export HAB_LICENSE
+
 echo "--- :key: Generating fake origin key for test build"
 # This is intended to be run in the context of public CI where
 # we won't have access to any valid signing keys.
@@ -47,6 +52,9 @@ source $project_root/results/last_build.env # reference metadata from the build
 
 ( cd "$project_root" || exit 1
 
-  echo "--- :construction: :linux: Testing"
-  hab pkg install results/${pkg_artifact} && ./habitat/tests/test.sh ${pkg_ident}
+  echo "--- :mag_right: :linux: Testing"
+  echo "... installing what we built"
+  hab pkg install results/${pkg_artifact}
+  echo "... testing what we built"
+  ./habitat/tests/test.sh ${pkg_ident}
 )
