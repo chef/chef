@@ -124,7 +124,6 @@ class Chef
               cookbooks_for_upload << cookbook
               version_constraints_to_update[cookbook_name] = cookbook.version
             end
-
             if config[:all]
               if cookbooks_for_upload.any?
                 begin
