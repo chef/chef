@@ -33,7 +33,7 @@ Code review takes place in GitHub pull requests. See [this article](https://help
 
 Once you open a pull request, project maintainers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. Two thumbs-up (:+1:) are required from project maintainers. See the master maintainers document for Chef projects at <https://github.com/chef/chef/blob/master/MAINTAINERS.md>.
+1. Two thumbs-up (:+1:) are required from project maintainers. See the master maintainers document for Chef projects at <https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md>.
 2. Your change will be merged into the project's `master` branch
 3. Our Expeditor bot will automatically update the project's changelog with your contribution. For projects such as Chef and Chef-DK the version will be automatically incremented and a build kicked off to the project's `current` channel.
 
