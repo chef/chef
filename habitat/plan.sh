@@ -13,6 +13,7 @@ pkg_build_deps=(
   core/git
 )
 pkg_deps=(
+  core/bash
   core/glibc
   core/ruby26
   core/libxml2
