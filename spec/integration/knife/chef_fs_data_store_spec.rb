@@ -194,7 +194,7 @@ describe "ChefFSDataStore tests", :workstation do
             Uploading x              [1.0.0]
             Uploaded 1 cookbook.
           EOM
-          knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/x/\n/cookbooks/x/metadata.rb\n"
+          knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/x/\n/cookbooks/x/metadata.json\n/cookbooks/x/metadata.rb\n"
         end
 
         it "knife raw -z -i empty.json -m PUT /data/x/y" do
@@ -251,7 +251,7 @@ describe "ChefFSDataStore tests", :workstation do
             Uploading z            [1.0.0]
             Uploaded 1 cookbook.
           EOM
-          knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/z/\n/cookbooks/z/metadata.rb\n"
+          knife("list --local -Rfp /cookbooks").should_succeed "/cookbooks/z/\n/cookbooks/z/metadata.json\n/cookbooks/z/metadata.rb\n"
         end
 
         it "knife raw -z -i empty.json -m POST /data" do

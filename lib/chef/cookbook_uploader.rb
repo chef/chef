@@ -46,6 +46,12 @@ class Chef
     end
 
     def upload_cookbooks
+      cookbooks.each do |cookbook|
+        next if cookbook.all_files.include?("#{cookbook.root_paths[0]}/metadata.json")
+
+        generate_metadata_json(cookbook.name.to_s,cookbook)
+      end
+
       # Syntax Check
       validate_cookbooks
       # generate checksums of cookbook files and create a sandbox
@@ -112,6 +118,13 @@ class Chef
       end
 
       Chef::Log.info("Upload complete!")
+    end
+
+    def generate_metadata_json(cookbook_name,cookbook)
+      metadata = Chef::Knife::CookbookMetadata.new
+      metadata.generate_metadata_from_file(cookbook_name, "#{cookbook.root_paths[0]}/metadata.rb")
+      cookbook.all_files << "#{cookbook.root_paths[0]}/metadata.json"
+      cookbook.cookbook_manifest.send(:generate_manifest)
     end
 
     def uploader_function_for(file, checksum, url, checksums_to_upload)
