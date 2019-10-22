@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.47 -->
-## [v15.4.47](https://github.com/chef/chef/tree/v15.4.47) (2019-10-21)
+<!-- latest_release 15.4.48 -->
+## [v15.4.48](https://github.com/chef/chef/tree/v15.4.48) (2019-10-22)
 
 #### Merged Pull Requests
-- Update maintainers link in CONTRIBUTING.md [#9012](https://github.com/chef/chef/pull/9012) ([vsingh-msys](https://github.com/vsingh-msys))
+- correct typos in license headers [#9016](https://github.com/chef/chef/pull/9016) ([pombredanne](https://github.com/pombredanne))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- correct typos in license headers [#9016](https://github.com/chef/chef/pull/9016) ([pombredanne](https://github.com/pombredanne)) <!-- 15.4.48 -->
 - Update maintainers link in CONTRIBUTING.md [#9012](https://github.com/chef/chef/pull/9012) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.47 -->
 - Sync over resource documentation from the docs site [#8999](https://github.com/chef/chef/pull/8999) ([tas50](https://github.com/tas50)) <!-- 15.4.46 -->
 <!-- release_rollup -->
