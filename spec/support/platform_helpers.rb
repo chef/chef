@@ -269,7 +269,7 @@ end
 
 def gce?
   HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
-rescue SocketError
+rescue SocketError, Errno::EBUSY
   false
 end
 
