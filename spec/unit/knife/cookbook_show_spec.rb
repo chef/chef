@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Copyright:: Copyright 2008-2017, Chef Software Inc.
-# License:: Apache License, eersion 2.0
+# License:: Apache License, version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
