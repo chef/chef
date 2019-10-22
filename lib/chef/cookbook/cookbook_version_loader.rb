@@ -65,14 +65,6 @@ class Chef
       # Load the cookbook. Raises an error if the cookbook_path given to the
       # constructor doesn't point to a valid cookbook.
       def load!
-        # file_paths_map = load
-
-        # if empty?
-        #   raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
-        # end
-
-        # file_paths_map
-
         metadata # force lazy evaluation to occur
 
         # re-raise any exception that occurred when reading the metadata
@@ -83,8 +75,9 @@ class Chef
         remove_ignored_files
 
         if empty?
-          Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
+          raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
         end
+
         cookbook_settings
       end
 
@@ -92,23 +85,10 @@ class Chef
       # directory as the cookbook_path. This behavior is provided for
       # compatibility, it is recommended to use #load! instead.
       def load
-        Chef::Log.warn "This method is deprecated. Use load! instead"
-        # metadata # force lazy evaluation to occur
-
-        # re-raise any exception that occurred when reading the metadata
-      #   raise_metadata_error!
-
-      #   load_all_files
-
-      #   remove_ignored_files
-
-      #   if empty?
-      #     Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
-      #   end
-      #   cookbook_settings
+        Chef::Log.warn "load method is deprecated. Use load! instead"
       end
 
-      alias :load_cookbooks :load
+      alias :load_cookbooks :load!
 
       def cookbook_version
         return nil if empty?
