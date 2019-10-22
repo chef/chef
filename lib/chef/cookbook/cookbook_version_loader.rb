@@ -81,9 +81,6 @@ class Chef
         cookbook_settings
       end
 
-      # Load the cookbook. Does not raise an error if given a non-cookbook
-      # directory as the cookbook_path. This behavior is provided for
-      # compatibility, it is recommended to use #load! instead.
       def load
         Chef::Log.warn "load method is deprecated. Use load! instead"
       end
