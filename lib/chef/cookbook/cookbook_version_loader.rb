@@ -83,9 +83,23 @@ class Chef
 
       def load
         Chef::Log.warn "load method is deprecated. Use load! instead"
+        metadata # force lazy evaluation to occur
+
+        # re-raise any exception that occurred when reading the metadata
+        raise_metadata_error!
+
+        load_all_files
+
+        remove_ignored_files
+
+        if empty?
+          raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
+        end
+
+        cookbook_settings
       end
 
-      alias :load_cookbooks :load!
+      alias :load_cookbooks :load
 
       def cookbook_version
         return nil if empty?
