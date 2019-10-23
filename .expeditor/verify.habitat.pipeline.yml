@@ -9,7 +9,7 @@ expeditor:
 
 steps:
 
-- label: "Windows plan"
+- label: ":windows: plan"
   commands:
     - scripts/ci/verify-plan.ps1
   expeditor:
@@ -18,3 +18,12 @@ steps:
         privileged: true
         single-use: true
         shell: ["powershell", "-Command"]
+
+- label: ":linux: plan"
+  commands:
+    - sudo ./scripts/ci/verify-plan.sh
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
