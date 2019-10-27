@@ -590,6 +590,12 @@ class Chef
       def run
         @longest = 0
 
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the SEARCH QUERY.")
+          exit(1)
+        end
+
         configure_user
         configure_password
         @password = config[:ssh_password] if config[:ssh_password]
