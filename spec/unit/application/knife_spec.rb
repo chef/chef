@@ -77,6 +77,23 @@ describe Chef::Application::Knife do
     expect(Chef::Config[:color]).to be_truthy
   end
 
+  context "validate --format option" do
+    it "should set the default format summary" do
+      with_argv(*%w{noop knife command}) do
+        expect(@knife).to receive(:exit).with(0)
+        @knife.run
+        expect(@knife.default_config[:format]).to eq("summary")
+      end
+    end
+
+    it "should raise the error for invalid value" do
+      with_argv(*%w{noop knife command -F abc}) do
+        expect(STDOUT).to receive(:puts).at_least(2).times
+        expect { @knife.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(2) }
+      end
+    end
+  end
+
   context "when given fips flags" do
     context "when Chef::Config[:fips]=false" do
       before do
