@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.50 -->
-## [v15.4.50](https://github.com/chef/chef/tree/v15.4.50) (2019-10-28)
+<!-- latest_release 15.4.51 -->
+## [v15.4.51](https://github.com/chef/chef/tree/v15.4.51) (2019-10-28)
 
 #### Merged Pull Requests
-- Validate format option values using `in` attribute [#9026](https://github.com/chef/chef/pull/9026) ([vsingh-msys](https://github.com/vsingh-msys))
+- knife ssh: Fix Exception: NoMethodError: undefined method join for nil:NilClass [#9028](https://github.com/chef/chef/pull/9028) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- knife ssh: Fix Exception: NoMethodError: undefined method join for nil:NilClass [#9028](https://github.com/chef/chef/pull/9028) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.51 -->
 - Validate format option values using `in` attribute [#9026](https://github.com/chef/chef/pull/9026) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.50 -->
 - Fix knife node show non-existent attributes [#9025](https://github.com/chef/chef/pull/9025) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.49 -->
 - correct typos in license headers [#9016](https://github.com/chef/chef/pull/9016) ([pombredanne](https://github.com/pombredanne)) <!-- 15.4.48 -->
