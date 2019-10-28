@@ -40,6 +40,13 @@ describe Chef::Knife::CookbookMetadataFromFile do
   end
 
   describe "run" do
+    it "should print usage and exit when a FILE is not provided" do
+      @knife.name_args = []
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal).with(/You must specify the FILE./)
+      expect { @knife.run }.to raise_error(SystemExit)
+    end
+
     it "should determine cookbook name from path" do
       expect(@md).to receive(:name).with(no_args)
       expect(@md).to receive(:name).with("quick_start")

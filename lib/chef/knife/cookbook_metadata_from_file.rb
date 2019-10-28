@@ -31,6 +31,12 @@ class Chef
       banner "knife cookbook metadata from file FILE (options)"
 
       def run
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the FILE.")
+          exit(1)
+        end
+
         file = @name_args[0]
         cookbook = File.basename(File.dirname(file))
 
