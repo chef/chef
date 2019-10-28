@@ -27,6 +27,7 @@ provisioner:
   product_name: angrychef
   product_version: latest
   chef_omnibus_root: /opt/angrychef
+  chef_license: accept-no-persist
 
 platforms:
   - name: centos-6
