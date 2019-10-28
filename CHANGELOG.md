@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.53 -->
-## [v15.4.53](https://github.com/chef/chef/tree/v15.4.53) (2019-10-28)
+<!-- latest_release 15.4.54 -->
+## [v15.4.54](https://github.com/chef/chef/tree/v15.4.54) (2019-10-28)
 
 #### Merged Pull Requests
-- Fix license acceptance in `omnibus/kitchen.yml` [#9030](https://github.com/chef/chef/pull/9030) ([christopher-snapp](https://github.com/christopher-snapp))
+- Fix knife cookbook metadata from file name args [#9032](https://github.com/chef/chef/pull/9032) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix knife cookbook metadata from file name args [#9032](https://github.com/chef/chef/pull/9032) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.54 -->
 - Fix license acceptance in `omnibus/kitchen.yml` [#9030](https://github.com/chef/chef/pull/9030) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.4.53 -->
 - [Data-collector] Add cookbooks attribute to run_end_message [#8893](https://github.com/chef/chef/pull/8893) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.52 -->
 - knife ssh: Fix Exception: NoMethodError: undefined method join for nil:NilClass [#9028](https://github.com/chef/chef/pull/9028) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.51 -->
