@@ -23,7 +23,7 @@ describe "notifying_block" do
   include Chef::Mixin::ShellOut
 
   let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
-  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
+  let(:chef_client) { "chef-client --minimal-ohai" }
 
   when_the_repository "notifying_block test one" do
     before do

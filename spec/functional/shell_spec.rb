@@ -82,7 +82,7 @@ describe Shell do
 
       require "pty"
       config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-      reader, writer, pid = PTY.spawn("bundle exec chef-shell -c #{config} #{options}")
+      reader, writer, pid = PTY.spawn("chef-shell -c #{config} #{options}")
       read_until(reader, "chef (#{Chef::VERSION})>")
       yield reader, writer if block_given?
       writer.puts('"done"')
