@@ -21,6 +21,8 @@ class Chef
   class Resource
     class User
       class PwUser < Chef::Resource::User
+        unified_mode true
+
         resource_name :pw_user
 
         provides :pw_user

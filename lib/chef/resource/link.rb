@@ -24,6 +24,8 @@ class Chef
   class Resource
     class Link < Chef::Resource
       include Chef::Mixin::Securable
+      unified_mode true
+
       resource_name :link
       provides :link
 

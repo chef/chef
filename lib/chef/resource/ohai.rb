@@ -23,6 +23,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Ohai < Chef::Resource
+      unified_mode true
+
       resource_name :ohai
       provides :ohai
 

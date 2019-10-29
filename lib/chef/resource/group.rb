@@ -20,6 +20,8 @@
 class Chef
   class Resource
     class Group < Chef::Resource
+      unified_mode true
+
       state_attrs :members
 
       description "Use the group resource to manage a local group."

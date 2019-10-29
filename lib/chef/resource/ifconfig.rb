@@ -26,6 +26,8 @@ class Chef
     #     device 'eth1'
     #   end
     class Ifconfig < Chef::Resource
+      unified_mode true
+
       resource_name :ifconfig
 
       description "Use the ifconfig resource to manage interfaces on Unix and Linux systems."

@@ -22,6 +22,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Breakpoint < Chef::Resource
+      unified_mode true
+
       provides :breakpoint, target_mode: true
       resource_name :breakpoint
 
