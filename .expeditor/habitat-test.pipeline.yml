@@ -1,26 +1,6 @@
 ---
 steps:
 
-- label: ":linux: Validate Habitat Builds of Chef Infra"
-  commands:
-    - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-    - powershell -File "./habitat/tests/test.sh" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: ":linux: :two: Validate Habitat Builds of Chef Infra"
-  commands:
-    - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
-    - powershell -File "./habitat/tests/test.sh" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
     - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
@@ -30,3 +10,17 @@ steps:
       windows:
         privileged: true
         single-use: true
+
+# Wait for the package testing to succeed before promoting whatever was tested.
+- wait
+
+- label: ":habicat: Promoting packages to the current channel."
+  commands:
+    - hab pkg promote "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS" current
+  expeditor:
+    executor:
+      docker:
+    secrets:
+      HAB_AUTH_TOKEN:
+        path: account/static/habitat/chef-ci
+        field: auth_token
