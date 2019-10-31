@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.54 -->
-## [v15.4.54](https://github.com/chef/chef/tree/v15.4.54) (2019-10-28)
+<!-- latest_release 15.4.55 -->
+## [v15.4.55](https://github.com/chef/chef/tree/v15.4.55) (2019-10-31)
 
 #### Merged Pull Requests
-- Fix knife cookbook metadata from file name args [#9032](https://github.com/chef/chef/pull/9032) ([vsingh-msys](https://github.com/vsingh-msys))
+- Turn on unified_mode for 35 core resources [#9034](https://github.com/chef/chef/pull/9034) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Turn on unified_mode for 35 core resources [#9034](https://github.com/chef/chef/pull/9034) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.55 -->
 - Fix knife cookbook metadata from file name args [#9032](https://github.com/chef/chef/pull/9032) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.54 -->
 - Fix license acceptance in `omnibus/kitchen.yml` [#9030](https://github.com/chef/chef/pull/9030) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.4.53 -->
 - [Data-collector] Add cookbooks attribute to run_end_message [#8893](https://github.com/chef/chef/pull/8893) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.52 -->
