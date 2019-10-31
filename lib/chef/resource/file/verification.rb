@@ -63,6 +63,7 @@ class Chef
 
       class Verification
         extend Chef::Mixin::DescendantsTracker
+        attr_reader :output
 
         def self.provides(name)
           @provides = name
@@ -117,7 +118,9 @@ class Chef
 
           command = @command % { path: path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
-          interpreter.evaluate
+          ret = interpreter.evaluate
+          @output = interpreter.output
+          ret
         end
 
         def verify_registered_verification(path, opts)
