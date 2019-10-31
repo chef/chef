@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency "license-acceptance", "~> 1.0", ">= 1.0.5"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
-  s.add_dependency "mixlib-authentication", "~> 2.1"
+  s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.0.3", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 15.0"
