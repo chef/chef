@@ -21,6 +21,8 @@ class Chef
   class Resource
     class User
       class SolarisUser < Chef::Resource::User
+        unified_mode true
+
         resource_name :solaris_user
 
         provides :solaris_user

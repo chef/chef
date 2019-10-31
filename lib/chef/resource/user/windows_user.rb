@@ -21,6 +21,8 @@ class Chef
   class Resource
     class User
       class WindowsUser < Chef::Resource::User
+        unified_mode true
+
         resource_name :windows_user
 
         provides :windows_user

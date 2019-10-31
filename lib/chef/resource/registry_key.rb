@@ -22,6 +22,8 @@ require_relative "../digester"
 class Chef
   class Resource
     class RegistryKey < Chef::Resource
+      unified_mode true
+
       resource_name :registry_key
       provides(:registry_key) { true }
 

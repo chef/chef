@@ -23,6 +23,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Execute < Chef::Resource
+      unified_mode true
+
       resource_name :execute
       provides :execute, target_mode: true
 

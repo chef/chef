@@ -22,6 +22,8 @@ require_relative "../provider/script"
 class Chef
   class Resource
     class Csh < Chef::Resource::Script
+      unified_mode true
+
       description "Use the csh resource to execute scripts using the csh interpreter."\
                   " This resource may also use any of the actions and properties that are"\
                   " available to the execute resource. Commands that are executed with this"\

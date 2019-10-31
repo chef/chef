@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class Scm < Chef::Resource
+      unified_mode true
+
       default_action :sync
       allowed_actions :checkout, :export, :sync, :diff, :log
 

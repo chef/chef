@@ -21,6 +21,8 @@ require_relative "../provider/script"
 class Chef
   class Resource
     class Python < Chef::Resource::Script
+      unified_mode true
+
       def initialize(name, run_context = nil)
         super
         @interpreter = "python"

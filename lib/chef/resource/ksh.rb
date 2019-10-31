@@ -21,6 +21,8 @@ require_relative "script"
 class Chef
   class Resource
     class Ksh < Chef::Resource::Script
+      unified_mode true
+
       description "Use the ksh resource to execute scripts using the Korn shell (ksh)"\
                   " interpreter. This resource may also use any of the actions and properties"\
                   " that are available to the execute resource. Commands that are executed"\

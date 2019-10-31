@@ -28,6 +28,7 @@ class Chef
   class Resource
     class File < Chef::Resource
       include Chef::Mixin::Securable
+      unified_mode true
 
       description "Use the file resource to manage files directly on a node."
 

@@ -22,6 +22,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Reboot < Chef::Resource
+      unified_mode true
+
       resource_name :reboot
 
       description "Use the reboot resource to reboot a node, a necessary step with some"\
