@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.56 -->
-## [v15.4.56](https://github.com/chef/chef/tree/v15.4.56) (2019-10-31)
+<!-- latest_release 15.4.57 -->
+## [v15.4.57](https://github.com/chef/chef/tree/v15.4.57) (2019-11-01)
 
 #### Merged Pull Requests
-- Bump all deps to the latest versions [#9037](https://github.com/chef/chef/pull/9037) ([tas50](https://github.com/tas50))
+- Allow for the mixlib-authentication 3.x gem [#9040](https://github.com/chef/chef/pull/9040) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow for the mixlib-authentication 3.x gem [#9040](https://github.com/chef/chef/pull/9040) ([tas50](https://github.com/tas50)) <!-- 15.4.57 -->
 - Bump all deps to the latest versions [#9037](https://github.com/chef/chef/pull/9037) ([tas50](https://github.com/tas50)) <!-- 15.4.56 -->
 - Turn on unified_mode for 35 core resources [#9034](https://github.com/chef/chef/pull/9034) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.55 -->
 - Fix knife cookbook metadata from file name args [#9032](https://github.com/chef/chef/pull/9032) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.54 -->
