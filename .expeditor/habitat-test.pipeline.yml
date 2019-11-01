@@ -16,7 +16,7 @@ steps:
 
 - label: ":habicat: Promoting packages to the current channel."
   commands:
-    - hab pkg promote "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS" current
+    - hab pkg promote "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS" current x86_64-windows
   expeditor:
     executor:
       docker:
