@@ -189,7 +189,7 @@ class Chef
       end
 
       def chefignore
-        @chefignore ||= Chefignore.new(File.basename(cookbook_path))
+        @chefignore ||= Chefignore.new(cookbook_path)
       end
 
       # Enumerate all the files in a cookbook and assign the resulting list to

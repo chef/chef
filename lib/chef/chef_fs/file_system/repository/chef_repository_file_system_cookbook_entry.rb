@@ -68,13 +68,14 @@ class Chef
             end
 
             # Check chefignore
-            ignorer = parent
+            ignorer = self
+
             loop do
-              if ignorer.is_a?(CookbooksDir)
+              if ignorer.is_a?(ChefRepositoryFileSystemCookbookDir)
                 # Grab the path from entry to child
                 path_to_child = name
                 child = self
-                while child.parent != ignorer
+                while child != ignorer
                   path_to_child = PathUtils.join(child.name, path_to_child)
                   child = child.parent
                 end

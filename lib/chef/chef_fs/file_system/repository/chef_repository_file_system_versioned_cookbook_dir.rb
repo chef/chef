@@ -25,7 +25,7 @@ class Chef
         class ChefRepositoryFileSystemVersionedCookbookDir < ChefRepositoryFileSystemCookbookDir
           # Override from parent
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
             # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
             # want to spend a lot of time adding code to the main Chef libraries
             canonical_name = canonical_cookbook_name(File.basename(file_path))
