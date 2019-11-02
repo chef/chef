@@ -65,11 +65,19 @@ describe Chef::Provider::SystemdUnit do
   end
 
   let(:shell_out_masked) do
-    double("shell_out", exit_status: 0, error?: false, stdout: "masked")
+    double("shell_out", exitstatus: 0, error?: false, stdout: "masked")
   end
 
   let(:shell_out_static) do
-    double("shell_out", exit_status: 0, error?: false, stdout: "static")
+    double("shell_out", exitstatus: 0, error?: false, stdout: "static")
+  end
+
+  let(:shell_out_disabled) do
+    double("shell_out", exitstatus: 1, error?: true, stdout: "disabled")
+  end
+
+  let(:shell_out_indirect) do
+    double("shell_out", exitstatus: 0, error?: true, stdout: "indirect")
   end
 
   before(:each) do
@@ -858,8 +866,8 @@ describe Chef::Provider::SystemdUnit do
           it "returns false when unit is not enabled" do
             current_resource.user(user_name)
             expect(provider).to receive(:shell_out_compacted)
-                                  .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
-                                  .and_return(shell_out_failure)
+              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
+              .and_return(shell_out_disabled)
             expect(provider.enabled?).to be false
           end
         end
@@ -874,8 +882,8 @@ describe Chef::Provider::SystemdUnit do
 
           it "returns false when unit is not enabled" do
             expect(provider).to receive(:shell_out_compacted)
-                                  .with(systemctl_path, "--system", "is-enabled", unit_name)
-                                  .and_return(shell_out_failure)
+              .with(systemctl_path, "--system", "is-enabled", unit_name)
+              .and_return(shell_out_disabled)
             expect(provider.enabled?).to be false
           end
         end
@@ -959,6 +967,47 @@ describe Chef::Provider::SystemdUnit do
                                   .with(systemctl_path, "--system", "is-enabled", unit_name)
                                   .and_return(shell_out_masked)
             expect(provider.static?).to be false
+          end
+        end
+      end
+
+      describe "#indirect?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
+        end
+
+        context "when a user is specified" do
+          it "returns true when the unit is indirect" do
+            current_resource.user(user_name)
+            expect(provider).to receive(:shell_out_compacted)
+              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
+              .and_return(shell_out_indirect)
+            expect(provider.indirect?).to be true
+          end
+
+          it "returns false when the unit is not indirect" do
+            current_resource.user(user_name)
+            expect(provider).to receive(:shell_out_compacted)
+              .with(systemctl_path, "--user", "is-enabled", unit_name, user_cmd_opts)
+              .and_return(shell_out_static)
+            expect(provider.indirect?).to be false
+          end
+        end
+
+        context "when no user is specified" do
+          it "returns true when the unit is indirect" do
+            expect(provider).to receive(:shell_out_compacted)
+              .with(systemctl_path, "--system", "is-enabled", unit_name)
+              .and_return(shell_out_indirect)
+            expect(provider.indirect?).to be true
+          end
+
+          it "returns false when the unit is not indirect" do
+            expect(provider).to receive(:shell_out_compacted)
+              .with(systemctl_path, "--system", "is-enabled", unit_name)
+              .and_return(shell_out_static)
+            expect(provider.indirect?).to be false
           end
         end
       end
