@@ -110,6 +110,13 @@ describe "knife config get", :workstation do
     it { is_expected.to match(/^node_name:\s+one$/) }
   end
 
+  context "with a config dot d files" do
+    before { file(".chef/config.d/abc.rb", "node_name 'one'\n") }
+
+    it { is_expected.to match(%r{^Loading from .d/ configuration file .*/#{File.basename(path_to("."))}/.chef/config.d/abc.rb$}) }
+    it { is_expected.to match(/^node_name:\s+one$/) }
+  end
+
   context "with a credentials file and CHEF_HOME" do
     before do
       file(".chef/credentials", "[default]\nclient_name = \"three\"\n")
