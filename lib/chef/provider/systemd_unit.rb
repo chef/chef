@@ -42,6 +42,7 @@ class Chef
         current_resource.active(active?)
         current_resource.masked(masked?)
         current_resource.static(static?)
+        current_resource.indirect(indirect?)
         current_resource.triggers_reload(new_resource.triggers_reload)
 
         current_resource
@@ -90,8 +91,11 @@ class Chef
         if current_resource.static
           logger.trace("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
         end
+        if current_resource.indirect
+          logger.trace("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
+        end
 
-        unless current_resource.enabled || current_resource.static
+        unless current_resource.enabled || current_resource.static || current_resource.indirect
           converge_by("enabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:enable, new_resource.unit_name)
           end
@@ -103,7 +107,11 @@ class Chef
           logger.trace("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
         end
 
-        if current_resource.enabled && !current_resource.static
+        if current_resource.indirect
+          logger.trace("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
+        end
+
+        if current_resource.enabled && !current_resource.static && !current_resource.indirect
           converge_by("disabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:disable, new_resource.unit_name)
           end
@@ -196,6 +204,10 @@ class Chef
 
       def static?
         systemctl_execute("is-enabled", new_resource.unit_name).stdout.include?("static")
+      end
+
+      def indirect?
+        systemctl_execute("is-enabled", new_resource.unit_name).stdout.include?("indirect")
       end
 
       private

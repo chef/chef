@@ -43,6 +43,7 @@ class Chef
       property :active, [TrueClass, FalseClass], skip_docs: true
       property :masked, [TrueClass, FalseClass], skip_docs: true
       property :static, [TrueClass, FalseClass], skip_docs: true
+      property :indirect, [TrueClass, FalseClass], skip_docs: true
 
       # User-provided properties
       property :user, String, desired_state: false,

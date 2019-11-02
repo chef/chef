@@ -90,6 +90,9 @@ class Chef
       # if the service is masked or not
       property :masked, [ TrueClass, FalseClass ], skip_docs: true
 
+      # if the service is indirect or not
+      property :indirect, [ TrueClass, FalseClass ], skip_docs: true
+
       property :options, [ Array, String ],
         description: "Solaris platform only. Options to pass to the service command. See the svcadm manual for details of possible options.",
         coerce: proc { |x| x.respond_to?(:split) ? x.shellsplit : x }
