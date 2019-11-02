@@ -94,6 +94,7 @@ class Chef
         unless current_resource.enabled || current_resource.static
           converge_by("enabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:enable, new_resource.unit_name)
+            logger.info("#{new_resource} enabled")
           end
         end
       end
@@ -106,6 +107,7 @@ class Chef
         if current_resource.enabled && !current_resource.static
           converge_by("disabling unit: #{new_resource.unit_name}") do
             systemctl_execute!(:disable, new_resource.unit_name)
+            logger.info("#{new_resource} disabled")
           end
         end
       end
@@ -113,6 +115,7 @@ class Chef
       def action_reenable
         converge_by("reenabling unit: #{new_resource.unit_name}") do
           systemctl_execute!(:reenable, new_resource.unit_name)
+          logger.info("#{new_resource} reenabled")
         end
       end
 
@@ -120,6 +123,7 @@ class Chef
         unless current_resource.masked
           converge_by("masking unit: #{new_resource.unit_name}") do
             systemctl_execute!(:mask, new_resource.unit_name)
+            logger.info("#{new_resource} masked")
           end
         end
       end
@@ -128,6 +132,7 @@ class Chef
         if current_resource.masked
           converge_by("unmasking unit: #{new_resource.unit_name}") do
             systemctl_execute!(:unmask, new_resource.unit_name)
+            logger.info("#{new_resource} unmasked")
           end
         end
       end
@@ -136,6 +141,7 @@ class Chef
         unless current_resource.active
           converge_by("starting unit: #{new_resource.unit_name}") do
             systemctl_execute!(:start, new_resource.unit_name, default_env: false)
+            logger.info("#{new_resource} started")
           end
         end
       end
@@ -144,6 +150,7 @@ class Chef
         if current_resource.active
           converge_by("stopping unit: #{new_resource.unit_name}") do
             systemctl_execute!(:stop, new_resource.unit_name, default_env: false)
+            logger.info("#{new_resource} stopped")
           end
         end
       end
@@ -151,6 +158,7 @@ class Chef
       def action_restart
         converge_by("restarting unit: #{new_resource.unit_name}") do
           systemctl_execute!(:restart, new_resource.unit_name, default_env: false)
+          logger.info("#{new_resource} restarted")
         end
       end
 
@@ -158,6 +166,7 @@ class Chef
         if current_resource.active
           converge_by("reloading unit: #{new_resource.unit_name}") do
             systemctl_execute!(:reload, new_resource.unit_name, default_env: false)
+            logger.info("#{new_resource} reloaded")
           end
         else
           logger.trace("#{new_resource.unit_name} is not active, skipping reload.")
@@ -167,18 +176,21 @@ class Chef
       def action_try_restart
         converge_by("try-restarting unit: #{new_resource.unit_name}") do
           systemctl_execute!("try-restart", new_resource.unit_name, default_env: false)
+          logger.info("#{new_resource} try-restarted")
         end
       end
 
       def action_reload_or_restart
         converge_by("reload-or-restarting unit: #{new_resource.unit_name}") do
           systemctl_execute!("reload-or-restart", new_resource.unit_name, default_env: false)
+          logger.info("#{new_resource} reload-or-restarted")
         end
       end
 
       def action_reload_or_try_restart
         converge_by("reload-or-try-restarting unit: #{new_resource.unit_name}") do
           systemctl_execute!("reload-or-try-restart", new_resource.unit_name, default_env: false)
+          logger.info("#{new_resource} reload-or-try-restarted")
         end
       end
 
