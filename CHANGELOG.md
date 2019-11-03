@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.60 -->
-## [v15.4.60](https://github.com/chef/chef/tree/v15.4.60) (2019-11-03)
+<!-- latest_release 15.4.61 -->
+## [v15.4.61](https://github.com/chef/chef/tree/v15.4.61) (2019-11-03)
 
 #### Merged Pull Requests
-- Bump omnibus to 6.1.10 [#9048](https://github.com/chef/chef/pull/9048) ([btm](https://github.com/btm))
+- [knife config get] Fix TypeError: no implicit conversion of nil into String [#9049](https://github.com/chef/chef/pull/9049) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [knife config get] Fix TypeError: no implicit conversion of nil into String [#9049](https://github.com/chef/chef/pull/9049) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.61 -->
 - Bump omnibus to 6.1.10 [#9048](https://github.com/chef/chef/pull/9048) ([btm](https://github.com/btm)) <!-- 15.4.60 -->
 - a Windows Habitat plan [#8900](https://github.com/chef/chef/pull/8900) ([robbkidd](https://github.com/robbkidd)) <!-- 15.4.59 -->
 - Fix multiple chefignore file issues [#8925](https://github.com/chef/chef/pull/8925) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.58 -->
