@@ -199,14 +199,14 @@ class Chef
         @role_default   = VividMash.new({}, self, node, :role_default)
         @force_default  = VividMash.new({}, self, node, :force_default)
 
-        @normal         = VividMash.new(normal, self, node, :normal)
+        @normal = VividMash.new(normal, self, node, :normal)
 
         @override       = VividMash.new(override, self, node, :override)
         @role_override  = VividMash.new({}, self, node, :role_override)
         @env_override   = VividMash.new({}, self, node, :env_override)
         @force_override = VividMash.new({}, self, node, :force_override)
 
-        @automatic      = VividMash.new(automatic, self, node, :automatic)
+        @automatic = VividMash.new(automatic, self, node, :automatic)
 
         super(nil, self, node, :merged)
       end

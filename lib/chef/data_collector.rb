@@ -64,8 +64,8 @@ class Chef
       # @param events [Chef::EventDispatch::Dispatcher] the event dispatcher
       def initialize(events)
         @events = events
-        @expanded_run_list       = {}
-        @deprecations            = Set.new
+        @expanded_run_list = {}
+        @deprecations = Set.new
       end
 
       # Hook to grab the run_status.  We also make the decision to run or not run here (our

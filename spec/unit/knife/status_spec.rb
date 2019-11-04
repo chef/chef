@@ -30,7 +30,7 @@ describe Chef::Knife::Status do
     @query = double("Chef::Search::Query")
     allow(@query).to receive(:search).and_yield(node)
     allow(Chef::Search::Query).to receive(:new).and_return(@query)
-    @knife  = Chef::Knife::Status.new
+    @knife = Chef::Knife::Status.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
