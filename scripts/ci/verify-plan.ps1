@@ -42,3 +42,4 @@ if (-not $?) { throw "unable to install this build"}
 
 Write-Host "--- :mag_right: Testing $Plan"
 powershell -File "./habitat/tests/test.ps1" -PackageIdentifier $pkg_ident
+if (-not $?) { throw "package didn't pass the test suite" }
