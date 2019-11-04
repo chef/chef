@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.64 -->
-## [v15.4.64](https://github.com/chef/chef/tree/v15.4.64) (2019-11-04)
+<!-- latest_release 15.4.65 -->
+## [v15.4.65](https://github.com/chef/chef/tree/v15.4.65) (2019-11-04)
 
 #### Merged Pull Requests
-- Update lixml2, libxslt, and nokogiri to the latest [#9054](https://github.com/chef/chef/pull/9054) ([tas50](https://github.com/tas50))
+- Updates for Chefstyle with Rubocop 0.75.1 [#9055](https://github.com/chef/chef/pull/9055) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updates for Chefstyle with Rubocop 0.75.1 [#9055](https://github.com/chef/chef/pull/9055) ([tas50](https://github.com/tas50)) <!-- 15.4.65 -->
 - Update lixml2, libxslt, and nokogiri to the latest [#9054](https://github.com/chef/chef/pull/9054) ([tas50](https://github.com/tas50)) <!-- 15.4.64 -->
 - systemd_unit needs to log [#9046](https://github.com/chef/chef/pull/9046) ([jaymzh](https://github.com/jaymzh)) <!-- 15.4.63 -->
 - Update omnibus [#9050](https://github.com/chef/chef/pull/9050) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.62 -->
