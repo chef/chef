@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.62 -->
-## [v15.4.62](https://github.com/chef/chef/tree/v15.4.62) (2019-11-04)
+<!-- latest_release 15.4.63 -->
+## [v15.4.63](https://github.com/chef/chef/tree/v15.4.63) (2019-11-04)
 
 #### Merged Pull Requests
-- Update omnibus [#9050](https://github.com/chef/chef/pull/9050) ([jaymalasinha](https://github.com/jaymalasinha))
+- systemd_unit needs to log [#9046](https://github.com/chef/chef/pull/9046) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- systemd_unit needs to log [#9046](https://github.com/chef/chef/pull/9046) ([jaymzh](https://github.com/jaymzh)) <!-- 15.4.63 -->
 - Update omnibus [#9050](https://github.com/chef/chef/pull/9050) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.62 -->
 - [knife config get] Fix TypeError: no implicit conversion of nil into String [#9049](https://github.com/chef/chef/pull/9049) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.61 -->
 - Bump omnibus to 6.1.10 [#9048](https://github.com/chef/chef/pull/9048) ([btm](https://github.com/btm)) <!-- 15.4.60 -->
