@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.61 -->
-## [v15.4.61](https://github.com/chef/chef/tree/v15.4.61) (2019-11-03)
+<!-- latest_release 15.4.62 -->
+## [v15.4.62](https://github.com/chef/chef/tree/v15.4.62) (2019-11-04)
 
 #### Merged Pull Requests
-- [knife config get] Fix TypeError: no implicit conversion of nil into String [#9049](https://github.com/chef/chef/pull/9049) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update omnibus [#9050](https://github.com/chef/chef/pull/9050) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update omnibus [#9050](https://github.com/chef/chef/pull/9050) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.4.62 -->
 - [knife config get] Fix TypeError: no implicit conversion of nil into String [#9049](https://github.com/chef/chef/pull/9049) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.61 -->
 - Bump omnibus to 6.1.10 [#9048](https://github.com/chef/chef/pull/9048) ([btm](https://github.com/btm)) <!-- 15.4.60 -->
 - a Windows Habitat plan [#8900](https://github.com/chef/chef/pull/8900) ([robbkidd](https://github.com/robbkidd)) <!-- 15.4.59 -->
