@@ -112,7 +112,7 @@ class Chef
 
             if node["ohai_time"]
               hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
-              hours_text   = "#{hours} hour#{hours == 1 ? " " : "s"}"
+              hours_text = "#{hours} hour#{hours == 1 ? " " : "s"}"
               minutes_text = "#{minutes} minute#{minutes == 1 ? " " : "s"}"
               seconds_text = "#{seconds} second#{seconds == 1 ? " " : "s"}"
               if hours > 24

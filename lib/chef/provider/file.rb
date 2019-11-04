@@ -84,7 +84,7 @@ class Chef
           end
 
         # true if we are going to be creating a new file
-        @needs_creating  = !::File.exist?(new_resource.path) || needs_unlinking?
+        @needs_creating = !::File.exist?(new_resource.path) || needs_unlinking?
 
         # Let children resources override constructing the current_resource
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
