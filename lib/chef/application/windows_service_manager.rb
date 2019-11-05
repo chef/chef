@@ -41,18 +41,18 @@ class Chef
         short: "-a ACTION",
         long: "--action ACTION",
         default: "status",
-        description: "Action to carry out on chef-service (install, uninstall, status, start, stop, pause, or resume)."
+        description: "Action to carry out on #{Chef::Dist::EXEC}-service (install, uninstall, status, start, stop, pause, or resume)."
 
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
-        default: "#{ENV["SYSTEMDRIVE"]}/chef/client.rb",
+        default: "#{ENV["SYSTEMDRIVE"]}/#{Chef::Dist::EXEC}/client.rb",
         description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,
         short: "-L LOGLOCATION",
         long: "--logfile LOGLOCATION",
-        description: "Set the log file location for chef-service."
+        description: "Set the log file location for #{Chef::Dist::EXEC}-service."
 
       option :help,
         short: "-h",
