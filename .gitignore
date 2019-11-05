@@ -72,3 +72,9 @@ chef-bin/pkg
 
 # auto generated docs from the docs.rb rake task
 docs_site
+
+# Rendered Templates
+ext/win32-eventlog/chef-log.man
+
+# tool logs
+ext/win32-eventlog/mkmf.log
