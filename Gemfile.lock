@@ -290,7 +290,7 @@ GEM
     term-ansicolor (1.7.1)
       tins (~> 1.0)
     thor (0.20.3)
-    tins (1.21.1)
+    tins (1.22.0)
     tomlrb (1.2.8)
     train-core (1.7.6)
       json (>= 1.8, < 3.0)
@@ -343,7 +343,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    wisper (2.0.0)
+    wisper (2.0.1)
     wmi-lite (1.0.2)
     yard (0.9.20)
 
