@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 14.14.26 -->
+## [v14.14.26](https://github.com/chef/chef/tree/v14.14.26) (2019-11-05)
+
+#### Merged Pull Requests
+- systemd_unit needs to log (chef 14 backport) [#9057](https://github.com/chef/chef/pull/9057) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=14.14.25 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- systemd_unit needs to log (chef 14 backport) [#9057](https://github.com/chef/chef/pull/9057) ([jaymzh](https://github.com/jaymzh)) <!-- 14.14.26 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
