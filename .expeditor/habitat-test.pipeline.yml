@@ -1,4 +1,12 @@
 ---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+      retry:
+        automatic:
+          limit: 1
+
 steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
