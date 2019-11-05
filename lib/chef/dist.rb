@@ -1,5 +1,6 @@
 class Chef
   class Dist
+    require "chef-config/dist"
     # This class is not fully implemented, depending on it is not recommended!
     # When referencing a product directly, like Chef (Now Chef Infra)
     PRODUCT = "Chef Infra Client".freeze
@@ -18,7 +19,7 @@ class Chef
     AUTOMATE = "Chef Automate".freeze
 
     # The chef executable, as in `chef gem install` or `chef generate cookbook`
-    EXEC = "chef".freeze
+    EXEC = ChefConfig::Dist::EXEC.freeze
 
     # product website address
     WEBSITE = "https://chef.io".freeze
@@ -43,7 +44,7 @@ class Chef
     SHELL_CONF = "chef_shell.rb".freeze
 
     # The configuration directory
-    CONF_DIR = "/etc/#{Chef::Dist::EXEC}".freeze
+    CONF_DIR = ChefConfig::Dist::CONF_DIR.freeze
 
     # The user's configuration directory
     USER_CONF_DIR = ".chef".freeze

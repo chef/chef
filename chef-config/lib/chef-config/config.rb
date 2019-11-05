@@ -34,7 +34,7 @@ require "uri" unless defined?(URI)
 require "addressable/uri" unless defined?(Addressable::URI)
 require "openssl" unless defined?(OpenSSL)
 require "yaml"
-require "chef/dist"
+require_relative "dist"
 
 module ChefConfig
 
@@ -646,9 +646,9 @@ module ChefConfig
       if chef_zero.enabled
         nil
       elsif target_mode?
-        platform_specific_path("#{Chef::Dist::CONF_DIR}/#{target_mode.host}/client.pem")
+        platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/#{target_mode.host}/client.pem")
       else
-        platform_specific_path("#{Chef::Dist::CONF_DIR}/client.pem")
+        platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/client.pem")
       end
     end
 
@@ -670,10 +670,10 @@ module ChefConfig
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      if target_mode? && File.exist?(platform_specific_path("#{Chef::Dist::CONF_DIR}/#{target_mode.host}/encrypted_data_bag_secret"))
-        platform_specific_path("#{Chef::Dist::CONF_DIR}/#{target_mode.host}/encrypted_data_bag_secret")
-      elsif File.exist?(platform_specific_path("#{Chef::Dist::CONF_DIR}/encrypted_data_bag_secret"))
-        platform_specific_path("#{Chef::Dist::CONF_DIR}/encrypted_data_bag_secret")
+      if target_mode? && File.exist?(platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/#{target_mode.host}/encrypted_data_bag_secret"))
+        platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/#{target_mode.host}/encrypted_data_bag_secret")
+      elsif File.exist?(platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/encrypted_data_bag_secret"))
+        platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/encrypted_data_bag_secret")
       else
         nil
       end
@@ -700,7 +700,7 @@ module ChefConfig
     # The `validation_key` is never used if the `client_key` exists.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("#{Chef::Dist::CONF_DIR}/validation.pem") }
+    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("#{ChefConfig::Dist::CONF_DIR}/validation.pem") }
     default :validation_client_name do
       # If the URL is set and looks like a normal Chef Server URL, extract the
       # org name and use that as part of the default.
