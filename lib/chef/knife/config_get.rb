@@ -47,9 +47,10 @@ class Chef
           if wcl.config_location
             loading_from("configuration", wcl.config_location)
           end
+
           if Chef::Config[:config_d_dir]
             wcl.find_dot_d(Chef::Config[:config_d_dir]).each do |path|
-              loading_from(".d/ configuration", wcl.config_location)
+              loading_from(".d/ configuration", path)
             end
           end
         end
