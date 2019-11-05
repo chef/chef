@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: ac881b7f810218323eeb4f71af4a8a4db75c1c92
+  revision: acdcf27e03545fac6014a995379b79f81840fd65
   branch: master
   specs:
-    omnibus (6.1.4)
+    omnibus (6.1.11)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar-ng (>= 3.3)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3e901694559a2f3a64105b204ed79f0ffb3410d5
+  revision: 3f47c11c9ea3186faed62ff52e88d0f580a759ff
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -33,17 +33,17 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.221.0)
-    aws-sdk-core (3.68.1)
+    aws-partitions (1.232.0)
+    aws-sdk-core (3.73.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
-      aws-partitions (~> 1.0)
+      aws-partitions (~> 1, >= 1.228.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.24.0)
-      aws-sdk-core (~> 3, >= 3.61.1)
+    aws-sdk-kms (1.25.0)
+      aws-sdk-core (~> 3, >= 3.71.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.48.0)
-      aws-sdk-core (~> 3, >= 3.61.1)
+    aws-sdk-s3 (1.53.0)
+      aws-sdk-core (~> 3, >= 3.71.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
@@ -68,10 +68,10 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.3)
     byebug (11.0.1)
-    chef (14.13.11)
+    chef (14.14.25)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.13.11)
+      chef-config (= 14.14.25)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -98,10 +98,10 @@ GEM
       specinfra (~> 2.10)
       syslog-logger (~> 1.6)
       uuidtools (~> 2.1.5)
-    chef (14.13.11-universal-mingw32)
+    chef (14.14.25-universal-mingw32)
       addressable
       bundler (>= 1.10)
-      chef-config (= 14.13.11)
+      chef-config (= 14.14.25)
       chef-zero (>= 13.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       erubis (~> 2.7)
@@ -141,7 +141,7 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (14.13.11)
+    chef-config (14.14.25)
       addressable
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
@@ -162,6 +162,7 @@ GEM
     diff-lcs (1.3)
     ed25519 (1.2.4)
     equatable (0.6.1)
+    erubi (1.9.0)
     erubis (2.7.0)
     faraday (0.17.0)
       multipart-post (>= 1.2, < 3)
@@ -222,7 +223,7 @@ GEM
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.7)
     molinillo (0.6.6)
-    multi_json (1.13.1)
+    multi_json (1.14.1)
     multipart-post (2.0.0)
     necromancer (0.5.0)
     net-scp (2.0.0)
@@ -310,7 +311,7 @@ GEM
     solve (4.0.2)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
-    specinfra (2.82.2)
+    specinfra (2.82.3)
       net-scp
       net-ssh (>= 2.7)
       net-telnet (= 0.1.1)
@@ -323,7 +324,7 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.3.3)
+    test-kitchen (2.3.4)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (~> 1.0, >= 1.0.11)
@@ -382,24 +383,25 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.2)
+    winrm (2.3.3)
       builder (>= 2.1.2)
-      erubis (~> 2.7)
+      erubi (~> 1.8)
       gssapi (~> 1.2)
       gyoku (~> 1.0)
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0, >= 0.6.1)
-    winrm-elevated (1.1.1)
+    winrm-elevated (1.1.2)
+      erubi (~> 1.8)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    winrm-fs (1.3.2)
-      erubis (~> 2.7)
+    winrm-fs (1.3.3)
+      erubi (~> 1.8)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 1.1)
       winrm (~> 2.0)
-    wisper (2.0.0)
+    wisper (2.0.1)
     wmi-lite (1.0.2)
     zhexdump (0.0.2)
 
