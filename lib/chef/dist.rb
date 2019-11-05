@@ -16,6 +16,10 @@ class Chef
     # The chef executable, as in `chef gem install` or `chef generate cookbook`
     EXEC = "chef".freeze
 
+    # A short name for the project, used in configurations
+    # Log messages, descriptions, etc...
+    SHORT = "chef".freeze
+
     # product website address
     WEBSITE = "https://chef.io".freeze
 

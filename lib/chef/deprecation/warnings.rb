@@ -21,11 +21,12 @@ class Chef
     module Warnings
 
       require_relative "../version"
+      require_relative "../dist"
 
       def add_deprecation_warnings_for(method_names)
         method_names.each do |name|
           define_method(name) do |*args|
-            message = "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in Chef #{Chef::VERSION.to_i.next}."
+            message = "Method '#{name}' of '#{self.class}' is deprecated. It will be removed in #{Chef::Dist::PRODUCT} #{Chef::VERSION.to_i.next}."
             message << " Please update your cookbooks accordingly."
             Chef.deprecated(:internal_api, message)
             super(*args)
