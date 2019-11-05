@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.27 -->
-## [v14.14.27](https://github.com/chef/chef/tree/v14.14.27) (2019-11-05)
+<!-- latest_release 14.14.28 -->
+## [v14.14.28](https://github.com/chef/chef/tree/v14.14.28) (2019-11-05)
 
 #### Merged Pull Requests
-- [chef-14] backport #9049 [#9051](https://github.com/chef/chef/pull/9051) ([vsingh-msys](https://github.com/vsingh-msys))
+- service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9063](https://github.com/chef/chef/pull/9063) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.25 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9063](https://github.com/chef/chef/pull/9063) ([jaymzh](https://github.com/jaymzh)) <!-- 14.14.28 -->
 - [chef-14] backport #9049 [#9051](https://github.com/chef/chef/pull/9051) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.14.27 -->
 - systemd_unit needs to log (chef 14 backport) [#9057](https://github.com/chef/chef/pull/9057) ([jaymzh](https://github.com/jaymzh)) <!-- 14.14.26 -->
 <!-- release_rollup -->
