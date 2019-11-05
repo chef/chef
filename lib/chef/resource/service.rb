@@ -159,6 +159,15 @@ class Chef
         )
       end
 
+      # if the service is indirect or not
+      def indirect(arg = nil)
+        set_or_return(
+          :indirect,
+          arg,
+          kind_of: [ TrueClass, FalseClass ]
+        )
+      end
+
       def options(arg = nil)
         set_or_return(
           :options,

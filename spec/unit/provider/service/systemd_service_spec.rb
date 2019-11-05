@@ -36,11 +36,11 @@ describe Chef::Provider::Service::Systemd do
   let(:provider) { Chef::Provider::Service::Systemd.new(new_resource, run_context) }
 
   let(:shell_out_success) do
-    double("shell_out", exitstatus: 0, error?: false)
+    double("shell_out", exitstatus: 0, error?: false, stdout: "")
   end
 
   let(:shell_out_failure) do
-    double("shell_out", exitstatus: 1, error?: true)
+    double("shell_out", exitstatus: 1, error?: true, stdout: "")
   end
 
   let(:current_resource) { Chef::Resource::Service.new(service_name) }
@@ -56,6 +56,7 @@ describe Chef::Provider::Service::Systemd do
       allow(provider).to receive(:is_active?).and_return(false)
       allow(provider).to receive(:is_enabled?).and_return(false)
       allow(provider).to receive(:is_masked?).and_return(false)
+      allow(provider).to receive(:is_indirect?).and_return(false)
     end
 
     it "should create a current resource with the name of the new resource" do
@@ -357,6 +358,29 @@ describe Chef::Provider::Service::Systemd do
         it "should return false if '#{systemctl_path} --system is-enabled service_name' returns anything except 0 and outputs an error'" do
           expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "Failed to get unit file state for #{service_name}: No such file or directory", exitstatus: shell_out_failure))
           expect(provider.is_masked?).to be false
+        end
+      end
+
+      describe "is_indirect?" do
+        before(:each) do
+          provider.current_resource = current_resource
+          current_resource.service_name(service_name)
+          allow(provider).to receive(:which).with("systemctl").and_return(systemctl_path.to_s)
+        end
+
+        it "should return true if '#{systemctl_path} --system is-enabled service_name' returns 'indirect'" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "indirect", exitstatus: shell_out_success))
+          expect(provider.is_indirect?).to be true
+        end
+
+        it "should return false if '#{systemctl_path} --system is-enabled service_name' returns 0 and outputs something other than 'indirect'" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "enabled", exitstatus: shell_out_success))
+          expect(provider.is_indirect?).to be false
+        end
+
+        it "should return false if '#{systemctl_path} --system is-enabled service_name' returns anything except 0 and outputs somethign other than 'indirect''" do
+          expect(provider).to receive(:shell_out).with("#{systemctl_path} --system is-enabled #{service_name_escaped}", {}).and_return(double(stdout: "enabled", exitstatus: shell_out_failure))
+          expect(provider.is_indirect?).to be false
         end
       end
     end
