@@ -389,8 +389,8 @@ class Chef
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
-        Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
-        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+        Chef::FileCache.store("#{Chef::Dist::SHORT}-stacktrace.out", chef_stacktrace_out)
+        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{Chef::Dist::SHORT}-stacktrace.out", false)}")
         logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
         logger.debug(message)
         true
