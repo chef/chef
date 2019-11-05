@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.66 -->
-## [v15.4.66](https://github.com/chef/chef/tree/v15.4.66) (2019-11-05)
+<!-- latest_release 15.4.67 -->
+## [v15.4.67](https://github.com/chef/chef/tree/v15.4.67) (2019-11-05)
 
 #### Merged Pull Requests
-- service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9047](https://github.com/chef/chef/pull/9047) ([jaymzh](https://github.com/jaymzh))
+- dist constants in win logs [#9058](https://github.com/chef/chef/pull/9058) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- dist constants in win logs [#9058](https://github.com/chef/chef/pull/9058) ([bobchaos](https://github.com/bobchaos)) <!-- 15.4.67 -->
 - service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9047](https://github.com/chef/chef/pull/9047) ([jaymzh](https://github.com/jaymzh)) <!-- 15.4.66 -->
 - Updates for Chefstyle with Rubocop 0.75.1 [#9055](https://github.com/chef/chef/pull/9055) ([tas50](https://github.com/tas50)) <!-- 15.4.65 -->
 - Update lixml2, libxslt, and nokogiri to the latest [#9054](https://github.com/chef/chef/pull/9054) ([tas50](https://github.com/tas50)) <!-- 15.4.64 -->
