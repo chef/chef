@@ -583,6 +583,36 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
         end
       end
 
+      context "and ssl_verify_mode is a symbol string" do
+        let(:content) do
+          content = <<~EOH
+            [default]
+            ssl_verify_mode = ":verify_none"
+          EOH
+          content
+        end
+
+        it "raises a ConfigurationError" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.ssl_verify_mode).to eq(:verify_none)
+        end
+      end
+
+      context "and ssl_verify_mode is a string" do
+        let(:content) do
+          content = <<~EOH
+            [default]
+            ssl_verify_mode = "verify_none"
+          EOH
+          content
+        end
+
+        it "raises a ConfigurationError" do
+          expect { config_loader.load_credentials }.not_to raise_error
+          expect(ChefConfig::Config.ssl_verify_mode).to eq(:verify_none)
+        end
+      end
+
       context "and has a syntax error" do
         let(:content) { "<<<<<" }
 

@@ -168,11 +168,21 @@ module ChefConfig
           extract_key(value, :client_key, :client_key_contents)
         when "knife"
           Config.knife.merge!(Hash[value.map { |k, v| [k.to_sym, v] }])
+        when "ssl_verify_mode"
+          Config[key.to_sym] = symbolize_value(value)
         else
           Config[key.to_sym] = value
         end
       end
       @credentials_found = true
+    end
+
+    def symbolize_value(value) 
+      if value.is_a?(String) && value[0] == ":"
+        value[1..-1].to_sym
+      else
+        value.to_sym
+      end
     end
 
     def extract_key(key_value, config_path, config_contents)
