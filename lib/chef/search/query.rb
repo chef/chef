@@ -126,9 +126,6 @@ class Chef
         return args.first if args.first.is_a?(Hash)
 
         args_h = {}
-        # If we have 4 arguments, the first is the now-removed sort option, so
-        # just ignore it.
-        args.pop(0) if args.length == 4
         args_h[:start] = args[0] if args[0]
         args_h[:rows] = args[1]
         args_h[:filter_result] = args[2]
