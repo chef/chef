@@ -9,6 +9,7 @@ winrm quickconfig -quiet
 $chef_gem_root = (hab pkg exec $PackageIdentifier gem.cmd which chef | Split-Path | Split-Path)
 try {
     Push-Location $chef_gem_root
+    $env:PATH = "C:\hab\bin;$env:PATH"
     hab pkg binlink --force $PackageIdentifier
     /hab/bin/rspec --format progress --tag ~executables --tag ~choco_installed spec/functional
     if (-not $?) { throw "functional testing failed"}

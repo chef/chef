@@ -20,3 +20,4 @@ if ($test_result.FailedCount -ne 0) { Exit $test_result.FailedCount }
 
 Write-Host "--- :alembic: Functional Tests"
 powershell -File "./habitat/tests/spec.ps1" -PackageIdentifier $PackageIdentifier
+if (-not $?) { throw "functional spec suite failed" }

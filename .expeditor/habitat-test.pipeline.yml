@@ -1,8 +1,18 @@
 ---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+      retry:
+        automatic:
+          limit: 1
+
 steps:
 
 - label: ":windows: Validate Habitat Builds of Chef Infra"
   commands:
+    - powershell -File "./scripts/ci/ensure-minimum-viable-hab.ps1"
+    - 'Write-Host "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"'
     - hab pkg install "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
     - powershell -File "./habitat/tests/test.ps1" -PackageIdentifier "$EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"
   expeditor:
