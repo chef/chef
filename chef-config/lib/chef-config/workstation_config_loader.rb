@@ -177,7 +177,7 @@ module ChefConfig
       @credentials_found = true
     end
 
-    def symbolize_value(value) 
+    def symbolize_value(value)
       if value.is_a?(String) && value[0] == ":"
         value[1..-1].to_sym
       else
