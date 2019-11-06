@@ -1,5 +1,19 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Client Release Notes 14.14.29
+
+## Bug Fixes
+
+ - Fixed an error with the `service` and `systemd_unit` resources which would try to re-enable services with an indirect status.```
+ - The `systemd_unit` resource now logs at the info level.
+ - Fixed knife config when it returned a `TypeError: no implicit conversion of nil into String` error.
+
+## Security Updates
+
+### libxslt
+
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
+
 # Chef Client Release Notes 14.14.25
 
 ## Bug Fixes
