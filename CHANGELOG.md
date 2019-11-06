@@ -1,22 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.29 -->
-## [v14.14.29](https://github.com/chef/chef/tree/v14.14.29) (2019-11-05)
-
-#### Merged Pull Requests
-- Update nokogiri, libxml2, and libxslt to latest [#9062](https://github.com/chef/chef/pull/9062) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.14.25 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update nokogiri, libxml2, and libxslt to latest [#9062](https://github.com/chef/chef/pull/9062) ([tas50](https://github.com/tas50)) <!-- 14.14.29 -->
-- service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9063](https://github.com/chef/chef/pull/9063) ([jaymzh](https://github.com/jaymzh)) <!-- 14.14.28 -->
-- [chef-14] backport #9049 [#9051](https://github.com/chef/chef/pull/9051) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.14.27 -->
-- systemd_unit needs to log (chef 14 backport) [#9057](https://github.com/chef/chef/pull/9057) ([jaymzh](https://github.com/jaymzh)) <!-- 14.14.26 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.14.29](https://github.com/chef/chef/tree/v14.14.29) (2019-11-06)
+
+#### Merged Pull Requests
+- systemd_unit needs to log (chef 14 backport) [#9057](https://github.com/chef/chef/pull/9057) ([jaymzh](https://github.com/jaymzh))
+- [chef-14] backport #9049 [#9051](https://github.com/chef/chef/pull/9051) ([vsingh-msys](https://github.com/vsingh-msys))
+- service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9063](https://github.com/chef/chef/pull/9063) ([jaymzh](https://github.com/jaymzh))
+- Update nokogiri, libxml2, and libxslt to latest [#9062](https://github.com/chef/chef/pull/9062) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.14.25](https://github.com/chef/chef/tree/v14.14.25) (2019-10-15)
 
 #### Merged Pull Requests
@@ -31,7 +29,6 @@
 - Update chef-zero to 14.0.13 and rspec to 3.9 [#8983](https://github.com/chef/chef/pull/8983) ([tas50](https://github.com/tas50))
 - Fix habitat build in expeditor config [#8992](https://github.com/chef/chef/pull/8992) ([christopher-snapp](https://github.com/christopher-snapp))
 - Revert habitat builder artifact to chef-client [#8994](https://github.com/chef/chef/pull/8994) ([christopher-snapp](https://github.com/christopher-snapp))
-<!-- latest_stable_release -->
 
 ## [v14.14.14](https://github.com/chef/chef/tree/v14.14.14) (2019-10-07)
 
