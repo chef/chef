@@ -125,6 +125,19 @@ class Chef
         return {} if args.empty?
         return args.first if args.first.is_a?(Hash)
 
+        first_arg_is_integer =
+          begin
+            Integer(args[0])
+            true
+          rescue
+            false
+          end
+
+        if args[0].is_a?(String) && !first_arg_is_integer
+          Chef::Log.warn "Sort argument to search API is ignored and should be removed: #{args[0]}"
+          args.shift
+        end
+
         args_h = {}
         args_h[:start] = args[0] if args[0]
         args_h[:rows] = args[1]
