@@ -4,15 +4,15 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Bug Fixes
 
- - Fixed service/systemd_unit resource trying to reenable services with an indirect status
- - systemd_unit now logs at info level
- - Fixed knife config get throwing a TypeError: no implicit conversion of nil into String error
+ - Fixed an error with the `service` and `systemd_unit` resources which would try to re-enable services with an indirect status.```
+ - The `systemd_unit` resource now logs at the info level.
+ - Fixed knife config when it returned a `TypeError: no implicit conversion of nil into String` error.
 
 ## Security Updates
 
 ### libxslt
 
-libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118)
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
 
 # Chef Client Release Notes 14.14.25
 
