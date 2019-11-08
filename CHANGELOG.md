@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.69 -->
-## [v15.4.69](https://github.com/chef/chef/tree/v15.4.69) (2019-11-06)
+<!-- latest_release 15.4.70 -->
+## [v15.4.70](https://github.com/chef/chef/tree/v15.4.70) (2019-11-08)
 
 #### Merged Pull Requests
-- fix the habitat package promotion tests [#9061](https://github.com/chef/chef/pull/9061) ([robbkidd](https://github.com/robbkidd))
+- Add chef-utils gem with various recipe DSL helpers [#8922](https://github.com/chef/chef/pull/8922) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add chef-utils gem with various recipe DSL helpers [#8922](https://github.com/chef/chef/pull/8922) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.70 -->
 - fix the habitat package promotion tests [#9061](https://github.com/chef/chef/pull/9061) ([robbkidd](https://github.com/robbkidd)) <!-- 15.4.69 -->
 - Remove useless search arg mangling [#9070](https://github.com/chef/chef/pull/9070) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.68 -->
 - dist constants in win logs [#9058](https://github.com/chef/chef/pull/9058) ([bobchaos](https://github.com/bobchaos)) <!-- 15.4.67 -->
