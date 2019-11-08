@@ -102,7 +102,7 @@ do_build() {
 do_install() {
   build_line "Copying directories from source to pkg_prefix"
   mkdir -p "${pkg_prefix}/chef"
-  for dir in bin chef-bin chef-config lib chef.gemspec Gemfile Gemfile.lock; do
+  for dir in bin chef-bin chef-config chef-utils lib chef.gemspec Gemfile Gemfile.lock; do
     cp -rv "${SRC_PATH}/${dir}" "${pkg_prefix}/chef/"
   done
 
