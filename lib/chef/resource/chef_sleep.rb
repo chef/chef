@@ -25,7 +25,7 @@ class Chef
 
       unified_mode true
 
-      description "Use the chef_sleep resource to sleep for a number of seconds during a #{Chef::Dist::PRODUCT} run. This resource should only be used when a command or service exits successfuly , but is not fully ready for the next step of the recipe."
+      description "Use the chef_sleep resource to set the number of seconds to sleep during a #{Chef::Dist::PRODUCT} run. Only use this resource when a command or service exits successfully but is not ready for the next step of the recipe."
       introduced "15.5"
       examples <<~DOC
         Sleep for 10 seconds
