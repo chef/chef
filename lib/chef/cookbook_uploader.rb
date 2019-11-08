@@ -49,7 +49,7 @@ class Chef
       cookbooks.each do |cookbook|
         next if cookbook.all_files.include?("#{cookbook.root_paths[0]}/metadata.json")
 
-        generate_metadata_json(cookbook.name.to_s,cookbook)
+        generate_metadata_json(cookbook.name.to_s, cookbook)
       end
 
       # Syntax Check
@@ -120,7 +120,7 @@ class Chef
       Chef::Log.info("Upload complete!")
     end
 
-    def generate_metadata_json(cookbook_name,cookbook)
+    def generate_metadata_json(cookbook_name, cookbook)
       metadata = Chef::Knife::CookbookMetadata.new
       metadata.generate_metadata_from_file(cookbook_name, "#{cookbook.root_paths[0]}/metadata.rb")
       cookbook.all_files << "#{cookbook.root_paths[0]}/metadata.json"
