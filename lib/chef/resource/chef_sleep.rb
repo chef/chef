@@ -40,7 +40,7 @@ class Chef
         end
         ````
 
-        Use a notify from another resource to sleep only when necessary
+        Use a notification from another resource to sleep only when necessary
         ```ruby
         service 'Service that is slow to start and reports as started' do
           service_name 'my_database'
