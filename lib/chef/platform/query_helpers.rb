@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,14 @@
 # limitations under the License.
 #
 
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 class Chef
   class Platform
 
     class << self
       def windows?
-        ChefConfig.windows?
+        ChefUtils.windows?
       end
 
       def windows_nano_server?

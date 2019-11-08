@@ -16,7 +16,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/api/file"
   require "chef/win32/file"
   require "chef/win32/version"

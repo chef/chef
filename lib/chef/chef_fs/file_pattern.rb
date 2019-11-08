@@ -245,7 +245,7 @@ class Chef
       end
 
       def self.pattern_special_characters
-        if Chef::ChefFS.windows?
+        if ChefUtils.windows?
           @pattern_special_characters ||= /(\*\*|\*|\?|[\*\?\.\|\(\)\[\]\{\}\+\\\\\^\$])/
         else
           # Unix also supports character regexes and backslashes

@@ -46,6 +46,8 @@ class Chef
 
     # includes the "core" DSL and not the "recipe" DSL by design
     include Chef::DSL::Core
+    # the class only gets the Universal DSL (no resource_collection at class parsing time)
+    extend Chef::DSL::Universal
 
     # supports the given resource and action (late binding)
     def self.supports?(resource, action)

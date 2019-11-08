@@ -59,6 +59,7 @@ class Chef
     extend Chef::Mixin::Provides
 
     include Chef::DSL::Universal
+    extend Chef::DSL::Universal
 
     # Bring in `property` and `property_type`
     include Chef::Mixin::Properties

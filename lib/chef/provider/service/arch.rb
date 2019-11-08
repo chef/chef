@@ -23,7 +23,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   provides :service, platform_family: "arch"
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:etc_rcd)
+    service_script_exist?(:etc_rcd, resource.service_name)
   end
 
   def initialize(new_resource, run_context)

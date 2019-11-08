@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,16 +19,16 @@
 require_relative "../exceptions"
 require_relative "wide_string"
 require_relative "../platform/query_helpers"
-require_relative "../win32/error" if Chef::Platform.windows?
-require_relative "../win32/api/system" if Chef::Platform.windows?
-require_relative "../win32/api/unicode" if Chef::Platform.windows?
+require_relative "../win32/error" if ChefUtils.windows?
+require_relative "../win32/api/system" if ChefUtils.windows?
+require_relative "../win32/api/unicode" if ChefUtils.windows?
 
 class Chef
   module Mixin
     module WindowsEnvHelper
       include Chef::Mixin::WideString
 
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         include Chef::ReservedNames::Win32::API::System
       end
 

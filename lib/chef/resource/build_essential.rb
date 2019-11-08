@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software, Inc.
+# Copyright:: 2008-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class Chef
         case node["platform_family"]
         when "debian"
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
-        when "amazon", "fedora", "rhel"
+        when fedora_derived?
           package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
 
           # Ensure GCC 4 is available on older pre-6 EL

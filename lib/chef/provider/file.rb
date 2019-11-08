@@ -453,7 +453,7 @@ class Chef
       end
 
       def load_resource_attributes_from_file(resource)
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           # This is a work around for CHEF-3554.
           # OC-6534: is tracking the real fix for this workaround.
           # Add support for Windows equivalent, or implicit resource

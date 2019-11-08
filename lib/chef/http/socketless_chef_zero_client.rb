@@ -44,7 +44,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require "chef_zero/server"
-require "chef/dist"
+require_relative "../dist"
 
 class Chef
   class HTTP

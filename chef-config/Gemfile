@@ -1,4 +1,6 @@
 source "https://rubygems.org"
 
+gem "chef-utils", path: File.expand_path("../../chef-utils", __FILE__) if File.exist?(File.expand_path("../../chef-utils", __FILE__))
+
 # Specify your gem's dependencies in chef-config.gemspec
 gemspec

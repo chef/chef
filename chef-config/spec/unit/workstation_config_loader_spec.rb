@@ -20,7 +20,7 @@ require "spec_helper"
 require "tempfile"
 
 require "chef-config/exceptions"
-require "chef-config/windows"
+require "chef-utils"
 require "chef-config/workstation_config_loader"
 
 RSpec.describe ChefConfig::WorkstationConfigLoader do
@@ -98,7 +98,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
             let(:env_pwd) { "/path/to/cwd" }
 
             before do
-              if ChefConfig.windows?
+              if ChefUtils.windows?
                 env["CD"] = env_pwd
               else
                 env["PWD"] = env_pwd
@@ -431,7 +431,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
   end
 
   describe "when loading a credentials file" do
-    if ChefConfig.windows?
+    if ChefUtils.windows?
       let(:home) { "C:/Users/example.user" }
     else
       let(:home) { "/Users/example.user" }

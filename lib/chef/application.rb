@@ -78,7 +78,7 @@ class Chef
         Chef::Application.fatal!("SIGTERM received, stopping", Chef::Exceptions::SigTerm.new)
       end
 
-      unless Chef::Platform.windows?
+      unless ChefUtils.windows?
         trap("QUIT") do
           logger.info("SIGQUIT received, call stack:\n  " + caller.join("\n  "))
         end
@@ -305,7 +305,7 @@ class Chef
       # win32-process gem exposes some form of :fork for Process
       # class. So we are separately ensuring that the platform we're
       # running on is not windows before forking.
-      chef_config[:client_fork] && Process.respond_to?(:fork) && !Chef::Platform.windows?
+      chef_config[:client_fork] && Process.respond_to?(:fork) && !ChefUtils.windows?
     end
 
     # Run chef-client once and then exit. If TERM signal is received, ignores the

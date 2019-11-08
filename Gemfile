@@ -10,6 +10,7 @@ gem "chef", path: "."
 # necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
+gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 
 if File.exist?(File.expand_path("../chef-bin", __FILE__))
@@ -65,6 +66,7 @@ group(:development, :test) do
   gem "rspec_junit_formatter", "~> 0.2.0"
   gem "simplecov"
   gem "webmock"
+  gem "fauxhai-ng" # for chef-utils gem
 end
 
 group(:chefstyle) do

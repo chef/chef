@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require_relative "config"
-require_relative "monkey_patches/webrick-utils" if Chef::Platform.windows?
+require_relative "monkey_patches/webrick-utils" if ChefUtils.windows?
 require_relative "dist"
 
 class Chef

@@ -19,7 +19,7 @@
 require "spec_helper"
 require "chef/provider/package/windows/exe"
 
-unless Chef::Platform.windows?
+unless ChefUtils.windows?
   class Chef
     module ReservedNames::Win32
       class File

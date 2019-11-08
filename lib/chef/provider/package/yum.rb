@@ -37,7 +37,7 @@ class Chef
         use_multipackage_api
         use_package_name_for_source
 
-        provides :package, platform_family: %w{fedora amazon rhel}
+        provides :package, platform_family: "fedora_derived"
 
         provides :yum_package
 

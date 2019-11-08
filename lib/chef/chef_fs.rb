@@ -53,7 +53,7 @@ require_relative "platform"
 class Chef
   module ChefFS
     def self.windows?
-      Chef::Platform.windows?
+      ChefUtils.windows?
     end
   end
 end

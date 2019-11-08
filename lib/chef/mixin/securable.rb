@@ -49,7 +49,7 @@ class Chef
               end
 
               # Windows does not support the sticky or setuid bits
-              if Chef::Platform.windows?
+              if ChefUtils.windows?
                 Integer(m) <= 0777 && Integer(m) >= 0
               else
                 Integer(m) <= 07777 && Integer(m) >= 0

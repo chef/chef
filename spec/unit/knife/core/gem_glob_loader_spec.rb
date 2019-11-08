@@ -23,7 +23,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
   let(:plugin_dir) { File.join(home, ".chef", "plugins", "knife") }
 
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
     Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
   end
 

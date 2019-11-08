@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ class Chef
 
         def self.for_resource(uri, new_resource, current_resource)
           if network_share?(uri)
-            unless Chef::Platform.windows?
+            unless ChefUtils.windows?
               raise Exceptions::UnsupportedPlatform, "Fetching the file on a network share is supported only on the Windows platform. Please change your source: #{uri}"
             end
 

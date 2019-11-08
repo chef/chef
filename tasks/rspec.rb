@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,14 @@ CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
 begin
   require "rspec/core/rake_task"
 
-  desc "Run specs for Chef's Components (chef-config)"
+  desc "Run specs for Chef's Components"
   task :component_specs do
-    Dir.chdir("chef-config") do
-      Bundler.with_clean_env do
-        sh("bundle install")
-        sh("bundle exec rake spec")
+    %w{chef-utils chef-config}.each do |gem|
+      Dir.chdir(gem) do
+        Bundler.with_clean_env do
+          sh("bundle install")
+          sh("bundle exec rake spec")
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Kartik Null Cating-Subramanian (<ksubramanian@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,7 +81,7 @@ describe Chef::ChefFS::PathUtils do
     end
 
     it "handles root correctly" do
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         expect(Chef::ChefFS::PathUtils.realest_path("C:/")).to eq("C:/")
       else
         expect(Chef::ChefFS::PathUtils.realest_path("/")).to eq("/")
@@ -91,7 +91,7 @@ describe Chef::ChefFS::PathUtils do
 
   context "invoking descendant_path" do
     it "handles paths with various casing on windows" do
-      allow(Chef::ChefFS).to receive(:windows?) { true }
+      allow(ChefUtils).to receive(:windows?) { true }
       expect(Chef::ChefFS::PathUtils.descendant_path("C:/ab/b/c", "C:/AB/B")).to eq("c")
       expect(Chef::ChefFS::PathUtils.descendant_path("C:/ab/b/c", "c:/ab/B")).to eq("c")
     end

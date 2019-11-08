@@ -1,5 +1,5 @@
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2018, Chef Software, Inc.
+# Copyright:: Copyright 2018-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,6 +92,8 @@ class Chef
     end
 
     def self.build_transport(logger = Chef::Log.with_child(subsystem: "transport"))
+      return nil unless Chef::Config.target_mode?
+
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
       #
       train_config = {}

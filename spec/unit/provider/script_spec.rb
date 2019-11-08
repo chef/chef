@@ -59,7 +59,7 @@ describe Chef::Provider::Script, "action_run" do
   context "when configuring the script file's security" do
     context "when not running on Windows" do
       before do
-        allow(::Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefUtils).to receive(:windows?).and_return(false)
       end
       context "#set_owner_and_group" do
         it "sets the owner and group for the script file" do
@@ -73,7 +73,7 @@ describe Chef::Provider::Script, "action_run" do
 
     context "when running on Windows" do
       before do
-        allow(::Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
         expect(new_resource.user).to eq(nil)
         stub_const("Chef::ReservedNames::Win32::API::Security::GENERIC_READ", 1)
         stub_const("Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE", 4)

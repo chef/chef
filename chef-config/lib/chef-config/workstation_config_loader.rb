@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 require_relative "config"
 require_relative "exceptions"
 require_relative "logger"
@@ -139,7 +140,7 @@ module ChefConfig
     end
 
     def working_directory
-      a = if ChefConfig.windows?
+      a = if ChefUtils.windows?
             env["CD"]
           else
             env["PWD"]

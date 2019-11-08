@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6c2d8583fd345c09c7931e2f8c0ed33a48925c40
+  revision: c12114af6196c4bc843bb39b930f6141a3239ff5
   branch: master
   specs:
-    chefstyle (0.13.3)
-      rubocop (= 0.72.0)
+    chefstyle (0.14.0)
+      rubocop (= 0.75.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -32,6 +32,7 @@ PATH
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.4.69)
+      chef-utils (= 15.4.69)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -63,6 +64,7 @@ PATH
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
       chef-config (= 15.4.69)
+      chef-utils (= 15.4.69)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -113,10 +115,16 @@ PATH
   specs:
     chef-config (15.4.69)
       addressable
+      chef-utils (= 15.4.69)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
+
+PATH
+  remote: chef-utils
+  specs:
+    chef-utils (15.4.69)
 
 GEM
   remote: https://rubygems.org/
@@ -158,6 +166,8 @@ GEM
       multipart-post (>= 1.2, < 3)
     faraday_middleware (0.12.2)
       faraday (>= 0.7.4, < 1.0)
+    fauxhai-ng (7.5.1)
+      net-ssh
     ffi (1.11.1)
     ffi (1.11.1-x64-mingw32)
     ffi (1.11.1-x86-mingw32)
@@ -294,7 +304,7 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.72.0)
+    rubocop (0.75.1)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.6)
@@ -417,10 +427,12 @@ DEPENDENCIES
   chef!
   chef-bin!
   chef-config!
+  chef-utils!
   chef-vault
   cheffish (~> 14)
   chefstyle!
   ed25519
+  fauxhai-ng
   inspec-core (~> 4.3)
   inspec-core-bin (~> 4.3)
   ohai!

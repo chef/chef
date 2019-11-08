@@ -35,6 +35,8 @@ def ruby_32bit?
 end
 
 def windows?
+  # NOTE this deliberately does not use ChefUtils.windows? because otherwise it would
+  # pick up the node out of tests, while this tests the hosts running the specs.
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 

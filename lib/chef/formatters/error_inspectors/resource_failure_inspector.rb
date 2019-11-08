@@ -1,7 +1,7 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ class Chef
             error_description.section("Template Context:", "#{exception.source_location}\n#{exception.source_listing}")
           end
 
-          if Chef::Platform.windows?
+          if ChefUtils.windows?
             require_relative "../../win32/security"
 
             unless Chef::ReservedNames::Win32::Security.has_admin_privileges?

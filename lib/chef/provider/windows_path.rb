@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/windows_env_helper" if Chef::Platform.windows?
+require_relative "../mixin/windows_env_helper" if ChefUtils.windows?
 require_relative "../mixin/wide_string"
 require_relative "../exceptions"
 
 class Chef
   class Provider
     class WindowsPath < Chef::Provider
-      include Chef::Mixin::WindowsEnvHelper if Chef::Platform.windows?
+      include Chef::Mixin::WindowsEnvHelper if ChefUtils.windows?
 
       provides :windows_path
 

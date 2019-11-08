@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,7 +44,7 @@ require_relative "../../data_handler/role_data_handler"
 require_relative "../../data_handler/user_data_handler"
 require_relative "../../data_handler/group_data_handler"
 require_relative "../../data_handler/container_data_handler"
-require_relative "../../../win32/security" if Chef::Platform.windows?
+require_relative "../../../win32/security" if ChefUtils.windows?
 
 class Chef
   module ChefFS
@@ -112,7 +112,7 @@ class Chef
                 begin
                   ::FileUtils.mkdir_p(path)
                   ::FileUtils.chmod(0700, path)
-                  if Chef::Platform.windows?
+                  if ChefUtils.windows?
                     all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
                     administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
                     owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner

@@ -1,0 +1,9 @@
+source "https://rubygems.org"
+
+gemspec
+
+group(:development, :test) do
+  gem "fauxhai-ng"
+  gem "rake"
+  gem "rspec"
+end

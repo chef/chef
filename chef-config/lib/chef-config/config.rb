@@ -21,6 +21,7 @@
 
 require "mixlib/config" unless defined?(Mixlib::Config)
 require "pathname" unless defined?(Pathname)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 require_relative "fips"
 require_relative "logger"
@@ -60,7 +61,7 @@ module ChefConfig
     # @return [String] a platform specific path
     def self.platform_specific_path(path)
       path = PathHelper.cleanpath(path)
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
@@ -78,7 +79,7 @@ module ChefConfig
     #
     # @return [String] the drive letter
     def self.windows_installation_drive
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]
         drive = ENV["SYSTEMDRIVE"] if drive.to_s == ""
         drive
@@ -573,7 +574,7 @@ module ChefConfig
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if ChefConfig.windows? && embedded_dir
+      if ChefUtils.windows? && embedded_dir
         cacert_path = File.join(embedded_dir, "ssl/certs/cacert.pem")
         cacert_path if File.exist?(cacert_path)
       else
@@ -841,7 +842,7 @@ module ChefConfig
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    if ChefConfig.windows?
+    if ChefUtils.windows?
       set_defaults_for_windows
     else
       set_defaults_for_nix
@@ -1138,7 +1139,7 @@ module ChefConfig
         end
       end
     rescue
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         ChefConfig.logger.trace "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
       else
         ChefConfig.logger.trace "No usable locale -a command found, assuming you have en_US.UTF-8 installed."
