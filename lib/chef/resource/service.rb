@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "chef-utils/dsl/service" unless defined?(ChefUtils::DSL::Service)
 require_relative "../resource"
 require "shellwords" unless defined?(Shellwords)
 require_relative "../dist"
@@ -24,7 +25,11 @@ require_relative "../dist"
 class Chef
   class Resource
     class Service < Chef::Resource
+      include ChefUtils::DSL::Service
+      extend ChefUtils::DSL::Service
+
       provides :service, target_mode: true
+
       identity_attr :service_name
 
       description "Use the service resource to manage a service."

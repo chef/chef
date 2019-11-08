@@ -203,7 +203,7 @@ describe Chef::Resource::Template do
         it "output should contain platform's line endings" do
           resource.run_action(:create)
           binread(path).each_line do |line|
-            expect(line).to end_with(Chef::Platform.windows? ? "\r\n" : "\n")
+            expect(line).to end_with(ChefUtils.windows? ? "\r\n" : "\n")
           end
         end
       end

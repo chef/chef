@@ -36,7 +36,7 @@ class Chef::Application::Solo < Chef::Application::Base
     default: Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/solo.rb"),
     description: "The configuration file to use."
 
-  unless Chef::Platform.windows?
+  unless ChefUtils.windows?
     option :daemonize,
       short: "-d",
       long: "--daemonize",

@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::CookbookLoader do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
   let(:repo_paths) do
     [

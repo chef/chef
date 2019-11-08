@@ -58,7 +58,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS.windows? ? '[\/\\\\]' : "/"
+        ChefUtils.windows? ? '[\/\\\\]' : "/"
       end
 
       # Given a server path, determines if it is absolute.
@@ -103,7 +103,7 @@ class Chef
 
       # Compares two path fragments according to the case-sentitivity of the host platform.
       def self.os_path_eq?(left, right)
-        Chef::ChefFS.windows? ? left.casecmp(right) == 0 : left == right
+        ChefUtils.windows? ? left.casecmp(right) == 0 : left == right
       end
 
       # Given two general OS-dependent file paths, determines the relative path of the

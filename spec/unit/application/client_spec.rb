@@ -323,7 +323,7 @@ describe Chef::Application::Client, "reconfigure" do
 
     it "should terminate with message when interval is given" do
       Chef::Config[:interval] = 600
-      allow(ChefConfig).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
       expect(Chef::Application).to receive(:fatal!).with(
         /Unforked .* interval runs are disabled by default\.
 Configuration settings:
@@ -336,7 +336,7 @@ Enable .* interval runs by setting `:client_fork = true` in your config file or 
     context "when interval is given on windows" do
       before do
         Chef::Config[:interval] = 600
-        allow(ChefConfig).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
       end
 
       it "should terminate" do

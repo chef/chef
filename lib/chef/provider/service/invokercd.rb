@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +23,12 @@ class Chef
     class Service
       class Invokercd < Chef::Provider::Service::Init
 
-        provides :service, platform_family: "debian", override: true do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:invokercd)
+        provides :service, platform_family: "debian", override: true do
+          invokercd?
         end
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def initialize(new_resource, run_context)

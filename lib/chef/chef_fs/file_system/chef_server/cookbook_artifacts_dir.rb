@@ -86,7 +86,7 @@ class Chef
               # the symlink without removing the original contents if we
               # are running on windows
               #
-              if Chef::Platform.windows?
+              if ChefUtils.windows?
                 Dir.rmdir proxy_cookbook_path
               end
             end

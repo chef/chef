@@ -635,7 +635,7 @@ class Chef
     # @return [Train::Plugins::Transport::BaseConnection]
     #
     def transport_connection
-      @transport_connection ||= transport.connection
+      @transport_connection ||= transport&.connection
     end
 
     #

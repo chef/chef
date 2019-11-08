@@ -111,7 +111,7 @@ class Chef
             next if managed_files.include?(file)
 
             if ::File.directory?(file)
-              if !Chef::Platform.windows? && file_class.symlink?(file.dup)
+              if !ChefUtils.windows? && file_class.symlink?(file.dup)
                 # Unix treats dir symlinks as files
                 purge_file(file)
               else
@@ -208,7 +208,7 @@ class Chef
         # Set the sensitivity level
         res.sensitive(new_resource.sensitive)
         res.source(::File.join(source, relative_source_path))
-        if Chef::Platform.windows? && files_rights
+        if ChefUtils.windows? && files_rights
           files_rights.each_pair do |permission, *args|
             res.rights(permission, *args)
           end
@@ -244,7 +244,7 @@ class Chef
       def directory_resource(dir)
         res = Chef::Resource::Directory.new(dir, run_context)
         res.cookbook_name = resource_cookbook
-        if Chef::Platform.windows? && rights
+        if ChefUtils.windows? && rights
           # rights are only meant to be applied to the toppest-level directory;
           # Windows will handle inheritance.
           if dir == path

@@ -32,7 +32,7 @@ class Chef
 
       description "Use the file resource to manage files directly on a node."
 
-      if Platform.windows?
+      if ChefUtils.windows?
         # Use Windows rights instead of standard *nix permissions
         state_attrs :checksum, :rights, :deny_rights
       else

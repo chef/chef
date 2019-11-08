@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 require "tempfile" unless defined?(Tempfile)
 require_relative "execute"
-require_relative "../win32/security" if Chef::Platform.windows?
+require_relative "../win32/security" if ChefUtils.windows?
 require "forwardable" unless defined?(Forwardable)
 
 class Chef
@@ -63,7 +63,7 @@ class Chef
       end
 
       def set_owner_and_group
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           # And on Windows also this is a no-op if there is no user specified.
           grant_alternate_user_read_access
         else

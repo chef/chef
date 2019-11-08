@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -79,7 +79,7 @@ class Chef
       # On certain versions of windows links are not supported. Make
       # sure we are not on such a platform.
       def verify_links_supported!
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           require_relative "../win32/file"
           begin
             Chef::ReservedNames::Win32::File.verify_links_supported!

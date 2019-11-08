@@ -20,7 +20,7 @@
 
 require_relative "config"
 require_relative "mixin/params_validate"
-require_relative "mixin/path_sanity"
+require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
 require_relative "log"
 require_relative "deprecated"
 require_relative "server_api"
@@ -52,6 +52,7 @@ require_relative "policy_builder"
 require_relative "request_id"
 require_relative "platform/rebooter"
 require_relative "mixin/deprecation"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig"
 require_relative "dist"
@@ -62,8 +63,6 @@ class Chef
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
   # syncs cookbooks if necessary, and triggers convergence.
   class Client
-    include Chef::Mixin::PathSanity
-
     extend Chef::Mixin::Deprecation
 
     extend Forwardable
@@ -251,7 +250,7 @@ class Chef
         logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
         logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
-        enforce_path_sanity
+        ENV["PATH"] = ChefUtils::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
 
         if Chef::Config.target_mode?
           get_ohai_data_remotely
@@ -749,7 +748,7 @@ class Chef
     # @api private
     #
     def do_windows_admin_check
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?

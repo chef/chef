@@ -1,6 +1,5 @@
 #--
-# Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2019, Chef Software Inc.
+# Copyright:: Copyright 2019-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +15,12 @@
 # limitations under the License.
 
 require "stringio" unless defined?(StringIO)
+require_relative "../internal"
 
-class Chef
-  module Mixin
+module ChefUtils
+  module DSL
     module TrainHelpers
+      include Internal
 
       #
       # FIXME: generally these helpers all use the pattern of checking for target_mode?
@@ -34,8 +35,8 @@ class Chef
       # @return [Boolean] if it exists
       #
       def file_exist?(filename)
-        if Chef::Config.target_mode?
-          Chef.run_context.transport_connection.file(filename).exist?
+        if __transport_connection
+          __transport_connection.file(filename).exist?
         else
           File.exist?(filename)
         end
@@ -46,8 +47,8 @@ class Chef
       # @api private
       #
       def file_open(*args, &block)
-        if Chef::Config.target_mode?
-          content = Chef.run_context.transport_connection.file(args[0]).content
+        if __transport_connection
+          content = __transport_connection.file(args[0]).content
           string_io = StringIO.new content
           yield string_io if block_given?
           string_io
@@ -55,6 +56,8 @@ class Chef
           File.open(*args, &block)
         end
       end
+
+      extend self
     end
   end
 end

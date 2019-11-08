@@ -19,7 +19,7 @@
 require "spec_helper"
 require "mixlib/shellout"
 require "chef/mixin/user_context"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/security"
 end
 

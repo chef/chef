@@ -31,7 +31,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
   context "when parsing source path on windows" do
 
     before do
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     describe "when given local unix path" do

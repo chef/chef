@@ -4,7 +4,7 @@ require "chef/run_lock"
 require "chef/config"
 require "timeout"
 require "fileutils"
-require "chef/win32/security" if Chef::Platform.windows?
+require "chef/win32/security" if ChefUtils.windows?
 require "chef/dist"
 
 describe Chef::Dist::SOLOEXEC do

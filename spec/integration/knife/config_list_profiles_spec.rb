@@ -44,7 +44,7 @@ describe "knife config list-profiles", :workstation do
     ensure
       ENV["HOME"] = old_home
       Dir.chdir(old_wd)
-      ENV[ChefConfig.windows? ? "CD" : "PWD"] = Dir.pwd
+      ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
     end
   end
 
@@ -53,7 +53,7 @@ describe "knife config list-profiles", :workstation do
     # because it has to run after the before set in the "with a chef repo" shared context.
     directory("repo")
     Dir.chdir(path_to("repo"))
-    ENV[ChefConfig.windows? ? "CD" : "PWD"] = Dir.pwd
+    ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
     ENV["HOME"] = path_to(".")
   end
 

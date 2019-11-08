@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,7 @@ RSpec.describe ChefConfig::PathHelper do
   context "on windows" do
 
     before(:each) do
-      allow(ChefConfig).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     include_examples("common_functionality")
@@ -106,7 +106,7 @@ RSpec.describe ChefConfig::PathHelper do
   context "on unix" do
 
     before(:each) do
-      allow(ChefConfig).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
     include_examples("common_functionality")
@@ -144,7 +144,7 @@ RSpec.describe ChefConfig::PathHelper do
     context "on windows" do
       before(:each) do
         # pass by default
-        allow(ChefConfig).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
         allow(path_helper).to receive(:printable?).and_return(true)
         allow(path_helper).to receive(:windows_max_length_exceeded?).and_return(false)
       end
@@ -254,7 +254,7 @@ RSpec.describe ChefConfig::PathHelper do
     context "when given more than one argument" do
       it "joins, cleanpaths, and escapes characters reserved by glob" do
         args = ["this/*path", "[needs]", "escaping?"]
-        escaped_path = if ChefConfig.windows?
+        escaped_path = if ChefUtils.windows?
                          "this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
                        else
                          "this/\\*path/\\[needs\\]/escaping\\?"
@@ -286,7 +286,7 @@ RSpec.describe ChefConfig::PathHelper do
   describe "all_homes" do
     before do
       stub_const("ENV", env)
-      allow(ChefConfig).to receive(:windows?).and_return(is_windows)
+      allow(ChefUtils).to receive(:windows?).and_return(is_windows)
     end
 
     context "on windows" do

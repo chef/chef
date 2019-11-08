@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/application/windows_service"
 end
 

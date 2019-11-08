@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -274,7 +274,7 @@ describe Chef::Provider::Subversion do
 
     it "selects 'svn' as the binary by default" do
       @resource.svn_binary nil
-      allow(ChefConfig).to receive(:windows?) { false }
+      allow(ChefUtils).to receive(:windows?) { false }
       expect(@provider).to receive(:svn_binary).and_return("svn")
       expect(@provider.export_command).to eql(
         "svn export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
@@ -283,7 +283,7 @@ describe Chef::Provider::Subversion do
 
     it "selects an svn binary with an exe extension on windows" do
       @resource.svn_binary nil
-      allow(ChefConfig).to receive(:windows?) { true }
+      allow(ChefUtils).to receive(:windows?) { true }
       expect(@provider).to receive(:svn_binary).and_return("svn.exe")
       expect(@provider.export_command).to eql(
         "svn.exe export --force -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"

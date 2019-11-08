@@ -19,7 +19,7 @@
 require "spec_helper"
 require "securerandom"
 require "chef/event_loggers/windows_eventlog"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "win32/eventlog"
   include Win32
 end

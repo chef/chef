@@ -67,7 +67,7 @@ class Chef
         basename = ::File.basename(@new_resource.path, tempfile_extension)
         # the leading "[.]chef-" here should be considered a public API and should not be changed
         basename.insert 0, "chef-"
-        basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
+        basename.insert 0, "." unless ChefUtils.windows? # dotfile if we're not on windows
         basename.scrub
       end
 

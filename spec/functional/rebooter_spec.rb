@@ -72,7 +72,7 @@ describe Chef::Platform::Rebooter do
 
       shared_context "test a reboot method" do
         def test_rebooter_method(method_sym, is_windows, is_solaris, expected_reboot_str)
-          allow(ChefConfig).to receive(:windows?).and_return(is_windows)
+          allow(ChefUtils).to receive(:windows?).and_return(is_windows)
           node.automatic["os"] = node.automatic["platform"] = node.automatic["platform_family"] = "solaris2" if is_solaris
           expect(rebooter).to receive(:shell_out!).once.with(expected_reboot_str)
           expect(rebooter).to receive(:raise).with(Chef::Exceptions::Reboot)

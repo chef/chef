@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 
 require_relative "mixin/create_path"
 require "fcntl"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require_relative "win32/mutex"
 end
 require_relative "config"
@@ -97,7 +97,7 @@ class Chef
     #
     def wait
       Chef::Log.warn("#{Chef::Dist::PRODUCT} #{runpid} is running, will wait for it to finish and then run.")
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         mutex.wait
       else
         runlock.flock(File::LOCK_EX)
@@ -116,7 +116,7 @@ class Chef
     # Release the system-wide lock.
     def release
       if runlock
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           mutex.release
         else
           runlock.flock(File::LOCK_UN)
@@ -138,7 +138,7 @@ class Chef
 
     # @api private solely for race condition tests
     def acquire_lock
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         acquire_win32_mutex
       else
         # If we support FD_CLOEXEC, then use it.

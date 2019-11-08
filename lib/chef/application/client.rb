@@ -33,7 +33,7 @@ class Chef::Application::Client < Chef::Application::Base
     long: "--config CONFIG",
     description: "The configuration file to use."
 
-  unless Chef::Platform.windows?
+  unless ChefUtils.windows?
     option :daemonize,
       short: "-d [WAIT]",
       long: "--daemonize [WAIT]",

@@ -181,7 +181,7 @@ module KnifeSupport
         expect(stderr_actual).to eq(expected[:stderr])
       end
       stdout_actual = @stdout
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         stderr_actual = stderr_actual.gsub("\r\n", "\n")
         stdout_actual = stdout_actual.gsub("\r\n", "\n")
       end

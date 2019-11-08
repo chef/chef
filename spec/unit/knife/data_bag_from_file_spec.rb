@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ Chef::Knife::DataBagFromFile.load_deps
 
 describe Chef::Knife::DataBagFromFile do
   before :each do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
     Chef::Config[:node_name] = "webmonkey.example.com"
     FileUtils.mkdir_p([db_folder, db_folder2])
     db_file.write(Chef::JSONCompat.to_json(plain_data))

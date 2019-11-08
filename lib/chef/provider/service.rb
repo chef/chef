@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,13 @@
 #
 
 require_relative "../provider"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Provider
     class Service < Chef::Provider
+      include ChefUtils::DSL::Service
+      extend ChefUtils::DSL::Service
 
       def supports
         @supports ||= new_resource.supports.dup
@@ -245,7 +248,7 @@ class Chef
         Chef.set_provider_priority_array :service, [ Systemd, Arch ], platform_family: "arch"
         Chef.set_provider_priority_array :service, [ Systemd, Gentoo ], platform_family: "gentoo"
         Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: "debian"
-        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse amazon}
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: "rpm_based"
       end
     end
   end

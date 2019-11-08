@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -482,7 +482,7 @@ describe Chef::Knife::UI do
       before(:each) do
         stdout = double("StringIO", tty?: true)
         allow(@ui).to receive(:stdout).and_return(stdout)
-        allow(ChefConfig).to receive(:windows?) { true }
+        allow(ChefUtils).to receive(:windows?) { true }
         Chef::Config.reset
       end
 

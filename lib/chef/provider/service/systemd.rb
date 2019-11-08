@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2011-2018, Chef Software Inc.
+# Copyright:: Copyright 2011-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,13 +27,13 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   include Chef::Mixin::Which
 
   provides :service, os: "linux", target_mode: true do |node|
-    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+    systemd?
   end
 
   attr_accessor :status_check_success
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
+    service_script_exist?(:systemd, resource.service_name)
   end
 
   def load_current_resource

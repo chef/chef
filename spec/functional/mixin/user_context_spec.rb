@@ -17,8 +17,8 @@
 
 require "spec_helper"
 
-require "chef/win32/api" if Chef::Platform.windows?
-require "chef/win32/api/error" if Chef::Platform.windows?
+require "chef/win32/api" if ChefUtils.windows?
+require "chef/win32/api/error" if ChefUtils.windows?
 require "chef/mixin/user_context"
 
 describe Chef::Mixin::UserContext, windows_only: true do

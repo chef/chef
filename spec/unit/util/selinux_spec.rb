@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2013-2018, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ describe Chef::Util::Selinux do
   it "each part of ENV['PATH'] should be checked" do
     expected_paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
 
-    expected_paths.each do |bin_path|
+    expected_paths.uniq.each do |bin_path|
       selinux_path = File.join(bin_path, "selinuxenabled")
       expect(File).to receive(:executable?).with(selinux_path).and_return(false)
     end
