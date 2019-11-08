@@ -25,8 +25,36 @@ class Chef
 
       unified_mode true
 
-      description "Use the chef_sleep resource to sleep for a number of seconds during a #{Chef::Dist::PRODUCT} run."
+      description "Use the chef_sleep resource to sleep for a number of seconds during a #{Chef::Dist::PRODUCT} run. This resource should only be used when a command or service exits successfuly , but is not fully ready for the next step of the recipe."
       introduced "15.5"
+      examples <<~DOC
+        Sleep for 10 seconds
+        ```ruby
+        chef_sleep '10'
+        ```
+
+        Sleep for 10 seconds with a friendly resource name for logging
+        ```ruby
+        chef_sleep 'wait for the service to start' do
+          seconds 10
+        end
+        ````
+
+        Use a notify from another resource to sleep only when necessary
+        ```ruby
+        service 'Service that is slow to start and reports as started' do
+          service_name 'my_database'
+          action :start
+          notifies :sleep, chef_sleep['wait for service start']
+        end
+
+        chef_sleep 'wait for service start' do
+          seconds 30
+          action :nothing
+        end
+        ```
+      DOC
+
 
       property :seconds, [String, Integer],
         description: "The number of seconds to sleep.",

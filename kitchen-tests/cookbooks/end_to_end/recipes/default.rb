@@ -9,6 +9,8 @@ hostname "chef-bk-ci.chef.io"
 
 apt_update
 
+chef_sleep '2'
+
 timezone "UTC"
 
 include_recipe "ubuntu" if platform?("ubuntu")
