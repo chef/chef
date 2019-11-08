@@ -33,7 +33,7 @@ class Chef
         chef_sleep '10'
         ```
 
-        Sleep for 10 seconds with a friendly resource name for logging
+        Sleep for 10 seconds with a descriptive resource name for logging
         ```ruby
         chef_sleep 'wait for the service to start' do
           seconds 10
@@ -54,7 +54,6 @@ class Chef
         end
         ```
       DOC
-
 
       property :seconds, [String, Integer],
         description: "The number of seconds to sleep.",

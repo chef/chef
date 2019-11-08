@@ -9,7 +9,7 @@ hostname "chef-bk-ci.chef.io"
 
 apt_update
 
-chef_sleep '2'
+chef_sleep "2"
 
 timezone "UTC"
 
