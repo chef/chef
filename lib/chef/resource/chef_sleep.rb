@@ -61,7 +61,9 @@ class Chef
         name_property: true
 
       action :sleep do
-        sleep(new_resource.seconds)
+        converge_by("sleep #{new_resource.seconds} seconds") do
+          sleep(new_resource.seconds)
+        end
       end
     end
   end
