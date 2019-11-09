@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.72 -->
-## [v15.4.72](https://github.com/chef/chef/tree/v15.4.72) (2019-11-08)
+<!-- latest_release 15.4.73 -->
+## [v15.4.73](https://github.com/chef/chef/tree/v15.4.73) (2019-11-09)
 
 #### Merged Pull Requests
-- 🚧 WIP: remove Oracle 8 from TK tests run in CI [#9074](https://github.com/chef/chef/pull/9074) ([robbkidd](https://github.com/robbkidd))
+- Add new chef_sleep resource [#9081](https://github.com/chef/chef/pull/9081) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add new chef_sleep resource [#9081](https://github.com/chef/chef/pull/9081) ([tas50](https://github.com/tas50)) <!-- 15.4.73 -->
 - 🚧 WIP: remove Oracle 8 from TK tests run in CI [#9074](https://github.com/chef/chef/pull/9074) ([robbkidd](https://github.com/robbkidd)) <!-- 15.4.72 -->
 - Add chef-utils gem with various recipe DSL helpers [#8922](https://github.com/chef/chef/pull/8922) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.70 -->
 - fix the habitat package promotion tests [#9061](https://github.com/chef/chef/pull/9061) ([robbkidd](https://github.com/robbkidd)) <!-- 15.4.69 -->
