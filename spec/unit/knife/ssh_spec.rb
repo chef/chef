@@ -360,29 +360,39 @@ describe Chef::Knife::Ssh do
   end
 
   describe "#run" do
-    before do
-      @query = Chef::Search::Query.new
-      expect(@query).to receive(:search).and_yield(@node_foo)
-      allow(Chef::Search::Query).to receive(:new).and_return(@query)
-      allow(@knife).to receive(:ssh_command).and_return(exit_code)
-      @knife.name_args = ["*:*", "false"]
+
+    it "should print usage and exit when a SEARCH QUERY is not provided" do
+      @knife.name_args = []
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal).with(/You must specify the SEARCH QUERY./)
+      expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    context "with an error" do
-      let(:exit_code) { 1 }
-
-      it "should exit with a non-zero exit code" do
-        expect(@knife).to receive(:exit).with(exit_code)
-        @knife.run
+    context "exit" do
+      before do
+        @query = Chef::Search::Query.new
+        expect(@query).to receive(:search).and_yield(@node_foo)
+        allow(Chef::Search::Query).to receive(:new).and_return(@query)
+        allow(@knife).to receive(:ssh_command).and_return(exit_code)
+        @knife.name_args = ["*:*", "false"]
       end
-    end
 
-    context "with no error" do
-      let(:exit_code) { 0 }
+      context "with an error" do
+        let(:exit_code) { 1 }
 
-      it "should not exit" do
-        expect(@knife).not_to receive(:exit)
-        @knife.run
+        it "should exit with a non-zero exit code" do
+          expect(@knife).to receive(:exit).with(exit_code)
+          @knife.run
+        end
+      end
+
+      context "with no error" do
+        let(:exit_code) { 0 }
+
+        it "should not exit" do
+          expect(@knife).not_to receive(:exit)
+          @knife.run
+        end
       end
     end
   end
