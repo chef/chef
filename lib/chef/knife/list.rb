@@ -62,10 +62,15 @@ class Chef
       attr_accessor :exit_code
 
       def run
-        patterns = name_args.length == 0 ? [""] : name_args
+
+        if name_args.length == 0
+          show_usage
+          ui.fatal("You must specify at least one argument. If you want to list everything in this directory, run \"knife list .\"")
+          exit 1
+        end
 
         # Get the top-level matches
-        all_results = parallelize(pattern_args_from(patterns)) do |pattern|
+        all_results = parallelize(pattern_args_from(name_args)) do |pattern|
           pattern_results = Chef::ChefFS::FileSystem.list(config[:local] ? local_fs : chef_fs, pattern).to_a
 
           if pattern_results.first && !pattern_results.first.exists? && pattern.exact_path
