@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.79 -->
-## [v15.4.79](https://github.com/chef/chef/tree/v15.4.79) (2019-11-12)
+<!-- latest_release 15.5.0 -->
+## [v15.5.0](https://github.com/chef/chef/tree/v15.5.0) (2019-11-12)
 
 #### Merged Pull Requests
-- [knife list] Validate name argument &amp; raise error if no args provided [#9059](https://github.com/chef/chef/pull/9059) ([vsingh-msys](https://github.com/vsingh-msys))
+- Remove the use of Chef Sugar from the Kitchen tests [#9088](https://github.com/chef/chef/pull/9088) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the use of Chef Sugar from the Kitchen tests [#9088](https://github.com/chef/chef/pull/9088) ([tas50](https://github.com/tas50)) <!-- 15.5.0 -->
 - [knife list] Validate name argument &amp; raise error if no args provided [#9059](https://github.com/chef/chef/pull/9059) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.79 -->
 - Bump all deps to current [#9087](https://github.com/chef/chef/pull/9087) ([tas50](https://github.com/tas50)) <!-- 15.4.78 -->
 - Switch our tests back to chef-sugar [#9084](https://github.com/chef/chef/pull/9084) ([tas50](https://github.com/tas50)) <!-- 15.4.77 -->
