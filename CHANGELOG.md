@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.78 -->
-## [v15.4.78](https://github.com/chef/chef/tree/v15.4.78) (2019-11-12)
+<!-- latest_release 15.4.79 -->
+## [v15.4.79](https://github.com/chef/chef/tree/v15.4.79) (2019-11-12)
 
 #### Merged Pull Requests
-- Bump all deps to current [#9087](https://github.com/chef/chef/pull/9087) ([tas50](https://github.com/tas50))
+- [knife list] Validate name argument &amp; raise error if no args provided [#9059](https://github.com/chef/chef/pull/9059) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [knife list] Validate name argument &amp; raise error if no args provided [#9059](https://github.com/chef/chef/pull/9059) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.4.79 -->
 - Bump all deps to current [#9087](https://github.com/chef/chef/pull/9087) ([tas50](https://github.com/tas50)) <!-- 15.4.78 -->
 - Switch our tests back to chef-sugar [#9084](https://github.com/chef/chef/pull/9084) ([tas50](https://github.com/tas50)) <!-- 15.4.77 -->
 - reserve a number for chef-sugar deprecation warnings [#9086](https://github.com/chef/chef/pull/9086) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.76 -->
