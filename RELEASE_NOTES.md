@@ -16,7 +16,7 @@ https://github.com/chef/chef/pull/8925
 
 ## Windows Habitat Plan
 
-HAB STUFF HERE
+Official Habitat packages of Chef Infra Client are now available for Windows. It has all the executables of the traditional omnibus packages, but in Habitat form. You can find it in the Habitat Builder under [chef/chef-infra-client](https://bldr.habitat.sh/#/pkgs/chef/chef-infra-client/latest/windows).
 
 ## New Resources
 
