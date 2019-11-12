@@ -1,5 +1,5 @@
-puts "CHEF SUGAR THINKS WE ARE ON UBUNTU" if ubuntu?
-puts "CHEF SUGAR THINKS WE ARE ON RHEL" if rhel?
+puts "CHEF UTILS THINKS WE ARE ON UBUNTU" if ubuntu?
+puts "CHEF UTILS THINKS WE ARE ON RHEL" if rhel?
 
 #
 # ubuntu cookbook overrides
