@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.4.76 -->
-## [v15.4.76](https://github.com/chef/chef/tree/v15.4.76) (2019-11-12)
+<!-- latest_release 15.4.77 -->
+## [v15.4.77](https://github.com/chef/chef/tree/v15.4.77) (2019-11-12)
 
 #### Merged Pull Requests
-- reserve a number for chef-sugar deprecation warnings [#9086](https://github.com/chef/chef/pull/9086) ([lamont-granquist](https://github.com/lamont-granquist))
+- Switch our tests back to chef-sugar [#9084](https://github.com/chef/chef/pull/9084) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Switch our tests back to chef-sugar [#9084](https://github.com/chef/chef/pull/9084) ([tas50](https://github.com/tas50)) <!-- 15.4.77 -->
 - reserve a number for chef-sugar deprecation warnings [#9086](https://github.com/chef/chef/pull/9086) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.76 -->
 - Fix action collection nilclass error early in runs [#9083](https://github.com/chef/chef/pull/9083) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.75 -->
 - rename windows_ruby_platform? to windows_ruby? [#9085](https://github.com/chef/chef/pull/9085) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.4.74 -->
