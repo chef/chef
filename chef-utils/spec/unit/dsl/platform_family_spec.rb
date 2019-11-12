@@ -24,7 +24,7 @@ def pf_reports_true_for(*args)
       expect(described_class.send(method, node)).to be true
     end
   end
-  (PLATFORM_FAMILY_HELPERS - [ :windows_ruby_platform? ] - args).each do |method|
+  (PLATFORM_FAMILY_HELPERS - [ :windows_ruby? ] - args).each do |method|
     it "reports false for #{method}" do
       expect(described_class.send(method, node)).to be false
     end
@@ -40,7 +40,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
     end
   end
 
-  ( PLATFORM_FAMILY_HELPERS - [ :windows_ruby_platform? ]).each do |helper|
+  ( PLATFORM_FAMILY_HELPERS - [ :windows_ruby? ]).each do |helper|
     it "has the #{helper} in the ChefUtils module" do
       expect(ChefUtils).to respond_to(helper)
     end
@@ -180,12 +180,12 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
 
   context "node-independent windows APIs" do
     if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-      it "reports true for :windows_ruby_platform?" do
-        expect(described_class.windows_ruby_platform?).to be true
+      it "reports true for :windows_ruby?" do
+        expect(described_class.windows_ruby?).to be true
       end
     else
-      it "reports false for :windows_ruby_platform?" do
-        expect(described_class.windows_ruby_platform?).to be false
+      it "reports false for :windows_ruby?" do
+        expect(described_class.windows_ruby?).to be false
       end
     end
   end

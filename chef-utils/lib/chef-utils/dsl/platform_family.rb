@@ -198,7 +198,7 @@ module ChefUtils
         # As a result of this the `windows?` helper and the `ChefUtils.windows?` helper do not behave
         # the same way in that the latter is not stubbable by chefspec.
         #
-        node ? node["platform_family"] == "windows" : windows_ruby_platform?
+        node ? node["platform_family"] == "windows" : windows_ruby?
       end
 
       # Determine if the ruby VM is currently running on a windows node (chefspec can never stub
@@ -206,7 +206,7 @@ module ChefUtils
       #
       # @return [Boolean]
       #
-      def windows_ruby_platform?
+      def windows_ruby?
         !!(RUBY_PLATFORM =~ /mswin|mingw32|windows/)
       end
 
