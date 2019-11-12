@@ -1,5 +1,56 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.5
+
+## New Cookbook Helpers
+
+Chef Infra Client now includes a new `chef-utils` gem, which ships with a large number of helpers to make writing cookbooks easier. Many of these helpers existed previously in the chef-sugar gem. We've renamed many of the named for consistency, while providing backwards compatibility with existing chef-sugar names. Existing cookbooks written with chef-sugar should work unmodified with any of these new helpers. Expect a Cookstyle rule in the near future to help you update existing chef-sugar code to use the newer built-in helpers.
+
+MORE HELPER STUFF HERE
+
+## Chefignore Improvements
+
+CHEFIGNORE STUFF HERE
+
+https://github.com/chef/chef/pull/8925
+
+## Windows Habitat Plan
+
+HAB STUFF HERE
+
+## New Resources
+
+### chef_sleep
+
+The `chef_sleep` resource can be used to sleep for a specified number of seconds during a Chef Infra Client run. This may be helpful for use with other commands that return a completed status before they are actually ready. In general don't use this resource unless you truly need.
+
+Using with a Windows service that starts, but isn't immediately ready:
+
+```ruby
+service 'Service that is slow to start and reports as started' do
+  service_name 'my_database'
+  action :start
+  notifies :sleep, chef_sleep['wait for service start']
+end
+
+chef_sleep 'wait for service start' do
+  seconds 30
+  action :nothing
+end
+```
+
+## Updated Resources
+
+## systemd_unit / service
+
+The `systemd_unit` and `service` resource (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
+
+## Security Updates
+
+### libxslt
+
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
+
 # Chef Infra Client 15.4
 
 ## converge_if_changed Improvements
