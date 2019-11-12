@@ -3,7 +3,7 @@ license          "Apache-2.0"
 description      "Installs/Configures base"
 version          "1.0.0"
 
-gem              "chef-sugar-ng"
+gem              "chef-sugar"
 
 depends          "chef-client"
 depends          "logrotate"
