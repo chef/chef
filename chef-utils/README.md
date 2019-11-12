@@ -82,12 +82,12 @@ There are helpers here which are also meta-families which group together multipl
 * `macos?`
 * `netbsd?`
 * `openbsd?`
-* `rhel?` - includes redhat, cnetos, scientific, oracle
+* `rhel?` - includes redhat, centos, scientific, oracle
 * `smartos?`
 * `solaris2?`
 * `suse?`
-* `windows?`
-* `windows_ruby_platform?` - this is always true if the ruby VM is running on a windows host and is not stubbed by chefspec
+* `windows?` - in a class context when called without a node object (ChefUtils.windows?) this is not stubbable by chefspec, when called with a node as the first argument or when called from the DSL it is stubabble by chefspec
+* `windows_ruby?` - this is always true if the ruby VM is running on a windows host and is not stubbed by chefspec
 
 Super Families:
 
