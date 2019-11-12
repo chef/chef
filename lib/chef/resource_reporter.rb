@@ -183,7 +183,7 @@ class Chef
 
     # get only the top level resources and strip out the subcollections
     def updated_resources
-      @updated_resources ||= action_collection.filtered_collection(max_nesting: 0, up_to_date: false, skipped: false, unprocessed: false)
+      @updated_resources ||= action_collection&.filtered_collection(max_nesting: 0, up_to_date: false, skipped: false, unprocessed: false) || {}
     end
 
     def total_res_count
