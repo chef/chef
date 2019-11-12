@@ -229,6 +229,10 @@ class Chef
       target 27
     end
 
+    class ChefSugar < Base
+      target 28
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client.html"
