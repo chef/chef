@@ -316,12 +316,8 @@ describe "knife list", :workstation do
         context "when cwd is at the top of the repository" do
           before { cwd "." }
 
-          it "knife list with no parameters reports an error" do
-            knife("list").should_fail "FATAL: You must specify at least one argument. If you want to list everything in this directory, run \"knife list .\"\n", stdout: /USAGE/
-          end
-
           it "knife list -Rfp returns everything" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               clients/
               clients/chef-validator.json
               clients/chef-webui.json
@@ -442,7 +438,7 @@ describe "knife list", :workstation do
           end
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               cookbook1/
               cookbook1/metadata.rb
               cookbook2/
@@ -461,7 +457,7 @@ describe "knife list", :workstation do
           before { cwd "cookbooks/cookbook2" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               metadata.rb
               recipes/
               recipes/default.rb
@@ -480,7 +476,7 @@ describe "knife list", :workstation do
           before { cwd "cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               cookbook1/
               cookbook1/metadata.rb
               cookbook2/
@@ -495,7 +491,7 @@ describe "knife list", :workstation do
           before { cwd "symlinked" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               cookbook1/
               cookbook1/metadata.rb
               cookbook2/
@@ -517,7 +513,7 @@ describe "knife list", :workstation do
           before { cwd "real_cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               cookbook1/
               cookbook1/metadata.rb
               cookbook2/
@@ -532,7 +528,7 @@ describe "knife list", :workstation do
           before { cwd "cookbooks" }
 
           it "knife list -Rfp returns cookbooks" do
-            knife("list -Rfp .").should_succeed <<~EOM
+            knife("list -Rfp").should_succeed <<~EOM
               cookbook1/
               cookbook1/metadata.rb
               cookbook2/
