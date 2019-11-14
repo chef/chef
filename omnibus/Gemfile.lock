@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: e18e22bf35bfc43b287caaee3825ac009d3846d2
+  revision: f0e30edfaaaf47f403c441ddf6665b21a26f4546
   branch: master
   specs:
-    omnibus (6.1.12)
+    omnibus (6.1.13)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
-      chef-sugar-ng (>= 3.3)
+      chef-sugar (>= 3.3)
       ffi-yajl (~> 2.2)
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -18,11 +18,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 3f47c11c9ea3186faed62ff52e88d0f580a759ff
+  revision: 1f1cec89d749593420a429baf182becf8741fe12
   branch: master
   specs:
     omnibus-software (4.0.0)
-      chef-sugar-ng (>= 5.0.0)
       omnibus (>= 5.6.1)
 
 GEM
@@ -33,17 +32,17 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.238.0)
-    aws-sdk-core (3.76.0)
+    aws-partitions (1.239.0)
+    aws-sdk-core (3.77.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
-      aws-partitions (~> 1, >= 1.228.0)
+      aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
     aws-sdk-kms (1.25.0)
       aws-sdk-core (~> 3, >= 3.71.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.53.0)
-      aws-sdk-core (~> 3, >= 3.71.0)
+    aws-sdk-s3 (1.54.0)
+      aws-sdk-core (~> 3, >= 3.77.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.1.0)
@@ -144,7 +143,7 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-sugar-ng (5.0.4)
+    chef-sugar (5.1.9)
     chef-zero (14.0.13)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -277,7 +276,7 @@ GEM
       strings-ansi (~> 0.1)
       unicode-display_width (~> 1.5)
       unicode_utils (~> 1.4)
-    strings-ansi (0.1.0)
+    strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
