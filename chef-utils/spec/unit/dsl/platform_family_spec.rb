@@ -88,16 +88,28 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
     pf_reports_true_for(:arch?, :arch_linux?)
   end
 
-  context "on centos" do
-    let(:options) { { platform: "centos" } }
+  context "on centos6" do
+    let(:options) { { platform: "centos", version: "6.9" } }
 
-    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?)
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
-  context "on clearos" do
-    let(:options) { { platform: "clearos" } }
+  context "on centos7" do
+    let(:options) { { platform: "centos", version: "7.7.1908" } }
 
-    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?)
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
+  end
+
+  context "on centos8" do
+    let(:options) { { platform: "centos", version: "8" } }
+
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel8?)
+  end
+
+  context "on clearos7" do
+    let(:options) { { platform: "clearos", version: "7.4" } }
+
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
 
   context "on dragonfly4" do
@@ -142,16 +154,34 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
     pf_reports_true_for(:suse?, :rpm_based?)
   end
 
-  context "on oracle" do
-    let(:options) { { platform: "oracle" } }
+  context "on oracle6" do
+    let(:options) { { platform: "oracle", version: "6.10" } }
 
-    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?)
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
-  context "on redhat" do
-    let(:options) { { platform: "redhat" } }
+  context "on oracle7" do
+    let(:options) { { platform: "oracle", version: "7.6" } }
 
-    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?)
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
+  end
+
+  context "on redhat6" do
+    let(:options) { { platform: "redhat", version: "6.9" } }
+
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
+  end
+
+  context "on redhat7" do
+    let(:options) { { platform: "redhat", version: "7.6" } }
+
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
+  end
+
+  context "on redhat8" do
+    let(:options) { { platform: "redhat", version: "8" } }
+
+    pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel8?)
   end
 
   context "on smartos" do

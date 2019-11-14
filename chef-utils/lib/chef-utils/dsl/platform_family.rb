@@ -77,7 +77,9 @@ module ChefUtils
       alias_method :mac?, :macos?
       alias_method :mac_os_x?, :macos?
 
-      # Determine if the current node is a member of the redhat family.
+      # Determine if the current node is a member of the rhel family (RHEL, CentOS, Oracle or Scientific Linux, no Amazon or Fedora).
+      #
+      # The platform_versions for these operating systems must match (rhel7 == centos7 == oracle7 == scientfic7), modulo additional packages
       #
       # @param [Chef::Node] node
       #
@@ -87,6 +89,36 @@ module ChefUtils
         node["platform_family"] == "rhel"
       end
       alias_method :el?, :rhel?
+
+      # Determine if the current node is a rhel6 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def rhel6?(node = __getnode)
+        node["platform_family"] == "rhel" && node["platform_version"].to_f >= 6.0 && node["platform_version"].to_f < 7.0
+      end
+
+      # Determine if the current node is a rhel7 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def rhel7?(node = __getnode)
+        node["platform_family"] == "rhel" && node["platform_version"].to_f >= 7.0 && node["platform_version"].to_f < 8.0
+      end
+
+      # Determine if the current node is a rhel8 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def rhel8?(node = __getnode)
+        node["platform_family"] == "rhel" && node["platform_version"].to_f >= 8.0 && node["platform_version"].to_f < 9.0
+      end
 
       # Determine if the current node is a member of the amazon family.
       #
