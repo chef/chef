@@ -82,7 +82,10 @@ There are helpers here which are also meta-families which group together multipl
 * `macos?`
 * `netbsd?`
 * `openbsd?`
-* `rhel?` - includes redhat, centos, scientific, oracle
+* `rhel?` - includes redhat, centos, scientific, oracle, clearos
+* `rhel6?` - includes redhat6, centos6, scientifc6, oracle6, clearos6
+* `rhel7?` - includes redhat7, centos7, scientifc7, oracle7, clearos7
+* `rhel8?` - includes redhat8, centos8, scientifc8, oracle8, clearos8
 * `smartos?`
 * `solaris2?`
 * `suse?`
