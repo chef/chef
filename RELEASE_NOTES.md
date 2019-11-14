@@ -10,9 +10,7 @@ MORE HELPER STUFF HERE
 
 ## Chefignore Improvements
 
-CHEFIGNORE STUFF HERE
-
-https://github.com/chef/chef/pull/8925
+We've reworked how chefignore files are handled in knife, which has allowed us to close out a large number of long outstanding bugs. knife will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally we've made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
 
 ## Windows Habitat Plan
 
@@ -44,6 +42,10 @@ end
 ## systemd_unit / service
 
 The `systemd_unit` and `service` resource (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
+
+## windows_firewall
+
+The `windows_firewall` resource has been updated to support passing in an array of profiles in the `profile` property. Thanks [@Happycoil](https://github.com/Happycoil) for this improvement.
 
 ## Security Updates
 
