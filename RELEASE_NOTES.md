@@ -16,6 +16,20 @@ We've reworked how chefignore files are handled in knife, which has allowed us t
 
 Official Habitat packages of Chef Infra Client are now available for Windows. It has all the executables of the traditional omnibus packages, but in Habitat form. You can find it in the Habitat Builder under [chef/chef-infra-client](https://bldr.habitat.sh/#/pkgs/chef/chef-infra-client/latest/windows).
 
+## Chef InSpec 4.18.38
+
+Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in additition to some great resource enhancements:
+
+- Inputs can now be used within a `describe.one` block
+- The `service` resource now includes a `startname` property for Windows and systemd services
+- The `interface` resource now includes a `name` property
+- The `user` resource now better supports Windows with the addition of `passwordage`, `maxbadpasswords`, and `badpasswordattempts` properties.
+- The `nginx` resource now includes parsing support for wildcard, dot prefix, and regex
+- The `iis_app_pool` resource now handles empty app pools
+- The `filesystem` resource now supports devices with very long names
+- The `apt` better handles URIs and supports repos with an `arch`
+- The `oracledb_session` has received multiple fixes to make it work better
+
 ## New Resources
 
 ### chef_sleep
