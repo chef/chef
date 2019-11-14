@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.2 -->
-## [v15.5.2](https://github.com/chef/chef/tree/v15.5.2) (2019-11-14)
+<!-- latest_release 15.5.3 -->
+## [v15.5.3](https://github.com/chef/chef/tree/v15.5.3) (2019-11-14)
 
 #### Merged Pull Requests
-- Update all deps to the latest including omnibus-software with faster Ruby [#9091](https://github.com/chef/chef/pull/9091) ([tas50](https://github.com/tas50))
+- Support multiple profiles in windows_firewall_rule [#8916](https://github.com/chef/chef/pull/8916) ([Happycoil](https://github.com/Happycoil))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support multiple profiles in windows_firewall_rule [#8916](https://github.com/chef/chef/pull/8916) ([Happycoil](https://github.com/Happycoil)) <!-- 15.5.3 -->
 - Update all deps to the latest including omnibus-software with faster Ruby [#9091](https://github.com/chef/chef/pull/9091) ([tas50](https://github.com/tas50)) <!-- 15.5.2 -->
 - Revert &quot;Validate name argument for knife list&quot; [#9090](https://github.com/chef/chef/pull/9090) ([tas50](https://github.com/tas50)) <!-- 15.5.1 -->
 - Remove the use of Chef Sugar from the Kitchen tests [#9088](https://github.com/chef/chef/pull/9088) ([tas50](https://github.com/tas50)) <!-- 15.5.0 -->
