@@ -10,14 +10,45 @@
 
 ## Getting Started
 
-Chef Utils gem is common code and mixins for the core Chef Infra ruby gems.  This should be are "core library" or "foundations" library
+Chef Utils gem is common code and mixins for the core Chef Infra Ruby gems. This should be are "core library" or "foundations" library
 for the chef ecosystem (and external related gems) which allows the use of core code and utility functions of the chef gem without requiring
 all the heaviness of the chef gem.
 
+### Platform Family Helpers
+
+The Platform Family helpers provide an alternative to comparing values from `node['platform_family']` or using the `platform_family?()` helper method. They allow you to write simpler logic that checks for specific platform family. Additionally we've provided several super families listed below, which bundle together common platform families into a single helper.
+
+* `aix?`
+* `amazon?`
+* `arch?` - includes arch, manjaro, and antergos platforms
+* `debian?` - includes debian, ubuntu, linuxmint, raspbian, and duvian platforms
+* `dragonflybsd?`
+* `fedora?` - includes arista_eos, fedora, and pidora platforms
+* `freebsd?`
+* `gentoo?`
+* `macos?`
+* `netbsd?`
+* `openbsd?`
+* `rhel?` - includes redhat, centos, scientific, oracle, and clearos platforms
+* `rhel6?` - includes redhat6, centos6, scientifc6, oracle6, and clearos6 platforms
+* `rhel7?` - includes redhat7, centos7, scientifc7, oracle7, and clearos7 platforms
+* `rhel8?` - includes redhat8, centos8, scientifc8, oracle8, and clearos8 platforms
+* `smartos?`
+* `solaris2?`
+* `suse?` - includes suse and opensuseleap platforms
+* `windows?` - NOTE: in a class context when called without a node object (ChefUtils.windows?) this is not stubbable by ChefSpec, but when called with a node as the first argument or when called from the DSL it is stubabble by chefspec
+* `windows_ruby?` - this is always true if the ruby VM is running on a windows host and is not stubbed by ChefSpec
+
+Super Families:
+
+* `fedora_based?` - anything of fedora lineage (fedora, fedhat, centos, amazon, pidora, etc)
+* `rpm_based?`- all `fedora_based` systems plus `suse` and any future linux distros based on RPM (excluding AIX)
+* `solaris_based?`- all solaris-derived systems (opensolaris, nexentacore, omnios, smartos, etc)
+* `bsd_based?`- all bsd-derived systems (freebsd, netbsd, openbsd, dragonflybsd).
+
 ### Platform Helpers
 
-Individual platforms for when code MUST be different on a case-by-case basis.  It is generally encouraged to not use these and to use
-the `platform_family` helpers unless it is known that code must be special cased for individual platforms.
+The Platform helpers provide an alternative to comparing values from `node['platform']` or using the `platform?()` helper method. In general we'd highly suggest writing code using the Platform Family helpers, but these helpers can be used when it's necessary to target specific platforms.
 
 * `aix_platform?`
 * `amazon_platform?`
@@ -50,7 +81,7 @@ the `platform_family` helpers unless it is known that code must be special cased
 * `ubuntu_platform?`
 * `windows_platform?`
 
-For campatibility with old chef-sugar code the following aliases work for backwards compatibility, but will be DEPRECATED in the future.
+For compatibility with old chef-sugar code the following aliases work for backwards compatibility, but will be DEPRECATED in the future.
 
 * `centos?`
 * `clearos?`
@@ -66,48 +97,16 @@ For campatibility with old chef-sugar code the following aliases work for backwa
 * `scientific?`
 * `ubuntu?`
 
-### Platform Family Helpers
-
-These should be the most commonly used helpers to identify the type of node which group somewhat similar or nearly identical types of platforms.
-There are helpers here which are also meta-families which group together multiple types into supertypes.
-
-* `aix?`
-* `amazon?`
-* `arch?`
-* `debian?` - includes debian, ubuntu, linuxmint, raspbian, etc
-* `dragonflybsd?`
-* `fedora?`
-* `freebsd?`
-* `gentoo?`
-* `macos?`
-* `netbsd?`
-* `openbsd?`
-* `rhel?` - includes redhat, centos, scientific, oracle, clearos
-* `rhel6?` - includes redhat6, centos6, scientifc6, oracle6, clearos6
-* `rhel7?` - includes redhat7, centos7, scientifc7, oracle7, clearos7
-* `rhel8?` - includes redhat8, centos8, scientifc8, oracle8, clearos8
-* `smartos?`
-* `solaris2?`
-* `suse?`
-* `windows?` - in a class context when called without a node object (ChefUtils.windows?) this is not stubbable by chefspec, when called with a node as the first argument or when called from the DSL it is stubabble by chefspec
-* `windows_ruby?` - this is always true if the ruby VM is running on a windows host and is not stubbed by chefspec
-
-Super Families:
-
-* `fedora_based?` - anything of fedora lineage (fedora, fedhat, centos, amazon, pidora, etc)
-* `rpm_based?`- all `fedora_based` systems plus `suse` and any future linux distros based on RPM (excluding AIX)
-* `solaris_based?`- all solaris-derived systems (opensolaris, nexentacore, omnios, smartos, etc)
-* `bsd_based?`- all bsd-derived systems (freebsd, netbsd, openbsd, dragonflybsd).
-
 ### OS Helpers
 
-OS helpers are only provided for OS types that contain multiple platform families ("linux"), or for unique OS values ("darwin").  Users should
-use the Platform Family helper level instead.
+The OS helpers provide an alternative to comparing data from `node['os']`.
 
-* linux?
-* darwin?
+* `linux?` - Any Linux distribution
+* `darwin?` - Darwin or macOS platforms
 
 ### Architecture Helpers
+
+Architecture Helpers allow you to determine the processor architecture of your node.
 
 * `_64_bit?`
 * `_32_bit?`
@@ -156,15 +155,15 @@ use the Platform Family helper level instead.
 
 ## Documentation for Software Developers
 
-The design of the DSL helper libraries in this gem are designed around the Chef Infra Client use cases.  Most of the helpers are
-accessible through the Chef DSL directly via the `ChefUtils::DSL` module.  They are also available via class method calls on
-the ChefUtils module directly (e.g. `ChefUtils.debian?`).  For that to be possible there is Chef Infra Client specific wiring in
-the `ChefUtils::Internal` class allowing the helpers to access the `Chef.run_context` global values.  This allows them to be
+The design of the DSL helper libraries in this gem are designed around the Chef Infra Client use cases. Most of the helpers are
+accessible through the Chef DSL directly via the `ChefUtils::DSL` module. They are also available via class method calls on
+the ChefUtils module directly (e.g. `ChefUtils.debian?`). For that to be possible there is Chef Infra Client specific wiring in
+the `ChefUtils::Internal` class allowing the helpers to access the `Chef.run_context` global values. This allows them to be
 used from library helpers in cookbooks inside Chef Infra Client.
 
 For external use in other gems, this automatic wiring will not work correctly, and so it will not generally be possible to
 call helpers off of the `ChefUtils` class (somee exceptions that do not require a node-like object or a train connection will
-may still work).  For use in other gems you should create your own module and mixin the helper class.  If you have a node
+may still work). For use in other gems you should create your own module and mixin the helper class. If you have a node
 method in your class/module then that method will be used.
 
 You can wire up a module which implements the Chef DSL with your own wiring using this template:
