@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 Chef Infra Client now includes a new `chef-utils` gem, which ships with a large number of helpers to make writing cookbooks easier. Many of these helpers existed previously in the chef-sugar gem. We've renamed many of the named for consistency, while providing backwards compatibility with existing chef-sugar names. Existing cookbooks written with chef-sugar should work unmodified with any of these new helpers. Expect a Cookstyle rule in the near future to help you update existing chef-sugar code to use the newer built-in helpers.
 
-MORE HELPER STUFF HERE
+For more information all all of the new helpers available see the [chef-utils readme](https://github.com/chef/chef/blob/master/chef-utils/README.md)
 
 ## Chefignore Improvements
 
@@ -15,6 +15,10 @@ We've reworked how chefignore files are handled in knife, which has allowed us t
 ## Windows Habitat Plan
 
 Official Habitat packages of Chef Infra Client are now available for Windows. It has all the executables of the traditional omnibus packages, but in Habitat form. You can find it in the Habitat Builder under [chef/chef-infra-client](https://bldr.habitat.sh/#/pkgs/chef/chef-infra-client/latest/windows).
+
+## Performance Improvements
+
+This release of Chef Infra Client ships with several optimizations to our Ruby installation that improve the performance of the chef-client and knife commands, especially on Windows systems. Expect to see more here in future releases.
 
 ## Chef InSpec 4.18.38
 
