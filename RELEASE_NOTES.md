@@ -10,7 +10,7 @@ For more information all all of the new helpers available, see the [chef-utils r
 
 ## Chefignore Improvements
 
-We've reworked how chefignore files are handled in knife, which has allowed us to close out a large number of long outstanding bugs. knife will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
+We've reworked how chefignore files are handled in `knife`, which has allowed us to close out a large number of long outstanding bugs. `knife` will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
 
 ## Windows Habitat Plan
 
@@ -379,7 +379,7 @@ This release includes critical bugfixes for the 15.0 release:
 This release includes critical bugfixes for the 15.0 release:
   - Allow accepting the license on non-interactive Windows sessions
   - Resolve license acceptance failures on Windows 2012 R2
-  - Improve some knife and chef-client help text
+  - Improve some `knife` and `chef-client` help text
   - Properly handle session_timeout default value in `knife bootstrap`
   - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
   - Resolve failures using the ca_trust_file option with `knife bootstrap`
