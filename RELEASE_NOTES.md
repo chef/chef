@@ -1,5 +1,77 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.5
+
+## New Cookbook Helpers
+
+Chef Infra Client now includes a new `chef-utils` gem, which ships with a large number of helpers to make writing cookbooks easier. Many of these helpers existed previously in the `chef-sugar` gem. We have renamed many of the named helpers for consistency, while providing backwards compatibility with existing `chef-sugar` names. Existing cookbooks written with `chef-sugar` should work unmodified with any of these new helpers. Expect a Cookstyle rule in the near future to help you update existing `chef-sugar` code to use the newer built-in helpers.
+
+For more information all all of the new helpers available, see the [chef-utils readme](https://github.com/chef/chef/blob/master/chef-utils/README.md)
+
+## Chefignore Improvements
+
+We've reworked how chefignore files are handled in `knife`, which has allowed us to close out a large number of long outstanding bugs. `knife` will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
+
+## Windows Habitat Plan
+
+Official Habitat packages of Chef Infra Client are now available for Windows. It has all the executables of the traditional omnibus packages, but in Habitat form. You can find it in the Habitat Builder under [chef/chef-infra-client](https://bldr.habitat.sh/#/pkgs/chef/chef-infra-client/latest/windows).
+
+## Performance Improvements
+
+This release of Chef Infra Client ships with several optimizations to our Ruby installation that improve the performance of the chef-client and knife commands, especially on Windows systems. Expect to see more here in future releases.
+
+## Chef InSpec 4.18.39
+
+Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in additition to some great resource enhancements:
+
+- Inputs can now be used within a `describe.one` block
+- The `service` resource now includes a `startname` property for Windows and systemd services
+- The `interface` resource now includes a `name` property
+- The `user` resource now better supports Windows with the addition of `passwordage`, `maxbadpasswords`, and `badpasswordattempts` properties
+- The `nginx` resource now includes parsing support for wildcard, dot prefix, and regex
+- The `iis_app_pool` resource now handles empty app pools
+- The `filesystem` resource now supports devices with very long names
+- The `apt` better handles URIs and supports repos with an `arch`
+- The `oracledb_session` has received multiple fixes to make it work better
+- The `npm` resource now works under sudo on Unix and on Windows with a custom PATH
+
+## New Resources
+
+### chef_sleep
+
+The `chef_sleep` resource can be used to sleep for a specified number of seconds during a Chef Infra Client run. This may be helpful to use with other commands that return a completed status before they are actually ready. In general, do not use this resource unless you truly need it.
+
+Using with a Windows service that starts, but is not immediately ready:
+
+```ruby
+service 'Service that is slow to start and reports as started' do
+  service_name 'my_database'
+  action :start
+  notifies :sleep, chef_sleep['wait for service start']
+end
+
+chef_sleep 'wait for service start' do
+  seconds 30
+  action :nothing
+end
+```
+
+## Updated Resources
+
+## systemd_unit / service
+
+The `systemd_unit` and `service` resources (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
+
+## windows_firewall
+
+The `windows_firewall` resource has been updated to support passing in an array of profiles in the `profile` property. Thanks [@Happycoil](https://github.com/Happycoil) for this improvement.
+
+## Security Updates
+
+### libxslt
+
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
+
 # Chef Infra Client 15.4
 
 ## converge_if_changed Improvements
@@ -307,7 +379,7 @@ This release includes critical bugfixes for the 15.0 release:
 This release includes critical bugfixes for the 15.0 release:
   - Allow accepting the license on non-interactive Windows sessions
   - Resolve license acceptance failures on Windows 2012 R2
-  - Improve some knife and chef-client help text
+  - Improve some `knife` and `chef-client` help text
   - Properly handle session_timeout default value in `knife bootstrap`
   - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
   - Resolve failures using the ca_trust_file option with `knife bootstrap`
