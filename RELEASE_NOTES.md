@@ -39,7 +39,7 @@ Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a la
 
 ### chef_sleep
 
-The `chef_sleep` resource can be used to sleep for a specified number of seconds during a Chef Infra Client run. This may be helpful for use with other commands that return a completed status before they are actually ready. In general don't use this resource unless you truly need.
+The `chef_sleep` resource can be used to sleep for a specified number of seconds during a Chef Infra Client run. This may be helpful to use with other commands that return a completed status before they are actually ready. In general, do not use this resource unless you truly need it.
 
 Using with a Windows service that starts, but isn't immediately ready:
 
