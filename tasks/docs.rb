@@ -24,7 +24,9 @@ namespace :docs_site do
       return nil if default.nil? || default == "" || default == "lazy default"
 
       if default.is_a?(String)
-        return default.inspect unless default[0] == ":"
+
+        # .inspect wraps the value in quotes which we want for strings, but not sentences or symbols as strings
+        return default.inspect unless default[0] == ":" || default.end_with?('.')
       end
       default
     end
@@ -101,7 +103,13 @@ namespace :docs_site do
     def bolded_description(name, description)
       return nil if description.nil? # handle resources missing descriptions
 
-      description.gsub( "#{name} ", "**#{name}** ").split("Note: ").first.strip
+      # we only want to bold occurences of the resource name in the first 5 words so treat it as an array
+      desc_array = description.split(" ")
+
+      desc_array = desc_array[0..4].map! { |x| name == x ? "**#{x}**" : x } + desc_array[5..-1]
+
+      # strip out notes and return just the description
+      desc_array.join(" ").split("Note: ").first.strip
     end
 
     def note_text(description)

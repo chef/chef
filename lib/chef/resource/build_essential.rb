@@ -22,7 +22,7 @@ class Chef
       resource_name :build_essential
       provides(:build_essential) { true }
 
-      description "Use the build_essential resource to install packages required for compiling C software from source."
+      description "Use the build_essential resource to install the packages required for compiling C software from source."
       introduced "14.0"
       examples <<~DOC
         Install compilation packages
