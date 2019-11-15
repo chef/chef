@@ -60,7 +60,7 @@ end
 
 ## systemd_unit / service
 
-The `systemd_unit` and `service` resource (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
+The `systemd_unit` and `service` resources (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
 
 ## windows_firewall
 
