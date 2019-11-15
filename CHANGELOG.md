@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.5 -->
-## [v15.5.5](https://github.com/chef/chef/tree/v15.5.5) (2019-11-14)
+<!-- latest_release 15.5.6 -->
+## [v15.5.6](https://github.com/chef/chef/tree/v15.5.6) (2019-11-15)
 
 #### Merged Pull Requests
-- Update InSpec to 4.18 [#9096](https://github.com/chef/chef/pull/9096) ([tas50](https://github.com/tas50))
+- Reorder the helper docs and expand platforms and descriptions [#9092](https://github.com/chef/chef/pull/9092) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Reorder the helper docs and expand platforms and descriptions [#9092](https://github.com/chef/chef/pull/9092) ([tas50](https://github.com/tas50)) <!-- 15.5.6 -->
 - Update InSpec to 4.18 [#9096](https://github.com/chef/chef/pull/9096) ([tas50](https://github.com/tas50)) <!-- 15.5.5 -->
 - Additional chef-utils helpers for rhel6/7/8 [#9095](https://github.com/chef/chef/pull/9095) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.4 -->
 - Support multiple profiles in windows_firewall_rule [#8916](https://github.com/chef/chef/pull/8916) ([Happycoil](https://github.com/Happycoil)) <!-- 15.5.3 -->
