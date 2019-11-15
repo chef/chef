@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.8 -->
-## [v15.5.8](https://github.com/chef/chef/tree/v15.5.8) (2019-11-15)
+<!-- latest_release 15.5.9 -->
+## [v15.5.9](https://github.com/chef/chef/tree/v15.5.9) (2019-11-15)
 
 #### Merged Pull Requests
-- Improve resource descriptions and the rake task for docs generation [#9097](https://github.com/chef/chef/pull/9097) ([tas50](https://github.com/tas50))
+- Add Chef Infra Client 15.5. release notes [#9089](https://github.com/chef/chef/pull/9089) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.4.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Chef Infra Client 15.5. release notes [#9089](https://github.com/chef/chef/pull/9089) ([tas50](https://github.com/tas50)) <!-- 15.5.9 -->
 - Improve resource descriptions and the rake task for docs generation [#9097](https://github.com/chef/chef/pull/9097) ([tas50](https://github.com/tas50)) <!-- 15.5.8 -->
 - Bump inspec-core-bin to 4.18.39 [#9098](https://github.com/chef/chef/pull/9098) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.5.7 -->
 - Reorder the helper docs and expand platforms and descriptions [#9092](https://github.com/chef/chef/pull/9092) ([tas50](https://github.com/tas50)) <!-- 15.5.6 -->
