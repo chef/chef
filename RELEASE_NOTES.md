@@ -27,7 +27,7 @@ Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a la
 - Inputs can now be used within a `describe.one` block
 - The `service` resource now includes a `startname` property for Windows and systemd services
 - The `interface` resource now includes a `name` property
-- The `user` resource now better supports Windows with the addition of `passwordage`, `maxbadpasswords`, and `badpasswordattempts` properties.
+- The `user` resource now better supports Windows with the addition of `passwordage`, `maxbadpasswords`, and `badpasswordattempts` properties
 - The `nginx` resource now includes parsing support for wildcard, dot prefix, and regex
 - The `iis_app_pool` resource now handles empty app pools
 - The `filesystem` resource now supports devices with very long names
