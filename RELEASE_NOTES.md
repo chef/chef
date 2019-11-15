@@ -20,7 +20,7 @@ Official Habitat packages of Chef Infra Client are now available for Windows. It
 
 This release of Chef Infra Client ships with several optimizations to our Ruby installation that improve the performance of the chef-client and knife commands, especially on Windows systems. Expect to see more here in future releases.
 
-## Chef InSpec 4.18.38
+## Chef InSpec 4.18.39
 
 Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in additition to some great resource enhancements:
 
@@ -33,6 +33,7 @@ Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a la
 - The `filesystem` resource now supports devices with very long names
 - The `apt` better handles URIs and supports repos with an `arch`
 - The `oracledb_session` has received multiple fixes to make it work better
+- The `npm` resource now works under sudo on Unix and on Windows with a custom PATH
 
 ## New Resources
 
