@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2019, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,9 +51,14 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect { resource.action :upgrade }.not_to raise_error
   end
 
-  it "supports setting installer_type as a symbol" do
-    resource.installer_type(:msi)
-    expect(resource.installer_type).to eql(:msi)
+  it "supports setting installer_type to :custom :inno :installshield :msi :nsis or :wise only" do
+    expect { resource.installer_type :custom }.not_to raise_error
+    expect { resource.installer_type :inno }.not_to raise_error
+    expect { resource.installer_type :installshield }.not_to raise_error
+    expect { resource.installer_type :msi }.not_to raise_error
+    expect { resource.installer_type :nsis }.not_to raise_error
+    expect { resource.installer_type :wise }.not_to raise_error
+    expect { resource.installer_type 'msi' }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   # String, Integer
@@ -72,7 +77,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     end
   end
 
-  it "coverts a source to an absolute path" do
+  it "converts a source to an absolute path" do
     allow(::File).to receive(:absolute_path).and_return("c:\\files\\frost.msi")
     resource.source("frost.msi")
     expect(resource.source).to eql "c:\\files\\frost.msi"
@@ -89,8 +94,8 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect(resource.source).to include("solitaire.msi")
   end
 
-  it "supports the checksum property" do
-    resource.checksum("somechecksum")
+  it "lowercases values provided in the checksum property" do
+    resource.checksum("SOMECHECKSUM")
     expect(resource.checksum).to eq("somechecksum")
   end
 
