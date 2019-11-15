@@ -70,11 +70,11 @@ class Chef
 
       property :checksum, String,
         desired_state: false, coerce: (proc { |c| c.downcase }),
-        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, Chef Infra Client does not download it. Use when a URL is specified by the source property."
+        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{Chef::Dist::PRODUCT} does not download it. Use when a URL is specified by the source property."
 
       property :remote_file_attributes, Hash,
         desired_state: false,
-        description: "A package at a remote location define as a Hash of properties that modifies the properties of the remote_file resource."
+        description: "If the source package to install is at a remote location this property allows you to define a hash of properties and their value which will be used by the underlying remote_file resource, which fetches the source."
     end
   end
 end
