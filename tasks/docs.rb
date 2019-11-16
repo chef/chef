@@ -26,7 +26,7 @@ namespace :docs_site do
       if default.is_a?(String)
 
         # .inspect wraps the value in quotes which we want for strings, but not sentences or symbols as strings
-        return default.inspect unless default[0] == ":" || default.end_with?('.')
+        return default.inspect unless default[0] == ":" || default.end_with?(".")
       end
       default
     end
