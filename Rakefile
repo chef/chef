@@ -17,10 +17,14 @@
 # limitations under the License.
 #
 
-require_relative "tasks/rspec"
-require_relative "tasks/dependencies"
-require_relative "tasks/announce"
-require_relative "tasks/docs"
+begin
+  require_relative "tasks/rspec"
+  require_relative "tasks/dependencies"
+  require_relative "tasks/announce"
+  require_relative "tasks/docs"
+rescue LoadError => e
+  puts "Skipping missing rake dep: #{e}"
+end
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 
