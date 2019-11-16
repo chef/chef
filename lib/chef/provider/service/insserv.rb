@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2011-2017, Chef Software Inc.
+# Copyright:: Copyright 2011-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,12 @@ class Chef
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, platform_family: %w{debian rhel fedora suse amazon} do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        provides :service, platform_family: %w{debian rhel fedora suse amazon} do
+          insserv?
         end
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def load_current_resource

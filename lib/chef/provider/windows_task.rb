@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,11 +18,11 @@
 
 require_relative "../mixin/shell_out"
 require "rexml/document" unless defined?(REXML::Document)
-require "iso8601" if Chef::Platform.windows?
+require "iso8601" if ChefUtils.windows?
 require_relative "../mixin/powershell_out"
 require_relative "../provider"
 require_relative "../util/path_helper"
-require "win32/taskscheduler" if Chef::Platform.windows?
+require "win32/taskscheduler" if ChefUtils.windows?
 
 class Chef
   class Provider
@@ -30,7 +30,7 @@ class Chef
       include Chef::Mixin::ShellOut
       include Chef::Mixin::PowershellOut
 
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         include Win32
 
         provides :windows_task

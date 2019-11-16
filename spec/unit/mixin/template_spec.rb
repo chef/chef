@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "spec_helper"
 require "cgi"
 describe Chef::Mixin::Template, "render_template" do
 
-  let(:sep) { Chef::Platform.windows? ? "\r\n" : "\n" }
+  let(:sep) { ChefUtils.windows? ? "\r\n" : "\n" }
 
   before :each do
     @context = Chef::Mixin::Template::TemplateContext.new({})
@@ -39,7 +39,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on windows" do
     before do
-      allow(ChefConfig).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     it "should render the templates with windows line endings" do
@@ -54,7 +54,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on unix" do
     before do
-      allow(ChefConfig).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
     it "should render the templates with unix line endings" do

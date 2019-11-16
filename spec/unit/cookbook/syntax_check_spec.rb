@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
 
   let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks", "openldap") }

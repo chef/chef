@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative "../../win32/crypto" if Chef::Platform.windows?
+require_relative "../../win32/crypto" if ChefUtils.windows?
 
 class Chef::Util::Powershell
   class PSCredential

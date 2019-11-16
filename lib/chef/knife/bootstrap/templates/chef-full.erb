@@ -1,4 +1,3 @@
-sh -c '
 <%= "https_proxy=\"#{knife_config[:bootstrap_proxy]}\" export https_proxy" if knife_config[:bootstrap_proxy] %>
 <%= "no_proxy=\"#{knife_config[:bootstrap_no_proxy]}\" export no_proxy" if knife_config[:bootstrap_no_proxy] %>
 
@@ -173,7 +172,7 @@ do_download() {
   <%= knife_config[:bootstrap_install_command] %>
 <% else %>
   install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
-  if test -f /usr/bin/<%= Chef::Dist::CLIENT %>}; then
+  if test -f /usr/bin/<%= Chef::Dist::CLIENT %>; then
     echo "-----> Existing <%= Chef::Dist::PRODUCT %> installation detected"
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
@@ -189,24 +188,24 @@ fi
 mkdir -p <%= Chef::Dist::CONF_DIR %>
 
 <% if client_pem -%>
-cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/client.pem
+)) || exit 1
 <% end -%>
 
 <% if validation_key -%>
-cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/validation.pem
+)) || exit 1
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
+(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-chmod 0600 <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret
+)) || exit 1
 <% end -%>
 
 <% unless trusted_certs.empty? -%>
@@ -240,4 +239,4 @@ mkdir -p <%= Chef::Dist::CONF_DIR %>/client.d
 
 echo "Starting the first <%= Chef::Dist::PRODUCT %> Client run..."
 
-<%= start_chef %>'
+<%= start_chef %>

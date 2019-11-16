@@ -17,7 +17,7 @@ include Chef::Mixin::ShellOut
 github_repo = ARGV.shift
 git_thing = ARGV.shift
 
-build_dir = File.expand_path(ENV["TRAVIS_BUILD_DIR"] || Dir.pwd)
+build_dir = Dir.pwd
 
 env = {
   "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; " \

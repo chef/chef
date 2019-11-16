@@ -23,7 +23,7 @@ class Chef
   class Resource
     class YumPackage < Chef::Resource::Package
       resource_name :yum_package
-      provides :package, platform_family: %w{rhel fedora amazon}
+      provides :package, platform_family: "fedora_derived"
 
       description "Use the yum_package resource to install, upgrade, and remove packages with Yum"\
                   " for the Red Hat and CentOS platforms. The yum_package resource is able to resolve"\

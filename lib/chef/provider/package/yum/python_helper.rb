@@ -40,9 +40,14 @@ class Chef
           YUM_HELPER = ::File.expand_path(::File.join(::File.dirname(__FILE__), "yum_helper.py")).freeze
 
           def yum_command
-            @yum_command ||= which("platform-python", "python", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
-              shell_out("#{f} -c 'import yum'").exitstatus == 0
-            end + " #{YUM_HELPER}"
+            @yum_command ||= begin
+              cmd = which("platform-python", "python", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
+                shell_out("#{f} -c 'import yum'").exitstatus == 0
+              end
+              raise Chef::Exceptions::Package, "cannot find yum libraries, you may need to use dnf_package" unless cmd
+
+              "#{cmd} #{YUM_HELPER}"
+            end
           end
 
           def start

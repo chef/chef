@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Delano (<stephen@ospcode.com>)
 # Author:: Seth Falcon (<seth@ospcode.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright 2010-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ Chef::Knife::EnvironmentFromFile.load_deps
 
 describe Chef::Knife::EnvironmentFromFile do
   before(:each) do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
     @knife = Chef::Knife::EnvironmentFromFile.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)

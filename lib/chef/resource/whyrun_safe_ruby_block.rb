@@ -19,6 +19,7 @@
 class Chef
   class Resource
     class WhyrunSafeRubyBlock < Chef::Resource::RubyBlock
+      unified_mode true
     end
   end
 end

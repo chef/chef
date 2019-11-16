@@ -20,8 +20,8 @@
 
 require "forwardable" unless defined?(Forwardable)
 require "securerandom" unless defined?(SecureRandom)
+require_relative "constants"
 require_relative "config"
-require_relative "nil_argument"
 require_relative "mixin/params_validate"
 require_relative "mixin/from_file"
 require_relative "mixin/deep_merge"
@@ -66,8 +66,6 @@ class Chef
 
     include Chef::Mixin::ParamsValidate
 
-    NULL_ARG = Object.new
-
     # Create a new Chef::Node object.
     def initialize(chef_server_rest: nil, logger: nil)
       @chef_server_rest = chef_server_rest
@@ -89,8 +87,6 @@ class Chef
     # after the run_context has been set on the node, go through the cookbook_collection
     # and setup the node[:cookbooks] attribute so that it is published in the node object
     def set_cookbook_attribute
-      return unless run_context.cookbook_collection
-
       run_context.cookbook_collection.each do |cookbook_name, cookbook|
         automatic_attrs[:cookbooks][cookbook_name][:version] = cookbook.version
       end
@@ -152,8 +148,8 @@ class Chef
     #
     # @param arg [String] the new policy_name value
     # @return [String] the current policy_name, or the one you just set
-    def policy_name(arg = NULL_ARG)
-      return @policy_name if arg.equal?(NULL_ARG)
+    def policy_name(arg = NOT_PASSED)
+      return @policy_name if arg.equal?(NOT_PASSED)
 
       validate({ policy_name: arg }, { policy_name: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_name = arg
@@ -175,8 +171,8 @@ class Chef
     #
     # @param arg [String] the new policy_group value
     # @return [String] the current policy_group, or the one you just set
-    def policy_group(arg = NULL_ARG)
-      return @policy_group if arg.equal?(NULL_ARG)
+    def policy_group(arg = NOT_PASSED)
+      return @policy_group if arg.equal?(NOT_PASSED)
 
       validate({ policy_group: arg }, { policy_group: { kind_of: [ String, NilClass ], regex: /^[\-:.[:alnum:]_]+$/ } })
       @policy_group = arg

@@ -593,6 +593,12 @@ class Chef
       def run
         @longest = 0
 
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the SEARCH QUERY.")
+          exit(1)
+        end
+
         configure_user
         configure_password
         @password = config[:ssh_password] if config[:ssh_password]
@@ -623,7 +629,7 @@ class Chef
           end
 
         session.close
-        if exit_status != 0
+        if exit_status && exit_status != 0
           exit exit_status
         else
           exit_status

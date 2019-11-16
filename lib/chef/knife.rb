@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@
 require "forwardable" unless defined?(Forwardable)
 require_relative "version"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
+require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
 require_relative "workstation_config_loader"
 require_relative "mixin/convert_to_class_name"
 require_relative "mixin/path_sanity"
@@ -39,7 +40,7 @@ class Chef
     Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
-    include Chef::Mixin::PathSanity
+    include ChefUtils::DSL::PathSanity
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
@@ -63,6 +64,12 @@ class Chef
 
     attr_accessor :name_args
     attr_accessor :ui
+
+    # knife acl subcommands are grouped in this category using this constant to verify.
+    OPSCODE_HOSTED_CHEF_ACCESS_CONTROL = %w{acl group user}.freeze
+
+    # knife opc subcommands are grouped in this category using this constant to verify.
+    CHEF_ORGANIZATION_MANAGEMENT = %w{opc}.freeze
 
     # Configure mixlib-cli to always separate defaults from user-supplied CLI options
     def self.use_separate_defaults?
@@ -234,7 +241,7 @@ class Chef
       dependency_loaders.each(&:call)
     end
 
-    OFFICIAL_PLUGINS = %w{ec2 rackspace windows openstack azure google linode push vcenter lpar}.freeze
+    OFFICIAL_PLUGINS = %w{lpar openstack push rackspace vcenter}.freeze
 
     class << self
       def list_commands(preferred_category = nil)
@@ -270,10 +277,14 @@ class Chef
           ui.info("If this is a recently installed plugin, please run 'knife rehash' to update the subcommands cache.")
         end
 
-        if category_commands = guess_category(args)
+        if CHEF_ORGANIZATION_MANAGEMENT.include?(args[0])
+          list_commands("CHEF ORGANIZATION MANAGEMENT")
+        elsif OPSCODE_HOSTED_CHEF_ACCESS_CONTROL.include?(args[0])
+          list_commands("OPSCODE HOSTED CHEF ACCESS CONTROL")
+        elsif category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
-          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK")
+          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK / Chef Workstation")
         else
           list_commands
         end
@@ -469,7 +480,7 @@ class Chef
       unless respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
-      enforce_path_sanity
+      ENV["PATH"] = sanitized_path if Chef::Config[:enforce_path_sanity]
       maybe_setup_fips
       Chef::LocalMode.with_server_connectivity do
         run

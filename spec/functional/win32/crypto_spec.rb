@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/crypto"
 end
 

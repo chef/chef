@@ -21,6 +21,8 @@ require_relative "scm"
 class Chef
   class Resource
     class Git < Chef::Resource::Scm
+      unified_mode true
+
       description "Use the git resource to manage source control resources that exist in a git repository. git version 1.6.5 (or higher) is required to use all of the functionality in the git resource."
 
       property :additional_remotes, Hash,

@@ -10,6 +10,7 @@ gem "chef", path: "."
 # necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
+gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
 gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
 
 if File.exist?(File.expand_path("../chef-bin", __FILE__))
@@ -25,8 +26,8 @@ gem "cheffish", "~> 14"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 4.3"
-  gem "inspec-core-bin", "~> 4.3" # need to provide the binaries for inspec
+  gem "inspec-core", "~> 4.18"
+  gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
   gem "chef-vault"
   gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
   gem "bcrypt_pbkdf" # ed25519 ssh key support done here as it's a native gem we can't put in train
@@ -65,6 +66,7 @@ group(:development, :test) do
   gem "rspec_junit_formatter", "~> 0.2.0"
   gem "simplecov"
   gem "webmock"
+  gem "fauxhai-ng" # for chef-utils gem
 end
 
 group(:chefstyle) do
@@ -76,7 +78,7 @@ instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
 
 # If you want to load debugging tools into the bundle exec sandbox,
 # add these additional dependencies into Gemfile.local
-eval_gemfile(__FILE__ + ".local") if File.exist?(__FILE__ + ".local")
+eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 
 # These lines added for Windows development only.
 # For FFI to call into PowerShell we need the binaries and assemblies located

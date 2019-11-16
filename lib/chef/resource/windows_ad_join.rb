@@ -31,7 +31,7 @@ class Chef
       introduced "14.0"
 
       property :domain_name, String,
-        description: "The FQDN of the Active Directory domain to join if it differs from the resource block's name.",
+        description: "An optional property to set the FQDN of the Active Directory domain to join if it differs from the resource block's name.",
         validation_message: "The 'domain_name' property must be a FQDN.",
         regex: /.\../, # anything.anything
         name_property: true
@@ -57,6 +57,10 @@ class Chef
         description: "Specifies a new hostname for the computer in the new domain.",
         introduced: "14.5"
 
+      property :workgroup_name, String,
+        description: "Specifies the name of a workgroup to which the computer is added to when it is removed from the domain. The default value is WORKGROUP. This property is only applicable to the :leave action.",
+        introduced: "15.4"
+
       # define this again so we can default it to true. Otherwise failures print the password
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
@@ -64,7 +68,7 @@ class Chef
       action :join do
         description "Join the Active Directory domain."
 
-        unless on_domain?
+        unless on_desired_domain?
           cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
           cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}@#{new_resource.domain_name}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
@@ -92,12 +96,77 @@ class Chef
         end
       end
 
+      action :leave do
+        description "Leave the Active Directory domain."
+
+        if joined_to_domain?
+          cmd = ""
+          cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}@#{new_resource.domain_name}\",$pswd);"
+          cmd << "Remove-Computer"
+          cmd << " -UnjoinDomainCredential $credential"
+          cmd << " -NewName \"#{new_resource.new_hostname}\"" if new_resource.new_hostname
+          cmd << " -WorkgroupName \"#{new_resource.workgroup_name}\"" if new_resource.workgroup_name
+          cmd << " -Force"
+
+          converge_by("leave Active Directory domain #{node_domain}") do
+            ps_run = powershell_out(cmd)
+            if ps_run.error?
+              if sensitive?
+                raise "Failed to leave the domain #{node_domain}: *suppressed sensitive resource output*"
+              else
+                raise "Failed to leave the domain #{node_domain}: #{ps_run.stderr}"
+              end
+            end
+
+            unless new_resource.reboot == :never
+              reboot "Reboot to leave domain #{new_resource.domain_name}" do
+                action clarify_reboot(new_resource.reboot)
+                reason "Reboot to leave domain #{new_resource.domain_name}"
+              end
+            end
+          end
+        end
+      end
+
       action_class do
-        def on_domain?
+        #
+        # @return [String] The domain name the node is joined to. When the node
+        #   is not joined to a domain this will return the name of the
+        #   workgroup the node is a member of.
+        #
+        def node_domain
           node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
           raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
 
-          node_domain.stdout.downcase.strip == new_resource.domain_name.downcase
+          node_domain.stdout.downcase.strip
+        end
+
+        #
+        # @return [String] The workgroup the node is a member of. This will
+        #   return an empty string if the system is not a member of a
+        #   workgroup.
+        #
+        def node_workgroup
+          node_workgroup = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Workgroup")
+          raise "Failed to check if the system is currently a member of a workgroup" if node_workgroup.error?
+
+          node_workgroup.stdout.downcase.strip
+        end
+
+        #
+        # @return [true, false] Whether or not the node is joined to ANY domain
+        #
+        def joined_to_domain?
+          node_workgroup.empty? && !node_domain.empty?
+        end
+
+        #
+        # @return [true, false] Whether or not the node is joined to the domain
+        #   defined by the resource :domain_name property.
+        #
+        def on_desired_domain?
+          node_domain == new_resource.domain_name.downcase
         end
 
         # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then

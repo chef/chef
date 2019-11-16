@@ -49,8 +49,8 @@ class Chef
 
     # @param repo_paths [Array<String>] the array of repo paths containing cookbook dirs
     def initialize(*repo_paths)
-      @repo_paths = repo_paths.flatten.map { |p| File.expand_path(p) }
-      raise ArgumentError, "You must specify at least one cookbook repo path" if repo_paths.empty?
+      @repo_paths = repo_paths.flatten.compact.map { |p| File.expand_path(p) }
+      raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
     end
 
     # The primary function of this class is to build this Mash mapping cookbook names as a string to
@@ -171,7 +171,7 @@ class Chef
         begin
           mash = Mash.new
           all_directories_in_repo_paths.each do |cookbook_path|
-            loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore(File.dirname(cookbook_path)))
+            loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore(cookbook_path))
             cookbook_name = loader.cookbook_name
             if mash.key?(cookbook_name)
               raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"

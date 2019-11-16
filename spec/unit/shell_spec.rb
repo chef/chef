@@ -42,7 +42,7 @@ describe Shell do
   before do
     Shell.irb_conf = {}
     allow(Shell::ShellSession.instance).to receive(:reset!)
-    allow(ChefConfig).to receive(:windows?).and_return(false)
+    allow(ChefUtils).to receive(:windows?).and_return(false)
     allow(Chef::Util::PathHelper).to receive(:home).and_return("/home/foo")
   end
 

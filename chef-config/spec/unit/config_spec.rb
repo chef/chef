@@ -201,7 +201,7 @@ RSpec.describe ChefConfig::Config do
       end
 
       before :each do
-        allow(ChefConfig).to receive(:windows?).and_return(is_windows)
+        allow(ChefUtils).to receive(:windows?).and_return(is_windows)
       end
       describe "class method: windows_installation_drive" do
         before do

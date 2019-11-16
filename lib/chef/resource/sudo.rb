@@ -30,7 +30,7 @@ class Chef
       description "Use the sudo resource to add or remove individual sudo entries using sudoers.d files."\
                   " Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the"\
                   " '#includedir' directive introduced in version 1.7.2. This resource does not enforce"\
-                  " installation of the required sudo version. Supported releases of Ubuntu, SuSE, Debian,"\
+                  " installation of the required sudo version. Chef-supported releases of Ubuntu, SuSE, Debian,"\
                   " and RHEL (6+) all support this feature."
       introduced "14.0"
 
@@ -166,7 +166,7 @@ class Chef
             source new_resource.template
             mode "0440"
             variables new_resource.variables
-            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
+            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
             action :create
           end
         else
@@ -185,7 +185,7 @@ class Chef
                       setenv:             new_resource.setenv,
                       env_keep_add:       new_resource.env_keep_add,
                       env_keep_subtract:  new_resource.env_keep_subtract
-            verify "#{new_resource.visudo_binary} -cf %{path}" if visudo_present?
+            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
             action :create
           end
         end

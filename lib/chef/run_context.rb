@@ -26,12 +26,16 @@ require_relative "recipe"
 require_relative "run_context/cookbook_compiler"
 require_relative "event_dispatch/events_output_stream"
 require_relative "train_transport"
+require_relative "exceptions"
 require "forwardable" unless defined?(Forwardable)
+require "set" unless defined?(Set)
 
 class Chef
 
   # Value object that loads and tracks the context of a Chef run
   class RunContext
+    extend Forwardable
+
     #
     # Global state
     #
@@ -62,7 +66,7 @@ class Chef
     #
     # @return [Chef::CookbookCollection]
     #
-    attr_accessor :cookbook_collection
+    attr_reader :cookbook_collection
 
     #
     # Resource Definitions for this run. Populated when the files in
@@ -72,14 +76,12 @@ class Chef
     #
     attr_reader :definitions
 
-    #
     # Event dispatcher for this run.
     #
     # @return [Chef::EventDispatch::Dispatcher]
     #
     attr_accessor :events
 
-    #
     # Hash of factoids for a reboot request.
     #
     # @return [Hash]
@@ -90,7 +92,6 @@ class Chef
     # Scoped state
     #
 
-    #
     # The parent run context.
     #
     # @return [Chef::RunContext] The parent run context, or `nil` if this is the
@@ -98,7 +99,6 @@ class Chef
     #
     attr_reader :parent_run_context
 
-    #
     # The root run context.
     #
     # @return [Chef::RunContext] The root run context.
@@ -109,7 +109,6 @@ class Chef
       rc
     end
 
-    #
     # The collection of resources intended to be converged (and able to be
     # notified).
     #
@@ -119,8 +118,12 @@ class Chef
     #
     attr_reader :resource_collection
 
-    attr_accessor :action_collection
+    # Handle to the global action_collection of executed actions for reporting / data_collector /etc
     #
+    # @return [Chef::ActionCollection
+    #
+    attr_accessor :action_collection
+
     # Pointer back to the Chef::Runner that created this
     #
     attr_accessor :runner
@@ -129,7 +132,6 @@ class Chef
     # Notification handling
     #
 
-    #
     # A Hash containing the before notifications triggered by resources
     # during the converge phase of the chef run.
     #
@@ -138,7 +140,6 @@ class Chef
     #
     attr_reader :before_notification_collection
 
-    #
     # A Hash containing the immediate notifications triggered by resources
     # during the converge phase of the chef run.
     #
@@ -147,7 +148,6 @@ class Chef
     #
     attr_reader :immediate_notification_collection
 
-    #
     # A Hash containing the delayed (end of run) notifications triggered by
     # resources during the converge phase of the chef run.
     #
@@ -156,7 +156,6 @@ class Chef
     #
     attr_reader :delayed_notification_collection
 
-    #
     # An Array containing the delayed (end of run) notifications triggered by
     # resources during the converge phase of the chef run.
     #
@@ -164,7 +163,16 @@ class Chef
     #
     attr_reader :delayed_actions
 
+    # A Set keyed by the string name, of all the resources that are updated.  We do not
+    # track actions or individual resource objects, since this matches the behavior of
+    # the notification collections which are keyed by Strings.
     #
+    attr_reader :updated_resources
+
+    # @return [Boolean] If the resource_collection is in unified_mode (no separate converge phase)
+    #
+    def_delegator :resource_collection, :unified_mode
+
     # A child of the root Chef::Log logging object.
     #
     # @return Mixlib::Log::Child A child logger
@@ -180,17 +188,16 @@ class Chef
     # @param events [EventDispatch::Dispatcher] The event dispatcher for this
     #   run.
     #
-    def initialize(node = nil, cookbook_collection = {}, events = nil, logger = nil)
+    def initialize(node = nil, cookbook_collection = nil, events = nil, logger = nil)
       @events = events
       @logger = logger || Chef::Log.with_child
-      @cookbook_collection = cookbook_collection
       self.node = node if node
+      self.cookbook_collection = cookbook_collection if cookbook_collection
       @definitions = {}
       @loaded_recipes_hash = {}
       @loaded_attributes_hash = {}
       @reboot_info = {}
       @cookbook_compiler = nil
-      @delayed_actions = []
 
       initialize_child_state
     end
@@ -198,6 +205,10 @@ class Chef
     def node=(node)
       @node = node
       node.run_context = self
+    end
+
+    def cookbook_collection=(cookbook_collection)
+      @cookbook_collection = cookbook_collection
       node.set_cookbook_attribute
     end
 
@@ -221,6 +232,7 @@ class Chef
       @immediate_notification_collection = Hash.new { |h, k| h[k] = [] }
       @delayed_notification_collection = Hash.new { |h, k| h[k] = [] }
       @delayed_actions = []
+      @updated_resources = Set.new
     end
 
     #
@@ -232,6 +244,10 @@ class Chef
       # Note for the future, notification.notifying_resource may be an instance
       # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
       # with a string value.
+      if unified_mode && updated_resources.include?(notification.notifying_resource.declared_key)
+        raise Chef::Exceptions::UnifiedModeBeforeSubscriptionEarlierResource.new(notification)
+      end
+
       before_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
@@ -256,11 +272,13 @@ class Chef
       # Note for the future, notification.notifying_resource may be an instance
       # of Chef::Resource::UnresolvedSubscribes when calling {Resource#subscribes}
       # with a string value.
+      if unified_mode && updated_resources.include?(notification.notifying_resource.declared_key)
+        add_delayed_action(notification)
+      end
       delayed_notification_collection[notification.notifying_resource.declared_key] << notification
     end
 
-    #
-    # Adds a delayed action to the +delayed_actions+.
+    # Adds a delayed action to the delayed_actions collection
     #
     def add_delayed_action(notification)
       if delayed_actions.any? { |existing_notification| existing_notification.duplicates?(notification) }
@@ -271,32 +289,45 @@ class Chef
       end
     end
 
-    #
     # Get the list of before notifications sent by the given resource.
     #
     # @return [Array[Notification]]
     #
     def before_notifications(resource)
-      before_notification_collection[resource.declared_key]
+      key = resource.is_a?(String) ? resource : resource.declared_key
+      before_notification_collection[key]
     end
 
-    #
     # Get the list of immediate notifications sent by the given resource.
     #
     # @return [Array[Notification]]
     #
     def immediate_notifications(resource)
-      immediate_notification_collection[resource.declared_key]
+      key = resource.is_a?(String) ? resource : resource.declared_key
+      immediate_notification_collection[key]
     end
 
+    # Get the list of immeidate notifications pending to the given resource
     #
+    # @return [Array[Notification]]
+    #
+    def reverse_immediate_notifications(resource)
+      immediate_notification_collection.map do |k, v|
+        v.select do |n|
+          (n.resource.is_a?(String) && n.resource == resource.declared_key) ||
+            n.resource == resource
+        end
+      end.flatten
+    end
+
     # Get the list of delayed (end of run) notifications sent by the given
     # resource.
     #
     # @return [Array[Notification]]
     #
     def delayed_notifications(resource)
-      delayed_notification_collection[resource.declared_key]
+      key = resource.is_a?(String) ? resource : resource.declared_key
+      delayed_notification_collection[key]
     end
 
     #
@@ -604,7 +635,7 @@ class Chef
     # @return [Train::Plugins::Transport::BaseConnection]
     #
     def transport_connection
-      @transport_connection ||= transport.connection
+      @transport_connection ||= transport&.connection
     end
 
     #
@@ -666,9 +697,9 @@ class Chef
         rest=
         rest_clean
         rest_clean=
-        unreachable_cookbook?
         transport
         transport_connection
+        unreachable_cookbook?
       }
 
       def initialize(parent_run_context)
@@ -681,8 +712,10 @@ class Chef
       end
 
       CHILD_STATE = %w{
-        create_child
         add_delayed_action
+        before_notification_collection
+        before_notifications
+        create_child
         delayed_actions
         delayed_notification_collection
         delayed_notification_collection=
@@ -690,21 +723,22 @@ class Chef
         immediate_notification_collection
         immediate_notification_collection=
         immediate_notifications
-        before_notification_collection
-        before_notifications
         include_recipe
         initialize_child_state
         load_recipe
         load_recipe_file
         notifies_before
-        notifies_immediately
         notifies_delayed
+        notifies_immediately
         parent_run_context
-        root_run_context
         resource_collection
         resource_collection=
+        reverse_immediate_notifications
+        root_run_context
         runner
         runner=
+        unified_mode
+        updated_resources
       }.map(&:to_sym)
 
       # Verify that we didn't miss any methods

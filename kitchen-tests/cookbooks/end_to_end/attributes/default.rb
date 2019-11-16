@@ -1,5 +1,5 @@
-puts "CHEF SUGAR THINKS WE ARE ON UBUNTU" if ubuntu?
-puts "CHEF SUGAR THINKS WE ARE ON RHEL" if rhel?
+puts "CHEF UTILS THINKS WE ARE ON UBUNTU" if ubuntu?
+puts "CHEF UTILS THINKS WE ARE ON RHEL" if rhel?
 
 #
 # ubuntu cookbook overrides
@@ -75,4 +75,4 @@ default["resolver"]["search"] = "chef.io"
 # nscd cookbook overrides
 #
 
-default["nscd"]["server_user"] = "nobody"
+default["nscd"]["server_user"] = "nobody" unless platform_family?("suse") # this breaks SLES 15

@@ -2,12 +2,14 @@
 # Cookbook:: end_to_end
 # Recipe:: default
 #
-# Copyright:: 2014-2018, Chef Software, Inc.
+# Copyright:: 2014-2019, Chef Software, Inc.
 #
 
-hostname "chef-travis-ci.chef.io"
+hostname "chef-bk-ci.chef.io"
 
 apt_update
+
+chef_sleep "2"
 
 timezone "UTC"
 

@@ -28,9 +28,15 @@ class Chef
         require_relative "../cookbook/metadata"
       end
 
-      banner "knife cookbook metadata from FILE (options)"
+      banner "knife cookbook metadata from file FILE (options)"
 
       def run
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the FILE.")
+          exit(1)
+        end
+
         file = @name_args[0]
         cookbook = File.basename(File.dirname(file))
 

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +25,7 @@ class Chef
   class Resource
     class RemoteDirectory < Chef::Resource::Directory
       include Chef::Mixin::Securable
+      unified_mode true
 
       description "Use the remote_directory resource to incrementally transfer a directory from a cookbook to a node. The director that is copied from the cookbook should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The remote_directory resource will obey file specificity."
 
@@ -36,7 +37,7 @@ class Chef
         @delete = false
       end
 
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         # create a second instance of the 'rights' attribute (property)
         rights_attribute(:files_rights)
       end

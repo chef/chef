@@ -60,5 +60,11 @@ describe Chef::Resource::RhsmRepo do
         expect(provider.repo_enabled?("differentrepo")).to eq(false)
       end
     end
+
+    context "when user pass wildcard" do
+      it "returns true" do
+        expect(provider.repo_enabled?("*")).to eq(true)
+      end
+    end
   end
 end

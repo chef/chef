@@ -108,7 +108,7 @@ class Chef
         description: "Description of the service.",
         introduced: "14.0"
 
-      property :run_as_user, String, default: "LocalSystem"
+      property :run_as_user, String, default: "localsystem", coerce: proc { |x| x.downcase }
       property :run_as_password, String, default: ""
     end
   end

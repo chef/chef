@@ -96,6 +96,12 @@ class Chef
 
       alias_method :to_array, :to_a
 
+      # As Psych module, not respecting ImmutableArray object
+      # So first convert it to Hash/Array then parse it to `.to_yaml`
+      def to_yaml(*opts)
+        to_a.to_yaml(*opts)
+      end
+
       private
 
       # needed for __path__
@@ -167,6 +173,12 @@ class Chef
       end
 
       alias_method :to_hash, :to_h
+
+      # As Psych module, not respecting ImmutableMash object
+      # So first convert it to Hash/Array then parse it to `.to_yaml`
+      def to_yaml(*opts)
+        to_h.to_yaml(*opts)
+      end
 
       # For elements like Fixnums, true, nil...
       def safe_dup(e)

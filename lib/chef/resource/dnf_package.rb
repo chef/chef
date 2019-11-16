@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ class Chef
 
       provides :dnf_package
 
-      description "Use the dnf_package resource to install, upgrade, and remove packages with DNF for Fedora platforms. The dnf_package resource is able to resolve provides data for packages much like DNF can do when it is run from the command line. This allows a variety of options for installing packages, like minimum versions, virtual provides and library names."
+      description "Use the dnf_package resource to install, upgrade, and remove packages with DNF for Fedora and RHEL 8+. The dnf_package resource is able to resolve provides data for packages much like DNF can do when it is run from the command line. This allows a variety of options for installing packages, like minimum versions, virtual provides and library names."
       introduced "12.18"
 
       allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
@@ -73,7 +73,7 @@ class Chef
         unless arg.nil?
           Chef.deprecated(:dnf_package_allow_downgrade, "the allow_downgrade property on the dnf_package provider is not used, DNF supports downgrades by default.")
         end
-        false
+        true
       end
     end
   end

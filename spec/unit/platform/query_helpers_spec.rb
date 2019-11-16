@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,13 +43,13 @@ describe "Chef::Platform#windows_nano_server?" do
   end
 
   it "returns false early when not on windows" do
-    allow(ChefConfig).to receive(:windows?).and_return(false)
+    allow(ChefUtils).to receive(:windows?).and_return(false)
     expect(Chef::Platform).to_not receive(:require)
     expect(Chef::Platform.windows_nano_server?).to be false
   end
 
   it "returns true when the registry value is 1" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)
@@ -59,7 +59,7 @@ describe "Chef::Platform#windows_nano_server?" do
   end
 
   it "returns false when the registry value is not 1" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)
@@ -69,7 +69,7 @@ describe "Chef::Platform#windows_nano_server?" do
   end
 
   it "returns false when the registry value does not exist" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)
@@ -80,7 +80,7 @@ describe "Chef::Platform#windows_nano_server?" do
   end
 
   it "returns false when the registry key does not exist" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)
@@ -114,13 +114,13 @@ describe "Chef::Platform#supports_msi?" do
   end
 
   it "returns false early when not on windows" do
-    allow(ChefConfig).to receive(:windows?).and_return(false)
+    allow(ChefUtils).to receive(:windows?).and_return(false)
     expect(Chef::Platform).to_not receive(:require)
     expect(Chef::Platform.supports_msi?).to be false
   end
 
   it "returns true when the registry key exists" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)
@@ -129,7 +129,7 @@ describe "Chef::Platform#supports_msi?" do
   end
 
   it "returns false when the registry key does not exist" do
-    allow(ChefConfig).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::Platform).to receive(:require).with("win32/registry")
     expect(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open)
       .with(key, access)

@@ -57,7 +57,7 @@ class Chef
         def repo_enabled?(repo)
           cmd = Mixlib::ShellOut.new("subscription-manager repos --list-enabled", env: { LANG: "en_US" })
           cmd.run_command
-          !cmd.stdout.match(/Repo ID:\s+#{repo}$/).nil?
+          repo == "*" || !cmd.stdout.match(/Repo ID:\s+#{repo}$/).nil?
         end
       end
     end

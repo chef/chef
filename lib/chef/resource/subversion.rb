@@ -23,6 +23,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Subversion < Chef::Resource::Scm
+      unified_mode true
+
       description "Use the subversion resource to manage source control resources that exist in a Subversion repository."
 
       allowed_actions :force_export

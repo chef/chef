@@ -181,7 +181,7 @@ describe Chef::Resource::RemoteFile do
 
   describe "when it has group, mode, owner, source, and checksum" do
     before do
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         resource.path("C:/temp/origin/file.txt")
         resource.rights(:read, "Everyone")
         resource.deny_rights(:full_control, "Clumsy_Sam")
@@ -197,7 +197,7 @@ describe Chef::Resource::RemoteFile do
 
     it "describes its state" do
       state = resource.state_for_resource_reporter
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         puts state
         expect(state[:rights]).to eq([{ permissions: :read, principals: "Everyone" }])
         expect(state[:deny_rights]).to eq([{ permissions: :full_control, principals: "Clumsy_Sam" }])
@@ -210,7 +210,7 @@ describe Chef::Resource::RemoteFile do
     end
 
     it "returns the path as its identity" do
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         expect(resource.identity).to eq("C:/temp/origin/file.txt")
       else
         expect(resource.identity).to eq("/this/path/")

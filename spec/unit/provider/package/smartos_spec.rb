@@ -25,7 +25,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource     = Chef::Resource::Package.new("varnish")
+    @new_resource = Chef::Resource::Package.new("varnish")
     @current_resource = Chef::Resource::Package.new("varnish")
 
     @status = double("Status", exitstatus: 0)

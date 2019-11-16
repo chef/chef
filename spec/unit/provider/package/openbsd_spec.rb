@@ -120,7 +120,7 @@ describe Chef::Provider::Package::Openbsd do
   describe "delete a package" do
     before do
       @name = "ihavetoes"
-      @new_resource     = Chef::Resource::Package.new(@name)
+      @new_resource = Chef::Resource::Package.new(@name)
       @current_resource = Chef::Resource::Package.new(@name)
       @provider = Chef::Provider::Package::Openbsd.new(@new_resource, @run_context)
       @provider.current_resource = @current_resource

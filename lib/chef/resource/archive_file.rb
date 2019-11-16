@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2017-2018, Chef Software Inc.
+# Copyright:: Copyright 2017-2019, Chef Software Inc.
 # Author:: Jamie Winsor (<jamie@vialstudios.com>)
 # Author:: Tim Smith (<tsmith@chef.io>)
 #
@@ -30,6 +30,15 @@ class Chef
 
       introduced "15.0"
       description "Use the archive_file resource to extract archive files to disk. This resource uses the libarchive library to extract multiple archive formats including tar, gzip, bzip, and zip formats."
+      examples <<~DOC
+        Extract a zip file to a specified directory
+        ```ruby
+        archive_file 'Precompiled.zip' do
+          path '/tmp/Precompiled.zip'
+          destination '/srv/files'
+        end
+        ```
+      DOC
 
       property :path, String,
         name_property: true,

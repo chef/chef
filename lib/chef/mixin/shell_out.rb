@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2018, Chef Software Inc.
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,11 @@
 # limitations under the License.
 
 require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
-require_relative "path_sanity"
+require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
 
 class Chef
   module Mixin
     module ShellOut
-      extend Chef::Mixin::PathSanity
 
       # PREFERRED APIS:
       #
@@ -97,7 +96,7 @@ class Chef
             "LC_ALL" => Chef::Config[:internal_locale],
             "LANGUAGE" => Chef::Config[:internal_locale],
             "LANG" => Chef::Config[:internal_locale],
-            env_path => sanitized_path,
+            env_path => ChefUtils::DSL::PathSanity.sanitized_path,
           }.update(options[env_key] || {})
         end
         options
@@ -182,7 +181,7 @@ class Chef
       end
 
       def self.env_path
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           "Path"
         else
           "PATH"

@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,15 +22,15 @@ class Chef
   class Provider
     class Service
       class Debian < Chef::Provider::Service::Init
-        provides :service, platform_family: "debian" do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:debian)
+        provides :service, platform_family: "debian" do
+          debianrcd?
         end
 
         UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i.freeze
         UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i.freeze
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def load_current_resource

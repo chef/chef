@@ -13,12 +13,62 @@ class Chef
     class KernelModule < Chef::Resource
       resource_name :kernel_module
 
-      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, install, and uninstall modules."
+      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
       introduced "14.3"
+      examples <<~DOC
+        Install and load a kernel module, and ensure it loads on reboot.
+        ```ruby
+        kernel_module 'loop'
+        ```
+        Install and load a kernel with a specific set of options, and ensure it loads on reboot. Consult kernel module
+        documentation for specific options that are supported.
+        ```ruby
+        kernel_module 'loop' do
+          options [
+            'max_loop=4',
+            'max_part=8'
+          ]
+        end
+        ```
+        Load a kernel module.
+        ```ruby
+        kernel_module 'loop' do
+          action :load
+        end
+        ```
+        Unload a kernel module and remove module config, so it doesn’t load on reboot.
+        ```ruby
+        kernel_module 'loop' do
+          action :uninstall
+        end
+        ```
+        Unload kernel module.
+        ```ruby
+        kernel_module 'loop' do
+          action :unload
+        end
+        ```
+        Blacklist a module from loading.
+        ```ruby
+        kernel_module 'loop' do
+          action :blacklist
+        end
+        ```
+        Disable a kernel module.
+        ```ruby
+        kernel_module 'loop' do
+          action :disable
+        end
+        ```
+      DOC
 
       property :modname, String,
         description: "An optional property to set the kernel module name if it differs from the resource block's name.",
         name_property: true, identity: true
+
+      property :options, Array,
+        description: "An optional property to set options for the kernel module.",
+        introduced: "15.4"
 
       property :load_dir, String,
         description: "The directory to load modules from.",
@@ -30,6 +80,13 @@ class Chef
 
       action :install do
         description "Load kernel module, and ensure it loads on reboot."
+
+        # create options file before loading the module
+        unless new_resource.options.nil?
+          file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
+            content "options #{new_resource.modname} #{new_resource.options.join(" ")}\n"
+          end.run_action(:create)
+        end
 
         # load the module first before installing
         new_resource.run_action(:load)
@@ -64,6 +121,10 @@ class Chef
           notifies :run, "execute[update initramfs]", :delayed
         end
 
+        file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
+          action :delete
+        end
+
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
@@ -79,6 +140,24 @@ class Chef
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
+          notifies :run, "execute[update initramfs]", :delayed
+        end
+
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
+        end
+
+        new_resource.run_action(:unload)
+      end
+
+      action :disable do
+        description "Disable a kernel module."
+
+        file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
+          content "install #{new_resource.modname} /bin/false"
           notifies :run, "execute[update initramfs]", :delayed
         end
 

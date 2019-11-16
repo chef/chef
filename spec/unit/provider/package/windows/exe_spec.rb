@@ -19,7 +19,7 @@
 require "spec_helper"
 require "chef/provider/package/windows/exe"
 
-unless Chef::Platform.windows?
+unless ChefUtils.windows?
   class Chef
     module ReservedNames::Win32
       class File
@@ -126,7 +126,7 @@ describe Chef::Provider::Package::Windows::Exe do
       it "removes installed package and quotes uninstall string" do
         new_resource.timeout = 300
         allow(::File).to receive(:exist?).with("uninst_dir/uninst_file").and_return(true)
-        expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir/uninst_file\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, timeout: 300, returns: [0])
+        expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir/uninst_file\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, default_env: false, timeout: 300, returns: [0])
         provider.remove_package
       end
     end

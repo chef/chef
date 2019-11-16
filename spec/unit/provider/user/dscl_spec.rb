@@ -21,7 +21,7 @@ require "ostruct"
 
 describe Chef::Provider::User::Dscl do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
 
   let(:shellcmdresult) { Struct.new(:stdout, :stderr, :exitstatus) }
@@ -35,6 +35,7 @@ describe Chef::Provider::User::Dscl do
   let(:node) do
     Chef::Node.new.tap do |node|
       node.automatic["os"] = "darwin"
+      node.automatic["platform_version"] = "10.13.0"
     end
   end
 

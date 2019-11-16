@@ -35,7 +35,7 @@ class Chef
           reboot_info = node.run_context.reboot_info
 
           cmd = case
-                when Chef::Platform.windows?
+                when ChefUtils.windows?
                   # should this do /f as well? do we then need a minimum delay to let apps quit?
                   # Use explicit path to shutdown.exe, to protect against https://github.com/chef/chef/issues/5594
                   windows_shutdown_path = "#{ENV["SYSTEMROOT"]}/System32/shutdown.exe"

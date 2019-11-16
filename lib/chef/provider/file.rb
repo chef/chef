@@ -84,7 +84,7 @@ class Chef
           end
 
         # true if we are going to be creating a new file
-        @needs_creating  = !::File.exist?(new_resource.path) || needs_unlinking?
+        @needs_creating = !::File.exist?(new_resource.path) || needs_unlinking?
 
         # Let children resources override constructing the current_resource
         @current_resource ||= Chef::Resource::File.new(new_resource.name)
@@ -453,7 +453,7 @@ class Chef
       end
 
       def load_resource_attributes_from_file(resource)
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           # This is a work around for CHEF-3554.
           # OC-6534: is tracking the real fix for this workaround.
           # Add support for Windows equivalent, or implicit resource

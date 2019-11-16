@@ -177,16 +177,17 @@ class Chef
       #
       # @return [Chef::RunContext]
       def setup_run_context(specific_recipes = nil, run_context = nil)
+        run_context ||= Chef::RunContext.new
+        run_context.node = node
+        run_context.events = events
+
         Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
         sync_cookbooks
         cookbook_collection = Chef::CookbookCollection.new(cookbooks_to_sync)
         cookbook_collection.validate!
         cookbook_collection.install_gems(events)
 
-        run_context ||= Chef::RunContext.new
-        run_context.node = node
         run_context.cookbook_collection = cookbook_collection
-        run_context.events = events
 
         setup_chef_class(run_context)
 

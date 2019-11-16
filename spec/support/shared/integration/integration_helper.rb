@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ require "chef/config"
 require "chef/json_compat"
 require "chef/server_api"
 require "support/shared/integration/knife_support"
-require "support/shared/integration/app_server_support"
 require "cheffish/rspec/chef_run_support"
 require "spec_helper"
 
@@ -129,7 +128,7 @@ module IntegrationSupport
           # TODO: "force" actually means "silence all exceptions". this
           # silences a weird permissions error on Windows that we should track
           # down, but for now there's no reason for it to blow up our CI.
-          FileUtils.remove_entry_secure(@repository_dir, force = Chef::Platform.windows?)
+          FileUtils.remove_entry_secure(@repository_dir, force = ChefUtils.windows?)
         ensure
           @repository_dir = nil
         end

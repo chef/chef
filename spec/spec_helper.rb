@@ -140,12 +140,14 @@ RSpec.configure do |config|
 
   config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
   config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
-  config.filter_run_excluding skip_travis: true if ENV["TRAVIS"]
+
+  config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
   config.filter_run_excluding not_supported_on_macos: true if mac_osx?
   config.filter_run_excluding macos_only: true unless mac_osx?
+  config.filter_run_excluding macos_1014: true unless mac_osx_1014?
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
@@ -189,6 +191,8 @@ RSpec.configure do |config|
   config.filter_run_excluding rhel: true unless rhel?
   config.filter_run_excluding rhel6: true unless rhel6?
   config.filter_run_excluding rhel7: true unless rhel7?
+  config.filter_run_excluding rhel8: true unless rhel8?
+  config.filter_run_excluding rhel_gte_8: true unless rhel_gte_8?
   config.filter_run_excluding intel_64bit: true unless intel_64bit?
   config.filter_run_excluding not_rhel: true if rhel?
   config.filter_run_excluding not_rhel6: true if rhel6?

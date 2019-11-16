@@ -77,8 +77,23 @@ describe Chef::Resource::ChocolateyPackage do
     expect(resource.version).to eql(["1.2.3", "4.5.6"])
   end
 
-  it "the default returns is 0" do
-    expect(resource.returns).to eql([0])
+  it "sets the list_options" do
+    resource.list_options("--local-only")
+    expect(resource.list_options).to eql("--local-only")
+  end
+
+  it "sets the user" do
+    resource.user("ubuntu")
+    expect(resource.user).to eql("ubuntu")
+  end
+
+  it "sets the password" do
+    resource.password("ubuntu@123")
+    expect(resource.password).to eql("ubuntu@123")
+  end
+
+  it "the default returns are 0 and 2" do
+    expect(resource.returns).to eql([0, 2])
   end
 
   # Integer, Array

@@ -43,7 +43,7 @@ class Chef
         long: "--[no-]force",
         boolean: true,
         default: false,
-        description: "Force upload of files even if they match (quicker and harmless, but doesn't print out what it changed)."
+        description: "Force download of files even if they match (quicker and harmless, but doesn't print out what it changed)."
 
       option :dry_run,
         long: "--dry-run",
@@ -56,7 +56,7 @@ class Chef
         long: "--[no-]diff",
         boolean: true,
         default: true,
-        description: "Turn off to avoid uploading existing files; only new (and possibly deleted) files with --no-diff."
+        description: "Turn off to avoid downloading existing files; only new (and possibly deleted) files with --no-diff."
 
       option :cookbook_version,
         long: "--cookbook-version VERSION",

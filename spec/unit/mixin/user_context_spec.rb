@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright (c) 2015 Chef Software, Inc.
+# Copyright:: Copyright (c) 2015-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +39,7 @@ describe "a class that mixes in user_context" do
 
   context "when running on Windows" do
     before do
-      allow(::Chef::Platform).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
       allow(::Chef::Util::Windows::LogonSession).to receive(:new).and_return(logon_session)
     end
 
@@ -97,7 +97,7 @@ describe "a class that mixes in user_context" do
 
   context "when not running on Windows" do
     before do
-      allow(::Chef::Platform).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
     it "raises a ::Chef::Exceptions::UnsupportedPlatform exception" do

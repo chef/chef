@@ -24,6 +24,8 @@ require_relative "../mixin/securable"
 class Chef
   class Resource
     class Directory < Chef::Resource
+      unified_mode true
+
       resource_name :directory
 
       description "Use the directory resource to manage a directory, which is a hierarchy"\

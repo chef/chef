@@ -21,6 +21,7 @@
 
 require "mixlib/config" unless defined?(Mixlib::Config)
 require "pathname" unless defined?(Pathname)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 require_relative "fips"
 require_relative "logger"
@@ -60,7 +61,7 @@ module ChefConfig
     # @return [String] a platform specific path
     def self.platform_specific_path(path)
       path = PathHelper.cleanpath(path)
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
@@ -78,7 +79,7 @@ module ChefConfig
     #
     # @return [String] the drive letter
     def self.windows_installation_drive
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]
         drive = ENV["SYSTEMDRIVE"] if drive.to_s == ""
         drive
@@ -264,10 +265,6 @@ module ChefConfig
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
     default(:user_path) { derive_path_from_chef_repo_path("users") }
-
-    # Location of policies on disk. String or array of strings.
-    # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
 
     # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
@@ -577,7 +574,7 @@ module ChefConfig
     # Path to the default CA bundle files.
     default :ssl_ca_path, nil
     default(:ssl_ca_file) do
-      if ChefConfig.windows? && embedded_dir
+      if ChefUtils.windows? && embedded_dir
         cacert_path = File.join(embedded_dir, "ssl/certs/cacert.pem")
         cacert_path if File.exist?(cacert_path)
       else
@@ -845,7 +842,7 @@ module ChefConfig
 
     # Those lists of regular expressions define what chef considers a
     # valid user and group name
-    if ChefConfig.windows?
+    if ChefUtils.windows?
       set_defaults_for_windows
     else
       set_defaults_for_nix
@@ -875,6 +872,7 @@ module ChefConfig
     #
     # NOTE: CHANGING THIS SETTING MAY CAUSE CORRUPTION, DATA LOSS AND
     # INSTABILITY.
+    #
     default :file_atomic_update, true
 
     # There are 3 possible values for this configuration setting.
@@ -882,18 +880,27 @@ module ChefConfig
     # false => file staging is done via tempfiles under ENV['TMP']
     # :auto => file staging will try using destination directory if possible and
     #   will fall back to ENV['TMP'] if destination directory is not usable.
+    #
     default :file_staging_uses_destdir, :auto
 
     # Exit if another run is in progress and the chef-client is unable to
     # get the lock before time expires. If nil, no timeout is enforced. (Exits
     # immediately if 0.)
+    #
     default :run_lock_timeout, nil
 
     # Number of worker threads for syncing cookbooks in parallel. Increasing
     # this number can result in gateway errors from the server (namely 503 and 504).
     # If you are seeing this behavior while using the default setting, reducing
     # the number of threads will help.
+    #
     default :cookbook_sync_threads, 10
+
+    # True if all resources by default default to unified mode, with all resources
+    # applying in "compile" mode, with no "converge" mode. False is backwards compatible
+    # setting for Chef 11-15 behavior.  This will break forward notifications.
+    #
+    default :resource_unified_mode_default, false
 
     # At the beginning of the Chef Client run, the cookbook manifests are downloaded which
     # contain URLs for every file in every relevant cookbook.  Most of the files
@@ -920,9 +927,9 @@ module ChefConfig
     default :no_lazy_load, true
 
     # A whitelisted array of attributes you want sent over the wire when node
-    # data is saved.
-    # The default setting is nil, which collects all data. Setting to [] will not
-    # collect any data for save.
+    # data is saved. The default setting is nil, which collects all data. Setting
+    # to [] will not collect any data for save.
+    #
     default :automatic_attribute_whitelist, nil
     default :default_attribute_whitelist, nil
     default :normal_attribute_whitelist, nil
@@ -948,12 +955,16 @@ module ChefConfig
       default :watchdog_timeout, 2 * (60 * 60) # 2 hours
     end
 
-    # Add an empty and non-strict config_context for chefdk. This lets the user
-    # have code like `chefdk.generator_cookbook "/path/to/cookbook"` in their
-    # config.rb, and it will be ignored by tools like knife and ohai. ChefDK
-    # itself can define the config options it accepts and enable strict mode,
+    # Add an empty and non-strict config_context for chefdk and chefcli.
+    # This lets the user have code like `chefdk.generator_cookbook "/path/to/cookbook"` or
+    # `chefcli[:generator_cookbook] = "/path/to/cookbook"` in their config.rb,
+    # and it will be ignored by tools like knife and ohai. ChefDK and ChefCLI
+    # themselves can define the config options it accepts and enable strict mode,
     # and that will only apply when running `chef` commands.
     config_context :chefdk do
+    end
+
+    config_context :chefcli do
     end
 
     # Configuration options for Data Collector reporting. These settings allow
@@ -1128,7 +1139,7 @@ module ChefConfig
         end
       end
     rescue
-      if ChefConfig.windows?
+      if ChefUtils.windows?
         ChefConfig.logger.trace "Defaulting to locale en_US.UTF-8 on Windows, until it matters that we do something else."
       else
         ChefConfig.logger.trace "No usable locale -a command found, assuming you have en_US.UTF-8 installed."

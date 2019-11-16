@@ -1,5 +1,325 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.5
+
+## New Cookbook Helpers
+
+Chef Infra Client now includes a new `chef-utils` gem, which ships with a large number of helpers to make writing cookbooks easier. Many of these helpers existed previously in the `chef-sugar` gem. We have renamed many of the named helpers for consistency, while providing backwards compatibility with existing `chef-sugar` names. Existing cookbooks written with `chef-sugar` should work unmodified with any of these new helpers. Expect a Cookstyle rule in the near future to help you update existing `chef-sugar` code to use the newer built-in helpers.
+
+For more information all all of the new helpers available, see the [chef-utils readme](https://github.com/chef/chef/blob/master/chef-utils/README.md)
+
+## Chefignore Improvements
+
+We've reworked how chefignore files are handled in `knife`, which has allowed us to close out a large number of long outstanding bugs. `knife` will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
+
+## Windows Habitat Plan
+
+Official Habitat packages of Chef Infra Client are now available for Windows. It has all the executables of the traditional omnibus packages, but in Habitat form. You can find it in the Habitat Builder under [chef/chef-infra-client](https://bldr.habitat.sh/#/pkgs/chef/chef-infra-client/latest/windows).
+
+## Performance Improvements
+
+This release of Chef Infra Client ships with several optimizations to our Ruby installation that improve the performance of the chef-client and knife commands, especially on Windows systems. Expect to see more here in future releases.
+
+## Chef InSpec 4.18.39
+
+Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in additition to some great resource enhancements:
+
+- Inputs can now be used within a `describe.one` block
+- The `service` resource now includes a `startname` property for Windows and systemd services
+- The `interface` resource now includes a `name` property
+- The `user` resource now better supports Windows with the addition of `passwordage`, `maxbadpasswords`, and `badpasswordattempts` properties
+- The `nginx` resource now includes parsing support for wildcard, dot prefix, and regex
+- The `iis_app_pool` resource now handles empty app pools
+- The `filesystem` resource now supports devices with very long names
+- The `apt` better handles URIs and supports repos with an `arch`
+- The `oracledb_session` has received multiple fixes to make it work better
+- The `npm` resource now works under sudo on Unix and on Windows with a custom PATH
+
+## New Resources
+
+### chef_sleep
+
+The `chef_sleep` resource can be used to sleep for a specified number of seconds during a Chef Infra Client run. This may be helpful to use with other commands that return a completed status before they are actually ready. In general, do not use this resource unless you truly need it.
+
+Using with a Windows service that starts, but is not immediately ready:
+
+```ruby
+service 'Service that is slow to start and reports as started' do
+  service_name 'my_database'
+  action :start
+  notifies :sleep, chef_sleep['wait for service start']
+end
+
+chef_sleep 'wait for service start' do
+  seconds 30
+  action :nothing
+end
+```
+
+## Updated Resources
+
+## systemd_unit / service
+
+The `systemd_unit` and `service` resources (when on systemd) have been updated to not re-enable services with an indirect status. Thanks [@jaymzh](https://github.com/jaymzh) for this fix.
+
+## windows_firewall
+
+The `windows_firewall` resource has been updated to support passing in an array of profiles in the `profile` property. Thanks [@Happycoil](https://github.com/Happycoil) for this improvement.
+
+## Security Updates
+
+### libxslt
+
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
+
+# Chef Infra Client 15.4
+
+## converge_if_changed Improvements
+
+Chef Infra Client will now take into account any `default` values specified in custom resources when making converge determinations with the `converge_if_changed` helper. Previously, default values would be ignored, which caused necessary changes to be skipped. Note: This change may cause behavior changes for some users, but we believe this original behavior is an impacting bug for enough users to make it outside of a major release. Thanks [@ jakauppila](https://github.com/jakauppila) for reporting this.
+
+## Bootstrap Improvements
+
+Several improvements have been made to the `knife bootstrap` command to make it more reliable and secure:
+
+- File creation is now wrapped in a umask to avoid potential race conditions
+- `NameError` and `RuntimeError` failures during bootstrap have been resolved
+- `Undefined method 'empty?' for nil:NilClass` during bootstrap have been resolved
+- Single quotes in attributes during bootstrap no longer result in bootstrap failures
+- The bootstrap command no longer appears in PS on the host while bootstrapping is running
+
+## knife supermarket list Improvements
+
+The `knife supermarket list` command now includes two new options:
+
+- `--sort-by [recently_updated recently_added most_downloaded most_followed]`: Sort cookbooks returned from the Supermarket API
+- `--owned_by`: Limit returned cookbooks to a particular owner
+
+## Updated Resources
+
+### chocolatey_package
+
+The `chocolatey_package` resource no longer fails when passing options with the `options` property. Thanks for reporting this issue [@kenmacleod](https://github.com/kenmacleod).
+
+### kernel_module
+
+The `kernel_module` resource includes a new `options` property, which allows users to set module specific parameters and settings. Thanks [@ramereth](https://github.com/ramereth) for this new feature.
+
+Example of a kernel_module resource using the new options property:
+
+```ruby
+  kernel_module 'loop' do
+  options [ 'max_loop=4', 'max_part=8' ]
+  end
+```
+
+### remote_file
+
+The `remote_file` resource has been updated to better display progress when using the `show_progress` resource. Thanks for reporting this issue [@isuftin](https://github.com/isuftin).
+
+### sudo
+
+The `sudo` resource now runs sudo config validation against all of the sudo configuration files on the system instead of only the file being written. This allows us to detect configuration errors that occur when configs conflict with each other. Thanks for reporting this issue [@drzewiec](https://github.com/drzewiec).
+
+### windows_ad_join
+
+The `windows_ad_join` has a new `:leave` action for leaving an Active Directory domain and rejoining a workgroup. This new action also has a new `workgroup_name` property for specifying the workgroup to join upon leaving the domain. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for adding this new action.
+
+Example of leaving a domain
+
+```ruby
+windows_ad_join 'Leave the domain' do
+  workgroup_name 'local'
+  action :leave
+end
+```
+
+### windows_package
+
+The `windows_package` resource no longer updates environmental variables before installing the package. This prevents potential modifications that may cause a package installation to fail. Thanks [@jeremyhage](https://github.com/jeremyhage) for this fix.
+
+### windows_service
+
+The `windows_service` resource no longer updates the service and triggers notifications if the case of the `run_as_user` property does not match the user set on the service. Thanks [@jasonwbarnett](https://github.com/jasonwbarnett) for this fix.
+
+### windows_share
+
+The `windows_share` resource is now fully idempotent by better validating the provided `path` property from the user. Thanks [@Happycoil](https://github.com/Happycoil) for this fix.
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.4 to 2.6.5 in order to resolve the following CVEs:
+
+- [CVE-2019-16255](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16255): A code injection vulnerability of Shell#[] and Shell#test
+- [CVE-2019-16254](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16254): HTTP response splitting in WEBrick (Additional fix)
+- [CVE-2019-15845](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15845): A NUL injection vulnerability of File.fnmatch and File.fnmatch?
+- [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16201): Regular Expression Denial of Service vulnerability of WEBrick’s Digest access authentication
+
+# Chef Infra Client 15.3
+
+## Custom Resource Unified Mode
+
+Chef Infra Client 15.3 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
+
+An example of forcing a resource to run at compile time:
+
+```ruby
+resource_name 'foo' do
+  action :nothing
+end.run_action(:some_action)
+```
+
+With unified mode, you opt in to a single phase per resource where all Ruby and Chef Infra resources are executed at once. This makes it far easier to determine how your code will be evaluated and run. Additionally, you no longer need to force any resources to run at compile time, as all code is run in the compile phase. To enable this new mode just add `unified_mode true` to your resources like this:
+
+```ruby
+property :Some_property, String
+
+unified_mode true
+
+action :create do
+  # some code
+end
+```
+
+## Interval Mode Now Fails on Windows
+
+Chef Infra Client 15.3 will now raise an error if you attempt to keep the chef-client process running long-term by enabling interval runs. Interval runs have already raised failures on non-Windows platforms and we've suggested that users move away from them on Windows for many years. The long-running chef-client process on Windows will load and reload cookbooks over each other in memory. This could produce a running state which is not a representation of the cookbook code that the authors wrote or tested, and behavior that may be wildly different depending on how long the chef-client process has been running and on the sequence that the cookbooks were uploaded.
+
+## Updated Resources
+
+### ifconfig
+
+The `ifconfig` resource has been updated to properly support interfaces with a hyphen in their name. This is most commonly encountered with bridge interfaces that are named `br-1234`.
+
+### archive_file
+
+The `archive_file` resource now supports archives in the RAR 5.0 format as well as zip files compressed using xz, lzma, ppmd8 and bzip2 compression.
+
+### user
+
+#### macOS 10.14 / 10.15 support
+
+The `user` resource now supports the creation of users on macOS 10.14 and 10.15 systems. The updated resource now complies with macOS TCC policies by using a user with admin privileges to create and modify users. The following new properties have been added for macOS user creation:
+
+* `admin` sets a user to be an admin.
+
+* `admin_username` and `admin_password` define the admin user credentials required for toggling SecureToken for a user. The value of 'admin_username' must correspond to a system user that is part of the 'admin' with SecureToken enabled in order to toggle SecureToken.
+
+* `secure_token` is a boolean property that sets the desired state for SecureToken. FileVault requires a SecureToken for full disk encryption.
+
+* `secure_token_password` is the plaintext password required to enable or disable `secure_token` for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it is not set.
+
+#### Password property is now sensitive
+
+The `password` property is now set to sensitive to prevent the password from being shown in debug or failure logs.
+
+#### gid property can now be a string
+
+The `gid` property now allows specifying the user's gid as a string. For example:
+
+```ruby
+user 'tim' do
+  gid '123'
+end
+```
+
+## Platform Support Updates
+
+### macOS 10.15 Support
+
+Chef Infra Client is now validated against macOS 10.15 (Catalina) with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html). Additionally, Chef Infra Client will no longer be validated against macOS 10.12.
+
+### AIX 7.2
+
+Chef Infra Client is now validated against AIX 7.2 with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html).
+
+## Chef InSpec 4.16
+
+Chef InSpec has been updated from 4.10.4 to 4.16.0 with the following changes:
+
+- A new `postfix_conf` has been added for inspecting Postfix configuration files.
+- A new `plugins` section has been added to the InSpec configuration file which can be used to pass secrets or other configurations into Chef InSpec plugins.
+- The `service` resource now includes a new `startname` property for determining which user is starting the Windows services.
+- The `groups` resource now properly gathers membership information on macOS hosts.
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.3 to 2.6.4 in order to resolve [CVE-2012-6708](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-6708) and [CVE-2015-9251](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-9251).
+
+### openssl
+
+openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
+
+### nokogiri
+
+nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
+
+# Chef Infra Client 15.2
+
+## Updated Resources
+
+### dnf_package
+
+The `dnf_package` resource has been updated to fully support RHEL 8.
+
+### kernel_module
+
+The `kernel_module` now supports a `:disable` action. Thanks [@tomdoherty](https://github.com/tomdoherty).
+
+### rhsm_repo
+
+The `rhsm_repo` resource has been updated to support passing a repo name of `*` in the `:disable` action. Thanks for reporting this issue [@erinn](https://github.com/erinn).
+
+### windows_task
+
+The `windows_task` resource has been updated to allow the `day` property to accept an `Integer` value.
+
+### zypper_package
+
+The `zypper_package` package has been updated to properly upgrade packages if necessary based on the versin specified in the resource block. Thanks [@foobarbam](https://github.com/foobarbam) for this fix.
+
+## Platform Support Updates
+
+### RHEL 8 Support Added
+
+Chef Infra Client 15.2 now includes native packages for RHEL 8 with all builds now validated on RHEL 8 hosts.
+
+### SLES 11 EOL
+
+Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase on March 31, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+
+### Ubuntu 14.04 EOL
+
+Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance updates on April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+
+## Ohai 15.2
+
+Ohai has been updated to 15.2 with the following changes:
+  - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
+  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all installed versions of packages, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
+  - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
+  - Arch running on ARM processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
+
+## Chef InSpec 4.10.4
+
+Chef InSpec has been updated from 4.6.4 to 4.10.4 with the following changes:
+
+- Fix handling multiple triggers in the `windows_task` resource
+- Fix exceptions when resources are used with incompatible transports
+- Un-deprecate the `be_running` matcher on the `service` resource
+- Add resource `sys_info.manufacturer` and `sys_info.model`
+- Add `ip6tables` resource
+
+## Security Updates
+
+### bzip2
+
+bzip2 has been updated from 1.0.6 to 1.0.8 to resolve [CVE-2016-3189](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-3189) and [CVE-2019-12900](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12900).
+
 # Chef Infra Client 15.1
 
 ## New Resources
@@ -59,7 +379,7 @@ This release includes critical bugfixes for the 15.0 release:
 This release includes critical bugfixes for the 15.0 release:
   - Allow accepting the license on non-interactive Windows sessions
   - Resolve license acceptance failures on Windows 2012 R2
-  - Improve some knife and chef-client help text
+  - Improve some `knife` and `chef-client` help text
   - Properly handle session_timeout default value in `knife bootstrap`
   - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
   - Resolve failures using the ca_trust_file option with `knife bootstrap`

@@ -65,7 +65,7 @@ class Chef
               file_class.symlink other.file_path, proxy_cookbook_path
 
               # Instantiate a proxy loader using the temporary symlink
-              proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.parent.chefignore)
+              proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.chefignore)
               proxy_loader.load_cookbooks
 
               cookbook_to_upload = proxy_loader.cookbook_version
@@ -86,7 +86,7 @@ class Chef
               # the symlink without removing the original contents if we
               # are running on windows
               #
-              if Chef::Platform.windows?
+              if ChefUtils.windows?
                 Dir.rmdir proxy_cookbook_path
               end
             end

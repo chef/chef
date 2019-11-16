@@ -46,6 +46,8 @@ describe Chef::DataCollector do
 
   let(:run_list) { node.run_list }
 
+  let(:cookbooks) { node.fetch("cookbooks", {}) }
+
   let(:run_id) { run_status.run_id }
 
   let(:expansion) { Chef::RunList::RunListExpansion.new("_default", run_list.run_list_items) }
@@ -208,6 +210,11 @@ describe Chef::DataCollector do
 
     it "has a run_list" do
       expect_converge_message("run_list" => expected_run_list)
+      send_run_failed_or_completed_event
+    end
+
+    it "has a cookbooks" do
+      expect_converge_message("cookbooks" => cookbooks)
       send_run_failed_or_completed_event
     end
 
@@ -877,6 +884,88 @@ describe Chef::DataCollector do
     let(:shift_jis) { "I have no idea what this character is:\n #{0x83.chr}#{0x80.chr}.\n" }
     it "handles invalid UTF-8 properly" do
       data_collector.send(:send_to_file_location, tempfile, { invalid: shift_jis })
+    end
+  end
+
+  describe "#send_to_datacollector" do
+    def stub_http_client(exception = nil)
+      if exception.nil?
+        expect(http_client).to receive(:post).with(nil, message, data_collector.send(:headers))
+      else
+        expect(http_client).to receive(:post).with(nil, message, data_collector.send(:headers)).and_raise(exception)
+      end
+    end
+
+    let(:message) { "message" }
+    let(:http_client) { instance_double(Chef::ServerAPI) }
+
+    before do
+      expect(data_collector).to receive(:setup_http_client).and_return(http_client)
+    end
+
+    it "does not disable the data_collector when no exception is raised" do
+      stub_http_client
+      expect(data_collector.events).not_to receive(:unregister)
+      data_collector.send(:send_to_data_collector, message)
+    end
+
+    errors = [ Timeout::Error, Errno::EINVAL, Errno::ECONNRESET,
+               Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
+               Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
+               Errno::EHOSTDOWN ]
+
+    errors.each do |exception_class|
+      context "when the client raises a #{exception_class} exception" do
+        before do
+          stub_http_client(exception_class)
+        end
+
+        it "disables the reporter" do
+          expect(data_collector.events).to receive(:unregister).with(data_collector)
+          data_collector.send(:send_to_data_collector, message)
+        end
+
+        it "logs an error and raises when raise_on_failure is enabled" do
+          Chef::Config[:data_collector][:raise_on_failure] = true
+          expect(Chef::Log).to receive(:error)
+          expect { data_collector.send(:send_to_data_collector, message) }.to raise_error(exception_class)
+        end
+
+        it "logs a warn message and does not raise an exception when raise_on_failure is disabled" do
+          Chef::Config[:data_collector][:raise_on_failure] = false
+          expect(Chef::Log).to receive(:warn)
+          data_collector.send(:send_to_data_collector, message)
+        end
+      end
+    end
+
+    context "when the client raises a 404 exception" do
+      let(:err) do
+        response = double("Net::HTTP response", code: "404")
+        Net::HTTPClientException.new("Not Found", response)
+      end
+
+      before do
+        stub_http_client(err)
+      end
+
+      it "disables the reporter" do
+        expect(data_collector.events).to receive(:unregister).with(data_collector)
+        data_collector.send(:send_to_data_collector, message)
+      end
+
+      it "logs an error and raises when raise_on_failure is enabled" do
+        Chef::Config[:data_collector][:raise_on_failure] = true
+        expect(Chef::Log).to receive(:error)
+        expect { data_collector.send(:send_to_data_collector, message) }.to raise_error(err)
+      end
+
+      # this is different specifically for 404s
+      it "logs an info message and does not raise an exception when raise_on_failure is disabled" do
+        Chef::Config[:data_collector][:raise_on_failure] = false
+        expect(Chef::Log).to receive(:debug).with(/This is normal if you do not have Chef Automate/)
+        data_collector.send(:send_to_data_collector, message)
+      end
     end
   end
 end

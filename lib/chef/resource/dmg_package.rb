@@ -23,8 +23,36 @@ class Chef
       resource_name :dmg_package
       provides(:dmg_package) { true }
 
-      description "Use the dmg_package resource to install a dmg 'package'. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."
+      description "Use the dmg_package resource to install a package from a .dmg file. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."
       introduced "14.0"
+      examples <<~DOC
+        Install Google Chrome via the DMG package
+        ```ruby
+        dmg_package 'Google Chrome' do
+          dmg_name 'googlechrome'
+          source   'https://dl-ssl.google.com/chrome/mac/stable/GGRM/googlechrome.dmg'
+          checksum '7daa2dc5c46d9bfb14f1d7ff4b33884325e5e63e694810adc58f14795165c91a'
+          action   :install
+        end
+        ```
+
+        Install Virtualbox from the .mpkg
+        ```ruby
+        dmg_package 'Virtualbox' do
+          source 'http://dlc.sun.com.edgesuite.net/virtualbox/4.0.8/VirtualBox-4.0.8-71778-OSX.dmg'
+          type   'mpkg'
+        end
+        ```
+
+        Install pgAdmin and automatically accept the EULA
+        ```ruby
+        dmg_package 'pgAdmin3' do
+          source   'http://wwwmaster.postgresql.org/redir/198/h/pgadmin3/release/v1.12.3/osx/pgadmin3-1.12.3.dmg'
+          checksum '9435f79d5b52d0febeddfad392adf82db9df159196f496c1ab139a6957242ce9'
+          accept_eula true
+        end
+        ```
+      DOC
 
       property :app, String,
         description: "The name of the application as it appears in the /Volumes directory if it differs from the resource block's name.",

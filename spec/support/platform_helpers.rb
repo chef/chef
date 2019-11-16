@@ -3,6 +3,7 @@ require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
 require "chef/mixin/powershell_out"
+require "chef/version_class"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -34,6 +35,8 @@ def ruby_32bit?
 end
 
 def windows?
+  # NOTE this deliberately does not use ChefUtils.windows? because otherwise it would
+  # pick up the node out of tests, while this tests the hosts running the specs.
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
@@ -110,6 +113,15 @@ def mac_osx_106?
   false
 end
 
+def mac_osx_1014?
+  if mac_osx?
+    ver = Chef::Version.new(ohai[:platform_version])
+    return ver.major == 10 && ver.minor == 14
+  end
+
+  false
+end
+
 def mac_osx?
   if File.exists? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
@@ -173,6 +185,14 @@ end
 
 def rhel7?
   rhel? && !!(ohai[:platform_version].to_i == 7)
+end
+
+def rhel8?
+  rhel? && !!(ohai[:platform_version].to_i == 8)
+end
+
+def rhel_gte_8?
+  rhel? && !!(ohai[:platform_version].to_i >= 8)
 end
 
 def debian_family?

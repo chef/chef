@@ -22,6 +22,8 @@ require_relative "execute"
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
+      unified_mode true
+
       resource_name :script
 
       identity_attr :name

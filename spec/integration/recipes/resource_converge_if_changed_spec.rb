@@ -53,9 +53,9 @@ describe "Resource::ActionClass#converge_if_changed" do
       context "and current_resource with state1=current, state2=current" do
         before :each do
           resource_class.load_current_value do
-            state1 "current_state1"
-            state2 "current_state2"
-            sensitive1 "current_dontprintme"
+            state1 "default_state1"
+            state2 "default_state2"
+            sensitive1 "default_dontprintme"
           end
         end
 
@@ -86,7 +86,7 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state1 to "new_state1" (was "current_state1")
+                -   set state1 to "new_state1" (was "default_state1")
             EOM
           end
         end
@@ -107,8 +107,8 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state1 to "new_state1" (was "current_state1")
-                -   set state2 to "new_state2" (was "current_state2")
+                -   set state1 to "new_state1" (was "default_state1")
+                -   set state2 to "new_state2" (was "default_state2")
             EOM
           end
         end
@@ -160,7 +160,7 @@ describe "Resource::ActionClass#converge_if_changed" do
           let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
-                state1 'current_state1'
+                state1 'default_state1'
                 state2 'new_state2'
               end
             EOM
@@ -172,7 +172,7 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state2 to "new_state2" (was "current_state2")
+                -   set state2 to "new_state2" (was "default_state2")
             EOM
           end
         end
@@ -181,8 +181,8 @@ describe "Resource::ActionClass#converge_if_changed" do
           let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
-                state1 'current_state1'
-                state2 'current_state2'
+                state1 'default_state1'
+                state2 'default_state2'
               end
             EOM
           end
@@ -344,8 +344,8 @@ describe "Resource::ActionClass#converge_if_changed" do
       context "and current_resource with state1=current, state2=current" do
         before :each do
           resource_class.load_current_value do
-            state1 "current_state1"
-            state2 "current_state2"
+            state1 "default_state1"
+            state2 "default_state2"
           end
         end
 
@@ -377,7 +377,7 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state1 to "new_state1" (was "current_state1")
+                -   set state1 to "new_state1" (was "default_state1")
             EOM
           end
         end
@@ -398,9 +398,9 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state1 to "new_state1" (was "current_state1")
+                -   set state1 to "new_state1" (was "default_state1")
                 - update default_identity1
-                -   set state2 to "new_state2" (was "current_state2")
+                -   set state2 to "new_state2" (was "default_state2")
             EOM
           end
         end
@@ -409,7 +409,7 @@ describe "Resource::ActionClass#converge_if_changed" do
           let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
-                state1 'current_state1'
+                state1 'default_state1'
                 state2 'new_state2'
               end
             EOM
@@ -421,7 +421,7 @@ describe "Resource::ActionClass#converge_if_changed" do
             expect(converged_recipe.stdout).to eq <<~EOM
               * #{resource_name}[blah] action create
                 - update default_identity1
-                -   set state2 to "new_state2" (was "current_state2")
+                -   set state2 to "new_state2" (was "default_state2")
             EOM
           end
         end
@@ -430,8 +430,8 @@ describe "Resource::ActionClass#converge_if_changed" do
           let(:converge_recipe) do
             <<-EOM
               #{resource_name} 'blah' do
-                state1 'current_state1'
-                state2 'current_state2'
+                state1 'default_state1'
+                state2 'default_state2'
               end
             EOM
           end

@@ -26,6 +26,8 @@ class Chef
     #     device 'eth1'
     #   end
     class Ifconfig < Chef::Resource
+      unified_mode true
+
       resource_name :ifconfig
 
       description "Use the ifconfig resource to manage interfaces on Unix and Linux systems."
@@ -47,7 +49,7 @@ class Chef
 
       property :family, String, default: "inet",
                introduced: "14.0",
-               description: "Networking family option for Debian-based systems. For example: inet or inet6."
+               description: "Networking family option for Debian-based systems; for example: inet or inet6."
 
       property :inet_addr, String,
         description: "The Internet host address for the network interface."

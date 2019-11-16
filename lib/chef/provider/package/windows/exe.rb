@@ -64,7 +64,7 @@ class Chef
                 unattended_flags,
                 expand_options(new_resource.options),
                 "& exit %%%%ERRORLEVEL%%%%",
-              ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns, sensitive: new_resource.sensitive
+              ].join(" "), default_env: false, timeout: new_resource.timeout, returns: new_resource.returns, sensitive: new_resource.sensitive
             )
           end
 
@@ -73,7 +73,7 @@ class Chef
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
               .map(&:uninstall_string).uniq.each do |uninstall_string|
                 logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-                shell_out!(uninstall_command(uninstall_string), timeout: new_resource.timeout, returns: new_resource.returns)
+                shell_out!(uninstall_command(uninstall_string), default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
               end
           end
 

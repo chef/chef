@@ -82,7 +82,7 @@ class Chef
       end
 
       def canonicalize(path)
-        Chef::Platform.windows? ? path.tr("/", '\\') : path
+        ChefUtils.windows? ? path.tr("/", '\\') : path
       end
 
       def action_create
@@ -101,7 +101,7 @@ class Chef
             # However if the new symlink will point to a file and the current symlink is pointing at a
             # directory we want to throw an exception and calling ::File.unlink on the directory symlink
             # will throw the correct ones.
-            if Chef::Platform.windows? && ::File.directory?(new_resource.to) &&
+            if ChefUtils.windows? && ::File.directory?(new_resource.to) &&
                 ::File.directory?(current_resource.target_file)
               converge_by("unlink existing windows symlink to dir at #{new_resource.target_file}") do
                 ::Dir.unlink(new_resource.target_file)
@@ -143,7 +143,7 @@ class Chef
 
       def action_delete
         if current_resource.to # Exists
-          if Chef::Platform.windows? && ::File.directory?(current_resource.target_file)
+          if ChefUtils.windows? && ::File.directory?(current_resource.target_file)
             converge_by("delete link to dir at #{new_resource.target_file}") do
               ::Dir.delete(new_resource.target_file)
               logger.info("#{new_resource} deleted")

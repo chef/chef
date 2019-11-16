@@ -21,6 +21,7 @@ require_relative "../chef_server/cookbook_dir"
 require_relative "../chef_server/versioned_cookbook_dir"
 require_relative "../exceptions"
 require_relative "../../../cookbook/cookbook_version_loader"
+require_relative "../../../cookbook/chefignore"
 
 class Chef
   module ChefFS
@@ -31,6 +32,11 @@ class Chef
         class ChefRepositoryFileSystemCookbookDir < ChefRepositoryFileSystemCookbookEntry
 
           # API Required by Respository::Directory
+          def chefignore
+            @chefignore ||= Chef::Cookbook::Chefignore.new(file_path)
+          rescue Errno::EISDIR, Errno::EACCES
+            # Work around a bug in Chefignore when chefignore is a directory
+          end
 
           def fs_entry_valid?
             return false unless File.directory?(file_path) && name_valid?
@@ -136,7 +142,7 @@ class Chef
           end
 
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
             loader.load_cookbooks
             loader.cookbook_version
           end

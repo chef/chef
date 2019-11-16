@@ -28,15 +28,15 @@ class Chef
         # to maintain a local state of service across restart's internal calls
         attr_accessor :upstart_service_running
 
-        provides :service, platform_family: "debian", override: true do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:upstart)
+        provides :service, platform_family: "debian", override: true do
+          upstart?
         end
 
         UPSTART_STATE_FORMAT = %r{\S+ \(?(start|stop)?\)? ?[/ ](\w+)}.freeze
 
         # Returns true if the configs for the service name has upstart variable
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:upstart)
+          service_script_exist?(:upstart, resource.service_name)
         end
 
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.

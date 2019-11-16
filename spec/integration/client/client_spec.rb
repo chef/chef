@@ -369,6 +369,28 @@ describe "chef-client" do
     end
   end
 
+  when_the_repository "has a cookbook that outputs some node attributes" do
+    before do
+      file "cookbooks/x/recipes/default.rb", <<~'EOM'
+        puts "COOKBOOKS: #{node[:cookbooks]}"
+      EOM
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+      EOM
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+      EOM
+    end
+
+    it "should have a cookbook attribute" do
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default' --no-fork", cwd: chef_dir)
+      result.error!
+      expect(result.stdout).to include('COOKBOOKS: {"x"=>{"version"=>"0.0.1"}}')
+    end
+  end
+
   when_the_repository "has a cookbook that should fail chef_version checks" do
     before do
       file "cookbooks/x/recipes/default.rb", ""

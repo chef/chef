@@ -116,6 +116,7 @@ class Chef
           to_proc
           to_set
           to_xml_attributes
+          to_yaml
           transform_keys
           transform_values
           uniq

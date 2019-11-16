@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "ostruct"
 
 require "spec_helper"
 
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/file" # probably need this in spec_helper
 end
 
@@ -41,7 +41,7 @@ describe Chef::Resource::Link do
   end
 
   def canonicalize(path)
-    Chef::Platform.windows? ? path.tr("/", '\\') : path
+    ChefUtils.windows? ? path.tr("/", '\\') : path
   end
 
   describe "when the target is a symlink" do
@@ -359,7 +359,7 @@ describe Chef::Resource::Link do
           provider.new_resource.name
         ).and_return(resource_link)
         allow(resource_link).to receive(:verify_links_supported!)
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
       end
 
       context "soft links" do
@@ -389,7 +389,7 @@ describe Chef::Resource::Link do
 
     context "on Linux platform" do
       before(:each) do
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefUtils).to receive(:windows?).and_return(false)
       end
 
       context "soft links" do

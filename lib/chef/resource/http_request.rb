@@ -22,6 +22,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
+      unified_mode true
+
       resource_name :http_request
       provides :http_request
 

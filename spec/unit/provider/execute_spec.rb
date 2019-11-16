@@ -42,7 +42,7 @@ describe Chef::Provider::Execute do
 
   before do
     allow(Chef::EventDispatch::EventsOutputStream).to receive(:new) { @live_stream }
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
     @original_log_level = Chef::Log.level
     Chef::Log.level = :info
     allow(STDOUT).to receive(:tty?).and_return(false)

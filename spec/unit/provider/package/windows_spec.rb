@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ require "chef/provider/package/windows/msi"
 
 describe Chef::Provider::Package::Windows, :windows_only do
   before(:each) do
-    allow(Chef::Util::PathHelper).to receive(:windows?).and_return(true)
+    allow(ChefUtils).to receive(:windows?).and_return(true)
     allow(Chef::FileCache).to receive(:create_cache_path).with("package/").and_return(cache_path)
   end
 

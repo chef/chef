@@ -114,6 +114,7 @@ class Chef::Application::Knife < Chef::Application
     short: "-F FORMAT",
     long: "--format FORMAT",
     description: "Which format to use for output.",
+    in: %w{summary text json yaml pp},
     default: "summary"
 
   option :local_mode,

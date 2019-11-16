@@ -47,6 +47,11 @@ describe Chef::Knife::NodeEnvironmentSet do
       @knife.run
     end
 
+    it "sets the environment to config for display" do
+      @knife.run
+      expect(@knife.config[:environment]).to eq("bar")
+    end
+
     it "should print the environment" do
       expect(@knife).to receive(:output).and_return(true)
       @knife.run

@@ -54,7 +54,7 @@ describe "knife config get", :workstation do
       ENV["KNIFE_HOME"] = old_knife_home
       ENV["HOME"] = old_home
       Dir.chdir(old_wd)
-      ENV[ChefConfig.windows? ? "CD" : "PWD"] = Dir.pwd
+      ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
       ChefConfig::PathHelper.per_tool_home_environment = nil
     end
   end
@@ -64,7 +64,7 @@ describe "knife config get", :workstation do
     # because it has to run after the before set in the "with a chef repo" shared context.
     directory("repo")
     Dir.chdir(path_to("repo"))
-    ENV[ChefConfig.windows? ? "CD" : "PWD"] = Dir.pwd
+    ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
     ENV["HOME"] = path_to(".")
   end
 
@@ -107,6 +107,13 @@ describe "knife config get", :workstation do
 
     it { is_expected.to match(%r{^Loading from configuration file .*/#{File.basename(path_to("."))}/.chef/knife.rb$}) }
     it { is_expected.to match(%r{^Loading from credentials file .*/#{File.basename(path_to("."))}/.chef/credentials$}) }
+    it { is_expected.to match(/^node_name:\s+one$/) }
+  end
+
+  context "with a config dot d files" do
+    before { file(".chef/config.d/abc.rb", "node_name 'one'\n") }
+
+    it { is_expected.to match(%r{^Loading from .d/ configuration file .*/#{File.basename(path_to("."))}/.chef/config.d/abc.rb$}) }
     it { is_expected.to match(/^node_name:\s+one$/) }
   end
 

@@ -88,7 +88,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
     it "returns json format data" do
       result = cmdlet_alias_requires_switch_or_argument.run({}, {}, "ls")
       expect(result.succeeded?).to eq(true)
-      expect(lambda { Chef::JSONCompat.parse(result.return_value) }).not_to raise_error
+      expect { Chef::JSONCompat.parse(result.return_value) }.not_to raise_error
     end
   end
 
@@ -105,7 +105,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   context "when constructor is given invalid arguments" do
     let(:cmd_output_format) { :invalid }
     it "throws an exception if an invalid format is passed to the constructor" do
-      expect(lambda { simple_cmdlet }).to raise_error(ArgumentError)
+      expect { simple_cmdlet }.to raise_error(ArgumentError)
     end
   end
 end

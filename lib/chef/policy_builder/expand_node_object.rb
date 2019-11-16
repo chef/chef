@@ -75,7 +75,6 @@ class Chef
       #
       def setup_run_context(specific_recipes = nil, run_context = nil)
         run_context ||= Chef::RunContext.new
-
         run_context.events = events
         run_context.node = node
 
@@ -93,6 +92,7 @@ class Chef
 
         cookbook_collection.validate!
         cookbook_collection.install_gems(events)
+
         run_context.cookbook_collection = cookbook_collection
 
         # TODO: move this into the cookbook_compilation_start hook

@@ -39,7 +39,7 @@ class Chef
       SOURCE = "#{Chef::Dist::PRODUCT}".freeze
 
       def self.available?
-        Chef::Platform.windows?
+        ChefUtils.windows?
       end
 
       def initialize

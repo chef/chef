@@ -40,7 +40,7 @@ class Chef::Knife::Exec < Chef::Knife
   end
 
   def run
-    config[:script_path] ||= Array(Chef::Config[:script_path])
+    config[:script_path] = Array(config[:script_path] || Chef::Config[:script_path])
 
     # Default script paths are chef-repo/.chef/scripts and ~/.chef/scripts
     config[:script_path] << File.join(Chef::Knife.chef_config_dir, "scripts") if Chef::Knife.chef_config_dir
@@ -57,6 +57,14 @@ class Chef::Knife::Exec < Chef::Knife
         context.instance_eval(IO.read(file), file, 0)
       end
     else
+      puts "An interactive shell is opened"
+      puts
+      puts "Type your script and do:"
+      puts
+      puts "1. To run the script, use 'Ctrl D'"
+      puts "2. To exit, use 'Ctrl/Shift C'"
+      puts
+      puts "Type here a script..."
       script = STDIN.read
       context.instance_eval(script, "STDIN", 0)
     end

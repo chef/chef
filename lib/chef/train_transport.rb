@@ -1,5 +1,5 @@
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2018, Chef Software, Inc.
+# Copyright:: Copyright 2018-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,6 +92,8 @@ class Chef
     end
 
     def self.build_transport(logger = Chef::Log.with_child(subsystem: "transport"))
+      return nil unless Chef::Config.target_mode?
+
       # TODO: Consider supporting parsing the protocol from a URI passed to `--target`
       #
       train_config = {}
@@ -100,7 +102,7 @@ class Chef
       tm_config = Chef::Config.target_mode
       protocol = tm_config.protocol
       train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
-      Chef::Log.trace("Using target mode options from Chef config file: #{train_config.keys.join(", ")}") if train_config
+      Chef::Log.trace("Using target mode options from #{Chef::Dist::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
       # Load the credentials file, and place any valid settings into the train configuration
       credentials = load_credentials(tm_config.host)

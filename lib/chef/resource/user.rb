@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class User < Chef::Resource
+      unified_mode true
+
       resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
 
       description "Use the user resource to add users, update existing users, remove users, and to lock/unlock user passwords."
@@ -47,6 +49,7 @@ class Chef
 
       property :password, String,
         description: "The password shadow hash",
+        sensitive: true,
         desired_state: false
 
       property :non_unique, [ TrueClass, FalseClass ],

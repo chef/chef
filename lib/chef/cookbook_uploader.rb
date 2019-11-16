@@ -139,7 +139,7 @@ class Chef
 
     def validate_cookbooks
       cookbooks.each do |cb|
-        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name)
+        syntax_checker = Chef::Cookbook::SyntaxCheck.new(cb.root_dir)
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
         Chef::Log.info("Validating templates")

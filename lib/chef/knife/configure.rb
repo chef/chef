@@ -120,7 +120,7 @@ class Chef
           @admin_client_key       = config[:admin_client_key] || ask_question("Please enter the location of the existing admin's private key: ", default: "#{Chef::Dist::SERVER_CONF_DIR}/admin.pem")
           @admin_client_key       = File.expand_path(@admin_client_key)
         else
-          @new_client_name        = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", default: Etc.getlogin)
+          @new_client_name = config[:node_name] || ask_question("Please enter an existing username or clientname for the API: ", default: Etc.getlogin)
         end
 
         @new_client_key = config[:client_key] || File.join(chef_config_path, "#{@new_client_name}.pem")

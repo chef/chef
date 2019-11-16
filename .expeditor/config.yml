@@ -18,6 +18,7 @@ rubygems:
   - chef
   - chef-config
   - chef-bin
+  - chef-utils
 
 docker_images:
   - chef
@@ -25,15 +26,23 @@ docker_images:
 pipelines:
   - verify:
       public: true
+  - verify/habitat:
+      description: >
+        A temporary pipeline to verify the habitat plans. Performs a local build,
+        tests it, then throws it away. Its steps should eventually move into the
+        "verify" pipeline (if fast enough) or this pipeline should be removed in
+        favor of learning about packaging problems after merge.
+      definition: .expeditor/verify.habitat.pipeline.yml
+      trigger: default
   - habitat/build
-  - omnibus/release:
-      env:
-        - BUILD_OPTIONS: -l debug
+  - habitat/test:
+      definition: .expeditor/habitat-test.pipeline.yml
+      trigger: default
+  - omnibus/release
   - omnibus/adhoc:
       definition: .expeditor/release.omnibus.yml
       env:
         - ADHOC: true
-        - BUILD_OPTIONS: -l debug
 
 github:
   # This deletes the GitHub PR branch after successfully merged into the release branch
@@ -82,21 +91,28 @@ merge_actions:
       only_if: built_in:bump_version
 
 subscriptions:
+  # the omnibus/docker/gem chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
       - built_in:build_docker_image
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
       - built_in:tag_docker_image
-      - built_in:promote_habitat_packages
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
       - built_in:tag_docker_image
-      - built_in:promote_habitat_packages
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
+
+  # the habitat chain
+  - workload: buildkite_hab_build_group_published:{{agent_id}}:*
+    actions:
+      # when all of the hab package publish to the unstable channel, test and promote them
+      - trigger_pipeline:habitat/test
+
+  # subscriptions to Ruby gem dependencies' releases, open PR for updates
   - workload: ruby_gem_published:mixlib-archive-*
     actions:
       - bash:.expeditor/update_dep.sh

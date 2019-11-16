@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2011-2018, Chef Software Inc.
+# Copyright:: Copyright 2011-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,13 +27,13 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   include Chef::Mixin::Which
 
   provides :service, os: "linux", target_mode: true do |node|
-    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+    systemd?
   end
 
   attr_accessor :status_check_success
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
+    service_script_exist?(:systemd, resource.service_name)
   end
 
   def load_current_resource
@@ -51,6 +51,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         current_resource.running(false)
         current_resource.enabled(false)
         current_resource.masked(false)
+        current_resource.indirect(false)
       end
     else
       current_resource.running(is_active?)
@@ -58,6 +59,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
     current_resource.enabled(is_enabled?)
     current_resource.masked(is_masked?)
+    current_resource.indirect(is_indirect?)
     current_resource
   end
 
@@ -143,11 +145,19 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def enable_service
+    if current_resource.masked || current_resource.indirect
+      logger.trace("#{new_resource} cannot be enabled: it is masked or indirect")
+      return
+    end
     options, args = get_systemctl_options_args
     shell_out!("#{systemctl_path} #{args} enable #{Shellwords.escape(new_resource.service_name)}", **options)
   end
 
   def disable_service
+    if current_resource.masked || current_resource.indirect
+      logger.trace("#{new_resource} cannot be disabled: it is masked or indirect")
+      return
+    end
     options, args = get_systemctl_options_args
     shell_out!("#{systemctl_path} #{args} disable #{Shellwords.escape(new_resource.service_name)}", **options)
   end
@@ -170,6 +180,12 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   def is_enabled?
     options, args = get_systemctl_options_args
     shell_out("#{systemctl_path} #{args} is-enabled #{Shellwords.escape(new_resource.service_name)} --quiet", **options).exitstatus == 0
+  end
+
+  def is_indirect?
+    options, args = get_systemctl_options_args
+    s = shell_out("#{systemctl_path} #{args} is-enabled #{Shellwords.escape(new_resource.service_name)}", **options)
+    s.stdout.include?("indirect")
   end
 
   def is_masked?
