@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 group(:development, :test) do
-  gem "fauxhai-ng"
+  gem "fauxhai-ng-slim"
   gem "rake"
   gem "rspec"
 end
