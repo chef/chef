@@ -67,7 +67,7 @@ class Chef
             end
           end
           ret_codes
-        end    
+        end
 
         def usermod_options
           opts = []
