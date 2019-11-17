@@ -28,7 +28,7 @@ class Chef
         end
 
         def manage_user
-          shell_out!("usermod", universal_options, usermod_options, new_resource.username, returns:  return_codes)
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username, returns: return_codes)
         end
 
         def remove_user
@@ -60,13 +60,13 @@ class Chef
           ret_codes = [0]
           if updating_home?
             if new_resource.manage_home
-              home_dir_exist = shell_out!("test", "-d", new_resource.home, returns: [1])
-              if home_dir_exist.error?
+              home_dir_not_exist = shell_out("test", "-d", new_resource.home, returns: [1])
+              if home_dir_not_exist
                 ret_codes << 12
               end
             end
           end
-          ret_codes.to_s
+          ret_codes
         end    
 
         def usermod_options
