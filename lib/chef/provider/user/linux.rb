@@ -24,23 +24,23 @@ class Chef
         provides :user, os: "linux"
 
         def create_user
-          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username, returns: return_codes)
         end
 
         def manage_user
-          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username, returns:  return_codes)
         end
 
         def remove_user
-          shell_out!("userdel", userdel_options, new_resource.username)
+          shell_out!("userdel", userdel_options, new_resource.username, returns: return_codes)
         end
 
         def lock_user
-          shell_out!("usermod", "-L", new_resource.username)
+          shell_out!("usermod", "-L", new_resource.username, returns: return_codes)
         end
 
         def unlock_user
-          shell_out!("usermod", "-U", new_resource.username)
+          shell_out!("usermod", "-U", new_resource.username, returns: return_codes)
         end
 
         # common to usermod and useradd
@@ -55,6 +55,19 @@ class Chef
           opts << "-o" if new_resource.non_unique
           opts
         end
+
+        def return_codes
+          ret_codes = [0]
+          if updating_home?
+            if new_resource.manage_home
+              home_dir_exist = shell_out!("test", "-d" new_resource.home, returns [1])
+              if home_dir_exist.error?
+                opts << 12
+              end
+            end
+          end
+          ret_codes.to_s
+        end    
 
         def usermod_options
           opts = []
