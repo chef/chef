@@ -160,7 +160,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-d", "/Users/mud",
                        "-m",
                        "adam"])
-			command.concat([{:returns=>[0,12]}])
+			command.concat([{:returns=>[0]}])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -210,7 +210,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-			command.concat([{:returns=>[0,12]}])
+			command.concat([{:returns=>[0]}])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
@@ -222,7 +222,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-			command.concat([{:returns=>[0,12]}])
+			command.concat([{:returns=>[0]}])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
