@@ -62,7 +62,7 @@ class Chef
             if new_resource.manage_home
               home_dir_exist = shell_out!("test", "-d", new_resource.home, returns: [1])
               if home_dir_exist.error?
-                opts << 12
+                ret_codes << 12
               end
             end
           end

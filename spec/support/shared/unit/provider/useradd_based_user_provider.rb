@@ -159,7 +159,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-u", "1000",
                        "-d", "/Users/mud",
                        "-m",
-                       "adam" ])
+                       "adam", {:returns=>[0,12]}])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -180,7 +180,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         command.concat([ "-s", "/usr/bin/zsh",
                          "-u", "1000",
                          "-r", "-m",
-                         "adam" ])
+                         "adam", {:returns=>[0]} ])
         expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
@@ -203,7 +203,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-g", "23",
                   "-d", "/Users/mud",
                   "-m",
-                  "adam" ]
+                  "adam", {:returns=>[0,12]}]
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
@@ -214,7 +214,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-g", "23",
                   "-d", "/Users/mud",
                   "-m",
-                  "adam" ]
+                  "adam", {:returns=>[0]}]
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
@@ -223,7 +223,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       expect(provider).to receive(:updating_home?).at_least(:once).and_return(false)
       command = ["usermod",
                   "-g", "23",
-                  "adam" ]
+                  "adam", {:returns=>[0]} ]
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.manage_user
     end
