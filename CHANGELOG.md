@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.5.10 -->
+## [v15.5.10](https://github.com/chef/chef/tree/v15.5.10) (2019-11-18)
+
+#### Merged Pull Requests
+- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.5.9 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50)) <!-- 15.5.10 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
