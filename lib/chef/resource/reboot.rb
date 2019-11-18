@@ -1,6 +1,6 @@
 #
 # Author:: Chris Doherty <cdoherty@chef.io>)
-# Copyright:: Copyright 2014-2018, Chef, Inc.
+# Copyright:: Copyright 2014-2019, Chef, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,8 +34,6 @@ class Chef
                   " immediate notifications. Delayed notifications produce unintuitive and"\
                   " probably undesired results."
       introduced "12.0"
-
-      default_action :nothing # make sure people are quite clear what they want
 
       property :reason, String,
         description: "A string that describes the reboot action.",
@@ -72,6 +70,11 @@ class Chef
           node.run_context.cancel_reboot
         end
       end
+
+      # make sure people are quite clear what they want
+      # we have to define this below the actions since setting default_action to :nothing is a no-op
+      # and doesn't actually override the first action in the resource
+      default_action :nothing
 
       action_class do
         # add a reboot to the node run_context
