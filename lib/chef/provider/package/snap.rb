@@ -36,7 +36,6 @@ class Chef
           @current_resource = Chef::Resource::SnapPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(get_current_versions)
-
           current_resource
         end
 
@@ -66,8 +65,7 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            install_snaps(resolved_names)
+            install_snaps(names)
           end
         end
 
@@ -75,14 +73,12 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
-            update_snaps(resolved_names)
+            update_snaps(names)
           end
         end
 
         def remove_package(names, versions)
-          resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
-          uninstall_snaps(resolved_names)
+          uninstall_snaps(names)
         end
 
         alias purge_package remove_package
@@ -136,13 +132,19 @@ class Chef
           # at this point only a UNIX socket is supported. The socket is /run/snapd.socket
           # Note - UNIXSocket is not defined on windows systems
           if defined?(::UNIXSocket)
-            UNIXSocket.open("/run/snapd.socket") do |socket|
+            headers, body = UNIXSocket.open("/run/snapd.socket") do |socket|
               # Send request, read the response, split the response and parse the body
               socket.print(request)
-              response = socket.read
-              headers, body = response.split("\r\n\r\n", 2)
-              JSON.parse(body)
+              sleep 5
+              begin
+                response = socket.read_nonblock(socket.nread)
+              rescue IO::WaitReadable, IO::EAGAINWaitReadable
+                IO.select([socket])
+                retry
+              end
+              response.split("\r\n\r\n", 2)
             end
+            JSON.parse(body)
           end
         end
 
@@ -212,19 +214,19 @@ class Chef
         end
 
         def install_snaps(snap_names)
-          response = post_snaps(snap_names, "install", new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "install", new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
         def update_snaps(snap_names)
-          response = post_snaps(snap_names, "refresh", new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "refresh", new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
         def uninstall_snaps(snap_names)
-          response = post_snaps(snap_names, "remove", new_resource.channel, new_resource.options)
+          response = post_snaps(snap_names, "remove", new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
@@ -270,43 +272,41 @@ class Chef
         #
         #   @param snap_names [Array] An array of snap package names to install
         #   @param action [String] The action.  install, refresh, remove, revert, enable, disable or switch
-        #   @param channel [String] The release channel.  Ex. stable
         #   @param options [Hash] Misc configuration Options
         #   @param revision [String] A revision/version
-        def generate_snap_json(snap_names, action, channel, options, revision = nil)
+        def generate_snap_json(snap_names, action, options, revision = nil)
           request = {
               "action" => action,
               "snaps" => snap_names,
           }
-          if %w{install refresh switch}.include?(action)
-            request["channel"] = channel
-          end
 
           # No defensive handling of params
           # Snap will throw the proper exception if called improperly
           # And we can provide that exception to the end user
-          request["classic"] = true if options["classic"]
-          request["devmode"] = true if options["devmode"]
-          request["jailmode"] = true if options["jailmode"]
+          unless options.nil?
+            request["classic"] = true if options.include?("classic")
+            request["devmode"] = true if options.include?("devmode")
+            request["jailmode"] = true if options.include?("jailmode")
+            request["ignore_validation"] = true if options.include?("ignore-validation")
+          end
           request["revision"] = revision unless revision.nil?
-          request["ignore_validation"] = true if options["ignore-validation"]
-          request
+          request.to_json
         end
 
         # Post to the snap api to update snaps
         #
         #   @param snap_names [Array] An array of snap package names to install
         #   @param action [String] The action.  install, refresh, remove, revert, enable, disable or switch
-        #   @param channel [String] The release channel.  Ex. stable
         #   @param options [Hash] Misc configuration Options
         #   @param revision [String] A revision/version
-        def post_snaps(snap_names, action, channel, options, revision = nil)
-          json = generate_snap_json(snap_names, action, channel, options, revision = nil)
+        def post_snaps(snap_names, action, options, revision = nil)
+          json = generate_snap_json(snap_names, action, options, revision = nil)
           call_snap_api("POST", "/v2/snaps", json)
         end
 
         def get_latest_package_version(name, channel)
           json = call_snap_api("GET", "/v2/find?name=#{name}")
+
           if json["status-code"] != 200
             raise Chef::Exceptions::Package, json["result"], caller
           end
@@ -326,13 +326,9 @@ class Chef
         end
 
         def get_installed_package_version_by_name(name)
-          result = get_installed_package_by_name(name)
+          response = get_installed_package_by_name(name)
           # Return nil if not installed
-          if result["status-code"] == 404
-            nil
-          else
-            result["version"]
-          end
+          response["status-code"] == 404 ? nil : response["result"]["version"]
         end
 
         def get_installed_package_by_name(name)
@@ -342,7 +338,7 @@ class Chef
             raise Chef::Exceptions::Package, json["result"], caller
           end
 
-          json["result"]
+          json
         end
 
         def get_installed_package_conf(name)

@@ -1,0 +1,8 @@
+{
+  "type": "error",
+  "status-code": 400,
+  "status": "Bad Request",
+  "result": {
+    "message": "cannot refresh \"hello\": snap \"hello\" is not installed"
+  }
+}

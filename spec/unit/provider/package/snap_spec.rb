@@ -55,6 +55,7 @@ describe Chef::Provider::Package::Snap do
   get_by_name_result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_by_name_result_failure.json")))
   async_result_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "async_result_success.json")))
   result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "result_failure.json")))
+  refresh_result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "refresh_result_failure.json")))
   change_id_result = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "change_id_result.json")))
   get_conf_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_conf_success.json")))
 
@@ -196,13 +197,121 @@ describe Chef::Provider::Package::Snap do
     it "should post the correct json" do
       snap_names = ["hello"]
       action = "install"
-      channel = "stable"
       options = {}
       revision = nil
-      actual = provider.send(:generate_snap_json, snap_names, action, channel, options, revision)
+      actual = provider.send(:generate_snap_json, snap_names, action, options, revision)
 
-      expect(actual).to eq("action" => "install", "snaps" => ["hello"], "channel" => "stable")
+      expect(actual).to eq("{\"action\":\"install\",\"snaps\":[\"hello\"]}")
+    end
+  end
+
+  describe "when source is not supplied" do
+    let(:source) { nil }
+    before do
+      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(find_result_success)
+      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_success)
+      allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/changes/401").and_return(change_id_result)
+      allow(provider).to receive(:get_installed_package_version_by_name).and_return(nil)
+      allow(provider).to receive(:get_latest_package_version).and_return("2.10")
     end
 
+    describe "#action_install" do
+      before do
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"install\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+        provider.load_current_resource
+      end
+
+      context "When package is not installed" do
+        it "does call install_package method" do
+          expect(provider).to receive(:install_package)
+          provider.run_action(:install)
+        end
+
+        it "does not raise an exception" do
+          expect { provider.run_action(:install) }.not_to raise_error
+        end
+      end
+
+      context "When package is installed" do
+        it "does not call install_package method" do
+          allow(provider).to receive(:get_installed_package_version_by_name).and_return("2.10")
+          expect(provider).not_to receive(:install_package)
+          provider.run_action(:install)
+        end
+
+        it "does not raise an exception" do
+          expect { provider.run_action(:install) }.not_to raise_error
+        end
+      end
+    end
+
+    describe "#action_upgrade" do
+      context "When package is installed" do
+        before do
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"refresh\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+          allow(provider).to receive(:get_current_versions).and_return("1.5")
+          allow(provider).to receive(:candidate_version).and_return("2.10")
+          provider.load_current_resource
+        end
+
+        it "does call upgrade_package" do
+          expect(provider).to receive(:upgrade_package)
+          provider.run_action(:upgrade)
+        end
+
+        it "does not raise an exception" do
+          expect { provider.run_action(:upgrade) }.not_to raise_error
+        end
+      end
+
+      context "When package is not installed" do
+        before do
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"refresh\",\"snaps\":[\"hello\"]}").and_return(refresh_result_fail)
+          allow(provider).to receive(:get_current_versions).and_return(nil)
+          provider.load_current_resource
+        end
+
+        it "does not call upgrade_package" do
+          expect(provider).to receive(:upgrade_package)
+          provider.run_action(:upgrade)
+        end
+
+        it "does raise an exception" do
+          expect { provider.run_action(:upgrade) }.to raise_error(RuntimeError)
+        end
+      end
+    end
+
+    describe "#action_remove" do
+      context "When package is installed" do
+        before do
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"remove\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+          allow(provider).to receive(:get_installed_package_version_by_name).and_return("2.10")
+          provider.load_current_resource
+        end
+
+        it "does call remove_package" do
+          expect(provider).to receive(:remove_package)
+          provider.run_action(:remove)
+        end
+
+        it "does not raise an exception" do
+          expect { provider.run_action(:remove) }.not_to raise_error
+        end
+      end
+
+      context "When package is not installed" do
+        it "does not call remove_package" do
+          provider.load_current_resource
+          expect(provider).not_to receive(:remove_package)
+          expect { provider.run_action(:remove) }.not_to raise_error
+        end
+
+        it "does not raise an exception" do
+          provider.load_current_resource
+          expect { provider.run_action(:remove) }.not_to raise_error
+        end
+      end
+    end
   end
 end
