@@ -15,15 +15,41 @@
 # limitations under the License.
 #
 
+require_relative "../resource"
+require_relative "../dist"
+
 class Chef
   class Resource
     class ClientRekey < Chef::Resource
       provides :client_rekey
       resource_name :client_rekey
 
-      property :name, String, default: ""
-      property :node_name, String, default: lazy { Chef::Config[:node_name] }
-      property :client_key, String, default: lazy { Chef::Config[:client_key] }
+      description "The client_rekey resource regenerates the key used by #{Chef::Dist::PRODUCT} to communicate with the #{Chef::Dist::SERVER_PRODUCT}."
+      introduced "15.6"
+
+      examples <<~DOC
+        Rekey the node
+        ```ruby
+        client_rekey
+        ```
+
+        Rekey the node with a custom key path
+        ```ruby
+        client_rekey 'Rotate client key' do
+          client_key '/etc/my_corp_keys/key.pem'
+        end
+        ````
+      DOC
+
+      property :name, String, default: "", skip_docs: true
+
+      property :node_name, String, default: lazy { Chef::Config[:node_name] },
+               description: "The name of the node.",
+               default_description: "The node_node value defined in your client.rb."
+
+      property :client_key, String, default: lazy { Chef::Config[:client_key] },
+               description: "The path to the Chef Infra Client key on disk.",
+               default_description: "The client_key value defined in your client.rb."
 
       action_class do
         def client_key
@@ -77,6 +103,8 @@ class Chef
       end
 
       action :rekey do
+        description "Rekey the client"
+
         assert_destination_writable!
         run_context.rest.put("clients/#{node_name}", put_data)
         write_key
