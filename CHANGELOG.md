@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.10 -->
-## [v15.5.10](https://github.com/chef/chef/tree/v15.5.10) (2019-11-18)
+<!-- latest_release 15.5.11 -->
+## [v15.5.11](https://github.com/chef/chef/tree/v15.5.11) (2019-11-18)
 
 #### Merged Pull Requests
-- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50))
+- Don&#39;t ship the extra rake tasks in the gem [#9104](https://github.com/chef/chef/pull/9104) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.9 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t ship the extra rake tasks in the gem [#9104](https://github.com/chef/chef/pull/9104) ([tas50](https://github.com/tas50)) <!-- 15.5.11 -->
 - Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50)) <!-- 15.5.10 -->
 <!-- release_rollup -->
 
