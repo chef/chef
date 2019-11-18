@@ -60,10 +60,7 @@ class Chef
           ret_codes = [0]
           if updating_home?
             if new_resource.manage_home
-              home_dir_not_exist = shell_out("test", "-d", new_resource.home, returns: [1])
-              if home_dir_not_exist.error?
-                ret_codes << 12
-              end
+              ret_codes << 12 if Dir.exist?(new_resource.home)
             end
           end
           ret_codes
