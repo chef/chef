@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: default
 #
-# Copyright:: 2014-2019, Chef Software, Inc.
+# Copyright:: 2014-2019, Chef Software Inc.
 #
 
 hostname "chef-bk-ci.chef.io"
@@ -36,7 +36,9 @@ yum_repository "epel" do
   only_if { platform_family?("rhel") }
 end
 
-build_essential
+build_essential do
+  raise_if_unsupported true
+end
 
 include_recipe "::packages"
 

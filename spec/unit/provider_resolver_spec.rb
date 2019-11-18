@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,6 +131,10 @@ describe Chef::ProviderResolver do
               expect(provider).to receive(:action=).with(action)
               expect(expected_provider).to receive(:new).with(resource, run_context).and_return(provider)
               expect(resolved_provider).to eql(expected_provider)
+            end
+          elsif expected_resource
+            it "'#{name}' resolves to resource #{expected_resource}", *tags do
+              expect(resource.class).to eql(expected_resource)
             end
           else
             it "'#{name}' fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
@@ -674,6 +678,7 @@ describe Chef::ProviderResolver do
     #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
             package: [ Chef::Resource::DnfPackage, Chef::Provider::Package::Dnf ],
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
+            build_essential: [ Chef::Resource::BuildEssential ],
 
             %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
               "3.1.4" => {
