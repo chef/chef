@@ -56,12 +56,11 @@ class Chef
         case
         when debian?
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
-        when false # rubocop:disable Lint/LiteralAsCondition
-        # when fedora_derived?
-          package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
+         when fedora_derived?
+           package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
 
           # Ensure GCC 4 is available on older pre-6 EL
-          package %w{ gcc44 gcc44-c++ } if platform_family?("rhel") && node["platform_version"].to_i < 6
+           package %w{ gcc44 gcc44-c++ } if platform_family?("rhel") && node["platform_version"].to_i < 6
         when freebsd?
           package "devel/gmake"
           package "devel/autoconf"
