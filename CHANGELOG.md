@@ -1,24 +1,22 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.15 -->
-## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
-
-#### Merged Pull Requests
-- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.5.9 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.15 -->
-- Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.14 -->
-- Remove bonus `.md` to fix link [#9110](https://github.com/chef/chef/pull/9110) ([btm](https://github.com/btm)) <!-- 15.5.13 -->
-- Convert reboot resource to a custom resource with descriptions [#7239](https://github.com/chef/chef/pull/7239) ([tas50](https://github.com/tas50)) <!-- 15.5.12 -->
-- Don&#39;t ship the extra rake tasks in the gem [#9104](https://github.com/chef/chef/pull/9104) ([tas50](https://github.com/tas50)) <!-- 15.5.11 -->
-- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50)) <!-- 15.5.10 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
+
+#### Merged Pull Requests
+- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50))
+- Don&#39;t ship the extra rake tasks in the gem [#9104](https://github.com/chef/chef/pull/9104) ([tas50](https://github.com/tas50))
+- Convert reboot resource to a custom resource with descriptions [#7239](https://github.com/chef/chef/pull/7239) ([tas50](https://github.com/tas50))
+- Remove bonus `.md` to fix link [#9110](https://github.com/chef/chef/pull/9110) ([btm](https://github.com/btm))
+- Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v15.5.9](https://github.com/chef/chef/tree/v15.5.9) (2019-11-15)
 
 #### Merged Pull Requests
@@ -65,7 +63,6 @@
 - Bump inspec-core-bin to 4.18.39 [#9098](https://github.com/chef/chef/pull/9098) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Improve resource descriptions and the rake task for docs generation [#9097](https://github.com/chef/chef/pull/9097) ([tas50](https://github.com/tas50))
 - Add Chef Infra Client 15.5. release notes [#9089](https://github.com/chef/chef/pull/9089) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.4.45](https://github.com/chef/chef/tree/v15.4.45) (2019-10-15)
 
