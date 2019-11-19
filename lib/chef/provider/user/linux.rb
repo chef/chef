@@ -24,23 +24,28 @@ class Chef
         provides :user, os: "linux"
 
         def create_user
-          shell_out!("useradd", universal_options, useradd_options, new_resource.username, returns: return_codes)
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
         end
 
         def manage_user
-          shell_out!("usermod", universal_options, usermod_options, new_resource.username, returns: return_codes)
+          manage_u = shell_out("usermod", universal_options, usermod_options, new_resource.username, returns: [0, 12])
+          if manage_u.exitstatus == 12 && manage_u.stderr !~ /exists/
+            raise Chef::Exceptions::User, "Unable to modify home directory for #{new_resource.username}"
+          end
+
+          manage_u.error!
         end
 
         def remove_user
-          shell_out!("userdel", userdel_options, new_resource.username, returns: return_codes)
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         def lock_user
-          shell_out!("usermod", "-L", new_resource.username, returns: return_codes)
+          shell_out!("usermod", "-L", new_resource.username)
         end
 
         def unlock_user
-          shell_out!("usermod", "-U", new_resource.username, returns: return_codes)
+          shell_out!("usermod", "-U", new_resource.username)
         end
 
         # common to usermod and useradd
@@ -54,16 +59,6 @@ class Chef
           opts << "-d" << new_resource.home if updating_home?
           opts << "-o" if new_resource.non_unique
           opts
-        end
-
-        def return_codes
-          ret_codes = [0]
-          if updating_home?
-            if new_resource.manage_home
-              ret_codes << 12 if Dir.exist?(new_resource.home)
-            end
-          end
-          ret_codes
         end
 
         def usermod_options
