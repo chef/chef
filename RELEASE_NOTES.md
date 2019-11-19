@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 The Chef Infra Client 15.5.15 release includes fixes for a regression in the `build_essential` resource that caused failures on `rhel` platforms as well as a regression in starting Chef Infra Client with `enforce_path_sanity` enabled. As part of this fix we've added a new property `raise_if_unsupported` to the `build-essential` resource, which will cause the Chef Infra Client run to fail if an unknown platform is encountered instead of silently continuing.
 
-We've also included updates to the `windows_package` resource to make the `checksum` property accept uppercase SHA256 checksums, and to provide better error messages if invalid options are passed to the `installer_type` property.
+We've also updated the `windows_package` resource. The resource will now provide better error messages if invalid options are passed to the `installer_type` property and the `checksum` property will now accept uppercase SHA256 checksums. 
 
 # Chef Infra Client 15.5.9
 
