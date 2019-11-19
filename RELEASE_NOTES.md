@@ -1,6 +1,12 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Infra Client 15.5
+# Chef Infra Client 15.5.14
+
+The Chef Infra Client 15.5.14 release includes a fix for a regression in the `build_essential` resource that caused failures on `rhel` platforms. As part of this fix we've added a new property `raise_if_unsupported` which will cause the Chef Infra Client run to fail if an unknown platform is encountered instead of silently continuing.
+
+We've also included updates to the `windows_package` resource to make the `checksum` property accept uppercase SHA256 checksums, and to provide better error messages if invalid options are passed to the `installer_type` property.
+
+# Chef Infra Client 15.5.9
 
 ## New Cookbook Helpers
 
