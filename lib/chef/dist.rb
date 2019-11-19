@@ -1,6 +1,8 @@
 class Chef
   class Dist
     require "chef-config/dist"
+    require "chef-config/config"
+
     # This class is not fully implemented, depending on it is not recommended!
     # When referencing a product directly, like Chef (Now Chef Infra)
     PRODUCT = "Chef Infra Client".freeze
@@ -48,7 +50,7 @@ class Chef
     SHELL_CONF = "chef_shell.rb".freeze
 
     # The configuration directory
-    CONF_DIR = ChefConfig::Dist::CONF_DIR.freeze
+    CONF_DIR = ChefConfig::Config::etc_chef_dir.freeze
 
     # The user's configuration directory
     USER_CONF_DIR = ".chef".freeze

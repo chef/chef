@@ -196,9 +196,6 @@ RSpec.describe ChefConfig::Config do
   [ false, true ].each do |is_windows|
 
     context "On #{is_windows ? "Windows" : "Unix"}" do
-      def to_platform(*args)
-        ChefConfig::Config.platform_specific_path(*args)
-      end
 
       before :each do
         allow(ChefUtils).to receive(:windows?).and_return(is_windows)
@@ -277,7 +274,7 @@ RSpec.describe ChefConfig::Config do
         end
 
         describe "ChefConfig::Config[:client_key]" do
-          let(:path_to_client_key) { to_platform("/etc/chef") + ChefConfig::PathHelper.path_separator }
+          let(:path_to_client_key) { ChefConfig::Config.etc_chef_dir + ChefConfig::PathHelper.path_separator }
 
           it "sets the default path to the client key" do
             expect(ChefConfig::Config.client_key).to eq(path_to_client_key + "client.pem")
@@ -412,7 +409,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when /var/chef exists and is accessible" do
             before do
-              allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var/chef")).and_return(true)
+              allow(ChefConfig::Config).to receive(:path_accessible?).with(ChefConfig::Config.var_chef_dir).and_return(true)
             end
 
             it "defaults to /var/chef" do
@@ -430,25 +427,25 @@ RSpec.describe ChefConfig::Config do
 
           context "when /var/chef does not exist and /var is accessible" do
             it "defaults to /var/chef" do
-              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
-              allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(true)
+              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(false)
+              allow(ChefConfig::Config).to receive(:path_accessible?).with(ChefConfig::Config.var_root_dir).and_return(true)
               expect(ChefConfig::Config[:cache_path]).to eq(primary_cache_path)
             end
           end
 
           context "when /var/chef does not exist and /var is not accessible" do
             it "defaults to $HOME/.chef" do
-              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(false)
-              allow(ChefConfig::Config).to receive(:path_accessible?).with(to_platform("/var")).and_return(false)
+              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(false)
+              allow(ChefConfig::Config).to receive(:path_accessible?).with(ChefConfig::Config.var_root_dir).and_return(false)
               expect(ChefConfig::Config[:cache_path]).to eq(secondary_cache_path)
             end
           end
 
           context "when /var/chef exists and is not accessible" do
             before do
-              allow(File).to receive(:exists?).with(to_platform("/var/chef")).and_return(true)
-              allow(File).to receive(:readable?).with(to_platform("/var/chef")).and_return(true)
-              allow(File).to receive(:writable?).with(to_platform("/var/chef")).and_return(false)
+              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(true)
+              allow(File).to receive(:readable?).with(ChefConfig::Config.var_chef_dir).and_return(true)
+              allow(File).to receive(:writable?).with(ChefConfig::Config.var_chef_dir).and_return(false)
             end
 
             it "defaults to $HOME/.chef" do
@@ -471,21 +468,21 @@ RSpec.describe ChefConfig::Config do
 
             context "and config_dir is /a/b/c" do
               before do
-                ChefConfig::Config.config_dir to_platform("/a/b/c")
+                ChefConfig::Config.config_dir ChefConfig::PathHelper.cleanpath("/a/b/c")
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                expect(ChefConfig::Config.cache_path).to eq(to_platform("/a/b/c/local-mode-cache"))
+                expect(ChefConfig::Config.cache_path).to eq(ChefConfig::PathHelper.cleanpath("/a/b/c/local-mode-cache"))
               end
             end
 
             context "and config_dir is /a/b/c/" do
               before do
-                ChefConfig::Config.config_dir to_platform("/a/b/c/")
+                ChefConfig::Config.config_dir ChefConfig::PathHelper.cleanpath("/a/b/c/")
               end
 
               it "cache_path is /a/b/c/local-mode-cache" do
-                expect(ChefConfig::Config.cache_path).to eq(to_platform("/a/b/c/local-mode-cache"))
+                expect(ChefConfig::Config.cache_path).to eq(ChefConfig::PathHelper.cleanpath("/a/b/c/local-mode-cache"))
               end
             end
           end
@@ -651,15 +648,15 @@ RSpec.describe ChefConfig::Config do
             end
 
             it "expands the path when determining config_dir" do
-              # config_dir goes through PathHelper.canonical_path, which
+              # config_dir goes through ChefConfig::PathHelper.canonical_path, which
               # downcases on windows because the FS is case insensitive, so we
               # have to downcase expected and actual to make the tests work.
-              expect(ChefConfig::Config.config_dir.downcase).to eq(to_platform(Dir.pwd).downcase)
+              expect(ChefConfig::Config.config_dir.downcase).to eq(ChefConfig::PathHelper.cleanpath(Dir.pwd).downcase)
             end
 
             it "does not set derived paths at FS root" do
               ChefConfig::Config.local_mode = true
-              expect(ChefConfig::Config.cache_path.downcase).to eq(to_platform(File.join(Dir.pwd, "local-mode-cache")).downcase)
+              expect(ChefConfig::Config.cache_path.downcase).to eq(ChefConfig::PathHelper.cleanpath(File.join(Dir.pwd, "local-mode-cache")).downcase)
             end
 
           end
@@ -667,13 +664,13 @@ RSpec.describe ChefConfig::Config do
           context "when the config file is /etc/chef/client.rb" do
 
             before do
-              config_location = to_platform("/etc/chef/client.rb").downcase
+              config_location = ChefConfig::PathHelper.cleanpath(ChefConfig::PathHelper.join(ChefConfig::Config.etc_chef_dir, "client.rb")).downcase
               allow(File).to receive(:absolute_path).with(config_location).and_return(config_location)
               ChefConfig::Config.config_file = config_location
             end
 
             it "config_dir is /etc/chef" do
-              expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef").downcase)
+              expect(ChefConfig::Config.config_dir).to eq(ChefConfig::Config.etc_chef_dir.downcase)
             end
 
             context "and chef is running in local mode" do
@@ -682,17 +679,17 @@ RSpec.describe ChefConfig::Config do
               end
 
               it "config_dir is /etc/chef" do
-                expect(ChefConfig::Config.config_dir).to eq(to_platform("/etc/chef").downcase)
+                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::Config.etc_chef_dir.downcase)
               end
             end
 
             context "when config_dir is set to /other/config/dir/" do
               before do
-                ChefConfig::Config.config_dir = to_platform("/other/config/dir/")
+                ChefConfig::Config.config_dir = ChefConfig::PathHelper.cleanpath("/other/config/dir/")
               end
 
               it "yields the explicit value" do
-                expect(ChefConfig::Config.config_dir).to eq(to_platform("/other/config/dir/"))
+                expect(ChefConfig::Config.config_dir).to eq(ChefConfig::PathHelper.cleanpath("/other/config/dir/"))
               end
             end
 
@@ -721,7 +718,7 @@ RSpec.describe ChefConfig::Config do
           if is_windows
             context "when the user's home dir is windows specific" do
               before do
-                ChefConfig::Config.user_home = to_platform("/home/charlie/")
+                ChefConfig::Config.user_home = ChefConfig::PathHelper.cleanpath("/home/charlie/")
               end
 
               it "config_dir is with backslashes" do
@@ -777,7 +774,7 @@ RSpec.describe ChefConfig::Config do
 
       describe "ChefConfig::Config[:user_home]" do
         it "should set when HOME is provided" do
-          expected = to_platform("/home/kitten")
+          expected = ChefConfig::PathHelper.cleanpath("/home/kitten")
           allow(ChefConfig::PathHelper).to receive(:home).and_return(expected)
           expect(ChefConfig::Config[:user_home]).to eq(expected)
         end
@@ -789,7 +786,7 @@ RSpec.describe ChefConfig::Config do
       end
 
       describe "ChefConfig::Config[:encrypted_data_bag_secret]" do
-        let(:db_secret_default_path) { to_platform("/etc/chef/encrypted_data_bag_secret") }
+        let(:db_secret_default_path) { ChefConfig::PathHelper.cleanpath("#{ChefConfig::Config.etc_chef_dir}/encrypted_data_bag_secret") }
 
         before do
           allow(File).to receive(:exist?).with(db_secret_default_path).and_return(secret_exists)
