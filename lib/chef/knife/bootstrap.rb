@@ -296,6 +296,12 @@ class Chef
         description: "URL to a custom installation script.",
         proc: Proc.new { |u| Chef::Config[:knife][:bootstrap_url] = u }
 
+      option :bootstrap_project,
+        long: "--bootstrap-project PROJECT",
+        description: "Project to install.",
+        proc: Proc.new { |u| Chef::Config[:knife][:bootstrap_project] = u },
+        default: "chef"
+
       option :msi_url, # Windows target only
         short: "-m URL",
         long: "--msi-url URL",
