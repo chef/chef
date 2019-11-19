@@ -160,7 +160,6 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-d", "/Users/mud",
                        "-m",
                        "adam"])
-      command.concat([ { returns: [0] } ])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -182,7 +181,6 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                          "-u", "1000",
                          "-r", "-m",
                          "adam"])
-        command.concat([ { returns: [0] } ])
         expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
@@ -192,7 +190,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   end
 
   describe "when managing a user" do
-    let(:passwd_s_status) do
+    let(:manage_u_status) do
       double("Mixlib::ShellOut command", exitstatus: 0, stdout: @stdout, stderr: @stderr, error!: nil)
     end
 
@@ -200,6 +198,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       provider.new_resource.manage_home true
       provider.new_resource.home "/Users/mud"
       provider.new_resource.gid "23"
+      @stderr = ""
     end
 
     # CHEF-3423, -m must come before the username
@@ -210,8 +209,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-      command.concat([ { returns: [0] } ])
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
 
@@ -222,8 +221,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-d", "/Users/mud",
                   "-m",
                   "adam"]
-      command.concat([ { returns: [0] } ])
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
 
@@ -232,8 +231,8 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       command = ["usermod",
                   "-g", "23",
                   "adam"]
-      command.concat([ { returns: [0] } ])
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
   end
@@ -241,24 +240,24 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   describe "when removing a user" do
 
     it "should run userdel with the new resources user name" do
-      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username, { returns: [0] }).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -r if manage_home is true" do
       @new_resource.manage_home true
-      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-r", @new_resource.username, { returns: [0] }).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-r", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name if non_unique is true" do
-      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username, { returns: [0] }).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", @new_resource.username).and_return(true)
       provider.remove_user
     end
 
     it "should run userdel with the new resources user name and -f if force is true" do
       @new_resource.force(true)
-      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-f", @new_resource.username, { returns: [0] }).and_return(true)
+      expect(provider).to receive(:shell_out_compacted!).with("userdel", "-f", @new_resource.username).and_return(true)
       provider.remove_user
     end
   end
@@ -344,14 +343,14 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
   describe "when locking the user" do
     it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-L", @new_resource.username, { returns: [0] })
+      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-L", @new_resource.username)
       provider.lock_user
     end
   end
 
   describe "when unlocking the user" do
     it "should run usermod -L with the new resources username" do
-      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-U", @new_resource.username, { returns: [0] })
+      expect(provider).to receive(:shell_out_compacted!).with("usermod", "-U", @new_resource.username)
       provider.unlock_user
     end
   end
