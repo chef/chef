@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.14 -->
-## [v15.5.14](https://github.com/chef/chef/tree/v15.5.14) (2019-11-19)
+<!-- latest_release 15.5.15 -->
+## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
 
 #### Merged Pull Requests
-- Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.9 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.15 -->
 - Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.14 -->
 - Remove bonus `.md` to fix link [#9110](https://github.com/chef/chef/pull/9110) ([btm](https://github.com/btm)) <!-- 15.5.13 -->
 - Convert reboot resource to a custom resource with descriptions [#7239](https://github.com/chef/chef/pull/7239) ([tas50](https://github.com/tas50)) <!-- 15.5.12 -->
