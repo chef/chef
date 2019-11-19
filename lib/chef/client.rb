@@ -250,7 +250,7 @@ class Chef
         logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
         logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
-        ENV["PATH"] = ChefUtils::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
+        ENV["PATH"] = ChefUtils::DSL::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
 
         if Chef::Config.target_mode?
           get_ohai_data_remotely
