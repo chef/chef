@@ -587,6 +587,7 @@ describe Chef::ProviderResolver do
         windows_service: [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
         windows_user: [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
         yum_package: [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
+        build_essential: [ Chef::Resource::BuildEssential ],
 
         "linux" => {
           "debian" => {
@@ -678,7 +679,6 @@ describe Chef::ProviderResolver do
     #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
             package: [ Chef::Resource::DnfPackage, Chef::Provider::Package::Dnf ],
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
-            build_essential: [ Chef::Resource::BuildEssential ],
 
             %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
               "3.1.4" => {
