@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.5.16 -->
+## [v15.5.16](https://github.com/chef/chef/tree/v15.5.16) (2019-11-20)
+
+#### Merged Pull Requests
+- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.5.15 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50)) <!-- 15.5.16 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
