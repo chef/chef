@@ -696,7 +696,7 @@ module ChefConfig
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
       if target_mode? && File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret"))
-       PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret")
+        PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret")
       elsif File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret"))
         PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret")
       else

@@ -46,7 +46,7 @@ class Chef
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
-        default: "#{ChefConfig::Config::c_chef_dir}/client.rb",
+        default: "#{ChefConfig::Config.c_chef_dir}/client.rb",
         description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,

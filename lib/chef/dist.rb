@@ -50,7 +50,7 @@ class Chef
     SHELL_CONF = "chef_shell.rb".freeze
 
     # The configuration directory
-    CONF_DIR = ChefConfig::Config::etc_chef_dir.freeze
+    CONF_DIR = ChefConfig::Config.etc_chef_dir.freeze
 
     # The user's configuration directory
     USER_CONF_DIR = ".chef".freeze
