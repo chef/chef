@@ -61,24 +61,24 @@ class Chef
           end
         end
 
-        def install_package(names, versions)
+        def install_package(names, _versions)
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            install_snaps(names)
+            names.each { |pkg| install_snaps(pkg) }
           end
         end
 
-        def upgrade_package(names, versions)
+        def upgrade_package(names, _versions)
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            update_snaps(names)
+            names.each { |pkg| update_snaps(pkg) }
           end
         end
 
-        def remove_package(names, versions)
-          uninstall_snaps(names)
+        def remove_package(names, _versions)
+          names.each { |pkg| uninstall_snaps(pkg) }
         end
 
         alias purge_package remove_package
@@ -213,20 +213,20 @@ class Chef
           response.error!
         end
 
-        def install_snaps(snap_names)
-          response = post_snaps(snap_names, "install", new_resource.options)
+        def install_snaps(snap_name)
+          response = post_snaps(snap_name, "install", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
-        def update_snaps(snap_names)
-          response = post_snaps(snap_names, "refresh", new_resource.options)
+        def update_snaps(snap_name)
+          response = post_snaps(snap_name, "refresh", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
-        def uninstall_snaps(snap_names)
-          response = post_snaps(snap_names, "remove", new_resource.options)
+        def uninstall_snaps(snap_name)
+          response = post_snaps(snap_name, "remove", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
@@ -270,15 +270,17 @@ class Chef
 
         # Constructs json to post for snap changes
         #
-        #   @param snap_names [Array] An array of snap package names to install
         #   @param action [String] The action.  install, refresh, remove, revert, enable, disable or switch
-        #   @param options [Hash] Misc configuration Options
+        #   @param channel [String] The release channel.  Ex. stable
+        #   @param options [Array] An array of configuration Options
         #   @param revision [String] A revision/version
-        def generate_snap_json(snap_names, action, options, revision = nil)
+        def generate_snap_json(action, channel, options, revision = nil)
           request = {
               "action" => action,
-              "snaps" => snap_names,
           }
+          if %w{install refresh switch}.include?(action)
+            request["channel"] = channel
+          end
 
           # No defensive handling of params
           # Snap will throw the proper exception if called improperly
@@ -295,13 +297,14 @@ class Chef
 
         # Post to the snap api to update snaps
         #
-        #   @param snap_names [Array] An array of snap package names to install
+        #   @param snap_name [String] The snap package name to install
         #   @param action [String] The action.  install, refresh, remove, revert, enable, disable or switch
-        #   @param options [Hash] Misc configuration Options
+        #   @param channel [String] The release channel.  Ex. stable
+        #   @param options [Array] An array of configuration Options
         #   @param revision [String] A revision/version
-        def post_snaps(snap_names, action, options, revision = nil)
-          json = generate_snap_json(snap_names, action, options, revision = nil)
-          call_snap_api("POST", "/v2/snaps", json)
+        def post_snaps(snap_name, action, channel, options, revision = nil)
+          json = generate_snap_json(action, channel, options, revision = nil)
+          call_snap_api("POST", "/v2/snaps/#{snap_name}", json)
         end
 
         def get_latest_package_version(name, channel)

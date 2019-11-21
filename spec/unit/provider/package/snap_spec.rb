@@ -197,11 +197,12 @@ describe Chef::Provider::Package::Snap do
     it "should post the correct json" do
       snap_names = ["hello"]
       action = "install"
-      options = {}
+      channel = "stable"
+      options = []
       revision = nil
-      actual = provider.send(:generate_snap_json, snap_names, action, options, revision)
+      actual = provider.send(:generate_snap_json, action, channel, options, revision)
 
-      expect(actual).to eq("{\"action\":\"install\",\"snaps\":[\"hello\"]}")
+      expect(actual).to eq("{\"action\":\"install\",\"channel\":\"stable\"}")
     end
   end
 
@@ -217,12 +218,12 @@ describe Chef::Provider::Package::Snap do
 
     describe "#action_install" do
       before do
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"install\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"install\",\"channel\":\"stable\"}").and_return(async_result_success)
         provider.load_current_resource
       end
 
       context "When package is not installed" do
-        it "does call install_package method" do
+        it "calls install_package method" do
           expect(provider).to receive(:install_package)
           provider.run_action(:install)
         end
@@ -248,13 +249,13 @@ describe Chef::Provider::Package::Snap do
     describe "#action_upgrade" do
       context "When package is installed" do
         before do
-          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"refresh\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"refresh\",\"channel\":\"stable\"}").and_return(async_result_success)
           allow(provider).to receive(:get_current_versions).and_return("1.5")
           allow(provider).to receive(:candidate_version).and_return("2.10")
           provider.load_current_resource
         end
 
-        it "does call upgrade_package" do
+        it "calls upgrade_package" do
           expect(provider).to receive(:upgrade_package)
           provider.run_action(:upgrade)
         end
@@ -266,7 +267,7 @@ describe Chef::Provider::Package::Snap do
 
       context "When package is not installed" do
         before do
-          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"refresh\",\"snaps\":[\"hello\"]}").and_return(refresh_result_fail)
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"refresh\",\"channel\":\"stable\"}").and_return(refresh_result_fail)
           allow(provider).to receive(:get_current_versions).and_return(nil)
           provider.load_current_resource
         end
@@ -276,7 +277,7 @@ describe Chef::Provider::Package::Snap do
           provider.run_action(:upgrade)
         end
 
-        it "does raise an exception" do
+        it "raises an exception" do
           expect { provider.run_action(:upgrade) }.to raise_error(RuntimeError)
         end
       end
@@ -285,12 +286,12 @@ describe Chef::Provider::Package::Snap do
     describe "#action_remove" do
       context "When package is installed" do
         before do
-          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"remove\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"remove\"}").and_return(async_result_success)
           allow(provider).to receive(:get_installed_package_version_by_name).and_return("2.10")
           provider.load_current_resource
         end
 
-        it "does call remove_package" do
+        it "calls remove_package" do
           expect(provider).to receive(:remove_package)
           provider.run_action(:remove)
         end
