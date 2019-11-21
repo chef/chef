@@ -2,15 +2,18 @@
 <!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.5.17 -->
+### Changes not yet released to stable
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.5.17](https://github.com/chef/chef/tree/v15.5.17) (2019-11-21)
+<!-- latest_stable_release -->
+
 ## [v15.5.16](https://github.com/chef/chef/tree/v15.5.16) (2019-11-21)
 
 #### Merged Pull Requests
 - Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
 
