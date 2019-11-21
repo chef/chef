@@ -1,19 +1,17 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.16 -->
-## [v15.5.16](https://github.com/chef/chef/tree/v15.5.16) (2019-11-20)
-
-#### Merged Pull Requests
-- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.5.15 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50)) <!-- 15.5.16 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.5.16](https://github.com/chef/chef/tree/v15.5.16) (2019-11-21)
+
+#### Merged Pull Requests
+- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
 
 #### Merged Pull Requests
@@ -23,7 +21,6 @@
 - Remove bonus `.md` to fix link [#9110](https://github.com/chef/chef/pull/9110) ([btm](https://github.com/btm))
 - Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist))
 - fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v15.5.9](https://github.com/chef/chef/tree/v15.5.9) (2019-11-15)
 
