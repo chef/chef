@@ -1,9 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.5.18 -->
+## [v15.5.18](https://github.com/chef/chef/tree/v15.5.18) (2019-11-25)
+
+#### Merged Pull Requests
+- Spelling, punctuation, grammar [#9122](https://github.com/chef/chef/pull/9122) ([ehershey](https://github.com/ehershey))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Spelling, punctuation, grammar [#9122](https://github.com/chef/chef/pull/9122) ([ehershey](https://github.com/ehershey)) <!-- 15.5.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
