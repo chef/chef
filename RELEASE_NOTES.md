@@ -570,7 +570,7 @@ Chef Solo's `--delete-entire-chef-repo` option has been extended to work in Loca
 
 ### sysctl now accepts a comments parameter
 
-The sysctl resource has been updated to allow additional (optional) comments. Comments can be passed as an array or a string. Any comments provided are prefixed with '#' signs and precede the sysctl setting in generated files.
+The `sysctl` resource has been updated to allow the inclusion of descriptive comments. Comments may be passed as an array or a string. Any comments provided are prefixed with '#' signs and precede the `sysctl` setting in generated files.
 
 An example:
 
@@ -589,7 +589,7 @@ sysctl 'vm.swappiness' do
 end
 ```
 
-which results in `/etc/sysctl.d/99-chef-vw.swappiness.conf` as follows
+which results in `/etc/sysctl.d/99-chef-vm.swappiness.conf` as follows
 ```
 # define how aggressively the kernel will swap memory pages.
 # Higher values will increase aggressiveness
