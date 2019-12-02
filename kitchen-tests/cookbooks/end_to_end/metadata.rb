@@ -20,7 +20,7 @@ depends          "git"
 supports         "ubuntu"
 supports         "debian"
 supports         "centos"
-supports         "opensuse"
+supports         "opensuseleap"
 supports         "fedora"
 supports         "amazon"
 
