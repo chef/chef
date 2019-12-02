@@ -83,6 +83,14 @@ platforms:
       - RUN yum -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
+- name: centos-8
+  driver:
+    image: dokken/centos-8
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
 - name: oraclelinux-6
   driver:
     image: dokken/oraclelinux-6
@@ -104,6 +112,7 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
+      - RUN yum -y reinstall systemd
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
@@ -127,14 +136,6 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
 
-- name: opensuse-leap-42
-  driver:
-    image: dokken/opensuse-leap-42
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install cron
-
 - name: opensuse-leap-15
   driver:
     image: dokken/opensuse-leap-15
@@ -147,9 +148,3 @@ suites:
   - name: end-to-end
     run_list:
       - recipe[end_to_end::default]
-  - name: rspec
-    run_list:
-      - recipe[rspec]
-    lifecycle:
-      post_converge:
-        - remote: /usr/local/bin/run-chef-rspec
