@@ -16,8 +16,7 @@ describe "Recipe DSL methods" do
     context "And class Chef::Provider::ProviderThingy with no provides" do
       before :context do
         class Chef::Provider::ProviderThingy < Chef::Provider
-          def load_current_resource
-          end
+          def load_current_resource; end
 
           def action_create
             Chef::Log.warn("hello from #{self.class.name}")

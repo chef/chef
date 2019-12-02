@@ -74,7 +74,7 @@ describe Chef::Resource::RhsmSubscription do
         Pool ID:    pool2
         Serial:     serial2
         Key2:       value2
-EOL
+      EOL
     end
 
     it "parses the output correctly" do

@@ -114,7 +114,8 @@ shared_context Chef::Resource::WindowsScript do
           resource.only_if resource_guard_command, architecture: guard_architecture
           expect { resource.run_action(:run) }.to raise_error(
             Chef::Exceptions::Win32ArchitectureIncorrect,
-            /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
+            /cannot execute script with requested architecture 'i386' on Windows Nano Server/
+          )
         end
       end
     end

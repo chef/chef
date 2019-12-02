@@ -37,7 +37,7 @@ describe "General chef_repo file system checks", :workstation do
           /data_bags/bag1/
           /environments/
           /roles/
-EOM
+        EOM
       end
     end
 
@@ -55,7 +55,7 @@ EOM
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
           /cookbooks/
-EOM
+        EOM
       end
     end
 
@@ -65,7 +65,7 @@ EOM
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
           /cookbooks/
-EOM
+        EOM
       end
     end
 
@@ -82,7 +82,7 @@ EOM
           /cookbooks/cookbook1/templates/
           /cookbooks/cookbook1/templates/default/
           /cookbooks/cookbook1/templates/default/x.txt
-EOM
+        EOM
       end
     end
 
@@ -92,7 +92,7 @@ EOM
       it "knife list --local -Rfp / does not return it" do
         knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
           /cookbooks/
-EOM
+        EOM
       end
     end
 
@@ -110,7 +110,7 @@ EOM
           /cookbooks/cookbook1/templates/
           /cookbooks/cookbook1/templates/default/
           /cookbooks/cookbook1/templates/default/x.txt
-EOM
+        EOM
       end
     end
 
@@ -154,7 +154,7 @@ EOM
           /environments/environment1.json
           /roles/
           /roles/role1.json
-EOM
+        EOM
       end
     end
 
@@ -163,7 +163,7 @@ EOM
       it "does not show up in list -Rfp" do
         knife("list --local -Rfp /").should_succeed <<~EOM
           /cookbooks/
-EOM
+        EOM
       end
     end
 
@@ -172,7 +172,7 @@ EOM
       it "does not show up in list -Rfp" do
         knife("list --local -Rfp /").should_succeed <<~EOM
           /data_bags/
-EOM
+        EOM
       end
     end
   end

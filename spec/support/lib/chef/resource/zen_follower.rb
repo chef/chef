@@ -25,7 +25,7 @@ class Chef
       provides :follower, platform: "zen"
 
       def master(arg = nil)
-        if !arg.nil?
+        unless arg.nil?
           @master = arg
         end
         @master

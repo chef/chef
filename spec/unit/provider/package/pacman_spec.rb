@@ -34,7 +34,7 @@ describe Chef::Provider::Package::Pacman do
     @stdin = StringIO.new
     @stdout = StringIO.new(<<~ERR)
       error: package "nano" not found
-ERR
+    ERR
     @stderr = StringIO.new
     @pid = 2342
   end
@@ -86,7 +86,7 @@ ERR
         Install Reason : Explicitly installed
         Install Script : Yes
         Description    : Pico editor clone with enhancements
-PACMAN
+      PACMAN
 
       status = double(stdout: stdout, exitstatus: 0)
       allow(@provider).to receive(:shell_out_compacted).and_return(status)
@@ -118,7 +118,7 @@ PACMAN
 
         [community]
         Include = /etc/pacman.d/mirrorlist
-PACMAN_CONF
+      PACMAN_CONF
 
       status = double(stdout: "customrepo nano 1.2.3-4", exitstatus: 0)
       allow(::File).to receive(:exist?).with("/etc/pacman.conf").and_return(true)

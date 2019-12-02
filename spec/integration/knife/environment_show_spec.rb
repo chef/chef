@@ -43,7 +43,7 @@ describe "knife environment show", :workstation do
         json_class:          Chef::Environment
         name:                b
         override_attributes:
-EOM
+      EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
 
@@ -54,7 +54,7 @@ EOM
             baz:
               raz.my: mataz
             foo: bar
-EOM
+      EOM
     end
 
     it "shows the requested nested attribute of an environment" do
@@ -62,7 +62,7 @@ EOM
         b:
           default_attributes.baz:
             raz.my: mataz
-EON
+      EON
     end
 
     it "shows the requested attribute of an environment with custom field separator" do
@@ -70,7 +70,7 @@ EON
         b:
           default_attributes:baz:
             raz.my: mataz
-EOT
+      EOT
     end
   end
 end

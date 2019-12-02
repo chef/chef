@@ -26,11 +26,11 @@ describe Chef::Cookbook::Metadata do
 
   describe "when comparing for equality" do
     before do
-      @fields = [ :name, :description, :long_description, :maintainer,
-                  :maintainer_email, :license, :platforms, :dependencies,
-                  :providing, :attributes, :recipes, :version,
-                  :source_url, :issues_url, :privacy, :ohai_versions, :chef_versions,
-                  :gems ]
+      @fields = %i{name description long_description maintainer
+                  maintainer_email license platforms dependencies
+                  providing attributes recipes version
+                  source_url issues_url privacy ohai_versions chef_versions
+                  gems}
     end
 
     it "does not depend on object identity for equality" do
@@ -438,7 +438,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", display_name: "foo")
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", display_name: Hash.new)
+        metadata.attribute("db/mysql/databases", display_name: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -447,7 +447,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", description: "foo")
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", description: Hash.new)
+        metadata.attribute("db/mysql/databases", description: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -456,7 +456,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", source_url: "foo")
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", source_url: Hash.new)
+        metadata.attribute("db/mysql/databases", source_url: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -465,7 +465,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", issues_url: "foo")
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", issues_url: Hash.new)
+        metadata.attribute("db/mysql/databases", issues_url: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -489,7 +489,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", choice: [10, "shared"])
       end.to raise_error(ArgumentError)
       expect do
-        metadata.attribute("db/mysql/databases", choice: Hash.new)
+        metadata.attribute("db/mysql/databases", choice: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -506,7 +506,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", calculated: false)
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", calculated: Hash.new)
+        metadata.attribute("db/mysql/databases", calculated: {})
       end.to raise_error(ArgumentError)
     end
 
@@ -526,7 +526,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", type: "array")
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", type: Array.new)
+        metadata.attribute("db/mysql/databases", type: [])
       end.to raise_error(ArgumentError)
     end
 
@@ -578,7 +578,7 @@ describe Chef::Cookbook::Metadata do
         metadata.attribute("db/mysql/databases", recipes: [])
       end.not_to raise_error
       expect do
-        metadata.attribute("db/mysql/databases", required: Hash.new)
+        metadata.attribute("db/mysql/databases", required: {})
       end.to raise_error(ArgumentError)
     end
 

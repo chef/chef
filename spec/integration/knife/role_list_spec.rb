@@ -37,7 +37,7 @@ describe "knife role list", :workstation do
         cat
         cdr
         cons
-EOM
+      EOM
     end
 
   end

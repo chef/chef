@@ -63,7 +63,7 @@ describe Chef::CookbookSynchronizer do
     {
       "path" => "recipes/default.rb",
       "name" => "recipes/default.rb",
-      "url"  => "http://chef.example.com/abc123",
+      "url" => "http://chef.example.com/abc123",
       "checksum" => "abc123",
     }
   end
@@ -72,7 +72,7 @@ describe Chef::CookbookSynchronizer do
     {
       "path" => "attributes/default.rb",
       "name" => "attributes/default.rb",
-      "url"  => "http://chef.example.com/abc456",
+      "url" => "http://chef.example.com/abc456",
       "checksum" => "abc456",
     }
   end
@@ -198,22 +198,22 @@ describe Chef::CookbookSynchronizer do
 
   let(:cookbook_a_default_recipe_tempfile) do
     double("Tempfile for cookbook_a default.rb recipe",
-           path: "/tmp/cookbook_a_recipes_default_rb")
+      path: "/tmp/cookbook_a_recipes_default_rb")
   end
 
   let(:cookbook_a_default_attribute_tempfile) do
     double("Tempfile for cookbook_a default.rb attr file",
-           path: "/tmp/cookbook_a_attributes_default_rb")
+      path: "/tmp/cookbook_a_attributes_default_rb")
   end
 
   let(:cookbook_a_file_default_tempfile) do
     double("Tempfile for cookbook_a megaman.conf file",
-           path: "/tmp/cookbook_a_file_default_tempfile")
+      path: "/tmp/cookbook_a_file_default_tempfile")
   end
 
   let(:cookbook_a_template_default_tempfile) do
     double("Tempfile for cookbook_a apache.conf.erb template",
-           path: "/tmp/cookbook_a_template_default_tempfile")
+      path: "/tmp/cookbook_a_template_default_tempfile")
   end
 
   def setup_common_files_missing_expectations

@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2018, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -69,7 +69,7 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
   def mount_should_exist(mount_point, device, fstype = nil, options = nil)
     validation_cmd = "mount | grep #{mount_point} | grep #{device} "
     validation_cmd << " | grep #{fstype} " unless fstype.nil?
-    validation_cmd << " | grep #{options.join(',')} " unless options.nil? || options.empty?
+    validation_cmd << " | grep #{options.join(",")} " unless options.nil? || options.empty?
     expect(shell_out(validation_cmd).exitstatus).to eq(0)
   end
 

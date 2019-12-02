@@ -74,7 +74,8 @@ describe Chef::Application::ExitCode do
 
     it "does write a warning on non-standard exit codes" do
       expect(Chef::Log).to receive(:warn).with(
-        /^Chef attempted to exit with a non-standard exit code of 151/)
+        /^Chef attempted to exit with a non-standard exit code of 151/
+      )
       expect(exit_codes.normalize_exit_code(151)).to eq(1)
     end
 
@@ -83,7 +84,7 @@ describe Chef::Application::ExitCode do
     end
 
     it "returns GENERIC_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(1)
+      expect(exit_codes.normalize_exit_code).to eq(1)
     end
 
     it "returns SIGINT_RECEIVED when a SIGINT is received" do

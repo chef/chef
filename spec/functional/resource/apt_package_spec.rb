@@ -89,7 +89,7 @@ end
 metadata = { unix_only: true,
              requires_root: true,
              provider: { package: Chef::Provider::Package::Apt },
-             arch: "x86_64" # test packages are 64bit
+             arch: "x86_64", # test packages are 64bit
 }
 
 describe Chef::Resource::AptPackage, metadata do

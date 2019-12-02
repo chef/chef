@@ -25,7 +25,7 @@ shared_examples_for "a Windows script resource" do
   before(:each) do
     node = Chef::Node.new
 
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
 
     run_context = Chef::RunContext.new(node, nil, nil)

@@ -262,8 +262,8 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "should do multipackage installs when given two packages without constraints" do
-      allow_remote_list(["git", "munin-node"])
-      new_resource.package_name(["git", "munin-node"])
+      allow_remote_list(%w{git munin-node})
+      new_resource.package_name(%w{git munin-node})
       provider.load_current_resource
       expect(provider).to receive(:shell_out_compacted!).with("#{choco_exe} install -y git munin-node", { returns: [0], timeout: timeout }).and_return(double)
       provider.run_action(:install)
@@ -298,8 +298,8 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "installing multiple packages with a package that does not exist throws an error" do
-      allow_remote_list(["git", "package-does-not-exist"])
-      new_resource.package_name(["git", "package-does-not-exist"])
+      allow_remote_list(%w{git package-does-not-exist})
+      new_resource.package_name(%w{git package-does-not-exist})
       provider.load_current_resource
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
@@ -405,8 +405,8 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "upgrading multiple packages with a package that does not exist throws an error" do
-      allow_remote_list(["git", "package-does-not-exist"])
-      new_resource.package_name(["git", "package-does-not-exist"])
+      allow_remote_list(%w{git package-does-not-exist})
+      new_resource.package_name(%w{git package-does-not-exist})
       provider.load_current_resource
       expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)
     end
@@ -432,8 +432,8 @@ describe Chef::Provider::Package::Chocolatey do
     end
 
     it "does nothing when all the packages are already removed" do
-      allow_remote_list(["git", "package-does-not-exist"])
-      new_resource.package_name(["git", "package-does-not-exist"])
+      allow_remote_list(%w{git package-does-not-exist})
+      new_resource.package_name(%w{git package-does-not-exist})
       provider.load_current_resource
       expect(provider).not_to receive(:remove_package)
       provider.run_action(:remove)

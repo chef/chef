@@ -51,7 +51,7 @@ describe Chef::Mixin::ShellOut do
     let(:retobj) { instance_double(Mixlib::ShellOut, "error!" => false) }
     let(:cmd) { "echo '#{rand(1000)}'" }
 
-    [ :shell_out, :shell_out_compact, :shell_out_compact_timeout, :shell_out!, :shell_out_compact!, :shell_out_compact_timeout! ].each do |method|
+    %i{shell_out shell_out_compact shell_out_compact_timeout shell_out! shell_out_compact! shell_out_compact_timeout!}.each do |method|
       describe "##{method}" do
         before do
           Chef::Config[:treat_deprecation_warnings_as_errors] = false
@@ -75,11 +75,11 @@ describe Chef::Mixin::ShellOut do
               options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 environment: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -89,11 +89,11 @@ describe Chef::Mixin::ShellOut do
               options = { environment: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 environment: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -118,11 +118,11 @@ describe Chef::Mixin::ShellOut do
               options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 env: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -132,11 +132,11 @@ describe Chef::Mixin::ShellOut do
               options = { env: { "HOME" => "/Users/morty" } }
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 env: {
-                  "HOME"     => "/Users/morty",
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "HOME" => "/Users/morty",
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -150,10 +150,10 @@ describe Chef::Mixin::ShellOut do
               expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
                 user: "morty",
                 environment: {
-                  "LC_ALL"   => Chef::Config[:internal_locale],
-                  "LANG"     => Chef::Config[:internal_locale],
+                  "LC_ALL" => Chef::Config[:internal_locale],
+                  "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path   => sanitized_path,
+                  env_path => sanitized_path,
                 },
               }).and_return(retobj)
               shell_out_obj.send(method, cmd, options)
@@ -165,10 +165,10 @@ describe Chef::Mixin::ShellOut do
           it "should set environment language settings to the configured internal locale" do
             expect(Chef::Mixin::ShellOut).to receive(:shell_out_command).with(cmd, {
               environment: {
-                "LC_ALL"   => Chef::Config[:internal_locale],
-                "LANG"     => Chef::Config[:internal_locale],
+                "LC_ALL" => Chef::Config[:internal_locale],
+                "LANG" => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                env_path   => sanitized_path,
+                env_path => sanitized_path,
               },
             }).and_return(retobj)
             shell_out_obj.send(method, cmd)
@@ -301,7 +301,7 @@ describe Chef::Mixin::ShellOut do
     end
 
     describe "deprecations" do
-      [ :shell_out_with_systems_locale, :shell_out_compact, :shell_out_compact_timeout, :shell_out_with_systems_locale!, :shell_out_compact!, :shell_out_compact_timeout! ].each do |method|
+      %i{shell_out_with_systems_locale shell_out_compact shell_out_compact_timeout shell_out_with_systems_locale! shell_out_compact! shell_out_compact_timeout!}.each do |method|
         it "should not respond to #{method} in Chef-15", chef: ">= 15" do
           expect(shell_out_obj.respond_to?(method)).to be false
         end
@@ -341,7 +341,7 @@ describe Chef::Mixin::ShellOut do
       end
 
       describe "on Chef-15", chef: ">= 15" do
-        [ :shell_out, :shell_out! ].each do |method|
+        %i{shell_out shell_out!}.each do |method|
           stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
           it "#{method} defaults to 900 seconds" do
             expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
@@ -377,7 +377,7 @@ describe Chef::Mixin::ShellOut do
       let(:new_resource) { Chef::Resource::Package.new("foo") }
       let(:provider) { new_resource.provider_for_action(:install) }
 
-      [ :shell_out, :shell_out! ].each do |method|
+      %i{shell_out shell_out!}.each do |method|
         stubbed_method = (method == :shell_out) ? :shell_out_compacted : :shell_out_compacted!
         it "#{method} defaults to 900 seconds" do
           expect(provider).to receive(stubbed_method).with("foo", timeout: 900)
@@ -416,7 +416,7 @@ describe Chef::Mixin::ShellOut do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
       end
 
-      [ :shell_out_compact_timeout, :shell_out_compact_timeout! ].each do |method|
+      %i{shell_out_compact_timeout shell_out_compact_timeout!}.each do |method|
         stubbed_method = (method == :shell_out_compact_timeout) ? :shell_out_compacted : :shell_out_compacted!
         it "#{method} defaults to 900 seconds" do
           expect(provider).to receive(stubbed_method).with("foo", timeout: 900)

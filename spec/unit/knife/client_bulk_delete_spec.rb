@@ -42,10 +42,10 @@ describe Chef::Knife::ClientBulkDelete do
 
   let(:nonvalidator_client_names) { %w{tim dan stephen} }
   let(:nonvalidator_clients) do
-    clients = Hash.new
+    clients = {}
 
     nonvalidator_client_names.each do |client_name|
-      client = Chef::ApiClientV1.new()
+      client = Chef::ApiClientV1.new
       client.name(client_name)
       allow(client).to receive(:destroy).and_return(true)
       clients[client_name] = client
@@ -56,10 +56,10 @@ describe Chef::Knife::ClientBulkDelete do
 
   let(:validator_client_names) { %w{myorg-validator} }
   let(:validator_clients) do
-    clients = Hash.new
+    clients = {}
 
     validator_client_names.each do |validator_client_name|
-      validator_client = Chef::ApiClientV1.new()
+      validator_client = Chef::ApiClientV1.new
       validator_client.name(validator_client_name)
       allow(validator_client).to receive(:validator).and_return(true)
       allow(validator_client).to receive(:destroy).and_return(true)

@@ -30,11 +30,11 @@ describe Chef::Provider::Execute do
 
   let(:opts) do
     {
-      timeout:      3600,
-      returns:      0,
-      log_level:    :info,
-      default_env:  false,
-      log_tag:      new_resource.to_s,
+      timeout: 3600,
+      returns: 0,
+      log_level: :info,
+      default_env: false,
+      log_tag: new_resource.to_s,
     }
   end
 

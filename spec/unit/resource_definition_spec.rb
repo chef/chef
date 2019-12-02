@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::ResourceDefinition do
-  let(:defn) { Chef::ResourceDefinition.new() }
+  let(:defn) { Chef::ResourceDefinition.new }
 
   describe "initialize" do
     it "should be a Chef::ResourceDefinition" do
@@ -92,7 +92,7 @@ describe Chef::ResourceDefinition do
 
   it "should raise an exception if prototype_params is not a hash" do
     expect do
-      defn.define :monkey, Array.new do
+      defn.define :monkey, [] do
       end
     end.to raise_error(ArgumentError)
   end

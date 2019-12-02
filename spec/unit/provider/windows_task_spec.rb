@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Provider::WindowsTask, :windows_only do
   let(:new_resource) { Chef::Resource::WindowsTask.new("sample_task") }
-  let(:current_resource) { Chef::Resource::WindowsTask.new() }
+  let(:current_resource) { Chef::Resource::WindowsTask.new }
 
   let(:provider) do
     node = Chef::Node.new

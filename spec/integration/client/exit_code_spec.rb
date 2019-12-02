@@ -30,21 +30,21 @@ describe "chef-client" do
     def setup_client_rb
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
-EOM
+        cookbook_path "#{path_to("cookbooks")}"
+      EOM
     end
 
     def setup_client_rb_with_audit_mode
       file "config/client.rb", <<~EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         audit_mode :audit_only
         silence_deprecation_warnings %w{chef-27}
-EOM
+      EOM
     end
 
     def run_chef_client_and_expect_exit_code(exit_code)
-      shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'x::default'",
+      shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'",
         cwd: chef_dir,
         returns: [exit_code])
     end
@@ -73,7 +73,7 @@ EOM
                   expect(4 - 4).to eq(1)
                 end
               end
-RECIPE
+            RECIPE
           end
 
           it "exits with AUDIT_MODE_FAILURE, 42" do
@@ -115,7 +115,7 @@ RECIPE
           before do
             file "cookbooks/x/recipes/default.rb", <<~EOM
               raise Chef::Exceptions::Reboot.new
-EOM
+            EOM
           end
 
           it "exits with REBOOT_SCHEDULED, 35" do
@@ -128,7 +128,7 @@ EOM
           before do
             file "cookbooks/x/recipes/default.rb", <<~EOM
               raise Chef::Exceptions::RebootFailed.new
-EOM
+            EOM
           end
 
           it "exits with REBOOT_FAILED, 41" do

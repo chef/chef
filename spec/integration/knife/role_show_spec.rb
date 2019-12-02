@@ -42,7 +42,7 @@ describe "knife role show", :workstation do
         name:                cons
         override_attributes:
         run_list:
-EOM
+      EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
 

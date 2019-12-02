@@ -42,21 +42,21 @@ describe "knife cookbook bulk delete", :workstation do
         foo  fox
         
         Do you really want to delete these cookbooks? (Y/N) 
-EOM
+      EOM
 
       stderr = <<~EOM
         Deleted cookbook  foo                       [1.0.0]
         Deleted cookbook  foo                       [0.6.5]
         Deleted cookbook  fox                       [0.6.5]
         Deleted cookbook  fox                       [0.6.0]
-EOM
+      EOM
 
       knife("cookbook bulk delete ^fo.*", input: "Y").should_succeed(stderr: stderr, stdout: stdout)
 
       knife("cookbook list -a").should_succeed <<~EOM
         fax   0.6.0
         zfa   0.6.5
-EOM
+      EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
 

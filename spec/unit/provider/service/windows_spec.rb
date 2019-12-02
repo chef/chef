@@ -41,8 +41,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       tag_id: 0,
       dependencies: ["Winmgmt"],
       service_start_name: "LocalSystem",
-      display_name: "Chef Client Service"
-    )
+      display_name: "Chef Client Service")
   end
 
   # Actual response from Win32::Service.services
@@ -73,8 +72,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       command: nil,
       num_actions: 0,
       actions: nil,
-      delayed_start: 1
-    )
+      delayed_start: 1)
   end
 
   let(:provider) do
@@ -98,7 +96,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     allow(Win32::Service).to receive(:start).with(any_args).and_return(Win32::Service)
     allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-      double("StatusStruct", current_state: "running"))
+      double("StatusStruct", current_state: "running")
+    )
     allow(Win32::Service).to receive(:config_info).with(new_resource.service_name)
       .and_return(chef_service_config_info)
 
@@ -176,8 +175,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
           tag_id: 0,
           dependencies: %w{NSI Tdx Afd},
           service_start_name: 'NT Authority\\LocalService',
-          display_name: "DHCP Client"
-        ))
+          display_name: "DHCP Client")
+      )
     end
 
     context "startup_type is neither :automatic or :disabled" do
@@ -192,8 +191,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
             tag_id: 0,
             dependencies: %w{NSI Tdx Afd},
             service_start_name: 'NT Authority\\LocalService',
-            display_name: "DHCP Client"
-          ))
+            display_name: "DHCP Client")
+        )
       end
 
       it "does not set the current resources enabled" do
@@ -385,14 +384,14 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       # properties that are Strings
       %i{binary_path_name load_order_group dependencies run_as_user
          display_name description}.each do |attr|
-        it "configures service if #{attr} has changed" do
-          provider.current_resource.send("#{attr}=", "old value")
-          provider.new_resource.send("#{attr}=", "new value")
+           it "configures service if #{attr} has changed" do
+             provider.current_resource.send("#{attr}=", "old value")
+             provider.new_resource.send("#{attr}=", "new value")
 
-          expect(Win32::Service).to receive(:configure)
-          provider.action_configure
-        end
-      end
+             expect(Win32::Service).to receive(:configure)
+             provider.action_configure
+           end
+         end
 
       # properties that are Integers
       %i{service_type error_control}.each do |attr|
@@ -503,7 +502,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
     before(:each) do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "stopped"),
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
     end
 
     context "run_as_user user is specified" do
@@ -553,7 +553,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "does nothing if the service is running" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       provider.start_service
@@ -562,7 +563,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "raises an error if the service is paused" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "paused"))
+        double("StatusStruct", current_state: "paused")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       expect { provider.start_service }.to raise_error( Chef::Exceptions::Service )
@@ -573,7 +575,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "start pending"),
         double("StatusStruct", current_state: "start pending"),
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       provider.start_service
@@ -582,7 +585,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "fails if the service is in stop_pending" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "stop pending"))
+        double("StatusStruct", current_state: "stop pending")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       expect { provider.start_service }.to raise_error( Chef::Exceptions::Service )
@@ -623,7 +627,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
     before(:each) do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "running"),
-        double("StatusStruct", current_state: "stopped"))
+        double("StatusStruct", current_state: "stopped")
+      )
     end
 
     it "calls the stop command if one is specified" do
@@ -648,7 +653,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "does nothing if the service is stopped" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "stopped"))
+        double("StatusStruct", current_state: "stopped")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:stop).with(new_resource.service_name)
       provider.stop_service
@@ -657,7 +663,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "raises an error if the service is paused" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "paused"))
+        double("StatusStruct", current_state: "paused")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:start).with(new_resource.service_name)
       expect { provider.stop_service }.to raise_error( Chef::Exceptions::Service )
@@ -668,7 +675,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "stop pending"),
         double("StatusStruct", current_state: "stop pending"),
-        double("StatusStruct", current_state: "stopped"))
+        double("StatusStruct", current_state: "stopped")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:stop).with(new_resource.service_name)
       provider.stop_service
@@ -677,7 +685,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "fails if the service is in start_pending" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "start pending"))
+        double("StatusStruct", current_state: "start pending")
+      )
       provider.load_current_resource
       expect(Win32::Service).not_to receive(:stop).with(new_resource.service_name)
       expect { provider.stop_service }.to raise_error( Chef::Exceptions::Service )
@@ -686,7 +695,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
 
     it "passes custom timeout to the stop command if provided" do
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
       new_resource.timeout 1
       expect(Win32::Service).to receive(:stop).with(new_resource.service_name)
       Timeout.timeout(2) do
@@ -711,7 +721,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
         double("StatusStruct", current_state: "running"),
         double("StatusStruct", current_state: "stopped"),
         double("StatusStruct", current_state: "stopped"),
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
       expect(Win32::Service).to receive(:stop).with(new_resource.service_name)
       expect(Win32::Service).to receive(:start).with(new_resource.service_name)
       provider.restart_service
@@ -722,7 +733,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
       allow(Win32::Service).to receive(:status).with(new_resource.service_name).and_return(
         double("StatusStruct", current_state: "stopped"),
         double("StatusStruct", current_state: "stopped"),
-        double("StatusStruct", current_state: "running"))
+        double("StatusStruct", current_state: "running")
+      )
       expect(Win32::Service).to receive(:start).with(new_resource.service_name)
       provider.restart_service
       expect(new_resource.updated_by_last_action?).to be_truthy
@@ -741,7 +753,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   describe Chef::Provider::Service::Windows, "enable_service" do
     before(:each) do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "disabled"))
+        double("ConfigStruct", start_type: "disabled")
+      )
     end
 
     it "enables service" do
@@ -761,14 +774,16 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   describe Chef::Provider::Service::Windows, "action_enable" do
     it "does nothing if the service is enabled" do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "auto start"))
+        double("ConfigStruct", start_type: "auto start")
+      )
       expect(provider).not_to receive(:enable_service)
       provider.action_enable
     end
 
     it "enables the service if it is not set to automatic start" do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "disabled"))
+        double("ConfigStruct", start_type: "disabled")
+      )
       expect(provider).to receive(:enable_service)
       provider.action_enable
     end
@@ -777,14 +792,16 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   describe Chef::Provider::Service::Windows, "action_disable" do
     it "does nothing if the service is disabled" do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "disabled"))
+        double("ConfigStruct", start_type: "disabled")
+      )
       expect(provider).not_to receive(:disable_service)
       provider.action_disable
     end
 
     it "disables the service if it is not set to disabled" do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "auto start"))
+        double("ConfigStruct", start_type: "auto start")
+      )
       expect(provider).to receive(:disable_service)
       provider.action_disable
     end
@@ -793,7 +810,8 @@ describe Chef::Provider::Service::Windows, "load_current_resource", :windows_onl
   describe Chef::Provider::Service::Windows, "disable_service" do
     before(:each) do
       allow(Win32::Service).to receive(:config_info).with(new_resource.service_name).and_return(
-        double("ConfigStruct", start_type: "auto start"))
+        double("ConfigStruct", start_type: "auto start")
+      )
     end
 
     it "disables service" do

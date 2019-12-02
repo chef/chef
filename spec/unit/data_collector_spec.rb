@@ -401,11 +401,11 @@ describe Chef::DataCollector::Reporter do
 
     let(:run_status) do
       instance_double("Chef::RunStatus",
-                      run_id: "run_id",
-                      node: node,
-                      start_time: Time.new,
-                      end_time: Time.new,
-                      exception: exception)
+        run_id: "run_id",
+        node: node,
+        start_time: Time.new,
+        end_time: Time.new,
+        exception: exception)
     end
 
     before do
@@ -727,29 +727,29 @@ describe Chef::DataCollector::Reporter do
       Errno::ECONNREFUSED, EOFError, Net::HTTPBadResponse,
       Net::HTTPHeaderSyntaxError, Net::ProtocolError, OpenSSL::SSL::SSLError,
       Errno::EHOSTDOWN ].each do |exception_class|
-      context "when the block raises a #{exception_class} exception" do
-        it "disables the reporter" do
-          expect(reporter).to receive(:disable_data_collector_reporter)
-          reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") }
-        end
-
-        context "when raise-on-failure is enabled" do
-          it "logs an error and raises" do
-            Chef::Config[:data_collector][:raise_on_failure] = true
-            expect(Chef::Log).to receive(:error)
-            expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.to raise_error(exception_class)
+        context "when the block raises a #{exception_class} exception" do
+          it "disables the reporter" do
+            expect(reporter).to receive(:disable_data_collector_reporter)
+            reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") }
           end
-        end
 
-        context "when raise-on-failure is disabled" do
-          it "logs an info message and does not raise an exception" do
-            Chef::Config[:data_collector][:raise_on_failure] = false
-            expect(Chef::Log).to receive(:info)
-            expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.not_to raise_error
+          context "when raise-on-failure is enabled" do
+            it "logs an error and raises" do
+              Chef::Config[:data_collector][:raise_on_failure] = true
+              expect(Chef::Log).to receive(:error)
+              expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.to raise_error(exception_class)
+            end
+          end
+
+          context "when raise-on-failure is disabled" do
+            it "logs an info message and does not raise an exception" do
+              Chef::Config[:data_collector][:raise_on_failure] = false
+              expect(Chef::Log).to receive(:info)
+              expect { reporter.send(:disable_reporter_on_error) { raise exception_class.new("bummer") } }.not_to raise_error
+            end
           end
         end
       end
-    end
   end
 
   describe "#validate_data_collector_server_url!" do
@@ -824,7 +824,7 @@ describe Chef::DataCollector::Reporter do
         resource_a  = Chef::Resource::Service.new("processed service")
         resource_b  = Chef::Resource::Service.new("unprocessed service")
 
-        resource_a.action = [ :enable, :start ]
+        resource_a.action = %i{enable start}
         resource_b.action = :start
 
         run_context = Chef::RunContext.new(Chef::Node.new, Chef::CookbookCollection.new, nil)

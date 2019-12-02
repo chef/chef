@@ -36,7 +36,7 @@ describe Chef::Provider::Service::Invokercd, "load_current_resource" do
       aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
       aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
       aj        8119  6041  0 21:34 pts/3    00:00:03 vi init_service_spec.rb
-PS
+    PS
     @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
@@ -121,7 +121,7 @@ PS
       @stdout = StringIO.new(<<~RUNNING_PS)
         aj        7842  5057  0 21:26 pts/2    00:00:06 chef
         aj        7842  5057  0 21:26 pts/2    00:00:06 poos
-RUNNING_PS
+      RUNNING_PS
       @status = double("Status", exitstatus: 0, stdout: @stdout)
       expect(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
@@ -152,12 +152,12 @@ RUNNING_PS
     it "should call the start command if one is specified" do
       @new_resource.start_command("/usr/sbin/invoke-rc.d chef startyousillysally")
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef startyousillysally", default_env: false)
-      @provider.start_service()
+      @provider.start_service
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name start' if no start command is specified" do
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} start", default_env: false)
-      @provider.start_service()
+      @provider.start_service
     end
   end
 
@@ -165,12 +165,12 @@ RUNNING_PS
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/usr/sbin/invoke-rc.d chef itoldyoutostop")
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef itoldyoutostop", default_env: false)
-      @provider.stop_service()
+      @provider.stop_service
     end
 
     it "should call '/usr/sbin/invoke-rc.d service_name stop' if no stop command is specified" do
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} stop", default_env: false)
-      @provider.stop_service()
+      @provider.stop_service
     end
   end
 
@@ -178,20 +178,20 @@ RUNNING_PS
     it "should call 'restart' on the service_name if the resource supports it" do
       @new_resource.supports({ restart: true })
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restart", default_env: false)
-      @provider.restart_service()
+      @provider.restart_service
     end
 
     it "should call the restart_command if one has been specified" do
       @new_resource.restart_command("/usr/sbin/invoke-rc.d chef restartinafire")
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d #{@new_resource.service_name} restartinafire", default_env: false)
-      @provider.restart_service()
+      @provider.restart_service
     end
 
     it "should just call stop, then start when the resource doesn't support restart and no restart_command is specified" do
       expect(@provider).to receive(:stop_service)
       expect(@provider).to receive(:sleep).with(1)
       expect(@provider).to receive(:start_service)
-      @provider.restart_service()
+      @provider.restart_service
     end
   end
 
@@ -199,13 +199,13 @@ RUNNING_PS
     it "should call 'reload' on the service if it supports it" do
       @new_resource.supports({ reload: true })
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef reload", default_env: false)
-      @provider.reload_service()
+      @provider.reload_service
     end
 
     it "should should run the user specified reload command if one is specified and the service doesn't support reload" do
       @new_resource.reload_command("/usr/sbin/invoke-rc.d chef lollerpants")
       expect(@provider).to receive(:shell_out!).with("/usr/sbin/invoke-rc.d chef lollerpants", default_env: false)
-      @provider.reload_service()
+      @provider.reload_service
     end
   end
 end

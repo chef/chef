@@ -95,7 +95,7 @@ describe Chef::Resource::YumPackage, "flush_cache" do
   end
 
   it "should allow you to set the flush timing with an array" do
-    flush_array = [ :before, :after ]
+    flush_array = %i{before after}
     flush_hash = { before: true, after: true }
     @resource.flush_cache(flush_array)
     expect(@resource.flush_cache).to eq(flush_hash)

@@ -73,7 +73,7 @@ describe "key list commands that inherit knife" do
 end
 
 describe Chef::Knife::KeyList do
-  let(:config) { Hash.new }
+  let(:config) { {} }
   let(:actor) { "charmander" }
   let(:ui) { instance_double("Chef::Knife::UI") }
 

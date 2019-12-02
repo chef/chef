@@ -619,7 +619,7 @@ describe Chef::ResourceReporter do
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id,
                                                  start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+            { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
           .and_raise(@error)
       end
 
@@ -648,7 +648,7 @@ describe Chef::ResourceReporter do
         @error = Net::HTTPClientException.new("500 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+            { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
           .and_raise(@error)
       end
 
@@ -678,7 +678,7 @@ describe Chef::ResourceReporter do
         @error = Net::HTTPClientException.new("500 message", @response)
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+            { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
           .and_raise(@error)
       end
 
@@ -699,7 +699,7 @@ describe Chef::ResourceReporter do
         response = { "uri" => "https://example.com/reports/nodes/spitfire/runs/@run_id" }
         expect(@rest_client).to receive(:post)
           .with("reports/nodes/spitfire/runs", { action: :start, run_id: @run_id, start_time: @start_time.to_s },
-               { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
+            { "X-Ops-Reporting-Protocol-Version" => Chef::ResourceReporter::PROTOCOL_VERSION })
           .and_return(response)
         @resource_reporter.run_started(@run_status)
       end

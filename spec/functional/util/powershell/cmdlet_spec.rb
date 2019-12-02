@@ -29,7 +29,7 @@ describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   let(:invalid_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "get-idontexist", cmd_output_format) }
   let(:cmdlet_get_item_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "get-item", cmd_output_format, { depth: 2 }) }
   let(:cmdlet_alias_requires_switch_or_argument) { Chef::Util::Powershell::Cmdlet.new(@node, "alias", cmd_output_format, { depth: 2 }) }
-  let(:etc_directory) { "#{ENV['systemroot']}\\system32\\drivers\\etc" }
+  let(:etc_directory) { "#{ENV["systemroot"]}\\system32\\drivers\\etc" }
   let(:architecture_cmdlet) { Chef::Util::Powershell::Cmdlet.new(@node, "$env:PROCESSOR_ARCHITECTURE") }
 
   it "executes a simple process" do

@@ -46,6 +46,7 @@ require "wmi-lite/wmi" if windows?
 
 def windows_domain_joined?
   return false unless windows?
+
   wmi = WmiLite::Wmi.new
   computer_system = wmi.first_of("Win32_ComputerSystem")
   computer_system["partofdomain"]
@@ -54,19 +55,20 @@ end
 def windows_2008r2_or_later?
   return false unless windows?
   return false unless host_version
-  components = host_version.split(".").map do |component|
-    component.to_i
-  end
+
+  components = host_version.split(".").map(&:to_i)
   components.length >= 2 && components[0] >= 6 && components[1] >= 1
 end
 
 def windows_2012r2?
   return false unless windows?
+
   (host_version && host_version.start_with?("6.3"))
 end
 
 def windows_gte_10?
   return false unless windows?
+
   Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(host_version))
 end
 
@@ -80,6 +82,7 @@ end
 
 def windows_powershell_dsc?
   return false unless windows?
+
   supports_dsc = false
   begin
     wmi = WmiLite::Wmi.new("root/microsoft/windows/desiredstateconfiguration")
@@ -97,6 +100,7 @@ end
 
 def windows_user_right?(right)
   return false unless windows?
+
   require "chef/win32/security"
   Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
@@ -238,6 +242,7 @@ end
 
 def root?
   return false if windows?
+
   Process.euid == 0
 end
 

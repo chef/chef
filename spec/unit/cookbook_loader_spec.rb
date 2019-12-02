@@ -91,7 +91,7 @@ describe Chef::CookbookLoader do
 
     describe "each" do
       it "should allow you to iterate over cookbooks with each" do
-        seen = Hash.new
+        seen = {}
         cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end
@@ -100,7 +100,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should iterate in alphabetical order" do
-        seen = Array.new
+        seen = []
         cookbook_loader.each_key do |cookbook_name|
           seen << cookbook_name
         end
@@ -116,52 +116,52 @@ describe Chef::CookbookLoader do
 
       it "should allow you to override an attribute file via cookbook_path" do
         expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /cookbooks\/openldap\/attributes\/default.rb/
+          f =~ %r{cookbooks/openldap/attributes/default.rb}
         end).not_to eql(nil)
         expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /kitchen\/openldap\/attributes\/default.rb/
+          f =~ %r{kitchen/openldap/attributes/default.rb}
         end).to eql(nil)
       end
 
       it "should load different attribute files from deeper paths" do
         expect(full_paths_for_part(:openldap, "attributes").detect do |f|
-          f =~ /kitchen\/openldap\/attributes\/robinson.rb/
+          f =~ %r{kitchen/openldap/attributes/robinson.rb}
         end).not_to eql(nil)
       end
 
       it "should allow you to override a definition file via cookbook_path" do
         expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /cookbooks\/openldap\/definitions\/client.rb/
+          f =~ %r{cookbooks/openldap/definitions/client.rb}
         end).not_to eql(nil)
         expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /kitchen\/openldap\/definitions\/client.rb/
+          f =~ %r{kitchen/openldap/definitions/client.rb}
         end).to eql(nil)
       end
 
       it "should load definition files from deeper paths" do
         expect(full_paths_for_part(:openldap, "definitions").detect do |f|
-          f =~ /kitchen\/openldap\/definitions\/drewbarrymore.rb/
+          f =~ %r{kitchen/openldap/definitions/drewbarrymore.rb}
         end).not_to eql(nil)
       end
 
       it "should allow you to override a recipe file via cookbook_path" do
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /cookbooks\/openldap\/recipes\/gigantor.rb/
+          f =~ %r{cookbooks/openldap/recipes/gigantor.rb}
         end).not_to eql(nil)
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/gigantor.rb/
+          f =~ %r{kitchen/openldap/recipes/gigantor.rb}
         end).to eql(nil)
       end
 
       it "should load recipe files from deeper paths" do
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/woot.rb/
+          f =~ %r{kitchen/openldap/recipes/woot.rb}
         end).not_to eql(nil)
       end
 
       it "should allow you to have an 'ignore' file, which skips loading files in later cookbooks" do
         expect(full_paths_for_part(:openldap, "recipes").detect do |f|
-          f =~ /kitchen\/openldap\/recipes\/ignoreme.rb/
+          f =~ %r{kitchen/openldap/recipes/ignoreme.rb}
         end).to eql(nil)
       end
 
@@ -170,8 +170,8 @@ describe Chef::CookbookLoader do
           f =~ /\.dotfile$/
         end).to match(/\.dotfile$/)
         expect(full_paths_for_part(:openldap, "files").detect do |f|
-          f =~ /\.ssh\/id_rsa$/
-        end).to match(/\.ssh\/id_rsa$/)
+          f =~ %r{\.ssh/id_rsa$}
+        end).to match(%r{\.ssh/id_rsa$})
       end
 
       it "should load the metadata for the cookbook" do
@@ -210,7 +210,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should have loaded the correct cookbook" do
-      seen = Hash.new
+      seen = {}
       cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
@@ -238,7 +238,7 @@ describe Chef::CookbookLoader do
     end
 
     it "should not load the other cookbooks" do
-      seen = Hash.new
+      seen = {}
       cookbook_loader.each_key do |cookbook_name|
         seen[cookbook_name] = true
       end
@@ -276,7 +276,7 @@ describe Chef::CookbookLoader do
       end
 
       it "should load all cookbooks" do
-        seen = Hash.new
+        seen = {}
         cookbook_loader.each_key do |cookbook_name|
           seen[cookbook_name] = true
         end

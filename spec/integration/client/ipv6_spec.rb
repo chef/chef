@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,7 +53,7 @@ describe "chef-client" do
       syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
       +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
       -----END RSA PRIVATE KEY-----
-END_VALIDATION_PEM
+    END_VALIDATION_PEM
   end
 
   let(:cache_path) do
@@ -63,10 +63,10 @@ END_VALIDATION_PEM
   let(:basic_config_file) do
     <<~END_CLIENT_RB
       chef_server_url "http://[::1]:8900"
-      validation_key '#{path_to('config/validator.pem')}'
+      validation_key '#{path_to("config/validator.pem")}'
       cache_path '#{cache_path}'
       client_key '#{cache_path}/client.pem'
-END_CLIENT_RB
+    END_CLIENT_RB
   end
 
   let(:client_rb_content) do
@@ -75,7 +75,7 @@ END_CLIENT_RB
 
   let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
 
-  let(:chef_client_cmd) { %Q{ruby '#{chef_dir}/chef-client' --minimal-ohai -c "#{path_to('config/client.rb')}" -lwarn} }
+  let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to("config/client.rb")}" -lwarn} }
 
   after do
     FileUtils.rm_rf(cache_path)

@@ -66,7 +66,7 @@ describe Chef::Audit::AuditData do
     end
 
     it "describes a Chef::Audit::AuditData object" do
-      keys = [:node_name, :run_id, :start_time, :end_time, :control_groups]
+      keys = %i{node_name run_id start_time end_time control_groups}
       expect(audit_data_hash.keys).to match_array(keys)
     end
 
@@ -125,7 +125,8 @@ describe Chef::Audit::ControlData do
   let(:control_data) do
     described_class.new(name: name,
                         resource_type: resource_type, resource_name: resource_name,
-                        context: context, line_number: line_number) end
+                        context: context, line_number: line_number)
+  end
 
   describe "#to_h" do
 
@@ -136,7 +137,7 @@ describe Chef::Audit::ControlData do
     end
 
     it "describes a Chef::Audit::ControlData object" do
-      keys = [:name, :resource_type, :resource_name, :context, :status, :details]
+      keys = %i{name resource_type resource_name context status details}
       expect(control_data_hash.keys).to match_array(keys)
     end
 
@@ -190,7 +191,8 @@ describe Chef::Audit::ControlGroupData do
     let(:control) do
       Chef::Audit::ControlData.new(name: name,
                                    resource_type: resource_type, resource_name: resource_name,
-                                   context: context, line_number: line_number) end
+                                   context: context, line_number: line_number)
+    end
 
     before do
       allow(Chef::Audit::ControlData).to receive(:new)
@@ -394,8 +396,8 @@ describe Chef::Audit::ControlGroupData do
     end
 
     it "describes a Chef::Audit::ControlGroupData object" do
-      keys = [:name, :status, :number_succeeded, :number_failed,
-        :controls, :id]
+      keys = %i{name status number_succeeded number_failed
+        controls id}
       expect(control_group_data_hash.keys).to match_array(keys)
     end
 
@@ -440,16 +442,19 @@ describe Chef::Audit::ControlGroupData do
 
         let(:control_1) do
           double("control 1",
-          line_number: control_hash_1[:line_number],
-          to_h: control_hash_1) end
+            line_number: control_hash_1[:line_number],
+            to_h: control_hash_1)
+        end
         let(:control_2) do
           double("control 2",
-          line_number: control_hash_2[:line_number],
-          to_h: control_hash_2) end
+            line_number: control_hash_2[:line_number],
+            to_h: control_hash_2)
+        end
         let(:control_3) do
           double("control 3",
-          line_number: control_hash_3[:line_number],
-          to_h: control_hash_3) end
+            line_number: control_hash_3[:line_number],
+            to_h: control_hash_3)
+        end
 
         let(:control_list) { [control_1, control_2, control_3] }
         let(:ordered_control_hashes) { [control_hash_2, control_hash_1, control_hash_3] }

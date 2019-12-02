@@ -96,7 +96,7 @@ end
 describe Chef::Resource::Group, "members" do
   let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
-  [ :users, :members].each do |method|
+  %i{users members}.each do |method|
     it "(#{method}) allows a String and coerces it to an Array" do
       resource.send(method, "some_user")
       expect(resource.send(method)).to eql(["some_user"])

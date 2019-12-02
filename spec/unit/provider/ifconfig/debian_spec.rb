@@ -123,7 +123,7 @@ describe Chef::Provider::Ifconfig::Debian do
             a line
             source #{tempdir_path}/*
             another line
-EOF
+          EOF
         end
 
         before do
@@ -146,7 +146,7 @@ EOF
             a line
             another line
             source #{tempdir_path}/*
-EOF
+          EOF
         end
 
         before do

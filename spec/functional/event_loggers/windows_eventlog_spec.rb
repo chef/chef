@@ -49,16 +49,18 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_start(version)
 
     expect(event_log.read(flags, offset).any? do |e|
-             e.source == "Chef" && e.event_id == 10000 &&
-                                               e.string_inserts[0].include?(version) end).to be_truthy
+      e.source == "Chef" && e.event_id == 10000 &&
+                                        e.string_inserts[0].include?(version)
+    end ).to be_truthy
   end
 
   it "writes run_started event with event_id 10001 and contains the run_id" do
     logger.run_started(run_status)
 
     expect(event_log.read(flags, offset).any? do |e|
-             e.source == "Chef" && e.event_id == 10001 &&
-                                               e.string_inserts[0].include?(run_id) end).to be_truthy
+      e.source == "Chef" && e.event_id == 10001 &&
+                                        e.string_inserts[0].include?(run_id)
+    end ).to be_truthy
   end
 
   it "writes run_completed event with event_id 10002 and contains the run_id and elapsed time" do

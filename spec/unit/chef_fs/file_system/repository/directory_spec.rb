@@ -106,7 +106,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     it "filters invalid names" do
-      expect(test_directory.children.map { |c| c.name }).to eql %w{ test1.json test2.json test3.json }
+      expect(test_directory.children.map(&:name)).to eql %w{ test1.json test2.json test3.json }
     end
   end
 

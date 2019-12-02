@@ -113,7 +113,7 @@ describe Chef::Role do
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      expect { @role.default_attributes(Array.new) }.to raise_error(ArgumentError)
+      expect { @role.default_attributes([]) }.to raise_error(ArgumentError)
     end
   end
 
@@ -128,7 +128,7 @@ describe Chef::Role do
     end
 
     it "should throw an ArgumentError if we aren't a kind of hash" do
-      expect { @role.override_attributes(Array.new) }.to raise_error(ArgumentError)
+      expect { @role.override_attributes([]) }.to raise_error(ArgumentError)
     end
   end
 
@@ -248,7 +248,7 @@ describe Chef::Role do
   ROLE_DSL = <<~EOR.freeze
     name "ceiling_cat"
     description "like Aliens, but furry"
-EOR
+  EOR
 
   describe "when loading from disk" do
     before do

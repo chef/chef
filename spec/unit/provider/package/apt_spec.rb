@@ -489,8 +489,8 @@ describe Chef::Provider::Package::Apt do
         allow(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "showhold", timeout: 900
         ).and_return(instance_double(
-          Mixlib::ShellOut, stdout: "irssi")
-                    )
+          Mixlib::ShellOut, stdout: "irssi"
+        ))
         expect(logger).to receive(:trace).with("#{@provider.new_resource} is already locked")
 
         @provider.action_lock
@@ -510,8 +510,8 @@ describe Chef::Provider::Package::Apt do
         allow(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "showhold", timeout: 900
         ).and_return(instance_double(
-          Mixlib::ShellOut, stdout: "")
-                    )
+          Mixlib::ShellOut, stdout: ""
+        ))
         expect(logger).to receive(:trace).with("#{@provider.new_resource} is already unlocked")
 
         @provider.action_unlock
@@ -564,7 +564,7 @@ describe Chef::Provider::Package::Apt do
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
           timeout: @timeout
         )
-        @provider.install_package(["libmysqlclient15-dev", "irssi"], ["not_a_real_version", "0.8.12-7"])
+        @provider.install_package(%w{libmysqlclient15-dev irssi}, ["not_a_real_version", "0.8.12-7"])
       end
     end
 

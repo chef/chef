@@ -47,7 +47,7 @@ describe "knife data bag from file", :workstation do
               "cipher": "aes-256-cbc"
             }
           }
-EOM
+        EOM
         file "data_bags/bar/round_trip.json", <<~EOM
           {
             "name": "data_bag_item_bar_round_trip",
@@ -70,33 +70,33 @@ EOM
               }
             }
           }
-EOM
+        EOM
       end
 
       it "uploads a single file" do
         knife("data bag from file foo #{db_dir}/foo/bar.json").should_succeed stderr: <<~EOM
           Updated data_bag_item[foo::bar]
-EOM
+        EOM
       end
 
       it "uploads a single encrypted file" do
         knife("data bag from file foo #{db_dir}/foo/encrypted.json").should_succeed stderr: <<~EOM
           Updated data_bag_item[foo::encrypted]
-EOM
+        EOM
       end
 
       it "uploads a file in chef's internal format" do
         pending "chef/chef#4815"
         knife("data bag from file bar #{db_dir}/bar/round_trip.json").should_succeed stderr: <<~EOM
           Updated data_bag_item[bar::round_trip]
-EOM
+        EOM
       end
 
       it "uploads many files" do
         knife("data bag from file foo #{db_dir}/foo/bar.json #{db_dir}/foo/bzr.json").should_succeed stderr: <<~EOM
           Updated data_bag_item[foo::bar]
           Updated data_bag_item[foo::bzr]
-EOM
+        EOM
       end
 
       it "uploads a whole directory" do
@@ -107,7 +107,7 @@ EOM
           cat
           dog
           encrypted
-EOM
+        EOM
       end
 
     end

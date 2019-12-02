@@ -129,14 +129,14 @@ describe Chef::Provider::Service::Gentoo do
     describe Chef::Provider::Service::Gentoo, "enable_service" do
       it "should call rc-update add *service* default" do
         expect(@provider).to receive(:shell_out!).with("/sbin/rc-update add chef default")
-        @provider.enable_service()
+        @provider.enable_service
       end
     end
 
     describe Chef::Provider::Service::Gentoo, "disable_service" do
       it "should call rc-update del *service* default" do
         expect(@provider).to receive(:shell_out!).with("/sbin/rc-update del chef default")
-        @provider.disable_service()
+        @provider.disable_service
       end
     end
   end

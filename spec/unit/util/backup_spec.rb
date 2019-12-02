@@ -110,7 +110,7 @@ describe Chef::Util::Backup do
     end
     it "should strip the drive letter off for windows" do
       expect(@backup).to receive(:path).and_return('c:\a\b\c.txt')
-      expect(@backup.send(:backup_filename)).to match(%r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|)
+      expect(@backup.send(:backup_filename)).to match(/^\\a\\b\\c.txt.chef-\d{14}.\d{6}$/)
     end
     it "should strip the drive letter off for windows (with forwardslashes)" do
       expect(@backup).to receive(:path).and_return("c:/a/b/c.txt")

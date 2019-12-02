@@ -412,7 +412,7 @@ describe Chef::Client do
     let(:required_recipe) do
       <<~EOM
         fake_recipe_variable = "for reals"
-EOM
+      EOM
     end
 
     context "when required_recipe is configured" do
@@ -431,10 +431,10 @@ EOM
         let(:required_recipe) do
           <<~EOM
             this is not a recipe
-EOM
+          EOM
         end
         it "should not raise an error" do
-          expect { client.load_required_recipe(rest, run_context) }.not_to raise_error()
+          expect { client.load_required_recipe(rest, run_context) }.not_to raise_error
         end
       end
     end

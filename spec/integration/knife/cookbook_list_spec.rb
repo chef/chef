@@ -39,7 +39,7 @@ describe "knife cookbook list", :workstation do
         x   1.0.0
         y   0.6.5
         z   0.6.5
-EOM
+      EOM
     end
 
     it "knife cookbook list -a shows all the versions of all the cookbooks" do
@@ -47,7 +47,7 @@ EOM
         x   1.0.0  0.6.5  0.6.0
         y   0.6.5  0.6.0
         z   0.6.5
-EOM
+      EOM
     end
 
   end

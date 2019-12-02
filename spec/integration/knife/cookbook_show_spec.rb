@@ -82,7 +82,7 @@ describe "knife cookbook show", :workstation do
           specificity: default
           url:         http://127.0.0.1:8900/file_store/checksums/8226671f751ba102dea6a6b6bd32fa8d
         version:       1.0.0
-EOM
+      EOM
     end
 
     it "knife cookbook show x 1.0.0 metadata shows the metadata" do
@@ -109,7 +109,7 @@ EOM
           x::x: 
         source_url:       
         version:          1.0.0
-EOM
+      EOM
     end
 
     it "knife cookbook show x 1.0.0 recipes shows all the recipes" do
@@ -125,7 +125,7 @@ EOM
         path:        recipes/x.rb
         specificity: default
         url:         http://127.0.0.1:8900/file_store/checksums/d41d8cd98f00b204e9800998ecf8427e
-EOM
+      EOM
     end
     # rubocop:enable Layout/TrailingWhitespace
 

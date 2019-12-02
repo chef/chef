@@ -42,7 +42,7 @@ describe "knife role from file", :workstation do
 
             }
           }
-EOM
+        EOM
 
         file "roles/car.json", <<~EOM
           {
@@ -57,7 +57,7 @@ EOM
 
             }
           }
-EOM
+        EOM
 
         file "roles/cdr.json", <<~EOM
           {
@@ -72,14 +72,14 @@ EOM
 
             }
           }
-EOM
+        EOM
 
       end
 
       it "uploads a single file" do
         knife("role from file #{role_dir}/cons.json").should_succeed stderr: <<~EOM
           Updated Role cons
-EOM
+        EOM
       end
 
       it "uploads many files" do
@@ -87,7 +87,7 @@ EOM
           Updated Role cons
           Updated Role car
           Updated Role cdr
-EOM
+        EOM
       end
 
     end

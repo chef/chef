@@ -36,7 +36,8 @@ describe Chef::Audit::AuditEventProxy do
     let(:description) { "poots" }
     let(:group) do
       double("ExampleGroup", parent_groups: parents,
-                             description: description) end
+                             description: description)
+    end
     let(:notification) { double("Notification", group: group) }
 
     context "when notified from a top-level example group" do
@@ -124,7 +125,8 @@ describe Chef::Audit::AuditEventProxy do
       let(:example) do
         double("Example", metadata: metadata,
                           description: example_description,
-                          full_description: full_description, exception: nil) end
+                          full_description: full_description, exception: nil)
+      end
 
       let(:metadata) do
         {
@@ -222,12 +224,14 @@ describe Chef::Audit::AuditEventProxy do
         let(:example_description) { "should not be listening" }
         let(:full_description) do
           [control_group_name, group_description,
-          example_description].join(" ") end
+          example_description].join(" ")
+        end
 
         # Metadata fields
         let(:described_class) do
           double("Serverspec::Type::Port",
-          class: "Serverspec::Type::Port", name: resource_name) end
+            class: "Serverspec::Type::Port", name: resource_name)
+        end
 
         # Control data fields
         let(:resource_type) { "Port" }
@@ -252,7 +256,8 @@ describe Chef::Audit::AuditEventProxy do
         let(:example_description) { "is not listening" }
         let(:full_description) do
           [control_group_name, group_description,
-          example_description].join(" ") end
+          example_description].join(" ")
+        end
 
         # Metadata fields
         let(:described_class) { nil }
@@ -283,12 +288,14 @@ describe Chef::Audit::AuditEventProxy do
         let(:example_description) { "is a file" }
         let(:full_description) do
           [control_group_name, outer_group_description,
-          group_description, example_description].join(" ") end
+          group_description, example_description].join(" ")
+        end
 
         # Metadata parts
         let(:described_class) do
           double("Serverspec::Type::File",
-          class: "Serverspec::Type::File", name: resource_name) end
+            class: "Serverspec::Type::File", name: resource_name)
+        end
 
         # Example group parts
         let(:parent_group) do

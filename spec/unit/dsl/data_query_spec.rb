@@ -24,7 +24,7 @@ class DataQueryDSLTester
 end
 
 describe Chef::DSL::DataQuery do
-  let(:node) { Hash.new }
+  let(:node) { {} }
 
   let(:language) do
     language = DataQueryDSLTester.new
@@ -68,7 +68,8 @@ describe Chef::DSL::DataQuery do
         "a1" => [1, 2, 3],
         "a2" => { "b1" => true },
       },
-    } end
+    }
+    end
 
     let(:item) do
       item = Chef::DataBagItem.new
