@@ -14,17 +14,17 @@ $ErrorActionPreference = 'Stop'
 
 echo "Downloading Ruby + DevKit"
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-(New-Object System.Net.WebClient).DownloadFile('https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.4-1/rubyinstaller-devkit-2.6.4-1-x64.exe', 'c:\\rubyinstaller-devkit-2.6.4-1-x64.exe')
+(New-Object System.Net.WebClient).DownloadFile('https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.5.7-1/rubyinstaller-devkit-2.6.5-1-x64.exe', 'c:\\rubyinstaller-devkit-2.6.5-1-x64.exe')
 
 echo "Installing Ruby + DevKit"
-Start-Process c:\rubyinstaller-devkit-2.6.4-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
+Start-Process c:\rubyinstaller-devkit-2.5.7-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
 
 echo "Cleaning up installation"
-Remove-Item c:\rubyinstaller-devkit-2.6.4-1-x64.exe -Force
+Remove-Item c:\rubyinstaller-devkit-2.5.7-1-x64.exe -Force
 echo "Closing out the layer (this can take awhile)"
 
 # Set-Item -Path Env:Path -Value to include ruby26
-$Env:Path+=";C:\ruby26\bin"
+$Env:Path+=";C:\ruby25\bin"
 
 winrm quickconfig -q
 ruby -v
