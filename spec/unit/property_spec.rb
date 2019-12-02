@@ -51,7 +51,8 @@ describe "Chef::Resource.property" do
   def self.english_join(values)
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
-    "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
+
+    "#{values[0..-2].map(&:inspect).join(", ")} and #{values[-1].inspect}"
   end
 
   def self.with_property(*properties, &block)
@@ -1051,19 +1052,19 @@ describe "Chef::Resource.property" do
       context "default ordering deprecation warnings" do
         it "emits an error for property :x, default: 10, #{name}: true" do
           expect { resource_class.property :x, :default => 10, name.to_sym => true }.to raise_error ArgumentError,
-            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
+            %r{A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)}
         end
         it "emits an error for property :x, default: nil, #{name}: true" do
           expect { resource_class.property :x, :default => nil, name.to_sym => true }.to raise_error ArgumentError,
-            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
+            %r{A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)}
         end
         it "emits an error for property :x, #{name}: true, default: 10" do
           expect { resource_class.property :x, name.to_sym => true, :default => 10 }.to raise_error ArgumentError,
-            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
+            %r{A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)}
         end
         it "emits an error for property :x, #{name}: true, default: nil" do
           expect { resource_class.property :x, name.to_sym => true, :default => nil }.to raise_error ArgumentError,
-            /A property cannot be both a name_property\/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)/
+            %r{A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property x of resource chef_resource_property_spec_(\d+)}
         end
       end
     end
@@ -1085,13 +1086,13 @@ describe "Chef::Resource.property" do
       expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          property_type(is: [:a, :b], default: :c)
+          property_type(is: %i{a b}, default: :c)
         end
       end.to raise_error(Chef::Exceptions::ValidationFailed)
       expect do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          property_type(is: [:a, :b], default: :b)
+          property_type(is: %i{a b}, default: :b)
         end
       end.not_to raise_error
     end
@@ -1100,8 +1101,8 @@ describe "Chef::Resource.property" do
       before :all do
         module ::PropertySpecPropertyTypes
           include Chef::Mixin::Properties
-          ABType = property_type(is: [:a, :b])
-          CDType = property_type(is: [:c, :d])
+          ABType = property_type(is: %i{a b})
+          CDType = property_type(is: %i{c d})
         end
       end
 

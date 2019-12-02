@@ -77,7 +77,8 @@ describe Chef::Knife::DataBagFromFile do
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
-  } end
+  }
+  end
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
   let(:rest) { double("Chef::ServerAPI") }

@@ -35,7 +35,7 @@ describe "knife list", :workstation do
         /nodes
         /roles
         /users
-EOM
+      EOM
     end
 
     it "knife list -R / returns everything" do
@@ -66,7 +66,7 @@ EOM
 
         /users:
         admin.json
-EOM
+      EOM
     end
   end
 
@@ -100,7 +100,7 @@ EOM
         /nodes
         /roles
         /users
-EOM
+      EOM
     end
 
     it "knife list -R / returns everything" do
@@ -163,7 +163,7 @@ EOM
         admin.json
         user1.json
         user2.json
-EOM
+      EOM
     end
 
     it "knife list -R --flat / returns everything" do
@@ -201,7 +201,7 @@ EOM
         /users/admin.json
         /users/user1.json
         /users/user2.json
-EOM
+      EOM
     end
 
     it "knife list -Rfp / returns everything" do
@@ -239,14 +239,14 @@ EOM
         /users/admin.json
         /users/user1.json
         /users/user2.json
-EOM
+      EOM
     end
 
     it "knife list /cookbooks returns the list of cookbooks" do
       knife("list /cookbooks").should_succeed <<~EOM
         /cookbooks/cookbook1
         /cookbooks/cookbook2
-EOM
+      EOM
     end
 
     it "knife list /cookbooks/*2/*/*.rb returns the one file" do
@@ -258,7 +258,7 @@ EOM
         /cookbooks/cookbook1/metadata.rb
         /cookbooks/cookbook2/metadata.rb
         /cookbooks/cookbook2/recipes/default.rb
-EOM
+      EOM
     end
 
     it "knife list /cookbooks/**.rb returns all ruby files" do
@@ -266,7 +266,7 @@ EOM
         /cookbooks/cookbook1/metadata.rb
         /cookbooks/cookbook2/metadata.rb
         /cookbooks/cookbook2/recipes/default.rb
-EOM
+      EOM
     end
 
     it "knife list /**.json returns all json files" do
@@ -289,7 +289,7 @@ EOM
         /users/admin.json
         /users/user1.json
         /users/user2.json
-EOM
+      EOM
     end
 
     it "knife list /data**.json returns all data bag json files" do
@@ -298,7 +298,7 @@ EOM
         /data_bags/bag1/item2.json
         /data_bags/bag2/item1.json
         /data_bags/bag2/item2.json
-EOM
+      EOM
     end
 
     it "knife list /environments/missing_file.json reports missing file" do
@@ -351,7 +351,7 @@ EOM
               users/admin.json
               users/user1.json
               users/user2.json
-EOM
+            EOM
           end
         end
       end
@@ -396,7 +396,7 @@ EOM
               /users/admin.json
               /users/user1.json
               /users/user2.json
-EOM
+            EOM
           end
 
           it "knife list -Rfp .. returns everything" do
@@ -434,7 +434,7 @@ EOM
               /users/admin.json
               /users/user1.json
               /users/user2.json
-EOM
+            EOM
           end
 
           it "knife list -Rfp returns cookbooks" do
@@ -445,7 +445,7 @@ EOM
               cookbook2/metadata.rb
               cookbook2/recipes/
               cookbook2/recipes/default.rb
-EOM
+            EOM
           end
         end
       end
@@ -461,7 +461,7 @@ EOM
               metadata.rb
               recipes/
               recipes/default.rb
-EOM
+            EOM
           end
         end
       end
@@ -483,7 +483,7 @@ EOM
               cookbook2/metadata.rb
               cookbook2/recipes/
               cookbook2/recipes/default.rb
-EOM
+            EOM
           end
         end
 
@@ -498,7 +498,7 @@ EOM
               cookbook2/metadata.rb
               cookbook2/recipes/
               cookbook2/recipes/default.rb
-EOM
+            EOM
           end
         end
       end
@@ -520,7 +520,7 @@ EOM
               cookbook2/metadata.rb
               cookbook2/recipes/
               cookbook2/recipes/default.rb
-EOM
+            EOM
           end
         end
 
@@ -535,7 +535,7 @@ EOM
               cookbook2/metadata.rb
               cookbook2/recipes/
               cookbook2/recipes/default.rb
-EOM
+            EOM
           end
         end
       end
@@ -619,7 +619,7 @@ EOM
           /users/
           /users/user1.json
           /users/user2.json
-EOM
+        EOM
       end
 
       context "missing file/directory tests" do
@@ -665,7 +665,7 @@ EOM
           /policies
           /policy_groups
           /roles
-EOM
+        EOM
       end
 
       it "knife list -R / returns everything" do
@@ -780,7 +780,7 @@ EOM
           /policy_groups:
 
           /roles:
-EOM
+        EOM
       end
     end
 
@@ -896,7 +896,7 @@ EOM
         /policy_groups:
 
         /roles:
-EOM
+      EOM
     end
 
     context "has plenty of stuff in it" do
@@ -1052,7 +1052,7 @@ EOM
           /roles/
           /roles/role1.json
           /roles/role2.json
-EOM
+        EOM
       end
     end
   end

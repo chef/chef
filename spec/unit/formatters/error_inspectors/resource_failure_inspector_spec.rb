@@ -60,7 +60,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
       @trace = [
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:14:in `from_file'",
         "/var/chef/cache/cookbooks/syntax-err/recipes/default.rb:11:in `from_file'",
-        "/usr/local/lib/ruby/gems/chef/lib/chef/client.rb:123:in `run'" # should not display
+        "/usr/local/lib/ruby/gems/chef/lib/chef/client.rb:123:in `run'", # should not display
       ]
       @exception = Chef::Exceptions::Package.new("No such package 'non-existing-package'")
       @exception.set_backtrace(@trace)
@@ -122,7 +122,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         source_line = "C:/Users/btm/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-        expect(@inspector.recipe_snippet).to match(/^# In C:\/Users\/btm/)
+        expect(@inspector.recipe_snippet).to match(%r{^# In C:/Users/btm})
       end
 
       it "parses a Windows path" do
@@ -136,7 +136,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         source_line = "/home/btm/src/chef/chef/spec/unit/fake_file.rb:2: undefined local variable or method `non_existent' for main:Object (NameError)"
         @resource.source_line = source_line
         @inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(@resource, :create, @exception)
-        expect(@inspector.recipe_snippet).to match(/^# In \/home\/btm/)
+        expect(@inspector.recipe_snippet).to match(%r{^# In /home/btm})
       end
 
       context "when the recipe file does not exist" do

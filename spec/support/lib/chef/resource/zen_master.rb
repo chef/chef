@@ -30,7 +30,7 @@ class Chef
       end
 
       def something(arg = nil)
-        if !arg.nil?
+        unless arg.nil?
           @something = arg
         end
         @something

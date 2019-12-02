@@ -150,7 +150,7 @@ describe "knife config get", :workstation do
     let(:cmd_args) { %w{node_name client_key} }
     before { file(".chef/credentials", "[default]\nclient_name = \"three\"\nclient_key = \"three.pem\"") }
 
-    it { is_expected.to match(/^client_key:\s+\S*\/.chef\/three.pem\nnode_name:\s+three\Z/) }
+    it { is_expected.to match(%r{^client_key:\s+\S*/.chef/three.pem\nnode_name:\s+three\Z}) }
   end
 
   context "with a dotted argument" do

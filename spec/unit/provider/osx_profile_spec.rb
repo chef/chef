@@ -132,7 +132,7 @@ describe Chef::Provider::OsxProfile do
       provider.load_current_resource
       expect(
         provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(test_profile["PayloadIdentifier"])
+      ).to eql(test_profile["PayloadIdentifier"])
     end
 
     it "should install when not installed" do
@@ -167,7 +167,7 @@ describe Chef::Provider::OsxProfile do
       provider.load_current_resource
       allow(provider).to receive(:write_profile_to_disk).and_return(profile_path)
       expect(provider).to receive(:shell_out_compacted).with("/usr/bin/profiles", "-I", "-F", profile_path).and_return(shell_out_success)
-      provider.action_install()
+      provider.action_install
     end
 
     it "should fail if there is no identifier inside the profile" do
@@ -228,16 +228,14 @@ describe Chef::Provider::OsxProfile do
       new_resource.profile_name "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(new_resource.profile_name)
+      expect(provider.instance_variable_get(:@new_profile_identifier)).to eql(new_resource.profile_name)
     end
 
     it "should use specified identifier" do
       new_resource.identifier "com.testprofile.screensaver"
       new_resource.action(:remove)
       provider.load_current_resource
-      expect(provider.instance_variable_get(:@new_profile_identifier)
-        ).to eql(new_resource.identifier)
+      expect(provider.instance_variable_get(:@new_profile_identifier)).to eql(new_resource.identifier)
     end
 
     it "should work with spaces in the identifier" do
@@ -251,7 +249,7 @@ describe Chef::Provider::OsxProfile do
       new_resource.action(:remove)
       provider.load_current_resource
       expect(provider).to receive(:shell_out_compacted).with("/usr/bin/profiles", "-R", "-p", new_resource.identifier).and_return(shell_out_success)
-      provider.action_remove()
+      provider.action_remove
     end
   end
 end

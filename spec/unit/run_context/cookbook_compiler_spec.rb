@@ -107,7 +107,7 @@ describe Chef::RunContext::CookbookCompiler do
       node.run_list("test-with-deps::default", "test-with-circular-deps::default")
 
       compiler.compile_libraries
-      expect(LibraryLoadOrder.load_order).to eq(["dependency1", "dependency2", "test-with-deps", "circular-dep2", "circular-dep1", "test-with-circular-deps"])
+      expect(LibraryLoadOrder.load_order).to eq(%w{dependency1 dependency2 test-with-deps circular-dep2 circular-dep1 test-with-circular-deps})
     end
   end
 
@@ -121,18 +121,18 @@ describe Chef::RunContext::CookbookCompiler do
       node.run_list("test-with-deps::default", "test-with-circular-deps::default")
 
       compiler.compile_lwrps
-      expect(LibraryLoadOrder.load_order).to eq(["dependency1-provider",
-                                             "dependency1-resource",
-                                             "dependency2-provider",
-                                             "dependency2-resource",
-                                             "test-with-deps-provider",
-                                             "test-with-deps-resource",
-                                             "circular-dep2-provider",
-                                             "circular-dep2-resource",
-                                             "circular-dep1-provider",
-                                             "circular-dep1-resource",
-                                             "test-with-circular-deps-provider",
-                                             "test-with-circular-deps-resource"])
+      expect(LibraryLoadOrder.load_order).to eq(%w{dependency1-provider
+                                             dependency1-resource
+                                             dependency2-provider
+                                             dependency2-resource
+                                             test-with-deps-provider
+                                             test-with-deps-resource
+                                             circular-dep2-provider
+                                             circular-dep2-resource
+                                             circular-dep1-provider
+                                             circular-dep1-resource
+                                             test-with-circular-deps-provider
+                                             test-with-circular-deps-resource})
     end
   end
 
@@ -147,12 +147,12 @@ describe Chef::RunContext::CookbookCompiler do
       node.run_list("test-with-deps::default", "test-with-circular-deps::default")
 
       compiler.compile_resource_definitions
-      expect(LibraryLoadOrder.load_order).to eq(["dependency1-definition",
-                                             "dependency2-definition",
-                                             "test-with-deps-definition",
-                                             "circular-dep2-definition",
-                                             "circular-dep1-definition",
-                                             "test-with-circular-deps-definition"])
+      expect(LibraryLoadOrder.load_order).to eq(%w{dependency1-definition
+                                             dependency2-definition
+                                             test-with-deps-definition
+                                             circular-dep2-definition
+                                             circular-dep1-definition
+                                             test-with-circular-deps-definition})
     end
 
   end
@@ -205,14 +205,14 @@ describe Chef::RunContext::CookbookCompiler do
     it "should return an array of cookbook names as symbols without duplicates" do
       node.run_list("test-with-circular-deps::default", "circular-dep1::default", "circular-dep2::default")
 
-      expect(compiler.cookbook_order).to eq([:"circular-dep2",
-                                         :"circular-dep1",
-                                         :"test-with-circular-deps"])
+      expect(compiler.cookbook_order).to eq(%i{circular-dep2
+                                         circular-dep1
+                                         test-with-circular-deps})
     end
 
     it "determines if a cookbook is in the list of cookbooks reachable by dependency" do
       node.run_list("test-with-deps::default", "test-with-deps::server")
-      expect(compiler.cookbook_order).to eq([:dependency1, :dependency2, :"test-with-deps"])
+      expect(compiler.cookbook_order).to eq(%i{dependency1 dependency2 test-with-deps})
       expect(compiler.unreachable_cookbook?(:dependency1)).to be_falsey
       expect(compiler.unreachable_cookbook?(:dependency2)).to be_falsey
       expect(compiler.unreachable_cookbook?(:'test-with-deps')).to be_falsey

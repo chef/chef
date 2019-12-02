@@ -145,25 +145,25 @@ describe Chef::Node::ImmutableMash do
     end
   end
 
-  [
-    :[]=,
-    :clear,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_if,
-    :keep_if,
-    :merge!,
-    :update,
-    :reject!,
-    :replace,
-    :select!,
-    :shift,
-    :write,
-    :write!,
-    :unlink,
-    :unlink!,
-  ].each do |mutator|
+  %i{
+    []=
+    clear
+    default=
+    default_proc=
+    delete
+    delete_if
+    keep_if
+    merge!
+    update
+    reject!
+    replace
+    select!
+    shift
+    write
+    write!
+    unlink
+    unlink!
+  }.each do |mutator|
     it "doesn't allow mutation via `#{mutator}'" do
       expect { @immutable_mash.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
@@ -190,37 +190,37 @@ describe Chef::Node::ImmutableArray do
   # with ImmutableMash, above
   ###
 
-  [
-    :<<,
-    :[]=,
-    :clear,
-    :collect!,
-    :compact!,
-    :default=,
-    :default_proc=,
-    :delete,
-    :delete_at,
-    :delete_if,
-    :fill,
-    :flatten!,
-    :insert,
-    :keep_if,
-    :map!,
-    :merge!,
-    :pop,
-    :push,
-    :update,
-    :reject!,
-    :reverse!,
-    :replace,
-    :select!,
-    :shift,
-    :slice!,
-    :sort!,
-    :sort_by!,
-    :uniq!,
-    :unshift,
-  ].each do |mutator|
+  %i{
+    <<
+    []=
+    clear
+    collect!
+    compact!
+    default=
+    default_proc=
+    delete
+    delete_at
+    delete_if
+    fill
+    flatten!
+    insert
+    keep_if
+    map!
+    merge!
+    pop
+    push
+    update
+    reject!
+    reverse!
+    replace
+    select!
+    shift
+    slice!
+    sort!
+    sort_by!
+    uniq!
+    unshift
+  }.each do |mutator|
     it "does not allow mutation via `#{mutator}" do
       expect { @immutable_array.send(mutator) }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end

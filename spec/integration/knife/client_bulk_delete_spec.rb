@@ -40,7 +40,7 @@ describe "knife client bulk delete", :workstation do
 
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
-EOM
+      EOM
 
       knife("client list").should_succeed <<~EOM
         cdr
@@ -48,7 +48,7 @@ EOM
         chef-webui
         concat
         cons
-EOM
+      EOM
     end
 
     it "deletes all matching clients when unanchored" do
@@ -60,14 +60,14 @@ EOM
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
         Deleted client concat
-EOM
+      EOM
 
       knife("client list").should_succeed <<~EOM
         cdr
         chef-validator
         chef-webui
         cons
-EOM
+      EOM
     end
   end
 
@@ -93,7 +93,7 @@ EOM
 
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
-EOM
+      EOM
 
       knife("client list").should_succeed <<~EOM
         car-validator
@@ -101,7 +101,7 @@ EOM
         chef-validator
         chef-webui
         cons
-EOM
+      EOM
     end
 
     it "deletes a validator when told to" do
@@ -117,14 +117,14 @@ EOM
 
         Are you sure you want to delete these clients? (Y/N) Deleted client car
         Deleted client cat
-EOM
+      EOM
 
       knife("client list").should_succeed <<~EOM
         cdr
         chef-validator
         chef-webui
         cons
-EOM
+      EOM
     end
   end
 end

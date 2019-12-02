@@ -22,9 +22,9 @@ describe Chef::Provider::PowershellScript, "action_run" do
   let(:powershell_version) { nil }
   let(:node) do
     node = Chef::Node.new
-    node.default["kernel"] = Hash.new
+    node.default["kernel"] = {}
     node.default["kernel"][:machine] = :x86_64.to_s
-    if ! powershell_version.nil?
+    unless powershell_version.nil?
       node.default[:languages] = { powershell: { version: powershell_version } }
     end
     node
@@ -103,14 +103,14 @@ describe Chef::Provider::PowershellScript, "action_run" do
         "3.6" => "Bypass",
         "4.0" => "Bypass",
         "5.0" => "Bypass" }.each do |version_policy|
-        let(:powershell_version) { version_policy[0].to_f }
-        context "when running PowerShell version #{version_policy[0]}" do
           let(:powershell_version) { version_policy[0].to_f }
-          it "sets the -ExecutionPolicy flag to '#{version_policy[1]}'" do
-            expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+          context "when running PowerShell version #{version_policy[0]}" do
+            let(:powershell_version) { version_policy[0].to_f }
+            it "sets the -ExecutionPolicy flag to '#{version_policy[1]}'" do
+              expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
+            end
           end
         end
-      end
     end
   end
 end

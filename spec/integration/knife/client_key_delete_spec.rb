@@ -33,7 +33,7 @@ describe "knife client key delete", :workstation do
       knife("client key create -k new car")
       knife("client key delete car new", input: "Y").should_succeed stdout: out, stderr: <<~EOM
         Deleted key named new for the client named car
-EOM
+      EOM
 
       knife("client key list car").should_succeed ""
     end

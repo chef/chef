@@ -122,7 +122,7 @@ describe Chef::Knife::CookbookUpload do
           test_cookbook:
             /path/one/test_cookbook
             /path/two/test_cookbook
-E
+        E
         expect(output.string).to include(expected_message)
       end
     end
@@ -198,7 +198,7 @@ E
       before(:each) do
         cookbook.metadata.depends("dependency")
         allow(cookbook_loader).to receive(:[]) do |ckbk|
-          { "test_cookbook" =>  cookbook,
+          { "test_cookbook" => cookbook,
             "dependency" => cookbook_dependency }[ckbk]
         end
         allow(knife).to receive(:cookbook_names).and_return(%w{cookbook_dependency test_cookbook})
@@ -225,7 +225,7 @@ E
         cookbook_dependency2 = Chef::CookbookVersion.new("dependency2")
         cookbook.metadata.depends("dependency2")
         allow(cookbook_loader).to receive(:[]) do |ckbk|
-          { "test_cookbook" =>  cookbook,
+          { "test_cookbook" => cookbook,
             "dependency" => cookbook_dependency,
             "dependency2" => cookbook_dependency2 }[ckbk]
         end
@@ -291,7 +291,8 @@ E
           it "should warn users that no cookbooks exist" do
             knife.config[:cookbook_path] = ["/chef-repo/cookbooks", "/home/user/cookbooks"]
             expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path].join(', ')}\. Use --cookbook-path to specify the desired path\./)
+              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path].join(', ')}\. Use --cookbook-path to specify the desired path\./
+            )
             knife.run
           end
         end
@@ -300,7 +301,8 @@ E
           it "should warn users that no cookbooks exist" do
             knife.config[:cookbook_path] = "/chef-repo/cookbooks"
             expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path]}\. Use --cookbook-path to specify the desired path\./)
+              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path]}\. Use --cookbook-path to specify the desired path\./
+            )
             knife.run
           end
         end

@@ -24,8 +24,7 @@ class NoWhyrunDemonstrator < Chef::Provider
     false
   end
 
-  def load_current_resource
-  end
+  def load_current_resource; end
 
   def action_foo
     @system_state_altered = true
@@ -39,8 +38,7 @@ class ConvergeActionDemonstrator < Chef::Provider
     true
   end
 
-  def load_current_resource
-  end
+  def load_current_resource; end
 
   def action_foo
     converge_by("running a state changing action") do

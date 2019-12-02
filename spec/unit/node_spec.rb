@@ -21,7 +21,7 @@ require "ostruct"
 
 describe Chef::Node do
 
-  let(:node) { Chef::Node.new() }
+  let(:node) { Chef::Node.new }
   let(:platform_introspector) { node }
 
   it_behaves_like "a platform introspector"
@@ -103,7 +103,7 @@ describe Chef::Node do
     end
 
     it "should always have a string for name" do
-      expect { node.name(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.name({}) }.to raise_error(ArgumentError)
     end
 
     it "cannot be blank" do
@@ -126,7 +126,7 @@ describe Chef::Node do
     end
 
     it "should disallow non-strings" do
-      expect { node.chef_environment(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.chef_environment({}) }.to raise_error(ArgumentError)
       expect { node.chef_environment(42) }.to raise_error(ArgumentError)
     end
 
@@ -162,7 +162,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_name(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_name(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -198,7 +198,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_group(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_group(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -769,7 +769,7 @@ describe Chef::Node do
 
       it "caches both strings and symbols correctly" do
         node.force_default[:solr][:version] = "4.10.2"
-        node.force_default[:solr][:data_dir] = "/opt/solr-#{node['solr'][:version]}/example/solr"
+        node.force_default[:solr][:data_dir] = "/opt/solr-#{node["solr"][:version]}/example/solr"
         node.force_default[:solr][:xms] = "512M"
         expect(node[:solr][:xms]).to eql("512M")
         expect(node["solr"][:xms]).to eql("512M")
@@ -778,8 +778,8 @@ describe Chef::Node do
       it "method interpolation syntax also works" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["passenger"]["version"]     = "4.0.57"
-        node.default["passenger"]["root_path"]   = "passenger-#{node['passenger']['version']}"
-        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]['version']}"
+        node.default["passenger"]["root_path"]   = "passenger-#{node["passenger"]["version"]}"
+        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]["version"]}"
         expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
         expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end
@@ -793,7 +793,7 @@ describe Chef::Node do
     it "should allow you to iterate over attributes with each_attribute" do
       node.default["sunshine"] = "is bright"
       node.default["canada"] = "is a nice place"
-      seen_attributes = Hash.new
+      seen_attributes = {}
       node.each_attribute do |a, v|
         seen_attributes[a] = v
       end
@@ -1196,7 +1196,7 @@ describe Chef::Node do
       expect(node.name).to eql("test.example.com-short")
       expect(node["sunshine"]).to eql("in")
       expect(node["something"]).to eql("else")
-      expect(node.run_list).to eq(["operations-master", "operations-monitoring"])
+      expect(node.run_list).to eq(%w{operations-master operations-monitoring})
     end
 
     it "should raise an exception if the file cannot be found or read" do
@@ -1215,7 +1215,7 @@ describe Chef::Node do
       node.run_list << "role[leninist]"
       node.run_list << "recipe[stalinist]"
 
-      @example = Chef::Node.new()
+      @example = Chef::Node.new
       @example.name("newname")
       @example.chef_environment("prod")
       @example.default_attrs = { "alpha" => { "bravo" => "charlie", "delta" => "echo" } }
@@ -1476,7 +1476,7 @@ describe Chef::Node do
 
           node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
@@ -1549,7 +1549,7 @@ describe Chef::Node do
 
           node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             }
@@ -1576,7 +1576,7 @@ describe Chef::Node do
 
           node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
@@ -1613,7 +1613,7 @@ describe Chef::Node do
 
           node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             }
@@ -1624,7 +1624,7 @@ describe Chef::Node do
           selected_data = {
             "default" => {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
             },

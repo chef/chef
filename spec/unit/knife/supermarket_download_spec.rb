@@ -31,8 +31,8 @@ describe Chef::Knife::SupermarketDownload do
       @cookbook_api_url = "https://supermarket.chef.io/api/v1/cookbooks"
       @version          = "1.0.2"
       @version_us       = @version.tr ".", "_"
-      @current_data     = { "deprecated"       => false,
-                            "latest_version"   => "#{@cookbook_api_url}/apache2/versions/#{@version_us}",
+      @current_data     = { "deprecated" => false,
+                            "latest_version" => "#{@cookbook_api_url}/apache2/versions/#{@version_us}",
                             "replacement" => "other_apache2" }
 
       allow(@knife.ui).to receive(:stderr).and_return(@stderr)
@@ -60,7 +60,7 @@ describe Chef::Knife::SupermarketDownload do
     context "when" do
       before do
         @cookbook_data = { "version" => @version,
-                           "file"    => "http://example.com/apache2_#{@version_us}.tgz" }
+                           "file" => "http://example.com/apache2_#{@version_us}.tgz" }
         @temp_file     = double( path: "/tmp/apache2_#{@version_us}.tgz" )
         @file          = File.join(Dir.pwd, "apache2-#{@version}.tar.gz")
       end
@@ -125,7 +125,7 @@ describe Chef::Knife::SupermarketDownload do
           @version         = "1.0.1"
           @version_us      = @version.tr ".", "_"
           @cookbook_data   = { "version" => @version,
-                               "file"    => "http://example.com/apache2_#{@version_us}.tgz" }
+                               "file" => "http://example.com/apache2_#{@version_us}.tgz" }
           @temp_file       = double(path: "/tmp/apache2_#{@version_us}.tgz")
           @file            = File.join(Dir.pwd, "apache2-#{@version}.tar.gz")
           @knife.name_args << @version

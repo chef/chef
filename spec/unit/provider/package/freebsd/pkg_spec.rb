@@ -25,7 +25,7 @@ describe Chef::Provider::Package::Freebsd::Pkg, "load_current_resource" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource     = Chef::Resource::Package.new("zsh")
+    @new_resource = Chef::Resource::Package.new("zsh")
     @current_resource = Chef::Resource::Package.new("zsh")
 
     @provider = Chef::Provider::Package::Freebsd::Pkg.new(@new_resource, @run_context)

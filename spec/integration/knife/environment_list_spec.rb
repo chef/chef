@@ -34,7 +34,7 @@ describe "knife environment list", :workstation do
         _default
         b
         y
-EOM
+      EOM
     end
 
   end

@@ -334,6 +334,7 @@ describe Chef::RunLock do
       loop do
         line = readline_nonblock(read_from_process)
         break if line.nil?
+
         event, time = line.split("@")
         example.log_event("#{name}.last_event got #{event}")
         example.log_event("[#{name}] #{event}", time.strip)
@@ -346,7 +347,7 @@ describe Chef::RunLock do
       example.log_event("#{name}.run_to(#{to_event.inspect})")
 
       # Start the process if it's not started
-      start if !pid
+      start unless pid
 
       # Tell the process what to stop at (also means it can go)
       write_to_process.print "#{to_event}\n"
@@ -370,7 +371,7 @@ describe Chef::RunLock do
     def run_to_completion
       example.log_event("#{name}.run_to_completion")
       # Start the process if it's not started
-      start if !pid
+      start unless pid
 
       # Tell the process to stop at nothing (no blocking)
       @write_to_process.print "nothing\n"

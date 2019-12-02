@@ -95,7 +95,7 @@ describe "knife common options", :workstation do
             syHLXYFNy0OxMtH/bBAXBGNHd9gf5uOnqh0pYcbe/uRAxumC7Rl0cL509eURiA2T
             +vFmf54y9YdnLXaqv+FhJT6B6V7WX7IpU9BMqJY1cJYXHuHG2KA=
             -----END RSA PRIVATE KEY-----
-EOM
+          EOM
         end
 
         it "knife raw /nodes/x should retrieve the node" do

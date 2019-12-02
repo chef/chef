@@ -50,7 +50,7 @@ describe Chef::CookbookVersion do
     let(:cookbook_paths_by_type) do
       {
         # Dunno if the paths here are representitive of what is set by CookbookLoader...
-        all_files:  Dir[File.join(cookbook_root, "**", "**")],
+        all_files: Dir[File.join(cookbook_root, "**", "**")],
       }
     end
 
@@ -117,7 +117,7 @@ describe Chef::CookbookVersion do
 
     let(:cookbook_paths_by_type) do
       {
-        all_files:  Dir[File.join(cookbook_root, "**", "**")],
+        all_files: Dir[File.join(cookbook_root, "**", "**")],
       }
     end
 

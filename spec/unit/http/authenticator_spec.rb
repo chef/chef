@@ -23,7 +23,7 @@ describe Chef::HTTP::Authenticator do
   let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test") }
   let(:method) { "GET" }
   let(:url) { URI("https://chef.example.com/organizations/test") }
-  let(:headers) { Hash.new }
+  let(:headers) { {} }
   let(:data) { "" }
 
   context "when handle_request is called" do
@@ -92,7 +92,8 @@ describe Chef::HTTP::Authenticator do
       it "calls authentication_headers with the proper input" do
         expect(class_instance).to receive(:authentication_headers).with(
           method, url, data,
-          { "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION }).and_return({})
+          { "X-Ops-Server-API-Version" => Chef::HTTP::Authenticator::DEFAULT_SERVER_API_VERSION }
+        ).and_return({})
         class_instance.handle_request(method, url, headers, data)
       end
     end
@@ -108,7 +109,7 @@ describe Chef::HTTP::Authenticator do
         wxpGV4dGtdcahwXNE4601aXPra+xPcRd2puCNoEDBzgVuTSsLYeKBDMSfs173W1Q
         YwIDAQAB
         -----END PUBLIC KEY-----
-EOH
+      EOH
 
       let(:class_instance) { Chef::HTTP::Authenticator.new(client_name: "test", raw_key: public_key, ssh_agent_signing: true) }
 

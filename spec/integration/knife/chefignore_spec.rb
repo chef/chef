@@ -56,7 +56,7 @@ describe "chefignore tests", :workstation do
           /environments/x.json
           /roles/
           /roles/x.json
-EOM
+        EOM
       end
     end
   end
@@ -71,7 +71,7 @@ EOM
     it "the cookbook is not listed" do
       knife("list --local -Rfp /").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'cookbook1' is empty or entirely chefignored at #{Chef::Config.chef_repo_path}/cookbooks/cookbook1\n")
         /cookbooks/
-EOM
+      EOM
     end
   end
 
@@ -93,7 +93,7 @@ EOM
           /cookbooks/cookbook1/y.json
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -110,7 +110,7 @@ EOM
           /cookbooks/cookbook1/y.json
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -132,7 +132,7 @@ EOM
           /cookbooks/cookbook2/recipes/y.rb
           /cookbooks/cookbook2/x.json
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -153,7 +153,7 @@ EOM
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/x.json
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -173,7 +173,7 @@ EOM
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/x.json
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -191,7 +191,7 @@ EOM
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/x.json
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
 
@@ -207,7 +207,7 @@ EOM
           /cookbooks/cookbook1/y.json
           /cookbooks/cookbook2/
           /cookbooks/cookbook2/y.json
-EOM
+        EOM
       end
     end
   end
@@ -239,7 +239,7 @@ EOM
           /cookbooks/mycookbook/x.json
           /cookbooks/yourcookbook/
           /cookbooks/yourcookbook/metadata.rb
-EOM
+        EOM
       end
 
       context "and conflicting cookbooks" do
@@ -258,7 +258,7 @@ EOM
             /cookbooks/yourcookbook/
             /cookbooks/yourcookbook/onlyincookbooks1.rb
             /cookbooks/yourcookbook/x.json
-EOM
+          EOM
         end
       end
     end
@@ -272,7 +272,7 @@ EOM
       knife("list --local -Rfp /cookbooks").should_succeed <<~EOM
         /cookbooks/chefignore/
         /cookbooks/chefignore/metadata.rb
-EOM
+      EOM
     end
   end
 
@@ -294,7 +294,7 @@ EOM
         /cookbooks/blah/metadata.rb
         /cookbooks/chefignore/
         /cookbooks/chefignore/metadata.rb
-EOM
+      EOM
     end
   end
 end

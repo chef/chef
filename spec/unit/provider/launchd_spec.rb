@@ -49,7 +49,7 @@ describe Chef::Provider::Launchd do
       \t<integer>300</integer>
       </dict>
       </plist>
-XML
+    XML
     let(:test_plist_multiple_intervals) { String.new <<~XML }
       <?xml version="1.0" encoding="UTF-8"?>
       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -78,7 +78,7 @@ XML
       \t<integer>300</integer>
       </dict>
       </plist>
-XML
+    XML
 
     let(:test_hash) do
       {
@@ -89,7 +89,8 @@ XML
         "Weekday" => 7,
       },
       "TimeOut" => 300,
-    } end
+    }
+    end
 
     before(:each) do
       provider.load_current_resource
@@ -139,7 +140,7 @@ XML
         it "should allow array of Hashes" do
           allowed = (1..2).collect do |num|
             {
-              "Hour"    => 10 + num,
+              "Hour" => 10 + num,
               "Weekday" => num,
             }
           end
@@ -152,11 +153,11 @@ XML
 
         it "should allow all StartCalendarInterval keys" do
           allowed = {
-            "Minute"  => 1,
-            "Hour"    => 1,
-            "Day"     => 1,
+            "Minute" => 1,
+            "Hour" => 1,
+            "Day" => 1,
             "Weekday" => 1,
-            "Month"   => 1,
+            "Month" => 1,
           }
           new_resource.program "/Library/scripts/call_mom.sh"
           new_resource.time_out 300
@@ -197,9 +198,11 @@ XML
       describe "and the file has been updated" do
         before(:each) do
           allow(provider).to receive(
-            :manage_plist).with(:create).and_return(true)
+            :manage_plist
+          ).with(:create).and_return(true)
           allow(provider).to receive(
-            :manage_service).with(:restart).and_return(true)
+            :manage_service
+          ).with(:restart).and_return(true)
         end
 
         it "should call manage_service with a :restart action" do
@@ -215,9 +218,11 @@ XML
       describe "and the file has not been updated" do
         before(:each) do
           allow(provider).to receive(
-            :manage_plist).with(:create).and_return(nil)
+            :manage_plist
+          ).with(:create).and_return(nil)
           allow(provider).to receive(
-            :manage_service).with(:enable).and_return(true)
+            :manage_service
+          ).with(:enable).and_return(true)
         end
 
         it "should call manage_service with a :enable action" do
@@ -236,9 +241,11 @@ XML
         before(:each) do
           allow(File).to receive(:exists?).and_return(true)
           allow(provider).to receive(
-            :manage_service).with(:disable).and_return(true)
+            :manage_service
+          ).with(:disable).and_return(true)
           allow(provider).to receive(
-            :manage_plist).with(:delete).and_return(true)
+            :manage_plist
+          ).with(:delete).and_return(true)
         end
 
         it "should call manage_service with a :disable action" do
@@ -255,7 +262,8 @@ XML
         before(:each) do
           allow(File).to receive(:exists?).and_return(false)
           allow(provider).to receive(
-            :manage_plist).with(:delete).and_return(true)
+            :manage_plist
+          ).with(:delete).and_return(true)
         end
 
         it "works with action :delete" do

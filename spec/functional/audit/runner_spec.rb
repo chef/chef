@@ -108,7 +108,7 @@ describe Chef::Audit::Runner do
           in_sub_process do
             runner.run
 
-            expect(stdout.string).to match(/Failure\/Error: expect\(2 - 1\)\.to eq\(0\)/)
+            expect(stdout.string).to match(%r{Failure/Error: expect\(2 - 1\)\.to eq\(0\)})
             expect(stdout.string).to match(/1 example, 1 failure/)
             expect(stdout.string).to match(/# control_group_name should fail/)
           end

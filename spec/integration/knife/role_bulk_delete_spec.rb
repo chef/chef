@@ -39,12 +39,12 @@ describe "knife role bulk delete", :workstation do
 
         Are you sure you want to delete these roles? (Y/N) Deleted role car
         Deleted role cat
-EOM
+      EOM
 
       knife("role list").should_succeed <<~EOM
         cdr
         cons
-EOM
+      EOM
     end
 
   end

@@ -17,10 +17,13 @@
 # limitations under the License.
 #
 
-require_relative "tasks/rspec"
-require_relative "tasks/maintainers"
-require_relative "tasks/dependencies"
-require_relative "tasks/announce"
+begin
+  require_relative "tasks/rspec"
+  require_relative "tasks/dependencies"
+  require_relative "tasks/announce"
+rescue LoadError => e
+  puts "Skipping missing rake dep: #{e}"
+end
 
 # hack the chef-config install to run before the traditional install task
 task :super_install do

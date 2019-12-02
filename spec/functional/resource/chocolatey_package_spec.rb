@@ -22,7 +22,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   include Chef::Mixin::PowershellOut
 
   let(:package_name) { "test-A" }
-  let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }
+  let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(" ")}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
 
   subject do
@@ -63,7 +63,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     end
 
     context "installing multiple packages" do
-      let(:package_name) { [ "test-A", "test-B" ] }
+      let(:package_name) { %w{test-A test-B} }
 
       it "installs both packages" do
         subject.run_action(:install)

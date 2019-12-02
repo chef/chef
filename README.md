@@ -1,15 +1,26 @@
-# Chef
+# Chef Infra
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
-[![Build Status Master](https://travis-ci.org/chef/chef.svg?branch=master)](https://travis-ci.org/chef/chef)
-[![Build Status Master](https://ci.appveyor.com/api/projects/status/github/chef/chef?branch=master&svg=true&passingText=master%20-%20Ok&pendingText=master%20-%20Pending&failingText=master%20-%20Failing)](https://ci.appveyor.com/project/Chef/chef/branch/master)
+[![Build Status](https://badge.buildkite.com/f798a31e86518429573be35b496b313f4aee72dbb17e946eda.svg?branch=chef-14)](https://buildkite.com/chef-oss/chef-chef-chef-14-verify)
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
-[![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef-rfc/blob/master/rfc086-chef-oss-project-policies.md#cadence-release)
+[![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef/blob/master/docs/dev/design_documents/client_release_cadence.md)
+
+**Umbrella Project**: [Chef Infra](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md)
+
+**Project State**: [Active](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md#active)
+
+**Issues [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
+
+**Pull Request [Response Time Maximum](https://github.com/chef/chef-oss-practices/blob/master/repo-management/repo-states.md)**: 14 days
 
 ## Getting Started
 
-Want to try Chef?
-For Chef user, please refer to [Quick Start](https://docs.chef.io/quick_start.html)
-For more details, please refer to [learnchef](https://learn.chef.io)
+Chef Infra is a configuration management tool designed to bring automation to your entire infrastructure.
+
+### Want to try Chef Infra?
+
+For Chef Infra usage, please refer to our [Learn Chef Rally](https://learn.chef.io/) website, which includes module-based training for Chef Infra, as well as Automate, Habitat, and InSpec.
+
+Other useful resources for Chef Infra users:
 
 - Documentation: <https://docs.chef.io>
 - Source: <https://github.com/chef/chef/tree/master>

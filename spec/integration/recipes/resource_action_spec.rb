@@ -154,7 +154,7 @@ module ResourceActionSpec
             ResourceActionSpec::ActionJackson.ruby_block_converged = ResourceActionSpec::ActionJackson.succeeded
           end
         end
-      EOM
+        EOM
         expect(ActionJackson.ran_action).to eq :access_attribute
         expect(ActionJackson.succeeded).to eq "foo!"
         expect(ActionJackson.ruby_block_converged).to eq "foo!"

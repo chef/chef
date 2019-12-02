@@ -25,7 +25,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @new_resource     = Chef::Resource::Package.new("varnish")
+    @new_resource = Chef::Resource::Package.new("varnish")
     @current_resource = Chef::Resource::Package.new("varnish")
 
     @status = double("Status", exitstatus: 0)
@@ -75,7 +75,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     end
 
     it "should lookup the candidate_version if the variable is not already set (pkgin separated by spaces)" do
-      search = double()
+      search = double
       expect(search).to receive(:each_line)
         .and_yield("something-varnish-1.1.1   something varnish like\n")
         .and_yield("varnish-2.3.4             actual varnish\n")
@@ -85,7 +85,7 @@ describe Chef::Provider::Package::SmartOS, "load_current_resource" do
     end
 
     it "should lookup the candidate_version if the variable is not already set (pkgin separated by semicolons)" do
-      search = double()
+      search = double
       expect(search).to receive(:each_line)
         .and_yield("something-varnish-1.1.1;;something varnish like\n")
         .and_yield("varnish-2.3.4;;actual varnish\n")

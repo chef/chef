@@ -178,7 +178,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="YES"},
           %Q{#{provider.builtin_service_enable_variable_name}="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -190,7 +191,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="YES"},
           (provider.builtin_service_enable_variable_name).to_s,
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -202,7 +204,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{thing_#{provider.builtin_service_enable_variable_name}="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -214,7 +217,8 @@ describe Chef::Provider::Service::Openbsd do
           [
           %Q{#{provider.builtin_service_enable_variable_name}_thing="NO"},
           %Q{#{provider.builtin_service_enable_variable_name}="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -286,12 +290,12 @@ describe Chef::Provider::Service::Openbsd do
       it "should call the start command if one is specified" do
         new_resource.start_command("/etc/rc.d/chef startyousillysally")
         expect(provider).to receive(:shell_out!).with("/etc/rc.d/chef startyousillysally", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name start' if no start command is specified" do
         expect(provider).to receive(:shell_out!).with("/etc/rc.d/#{new_resource.service_name} start", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
     end
 
@@ -299,12 +303,12 @@ describe Chef::Provider::Service::Openbsd do
       it "should call the stop command if one is specified" do
         new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name stop' if no stop command is specified" do
         expect(provider).to receive(:shell_out!).with("/etc/rc.d/#{new_resource.service_name} stop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
     end
 
@@ -313,20 +317,20 @@ describe Chef::Provider::Service::Openbsd do
         let(:supports) { { restart: true } }
         it "should call 'restart' on the service_name if the resource supports it" do
           expect(provider).to receive(:shell_out!).with("/etc/rc.d/#{new_resource.service_name} restart", default_env: false)
-          provider.restart_service()
+          provider.restart_service
         end
       end
 
       it "should call the restart_command if one has been specified" do
         new_resource.restart_command("/etc/init.d/chef restartinafire")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef restartinafire", default_env: false)
-        provider.restart_service()
+        provider.restart_service
       end
 
       it "otherwise it should call stop and start" do
         expect(provider).to receive(:stop_service)
         expect(provider).to receive(:start_service)
-        provider.restart_service()
+        provider.restart_service
       end
     end
   end

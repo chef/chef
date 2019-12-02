@@ -392,9 +392,7 @@ shared_examples_for "a configured file resource" do
   end
 
   def binread(file)
-    content = File.open(file, "rb") do |f|
-      f.read
-    end
+    content = File.open(file, "rb", &:read)
     content.force_encoding(Encoding::BINARY) if "".respond_to?(:force_encoding)
     content
   end

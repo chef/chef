@@ -69,7 +69,7 @@ describe Chef::Resource::Git, requires_git: true do
       [user]
         name = frodoTbaggins
         email = frodo@shire.org
-E
+    E
   end
 
   before(:each) do
@@ -220,7 +220,7 @@ E
   context "when dealing with a repo with a degenerate tag named 'HEAD'" do
     before do
       shell_out!("git tag -m\"degenerate tag\" HEAD ed181b3419b6f489bedab282348162a110d6d3a1",
-                 cwd: origin_repo)
+        cwd: origin_repo)
     end
 
     let(:basic_git_resource) do
@@ -240,16 +240,16 @@ E
     it "checks out the (master) HEAD revision and ignores the tag" do
       basic_git_resource.run_action(:sync)
       head_rev = shell_out!("git rev-parse HEAD",
-                            cwd: deploy_directory,
-                            returns: [0]).stdout.strip
+        cwd: deploy_directory,
+        returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
 
     it "checks out the (master) HEAD revision when no revision is specified (ignores tag)" do
       git_resource_default_rev.run_action(:sync)
       head_rev = shell_out!("git rev-parse HEAD",
-                            cwd: deploy_directory,
-                            returns: [0]).stdout.strip
+        cwd: deploy_directory,
+        returns: [0]).stdout.strip
       expect(head_rev).to eq(rev_head)
     end
 

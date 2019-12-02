@@ -41,18 +41,11 @@ class ReleaseAnnouncement
   end
 
   def release_notes_from_file
-    File.read("RELEASE_NOTES.md").match(/^# Chef Client Release Notes #{@maj_minor}:\n\n(.*)/m)[1]
+    File.read("RELEASE_NOTES.md").match(/^# Chef Infra Client Release Notes #{@maj_minor}:\n\n(.*)/m)[1]
   end
 end
 
-namespace :announce do
-  desc "Generate the Prerelease Announcement (version: X.Y.Z, release_date: YYYY-MM-DD)"
-  task :prerelease, :version, :release_date do |t, args|
-    ReleaseAnnouncement.new(args[:version], args[:release_date], "prerelease").render
-  end
-
-  desc "Generate the Release Announcement (version: X.Y.Z)"
-  task :release, :version do |t, args|
-    ReleaseAnnouncement.new(args[:version], nil, "release").render
-  end
+desc "Generate the Release Announcement (version: X.Y.Z)"
+task :announce_release, :version do |t, args|
+  ReleaseAnnouncement.new(args[:version], nil, "release").render
 end

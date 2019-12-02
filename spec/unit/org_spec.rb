@@ -52,7 +52,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it anything but a string" do
-      expect { org.name Hash.new }.to raise_error(ArgumentError)
+      expect { org.name({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -63,7 +63,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it anything but a string" do
-      expect { org.name Hash.new }.to raise_error(ArgumentError)
+      expect { org.name({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -74,7 +74,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it something lame" do
-      expect { org.private_key Hash.new }.to raise_error(ArgumentError)
+      expect { org.private_key({}) }.to raise_error(ArgumentError)
     end
   end
 

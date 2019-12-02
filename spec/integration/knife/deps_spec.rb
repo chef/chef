@@ -46,7 +46,7 @@ describe "knife deps", :workstation do
           /cookbooks/quiche
           /cookbooks/soup
           /roles/starring.json
-EOM
+        EOM
       end
     end
 
@@ -65,7 +65,7 @@ EOM
           /cookbooks/quiche
           /cookbooks/soup
           /roles/starring.json
-EOM
+        EOM
       end
     end
 
@@ -99,7 +99,7 @@ EOM
           /cookbooks/quiche
           /cookbooks/soup
           /nodes/mort.json
-EOM
+        EOM
       end
     end
     when_the_repository "has a cookbook with no dependencies" do
@@ -155,7 +155,7 @@ depends "kettle"'
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps * reports all dependencies of all things" do
         knife("deps /nodes/*").should_succeed <<~EOM
@@ -166,7 +166,7 @@ EOM
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps a b reports all dependencies of a and b" do
         knife("deps /nodes/bart.json /nodes/mort.json").should_succeed <<~EOM
@@ -177,7 +177,7 @@ EOM
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps --tree /* shows dependencies in a tree" do
         knife("deps --tree /nodes/*").should_succeed <<~EOM
@@ -189,7 +189,7 @@ EOM
               /roles/minor.json
               /cookbooks/quiche
               /cookbooks/soup
-EOM
+        EOM
       end
       it "knife deps --tree --no-recurse shows only the first level of dependencies" do
         knife("deps --tree --no-recurse /nodes/*").should_succeed <<~EOM
@@ -198,7 +198,7 @@ EOM
           /nodes/mort.json
             /environments/desert.json
             /roles/starring.json
-EOM
+        EOM
       end
     end
 
@@ -237,7 +237,7 @@ depends "foo"'
             /roles/bar.json
             /roles/foo.json
             /roles/self.json
-EOM
+          EOM
         end
         it "knife deps --tree prints each once" do
           knife("deps --tree /roles/foo.json /roles/self.json") do
@@ -383,7 +383,7 @@ EOM
           /cookbooks/quiche
           /cookbooks/soup
           /roles/starring.json
-EOM
+        EOM
       end
     end
 
@@ -400,7 +400,7 @@ EOM
           /cookbooks/quiche
           /cookbooks/soup
           /roles/starring.json
-EOM
+        EOM
       end
     end
 
@@ -432,7 +432,7 @@ EOM
           /cookbooks/quiche
           /cookbooks/soup
           /nodes/mort.json
-EOM
+        EOM
       end
     end
     when_the_chef_server "has a cookbook with no dependencies" do
@@ -484,7 +484,7 @@ depends "kettle"', "recipes" => { "default.rb" => "" } }
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps * reports all dependencies of all things" do
         knife("deps --remote /nodes/*").should_succeed <<~EOM
@@ -495,7 +495,7 @@ EOM
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps a b reports all dependencies of a and b" do
         knife("deps --remote /nodes/bart.json /nodes/mort.json").should_succeed <<~EOM
@@ -506,7 +506,7 @@ EOM
           /cookbooks/soup
           /roles/starring.json
           /nodes/mort.json
-EOM
+        EOM
       end
       it "knife deps --tree /* shows dependencies in a tree" do
         knife("deps --remote --tree /nodes/*").should_succeed <<~EOM
@@ -518,7 +518,7 @@ EOM
               /roles/minor.json
               /cookbooks/quiche
               /cookbooks/soup
-EOM
+        EOM
       end
       it "knife deps --tree --no-recurse shows only the first level of dependencies" do
         knife("deps --remote --tree --no-recurse /nodes/*").should_succeed <<~EOM
@@ -527,18 +527,18 @@ EOM
           /nodes/mort.json
             /environments/desert.json
             /roles/starring.json
-EOM
+        EOM
       end
     end
 
     context "circular dependencies" do
       when_the_chef_server "has cookbooks with circular dependencies" do
         before do
-          cookbook "foo", "1.0.0", { "metadata.rb"  => 'name "foo"
+          cookbook "foo", "1.0.0", { "metadata.rb" => 'name "foo"
 depends "bar"' }
-          cookbook "bar", "1.0.0", { "metadata.rb"  => 'name "bar"
+          cookbook "bar", "1.0.0", { "metadata.rb" => 'name "bar"
 depends "baz"' }
-          cookbook "baz", "1.0.0", { "metadata.rb"  => 'name "baz"
+          cookbook "baz", "1.0.0", { "metadata.rb" => 'name "baz"
 depends "foo"' }
           cookbook "self", "1.0.0", { "metadata.rb" => 'name "self"
 depends "self"' }
@@ -549,7 +549,7 @@ depends "self"' }
             /cookbooks/bar
             /cookbooks/foo
             /cookbooks/self
-EOM
+          EOM
         end
         it "knife deps --tree prints each once" do
           knife("deps --remote --tree /cookbooks/foo /cookbooks/self").should_succeed <<~EOM
@@ -559,7 +559,7 @@ EOM
                   /cookbooks/foo
             /cookbooks/self
               /cookbooks/self
-EOM
+          EOM
         end
       end
       when_the_chef_server "has roles with circular dependencies" do
@@ -575,7 +575,7 @@ EOM
             /roles/bar.json
             /roles/foo.json
             /roles/self.json
-EOM
+          EOM
         end
         it "knife deps --tree prints each once" do
           knife("deps --remote --tree /roles/foo.json /roles/self.json") do

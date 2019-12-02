@@ -40,7 +40,7 @@ describe Chef::Provider::Package::Paludis do
       user/ntp 0 accounts
       user/ntp 0 installed-accounts
       net/ntp 4.2.6_p5-r1 installed
-PKG_STATUS
+    PKG_STATUS
     @pid = 12345
     @shell_out = OpenStruct.new(stdout: @stdout, stdin: @stdin, stderr: @stderr, status: @status, exitstatus: 0)
   end
@@ -71,7 +71,7 @@ PKG_STATUS
         user/ntp 0 accounts
         user/ntp 0 installed-accounts
         net/ntp 4.2.6_p5-r1 installed
-INSTALLED
+      INSTALLED
       expect(@provider).to receive(:shell_out_compacted!).and_return(@shell_out)
       @provider.load_current_resource
       expect(@current_resource.version).to eq("4.2.6_p5-r1")
@@ -100,7 +100,7 @@ INSTALLED
       @stdout.replace(<<~PKG_STATUS)
         sys-process/lsof 4.87 arbor
         sys-process/lsof 4.87 x86_64
-PKG_STATUS
+      PKG_STATUS
       expect(@provider).to receive(:shell_out_compacted!).with("cave", "-L", "warning", "resolve", "-x", "=sys-process/lsof-4.87", { timeout: @new_resource.timeout || 900 })
       @provider.install_package("sys-process/lsof", "4.87")
     end
@@ -109,7 +109,7 @@ PKG_STATUS
       @stdout.replace(<<~PKG_STATUS)
         sys-process/lsof 4.87 arbor
         sys-process/lsof 4.87 x86_64
-PKG_STATUS
+      PKG_STATUS
       expect(@provider).to receive(:shell_out_compacted!).and_return(@shell_out)
       @provider.load_current_resource
       expect(@current_resource.version).to be_nil

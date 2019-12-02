@@ -28,13 +28,13 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   it_behaves_like "a Windows script running on Windows"
 
-  let(:successful_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
-  let(:failed_executable_script_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe /badargument" }
+  let(:successful_executable_script_content) { "#{ENV["SystemRoot"]}\\system32\\attrib.exe $env:systemroot" }
+  let(:failed_executable_script_content) { "#{ENV["SystemRoot"]}\\system32\\attrib.exe /badargument" }
   let(:processor_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTURE" }
   let(:native_architecture_script_content) { "echo $env:PROCESSOR_ARCHITECTUREW6432" }
   let(:cmdlet_exit_code_not_found_content) { "get-item '.\\thisdoesnotexist'" }
   let(:cmdlet_exit_code_success_content) { "get-item ." }
-  let(:windows_process_exit_code_success_content) { "#{ENV['SystemRoot']}\\system32\\attrib.exe $env:systemroot" }
+  let(:windows_process_exit_code_success_content) { "#{ENV["SystemRoot"]}\\system32\\attrib.exe $env:systemroot" }
   let(:windows_process_exit_code_not_found_content) { "findstr /notavalidswitch" }
   let(:arbitrary_nonzero_process_exit_code) { 4193 }
   let(:arbitrary_nonzero_process_exit_code_content) { "exit #{arbitrary_nonzero_process_exit_code}" }
@@ -473,26 +473,26 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a not_if block using the cwd guard parameter" do
-        custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+        custom_cwd = "#{ENV["SystemRoot"]}\\system32\\drivers\\etc"
         resource.not_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates an only_if block using the cwd guard parameter" do
-        custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+        custom_cwd = "#{ENV["SystemRoot"]}\\system32\\drivers\\etc"
         resource.only_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')", cwd: custom_cwd
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "inherits cwd from the parent resource for only_if" do
-        custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+        custom_cwd = "#{ENV["SystemRoot"]}\\system32\\drivers\\etc"
         resource.cwd custom_cwd
         resource.only_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
       it "inherits cwd from the parent resource for not_if" do
-        custom_cwd = "#{ENV['SystemRoot']}\\system32\\drivers\\etc"
+        custom_cwd = "#{ENV["SystemRoot"]}\\system32\\drivers\\etc"
         resource.cwd custom_cwd
         resource.not_if "exit ! [int32]($pwd.path -eq '#{custom_cwd}')"
         expect(resource.should_skip?(:run)).to be_truthy
@@ -584,7 +584,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         resource.only_if "$true", architecture: :i386
         expect { resource.run_action(:run) }.to raise_error(
           Chef::Exceptions::Win32ArchitectureIncorrect,
-          /cannot execute script with requested architecture 'i386' on Windows Nano Server/)
+          /cannot execute script with requested architecture 'i386' on Windows Nano Server/
+        )
       end
     end
   end

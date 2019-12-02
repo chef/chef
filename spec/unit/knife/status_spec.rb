@@ -30,7 +30,7 @@ describe Chef::Knife::Status do
     @query = double("Chef::Search::Query")
     allow(@query).to receive(:search).and_yield(node)
     allow(Chef::Search::Query).to receive(:new).and_return(@query)
-    @knife  = Chef::Knife::Status.new
+    @knife = Chef::Knife::Status.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
@@ -40,7 +40,8 @@ describe Chef::Knife::Status do
       { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
                    ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } } end
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
+    end
 
     it "should default to searching for everything" do
       expect(@query).to receive(:search).with(:node, "*:*", opts)

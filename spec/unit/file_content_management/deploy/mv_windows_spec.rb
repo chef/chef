@@ -84,8 +84,8 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
       let(:target_file_security_descriptor) do
         double "security descriptor for target file",
-             group: original_target_file_group,
-             owner: original_target_file_owner
+          group: original_target_file_group,
+          owner: original_target_file_owner
       end
 
       let(:updated_target_security_descriptor) do

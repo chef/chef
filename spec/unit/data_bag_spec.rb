@@ -46,7 +46,7 @@ describe Chef::DataBag do
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      expect { @data_bag.name Hash.new }.to raise_error(ArgumentError)
+      expect { @data_bag.name({}) }.to raise_error(ArgumentError)
     end
 
     [ ".", "-", "_", "1"].each do |char|

@@ -28,8 +28,7 @@ describe Chef::Application::Knife do
         long: "-optwithdefault VALUE",
         default: "default-value"
 
-      def run
-      end
+      def run; end
     end
   end
 

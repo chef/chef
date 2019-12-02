@@ -260,7 +260,7 @@ describe Chef::Provider::Package::Cab do
     end
 
     before do
-      new_resource.source = "#{ENV['TEMP']}/test6.1-kb2664825-v3-x64.cab"
+      new_resource.source = "#{ENV["TEMP"]}/test6.1-kb2664825-v3-x64.cab"
       installed_package_list_obj = double(stdout: installed_package_list_stdout)
       allow(provider).to receive(:dism_command).with("/Get-Packages").and_return(installed_package_list_obj)
     end

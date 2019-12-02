@@ -34,7 +34,7 @@ describe "knife node environment set", :workstation do
       knife("node show cons -a chef_environment").should_succeed <<~EOM
         cons:
           chef_environment: lisp
-EOM
+      EOM
     end
 
     it "with no environment" do

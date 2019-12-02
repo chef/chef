@@ -30,7 +30,8 @@ describe Chef::Audit::AuditReporter do
   let(:end_time) { Time.new(2014, 12, 3, 9, 36, 14, "-08:00") }
   let(:run_status) do
     instance_double(Chef::RunStatus, node: node, run_id: run_id,
-                                     start_time: start_time, end_time: end_time) end
+                                     start_time: start_time, end_time: end_time)
+  end
 
   describe "#audit_phase_start" do
 
@@ -89,7 +90,8 @@ describe Chef::Audit::AuditReporter do
         let(:audit_error) do
           double("AuditError", class: "Chef::Exceptions::AuditError",
                                message: "Audit phase failed with error message: derpderpderp",
-                               backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
+                               backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"])
+        end
 
         before do
           reporter.instance_variable_set(:@audit_phase_error, audit_error)
@@ -103,7 +105,7 @@ describe Chef::Audit::AuditReporter do
             Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
             /path/recipe.rb:57
             /path/library.rb:106
-EOM
+          EOM
         end
 
       end
@@ -238,12 +240,14 @@ EOM
     let(:audit_error) do
       double("AuditError", class: "Chef::Exceptions::AuditError",
                            message: "Audit phase failed with error message: derpderpderp",
-                           backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"]) end
+                           backtrace: ["/path/recipe.rb:57", "/path/library.rb:106"])
+    end
 
     let(:run_error) do
       double("RunError", class: "Chef::Exceptions::RunError",
                          message: "This error shouldn't be reported.",
-                         backtrace: ["fix it", "fix it", "fix it"]) end
+                         backtrace: ["fix it", "fix it", "fix it"])
+    end
 
     before do
       allow(reporter).to receive(:auditing_enabled?).and_return(true)
@@ -273,7 +277,7 @@ EOM
           Chef::Exceptions::AuditError: Audit phase failed with error message: derpderpderp
           /path/recipe.rb:57
           /path/library.rb:106
-EOM
+        EOM
       end
     end
   end
@@ -282,10 +286,12 @@ EOM
 
     let(:control_group_foo) do
       instance_double(Chef::Audit::ControlGroupData,
-      metadata: double("foo metadata")) end
+        metadata: double("foo metadata"))
+    end
     let(:control_group_bar) do
       instance_double(Chef::Audit::ControlGroupData,
-      metadata: double("bar metadata")) end
+        metadata: double("bar metadata"))
+    end
 
     let(:ordered_control_groups) do
       {
@@ -296,11 +302,13 @@ EOM
 
     let(:audit_data) do
       instance_double(Chef::Audit::AuditData,
-      add_control_group: true) end
+        add_control_group: true)
+    end
 
     let(:run_context) do
       instance_double(Chef::RunContext,
-      audits: ordered_control_groups) end
+        audits: ordered_control_groups)
+    end
 
     before do
       allow(reporter).to receive(:ordered_control_groups).and_return(ordered_control_groups)
@@ -350,7 +358,8 @@ EOM
     let(:name) { "bat" }
     let(:control_group) do
       instance_double(Chef::Audit::ControlGroupData,
-      metadata: double("metadata")) end
+        metadata: double("metadata"))
+    end
 
     before do
       allow(Chef::Audit::ControlGroupData).to receive(:new)

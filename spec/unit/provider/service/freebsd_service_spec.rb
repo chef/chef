@@ -142,7 +142,7 @@ describe Chef::Provider::Service::Freebsd do
           413  ??  Ss     0:02.51 /usr/sbin/syslogd -s
           539  ??  Is     0:00.14 /usr/sbin/sshd
           545  ??  Ss     0:17.53 sendmail: accepting connections (sendmail)
-PS_SAMPLE
+        PS_SAMPLE
       end
       let(:status) { double(stdout: stdout, exitstatus: 0) }
 
@@ -261,7 +261,8 @@ PS_SAMPLE
           [
           %Q{thing_#{new_resource.service_name}_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -273,7 +274,8 @@ PS_SAMPLE
           [
           %Q{#{new_resource.service_name}_thing_enable="YES"},
           %Q{#{new_resource.service_name}_enable="NO"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (false)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be false
@@ -285,7 +287,8 @@ PS_SAMPLE
           [
           %Q{thing_#{new_resource.service_name}_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -297,7 +300,8 @@ PS_SAMPLE
           [
           %Q{#{new_resource.service_name}_thing_enable="NO"},
           %Q{#{new_resource.service_name}_enable="YES"},
-        ] end
+        ]
+        end
         it "sets enabled based on the exact match (true)" do
           provider.determine_enabled_status!
           expect(current_resource.enabled).to be true
@@ -344,7 +348,7 @@ PS_SAMPLE
         StringIO.new(<<~EOF)
           name="#{new_resource.service_name}"
           rcvar=`set_rcvar`
-EOF
+        EOF
       end
 
       it "should not raise an exception if the rcscript have a name variable" do
@@ -365,7 +369,7 @@ EOF
       let(:rcscript) do
         StringIO.new <<~EOF
           rcvar=`set_rcvar`
-EOF
+        EOF
       end
 
       before do
@@ -380,7 +384,7 @@ EOF
             #
             # #{new_resource.service_name}_enable="YES"
             #   (default: "")
-EOF
+          EOF
         end
 
         it "should get the service name from rcvar if the rcscript does not have a name variable" do
@@ -397,7 +401,7 @@ EOF
           rcvar_stdout = <<~EOF
             # service_with_noname
             #
-EOF
+          EOF
         end
 
         it "should return nil" do
@@ -445,12 +449,12 @@ EOF
       it "should call the start command if one is specified" do
         new_resource.start_command("/etc/rc.d/chef startyousillysally")
         expect(provider).to receive(:shell_out!).with("/etc/rc.d/chef startyousillysally", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststart' if no start command is specified" do
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} faststart", default_env: false)
-        provider.start_service()
+        provider.start_service
       end
     end
 
@@ -458,12 +462,12 @@ EOF
       it "should call the stop command if one is specified" do
         new_resource.stop_command("/etc/init.d/chef itoldyoutostop")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef itoldyoutostop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
 
       it "should call '/usr/local/etc/rc.d/service_name faststop' if no stop command is specified" do
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} faststop", default_env: false)
-        provider.stop_service()
+        provider.stop_service
       end
     end
 
@@ -471,19 +475,19 @@ EOF
       it "should call 'restart' on the service_name if the resource supports it" do
         new_resource.supports({ restart: true })
         expect(provider).to receive(:shell_out!).with("/usr/local/etc/rc.d/#{new_resource.service_name} fastrestart", default_env: false)
-        provider.restart_service()
+        provider.restart_service
       end
 
       it "should call the restart_command if one has been specified" do
         new_resource.restart_command("/etc/init.d/chef restartinafire")
         expect(provider).to receive(:shell_out!).with("/etc/init.d/chef restartinafire", default_env: false)
-        provider.restart_service()
+        provider.restart_service
       end
 
       it "otherwise it should call stop and start" do
         expect(provider).to receive(:stop_service)
         expect(provider).to receive(:start_service)
-        provider.restart_service()
+        provider.restart_service
       end
     end
   end
@@ -550,21 +554,21 @@ EOF
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "#{new_resource.service_name}_enable=\"NO\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should not partial match an already enabled service" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"NO\"", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should enable the service if it is not enabled and not already specified in the rc.conf file" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return(%w{foo bar})
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
 
     it "should not enable the service if it is already enabled" do
@@ -577,7 +581,7 @@ EOF
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"YES\""])
-      provider.enable_service()
+      provider.enable_service
     end
   end
 
@@ -591,27 +595,27 @@ EOF
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "#{new_resource.service_name}_enable=\"YES\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should not disable an enabled service that partially matches" do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar" ])
       expect(provider).to receive(:write_rc_conf).with(["foo", "thing_#{new_resource.service_name}_enable=\"YES\"", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should not disable the service if it is already disabled" do
       allow(current_resource).to receive(:enabled).and_return(false)
       expect(provider).not_to receive(:write_rc_conf)
-      provider.disable_service()
+      provider.disable_service
     end
 
     it "should remove commented out versions of it being disabled or enabled" do
       allow(current_resource).to receive(:enabled).and_return(true)
       expect(provider).to receive(:read_rc_conf).and_return([ "foo", "bar", "\# #{new_resource.service_name}_enable=\"YES\"", "\# #{new_resource.service_name}_enable=\"NO\""])
       expect(provider).to receive(:write_rc_conf).with(["foo", "bar", "#{new_resource.service_name}_enable=\"NO\""])
-      provider.disable_service()
+      provider.disable_service
     end
   end
 end

@@ -175,20 +175,20 @@ end
 describe Chef::FileContentManagement::Deploy::Cp do
 
   let(:unix_invariants) do
-    [
-      :uid,
-      :gid,
-      :mode,
-      :ino,
-    ]
+    %i{
+      uid
+      gid
+      mode
+      ino
+    }
   end
 
   let(:security_descriptor_invariants) do
-    [
-      :owner,
-      :group,
-      :dacl,
-    ]
+    %i{
+      owner
+      group
+      dacl
+    }
   end
 
   it_should_behave_like "a content deploy strategy"
@@ -198,11 +198,11 @@ end
 describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
 
   let(:unix_invariants) do
-    [
-      :uid,
-      :gid,
-      :mode,
-    ]
+    %i{
+      uid
+      gid
+      mode
+    }
   end
 
   it_should_behave_like "a content deploy strategy"
@@ -216,11 +216,11 @@ describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
   context "when a file has no sacl" do
 
     let(:security_descriptor_invariants) do
-      [
-       :owner,
-       :group,
-       :dacl,
-      ]
+      %i{
+       owner
+       group
+       dacl
+      }
     end
 
     it_should_behave_like "a content deploy strategy"
