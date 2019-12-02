@@ -458,12 +458,22 @@ shared_examples_for Chef::Provider::File do
     end
 
     context "do_validate_content" do
-      before { setup_normal_file }
 
+      let(:tempfile_name) { "foo-bar-baz" }
+      let(:backupfile) { "/tmp/failed_validations/#{tempfile_name}" }
       let(:tempfile) do
-        t = double("Tempfile", path: "/tmp/foo-bar-baz", closed?: true)
+        t = double("Tempfile", path: "/tmp/#{tempfile_name}", closed?: true)
         allow(content).to receive(:tempfile).and_return(t)
         t
+      end
+
+      before do
+        Chef::Config[:file_cache_path] = "/tmp"
+        allow(File).to receive(:dirname).and_return(tempfile)
+        allow(File).to receive(:basename).and_return(tempfile_name)
+        allow(FileUtils).to receive(:mkdir_p).and_return(true)
+        allow(FileUtils).to receive(:cp).and_return(true)
+        setup_normal_file
       end
 
       context "with user-supplied verifications" do
@@ -477,7 +487,8 @@ shared_examples_for Chef::Provider::File do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}")
+          msg = "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}"
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, /#{msg}/)
         end
 
         it "does not show verification for sensitive resources" do
@@ -485,7 +496,8 @@ shared_examples_for Chef::Provider::File do
           provider.new_resource.verify windows? ? "REM" : "true"
           provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
           provider.new_resource.sensitive true
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, "Proposed content for #{provider.new_resource.path} failed verification [sensitive]")
+          msg = "Proposed content for #{provider.new_resource.path} failed verification [sensitive]\nTemporary file moved to #{backupfile}"
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, msg)
         end
       end
     end

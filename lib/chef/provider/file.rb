@@ -342,7 +342,7 @@ class Chef
           new_resource.verify.each do |v|
             unless v.verify(tempfile.path)
               backupfile = "#{Chef::Config[:file_cache_path]}/failed_validations/#{::File.basename(tempfile.path)}"
-              FileUtils.mkdir_p File.dirname(backupfile)
+              FileUtils.mkdir_p ::File.dirname(backupfile)
               FileUtils.cp tempfile.path, backupfile
               raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? "[sensitive]" : "#{v}\n#{v.output}"}\nTemporary file moved to #{backupfile}"
             end

@@ -123,8 +123,10 @@ RSpec.configure do |config|
   config.filter_run_excluding external: true
 
   # Explicitly disable :should syntax
+  # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.
   config.expect_with :rspec do |c|
     c.syntax = :expect
+    c.max_formatted_output_length = nil
   end
   config.mock_with :rspec do |c|
     c.syntax = :expect
