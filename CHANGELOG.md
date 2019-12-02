@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.30 -->
-## [v14.14.30](https://github.com/chef/chef/tree/v14.14.30) (2019-11-12)
+<!-- latest_release 14.14.31 -->
+## [v14.14.31](https://github.com/chef/chef/tree/v14.14.31) (2019-12-02)
 
 #### Merged Pull Requests
-- [chef-14] backport#9028 Fix Exception: NoMethodError: undefined… [#9072](https://github.com/chef/chef/pull/9072) ([vsingh-msys](https://github.com/vsingh-msys))
+- Pull in testing updates from master branch [#9127](https://github.com/chef/chef/pull/9127) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in testing updates from master branch [#9127](https://github.com/chef/chef/pull/9127) ([tas50](https://github.com/tas50)) <!-- 14.14.31 -->
 - [chef-14] backport#9028 Fix Exception: NoMethodError: undefined… [#9072](https://github.com/chef/chef/pull/9072) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.14.30 -->
 <!-- release_rollup -->
 
