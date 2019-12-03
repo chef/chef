@@ -23,7 +23,7 @@ require "chef/cookbook_uploader"
 require "timeout"
 
 describe Chef::Knife::CookbookUpload do
-  let(:cookbook) { Chef::CookbookVersion.new("test_cookbook", "/tmp/blah.txt") }
+  let(:cookbook) { Chef::CookbookVersion.new("test_cookbook", "/tmp/blah") }
 
   let(:cookbooks_by_name) do
     { cookbook.name => cookbook }
@@ -56,6 +56,7 @@ describe Chef::Knife::CookbookUpload do
 
   describe "with --concurrency" do
     it "should upload cookbooks with predefined concurrency" do
+      allow(cookbook).to receive(:compile_metadata).and_return(nil)
       allow(Chef::CookbookVersion).to receive(:list_all_versions).and_return({})
       knife.config[:concurrency] = 3
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
@@ -114,11 +115,13 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it "should read only one cookbook" do
+        allow(cookbooks_by_name["test_cookbook1"]).to receive(:compile_metadata).and_return(nil)
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook1").and_call_original
         knife.run
       end
 
       it "should not read all cookbooks" do
+        allow(cookbooks_by_name["test_cookbook1"]).to receive(:compile_metadata).and_return(nil)
         expect(cookbook_loader).not_to receive(:load_cookbooks)
         knife.run
       end
@@ -178,6 +181,7 @@ describe Chef::Knife::CookbookUpload do
         allow(knife).to receive(:cookbook_names).and_return(%w{cookbook_dependency test_cookbook})
         @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
         knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
+        allow(cookbook).to receive(:compile_metadata).and_return(nil)
       end
 
       it "should exit and not upload the cookbook" do
@@ -213,6 +217,7 @@ describe Chef::Knife::CookbookUpload do
     end
 
     it "should freeze the version of the cookbooks if --freeze is specified" do
+      allow(cookbook).to receive(:compile_metadata).and_return(nil)
       knife.config[:freeze] = true
       expect(cookbook).to receive(:freeze_version).once
       knife.run
@@ -229,6 +234,8 @@ describe Chef::Knife::CookbookUpload do
           @test_cookbook2 = Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah")
           allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
           allow(cookbook_loader).to receive(:cookbook_names).and_return(%w{test_cookbook1 test_cookbook2})
+          allow(@test_cookbook1).to receive(:compile_metadata).and_return(nil)
+          allow(@test_cookbook2).to receive(:compile_metadata).and_return(nil)
         end
 
         it "should upload all cookbooks" do
@@ -283,6 +290,10 @@ describe Chef::Knife::CookbookUpload do
     end
 
     describe "when a frozen cookbook exists on the server" do
+      before(:each) do
+        allow(cookbook).to receive(:compile_metadata).and_return(nil)
+      end
+
       it "should fail to replace it" do
         exception = Chef::Exceptions::CookbookFrozen.new
         expect(cookbook_uploader).to receive(:upload_cookbooks)

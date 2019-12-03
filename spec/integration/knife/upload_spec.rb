@@ -209,7 +209,10 @@ describe "knife upload", :workstation do
               Created /roles/y.json
               Created /users/y.json
             EOM
-            knife("diff /").should_succeed ""
+            knife("diff --name-status /").should_succeed <<~EOM
+              D\t/cookbooks/x/metadata.json
+              D\t/cookbooks/y/metadata.json
+            EOM
           end
 
           it "knife upload --no-diff adds the new files" do
@@ -225,7 +228,10 @@ describe "knife upload", :workstation do
               Created /roles/y.json
               Created /users/y.json
             EOM
-            knife("diff --name-status /").should_succeed ""
+            knife("diff --name-status /").should_succeed <<~EOM
+              D\t/cookbooks/x/metadata.json
+              D\t/cookbooks/y/metadata.json
+            EOM
           end
         end
       end
@@ -462,6 +468,7 @@ describe "knife upload", :workstation do
           knife("upload /cookbooks/x/y.rb").should_fail "ERROR: /cookbooks/x cannot have a child created under it.\n"
           knife("upload --purge /cookbooks/x/z.rb").should_fail "ERROR: /cookbooks/x/z.rb cannot be deleted.\n"
         end
+
         # TODO this is a bit of an inconsistency: if we didn't specify --purge,
         # technically we shouldn't have deleted missing files.  But ... cookbooks
         # are a special case.
@@ -469,13 +476,18 @@ describe "knife upload", :workstation do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
+
         it "knife upload --purge of the cookbook itself succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
       when_the_repository "has a missing file for the cookbook" do
@@ -488,7 +500,9 @@ describe "knife upload", :workstation do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
       when_the_repository "has an extra file for the cookbook" do
@@ -503,7 +517,9 @@ describe "knife upload", :workstation do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
 
@@ -602,7 +618,6 @@ describe "knife upload", :workstation do
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
-            A\t/cookbooks/x/metadata.json
             A\t/cookbooks/x/onlyin1.0.0.rb
           EOM
         end
@@ -614,11 +629,13 @@ describe "knife upload", :workstation do
           cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
 
-        it "knife upload /cookbooks/x uploads the local version" do
+        it "knife upload /cookbooks/x uploads the local version generates metadata.json and uploads it." do
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
 
@@ -639,7 +656,6 @@ describe "knife upload", :workstation do
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
-            A\t/cookbooks/x/metadata.json
             A\t/cookbooks/x/onlyin1.0.0.rb
           EOM
         end
@@ -654,7 +670,9 @@ describe "knife upload", :workstation do
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
     end
@@ -754,7 +772,9 @@ describe "knife upload", :workstation do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Created /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
     end

@@ -46,12 +46,6 @@ class Chef
     end
 
     def upload_cookbooks
-      cookbooks.each do |cookbook|
-        next if cookbook.all_files.include?("#{cookbook.root_paths[0]}/metadata.json")
-
-        generate_metadata_json(cookbook.name.to_s, cookbook)
-      end
-
       # Syntax Check
       validate_cookbooks
       # generate checksums of cookbook files and create a sandbox

@@ -20,10 +20,14 @@
 
 require_relative "../knife"
 require_relative "../cookbook_uploader"
+require_relative "../mixin/file_class"
+
 
 class Chef
   class Knife
     class CookbookUpload < Knife
+
+      include Chef::Mixin::FileClass
 
       CHECKSUM = "checksum".freeze
       MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
@@ -202,15 +206,46 @@ class Chef
       end
 
       def upload(cookbooks, justify_width)
-        cookbooks.each do |cb|
-          ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
-          check_for_broken_links!(cb)
-          check_for_dependencies!(cb)
+        require "tmpdir"
+
+        Dir.mktmpdir do |tmp_dir_path|
+          begin
+            cookbooks_to_upload = []
+            compiled_metadata = nil
+
+            cookbooks.each do |cb|
+              compiled_metadata = cb.compile_metadata
+              ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
+              check_for_broken_links!(cb)
+              check_for_dependencies!(cb)
+
+              if compiled_metadata
+                proxy_cookbook_path = "#{tmp_dir_path}/#{cb.name}"
+                # Make a symlink
+                file_class.symlink cb.root_dir, proxy_cookbook_path
+                proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path)
+
+                proxy_loader.load_cookbooks
+                cookbook_to_upload = proxy_loader.cookbook_version
+                cookbook_to_upload.freeze_version if options[:freeze]
+                cookbooks_to_upload << cookbook_to_upload
+              else
+                cookbooks_to_upload << cb
+              end
+            end
+
+            Chef::CookbookUploader.new(cookbooks_to_upload, force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
+          rescue Chef::Exceptions::CookbookFrozen => e
+            ui.error e
+            raise
+          ensure
+            # deletes the generated metadata from local repo.
+            if compiled_metadata
+              GC.start
+              File.unlink(compiled_metadata)
+            end
+          end
         end
-        Chef::CookbookUploader.new(cookbooks, force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
-      rescue Chef::Exceptions::CookbookFrozen => e
-        ui.error e
-        raise
       end
 
       def check_for_broken_links!(cookbook)
