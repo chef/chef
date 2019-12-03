@@ -69,7 +69,7 @@ class Chef
 
       property :options, Array,
         description: "An optional property to set options for the kernel module.",
-        introduced: "15.4"
+        introduced: "14.15"
 
       property :load_dir, String,
                description: "The directory to load modules from.",
