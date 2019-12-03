@@ -114,13 +114,6 @@ class Chef
       Chef::Log.info("Upload complete!")
     end
 
-    def generate_metadata_json(cookbook_name, cookbook)
-      metadata = Chef::Knife::CookbookMetadata.new
-      metadata.generate_metadata_from_file(cookbook_name, "#{cookbook.root_paths[0]}/metadata.rb")
-      cookbook.all_files << "#{cookbook.root_paths[0]}/metadata.json"
-      cookbook.cookbook_manifest.send(:generate_manifest)
-    end
-
     def uploader_function_for(file, checksum, url, checksums_to_upload)
       lambda do
         # Checksum is the hexadecimal representation of the md5,
