@@ -22,7 +22,6 @@ require_relative "../knife"
 require_relative "../cookbook_uploader"
 require_relative "../mixin/file_class"
 
-
 class Chef
   class Knife
     class CookbookUpload < Knife
