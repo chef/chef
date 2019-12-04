@@ -6,7 +6,7 @@ name=<%= @config.description %>
 <% if @config.baseurl %>
 baseurl=<%= case @config.baseurl
      when Array
-       @config.baseurl.join("\n")
+       @config.baseurl.join("\n        ")
      else
        @config.baseurl
      end %>
