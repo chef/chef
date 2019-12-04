@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.5.22 -->
-## [v15.5.22](https://github.com/chef/chef/tree/v15.5.22) (2019-12-04)
+<!-- latest_release 15.5.23 -->
+## [v15.5.23](https://github.com/chef/chef/tree/v15.5.23) (2019-12-04)
 
 #### Merged Pull Requests
-- Resolve non-zero &quot;success&quot; error code issues with linux_user re… [#9105](https://github.com/chef/chef/pull/9105) ([skippyj](https://github.com/skippyj))
+- Bump omnibus-software to remove libtool+pkg-config [#9136](https://github.com/chef/chef/pull/9136) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software to remove libtool+pkg-config [#9136](https://github.com/chef/chef/pull/9136) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.23 -->
 - Resolve non-zero &quot;success&quot; error code issues with linux_user re… [#9105](https://github.com/chef/chef/pull/9105) ([skippyj](https://github.com/skippyj)) <!-- 15.5.22 -->
 - Tiny spelling typo and grammar [#9135](https://github.com/chef/chef/pull/9135) ([ehershey](https://github.com/ehershey)) <!-- 15.5.21 -->
 - [yum_repository] Add indentation for multiple baseurls [#9134](https://github.com/chef/chef/pull/9134) ([bugok](https://github.com/bugok)) <!-- 15.5.20 -->
