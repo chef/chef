@@ -4,6 +4,10 @@ class Chef
     # When referencing a product directly, like Chef (Now Chef Infra)
     PRODUCT = "Chef Infra Client".freeze
 
+    # A short designation for the product, used in Windows event logs
+    # and some nomenclature.
+    SHORT = "chef".freeze
+
     # The name of the server product
     SERVER_PRODUCT = "Chef Infra Server".freeze
 

@@ -1,11 +1,43 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.5.24 -->
+## [v15.5.24](https://github.com/chef/chef/tree/v15.5.24) (2019-12-05)
+
+#### Merged Pull Requests
+- Update Ohai and pull in Ruby perf improvements [#9137](https://github.com/chef/chef/pull/9137) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.5.17 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Update Ohai and pull in Ruby perf improvements [#9137](https://github.com/chef/chef/pull/9137) ([tas50](https://github.com/tas50)) <!-- 15.5.24 -->
+- Bump omnibus-software to remove libtool+pkg-config [#9136](https://github.com/chef/chef/pull/9136) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.5.23 -->
+- Resolve non-zero &quot;success&quot; error code issues with linux_user re… [#9105](https://github.com/chef/chef/pull/9105) ([skippyj](https://github.com/skippyj)) <!-- 15.5.22 -->
+- Tiny spelling typo and grammar [#9135](https://github.com/chef/chef/pull/9135) ([ehershey](https://github.com/ehershey)) <!-- 15.5.21 -->
+- [yum_repository] Add indentation for multiple baseurls [#9134](https://github.com/chef/chef/pull/9134) ([bugok](https://github.com/bugok)) <!-- 15.5.20 -->
+- restoring correct value to windows event source [#9117](https://github.com/chef/chef/pull/9117) ([bobchaos](https://github.com/bobchaos)) <!-- 15.5.19 -->
+- Spelling, punctuation, grammar [#9122](https://github.com/chef/chef/pull/9122) ([ehershey](https://github.com/ehershey)) <!-- 15.5.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.5.17](https://github.com/chef/chef/tree/v15.5.17) (2019-11-21)
+<!-- latest_stable_release -->
+
+## [v15.5.16](https://github.com/chef/chef/tree/v15.5.16) (2019-11-21)
+
+#### Merged Pull Requests
+- Require relative in the win32-eventlog rakefile [#9116](https://github.com/chef/chef/pull/9116) ([tas50](https://github.com/tas50))
+
+## [v15.5.15](https://github.com/chef/chef/tree/v15.5.15) (2019-11-19)
+
+#### Merged Pull Requests
+- Improve input validation on windows_package [#9102](https://github.com/chef/chef/pull/9102) ([tas50](https://github.com/tas50))
+- Don&#39;t ship the extra rake tasks in the gem [#9104](https://github.com/chef/chef/pull/9104) ([tas50](https://github.com/tas50))
+- Convert reboot resource to a custom resource with descriptions [#7239](https://github.com/chef/chef/pull/7239) ([tas50](https://github.com/tas50))
+- Remove bonus `.md` to fix link [#9110](https://github.com/chef/chef/pull/9110) ([btm](https://github.com/btm))
+- Fix failures in build_essential on rhel platforms [#9111](https://github.com/chef/chef/pull/9111) ([lamont-granquist](https://github.com/lamont-granquist))
+- fix enforce_path_sanity being set to true [#9114](https://github.com/chef/chef/pull/9114) ([lamont-granquist](https://github.com/lamont-granquist))
+
 ## [v15.5.9](https://github.com/chef/chef/tree/v15.5.9) (2019-11-15)
 
 #### Merged Pull Requests
@@ -52,7 +84,6 @@
 - Bump inspec-core-bin to 4.18.39 [#9098](https://github.com/chef/chef/pull/9098) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Improve resource descriptions and the rake task for docs generation [#9097](https://github.com/chef/chef/pull/9097) ([tas50](https://github.com/tas50))
 - Add Chef Infra Client 15.5. release notes [#9089](https://github.com/chef/chef/pull/9089) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.4.45](https://github.com/chef/chef/tree/v15.4.45) (2019-10-15)
 

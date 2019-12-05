@@ -28,7 +28,12 @@ class Chef
         end
 
         def manage_user
-          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
+          manage_u = shell_out("usermod", universal_options, usermod_options, new_resource.username, returns: [0, 12])
+          if manage_u.exitstatus == 12 && manage_u.stderr !~ /exists/
+            raise Chef::Exceptions::User, "Unable to modify home directory for #{new_resource.username}"
+          end
+
+          manage_u.error!
         end
 
         def remove_user

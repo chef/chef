@@ -24,7 +24,7 @@ override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
 override "zlib", version: "1.2.11"
 
-# we build both a chef and ohai omnibus-software defintion which create the
+# We build both chef and ohai omnibus-software definitions which creates the
 # chef-client and ohai binstubs. Out of the box the ohai definition uses whatever
 # is in master, which won't match what's in the Gemfile.lock and used by the chef
 # definition. This pin will ensure that ohai and chef-client commands use the

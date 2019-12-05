@@ -39,7 +39,7 @@ describe Chef::Util::Selinux do
   end
 
   it "each part of ENV['PATH'] should be checked" do
-    expected_paths = ENV["PATH"].split(File::PATH_SEPARATOR) + [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
+    expected_paths = ENV["PATH"].split(File::PATH_SEPARATOR) + %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
 
     expected_paths.uniq.each do |bin_path|
       selinux_path = File.join(bin_path, "selinuxenabled")
