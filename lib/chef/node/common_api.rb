@@ -100,7 +100,7 @@ class Chef
 
       # non-autovivifying reader that throws an exception if the attribute does not exist
       def read!(*path)
-        raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
+        raise Chef::Exceptions::NoSuchAttribute.new(path.join ".") unless exist?(*path)
 
         path.inject(self) do |memo, key|
           memo[key]
