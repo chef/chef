@@ -147,6 +147,9 @@ elif [[ -d /usr/local/etc/sudoers.d ]]; then
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
+# REDO 20190813 - this ulimit can be removed once the macos anka images are updated to support more than 256 open files
+ulimit -S -n 512
+
 cd "$chef_gem"
 sudo -E bundle install
 sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional
