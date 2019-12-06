@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.33 -->
-## [v14.14.33](https://github.com/chef/chef/tree/v14.14.33) (2019-12-03)
+<!-- latest_release 14.14.34 -->
+## [v14.14.34](https://github.com/chef/chef/tree/v14.14.34) (2019-12-06)
 
 #### Merged Pull Requests
-- kernel_module: Add new options property (backport from chef-15 to chef-14) [#9120](https://github.com/chef/chef/pull/9120) ([ramereth](https://github.com/ramereth))
+- Fix Chef-14 Test Failures [#9142](https://github.com/chef/chef/pull/9142) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix Chef-14 Test Failures [#9142](https://github.com/chef/chef/pull/9142) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.34 -->
 - kernel_module: Add new options property (backport from chef-15 to chef-14) [#9120](https://github.com/chef/chef/pull/9120) ([ramereth](https://github.com/ramereth)) <!-- 14.14.33 -->
 - Boilerplate and testing backports from master [#9128](https://github.com/chef/chef/pull/9128) ([tas50](https://github.com/tas50)) <!-- 14.14.32 -->
 - Pull in testing updates from master branch [#9127](https://github.com/chef/chef/pull/9127) ([tas50](https://github.com/tas50)) <!-- 14.14.31 -->
