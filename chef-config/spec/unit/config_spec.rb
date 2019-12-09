@@ -151,6 +151,38 @@ RSpec.describe ChefConfig::Config do
 
     end
 
+    describe "expand relative paths" do
+      let(:current_directory) { Dir.pwd }
+
+      context "when given cookbook_path" do
+        let(:extra_config_options) { [ "cookbook_path=cookbooks/" ] }
+
+        it "expanded cookbook_path" do
+          apply_config
+          expect(described_class[:cookbook_path]).to eq("#{current_directory}/cookbooks")
+        end
+      end
+
+      context "when passes multiple config options" do
+        let(:extra_config_options) { ["data_bag_path=data_bags/", "cookbook_path=cookbooks", "chef_repo_path=."] }
+
+        it "expanded paths" do
+          apply_config
+          expect(described_class[:data_bag_path]).to eq("#{current_directory}/data_bags")
+          expect(described_class[:cookbook_path]).to eq("#{current_directory}/cookbooks")
+          expect(described_class[:chef_repo_path]).to eq("#{current_directory}")
+        end
+      end
+
+      context "when passes multiple cookbook_paths in config options" do
+        let(:extra_config_options) { ["cookbook_path=[first_cookbook, secound_cookbooks]"] }
+
+        it "expanded paths" do
+          apply_config
+          expect(described_class[:cookbook_path]).to eq(["#{current_directory}/first_cookbook", "#{current_directory}/secound_cookbooks"])
+        end
+      end
+    end
   end
 
   describe "when configuring formatters" do
