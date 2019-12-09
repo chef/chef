@@ -563,15 +563,15 @@ module ChefConfig
     # SSL verification settings. When set to :verify_none no HTTPS requests will
     # be validated.
     default :ssl_verify_mode, :verify_peer
-   
-    # Needed to coerce string value to a symbol when loading settings from the 
+
+    # Needed to coerce string value to a symbol when loading settings from the
     # credentials toml files which doesn't allow ruby symbol values
     configurable(:ssl_verify_mode).writes_value do |value|
       if value.is_a?(String) && value[0] == ":"
         value[1..-1].to_sym
       else
         value.to_sym
-      end 
+      end
     end
 
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
