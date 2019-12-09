@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.1 -->
-## [v15.6.1](https://github.com/chef/chef/tree/v15.6.1) (2019-12-06)
+<!-- latest_release 15.6.2 -->
+## [v15.6.2](https://github.com/chef/chef/tree/v15.6.2) (2019-12-09)
 
 #### Merged Pull Requests
-- bump omnibus-software + rhel6 fix [#9145](https://github.com/chef/chef/pull/9145) ([lamont-granquist](https://github.com/lamont-granquist))
+- Specify item path in Node.read! error message [#9147](https://github.com/chef/chef/pull/9147) ([zeusttu](https://github.com/zeusttu))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Specify item path in Node.read! error message [#9147](https://github.com/chef/chef/pull/9147) ([zeusttu](https://github.com/zeusttu)) <!-- 15.6.2 -->
 - bump omnibus-software + rhel6 fix [#9145](https://github.com/chef/chef/pull/9145) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.1 -->
 - Update ruby_prof to 1.0 [#9130](https://github.com/chef/chef/pull/9130) ([tas50](https://github.com/tas50)) <!-- 15.6.0 -->
 - Update omnnibus-software to add further ruby cleanup [#9141](https://github.com/chef/chef/pull/9141) ([tas50](https://github.com/tas50)) <!-- 15.5.26 -->
