@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.5 -->
-## [v15.6.5](https://github.com/chef/chef/tree/v15.6.5) (2019-12-09)
+<!-- latest_release 15.6.6 -->
+## [v15.6.6](https://github.com/chef/chef/tree/v15.6.6) (2019-12-09)
 
 #### Merged Pull Requests
-- Fix for ChefConfig should expand relative paths [#9042](https://github.com/chef/chef/pull/9042) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Fix apt_repository uri single/double quotes and spaces [#9036](https://github.com/chef/chef/pull/9036) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix apt_repository uri single/double quotes and spaces [#9036](https://github.com/chef/chef/pull/9036) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.6.6 -->
 - Fix for ChefConfig should expand relative paths [#9042](https://github.com/chef/chef/pull/9042) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 15.6.5 -->
 - Replace hardcoded /etc/chef with Chef::Dist::CONF_DIR [#9060](https://github.com/chef/chef/pull/9060) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.4 -->
 - Symbolize config for ssl_verify_mode in credentials [#9064](https://github.com/chef/chef/pull/9064) ([teknofire](https://github.com/teknofire)) <!-- 15.6.3 -->
