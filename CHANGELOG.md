@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.3 -->
-## [v15.6.3](https://github.com/chef/chef/tree/v15.6.3) (2019-12-09)
+<!-- latest_release 15.6.4 -->
+## [v15.6.4](https://github.com/chef/chef/tree/v15.6.4) (2019-12-09)
 
 #### Merged Pull Requests
-- Symbolize config for ssl_verify_mode in credentials [#9064](https://github.com/chef/chef/pull/9064) ([teknofire](https://github.com/teknofire))
+- Replace hardcoded /etc/chef with Chef::Dist::CONF_DIR [#9060](https://github.com/chef/chef/pull/9060) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace hardcoded /etc/chef with Chef::Dist::CONF_DIR [#9060](https://github.com/chef/chef/pull/9060) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.4 -->
 - Symbolize config for ssl_verify_mode in credentials [#9064](https://github.com/chef/chef/pull/9064) ([teknofire](https://github.com/teknofire)) <!-- 15.6.3 -->
 - Specify item path in Node.read! error message [#9147](https://github.com/chef/chef/pull/9147) ([zeusttu](https://github.com/zeusttu)) <!-- 15.6.2 -->
 - bump omnibus-software + rhel6 fix [#9145](https://github.com/chef/chef/pull/9145) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.1 -->
