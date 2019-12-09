@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.8 -->
-## [v15.6.8](https://github.com/chef/chef/tree/v15.6.8) (2019-12-09)
+<!-- latest_release 15.6.9 -->
+## [v15.6.9](https://github.com/chef/chef/tree/v15.6.9) (2019-12-09)
 
 #### Merged Pull Requests
-- Add a new distro constant for chef-apply [#9149](https://github.com/chef/chef/pull/9149) ([bobchaos](https://github.com/bobchaos))
+- Remove duplicate constant for Chef::Dist::SHORT [#9150](https://github.com/chef/chef/pull/9150) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove duplicate constant for Chef::Dist::SHORT [#9150](https://github.com/chef/chef/pull/9150) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.9 -->
 - Add a new distro constant for chef-apply [#9149](https://github.com/chef/chef/pull/9149) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.8 -->
 - Add output for the file provider verification [#9039](https://github.com/chef/chef/pull/9039) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.7 -->
 - Fix apt_repository uri single/double quotes and spaces [#9036](https://github.com/chef/chef/pull/9036) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 15.6.6 -->
