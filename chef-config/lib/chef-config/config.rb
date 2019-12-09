@@ -34,6 +34,7 @@ require "uri" unless defined?(URI)
 require "addressable/uri" unless defined?(Addressable::URI)
 require "openssl" unless defined?(OpenSSL)
 require "yaml"
+require_relative "dist"
 
 module ChefConfig
 
@@ -71,6 +72,31 @@ module ChefConfig
         end
       end
       path
+    end
+
+    # On *nix, /etc/chef
+    def self.etc_chef_dir
+      path = ChefUtils.windows? ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
+    # On *nix, /var/chef
+    def self.var_chef_dir
+      path = ChefUtils.windows? ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
+    # On *nix, the root of /var/, used to test if we can create and write in /var/chef
+    def self.var_root_dir
+      path = ChefUtils.windows? ? c_chef_dir : "/var"
+      PathHelper.cleanpath(path)
+    end
+
+    # On windows, C:/chef/
+    def self.c_chef_dir
+      drive = windows_installation_drive || "C:"
+      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
     end
 
     # the drive where Chef is installed on a windows host. This is determined
@@ -284,8 +310,8 @@ module ChefConfig
       if local_mode
         PathHelper.join(config_dir, "local-mode-cache")
       else
-        primary_cache_root = platform_specific_path("/var")
-        primary_cache_path = platform_specific_path("/var/chef")
+        primary_cache_root = var_root_dir
+        primary_cache_path = var_chef_dir
         # Use /var/chef as the cache path only if that folder exists and we can read and write
         # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
         # Otherwise, we'll create .chef under the user's home directory and use that as
@@ -655,9 +681,9 @@ module ChefConfig
       if chef_zero.enabled
         nil
       elsif target_mode?
-        platform_specific_path("/etc/chef/#{target_mode.host}/client.pem")
+        PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/client.pem")
       else
-        platform_specific_path("/etc/chef/client.pem")
+        PathHelper.cleanpath("#{etc_chef_dir}/client.pem")
       end
     end
 
@@ -679,10 +705,10 @@ module ChefConfig
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      if target_mode? && File.exist?(platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret"))
-        platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret")
-      elsif File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
-        platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+      if target_mode? && File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret"))
+        PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret")
+      elsif File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret"))
+        PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret")
       else
         nil
       end
@@ -709,7 +735,7 @@ module ChefConfig
     # The `validation_key` is never used if the `client_key` exists.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
+    default(:validation_key) { chef_zero.enabled ? nil : PathHelper.cleanpath("#{etc_chef_dir}/validation.pem") }
     default :validation_client_name do
       # If the URL is set and looks like a normal Chef Server URL, extract the
       # org name and use that as part of the default.
