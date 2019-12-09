@@ -45,6 +45,9 @@ class Chef
     # The chef-shell executable
     SHELL = "chef-shell".freeze
 
+    # The chef-apply executable
+    APPLY = "chef-apply".freeze
+
     # Configuration related constants
     # The chef-shell configuration file
     SHELL_CONF = "chef_shell.rb".freeze
