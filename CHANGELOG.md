@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.9 -->
-## [v15.6.9](https://github.com/chef/chef/tree/v15.6.9) (2019-12-09)
+<!-- latest_release 15.6.10 -->
+## [v15.6.10](https://github.com/chef/chef/tree/v15.6.10) (2019-12-10)
 
 #### Merged Pull Requests
-- Remove duplicate constant for Chef::Dist::SHORT [#9150](https://github.com/chef/chef/pull/9150) ([bobchaos](https://github.com/bobchaos))
+- Bump ohai to 15.6.3 [#9152](https://github.com/chef/chef/pull/9152) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.5.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 15.6.3 [#9152](https://github.com/chef/chef/pull/9152) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.10 -->
 - Remove duplicate constant for Chef::Dist::SHORT [#9150](https://github.com/chef/chef/pull/9150) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.9 -->
 - Add a new distro constant for chef-apply [#9149](https://github.com/chef/chef/pull/9149) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.8 -->
 - Add output for the file provider verification [#9039](https://github.com/chef/chef/pull/9039) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.7 -->
