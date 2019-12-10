@@ -1,6 +1,12 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# Chef Infra Client 15.5
+# Chef Infra Client 15.5.15
+
+The Chef Infra Client 15.5.15 release includes fixes for two regressions. A regression in the `build_essential` resource caused failures on `rhel` platforms and a second regression caused Chef Infra Client to fail when starting with `enforce_path_sanity` enabled. As part of this fix we've added a new property, `raise_if_unsupported`, to the `build-essential` resource. Instead of silently continuing, this property will fail a Chef Infra Client run if an unknown platform is encountered.
+
+We've also updated the `windows_package` resource. The resource will now provide better error messages if invalid options are passed to the `installer_type` property and the `checksum` property will now accept uppercase SHA256 checksums. 
+
+# Chef Infra Client 15.5.9
 
 ## New Cookbook Helpers
 
@@ -10,7 +16,7 @@ For more information all all of the new helpers available, see the [chef-utils r
 
 ## Chefignore Improvements
 
-We've reworked how chefignore files are handled in `knife`, which has allowed us to close out a large number of long outstanding bugs. `knife` will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookkbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commmands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
+We've reworked how chefignore files are handled in `knife`, which has allowed us to close out a large number of long outstanding bugs. `knife` will now traverse all the way up the directory structure looking for a chefignore file. This means you can place a chefignore file in each cookbook or any parent directory in your repository structure. Additionally, we have made fixes that ensure that commands like `knife diff` and `knife cookbook upload` always honor your chefignore files.
 
 ## Windows Habitat Plan
 
@@ -22,7 +28,7 @@ This release of Chef Infra Client ships with several optimizations to our Ruby i
 
 ## Chef InSpec 4.18.39
 
-Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in additition to some great resource enhancements:
+Chef InSpec has been updated from 4.17.17 to 4.18.38. This release includes a large number of bug fixes in addition to some great resource enhancements:
 
 - Inputs can now be used within a `describe.one` block
 - The `service` resource now includes a `startname` property for Windows and systemd services
@@ -280,7 +286,7 @@ The `windows_task` resource has been updated to allow the `day` property to acce
 
 ### zypper_package
 
-The `zypper_package` package has been updated to properly upgrade packages if necessary based on the versin specified in the resource block. Thanks [@foobarbam](https://github.com/foobarbam) for this fix.
+The `zypper_package` package has been updated to properly upgrade packages if necessary based on the version specified in the resource block. Thanks [@foobarbam](https://github.com/foobarbam) for this fix.
 
 ## Platform Support Updates
 

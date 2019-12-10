@@ -34,6 +34,7 @@ require "uri" unless defined?(URI)
 require "addressable/uri" unless defined?(Addressable::URI)
 require "openssl" unless defined?(OpenSSL)
 require "yaml"
+require_relative "dist"
 
 module ChefConfig
 
@@ -73,6 +74,31 @@ module ChefConfig
       path
     end
 
+    # On *nix, /etc/chef
+    def self.etc_chef_dir
+      path = ChefUtils.windows? ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
+    # On *nix, /var/chef
+    def self.var_chef_dir
+      path = ChefUtils.windows? ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
+    # On *nix, the root of /var/, used to test if we can create and write in /var/chef
+    def self.var_root_dir
+      path = ChefUtils.windows? ? c_chef_dir : "/var"
+      PathHelper.cleanpath(path)
+    end
+
+    # On windows, C:/chef/
+    def self.c_chef_dir
+      drive = windows_installation_drive || "C:"
+      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
     # the drive where Chef is installed on a windows host. This is determined
     # either by the drive containing the current file or by the SYSTEMDRIVE ENV
     # variable
@@ -108,12 +134,20 @@ module ChefConfig
           # Split including whitespace if someone does truly odd like
           # --config-option "foo = bar"
           key, value = option.split(/\s*=\s*/, 2)
+
           # Call to_sym because Chef::Config expects only symbol keys. Also
           # runs a simple parse on the string for some common types.
           memo[key.to_sym] = YAML.safe_load(value)
           memo
         end
-        merge!(extra_parsed_options)
+        set_extra_config_options(extra_parsed_options)
+      end
+    end
+
+    # We use :[]= assignment here to not bypass any coercions that happen via mixlib-config writes_value callbacks
+    def self.set_extra_config_options(extra_parsed_options)
+      extra_parsed_options.each do |key, value|
+        self[key.to_sym] = value
       end
     end
 
@@ -155,6 +189,20 @@ module ChefConfig
     # it up here and get a real method written so that things get dispatched
     # properly.
     configurable(:daemonize).writes_value { |v| v }
+
+    def self.expand_relative_paths(path)
+      unless path.nil?
+        if path.is_a?(String)
+          File.expand_path(path)
+        else
+          Array(path).map { |path| File.expand_path(path) }
+        end
+      end
+    end
+
+    configurable(:cookbook_path).writes_value { |path| expand_relative_paths(path) }
+
+    configurable(:chef_repo_path).writes_value { |path| expand_relative_paths(path) }
 
     # The root where all local chef object data is stored.  cookbooks, data bags,
     # environments are all assumed to be in separate directories under this.
@@ -204,23 +252,23 @@ module ChefConfig
 
     # Location of acls on disk. String or array of strings.
     # Defaults to <chef_repo_path>/acls.
-    default(:acl_path) { derive_path_from_chef_repo_path("acls") }
+    default(:acl_path) { derive_path_from_chef_repo_path("acls") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of clients on disk. String or array of strings.
     # Defaults to <chef_repo_path>/clients.
-    default(:client_path) { derive_path_from_chef_repo_path("clients") }
+    default(:client_path) { derive_path_from_chef_repo_path("clients") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of client keys on disk. String or array of strings.
     # Defaults to <chef_repo_path>/client_keys.
-    default(:client_key_path) { derive_path_from_chef_repo_path("client_keys") }
+    default(:client_key_path) { derive_path_from_chef_repo_path("client_keys") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of containers on disk. String or array of strings.
     # Defaults to <chef_repo_path>/containers.
-    default(:container_path) { derive_path_from_chef_repo_path("containers") }
+    default(:container_path) { derive_path_from_chef_repo_path("containers") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of cookbook_artifacts on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbook_artifacts.
-    default(:cookbook_artifact_path) { derive_path_from_chef_repo_path("cookbook_artifacts") }
+    default(:cookbook_artifact_path) { derive_path_from_chef_repo_path("cookbook_artifacts") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of cookbooks on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
@@ -236,35 +284,35 @@ module ChefConfig
 
     # Location of data bags on disk. String or array of strings.
     # Defaults to <chef_repo_path>/data_bags.
-    default(:data_bag_path) { derive_path_from_chef_repo_path("data_bags") }
+    default(:data_bag_path) { derive_path_from_chef_repo_path("data_bags") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of environments on disk. String or array of strings.
     # Defaults to <chef_repo_path>/environments.
-    default(:environment_path) { derive_path_from_chef_repo_path("environments") }
+    default(:environment_path) { derive_path_from_chef_repo_path("environments") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/groups.
-    default(:group_path) { derive_path_from_chef_repo_path("groups") }
+    default(:group_path) { derive_path_from_chef_repo_path("groups") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of nodes on disk. String or array of strings.
     # Defaults to <chef_repo_path>/nodes.
-    default(:node_path) { derive_path_from_chef_repo_path("nodes") }
+    default(:node_path) { derive_path_from_chef_repo_path("nodes") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of policies on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policies.
-    default(:policy_path) { derive_path_from_chef_repo_path("policies") }
+    default(:policy_path) { derive_path_from_chef_repo_path("policies") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of policy_groups on disk. String or array of strings.
     # Defaults to <chef_repo_path>/policy_groups.
-    default(:policy_group_path) { derive_path_from_chef_repo_path("policy_groups") }
+    default(:policy_group_path) { derive_path_from_chef_repo_path("policy_groups") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of roles on disk. String or array of strings.
     # Defaults to <chef_repo_path>/roles.
-    default(:role_path) { derive_path_from_chef_repo_path("roles") }
+    default(:role_path) { derive_path_from_chef_repo_path("roles") }.writes_value { |path| expand_relative_paths(path) }
 
     # Location of users on disk. String or array of strings.
     # Defaults to <chef_repo_path>/users.
-    default(:user_path) { derive_path_from_chef_repo_path("users") }
+    default(:user_path) { derive_path_from_chef_repo_path("users") }.writes_value { |path| expand_relative_paths(path) }
 
     # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
@@ -284,8 +332,8 @@ module ChefConfig
       if local_mode
         PathHelper.join(config_dir, "local-mode-cache")
       else
-        primary_cache_root = platform_specific_path("/var")
-        primary_cache_path = platform_specific_path("/var/chef")
+        primary_cache_root = var_root_dir
+        primary_cache_path = var_chef_dir
         # Use /var/chef as the cache path only if that folder exists and we can read and write
         # into it, or /var exists and we can read and write into it (we'll create /var/chef later).
         # Otherwise, we'll create .chef under the user's home directory and use that as
@@ -312,7 +360,7 @@ module ChefConfig
     default(:checksum_path) { PathHelper.join(cache_path, "checksums") }
 
     # Where chef's cache files should be stored
-    default(:file_cache_path) { PathHelper.join(cache_path, "cache") }
+    default(:file_cache_path) { PathHelper.join(cache_path, "cache") }.writes_value { |path| expand_relative_paths(path) }
 
     # Where backups of chef-managed files should go
     default(:file_backup_path) { PathHelper.join(cache_path, "backup") }
@@ -564,6 +612,16 @@ module ChefConfig
     # be validated.
     default :ssl_verify_mode, :verify_peer
 
+    # Needed to coerce string value to a symbol when loading settings from the
+    # credentials toml files which doesn't allow ruby symbol values
+    configurable(:ssl_verify_mode).writes_value do |value|
+      if value.is_a?(String) && value[0] == ":"
+        value[1..-1].to_sym
+      else
+        value.to_sym
+      end
+    end
+
     # Whether or not to verify the SSL cert for HTTPS requests to the Chef
     # server API. If set to `true`, the server's cert will be validated
     # regardless of the :ssl_verify_mode setting. This is set to `true` when
@@ -645,9 +703,9 @@ module ChefConfig
       if chef_zero.enabled
         nil
       elsif target_mode?
-        platform_specific_path("/etc/chef/#{target_mode.host}/client.pem")
+        PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/client.pem")
       else
-        platform_specific_path("/etc/chef/client.pem")
+        PathHelper.cleanpath("#{etc_chef_dir}/client.pem")
       end
     end
 
@@ -669,10 +727,10 @@ module ChefConfig
 
     # This secret is used to decrypt encrypted data bag items.
     default(:encrypted_data_bag_secret) do
-      if target_mode? && File.exist?(platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret"))
-        platform_specific_path("/etc/chef/#{target_mode.host}/encrypted_data_bag_secret")
-      elsif File.exist?(platform_specific_path("/etc/chef/encrypted_data_bag_secret"))
-        platform_specific_path("/etc/chef/encrypted_data_bag_secret")
+      if target_mode? && File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret"))
+        PathHelper.cleanpath("#{etc_chef_dir}/#{target_mode.host}/encrypted_data_bag_secret")
+      elsif File.exist?(PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret"))
+        PathHelper.cleanpath("#{etc_chef_dir}/encrypted_data_bag_secret")
       else
         nil
       end
@@ -699,7 +757,7 @@ module ChefConfig
     # The `validation_key` is never used if the `client_key` exists.
     #
     # If chef-zero is enabled, this defaults to nil (no authentication).
-    default(:validation_key) { chef_zero.enabled ? nil : platform_specific_path("/etc/chef/validation.pem") }
+    default(:validation_key) { chef_zero.enabled ? nil : PathHelper.cleanpath("#{etc_chef_dir}/validation.pem") }
     default :validation_client_name do
       # If the URL is set and looks like a normal Chef Server URL, extract the
       # org name and use that as part of the default.
@@ -746,7 +804,7 @@ module ChefConfig
     # the new (and preferred) configuration setting. If not set, knife will
     # fall back to using cache_options[:path], which is deprecated but exists in
     # many client configs generated by pre-Chef-11 bootstrappers.
-    default(:syntax_check_cache_path) { cache_options[:path] }
+    default(:syntax_check_cache_path) { cache_options[:path] }.writes_value { |path| expand_relative_paths(path) }
 
     # Deprecated:
     # Move this to the default value of syntax_cache_path when this is removed.

@@ -475,7 +475,7 @@ class Chef
     class CookbookChefVersionMismatch < RuntimeError
       def initialize(chef_version, cookbook_name, cookbook_version, *constraints)
         constraint_str = constraints.map { |c| c.requirement.as_list.to_s }.join(", ")
-        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on chef version #{constraint_str}, but the running chef version is #{chef_version}"
+        super "Cookbook '#{cookbook_name}' version '#{cookbook_version}' depends on #{Chef::Dist::PRODUCT} version #{constraint_str}, but the running #{Chef::Dist::PRODUCT} version is #{chef_version}"
       end
     end
 

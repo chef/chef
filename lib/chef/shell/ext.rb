@@ -208,7 +208,7 @@ module Shell
       end
       alias :halp :help
 
-      desc "prints information about chef"
+      desc "prints information about #{Chef::Dist::PRODUCT}"
       def version
         puts "This is the #{Chef::Dist::SHELL}.\n" +
           " #{Chef::Dist::PRODUCT} Version: #{::Chef::VERSION}\n" +

@@ -32,7 +32,7 @@ require "license_acceptance/cli_flags/mixlib_cli"
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
 
-  banner "Usage: chef-apply [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
+  banner "Usage: #{Chef::Dist::APPLY} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
   option :execute,
     short: "-e RECIPE_TEXT",
@@ -163,7 +163,7 @@ class Chef::Application::Apply < Chef::Application
                   else
                     Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
                   end
-    recipe = Chef::Recipe.new("(chef-apply cookbook)", "(chef-apply recipe)", run_context)
+    recipe = Chef::Recipe.new("(#{Chef::Dist::APPLY} cookbook)", "(#{Chef::Dist::APPLY} recipe)", run_context)
     [recipe, run_context]
   end
 

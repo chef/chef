@@ -2,7 +2,7 @@ require "rubygems"
 require "rake"
 require "mkmf"
 require "erb"
-require "chef/dist"
+require_relative "../../lib/chef/dist"
 
 desc "Building event log dll"
 
@@ -51,7 +51,7 @@ task register: EVT_SHARED_OBJECT do
   begin
     Win32::EventLog.add_event_source(
       source: "Application",
-      key_name: Chef::Dist::PRODUCT,
+      key_name: Chef::Dist::SHORT,
       event_message_file: dll_file,
       category_message_file: dll_file
     )

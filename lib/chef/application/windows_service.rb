@@ -40,7 +40,7 @@ class Chef
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
-        default: "#{ENV["SYSTEMDRIVE"]}/chef/client.rb",
+        default: "#{Chef::Config.etc_chef_dir}/client.rb",
         description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
 
       option :log_location,
@@ -60,7 +60,7 @@ class Chef
         description: "Set the number of seconds to wait between #{Chef::Dist::PRODUCT} runs.",
         proc: lambda { |s| s.to_i }
 
-      DEFAULT_LOG_LOCATION ||= "#{ENV["SYSTEMDRIVE"]}/chef/client.log".freeze
+      DEFAULT_LOG_LOCATION ||= "#{Chef::Config.c_chef_dir}/client.log".freeze
 
       def service_init
         @service_action_mutex = Mutex.new

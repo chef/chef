@@ -159,7 +159,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                        "-u", "1000",
                        "-d", "/Users/mud",
                        "-m",
-                       "adam" ])
+                       "adam"])
       expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
       provider.create_user
     end
@@ -180,7 +180,7 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
         command.concat([ "-s", "/usr/bin/zsh",
                          "-u", "1000",
                          "-r", "-m",
-                         "adam" ])
+                         "adam"])
         expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
         provider.create_user
       end
@@ -190,10 +190,15 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
   end
 
   describe "when managing a user" do
+    let(:manage_u_status) do
+      double("Mixlib::ShellOut command", exitstatus: 0, stdout: @stdout, stderr: @stderr, error!: nil)
+    end
+
     before(:each) do
       provider.new_resource.manage_home true
       provider.new_resource.home "/Users/mud"
       provider.new_resource.gid "23"
+      @stderr = ""
     end
 
     # CHEF-3423, -m must come before the username
@@ -203,8 +208,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-g", "23",
                   "-d", "/Users/mud",
                   "-m",
-                  "adam" ]
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+                  "adam"]
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
 
@@ -214,8 +220,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
                   "-g", "23",
                   "-d", "/Users/mud",
                   "-m",
-                  "adam" ]
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+                  "adam"]
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
 
@@ -223,8 +230,9 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
       expect(provider).to receive(:updating_home?).at_least(:once).and_return(false)
       command = ["usermod",
                   "-g", "23",
-                  "adam" ]
-      expect(provider).to receive(:shell_out_compacted!).with(*command).and_return(true)
+                  "adam"]
+      command.concat([ { returns: [0, 12] } ])
+      expect(provider).to receive(:shell_out_compacted).with(*command).and_return(manage_u_status)
       provider.manage_user
     end
   end
