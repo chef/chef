@@ -206,6 +206,34 @@ class Chef
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
         default: lazy { {} }
 
+      TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
+      TIMEOUT_REGEX = /\A\S+/.freeze
+
+      property :time_out, Hash,
+        description: "A Hash of timeouts in the form of ({'OPTION' => 'VALUE'}).
+        Accepted valid options are:
+        preserve-status (BOOL, default: 'false'),
+        foreground (BOOL, default: 'false'),
+        kill-after (in seconds),
+        signal (a name like 'HUP' or a number)",
+        default: lazy { {} },
+        coerce: proc { |h|
+          if h.is_a?(Hash)
+            invalid_keys = h.keys - TIMEOUT_OPTS
+            unless invalid_keys.empty?
+              error_msg = "Key of option time_out must be equal to one of: \"#{TIMEOUT_OPTS.join('", "')}\"!  You passed \"#{invalid_keys.join(", ")}\"."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            unless h.values.all? { |x| x =~ TIMEOUT_REGEX }
+              error_msg = "Values of option time_out should be non-empty string without any leading whitespaces."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            h
+          elsif h.is_a?(Integer) || h.is_a?(String)
+            { "duration" => h }
+          end
+        }
+
       property :mode, [String, Integer],
         description: "The octal mode of the generated crontab file.",
         default: "0600"
