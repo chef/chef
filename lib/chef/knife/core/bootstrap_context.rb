@@ -213,7 +213,7 @@ class Chef
               attributes[:run_list] = @run_list
             end
 
-            attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
+            attributes.delete(:run_list) if ( attributes[:policy_name] && !attributes[:policy_name].empty? ) || ( attributes["policy_name"] && !attributes["policy_name"].empty? )
             attributes.merge!(tags: @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
         end
