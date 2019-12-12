@@ -1,6 +1,6 @@
 #
 # Author:: Ryan Cragun (<ryan@chef.io>)
-# Copyright:: Copyright (c) 2019, Chef Software Inc.
+# Copyright:: Copyright (c) 2019-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,6 +92,8 @@ class Chef
 
           @user_plist = Plist.new(::Plist.parse_xml(user_xml))
 
+          return unless user_plist[:shadow_hash]
+
           shadow_hash_hex = user_plist[:shadow_hash][0]
           return unless shadow_hash_hex && shadow_hash_hex != ""
 
@@ -148,14 +150,12 @@ class Chef
             cmd += ["-adminPassword", new_resource.admin_password]
           end
 
-          converge_by "create user" do
-            # sysadminctl doesn't exit with a non-zero exit code if it encounters
-            # a problem. We'll check stderr and make sure we see that it finished
-            # correctly.
-            res = run_sysadminctl(cmd)
-            unless res.downcase =~ /creating user/
-              raise Chef::Exceptions::User, "error when creating user: #{res}"
-            end
+          # sysadminctl doesn't exit with a non-zero exit code if it encounters
+          # a problem. We'll check stderr and make sure we see that it finished
+          # correctly.
+          res = run_sysadminctl(cmd)
+          unless res.downcase =~ /creating user/
+            raise Chef::Exceptions::User, "error when creating user: #{res}"
           end
 
           # Wait for the user to show up in the ds cache
@@ -289,11 +289,9 @@ class Chef
 
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
           # a problem. We'll check stderr and make sure we see that it finished
-          converge_by "remove user" do
-            res = run_sysadminctl(cmd)
-            unless res.downcase =~ /deleting record|not found/
-              raise Chef::Exceptions::User, "error deleting user: #{res}"
-            end
+          res = run_sysadminctl(cmd)
+          unless res.downcase =~ /deleting record|not found/
+            raise Chef::Exceptions::User, "error deleting user: #{res}"
           end
 
           reload_user_plist
@@ -301,18 +299,15 @@ class Chef
         end
 
         def lock_user
-          converge_by "lock user" do
-            run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
-          end
+          run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
 
           reload_user_plist
         end
 
         def unlock_user
           auth_string = user_plist[:auth_authority].reject! { |tag| tag == ";DisabledUser;" }.join.strip
-          converge_by "unlock user" do
-            run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
-          end
+
+          run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
 
           reload_user_plist
         end
@@ -483,7 +478,7 @@ class Chef
             )
           end
 
-          shadow_hash = user_plist[:shadow_hash][0]
+          shadow_hash = user_plist[:shadow_hash] ? user_plist[:shadow_hash][0] : {}
           shadow_hash["SALTED-SHA512-PBKDF2"] = {
             "entropy" => entropy,
             "salt" => salt,
@@ -533,7 +528,7 @@ class Chef
           run_dsimport(import_file, "/Local/Default", "M")
           run_dscl("create", "/Users/#{new_resource.username}", "Password", "********")
         ensure
-          ::File.delete(import_file) if defined?(import_file) && ::File.exist?(import_file)
+          ::File.delete(import_file) if import_file && ::File.exist?(import_file)
         end
 
         def wait_for_user
