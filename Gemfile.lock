@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 4bbe44d771746b9b2eab118c9b8368ea4361f1d9
+  revision: dfce5063fd9ce74676d32e7ba7c755271b846e57
   branch: master
   specs:
     ohai (15.6.3)
@@ -140,7 +140,7 @@ GEM
     bcrypt_pbkdf (1.0.1-x86-mingw32)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
-    builder (3.2.3)
+    builder (3.2.4)
     byebug (11.0.1)
     chef-vault (3.4.3)
     chef-zero (14.0.13)
@@ -218,7 +218,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.4)
-    json (2.2.0)
+    json (2.3.0)
     json-schema (2.8.1)
       addressable (>= 2.4)
     libyajl2 (1.2.0)
@@ -338,7 +338,7 @@ GEM
     thor (0.20.3)
     tins (1.22.2)
     tomlrb (1.2.9)
-    train-core (3.2.0)
+    train-core (3.2.5)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
