@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.6.11 -->
+## [v15.6.11](https://github.com/chef/chef/tree/v15.6.11) (2019-12-12)
+
+#### Merged Pull Requests
+- Fix mac_user breakage and logging [#9158](https://github.com/chef/chef/pull/9158) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.6.10 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Fix mac_user breakage and logging [#9158](https://github.com/chef/chef/pull/9158) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.11 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
