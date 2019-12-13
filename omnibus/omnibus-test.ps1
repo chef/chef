@@ -91,10 +91,6 @@ winrm quickconfig -quiet
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-# NOTE: we have unit tests in chef/chef which ARE NOT unit tests.  We need to run them on the actual shipping production artifact on the
-# actual distro that they're expected to run on, or we lose test coverage, which leads to shipping regressions.  We need to run all the
-# tests here before shipping.   The integration specs have been removed due to bugginess with license acceptance, but that should be fixed.
-#
-# chocolatey functional tests fail so disable that tag directly <-- and this is a bug that needs fixing.
-bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation --tag ~choco_installed spec/functional spec/unit
+# chocolatey functional tests fail so disable that tag directly
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation --tag ~choco_installed spec/functional
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
