@@ -152,6 +152,9 @@ elif [[ -d /usr/local/etc/sudoers.d ]]; then
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
+# accept license
+CHEF_LICENSE=accept-no-persist
+
 cd "$chef_gem"
 sudo -E bundle install
 # NOTE: we have unit tests in chef/chef which ARE NOT unit tests.  We need to run them on the actual shipping production artifact on the

@@ -82,6 +82,9 @@ Get-Location
 # ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 $Env:FORCE_FFI_YAJL = "ext"
 
+# accept license
+$Env:CHEF_LICENSE = "accept-no-persist"
+
 # some tests need winrm configured
 winrm quickconfig -quiet
 
