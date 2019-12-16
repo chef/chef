@@ -111,9 +111,7 @@ describe Chef::Knife::CookbookUpload do
       let(:name_args) { ["test_cookbook1"] }
 
       let(:cookbooks_by_name) do
-        {
-          "test_cookbook1" => Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
-        }
+        { "test_cookbook1" => Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah") }
       end
 
       it "should read only one cookbook" do

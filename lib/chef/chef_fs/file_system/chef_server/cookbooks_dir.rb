@@ -76,7 +76,7 @@ class Chef
             tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook])
             tmp_cl.load_cookbooks
             tmp_cl.compile_metadata
-            tmp_cl.freeze_version if options[:freeze]
+            tmp_cl.freeze_versions if options[:freeze]
             cookbook_for_upload = []
             tmp_cl.each do |cookbook_name, cookbook|
               cookbook_for_upload << cookbook
