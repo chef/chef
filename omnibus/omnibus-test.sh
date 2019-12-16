@@ -157,7 +157,5 @@ CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 sudo -E bundle install
-# NOTE: we have unit tests in chef/chef which ARE NOT unit tests.  We need to run them on the actual shipping production artifact on the
-# actual distro that they're expected to run on, or we lose test coverage, which leads to shipping regressions.  We need to run all the
-# tests here before shipping.  The integration specs have been removed due to bugginess with license acceptance, but that should be fixed.
-sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional spec/unit
+# FIXME: we need to add back unit and integration tests here.  we have no converage of those on e.g. AIX
+sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional
