@@ -33,6 +33,9 @@ describe Chef::Knife::CookbookUpload do
     cookbook_loader = cookbooks_by_name.dup
     allow(cookbook_loader).to receive(:merged_cookbooks).and_return([])
     allow(cookbook_loader).to receive(:load_cookbooks).and_return(cookbook_loader)
+    allow(cookbook_loader).to receive(:compile_metadata).and_return(nil)
+    allow(cookbook_loader).to receive(:freeze_versions).and_return(nil)
+    allow(cookbook_loader).to receive(:unlink!).and_return(nil)
     cookbook_loader
   end
 
@@ -52,16 +55,17 @@ describe Chef::Knife::CookbookUpload do
 
   before(:each) do
     allow(Chef::CookbookLoader).to receive(:new).and_return(cookbook_loader)
+    allow(Chef::CookbookLoader).to receive(:copy_to_tmp_dir_from_array).and_return(cookbook_loader)
   end
 
   describe "with --concurrency" do
     it "should upload cookbooks with predefined concurrency" do
-      allow(cookbook).to receive(:compile_metadata).and_return(nil)
       allow(Chef::CookbookVersion).to receive(:list_all_versions).and_return({})
       knife.config[:concurrency] = 3
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
+      allow(cookbook_loader).to receive(:tmp_working_dir_path).and_return("/tmp/blah")
       expect(Chef::CookbookUploader).to receive(:new)
         .with( kind_of(Array), { force: nil, concurrency: 3 })
         .and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
@@ -108,21 +112,17 @@ describe Chef::Knife::CookbookUpload do
 
       let(:cookbooks_by_name) do
         {
-          "test_cookbook1" => Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah"),
-          "test_cookbook2" => Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah"),
-          "test_cookbook3" => Chef::CookbookVersion.new("test_cookbook3", "/tmp/blah"),
+          "test_cookbook1" => Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
         }
       end
 
       it "should read only one cookbook" do
-        allow(cookbooks_by_name["test_cookbook1"]).to receive(:compile_metadata).and_return(nil)
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook1").and_call_original
         knife.run
       end
 
       it "should not read all cookbooks" do
-        allow(cookbooks_by_name["test_cookbook1"]).to receive(:compile_metadata).and_return(nil)
-        expect(cookbook_loader).not_to receive(:load_cookbooks)
+        expect(cookbook_loader).to receive(:load_cookbooks)
         knife.run
       end
 
@@ -181,12 +181,11 @@ describe Chef::Knife::CookbookUpload do
         allow(knife).to receive(:cookbook_names).and_return(%w{cookbook_dependency test_cookbook})
         @stdout, @stderr, @stdin = StringIO.new, StringIO.new, StringIO.new
         knife.ui = Chef::Knife::UI.new(@stdout, @stderr, @stdin, {})
-        allow(cookbook).to receive(:compile_metadata).and_return(nil)
       end
 
       it "should exit and not upload the cookbook" do
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
-        expect(cookbook_loader).not_to receive(:load_cookbooks)
+        # expect(cookbook_loader).not_to receive(:load_cookbooks)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
         expect { knife.run }.to raise_error(SystemExit)
       end
@@ -217,9 +216,8 @@ describe Chef::Knife::CookbookUpload do
     end
 
     it "should freeze the version of the cookbooks if --freeze is specified" do
-      allow(cookbook).to receive(:compile_metadata).and_return(nil)
       knife.config[:freeze] = true
-      expect(cookbook).to receive(:freeze_version).once
+      expect(cookbook_loader).to receive(:freeze_versions).once
       knife.run
     end
 
@@ -234,8 +232,6 @@ describe Chef::Knife::CookbookUpload do
           @test_cookbook2 = Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah")
           allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
           allow(cookbook_loader).to receive(:cookbook_names).and_return(%w{test_cookbook1 test_cookbook2})
-          allow(@test_cookbook1).to receive(:compile_metadata).and_return(nil)
-          allow(@test_cookbook2).to receive(:compile_metadata).and_return(nil)
         end
 
         it "should upload all cookbooks" do
@@ -290,10 +286,6 @@ describe Chef::Knife::CookbookUpload do
     end
 
     describe "when a frozen cookbook exists on the server" do
-      before(:each) do
-        allow(cookbook).to receive(:compile_metadata).and_return(nil)
-      end
-
       it "should fail to replace it" do
         exception = Chef::Exceptions::CookbookFrozen.new
         expect(cookbook_uploader).to receive(:upload_cookbooks)

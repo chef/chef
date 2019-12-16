@@ -96,32 +96,42 @@ class Chef
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map(&:size).max.to_i + 2
+
+        cookbooks = []
+        cookbooks_to_upload.each do |cookbook_name, cookbook|
+          cookbooks << cookbook
+        end
+
+        tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array(cookbooks)
+        tmp_cl.load_cookbooks
+        tmp_cl.compile_metadata
+        tmp_cl.freeze_versions if config[:freeze]
+
+        cookbooks_for_upload = []
+        tmp_cl.each do |cookbook_name, cookbook|
+          cookbooks_for_upload << cookbook
+          version_constraints_to_update[cookbook_name] = cookbook.version
+        end
+
         if config[:all]
-          cookbook_repo.load_cookbooks
-          cookbooks_for_upload = []
-          cookbook_repo.each do |cookbook_name, cookbook|
-            cookbooks_for_upload << cookbook
-            cookbook.freeze_version if config[:freeze]
-            version_constraints_to_update[cookbook_name] = cookbook.version
-          end
           if cookbooks_for_upload.any?
             begin
               upload(cookbooks_for_upload, justify_width)
-            rescue Exceptions::CookbookFrozen
+            rescue Chef::Exceptions::CookbookFrozen
               ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+              ui.error("Uploading of some of the cookbooks must be failed. Remove cookbook whose version is frozen from your cookbooks repo OR use --force option.")
+              upload_failures += 1
             end
-            ui.info("Uploaded all cookbooks.")
+            ui.info("Uploaded all cookbooks.") if upload_failures == 0
           else
             cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
             ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
           end
         else
-          cookbooks_to_upload.each do |cookbook_name, cookbook|
-            cookbook.freeze_version if config[:freeze]
+          tmp_cl.each do |cookbook_name, cookbook|
             begin
               upload([cookbook], justify_width)
               upload_ok += 1
-              version_constraints_to_update[cookbook_name] = cookbook.version
             rescue Exceptions::CookbookNotFoundInRepo => e
               upload_failures += 1
               ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
@@ -147,6 +157,8 @@ class Chef
         unless version_constraints_to_update.empty?
           update_version_constraints(version_constraints_to_update) if config[:environment]
         end
+
+        tmp_cl.unlink!
       end
 
       def cookbooks_to_upload
@@ -205,46 +217,15 @@ class Chef
       end
 
       def upload(cookbooks, justify_width)
-        require "tmpdir"
-
-        Dir.mktmpdir do |tmp_dir_path|
-          begin
-            cookbooks_to_upload = []
-            compiled_metadata = nil
-
-            cookbooks.each do |cb|
-              compiled_metadata = cb.compile_metadata
-              ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
-              check_for_broken_links!(cb)
-              check_for_dependencies!(cb)
-
-              if compiled_metadata
-                proxy_cookbook_path = "#{tmp_dir_path}/#{cb.name}"
-                # Make a symlink
-                file_class.symlink cb.root_dir, proxy_cookbook_path
-                proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path)
-
-                proxy_loader.load_cookbooks
-                cookbook_to_upload = proxy_loader.cookbook_version
-                cookbook_to_upload.freeze_version if options[:freeze]
-                cookbooks_to_upload << cookbook_to_upload
-              else
-                cookbooks_to_upload << cb
-              end
-            end
-
-            Chef::CookbookUploader.new(cookbooks_to_upload, force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
-          rescue Chef::Exceptions::CookbookFrozen => e
-            ui.error e
-            raise
-          ensure
-            # deletes the generated metadata from local repo.
-            if compiled_metadata
-              GC.start
-              File.unlink(compiled_metadata)
-            end
-          end
+        cookbooks.each do |cb|
+          ui.info("Uploading #{cb.name.to_s.ljust(justify_width + 10)} [#{cb.version}]")
+          check_for_broken_links!(cb)
+          check_for_dependencies!(cb)
         end
+        Chef::CookbookUploader.new(cookbooks, force: config[:force], concurrency: config[:concurrency]).upload_cookbooks
+      rescue Chef::Exceptions::CookbookFrozen => e
+        ui.error e
+        raise
       end
 
       def check_for_broken_links!(cookbook)

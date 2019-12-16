@@ -72,35 +72,23 @@ class Chef
           end
 
           def upload_cookbook(other, options)
-            compiled_metadata = other.chef_object.compile_metadata
-
-            Dir.mktmpdir do |tmp_dir_path|
-              begin
-                if compiled_metadata
-                  proxy_cookbook_path = "#{tmp_dir_path}/#{other.name}"
-                  # Make a symlink
-                  file_class.symlink other.chef_object.root_dir, proxy_cookbook_path
-                  proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path)
-                  proxy_loader.load_cookbooks
-                  cookbook_to_upload = proxy_loader.cookbook_version
-                else
-                  cookbook_to_upload = other.chef_object
-                end
-
-                cookbook_to_upload.freeze_version if options[:freeze]
-                uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: chef_rest)
-
-                with_actual_cookbooks_dir(other.parent.file_path) do
-                  uploader.upload_cookbooks
-                end
-              ensure
-                # deletes the generated metadata from local repo.
-                if compiled_metadata
-                  GC.start
-                  File.unlink(compiled_metadata)
-                end
-              end
+            cookbook = other.chef_object
+            tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook])
+            tmp_cl.load_cookbooks
+            tmp_cl.compile_metadata
+            tmp_cl.freeze_version if options[:freeze]
+            cookbook_for_upload = []
+            tmp_cl.each do |cookbook_name, cookbook|
+              cookbook_for_upload << cookbook
             end
+
+            uploader = Chef::CookbookUploader.new(cookbook_for_upload, force: options[:force], rest: chef_rest)
+
+            with_actual_cookbooks_dir(other.parent.file_path) do
+              uploader.upload_cookbooks
+            end
+
+            tmp_cl.unlink!
           end
 
           def chef_rest
