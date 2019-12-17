@@ -19,6 +19,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class BuildEssential < Chef::Resource
+      unified_mode true
+
       resource_name :build_essential
       provides(:build_essential) { true }
 
