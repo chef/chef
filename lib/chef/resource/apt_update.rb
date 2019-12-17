@@ -85,6 +85,8 @@ class Chef
       end
 
       action :periodic do
+        return unless debian?
+
         unless apt_up_to_date?
           converge_by "update new lists of packages" do
             do_update
@@ -93,6 +95,8 @@ class Chef
       end
 
       action :update do
+        return unless debian?
+
         converge_by "force update new lists of packages" do
           do_update
         end

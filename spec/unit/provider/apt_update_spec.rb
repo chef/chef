@@ -35,6 +35,7 @@ describe "Chef::Provider::AptUpdate" do
     new_resource.class.send(:const_set, :APT_CONF_DIR, config_dir)
     new_resource.class.send(:remove_const, :STAMP_DIR)
     new_resource.class.send(:const_set, :STAMP_DIR, stamp_dir)
+    node.automatic["platform_family"] = "debian"
   end
 
   let(:apt_update_cmd) { %w{apt-get -q update} }
