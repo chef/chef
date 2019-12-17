@@ -1,6 +1,6 @@
 #
 # Author:: Tim Smith (<tsmith@chef.io>)
-# Copyright:: 2016-2017, Chef Software, Inc.
+# Copyright:: 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,23 +35,5 @@ describe Chef::Resource::AptPreference do
   it "supports :add, :remove actions" do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
-  end
-
-  it "resolves to a Noop class when on non-linux OS" do
-    node.automatic[:os] = "windows"
-    node.automatic[:platform_family] = "windows"
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
-  end
-
-  it "resolves to a Noop class when on non-debian linux" do
-    node.automatic[:os] = "linux"
-    node.automatic[:platform_family] = "gentoo"
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
-  end
-
-  it "resolves to a AptUpdate class when on a debian platform_family" do
-    node.automatic[:os] = "linux"
-    node.automatic[:platform_family] = "debian"
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptPreference)
   end
 end

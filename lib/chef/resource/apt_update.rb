@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class AptUpdate < Chef::Resource
+      unified_mode true
+
       resource_name :apt_update
       provides(:apt_update) { true }
 
@@ -50,6 +52,52 @@ class Chef
 
       default_action :periodic
       allowed_actions :update, :periodic
+
+      action_class do
+        APT_CONF_DIR = "/etc/apt/apt.conf.d".freeze
+        STAMP_DIR = "/var/lib/apt/periodic".freeze
+
+        # Determines whether we need to run `apt-get update`
+        #
+        # @return [Boolean]
+        def apt_up_to_date?
+          ::File.exist?("#{STAMP_DIR}/update-success-stamp") &&
+            ::File.mtime("#{STAMP_DIR}/update-success-stamp") > Time.now - new_resource.frequency
+        end
+
+        def do_update
+          [STAMP_DIR, APT_CONF_DIR].each do |d|
+            directory d do
+              recursive true
+            end
+          end
+
+          file "#{APT_CONF_DIR}/15update-stamp" do
+            content "APT::Update::Post-Invoke-Success {\"touch #{STAMP_DIR}/update-success-stamp 2>/dev/null || true\";};\n"
+            action :create_if_missing
+          end
+
+          execute "apt-get -q update" do
+            command [ "apt-get", "-q", "update" ]
+            default_env true
+          end
+        end
+      end
+
+      action :periodic do
+        unless apt_up_to_date?
+          converge_by "update new lists of packages" do
+            do_update
+          end
+        end
+      end
+
+      action :update do
+        converge_by "force update new lists of packages" do
+          do_update
+        end
+      end
+
     end
   end
 end

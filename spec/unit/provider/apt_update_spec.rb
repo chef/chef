@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,23 +18,23 @@
 
 require "spec_helper"
 
-describe Chef::Provider::AptUpdate do
-  let(:new_resource) { Chef::Resource::AptUpdate.new("update") }
+describe "Chef::Provider::AptUpdate" do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:collection) { double("resource collection") }
+  let(:new_resource) { Chef::Resource::AptUpdate.new("update", run_context) }
+  let(:provider) { new_resource.provider_for_action(:update) }
 
   let(:config_dir) { Dir.mktmpdir("apt_update_apt_conf_d") }
   let(:config_file) { File.join(config_dir, "15update-stamp") }
   let(:stamp_dir) { Dir.mktmpdir("apt_update_periodic") }
 
   before do
-    stub_const("Chef::Provider::AptUpdate::APT_CONF_DIR", config_dir)
-    stub_const("Chef::Provider::AptUpdate::STAMP_DIR", stamp_dir)
-  end
-
-  let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::AptUpdate.new(new_resource, run_context)
+    new_resource.class.send(:remove_const, :APT_CONF_DIR)
+    new_resource.class.send(:const_set, :APT_CONF_DIR, config_dir)
+    new_resource.class.send(:remove_const, :STAMP_DIR)
+    new_resource.class.send(:const_set, :STAMP_DIR, stamp_dir)
   end
 
   let(:apt_update_cmd) { %w{apt-get -q update} }

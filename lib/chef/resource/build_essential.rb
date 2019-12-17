@@ -56,11 +56,11 @@ class Chef
         case
         when debian?
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
-         when fedora_derived?
-           package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
+        when fedora_derived?
+          package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
 
           # Ensure GCC 4 is available on older pre-6 EL
-           package %w{ gcc44 gcc44-c++ } if platform_family?("rhel") && node["platform_version"].to_i < 6
+          package %w{ gcc44 gcc44-c++ } if platform_family?("rhel") && node["platform_version"].to_i < 6
         when freebsd?
           package "devel/gmake"
           package "devel/autoconf"
@@ -126,16 +126,14 @@ class Chef
           package %w{ autoconf bison flex gcc gcc-c++ kernel-default-devel make m4 }
           package %w{ gcc48 gcc48-c++ } if node["platform_version"].to_i < 12
         else
+          msg = <<-EOH
+        The build_essential resource does not currently support the '#{node["platform_family"]}'
+        platform family. Skipping...
+          EOH
           if new_resource.raise_if_unsupported
-            raise <<-EOH
-        The build_essential resource does not currently support the '#{node["platform_family"]}'
-        platform family. Skipping...
-            EOH
+            raise msg
           else
-            Chef::Log.warn <<-EOH
-        The build_essential resource does not currently support the '#{node["platform_family"]}'
-        platform family. Skipping...
-            EOH
+            Chef::Log.warn msg
           end
         end
       end
