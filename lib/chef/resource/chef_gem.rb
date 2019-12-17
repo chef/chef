@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,7 @@ class Chef
     #  - Runs Gem.clear_paths after the action, ensuring that gem is aware of changes so that it can be required
     #    immediately after it is installed
     class ChefGem < Chef::Resource::Package::GemPackage
+      unified_mode true
       resource_name :chef_gem
 
       property :gem_binary, default: "#{RbConfig::CONFIG["bindir"]}/gem", default_description: "Chef's built-in gem binary.",
