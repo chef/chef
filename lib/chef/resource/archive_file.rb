@@ -102,8 +102,11 @@ class Chef
         end
 
         if new_resource.owner || new_resource.group
-          converge_by("set owner of #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            FileUtils.chown_R(new_resource.owner, new_resource.group, new_resource.destination)
+          converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
+            archive = Archive::Reader.open_filename(new_resource.path)
+            archive.each_entry do |e|
+              FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+            end
           end
         end
       end
