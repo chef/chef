@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.17 -->
-## [v15.6.17](https://github.com/chef/chef/tree/v15.6.17) (2019-12-17)
+<!-- latest_release 15.6.18 -->
+## [v15.6.18](https://github.com/chef/chef/tree/v15.6.18) (2019-12-18)
 
 #### Merged Pull Requests
-- Bump inspec-core to 4.18.51 [#9168](https://github.com/chef/chef/pull/9168) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.6.18 -->
 - Bump inspec-core to 4.18.51 [#9168](https://github.com/chef/chef/pull/9168) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.17 -->
 - try unit + functional tests [#9163](https://github.com/chef/chef/pull/9163) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.14 -->
 - Bump train-core to 3.2.5 [#9159](https://github.com/chef/chef/pull/9159) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.12 -->
