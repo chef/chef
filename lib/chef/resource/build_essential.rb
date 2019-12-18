@@ -158,7 +158,7 @@ class Chef
         #
         # @return [String]
         def xcode_cli_package
-          cmd = <<-EOH.gsub(/^ {14}/, '')
+          cmd = <<-EOH.gsub(/^ {14}/, "")
           softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n' | sed 's/Label: //g'
           EOH
           cmd.run_command
