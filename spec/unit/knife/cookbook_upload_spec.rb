@@ -183,7 +183,6 @@ describe Chef::Knife::CookbookUpload do
 
       it "should exit and not upload the cookbook" do
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
-        # expect(cookbook_loader).not_to receive(:load_cookbooks)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
         expect { knife.run }.to raise_error(SystemExit)
       end
