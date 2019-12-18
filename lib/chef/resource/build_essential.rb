@@ -67,7 +67,8 @@ class Chef
           package "devel/m4"
           package "devel/gettext"
         when macos?
-          unless xcode_cli_installed?
+          update_label = xcode_cli_package
+          unless xcode_cli_installed? && update_label.empty?
             # This script was graciously borrowed and modified from Tim Sutton's
             # osx-vm-templates at https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
             execute "install XCode Command Line tools" do
@@ -76,7 +77,7 @@ class Chef
                 # in Apple's SUS catalog
                 touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
                 # find the CLI Tools update. We tail here because sometimes there's 2 and newest is last
-                PROD=$(softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n')
+                PROD=#{update_label}
                 # install it
                 softwareupdate -i "$PROD" --verbose
                 # Remove the placeholder to prevent perpetual appearance in the update utility
@@ -150,6 +151,19 @@ class Chef
           cmd.run_command
           # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
+        end
+
+        #
+        # Return to package label of the latest XCode Command Line Tools update, if available
+        #
+        # @return [String]
+        def xcode_cli_package
+          cmd = <<-EOH.gsub(/^ {14}/, '')
+          softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n' | sed 's/Label: //g'
+          EOH
+          cmd.run_command
+          cmd.error!
+          cmd.stdout
         end
       end
 
