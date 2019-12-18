@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.18 -->
-## [v15.6.18](https://github.com/chef/chef/tree/v15.6.18) (2019-12-18)
+<!-- latest_release 15.6.19 -->
+## [v15.6.19](https://github.com/chef/chef/tree/v15.6.19) (2019-12-18)
 
 #### Merged Pull Requests
-- add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly))
+- resource archive_file: apply ownership to extracted files only [#9173](https://github.com/chef/chef/pull/9173) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- resource archive_file: apply ownership to extracted files only [#9173](https://github.com/chef/chef/pull/9173) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.19 -->
 - add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.6.18 -->
 - Bump inspec-core to 4.18.51 [#9168](https://github.com/chef/chef/pull/9168) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.17 -->
 - try unit + functional tests [#9163](https://github.com/chef/chef/pull/9163) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.14 -->
