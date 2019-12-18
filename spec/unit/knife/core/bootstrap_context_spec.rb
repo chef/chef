@@ -141,7 +141,7 @@ describe Chef::Knife::Core::BootstrapContext do
     let(:config) { { policy_name: "my_app_server", policy_group: "staging" } }
 
     it "includes them in the first_boot data and excludes run_list" do
-      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json(config))
+      expect(Chef::JSONCompat.to_json(bootstrap_context.first_boot)).to eq(Chef::JSONCompat.to_json({ policy_name: "my_app_server", policy_group: "staging" }))
     end
 
   end

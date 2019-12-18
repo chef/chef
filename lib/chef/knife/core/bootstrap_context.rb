@@ -205,15 +205,14 @@ class Chef
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).tap do |attributes|
+          (@config[:first_boot_attributes] = Mash.new(@config[:first_boot_attributes]) || Mash.new).tap do |attributes|
             if @config[:policy_name] && @config[:policy_group]
               attributes[:policy_name] = @config[:policy_name]
               attributes[:policy_group] = @config[:policy_group]
             else
               attributes[:run_list] = @run_list
             end
-
-            attributes.delete(:run_list) if ( attributes[:policy_name] && !attributes[:policy_name].empty? ) || ( attributes["policy_name"] && !attributes["policy_name"].empty? )
+            attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
             attributes.merge!(tags: @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
         end
