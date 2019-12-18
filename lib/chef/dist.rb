@@ -9,13 +9,13 @@ class Chef
 
     # A short designation for the product, used in Windows event logs
     # and some nomenclature.
-    SHORT = "chef".freeze
+    SHORT = ChefConfig::Dist::SHORT.freeze
 
     # The name of the server product
     SERVER_PRODUCT = "Chef Infra Server".freeze
 
     # The client's alias (chef-client)
-    CLIENT = "chef-client".freeze
+    CLIENT = ChefConfig::Dist::CLIENT.freeze
 
     # name of the automate product
     AUTOMATE = "Chef Automate".freeze
@@ -52,7 +52,7 @@ class Chef
     CONF_DIR = ChefConfig::Config.etc_chef_dir.freeze
 
     # The user's configuration directory
-    USER_CONF_DIR = ".chef".freeze
+    USER_CONF_DIR = ChefConfig::Dist::USER_CONF_DIR.freeze
 
     # The server's configuration directory
     SERVER_CONF_DIR = "/etc/chef-server".freeze
