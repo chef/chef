@@ -177,7 +177,7 @@ do_download() {
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P chef -c <%= @config[:channel] %> -v <%= version_to_install %>
+    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 
