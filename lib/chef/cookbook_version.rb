@@ -445,6 +445,10 @@ class Chef
       end
     end
 
+    def has_metadata_file?
+      all_files.include?(metadata_json_file) || all_files.include?(metadata_rb_file)
+    end
+
     ##
     # REST API
     ##

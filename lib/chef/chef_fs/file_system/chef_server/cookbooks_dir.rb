@@ -73,6 +73,7 @@ class Chef
 
           def upload_cookbook(other, options)
             cookbook = other.chef_object if other.chef_object
+            raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook.name) unless cookbook.has_metadata_file?
 
             if cookbook
               begin

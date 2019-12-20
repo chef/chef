@@ -99,8 +99,16 @@ class Chef
 
         cookbooks = []
         cookbooks_to_upload.each do |cookbook_name, cookbook|
+          raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook_name) unless cookbook.has_metadata_file?
+
+          if cookbook.metadata.name.nil?
+            message = "Cookbook loaded at path [#{cookbook.root_paths[0]}] has invalid metadata: #{cookbook.metadata.errors.join("; ")}"
+            raise Chef::Exceptions::MetadataNotValid, message
+          end
+
           cookbooks << cookbook
         end
+
         if cookbooks.empty?
           cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
           ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
@@ -164,7 +172,6 @@ class Chef
             unless version_constraints_to_update.empty?
               update_version_constraints(version_constraints_to_update) if config[:environment]
             end
-
           ensure
             tmp_cl.unlink!
           end
