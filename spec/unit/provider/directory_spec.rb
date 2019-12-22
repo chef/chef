@@ -212,7 +212,6 @@ describe Chef::Provider::Directory do
       it "os x 10.10 can write to sip locations" do
         allow(node).to receive(:[]).with("platform_version").and_return("10.10")
         allow(Dir).to receive(:mkdir).and_return([true], [])
-        allow(::File).to receive(:directory?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(true)
         directory.run_action(:create)
         expect(new_resource).to be_updated
@@ -228,7 +227,6 @@ describe Chef::Provider::Directory do
       it "os x 10.11 can write to sip exlcusions" do
         new_resource.path "/usr/local/chef_test"
         allow(node).to receive(:[]).with("platform_version").and_return("10.11")
-        allow(::File).to receive(:directory?).and_return(true)
         allow(Dir).to receive(:mkdir).and_return([true], [])
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
         directory.run_action(:create)
