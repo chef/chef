@@ -122,7 +122,7 @@ class Chef
       end
 
       def action_create
-        unless ::File.exists?(new_resource.path)
+        unless ::File.directory?(new_resource.path)
           converge_by("create new directory #{new_resource.path}") do
             if new_resource.recursive == true
               ::FileUtils.mkdir_p(new_resource.path)
@@ -138,7 +138,7 @@ class Chef
       end
 
       def action_delete
-        if ::File.exists?(new_resource.path)
+        if ::File.directory?(new_resource.path)
           converge_by("delete existing directory #{new_resource.path}") do
             if new_resource.recursive == true
               # we don't use rm_rf here because it masks all errors, including
