@@ -452,9 +452,28 @@ describe "knife upload", :workstation do
     # upload of a file is designed not to work at present.  Make sure that is the
     # case.
     when_the_chef_server "has a cookbook" do
-
       before do
         cookbook "x", "1.0.0", { "z.rb" => "" }
+      end
+
+      when_the_repository "does not have metadata file" do
+        before do
+          file "cookbooks/x/y.rb", "hi"
+        end
+
+        it "raises MetadataNotFound exception" do
+          expect { knife("upload /cookbooks/x") }.to raise_error(Chef::Exceptions::MetadataNotFound)
+        end
+      end
+
+      when_the_repository "does not have valid metadata" do
+        before do
+          file "cookbooks/x/metadata.rb", cb_metadata(nil, "1.0.0")
+        end
+
+        it "raises exception for invalid metadata" do
+          expect { knife("upload /cookbooks/x") }.to raise_error(Chef::Exceptions::MetadataNotValid)
+        end
       end
 
       when_the_repository "has a modified, extra and missing file for the cookbook" do
