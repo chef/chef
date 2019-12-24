@@ -161,6 +161,7 @@ class Chef
           cmd = <<-EOH.gsub(/^ {14}/, "")
           softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n' | sed 's/Label: //g'
           EOH
+          cmd = Mixlib::ShellOut.new(cmd)
           cmd.run_command
           cmd.error!
           cmd.stdout
