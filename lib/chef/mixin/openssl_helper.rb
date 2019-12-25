@@ -408,8 +408,8 @@ class Chef
       # @param [integer] renew_before_expiry number of days before expiration
       # @return [true, false]
       def cert_need_renewall?(cert_file, renew_before_expiry)
-        raise TypeError, 'cert_file must be a String object' unless cert_file.is_a?(String)
-        raise TypeError, 'renew_before_expiry must be a Integer object' unless renew_before_expiry.is_a?(Integer)
+        raise TypeError, "cert_file must be a String object" unless cert_file.is_a?(String)
+        raise TypeError, "renew_before_expiry must be a Integer object" unless renew_before_expiry.is_a?(Integer)
 
         resp = true
         cert_content = ::File.exist?(cert_file) ? File.read(cert_file) : cert_file
