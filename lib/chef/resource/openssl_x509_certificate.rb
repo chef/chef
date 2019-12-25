@@ -110,33 +110,40 @@ class Chef
         description: "The passphrase for CA private key's passphrase."
 
       property :renew_before_expiry, Integer,
-        description: "The number of days before the expiry. The certificate will be automaticaly renewed when the value is reached.",
-        default: 5
+        description: "The number of days before the expiry. The certificate will be automaticaly renewed when the value is reached."
 
       action :create do
         description "Generate a certificate"
 
-        if cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry)
-          converge_by("Create #{@new_resource}") do
-            file new_resource.path do
-              action :create
-              owner new_resource.owner unless new_resource.owner.nil?
-              group new_resource.group unless new_resource.group.nil?
-              mode new_resource.mode unless new_resource.mode.nil?
-              sensitive true
-              content cert.to_pem
-            end
+        file new_resource.path do
+          action :create_if_missing
+          owner new_resource.owner unless new_resource.owner.nil?
+          group new_resource.group unless new_resource.group.nil?
+          mode new_resource.mode unless new_resource.mode.nil?
+          sensitive true
+          content cert.to_pem
+        end
 
-            if new_resource.csr_file.nil?
-              file new_resource.key_file do
-                action :create_if_missing
-                owner new_resource.owner unless new_resource.owner.nil?
-                group new_resource.group unless new_resource.group.nil?
-                mode new_resource.mode unless new_resource.mode.nil?
-                sensitive true
-                content key.to_pem
-              end
-            end
+        unless new_resource.renew_before_expiry.nil?
+          file new_resource.path do
+            action :create
+            owner new_resource.owner unless new_resource.owner.nil?
+            group new_resource.group unless new_resource.group.nil?
+            mode new_resource.mode unless new_resource.mode.nil?
+            sensitive true
+            content cert.to_pem
+            only_if { cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry) }
+          end
+        end
+
+        if new_resource.csr_file.nil?
+          file new_resource.key_file do
+            action :create_if_missing
+            owner new_resource.owner unless new_resource.owner.nil?
+            group new_resource.group unless new_resource.group.nil?
+            mode new_resource.mode unless new_resource.mode.nil?
+            sensitive true
+            content key.to_pem
           end
         end
       end
