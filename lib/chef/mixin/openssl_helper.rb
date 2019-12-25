@@ -401,6 +401,30 @@ class Chef
         crl.sign(ca_private_key, ::OpenSSL::Digest::SHA256.new)
         crl
       end
+
+      # Return true if a certificate need to be renewed (or doesn't exist) according to the number
+      # of days before expiration given
+      # @param [string] cert_file path of the cert file or cert content
+      # @param [integer] renew_before_expiry number of days before expiration
+      # @return [true, false]
+      def cert_need_renewall?(cert_file, renew_before_expiry)
+        raise TypeError, 'cert_file must be a String object' unless cert_file.is_a?(String)
+        raise TypeError, 'renew_before_expiry must be a Integer object' unless renew_before_expiry.is_a?(Integer)
+
+        resp = true
+        cert_content = ::File.exist?(cert_file) ? File.read(cert_file) : cert_file
+        begin
+          cert = OpenSSL::X509::Certificate.new cert_content
+        rescue ::OpenSSL::X509::CertificateError
+          return resp
+        end
+
+        unless cert.not_after <= Time.now + 3600 * 24 * renew_before_expiry
+          resp = false
+        end
+
+        resp
+      end
     end
   end
 end
