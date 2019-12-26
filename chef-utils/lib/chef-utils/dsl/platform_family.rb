@@ -22,7 +22,7 @@ module ChefUtils
     module PlatformFamily
       include Internal
 
-      # Determine if the current node is arch linux.
+      # Determine if the current node is a member of the 'arch' family.
       #
       # @param [Chef::Node] node
       #
@@ -34,7 +34,7 @@ module ChefUtils
       # chef-sugar backcompat methods
       alias_method :arch_linux?, :arch?
 
-      # Determine if the current node is aix
+      # Determine if the current node is a member of the 'aix' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -44,7 +44,7 @@ module ChefUtils
         node["platform_family"] == "aix"
       end
 
-      # Determine if the current node is a member of the debian family.
+      # Determine if the current node is a member of the 'debian' platform family (Debian, Ubuntu and derivatives).
       #
       # @param [Chef::Node] node
       #
@@ -54,7 +54,7 @@ module ChefUtils
         node["platform_family"] == "debian"
       end
 
-      # Determine if the current node is a member of the fedora family.
+      # Determine if the current node is a member of the 'fedora' platform family (Fedora and Arist).
       #
       # @param [Chef::Node] node
       #
@@ -64,7 +64,7 @@ module ChefUtils
         node["platform_family"] == "fedora"
       end
 
-      # Determine if the current node is a member of the OSX family.
+      # Determine if the current node is a member of the 'mac_os_x' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -77,9 +77,7 @@ module ChefUtils
       alias_method :mac?, :macos?
       alias_method :mac_os_x?, :macos?
 
-      # Determine if the current node is a member of the rhel family (RHEL, CentOS, Oracle or Scientific Linux, no Amazon or Fedora).
-      #
-      # The platform_versions for these operating systems must match (rhel7 == centos7 == oracle7 == scientfic7), modulo additional packages
+      # Determine if the current node is a member of the 'rhel' platform family (Red Hat, CentOS, Oracle or Scientific Linux, but NOT Amazon Linux or Fedora).
       #
       # @param [Chef::Node] node
       #
@@ -90,7 +88,7 @@ module ChefUtils
       end
       alias_method :el?, :rhel?
 
-      # Determine if the current node is a rhel6 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel6 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
       #
       # @param [Chef::Node] node
       #
@@ -100,7 +98,7 @@ module ChefUtils
         node["platform_family"] == "rhel" && node["platform_version"].to_f >= 6.0 && node["platform_version"].to_f < 7.0
       end
 
-      # Determine if the current node is a rhel7 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel7 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
       #
       # @param [Chef::Node] node
       #
@@ -110,7 +108,7 @@ module ChefUtils
         node["platform_family"] == "rhel" && node["platform_version"].to_f >= 7.0 && node["platform_version"].to_f < 8.0
       end
 
-      # Determine if the current node is a rhel8 compatible build (RHEL, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel8 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
       #
       # @param [Chef::Node] node
       #
@@ -120,7 +118,7 @@ module ChefUtils
         node["platform_family"] == "rhel" && node["platform_version"].to_f >= 8.0 && node["platform_version"].to_f < 9.0
       end
 
-      # Determine if the current node is a member of the amazon family.
+      # Determine if the current node is a member of the 'amazon' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -131,7 +129,7 @@ module ChefUtils
       end
       alias_method :amazon_linux?, :amazon?
 
-      # Determine if the current node is solaris2
+      # Determine if the current node is a member of the 'solaris2' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -143,7 +141,7 @@ module ChefUtils
       # chef-sugar backcompat methods
       alias_method :solaris?, :solaris2?
 
-      # Determine if the current node is smartos
+      # Determine if the current node is a member of the 'smartos' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -153,7 +151,7 @@ module ChefUtils
         node["platform_family"] == "smartos"
       end
 
-      # Determine if the current node is a member of the suse family.
+      # Determine if the current node is a member of the 'suse' platform family  (openSUSE, SLES, and SLED).
       #
       # @param [Chef::Node] node
       #
@@ -163,7 +161,7 @@ module ChefUtils
         node["platform_family"] == "suse"
       end
 
-      # Determine if the current node is a member of the gentoo family.
+      # Determine if the current node is a member of the 'gentoo' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -173,7 +171,7 @@ module ChefUtils
         node["platform_family"] == "gentoo"
       end
 
-      # Determine if the current node is freebsd
+      # Determine if the current node is a member of the 'freebsd' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -183,7 +181,7 @@ module ChefUtils
         node["platform_family"] == "freebsd"
       end
 
-      # Determine if the current node is openbsd
+      # Determine if the current node is a member of the 'openbsd' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -193,7 +191,7 @@ module ChefUtils
         node["platform_family"] == "openbsd"
       end
 
-      # Determine if the current node is netbsd
+      # Determine if the current node is a member of the 'netbsd' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -203,7 +201,7 @@ module ChefUtils
         node["platform_family"] == "netbsd"
       end
 
-      # Determine if the current node is dragonflybsd
+      # Determine if the current node is a member of the 'dragonflybsd' platform family.
       #
       # @param [Chef::Node] node
       #
@@ -213,7 +211,7 @@ module ChefUtils
         node["platform_family"] == "dragonflybsd"
       end
 
-      # Determine if the current node is a member of the windows family.
+      # Determine if the current node is a member of the 'windows' platform family.
       #
       # @param [Chef::Node] node
       #

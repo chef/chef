@@ -63,7 +63,7 @@ module ChefUtils
         %w{sun4u sun4v}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is Powerpc64 Big Endian
+      # Determine if the current architecture is PowerPC 64bit Big Endian
       #
       # @return [Boolean]
       #
@@ -71,7 +71,7 @@ module ChefUtils
         %w{ppc64}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is Powerpc64 Little Endian
+      # Determine if the current architecture is PowerPC 64bit Little Endian
       #
       # @return [Boolean]
       #

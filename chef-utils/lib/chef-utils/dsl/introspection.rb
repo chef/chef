@@ -28,7 +28,7 @@ module ChefUtils
     module Introspection
       include TrainHelpers
 
-      # Returns whether the node is a docker container.
+      # Determine if the node is a docker container.
       #
       # @param [Chef::Node] node
       #
@@ -40,6 +40,8 @@ module ChefUtils
         !!(node && node.read("virtualization", "systems", "docker") == "guest")
       end
 
+      # Determine if the node uses the systemd init system.
+      #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
@@ -48,6 +50,8 @@ module ChefUtils
         file_exist?("/proc/1/comm") && file_open("/proc/1/comm").gets.chomp == "systemd"
       end
 
+      # Determine if the node is running in Test Kitchen.
+      #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
@@ -56,6 +60,8 @@ module ChefUtils
         ENV.key?("TEST_KITCHEN")
       end
 
+      # Determine if the node is running in a CI system that sets the CI env var.
+      #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
@@ -64,6 +70,8 @@ module ChefUtils
         ENV.key?("CI")
       end
 
+      # Determine if the a systemd service unit is present on the system.
+      #
       # @param [String] svc_name
       #
       # @return [Boolean]
@@ -76,6 +84,8 @@ module ChefUtils
         end
       end
 
+      # Determine if the a systemd unit of any type is present on the system.
+      #
       # @param [String] svc_name
       #
       # @return [Boolean]
