@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: dfce5063fd9ce74676d32e7ba7c755271b846e57
+  revision: b62033885925961d1049e6823eecaa2cb599a1cc
   branch: master
   specs:
-    ohai (15.6.3)
+    ohai (15.7.0)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -142,7 +142,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.0.1)
-    chef-telemetry (1.0.1)
+    chef-telemetry (1.0.2)
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
@@ -154,7 +154,7 @@ GEM
       mixlib-log (>= 2.0, < 4.0)
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
-    cheffish (14.0.4)
+    cheffish (14.0.13)
       chef-zero (~> 14.0)
       net-ssh
     coderay (1.1.2)
@@ -255,7 +255,7 @@ GEM
     mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.4)
-    mixlib-cli (2.1.1)
+    mixlib-cli (2.1.5)
     mixlib-config (3.0.5)
       tomlrb
     mixlib-log (3.0.1)
@@ -278,7 +278,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.1)
-    parser (2.6.5.0)
+    parser (2.7.0.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
@@ -298,8 +298,8 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (4.0.1)
-    rack (2.0.7)
+    public_suffix (4.0.2)
+    rack (2.0.8)
     rainbow (3.0.0)
     rake (12.3.2)
     rb-readline (0.5.5)
