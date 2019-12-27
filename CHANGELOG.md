@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.35 -->
-## [v14.14.35](https://github.com/chef/chef/tree/v14.14.35) (2019-12-06)
+<!-- latest_release 14.14.36 -->
+## [v14.14.36](https://github.com/chef/chef/tree/v14.14.36) (2019-12-27)
 
 #### Merged Pull Requests
-- Update Chef 14 deps to the latest + trim the install size [#9143](https://github.com/chef/chef/pull/9143) ([tas50](https://github.com/tas50))
+- Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50)) <!-- 14.14.36 -->
 - Update Chef 14 deps to the latest + trim the install size [#9143](https://github.com/chef/chef/pull/9143) ([tas50](https://github.com/tas50)) <!-- 14.14.35 -->
 - Fix Chef-14 Test Failures [#9142](https://github.com/chef/chef/pull/9142) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.34 -->
 - kernel_module: Add new options property (backport from chef-15 to chef-14) [#9120](https://github.com/chef/chef/pull/9120) ([ramereth](https://github.com/ramereth)) <!-- 14.14.33 -->
