@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: bed563eb2e1872ab02b5cdaee07b3ef42491fd85
+  revision: 7402675e2042aa6bae26d6d7025924885b5da67b
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,16 +32,16 @@ GEM
     artifactory (3.0.5)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.251.0)
-    aws-sdk-core (3.84.0)
+    aws-partitions (1.260.0)
+    aws-sdk-core (3.86.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.26.0)
+    aws-sdk-kms (1.27.0)
       aws-sdk-core (~> 3, >= 3.71.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.59.0)
+    aws-sdk-s3 (1.60.1)
       aws-sdk-core (~> 3, >= 3.83.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -65,7 +65,7 @@ GEM
       thor (>= 0.20)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
-    builder (3.2.3)
+    builder (3.2.4)
     byebug (11.0.1)
     chef (14.14.29)
       addressable
@@ -208,10 +208,10 @@ GEM
     mixlib-archive (1.0.1-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.1.1)
+    mixlib-cli (2.1.5)
     mixlib-config (3.0.5)
       tomlrb
-    mixlib-install (3.11.21)
+    mixlib-install (3.11.24)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -272,8 +272,8 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (4.0.1)
-    rack (2.0.7)
+    public_suffix (4.0.2)
+    rack (2.0.8)
     retryable (3.0.5)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -382,7 +382,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.3)
+    winrm (2.3.4)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
