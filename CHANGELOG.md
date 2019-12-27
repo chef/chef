@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.6.20 -->
-## [v15.6.20](https://github.com/chef/chef/tree/v15.6.20) (2019-12-27)
+<!-- latest_release 15.6.21 -->
+## [v15.6.21](https://github.com/chef/chef/tree/v15.6.21) (2019-12-27)
 
 #### Merged Pull Requests
-- Fix event log message description format [#9190](https://github.com/chef/chef/pull/9190) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Bump mixlib-cli to 2.1.5 as well as Ohai, cheffish, and telemetry [#9191](https://github.com/chef/chef/pull/9191) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-cli to 2.1.5 as well as Ohai, cheffish, and telemetry [#9191](https://github.com/chef/chef/pull/9191) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.21 -->
 - Fix event log message description format [#9190](https://github.com/chef/chef/pull/9190) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.6.20 -->
 - resource archive_file: apply ownership to extracted files only [#9173](https://github.com/chef/chef/pull/9173) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.19 -->
 - add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.6.18 -->
