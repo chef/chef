@@ -179,7 +179,7 @@ GEM
     ffi (1.11.3)
     ffi (1.11.3-x64-mingw32)
     ffi (1.11.3-x86-mingw32)
-    ffi-libarchive (0.4.10)
+    ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
