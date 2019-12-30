@@ -250,15 +250,15 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     method_source (0.9.2)
-    mixlib-archive (1.0.1)
+    mixlib-archive (1.0.5)
       mixlib-log
-    mixlib-archive (1.0.1-universal-mingw32)
+    mixlib-archive (1.0.5-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.4)
     mixlib-cli (2.1.5)
     mixlib-config (3.0.6)
       tomlrb
-    mixlib-log (3.0.1)
+    mixlib-log (3.0.8)
     mixlib-shellout (3.0.7)
     mixlib-shellout (3.0.7-universal-mingw32)
       win32-process (~> 0.8.2)
@@ -435,7 +435,7 @@ GEM
       rubyzip (~> 1.1)
       winrm (~> 2.0)
     wisper (2.0.1)
-    wmi-lite (1.0.2)
+    wmi-lite (1.0.5)
     yard (0.9.20)
 
 PLATFORMS
