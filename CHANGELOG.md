@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.2 -->
-## [v15.7.2](https://github.com/chef/chef/tree/v15.7.2) (2019-12-30)
+<!-- latest_release 15.7.3 -->
+## [v15.7.3](https://github.com/chef/chef/tree/v15.7.3) (2019-12-30)
 
 #### Merged Pull Requests
-- Bump ffi-yajl to 2.3.3 [#9195](https://github.com/chef/chef/pull/9195) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump mixlib-archive to 1.0.5 [#9196](https://github.com/chef/chef/pull/9196) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-archive to 1.0.5 [#9196](https://github.com/chef/chef/pull/9196) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.3 -->
 - Bump ffi-yajl to 2.3.3 [#9195](https://github.com/chef/chef/pull/9195) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.2 -->
 - Update libarchive to 1.0 [#9194](https://github.com/chef/chef/pull/9194) ([tas50](https://github.com/tas50)) <!-- 15.7.1 -->
 - Update all omnibus deps to the latest [#9192](https://github.com/chef/chef/pull/9192) ([tas50](https://github.com/tas50)) <!-- 15.7.0 -->
