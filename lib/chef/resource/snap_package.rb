@@ -31,6 +31,10 @@ class Chef
         default: "stable",
         equal_to: %w{edge beta candidate stable},
         desired_state: false
+
+      property :version, [String, Array],
+        description: "The version of a package to be installed or upgraded.",
+        coerce: proc { |x| [x].flatten }
     end
   end
 end

@@ -58,6 +58,7 @@ describe Chef::Provider::Package::Snap do
   refresh_result_fail = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "refresh_result_failure.json")))
   change_id_result = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "change_id_result.json")))
   get_conf_success = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "get_conf_success.json")))
+  kubectl_find_result = JSON.parse(File.read(File.join(CHEF_SPEC_DATA, "snap_package", "kubectl_find_result.json")))
 
   describe "#define_resource_requirements" do
 
@@ -213,7 +214,6 @@ describe Chef::Provider::Package::Snap do
       allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/snaps/#{package}").and_return(get_by_name_result_success)
       allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/changes/401").and_return(change_id_result)
       allow(provider).to receive(:get_installed_package_version_by_name).and_return(nil)
-      allow(provider).to receive(:get_latest_package_version).and_return("2.10")
     end
 
     describe "#action_install" do
@@ -311,6 +311,28 @@ describe Chef::Provider::Package::Snap do
         it "does not raise an exception" do
           provider.load_current_resource
           expect { provider.run_action(:remove) }.not_to raise_error
+        end
+      end
+    end
+
+    describe "when version is supplied" do
+      let(:package) { "kubectl" }
+      before do
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(kubectl_find_result)
+        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"install\",\"channel\":\"1.6/stable\"}").and_return(async_result_success)
+      end
+
+      context "When valid package version passed" do
+        it "does not raise an exception" do
+          new_resource.version = "1.6"
+          expect { provider.run_action(:install) }.not_to raise_error
+        end
+      end
+
+      context "When invalid package version passed" do
+        it "raises an exception" do
+          new_resource.version = "1.44"
+          expect { provider.run_action(:install) }.to raise_error
         end
       end
     end

@@ -57,4 +57,18 @@ describe Chef::Resource::SnapPackage, "initialize" do
     expect { resource.channel "beta" }.not_to raise_error
     expect { resource.channel "candidate" }.not_to raise_error
   end
+
+  it "the default version is nil" do
+    expect(resource.version).to eql(nil)
+  end
+
+  it "the version setter coerces to arrays" do
+    resource.version("1.2.3")
+    expect(resource.version).to eql(["1.2.3"])
+  end
+
+  it "the version setter accepts arrays" do
+    resource.version(["1.2.3", "4.5.6"])
+    expect(resource.version).to eql(["1.2.3", "4.5.6"])
+  end
 end
