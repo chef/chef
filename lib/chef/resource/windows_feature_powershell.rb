@@ -1,7 +1,7 @@
 #
 # Author:: Greg Zapp (<greg.zapp@gmail.com>)
 #
-# Copyright:: 2015-2018, Chef Software, Inc
+# Copyright:: 2015-2020, Chef Software, Inc
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,20 +50,18 @@ class Chef
         description: "Install all applicable management tools for the roles, role services, or features.",
         default: false
 
-      # Converts strings of features into an Array. Array objects are lowercased unless we're on < 8/2k12+.
+      # Converts strings of features into an Array. Array objects are lowercased
       # @return [Array] array of features
       def to_formatted_array(x)
         x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
 
-        # feature installs on windows < 8/2012 are case sensitive so only downcase when on 2012+
-        older_than_win_2012_or_8? ? x : x.map(&:downcase)
+        # features aren't case sensitive so let's compare in lowercase
+        x.map(&:downcase)
       end
 
       include Chef::Mixin::PowershellOut
 
       action :install do
-        raise_on_old_powershell
-
         reload_cached_powershell_data unless node["powershell_features_cache"]
         fail_if_unavailable # fail if the features don't exist
         fail_if_removed # fail if the features are in removed state
@@ -71,14 +69,10 @@ class Chef
         Chef::Log.debug("Windows features needing installation: #{features_to_install.empty? ? "none" : features_to_install.join(",")}")
         unless features_to_install.empty?
           converge_by("install Windows feature#{"s" if features_to_install.count > 1} #{features_to_install.join(",")}") do
-            install_command = "#{install_feature_cmdlet} #{features_to_install.join(",")}"
-            install_command << " -IncludeAllSubFeature"  if new_resource.all
-            if older_than_win_2012_or_8? && (new_resource.source || new_resource.management_tools)
-              Chef::Log.warn("The 'source' and 'management_tools' properties are only available on Windows 8/2012 or greater. Skipping these properties!")
-            else
-              install_command << " -Source \"#{new_resource.source}\"" if new_resource.source
-              install_command << " -IncludeManagementTools" if new_resource.management_tools
-            end
+            install_command = "Install-WindowsFeature #{features_to_install.join(",")}"
+            install_command << " -IncludeAllSubFeature" if new_resource.all
+            install_command << " -Source \"#{new_resource.source}\"" if new_resource.source
+            install_command << " -IncludeManagementTools" if new_resource.management_tools
 
             cmd = powershell_out!(install_command, timeout: new_resource.timeout)
             Chef::Log.info(cmd.stdout)
@@ -89,15 +83,13 @@ class Chef
       end
 
       action :remove do
-        raise_on_old_powershell
-
         reload_cached_powershell_data unless node["powershell_features_cache"]
 
         Chef::Log.debug("Windows features needing removal: #{features_to_remove.empty? ? "none" : features_to_remove.join(",")}")
 
         unless features_to_remove.empty?
           converge_by("remove Windows feature#{"s" if features_to_remove.count > 1} #{features_to_remove.join(",")}") do
-            cmd = powershell_out!("#{remove_feature_cmdlet} #{features_to_remove.join(",")}", timeout: new_resource.timeout)
+            cmd = powershell_out!("Uninstall-WindowsFeature #{features_to_remove.join(",")}", timeout: new_resource.timeout)
             Chef::Log.info(cmd.stdout)
 
             reload_cached_powershell_data # Reload cached powershell feature state
@@ -106,9 +98,6 @@ class Chef
       end
 
       action :delete do
-        raise_on_old_powershell
-        raise_if_delete_unsupported
-
         reload_cached_powershell_data unless node["powershell_features_cache"]
 
         fail_if_unavailable # fail if the features don't exist
@@ -136,29 +125,6 @@ class Chef
           Regexp.last_match(1).to_i if cmd.stdout =~ /^(\d+)/
         rescue Errno::ENOENT
           0 # zero as in nothing is installed
-        end
-
-        # raise if we're running powershell less than 3.0 since we need convertto-json
-        # check the powershell version via ohai data and if we're < 3.0 also shellout to make sure as
-        # a newer version could be installed post ohai run. Yes we're double checking. It's fine.
-        # @todo this can go away when we fully remove support for Windows 2008 R2
-        # @raise [RuntimeError] Raise if powershell is < 3.0
-        def raise_on_old_powershell
-          # be super defensive about the powershell lang plugin not being there
-          return if node["languages"] && node["languages"]["powershell"] && node["languages"]["powershell"]["version"].to_i >= 3
-          raise "The windows_feature_powershell resource requires PowerShell 3.0 or later. Please install PowerShell 3.0+ before running this resource." if powershell_version < 3
-        end
-
-        # The appropriate cmdlet to install a windows feature based on windows release
-        # @return [String]
-        def install_feature_cmdlet
-          older_than_win_2012_or_8? ? "Add-WindowsFeature" : "Install-WindowsFeature"
-        end
-
-        # The appropriate cmdlet to remove a windows feature based on windows release
-        # @return [String]
-        def remove_feature_cmdlet
-          older_than_win_2012_or_8? ? "Remove-WindowsFeature" : "Uninstall-WindowsFeature"
         end
 
         # @return [Array] features the user has requested to install which need installation
@@ -252,11 +218,6 @@ class Chef
           end
           removed = new_resource.feature_name & node["powershell_features_cache"]["removed"]
           raise "The Windows feature#{"s" if removed.count > 1} #{removed.join(",")} #{removed.count > 1 ? "are" : "is"} removed from the host and cannot be installed." unless removed.empty?
-        end
-
-        # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
-        def raise_if_delete_unsupported
-          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if older_than_win_2012_or_8?
         end
       end
     end

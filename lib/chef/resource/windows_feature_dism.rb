@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 #
-# Copyright:: 2011-2018, Chef Software, Inc.
+# Copyright:: 2011-2020, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,12 +44,10 @@ class Chef
         description: "Specifies a timeout (in seconds) for the feature installation.",
         default: 600
 
-      # @return [Array] lowercase the array unless we're on < Windows 2012
+      # @return [Array] lowercase the array
       def to_formatted_array(x)
         x = x.split(/\s*,\s*/) if x.is_a?(String) # split multiple forms of a comma separated list
-
-        # feature installs on windows < 2012 are case sensitive so only downcase when on 2012+
-        older_than_win_2012_or_8? ? x : x.map(&:downcase)
+        x.map(&:downcase)
       end
 
       action :install do
@@ -97,8 +95,6 @@ class Chef
 
       action :delete do
         description "Remove a Windows role/feature from the image using DISM"
-
-        raise_if_delete_unsupported
 
         reload_cached_dism_data unless node["dism_features_cache"]
 
@@ -193,25 +189,16 @@ class Chef
           logger.trace("The cache contains\n#{node["dism_features_cache"]}")
         end
 
-        # parse the feature string and add the values to the appropriate array
-        # in the
-        # strips trailing whitespace characters then split on n number of spaces
-        # + | +  n number of spaces
+        # parse the feature string and add the values to the appropriate array in the strips
+        # trailing whitespace characters then split on n number of spaces + | +  n number of spaces
         # @return [void]
         def add_to_feature_mash(feature_type, feature_string)
           feature_details = feature_string.strip.split(/\s+[|]\s+/).first
 
-          # dism on windows 2012+ isn't case sensitive so it's best to compare
-          # lowercase lists so the user input doesn't need to be case sensitive
-          # @todo when we're ready to remove windows 2008R2 the gating here can go away
-          feature_details.downcase! unless older_than_win_2012_or_8?
+          # dism isn't case sensitive so it's best to compare lowercase lists so the
+          # user input doesn't need to be case sensitive
+          feature_details.downcase!
           node.override["dism_features_cache"][feature_type] << feature_details
-        end
-
-        # Fail unless we're on windows 8+ / 2012+ where deleting a feature is supported
-        # @return [void]
-        def raise_if_delete_unsupported
-          raise Chef::Exceptions::UnsupportedAction, "#{self} :delete action not supported on Windows releases before Windows 8/2012. Cannot continue!" if older_than_win_2012_or_8?
         end
 
         def required_parent_feature?(error_message)
