@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.5 -->
-## [v15.7.5](https://github.com/chef/chef/tree/v15.7.5) (2020-01-08)
+<!-- latest_release 15.7.6 -->
+## [v15.7.6](https://github.com/chef/chef/tree/v15.7.6) (2020-01-09)
 
 #### Merged Pull Requests
-- Last batch of wordmarks removal for chef-config [#9176](https://github.com/chef/chef/pull/9176) ([bobchaos](https://github.com/bobchaos))
+- Remove legacy Net::HTTP not needed in Ruby 2.2+ [#9200](https://github.com/chef/chef/pull/9200) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove legacy Net::HTTP not needed in Ruby 2.2+ [#9200](https://github.com/chef/chef/pull/9200) ([tas50](https://github.com/tas50)) <!-- 15.7.6 -->
 - Last batch of wordmarks removal for chef-config [#9176](https://github.com/chef/chef/pull/9176) ([bobchaos](https://github.com/bobchaos)) <!-- 15.7.5 -->
 - Bump chef-vault to 4.0.1, chef-zero to 14.0.17, mixlib-shellout to 3.0.9, and mixlib-authentication to 3.0.6 [#9198](https://github.com/chef/chef/pull/9198) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.4 -->
 - Bump mixlib-archive to 1.0.5 [#9196](https://github.com/chef/chef/pull/9196) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.3 -->
