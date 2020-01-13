@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) 2016-2018, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,7 @@ namespace :dependencies do
     desc "Update #{dir}/Gemfile.lock."
     task task_name do
       Dir.chdir(dir) do
-        Bundler.with_clean_env do
+        Bundler.with_unbundled_env do
           rm_f "#{dir}/Gemfile.lock"
           sh "bundle lock --update --add-platform ruby"
           sh "bundle lock --update --add-platform x64-mingw32"
@@ -45,7 +45,7 @@ namespace :dependencies do
     desc "Update #{dir}/Gemfile.lock."
     task task_name do
       Dir.chdir(dir) do
-        Bundler.with_clean_env do
+        Bundler.with_unbundled_env do
           sh "bundle update"
         end
       end

@@ -65,7 +65,7 @@ end
 def system_windows_service_gem?
   windows_service_gem_check_command = %q{ruby -r "win32/daemon" -e ":noop"}
   if defined?(Bundler)
-    Bundler.with_clean_env do
+    Bundler.with_unbundled_env do
       # This returns true if the gem can be loaded
       system(windows_service_gem_check_command)
     end
