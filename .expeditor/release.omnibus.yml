@@ -52,7 +52,6 @@ builder-to-testers-map:
   windows-2012r2-i386:
     - windows-2012r2-i386
   windows-2012r2-x86_64:
-    - windows-2008r2-x86_64
     - windows-2012-x86_64
     - windows-2012r2-x86_64
     - windows-2016-x86_64
