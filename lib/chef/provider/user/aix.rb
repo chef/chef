@@ -110,7 +110,7 @@ class Chef
           return unless current_resource.password != new_resource.password && new_resource.password
 
           logger.trace("#{new_resource.username} setting password to #{new_resource.password}")
-          command = "echo '#{new_resource.username}:#{new_resource.password}' | chpasswd -e"
+          command = "echo '#{new_resource.username}:#{new_resource.password}' | chpasswd -c -e"
           shell_out!(command)
         end
 
