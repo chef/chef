@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 9fbb95fd6636a034874e9a7e3a1a02e4c8b74c2f
+  revision: 7dd5e7fc9b28cd0437ba8288a11d371f8ed8e5d0
   branch: master
   specs:
-    omnibus (6.1.18)
+    omnibus (6.1.20)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -14,11 +14,11 @@ GIT
       ohai (>= 13, < 16)
       pedump
       ruby-progressbar (~> 1.7)
-      thor (~> 0.18)
+      thor (>= 0.18, < 2.0)
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 7402675e2042aa6bae26d6d7025924885b5da67b
+  revision: 09a3cb0550d4a54c197246583658a0255bda7a36
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -29,11 +29,11 @@ GEM
   specs:
     addressable (2.7.0)
       public_suffix (>= 2.0.2, < 5.0)
-    artifactory (3.0.5)
+    artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.260.0)
-    aws-sdk-core (3.86.0)
+    aws-partitions (1.263.0)
+    aws-sdk-core (3.88.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -150,7 +150,7 @@ GEM
       tomlrb (~> 1.2)
     chef-sugar (5.1.9)
     chef-utils (15.6.10)
-    chef-zero (14.0.13)
+    chef-zero (14.0.17)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -164,7 +164,7 @@ GEM
     equatable (0.6.1)
     erubi (1.9.0)
     erubis (2.7.0)
-    faraday (0.17.1)
+    faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
     ffi (1.11.3)
     ffi (1.11.3-x64-mingw32)
@@ -173,7 +173,7 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
-    ffi-yajl (2.3.1)
+    ffi-yajl (2.3.3)
       libyajl2 (~> 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.0)
@@ -206,24 +206,24 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.10)
     minitar (0.9)
-    mixlib-archive (1.0.1)
+    mixlib-archive (1.0.5)
       mixlib-log
-    mixlib-archive (1.0.1-universal-mingw32)
+    mixlib-archive (1.0.5-universal-mingw32)
       mixlib-log
-    mixlib-authentication (3.0.4)
+    mixlib-authentication (3.0.6)
     mixlib-cli (2.1.5)
-    mixlib-config (3.0.5)
+    mixlib-config (3.0.6)
       tomlrb
-    mixlib-install (3.11.24)
+    mixlib-install (3.11.26)
       mixlib-shellout
       mixlib-versioning
       thor
-    mixlib-log (3.0.1)
-    mixlib-shellout (3.0.7)
-    mixlib-shellout (3.0.7-universal-mingw32)
+    mixlib-log (3.0.8)
+    mixlib-shellout (3.0.9)
+    mixlib-shellout (3.0.9-universal-mingw32)
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
-    mixlib-versioning (1.2.7)
+    mixlib-versioning (1.2.12)
     molinillo (0.6.6)
     multi_json (1.14.1)
     multipart-post (2.0.0)
@@ -239,7 +239,8 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
-    octokit (4.14.0)
+    octokit (4.15.0)
+      faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
     ohai (15.6.3)
       chef-config (>= 12.8, < 16)
@@ -265,8 +266,8 @@ GEM
     plist (3.5.0)
     progressbar (1.10.1)
     proxifier (1.0.3)
-    public_suffix (4.0.2)
-    rack (2.0.8)
+    public_suffix (4.0.3)
+    rack (2.1.1)
     retryable (3.0.5)
     ruby-progressbar (1.10.1)
     rubyntlm (0.6.2)
@@ -275,7 +276,7 @@ GEM
       addressable (>= 2.3.5)
       faraday (> 0.8, < 2.0)
     semverse (3.0.0)
-    solve (4.0.2)
+    solve (4.0.3)
       molinillo (~> 0.6)
       semverse (>= 1.1, < 4.0)
     strings (0.1.8)
@@ -308,7 +309,7 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
       net-ssh (>= 2.9, < 6.0)
-    train-winrm (0.2.5)
+    train-winrm (0.2.6)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
     tty-box (0.5.0)
@@ -372,7 +373,7 @@ GEM
       rubyzip (~> 2.0)
       winrm (~> 2.0)
     wisper (2.0.1)
-    wmi-lite (1.0.2)
+    wmi-lite (1.0.5)
     zhexdump (0.0.2)
 
 PLATFORMS
