@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.7 -->
-## [v15.7.7](https://github.com/chef/chef/tree/v15.7.7) (2020-01-09)
+<!-- latest_release 15.7.8 -->
+## [v15.7.8](https://github.com/chef/chef/tree/v15.7.8) (2020-01-13)
 
 #### Merged Pull Requests
-- Expand chef-utils yard comments and make consistent [#9188](https://github.com/chef/chef/pull/9188) ([tas50](https://github.com/tas50))
+- Update all deps to current [#9210](https://github.com/chef/chef/pull/9210) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update all deps to current [#9210](https://github.com/chef/chef/pull/9210) ([tas50](https://github.com/tas50)) <!-- 15.7.8 -->
 - Expand chef-utils yard comments and make consistent [#9188](https://github.com/chef/chef/pull/9188) ([tas50](https://github.com/tas50)) <!-- 15.7.7 -->
 - Remove legacy Net::HTTP not needed in Ruby 2.2+ [#9200](https://github.com/chef/chef/pull/9200) ([tas50](https://github.com/tas50)) <!-- 15.7.6 -->
 - Last batch of wordmarks removal for chef-config [#9176](https://github.com/chef/chef/pull/9176) ([bobchaos](https://github.com/bobchaos)) <!-- 15.7.5 -->
