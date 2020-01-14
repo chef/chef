@@ -854,4 +854,46 @@ describe Chef::Mixin::OpenSSLHelper do
       end
     end
   end
+
+  describe "#cert_need_renewall?" do
+    require "tempfile"
+
+    before(:each) do
+      @certfile = Tempfile.new("certfile")
+    end
+
+    context "When the cert file doesnt not exist" do
+      it "returns true" do
+        expect(instance.cert_need_renewall?("/tmp/bad_filename", 3650)).to be_truthy
+      end
+    end
+
+    context "When the cert file does exist, but does not contain a valid Certificate" do
+      it "returns true" do
+        @certfile.write("I_am_not_a_cert_I_am_a_free_man")
+        @certfile.close
+        expect(instance.cert_need_renewall?(@certfile.path, 3650)).to be_truthy
+      end
+    end
+
+    context "When the cert file does exist, and does not contain a soon to expire certficitate" do
+      it "returns false" do
+        @certfile.write("-----BEGIN CERTIFICATE-----\nMIIDODCCAiCgAwIBAgIVAPCkjE+wlZ1PgXwgvFgXKzhSpUkvMA0GCSqGSIb3DQEB\nCwUAMA0xCzAJBgNVBAMMAkNBMB4XDTE5MTIyNTEyNTY1NVoXDTI5MTIyMjEyNTY1\nNVowDTELMAkGA1UEAwwCQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQC9bDWs5akf85UEMj8kry4DYNuAnaL4GnMs6XukQtp3dso+FgbKprgVogyepnet\nE+GlQq32u/n4y8K228kB6NoCn+c/yP+4QlKUBt0xSzQbSUuAE/5xZoKi/kH1ZsQ/\nuKXN/tIHagApEUGn5zqc8WBvWPliRAqiklwj8WtSw1WRa5eCdaVtln3wKuvPnYR5\n/V4YBHyHNhtlfXJBMtEaXm1rRzJGun+FdcrsCfcIFXp8lWobF+EVP8fRwqFTEtT6\nRXv6RT8sHy53a0KNTm8qnbacfr1MofgUuhzLjOrbIVvXpnRLeOkv8XW5rSH+zgsC\nZFK3bJ3j6UVbFQV4jXwlAWVrAgMBAAGjgY4wgYswDgYDVR0PAQH/BAQDAgGmMA8G\nA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFK4S2PNu6bpjxkJxedNaxfCrwtD4MEkG\nA1UdIwRCMECAFK4S2PNu6bpjxkJxedNaxfCrwtD4oRGkDzANMQswCQYDVQQDDAJD\nQYIVAPCkjE+wlZ1PgXwgvFgXKzhSpUkvMA0GCSqGSIb3DQEBCwUAA4IBAQBGk+u3\n9N3PLWNOwYrqK7fD4yceWnz4UsV9uN1IU5PQTgYBaGyAZvU+VJluZZeDj7QjwbUW\ngISclvW/pSWpUVW3O0sfAM97u+5UMYHz4W5Bgq8CtdOKHgdZHKhzBePhmou11zO0\nZ6uQ7bkh0/REqKO7TFKaMMnakEhFXoDrS1EiB4W69KVXyrBVzVm5LK7uvOAQAeMp\nnEk3Oz+5pmKjSCf1cEd2jzAgDbaVrIvxICPgXAlNrKukmRW/0UHqDDVBfF7PioD2\nptlQFxWIkih6s/clwhsBFBwV1yyCirYfjhzmKPPLZUmx10okudLzaKrRbkPxrzbC\nmKEZoV+Nz2CNrGm5\n-----END CERTIFICATE-----\n")
+        @certfile.close
+        expect(instance.cert_need_renewall?(@certfile.path, 5)).to be_falsey
+      end
+    end
+
+    context "When the cert file does exist, and does contain a soon to expire certficitate" do
+      it "returns true" do
+        @certfile.write("-----BEGIN CERTIFICATE-----\nMIIDODCCAiCgAwIBAgIVAPCkjE+wlZ1PgXwgvFgXKzhSpUkvMA0GCSqGSIb3DQEB\nCwUAMA0xCzAJBgNVBAMMAkNBMB4XDTE5MTIyNTEyNTY1NVoXDTI5MTIyMjEyNTY1\nNVowDTELMAkGA1UEAwwCQ0EwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\nAQC9bDWs5akf85UEMj8kry4DYNuAnaL4GnMs6XukQtp3dso+FgbKprgVogyepnet\nE+GlQq32u/n4y8K228kB6NoCn+c/yP+4QlKUBt0xSzQbSUuAE/5xZoKi/kH1ZsQ/\nuKXN/tIHagApEUGn5zqc8WBvWPliRAqiklwj8WtSw1WRa5eCdaVtln3wKuvPnYR5\n/V4YBHyHNhtlfXJBMtEaXm1rRzJGun+FdcrsCfcIFXp8lWobF+EVP8fRwqFTEtT6\nRXv6RT8sHy53a0KNTm8qnbacfr1MofgUuhzLjOrbIVvXpnRLeOkv8XW5rSH+zgsC\nZFK3bJ3j6UVbFQV4jXwlAWVrAgMBAAGjgY4wgYswDgYDVR0PAQH/BAQDAgGmMA8G\nA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFK4S2PNu6bpjxkJxedNaxfCrwtD4MEkG\nA1UdIwRCMECAFK4S2PNu6bpjxkJxedNaxfCrwtD4oRGkDzANMQswCQYDVQQDDAJD\nQYIVAPCkjE+wlZ1PgXwgvFgXKzhSpUkvMA0GCSqGSIb3DQEBCwUAA4IBAQBGk+u3\n9N3PLWNOwYrqK7fD4yceWnz4UsV9uN1IU5PQTgYBaGyAZvU+VJluZZeDj7QjwbUW\ngISclvW/pSWpUVW3O0sfAM97u+5UMYHz4W5Bgq8CtdOKHgdZHKhzBePhmou11zO0\nZ6uQ7bkh0/REqKO7TFKaMMnakEhFXoDrS1EiB4W69KVXyrBVzVm5LK7uvOAQAeMp\nnEk3Oz+5pmKjSCf1cEd2jzAgDbaVrIvxICPgXAlNrKukmRW/0UHqDDVBfF7PioD2\nptlQFxWIkih6s/clwhsBFBwV1yyCirYfjhzmKPPLZUmx10okudLzaKrRbkPxrzbC\nmKEZoV+Nz2CNrGm5\n-----END CERTIFICATE-----\n")
+        @certfile.close
+        expect(instance.cert_need_renewall?(@certfile.path, 3650)).to be_truthy
+      end
+    end
+
+    after(:each) do
+      @certfile.unlink
+    end
+  end
 end
