@@ -137,7 +137,7 @@ class Chef
       end
 
       def download_cookbook_to(download_path)
-        downloader = Chef::Knife::CookbookSiteDownload.new
+        downloader = Chef::Knife::SupermarketDownload.new
         downloader.config[:file] = download_path
         downloader.config[:supermarket_site] = config[:supermarket_site]
         downloader.name_args = name_args
