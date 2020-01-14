@@ -1,4 +1,4 @@
-# Copyright:: Copyright 2017, Chef Software Inc.
+# Copyright:: Copyright 2017-2019, Chef Software Inc.
 #
 # License:: Apache License, Version 2.0
 #
@@ -51,7 +51,7 @@ describe Chef::Provider::User::Aix do
     end
 
     it "should call chpasswd correctly" do
-      expect(provider).to receive(:shell_out_compacted!).with("echo 'adam:Ostagazuzulum' | chpasswd -e").and_return true
+      expect(provider).to receive(:shell_out_compacted!).with("echo 'adam:Ostagazuzulum' | chpasswd -c -e").and_return true
       provider.manage_user
     end
   end
