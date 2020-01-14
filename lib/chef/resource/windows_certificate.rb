@@ -38,6 +38,10 @@ class Chef
       property :pfx_password, String,
         description: "The password to access the source if it is a pfx file."
 
+      property :pfx_properties, Integer,
+        description: "The dwFlags value desired for PFX storage. Automatically assigned based on the user_store property if omitted. See https://docs.microsoft.com/en-us/windows/desktop/api/wincrypt/nf-wincrypt-pfximportcertstore PFXImportCertStore function for available values.",
+        default: lazy { user_store ? 0x00001000 : 0x00000020 }
+
       property :private_key_acl, Array,
         description: "An array of 'domain\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
 
@@ -134,7 +138,7 @@ class Chef
 
         def add_pfx_cert
           store = ::Win32::Certstore.open(new_resource.store_name)
-          store.add_pfx(new_resource.source, new_resource.pfx_password)
+          store.add_pfx(new_resource.source, new_resource.pfx_password, new_resource.pfx_properties)
         end
 
         def delete_cert
