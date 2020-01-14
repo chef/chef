@@ -125,7 +125,7 @@ class Chef
           content cert.to_pem
         end
 
-        unless new_resource.renew_before_expiry.nil?
+        if !new_resource.renew_before_expiry.nil? && cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry)
           file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
@@ -133,7 +133,6 @@ class Chef
             mode new_resource.mode unless new_resource.mode.nil?
             sensitive true
             content cert.to_pem
-            only_if { cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry) }
           end
         end
 
