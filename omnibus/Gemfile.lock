@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 09a3cb0550d4a54c197246583658a0255bda7a36
+  revision: ee6adeb0069decda4343387cb7c33dd0b16d8fc3
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -197,7 +197,7 @@ GEM
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
       tty-prompt (~> 0.18)
-    license_scout (1.1.2)
+    license_scout (1.1.3)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -331,7 +331,7 @@ GEM
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.3.0)
+    win32-certstore (0.4.0)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
