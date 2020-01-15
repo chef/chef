@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,9 @@ describe Chef::Resource::WindowsTask, :windows_only do
           subject.command "#{Chef::Dist::CLIENT} -W"
           subject.run_action(:create)
           subject.command "#{Chef::Dist::CLIENT} -W"
+          puts "START IDEMPOTENT CALL"
           subject.run_action(:create)
+          puts "END IDEMPOTENT CALL"
           expect(subject).not_to be_updated_by_last_action
         end
 
