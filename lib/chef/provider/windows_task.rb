@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,6 +131,7 @@ class Chef
           else
             basic_validation
             set_start_day_and_time
+            puts "CONVERGE BY ONE"
             converge_by("#{new_resource} task created") do
               task = TaskScheduler.new
               if new_resource.frequency == :none
@@ -158,6 +159,7 @@ class Chef
             if current_resource.task.status == "running"
               logger.info "#{new_resource} task is currently running, skipping run"
             else
+              puts "CONVERGE BY TWO"
               converge_by("run scheduled task #{new_resource}") do
                 current_resource.task.run
               end
@@ -170,6 +172,7 @@ class Chef
         def action_delete
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
+            puts "CONVERGE BY THREE"
             converge_by("delete scheduled task #{new_resource}") do
               ts = TaskScheduler.new
               ts.delete(current_resource.task_name)
@@ -198,6 +201,7 @@ class Chef
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "not scheduled"
+              puts "CONVERGE_BY FOUR"
               converge_by("#{new_resource} task enabled") do
                 # TODO wind32-taskscheduler currently not having any method to handle this so using schtasks.exe here
                 run_schtasks "CHANGE", "ENABLE" => ""
@@ -215,6 +219,7 @@ class Chef
           if current_resource.exists
             logger.info "#{new_resource} task exists"
             if %w{ready running}.include?(current_resource.task.status)
+              puts "CONVERGE_BY FIVE"
               converge_by("#{new_resource} task disabled") do
                 # TODO: in win32-taskscheduler there is no method whcih disbales the task so currently calling disable with schtasks.exe
                 run_schtasks "CHANGE", "DISABLE" => ""
@@ -244,6 +249,7 @@ class Chef
         end
 
         def update_task(task)
+          puts "CONVERGE_BY SIX"
           converge_by("#{new_resource} task updated") do
             task.set_account_information(new_resource.user, new_resource.password, new_resource.interactive_enabled)
             task.application_name = new_resource.command if new_resource.command
