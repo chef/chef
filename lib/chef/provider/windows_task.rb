@@ -334,6 +334,7 @@ class Chef
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
+            puts "IN FREQUENCY NONE"
             flag = (task.account_information != new_resource.user ||
             task.application_name != new_resource.command ||
             description_needs_update?(task) ||
@@ -346,10 +347,13 @@ class Chef
             current_task_trigger = task.trigger(0)
             new_task_trigger = trigger
             flag = (ISO8601::Duration.new(task.idle_settings[:idle_duration])) != (ISO8601::Duration.new(new_resource.idle_time * 60)) if new_resource.frequency == :on_idle
+            puts "FIRST FLAG WAS TRUE" if flag
             flag = (ISO8601::Duration.new(task.execution_time_limit)) != (ISO8601::Duration.new(new_resource.execution_time_limit * 60)) unless new_resource.execution_time_limit.nil?
+            puts "SECOND FLAG WAS TRUE" if flag
 
             # if trigger not found updating the task to add the trigger
             if current_task_trigger.nil?
+              puts "CURRENT TASK TRIGGER NIL"
               flag = true
             else
               flag = true if start_day_updated?(current_task_trigger, new_task_trigger) == true ||
@@ -369,12 +373,19 @@ class Chef
                 task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries ||
                 task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries ||
                 task.settings[:start_when_available] != new_resource.start_when_available
+              puts "WTF CONDITIONAL WAS TRUE" if flag
               if trigger_type == TaskScheduler::MONTHLYDATE
-                flag = true if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
+                if current_task_trigger[:run_on_last_day_of_month] != new_task_trigger[:run_on_last_day_of_month]
+                  puts "MONTHLYDATE WAS TRUE"
+                  flag = true
+                end
               end
 
               if trigger_type == TaskScheduler::MONTHLYDOW
-                flag = true if current_task_trigger[:run_on_last_week_of_month] != new_task_trigger[:run_on_last_week_of_month]
+                if current_task_trigger[:run_on_last_week_of_month] != new_task_trigger[:run_on_last_week_of_month]
+                  puts "MONTHLYDOW WAS TRUE"
+                  flag = true
+                end
               end
             end
           end
