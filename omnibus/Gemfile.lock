@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 7dd5e7fc9b28cd0437ba8288a11d371f8ed8e5d0
+  revision: 70855aab656d333622c51171828b4f41d04f6ef5
   branch: master
   specs:
-    omnibus (6.1.20)
+    omnibus (6.1.21)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: ee6adeb0069decda4343387cb7c33dd0b16d8fc3
+  revision: 1b2dfe467cbc22e0e2e232e2648af3482830bfd7
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.263.0)
-    aws-sdk-core (3.89.0)
+    aws-partitions (1.264.0)
+    aws-sdk-core (3.89.1)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -166,9 +166,9 @@ GEM
     erubis (2.7.0)
     faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.11.3)
-    ffi (1.11.3-x64-mingw32)
-    ffi (1.11.3-x86-mingw32)
+    ffi (1.12.1)
+    ffi (1.12.1-x64-mingw32)
+    ffi (1.12.1-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
@@ -189,7 +189,7 @@ GEM
     iso8601 (0.12.1)
     jmespath (1.4.0)
     json (2.3.0)
-    kitchen-vagrant (1.6.0)
+    kitchen-vagrant (1.6.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
     license-acceptance (1.0.13)
@@ -327,7 +327,7 @@ GEM
       tty-screen (~> 0.7)
       wisper (~> 2.0.0)
     tty-screen (0.7.0)
-    unicode-display_width (1.6.0)
+    unicode-display_width (1.6.1)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
     win32-api (1.5.3-universal-mingw32)
