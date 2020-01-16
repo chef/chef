@@ -326,7 +326,6 @@ class Chef
         # known issue : Since start_day and time is not mandatory while updating weekly frequency for which start_day is not mentioned by user idempotency
         # is not gettting maintained as new_resource.start_day is nil and we fetch the day of week from start_day to set and its currently coming as nil and don't match with current_task
         def task_needs_update?(task)
-
           flag = false
           if new_resource.frequency == :none
             flag = (task.author != new_resource.user ||
