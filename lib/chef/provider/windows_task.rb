@@ -328,7 +328,7 @@ class Chef
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
-            flag = (task.account_information != new_resource.user ||
+            flag = (task.author != new_resource.user ||
             task.application_name != new_resource.command ||
             description_needs_update?(task) ||
             task.parameters != new_resource.command_arguments.to_s ||
@@ -352,7 +352,7 @@ class Chef
                 current_task_trigger[:type] != new_task_trigger[:type] ||
                 current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i ||
                 current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
-                task.account_information.to_s.casecmp(new_resource.user.to_s) != 0 ||
+                task.author.to_s.casecmp(new_resource.user.to_s) != 0 ||
                 task.application_name != new_resource.command ||
                 description_needs_update?(task) ||
                 task.parameters != new_resource.command_arguments.to_s ||
