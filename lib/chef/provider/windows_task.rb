@@ -356,6 +356,8 @@ class Chef
               puts "CURRENT TASK TRIGGER NIL"
               flag = true
             else
+              puts "ACCOUNT1: #{task.account_information}"
+              puts "ACCOUNT2: #{new_resource.user}"
               puts "START DAY UPDATED" if start_day_updated?(current_task_trigger, new_task_trigger) == true
               puts "START TIME UPDATED" if start_time_updated?(current_task_trigger, new_task_trigger) == true
               puts "TRIGGER_TYPE" if current_task_trigger[:trigger_type] != new_task_trigger[:trigger_type]
