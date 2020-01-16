@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.17 -->
-## [v15.7.17](https://github.com/chef/chef/tree/v15.7.17) (2020-01-16)
+<!-- latest_release 15.7.18 -->
+## [v15.7.18](https://github.com/chef/chef/tree/v15.7.18) (2020-01-16)
 
 #### Merged Pull Requests
-- Use the right class in knife supermarket install [#9217](https://github.com/chef/chef/pull/9217) ([tas50](https://github.com/tas50))
+- Use /etc/chef for bootstrapping instead of CONF_DIR [#9226](https://github.com/chef/chef/pull/9226) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use /etc/chef for bootstrapping instead of CONF_DIR [#9226](https://github.com/chef/chef/pull/9226) ([marcparadise](https://github.com/marcparadise)) <!-- 15.7.18 -->
 - Use the right class in knife supermarket install [#9217](https://github.com/chef/chef/pull/9217) ([tas50](https://github.com/tas50)) <!-- 15.7.17 -->
 - Fix for windows task not idempotent on the windows19 and window… [#9223](https://github.com/chef/chef/pull/9223) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.7.16 -->
 - x509_certificate : Add the capability to automatically renew a certificate [#9187](https://github.com/chef/chef/pull/9187) ([julienhuon](https://github.com/julienhuon)) <!-- 15.7.15 -->
