@@ -356,6 +356,23 @@ class Chef
               puts "CURRENT TASK TRIGGER NIL"
               flag = true
             else
+              puts "START DAY UPDATED" if start_day_updated?(current_task_trigger, new_task_trigger) == true
+              puts "START TIME UPDATED" if start_time_updated?(current_task_trigger, new_task_trigger) == true
+              puts "TRIGGER_TYPE" if current_task_trigger[:trigger_type] != new_task_trigger[:trigger_type]
+              puts "TYPE" if current_task_trigger[:type] != new_task_trigger[:type]
+              puts "RANDOM_MINUTES_INTERVAL" if current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i
+              puts "MINUTES INTERVAL" if current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i
+              puts "ACCOUNT INFO" if task.account_information.to_s.casecmp(new_resource.user.to_s) != 0
+              puts "APP NAME" if task.application_name != new_resource.command
+              puts "DESC NEED UPD" if description_needs_update?(task)
+              puts "PARAMETERS" if task.parameters != new_resource.command_arguments.to_s
+              puts "WORKDIR" if task.working_directory != new_resource.cwd.to_s
+              puts "LOGON_TYPE" if task.principals[:logon_type] != logon_type
+              puts "RUN LEVEL" if task.principals[:run_level] != run_level
+              puts "PRIORITY" if PRIORITY[task.priority] != new_resource.priority
+              puts "DISALLOW IF ON BATT" if task.settings[:disallow_start_if_on_batteries] != new_resource.disallow_start_if_on_batteries
+              puts "IF GOING ON BATT" if task.settings[:stop_if_going_on_batteries] != new_resource.stop_if_going_on_batteries
+              puts "START WHEN AVAIL" if task.settings[:start_when_available] != new_resource.start_when_available
               flag = true if start_day_updated?(current_task_trigger, new_task_trigger) == true ||
                 start_time_updated?(current_task_trigger, new_task_trigger) == true ||
                 current_task_trigger[:trigger_type] != new_task_trigger[:trigger_type] ||
