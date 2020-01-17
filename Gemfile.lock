@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 79b17080b9596096633f85c96305bda766d3ba60
+  revision: f0ac4a7a505523180a44f7edb25a3d294da8d184
   branch: master
   specs:
-    ohai (15.7.3)
+    ohai (16.0.0)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -51,7 +51,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (>= 4.2, < 6)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 15.0)
+      ohai (~> 16.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
@@ -84,7 +84,7 @@ PATH
       net-sftp (~> 2.1, >= 2.1.2)
       net-ssh (>= 4.2, < 6)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 15.0)
+      ohai (~> 16.0)
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
