@@ -44,11 +44,14 @@ class Chef
     # @return [Array<String>] the array of repo paths containing cookbook dirs
     attr_reader :repo_paths
 
+    attr_accessor :tmp_working_dir_path
+
     # XXX: this is highly questionable combined with the Hash-style each method
     include Enumerable
 
     # @param repo_paths [Array<String>] the array of repo paths containing cookbook dirs
     def initialize(*repo_paths)
+      @tmp_working_dir_path = nil
       @repo_paths = repo_paths.flatten.compact.map { |p| File.expand_path(p) }
       raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
     end
@@ -133,6 +136,56 @@ class Chef
 
     def values
       cookbooks_by_name.values
+    end
+
+    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loder object which points to tmp directory
+    def self.copy_to_tmp_dir_from_array(cookbooks)
+      tmp_cookbook_file = Tempfile.new("tmp_working_dir_path")
+      tmp_cookbook_file.close
+      @tmp_working_dir_path = tmp_cookbook_file.path
+      File.unlink(@tmp_working_dir_path)
+      FileUtils.mkdir_p(@tmp_working_dir_path)
+      cookbooks.each do |cookbook|
+        checksums_to_on_disk_paths = cookbook.checksums
+        cookbook.each_file do |manifest_record|
+          path_in_cookbook = manifest_record[:path]
+          on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+          dest = File.join(@tmp_working_dir_path, cookbook.name.to_s, path_in_cookbook)
+          FileUtils.mkdir_p(File.dirname(dest))
+          FileUtils.cp_r(on_disk_path, dest)
+        end
+      end
+      tmp_cookbook_loader ||= begin
+        Chef::Cookbook::FileVendor.fetch_from_disk(@tmp_working_dir_path)
+        CookbookLoader.new(@tmp_working_dir_path)
+      end
+      tmp_cookbook_loader.tmp_working_dir_path = @tmp_working_dir_path
+      tmp_cookbook_loader
+    end
+
+    # generates metadata.json adds it in the manifest
+    def compile_metadata
+      each do |cookbook_name, cookbook|
+        compiled_metadata = cookbook.compile_metadata
+        if compiled_metadata
+          cookbook.all_files << compiled_metadata
+          cookbook.cookbook_manifest.send(:generate_manifest)
+        end
+      end
+    end
+
+    # freeze versions of all the cookbooks
+    def freeze_versions
+      each do |cookbook_name, cookbook|
+        cookbook.freeze_version
+      end
+    end
+
+    # removes the tmp_dir_path
+    def unlink!
+      raise "Invalid directory path." if @tmp_working_dir_path.nil?
+
+      FileUtils.rm_rf(@tmp_working_dir_path)
     end
 
     alias :cookbooks :values

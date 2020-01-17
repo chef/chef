@@ -72,12 +72,29 @@ class Chef
           end
 
           def upload_cookbook(other, options)
-            cookbook_to_upload = other.chef_object
-            cookbook_to_upload.freeze_version if options[:freeze]
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, force: options[:force], rest: chef_rest)
+            cookbook = other.chef_object if other.chef_object
+            raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook.name) unless cookbook.has_metadata_file?
 
-            with_actual_cookbooks_dir(other.parent.file_path) do
-              uploader.upload_cookbooks
+            if cookbook
+              begin
+                tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook])
+                tmp_cl.load_cookbooks
+                tmp_cl.compile_metadata
+                tmp_cl.freeze_versions if options[:freeze]
+                cookbook_for_upload = []
+                tmp_cl.each do |cookbook_name, cookbook|
+                  cookbook_for_upload << cookbook
+                end
+
+                uploader = Chef::CookbookUploader.new(cookbook_for_upload, force: options[:force], rest: chef_rest)
+
+                with_actual_cookbooks_dir(other.parent.file_path) do
+                  uploader.upload_cookbooks
+                end
+
+              ensure
+                tmp_cl.unlink!
+              end
             end
           end
 

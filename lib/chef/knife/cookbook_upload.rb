@@ -20,10 +20,13 @@
 
 require_relative "../knife"
 require_relative "../cookbook_uploader"
+require_relative "../mixin/file_class"
 
 class Chef
   class Knife
     class CookbookUpload < Knife
+
+      include Chef::Mixin::FileClass
 
       CHECKSUM = "checksum".freeze
       MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
@@ -93,56 +96,85 @@ class Chef
         # to check for the existence of a cookbook's dependencies.
         @server_side_cookbooks = Chef::CookbookVersion.list_all_versions
         justify_width = @server_side_cookbooks.map(&:size).max.to_i + 2
-        if config[:all]
-          cookbook_repo.load_cookbooks
-          cookbooks_for_upload = []
-          cookbook_repo.each do |cookbook_name, cookbook|
-            cookbooks_for_upload << cookbook
-            cookbook.freeze_version if config[:freeze]
-            version_constraints_to_update[cookbook_name] = cookbook.version
-          end
-          if cookbooks_for_upload.any?
-            begin
-              upload(cookbooks_for_upload, justify_width)
-            rescue Exceptions::CookbookFrozen
-              ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
-            end
-            ui.info("Uploaded all cookbooks.")
-          else
-            cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
-            ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
-          end
-        else
-          cookbooks_to_upload.each do |cookbook_name, cookbook|
-            cookbook.freeze_version if config[:freeze]
-            begin
-              upload([cookbook], justify_width)
-              upload_ok += 1
-              version_constraints_to_update[cookbook_name] = cookbook.version
-            rescue Exceptions::CookbookNotFoundInRepo => e
-              upload_failures += 1
-              ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
-              Log.debug(e)
-              upload_failures += 1
-            rescue Exceptions::CookbookFrozen
-              ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
-              upload_failures += 1
-            end
+
+        cookbooks = []
+        cookbooks_to_upload.each do |cookbook_name, cookbook|
+          raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook_name) unless cookbook.has_metadata_file?
+
+          if cookbook.metadata.name.nil?
+            message = "Cookbook loaded at path [#{cookbook.root_paths[0]}] has invalid metadata: #{cookbook.metadata.errors.join("; ")}"
+            raise Chef::Exceptions::MetadataNotValid, message
           end
 
-          if upload_failures == 0
-            ui.info "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"}."
-          elsif upload_failures > 0 && upload_ok > 0
-            ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"} ok but #{upload_failures} " +
-              "cookbook#{upload_failures == 1 ? "" : "s"} upload failed."
-          elsif upload_failures > 0 && upload_ok == 0
-            ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures == 1 ? "" : "s"}."
-            exit 1
-          end
+          cookbooks << cookbook
         end
 
-        unless version_constraints_to_update.empty?
-          update_version_constraints(version_constraints_to_update) if config[:environment]
+        if cookbooks.empty?
+          cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
+          ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
+        else
+          begin
+            tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array(cookbooks)
+            tmp_cl.load_cookbooks
+            tmp_cl.compile_metadata
+            tmp_cl.freeze_versions if config[:freeze]
+
+            cookbooks_for_upload = []
+            tmp_cl.each do |cookbook_name, cookbook|
+              cookbooks_for_upload << cookbook
+              version_constraints_to_update[cookbook_name] = cookbook.version
+            end
+
+            if config[:all]
+              if cookbooks_for_upload.any?
+                begin
+                  upload(cookbooks_for_upload, justify_width)
+                rescue Chef::Exceptions::CookbookFrozen
+                  ui.warn("Not updating version constraints for some cookbooks in the environment as the cookbook is frozen.")
+                  ui.error("Uploading of some of the cookbooks must be failed. Remove cookbook whose version is frozen from your cookbooks repo OR use --force option.")
+                  upload_failures += 1
+                rescue SystemExit => e
+                  tmp_cl.unlink!
+                  raise exit e.status
+                end
+                ui.info("Uploaded all cookbooks.") if upload_failures == 0
+              end
+            else
+              tmp_cl.each do |cookbook_name, cookbook|
+                begin
+                  upload([cookbook], justify_width)
+                  upload_ok += 1
+                rescue Exceptions::CookbookNotFoundInRepo => e
+                  upload_failures += 1
+                  ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+                  Log.debug(e)
+                  upload_failures += 1
+                rescue Exceptions::CookbookFrozen
+                  ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
+                  upload_failures += 1
+                rescue SystemExit => e
+                  tmp_cl.unlink!
+                  raise exit e.status
+                end
+              end
+
+              if upload_failures == 0
+                ui.info "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"}."
+              elsif upload_failures > 0 && upload_ok > 0
+                ui.warn "Uploaded #{upload_ok} cookbook#{upload_ok == 1 ? "" : "s"} ok but #{upload_failures} " +
+                  "cookbook#{upload_failures == 1 ? "" : "s"} upload failed."
+              elsif upload_failures > 0 && upload_ok == 0
+                ui.error "Failed to upload #{upload_failures} cookbook#{upload_failures == 1 ? "" : "s"}."
+                exit 1
+              end
+            end
+
+            unless version_constraints_to_update.empty?
+              update_version_constraints(version_constraints_to_update) if config[:environment]
+            end
+          ensure
+            tmp_cl.unlink!
+          end
         end
       end
 

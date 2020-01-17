@@ -86,5 +86,15 @@ describe "knife cookbook upload", :workstation do
         EOM
       end
     end
+
+    when_the_repository "has cookbook metadata without name attribute in metadata file" do
+      before do
+        file "cookbooks/x/metadata.rb", cb_metadata(nil, "1.0.0")
+      end
+
+      it "knife cookbook upload x " do
+        expect { knife("cookbook upload x -o #{cb_dir}") }.to raise_error(Chef::Exceptions::MetadataNotValid)
+      end
+    end
   end
 end

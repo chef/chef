@@ -209,7 +209,10 @@ describe "knife upload", :workstation do
               Created /roles/y.json
               Created /users/y.json
             EOM
-            knife("diff /").should_succeed ""
+            knife("diff --name-status /").should_succeed <<~EOM
+              D\t/cookbooks/x/metadata.json
+              D\t/cookbooks/y/metadata.json
+            EOM
           end
 
           it "knife upload --no-diff adds the new files" do
@@ -225,7 +228,10 @@ describe "knife upload", :workstation do
               Created /roles/y.json
               Created /users/y.json
             EOM
-            knife("diff --name-status /").should_succeed ""
+            knife("diff --name-status /").should_succeed <<~EOM
+              D\t/cookbooks/x/metadata.json
+              D\t/cookbooks/y/metadata.json
+            EOM
           end
         end
       end
@@ -289,8 +295,8 @@ describe "knife upload", :workstation do
             Created /data_bags/x
             Created /data_bags/x/y.json
           EOM
-          knife("diff --name-status /data_bags").should_succeed <<EOM
-EOM
+          knife("diff --name-status /data_bags").should_succeed <<~EOM
+          EOM
           expect(Chef::JSONCompat.parse(knife("raw /data/x/y").stdout, create_additions: false).keys.sort).to eq(%w{foo id})
         end
 
@@ -446,9 +452,28 @@ EOM
     # upload of a file is designed not to work at present.  Make sure that is the
     # case.
     when_the_chef_server "has a cookbook" do
-
       before do
         cookbook "x", "1.0.0", { "z.rb" => "" }
+      end
+
+      when_the_repository "does not have metadata file" do
+        before do
+          file "cookbooks/x/y.rb", "hi"
+        end
+
+        it "raises MetadataNotFound exception" do
+          expect { knife("upload /cookbooks/x") }.to raise_error(Chef::Exceptions::MetadataNotFound)
+        end
+      end
+
+      when_the_repository "does not have valid metadata" do
+        before do
+          file "cookbooks/x/metadata.rb", cb_metadata(nil, "1.0.0")
+        end
+
+        it "raises exception for invalid metadata" do
+          expect { knife("upload /cookbooks/x") }.to raise_error(Chef::Exceptions::MetadataNotValid)
+        end
       end
 
       when_the_repository "has a modified, extra and missing file for the cookbook" do
@@ -462,6 +487,7 @@ EOM
           knife("upload /cookbooks/x/y.rb").should_fail "ERROR: /cookbooks/x cannot have a child created under it.\n"
           knife("upload --purge /cookbooks/x/z.rb").should_fail "ERROR: /cookbooks/x/z.rb cannot be deleted.\n"
         end
+
         # TODO this is a bit of an inconsistency: if we didn't specify --purge,
         # technically we shouldn't have deleted missing files.  But ... cookbooks
         # are a special case.
@@ -469,13 +495,18 @@ EOM
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
+
         it "knife upload --purge of the cookbook itself succeeds" do
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
       when_the_repository "has a missing file for the cookbook" do
@@ -488,7 +519,9 @@ EOM
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
       when_the_repository "has an extra file for the cookbook" do
@@ -503,7 +536,9 @@ EOM
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
 
@@ -548,6 +583,7 @@ EOM
     when_the_repository "has a cookbook" do
       before do
         file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0")
+        file "cookbooks/x/metadata.json", { name: "x", version: "1.0.0" }
         file "cookbooks/x/onlyin1.0.0.rb", "old_text"
       end
 
@@ -558,6 +594,38 @@ EOM
         end
 
         it "knife upload /cookbooks/x uploads the local version" do
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            D\t/cookbooks/x/onlyin1.0.1.rb
+            A\t/cookbooks/x/metadata.json
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
+          knife("upload --purge /cookbooks/x").should_succeed <<~EOM
+            Updated /cookbooks/x
+          EOM
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            D\t/cookbooks/x/onlyin1.0.1.rb
+            A\t/cookbooks/x/metadata.json
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
+        end
+      end
+    end
+
+    when_the_repository "has a cookbook" do
+      before do
+        file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0")
+        file "cookbooks/x/onlyin1.0.0.rb", "old_text"
+      end
+
+      when_the_chef_server "has a later version for the cookbook" do
+        before do
+          cookbook "x", "1.0.0", { "onlyin1.0.0.rb" => "" }
+          cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "hi" }
+        end
+
+        it "knife upload /cookbooks/x uploads the local version and generates metadata.json from metadata.rb and uploads it." do
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
@@ -580,11 +648,13 @@ EOM
           cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
 
-        it "knife upload /cookbooks/x uploads the local version" do
+        it "knife upload /cookbooks/x uploads the local version generates metadata.json and uploads it." do
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
 
@@ -593,7 +663,7 @@ EOM
           cookbook "x", "1.0.1", { "onlyin1.0.1.rb" => "hi" }
         end
 
-        it "knife upload /cookbooks/x uploads the local version" do
+        it "knife upload /cookbooks/x uploads the local version and generates metadata.json before upload and uploads it." do
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
@@ -619,7 +689,9 @@ EOM
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
     end
@@ -719,7 +791,9 @@ EOM
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Created /cookbooks/x
           EOM
-          knife("diff --name-status /cookbooks").should_succeed ""
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x/metadata.json
+          EOM
         end
       end
     end

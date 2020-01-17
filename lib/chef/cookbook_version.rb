@@ -445,6 +445,10 @@ class Chef
       end
     end
 
+    def has_metadata_file?
+      all_files.include?(metadata_json_file) || all_files.include?(metadata_rb_file)
+    end
+
     ##
     # REST API
     ##
@@ -511,6 +515,19 @@ class Chef
 
     def cookbook_manifest
       @cookbook_manifest ||= CookbookManifest.new(self)
+    end
+
+    def compile_metadata(path = root_dir)
+      json_file = "#{path}/metadata.json"
+      rb_file = "#{path}/metadata.rb"
+      return nil if File.exist?(json_file)
+
+      md = Chef::Cookbook::Metadata.new
+      md.from_file(rb_file)
+      f = File.open(json_file, "w")
+      f.write(Chef::JSONCompat.to_json_pretty(md))
+      f.close
+      f.path
     end
 
     private
