@@ -2,7 +2,7 @@
 ---
 # the name we use for this project when interacting with expeditor chatbot
 project:
-  alias: chef-15
+  alias: chef-16
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
