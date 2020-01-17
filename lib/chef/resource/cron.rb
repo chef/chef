@@ -173,6 +173,7 @@ class Chef
         kill-after (in seconds),
         signal (a name like 'HUP' or a number)",
         default: lazy { {} },
+        introduced: "15.7",
         coerce: proc { |h|
           if h.is_a?(Hash)
             invalid_keys = h.keys - TIMEOUT_OPTS
