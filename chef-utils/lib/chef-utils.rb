@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2019, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,7 @@ require_relative "chef-utils/dsl/platform_family"
 require_relative "chef-utils/dsl/service"
 require_relative "chef-utils/dsl/train_helpers"
 require_relative "chef-utils/dsl/which"
+require_relative "chef-utils/dsl/windows"
 require_relative "chef-utils/mash"
 
 # This is the Chef Infra Client DSL, not everytihng needs to go in here
@@ -33,6 +34,7 @@ module ChefUtils
   include ChefUtils::DSL::PlatformFamily
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::Introspection
+  include ChefUtils::DSL::Windows
   # FIXME: include ChefUtils::DSL::Which in Chef 16.0
   # FIXME: include ChefUtils::DSL::PathSanity in Chef 16.0
   # FIXME: include ChefUtils::DSL::TrainHelpers in Chef 16.0
