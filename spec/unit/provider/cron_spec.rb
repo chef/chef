@@ -1081,4 +1081,131 @@ describe Chef::Provider::Cron do
       end
     end
   end
+
+  describe "#env_var_str" do
+    context "when no env vars are set" do
+      it "returns an empty string" do
+        expect(@provider.send(:env_var_str)).to be_empty
+      end
+    end
+    let(:mailto) { "foo@example.com" }
+    context "When set directly" do
+      it "returns string with value" do
+        @new_resource.mailto mailto
+        expect(@provider.send(:env_var_str)).to include(mailto)
+      end
+    end
+    context "When set within the hash" do
+      context "env properties" do
+        it "returns string with a warning" do
+          @new_resource.environment "MAILTO" => mailto
+          expect(logger).to receive(:warn).with("cronhole some stuff: the environment property contains the 'MAILTO' variable, which should be set separately as a property.")
+          expect(@provider.send(:env_var_str)).to include(mailto)
+        end
+      end
+      context "other properties" do
+        it "returns string with no warning" do
+          @new_resource.environment "FOOMAILTO" => mailto
+          expect(logger).not_to receive(:warn).with("cronhole some stuff: the environment property contains the 'MAILTO' variable, which should be set separately as a property.")
+          expect(@provider.send(:env_var_str)).to include(mailto)
+        end
+        it "and a line break within properties" do
+          @new_resource.environment "FOOMAILTO" => mailto, "BARMAILTO" => mailto
+          expect(@provider.send(:env_var_str)).to eq("FOOMAILTO=foo@example.com\nBARMAILTO=foo@example.com")
+        end
+      end
+      context "both env and other properties" do
+        it "returns string with line break within the properties" do
+          @new_resource.mailto mailto
+          @new_resource.environment "FOOMAILTO" => mailto
+          expect(@provider.send(:env_var_str)).to eq("MAILTO=\"foo@example.com\"\nFOOMAILTO=foo@example.com")
+        end
+      end
+    end
+  end
+
+  describe "#duration_str" do
+    context "time as a frequency" do
+      it "returns string" do
+        @new_resource.time :yearly
+        expect(@provider.send(:duration_str)).to eq("@yearly")
+      end
+    end
+    context "time as a duration" do
+      it "defaults to * (No Specific Value)" do
+        @new_resource.minute "1"
+        expect(@provider.send(:duration_str)).to eq("1 * * * *")
+      end
+      it "returns cron format string" do
+        @new_resource.minute "1"
+        @new_resource.hour "2"
+        @new_resource.day "3"
+        @new_resource.month "4"
+        @new_resource.weekday "5"
+        expect(@provider.send(:duration_str)).to eq("1 2 3 4 5")
+      end
+    end
+  end
+
+  describe "#time_out_str" do
+    context "When not given" do
+      it "Returns an empty string" do
+        expect(@provider.send(:time_out_str)).to be_empty
+      end
+    end
+    context "When given" do
+      let(:time_out_str_val) { " timeout 10;" }
+      context "as String" do
+        it "returns string" do
+          @new_resource.time_out "10"
+          expect(@provider.send(:time_out_str)).to eq time_out_str_val
+        end
+      end
+      context "as Integer" do
+        it "returns string" do
+          @new_resource.time_out "10"
+          expect(@provider.send(:time_out_str)).to eq time_out_str_val
+        end
+      end
+      context "as Hash" do
+        it "returns string" do
+          @new_resource.time_out "duration" => "10"
+          expect(@provider.send(:time_out_str)).to eq time_out_str_val
+        end
+        it "also contains properties" do
+          @new_resource.time_out "duration" => "10", "foreground" => "true", "signal" => "FOO"
+          expect(@provider.send(:time_out_str)).to eq " timeout --foreground --signal FOO 10;"
+        end
+      end
+    end
+  end
+
+  describe "#cmd_str" do
+    context "With command" do
+      let(:cmd) { "FOOBAR" }
+      before {
+        @new_resource.command cmd
+      }
+      it "returns a string with command" do
+        expect(@provider.send(:cmd_str)).to include(cmd)
+      end
+      it "string ends with a next line" do
+        expect(@provider.send(:cmd_str)[-1]).to eq("\n")
+      end
+    end
+    context "Without command, passed" do
+      context "as nil" do
+        it "returns an empty string with a next line" do
+          @new_resource.command nil
+          expect(@provider.send(:cmd_str)).to eq(" \n")
+        end
+      end
+      context "as an empty string" do
+        it "returns an empty string with a next line" do
+          @new_resource.command ""
+          expect(@provider.send(:cmd_str)).to eq(" \n")
+        end
+      end
+    end
+  end
 end
