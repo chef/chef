@@ -194,7 +194,7 @@ class Chef
           "environment_variables" => "EnvironmentVariables",
           "exit_timeout" => "ExitTimeout",
           "ld_group" => "GroupName",
-          "hard_resource_limits" => "HardreSourceLimits",
+          "hard_resource_limits" => "HardResourceLimits",
           "inetd_compatibility" => "inetdCompatibility",
           "init_groups" => "InitGroups",
           "keep_alive" => "KeepAlive",
