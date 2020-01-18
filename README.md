@@ -1,6 +1,6 @@
 # Chef Infra
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
-[![Build Status](https://badge.buildkite.com/c82093430ceec7d27af05febb9dcafe3aa331fff9d74c0ab9d.svg?branch=chef-15)](https://buildkite.com/chef-oss/chef-chef-master-verify)
+[![Build status](https://badge.buildkite.com/13b36bf2d9116e3527ff9893e7edd82cb183027941fef3d24e.svg)](https://buildkite.com/chef-oss/chef-chef-chef-15-verify)
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
 [![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef/blob/v15.2.21/docs/dev/design_documents/client_release_cadence.md)
 
