@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.23 -->
-## [v15.7.23](https://github.com/chef/chef/tree/v15.7.23) (2020-01-17)
+<!-- latest_release 16.0.1 -->
+## [v16.0.1](https://github.com/chef/chef/tree/v16.0.1) (2020-01-21)
 
 #### Merged Pull Requests
-- Remove RHEL 6 s390x (zLinux) support [#9233](https://github.com/chef/chef/pull/9233) ([jaymalasinha](https://github.com/jaymalasinha))
+- Update to Ohai 16.0.2 [#9246](https://github.com/chef/chef/pull/9246) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to Ohai 16.0.2 [#9246](https://github.com/chef/chef/pull/9246) ([tas50](https://github.com/tas50)) <!-- 16.0.1 -->
 - Remove RHEL 6 s390x (zLinux) support [#9233](https://github.com/chef/chef/pull/9233) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.7.23 -->
 - Add time_out property in cron resource [#9153](https://github.com/chef/chef/pull/9153) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.7.22 -->
 - Generate metadata.json from metadata.rb if not exist before knife cookbook upload or knife upload or berkshelf upload [#9073](https://github.com/chef/chef/pull/9073) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.7.21 -->
