@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 9cd1a980192a2b64111dc43cbca6470a6e7f1b44
+  revision: ac9373514d319bfe724dc89d9a5493d3587f2111
   branch: 15-stable
   specs:
-    ohai (15.7.3)
+    ohai (15.7.4)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -141,7 +141,7 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
-    byebug (11.0.1)
+    byebug (11.1.0)
     chef-telemetry (1.0.2)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -176,9 +176,9 @@ GEM
       faraday (>= 0.7.4, < 1.0)
     fauxhai-ng (7.5.1)
       net-ssh
-    ffi (1.11.3)
-    ffi (1.11.3-x64-mingw32)
-    ffi (1.11.3-x86-mingw32)
+    ffi (1.12.1)
+    ffi (1.12.1-x64-mingw32)
+    ffi (1.12.1-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
