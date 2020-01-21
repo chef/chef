@@ -15,4 +15,6 @@
 
 require "chef-utils/version_string"
 
-Chef::VersionString == ChefUtils::VersionString
+class Chef
+  VersionString = ChefUtils::VersionString
+end
