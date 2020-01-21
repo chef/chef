@@ -26,6 +26,7 @@ class Chef
       extend Chef::Mixin::Which
       extend Chef::Mixin::ShellOut
 
+      unified_mode true
       resource_name :dnf_package
 
       # all rhel variants >= 8 will use DNF

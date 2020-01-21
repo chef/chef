@@ -20,6 +20,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class DmgPackage < Chef::Resource
+      unified_mode true
       resource_name :dmg_package
       provides(:dmg_package) { true }
 
@@ -129,8 +130,8 @@ class Chef
             end
           end
 
-          ruby_block "attach #{dmg_file}" do
-            block do
+          unless dmg_attached?
+            converge_by "attach #{dmg_file}" do
               raise "This DMG package requires EULA acceptance. Add 'accept_eula true' to dmg_package resource to accept the EULA during installation." if software_license_agreement? && !new_resource.accept_eula
 
               attach_cmd = new_resource.accept_eula ? "yes | " : ""
@@ -138,7 +139,6 @@ class Chef
 
               shell_out!(attach_cmd, env: { "PAGER" => "true" })
             end
-            not_if { dmg_attached? }
           end
 
           case new_resource.type

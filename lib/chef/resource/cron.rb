@@ -23,6 +23,7 @@ require_relative "../provider/cron" # do not remove. we actually need this below
 class Chef
   class Resource
     class Cron < Chef::Resource
+      unified_mode true
       resource_name :cron
       provides :cron
 
