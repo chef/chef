@@ -7,7 +7,6 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
-# necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
 gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
