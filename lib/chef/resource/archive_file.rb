@@ -23,6 +23,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class ArchiveFile < Chef::Resource
+      unified_mode true
 
       resource_name :archive_file
       provides :archive_file

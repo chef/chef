@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software, Inc.
+# Copyright:: 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,7 @@ require_relative "../dist"
 class Chef
   class Resource
     class CronD < Chef::Resource
+      unified_mode true
       resource_name :cron_d
 
       introduced "14.4"

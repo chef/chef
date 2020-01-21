@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: 2016-2018, Chef Software Inc.
+# Copyright:: 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,15 +44,13 @@ GPG_FINGER = <<~EOF.freeze
   sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
 EOF
 
-describe Chef::Provider::AptRepository do
-  let(:new_resource) { Chef::Resource::AptRepository.new("multiverse") }
-
-  let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::AptRepository.new(new_resource, run_context)
-  end
+describe "Chef::Provider::AptRepository" do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:collection) { double("resource collection") }
+  let(:new_resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
+  let(:provider) { new_resource.provider_for_action(:add) }
 
   let(:apt_key_finger_cmd) do
     %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}

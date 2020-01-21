@@ -1,5 +1,5 @@
 #
-# Copyright:: 2019, Chef Software, Inc.
+# Copyright:: 2019-2019, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 class Chef
   class Resource
     class ChocolateyFeature < Chef::Resource
+      unified_mode true
       resource_name :chocolatey_feature
 
       description "Use the chocolatey_feature resource to enable and disable Chocolatey features."

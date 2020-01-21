@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2018, Chef Software Inc.
+# Copyright:: Copyright 2010-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "provider/apt_update"
-require_relative "provider/apt_preference"
-require_relative "provider/apt_repository"
 require_relative "provider/batch"
 require_relative "provider/cookbook_file"
 require_relative "provider/cron"

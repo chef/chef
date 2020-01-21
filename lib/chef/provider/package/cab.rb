@@ -1,6 +1,6 @@
 #
 # Author:: Vasundhara Jagdale (<vasundhara.jagdale@msystechnologies.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,13 +45,11 @@ class Chef
         end
 
         def download_source_file
-          source_resource.run_action(:create)
-          logger.trace("#{new_resource} fetched source file to #{source_resource.path}")
           source_resource.path
         end
 
         def source_resource
-          @source_resource ||= declare_resource(:remote_file, new_resource.name) do
+          declare_resource(:remote_file, new_resource.name) do
             path default_download_cache_path
             source new_resource.source
             backup false

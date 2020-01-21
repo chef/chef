@@ -1,7 +1,7 @@
 #
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza.
 # License:: Apache License, Version 2.0
 #
@@ -28,6 +28,7 @@ class Chef
     class FreebsdPackage < Chef::Resource::Package
       include Chef::Mixin::ShellOut
 
+      unified_mode true
       resource_name :freebsd_package
       provides :package, platform: "freebsd"
 
