@@ -124,7 +124,6 @@ class Chef
               cookbooks_for_upload << cookbook
               version_constraints_to_update[cookbook_name] = cookbook.version
             end
-
             if config[:all]
               if cookbooks_for_upload.any?
                 begin
@@ -168,7 +167,6 @@ class Chef
                 exit 1
               end
             end
-
             unless version_constraints_to_update.empty?
               update_version_constraints(version_constraints_to_update) if config[:environment]
             end
@@ -193,7 +191,7 @@ class Chef
                   end
                 end
               rescue Exceptions::CookbookNotFoundInRepo => e
-                ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+                ui.error(e.message)
                 Log.debug(e)
               end
             end

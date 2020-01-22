@@ -95,11 +95,11 @@ class Chef
 
       loader = cookbook_version_loaders[cookbook_name]
 
-      loader.load
+      loader.load!
 
       cookbook_version = loader.cookbook_version
       cookbooks_by_name[cookbook_name] = cookbook_version
-      metadata[cookbook_name] = cookbook_version.metadata
+      metadata[cookbook_name] = cookbook_version.metadata unless cookbook_version.nil?
       cookbook_version
     end
 

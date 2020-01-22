@@ -54,6 +54,7 @@ describe "ChefFSDataStore tests", :workstation do
 
       context "GET /TYPE" do
         it "knife list -z -R returns everything" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
           knife("list -z -Rfp /").should_succeed <<~EOM
             /acls/
             /acls/clients/
@@ -118,6 +119,7 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife delete -z -r /cookbooks/x works" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(3).times
           knife("delete -z -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
           knife("list -z -Rfp /cookbooks").should_succeed ""
         end
@@ -155,6 +157,7 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife show -z /cookbooks/x/metadata.rb works" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("show -z /cookbooks/x/metadata.rb").should_succeed "/cookbooks/x/metadata.rb:\n#{cookbook_x_100_metadata_rb}\n"
         end
 
@@ -190,6 +193,7 @@ describe "ChefFSDataStore tests", :workstation do
         end
 
         it "knife cookbook upload works" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("cookbook upload -z --cookbook-path #{path_to("cookbooks_to_upload")} x").should_succeed stderr: <<~EOM
             Uploading x              [1.0.0]
             Uploaded 1 cookbook.
@@ -442,6 +446,7 @@ describe "ChefFSDataStore tests", :workstation do
 
       context "GET /TYPE" do
         it "knife list -z -R returns everything" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("list -z -Rfp /").should_succeed <<~EOM
             /clients/
             /clients/x.json
