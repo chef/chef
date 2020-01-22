@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016-2019, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,6 +40,7 @@ class Chef
           compare_by_identity?
           count
           cycle
+          deconstruct_keys
           default
           default_proc
           detect
@@ -60,6 +61,7 @@ class Chef
           fetch
           fetch_values
           filter
+          filter_map
           find
           find_all
           find_index
@@ -109,6 +111,7 @@ class Chef
           sum
           take
           take_while
+          tally
           to_a
           to_h
           to_hash
