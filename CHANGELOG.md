@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.3 -->
-## [v16.0.3](https://github.com/chef/chef/tree/v16.0.3) (2020-01-21)
+<!-- latest_release 16.0.4 -->
+## [v16.0.4](https://github.com/chef/chef/tree/v16.0.4) (2020-01-22)
 
 #### Merged Pull Requests
-- WIP: Chef-16 resource cleanup + unified_mode [#9174](https://github.com/chef/chef/pull/9174) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add windows helpers for install type [#9235](https://github.com/chef/chef/pull/9235) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add windows helpers for install type [#9235](https://github.com/chef/chef/pull/9235) ([tas50](https://github.com/tas50)) <!-- 16.0.4 -->
 - WIP: Chef-16 resource cleanup + unified_mode [#9174](https://github.com/chef/chef/pull/9174) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.3 -->
 - Require Ruby 2.6+ [#9247](https://github.com/chef/chef/pull/9247) ([tas50](https://github.com/tas50)) <!-- 16.0.2 -->
 - Update to Ohai 16.0.2 [#9246](https://github.com/chef/chef/pull/9246) ([tas50](https://github.com/tas50)) <!-- 16.0.1 -->
