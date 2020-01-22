@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2017, Chef Software Inc.
+# Copyright:: Copyright 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -195,7 +195,7 @@ describe Chef::Search::Query do
 
     it "throws an exception if you pass an incorrect option" do
       expect { query.search(:node, "platform:rhel", total: 10) }
-        .to raise_error(ArgumentError, /unknown keyword: total/)
+        .to raise_error(ArgumentError, /unknown keyword: :+total/)
     end
 
     it "returns the raw rows, start, and total if no block is passed" do
