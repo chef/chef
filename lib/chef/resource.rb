@@ -1376,7 +1376,7 @@ class Chef
         options[:chef_version] = @chef_version_for_provides
       end
 
-      result = Chef.resource_handler_map.set(name, self, options, &block)
+      result = Chef.resource_handler_map.set(name, self, **options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end

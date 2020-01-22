@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016-2019, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,6 +43,7 @@ class Chef
           compact
           count
           cycle
+          deconstruct
           detect
           difference
           dig
@@ -59,6 +60,7 @@ class Chef
           entries
           fetch
           filter
+          filter_map
           find
           find_all
           find_index
@@ -71,6 +73,7 @@ class Chef
           include?
           index
           inject
+          intersection
           join
           last
           lazy
@@ -113,6 +116,7 @@ class Chef
           sum
           take
           take_while
+          tally
           to_a
           to_ary
           to_csv

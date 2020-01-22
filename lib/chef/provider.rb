@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -334,7 +334,7 @@ class Chef
     end
 
     def self.provides(short_name, opts = {}, &block)
-      Chef.provider_handler_map.set(short_name, self, opts, &block)
+      Chef.provider_handler_map.set(short_name, self, **opts, &block)
     end
 
     def self.provides?(node, resource)

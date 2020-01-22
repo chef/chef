@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -457,10 +457,10 @@ describe Chef::Cookbook::Metadata do
       metadata.version "1.2.3"
       metadata.gem "foo", "~> 1.2"
       metadata.gem "bar", ">= 2.2", "< 4.0"
-      metadata.chef_version ">= 11.14.2", "< 11.18.10"
-      metadata.chef_version ">= 12.2.1", "< 12.5.1"
-      metadata.ohai_version ">= 7.1.0", "< 7.5.0"
-      metadata.ohai_version ">= 8.0.1", "< 8.6.0"
+      metadata.chef_version "< 11.18.10", ">= 11.14.2"
+      metadata.chef_version "< 12.5.1", ">= 12.2.1"
+      metadata.ohai_version "< 7.5.0", ">= 7.1.0"
+      metadata.ohai_version "< 8.6.0", ">= 8.0.1"
     end
 
     it "should produce the same output from to_json and Chef::JSONCompat" do
