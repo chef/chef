@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.7 -->
-## [v16.0.7](https://github.com/chef/chef/tree/v16.0.7) (2020-01-22)
+<!-- latest_release 16.0.8 -->
+## [v16.0.8](https://github.com/chef/chef/tree/v16.0.8) (2020-01-22)
 
 #### Merged Pull Requests
-- Fix most Ruby 2.7 test failures / systemd service provider splat args conversion [#9251](https://github.com/chef/chef/pull/9251) ([lamont-granquist](https://github.com/lamont-granquist))
+- launchd: Fix capitalization of HardResourceLimits [#9239](https://github.com/chef/chef/pull/9239) ([rb2k](https://github.com/rb2k))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- launchd: Fix capitalization of HardResourceLimits [#9239](https://github.com/chef/chef/pull/9239) ([rb2k](https://github.com/rb2k)) <!-- 16.0.8 -->
 - Fix most Ruby 2.7 test failures / systemd service provider splat args conversion [#9251](https://github.com/chef/chef/pull/9251) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.7 -->
 - Raises error if there is empty cookbook directory at the time o… [#9011](https://github.com/chef/chef/pull/9011) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.0.6 -->
 - move Chef::VersionString to Chef::Utils [#9234](https://github.com/chef/chef/pull/9234) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.5 -->
