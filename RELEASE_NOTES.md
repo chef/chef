@@ -45,7 +45,7 @@ We have added new helpers for identifying Windows releases that can be used in a
 
 ### windows_workstation?
 
-Returns tr`ue if the system is a Windows Workstation edition.
+Returns `true` if the system is a Windows Workstation edition.
 
 ### windows_server?
 
