@@ -82,7 +82,7 @@ class Chef
       end
 
       def load
-        Chef::Log.warn "load method is deprecated. Use load! instead"
+        Chef::Log.warn "Chef::Cookbook::CookbookVersionLoader's load method is deprecated. Please use load! instead."
         metadata # force lazy evaluation to occur
 
         # re-raise any exception that occurred when reading the metadata
