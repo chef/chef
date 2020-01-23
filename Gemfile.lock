@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: f4b0958ad9d5e52eb720c52def3b427165d9c553
+  revision: a4ad6b43736221f2cbcf8a5b58285cc492446d16
   branch: master
   specs:
     ohai (16.0.2)
@@ -176,9 +176,9 @@ GEM
       faraday (>= 0.7.4, < 1.0)
     fauxhai-ng (7.5.1)
       net-ssh
-    ffi (1.11.3)
-    ffi (1.11.3-x64-mingw32)
-    ffi (1.11.3-x86-mingw32)
+    ffi (1.12.1)
+    ffi (1.12.1-x64-mingw32)
+    ffi (1.12.1-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
@@ -359,7 +359,7 @@ GEM
     tins (1.24.0)
       sync
     tomlrb (1.2.9)
-    train-core (3.2.5)
+    train-core (3.2.14)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)
@@ -371,7 +371,7 @@ GEM
       pastel (~> 0.7.2)
       strings (~> 0.1.6)
       tty-cursor (~> 0.7)
-    tty-color (0.5.0)
+    tty-color (0.5.1)
     tty-cursor (0.7.0)
     tty-prompt (0.20.0)
       necromancer (~> 0.5.0)
