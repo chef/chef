@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.27 -->
-## [v15.7.27](https://github.com/chef/chef/tree/v15.7.27) (2020-01-23)
+<!-- latest_release 15.7.28 -->
+## [v15.7.28](https://github.com/chef/chef/tree/v15.7.28) (2020-01-23)
 
 #### Merged Pull Requests
-- Update ohai to 15.7.4 [#9255](https://github.com/chef/chef/pull/9255) ([tas50](https://github.com/tas50))
+- launchd: Fix capitalization of HardResourceLimits [#9257](https://github.com/chef/chef/pull/9257) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- launchd: Fix capitalization of HardResourceLimits [#9257](https://github.com/chef/chef/pull/9257) ([tas50](https://github.com/tas50)) <!-- 15.7.28 -->
 - Update ohai to 15.7.4 [#9255](https://github.com/chef/chef/pull/9255) ([tas50](https://github.com/tas50)) <!-- 15.7.27 -->
 - Update Ohai to 15.7.4 [#9249](https://github.com/chef/chef/pull/9249) ([tas50](https://github.com/tas50)) <!-- 15.7.26 -->
 - Point at the 15-stable ohai branch [#9240](https://github.com/chef/chef/pull/9240) ([tas50](https://github.com/tas50)) <!-- 15.7.25 -->
