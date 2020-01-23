@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -910,9 +910,16 @@ describe Chef::Resource do
       klz.provides :energy, platform: %w{autobots decepticons}
     end
 
-    it "adds mappings for all platforms" do
+    it "adds mappings for all platforms", ruby: "< 2.7" do
       expect(Chef.resource_handler_map).to receive(:set).with(
         :tape_deck, Chef::Resource::Klz, {}
+      )
+      klz.provides :tape_deck
+    end
+
+    it "adds mappings for all platforms", ruby: ">= 2.7" do
+      expect(Chef.resource_handler_map).to receive(:set).with(
+        :tape_deck, Chef::Resource::Klz
       )
       klz.provides :tape_deck
     end
