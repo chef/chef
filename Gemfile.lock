@@ -371,7 +371,7 @@ GEM
       pastel (~> 0.7.2)
       strings (~> 0.1.6)
       tty-cursor (~> 0.7)
-    tty-color (0.5.0)
+    tty-color (0.5.1)
     tty-cursor (0.7.0)
     tty-prompt (0.20.0)
       necromancer (~> 0.5.0)
