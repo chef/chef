@@ -27,7 +27,7 @@ The `sudo` resource no longer fails on the second Chef Infra Client run when usi
 
 ### user
 
-The `user` resource on aix no longer forces the user to change the password after Chef Infra Client modifies the password. Thanks for this fix [@Triodes](https://github.com/Triodes)
+The `user` resource on AIX no longer forces the user to change the password after Chef Infra Client modifies the password. Thanks for this fix, [@Triodes](https://github.com/Triodes).
 
 The `user` resource on macOS 10.15 has received several important fixes to improve logging and prevent failures.
 
