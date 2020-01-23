@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### archive_file
 
-The `archive_file` will now only change ownership on files and directories that were part of the archive itself. This is important so you don't change permissions on important high level directories such as /etc or /bin just by extracting a file into those directories. Thanks for this fix [@bobchaos](https://github.com/bobchaos/)
+The `archive_file` resource will now only change ownership on files and directories that were part of the archive itself. This prevents changing permissions on important high level directories such as /etc or /bin when you extract a file into those directories. Thanks for this fix, [@bobchaos](https://github.com/bobchaos/).
 
 ### cron and cron_d
 
