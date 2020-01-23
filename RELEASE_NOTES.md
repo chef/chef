@@ -12,10 +12,10 @@ The `archive_file` resource will now only change ownership on files and director
 
 The `cron` and `cron_d` resources now include a `timeout` property, which allows you to configure actions to perform when a job times out. This property accepts a hash of timeout configuration options:
 
-- `preserve-status`: true/false with a default of false
-- `foreground`: true/false with a default of false
-- `kill-after`: Integer for the timeout in seconds
-- `signal`: String or Integer to send to the process such as `HUP`
+- `preserve-status`: `true`/`false` with a default of `false`
+- `foreground`: `true`/`false` with a default of `false`
+- `kill-after`: `Integer` for the timeout in seconds
+- `signal`: `String` or `Integer` to send to the process such as `HUP`
 
 ### launchd
 
