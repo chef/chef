@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.10 -->
-## [v16.0.10](https://github.com/chef/chef/tree/v16.0.10) (2020-01-23)
+<!-- latest_release 16.0.11 -->
+## [v16.0.11](https://github.com/chef/chef/tree/v16.0.11) (2020-01-23)
 
 #### Merged Pull Requests
-- Bump train-core to 3.2.14 [#9258](https://github.com/chef/chef/pull/9258) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fixes all notarization issues [#9219](https://github.com/chef/chef/pull/9219) ([jonsmorrow](https://github.com/jonsmorrow))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixes all notarization issues [#9219](https://github.com/chef/chef/pull/9219) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 16.0.11 -->
 - Bump train-core to 3.2.14 [#9258](https://github.com/chef/chef/pull/9258) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.10 -->
 - fix a few more ruby 2.7 specs [#9253](https://github.com/chef/chef/pull/9253) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.9 -->
 - launchd: Fix capitalization of HardResourceLimits [#9239](https://github.com/chef/chef/pull/9239) ([rb2k](https://github.com/rb2k)) <!-- 16.0.8 -->
