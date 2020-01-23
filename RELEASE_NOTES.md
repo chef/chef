@@ -23,7 +23,7 @@ The `launchd` resource has been updated to properly capitalize `HardResourceLimi
 
 ### sudo
 
-The `sudo` resource no longer fails on the second Chef Infra Client run when using a `Cmnd_Alias`. Thanks for reporting this issue [@Rudikza](https://github.com/Rudikza)
+The `sudo` resource no longer fails on the second Chef Infra Client run when using a `Cmnd_Alias`. Thanks for reporting this issue, [@Rudikza](https://github.com/Rudikza).
 
 ### user
 
