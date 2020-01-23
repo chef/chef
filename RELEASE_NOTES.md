@@ -19,7 +19,7 @@ The `cron` and `cron_d` resources now include a `timeout` property, which allows
 
 ### launchd
 
-The launchd resource has been updated to properly capitalize `HardResourceLimits`. Thanks for this fix [@rb2k](https://github.com/rb2k/).
+The `launchd` resource has been updated to properly capitalize `HardResourceLimits`. Thanks for this fix, [@rb2k](https://github.com/rb2k/).
 
 ### sudo
 
