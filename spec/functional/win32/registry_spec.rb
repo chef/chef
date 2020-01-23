@@ -56,12 +56,6 @@ describe "Chef::Win32::Registry", :windows_only do
     end
   end
 
-  # Server Versions
-  # it "succeeds if server versiion is 2003R2, 2008, 2008R2, 2012" do
-  # end
-  # it "falis if the server versions are anything else" do
-  # end
-
   describe "hive_exists?" do
     it "returns true if the hive exists" do
       expect(@registry.hive_exists?("HKCU\\Software\\Root")).to eq(true)
