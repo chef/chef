@@ -41,6 +41,7 @@ describe "knife deps", :workstation do
         file "cookbooks/soup/recipes/chicken.rb", ""
       end
       it "knife deps reports all dependencies" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /roles/starring.json").should_succeed <<~EOM
           /roles/minor.json
           /cookbooks/quiche
@@ -60,6 +61,7 @@ describe "knife deps", :workstation do
         file "cookbooks/soup/recipes/chicken.rb", ""
       end
       it "knife deps reports all dependencies" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /roles/starring.json").should_succeed <<~EOM
           /roles/minor.json
           /cookbooks/quiche
@@ -94,6 +96,7 @@ describe "knife deps", :workstation do
         file "nodes/mort.json", { "run_list" => %w{role[minor] recipe[quiche] recipe[soup::chicken]} }
       end
       it "knife deps reports just the node" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /nodes/mort.json").should_succeed <<~EOM
           /roles/minor.json
           /cookbooks/quiche
@@ -108,6 +111,7 @@ describe "knife deps", :workstation do
         file "cookbooks/quiche/recipes/default.rb", ""
       end
       it "knife deps reports just the cookbook" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
         knife("deps /cookbooks/quiche").should_succeed "/cookbooks/quiche\n"
       end
     end
@@ -119,6 +123,7 @@ depends "kettle"'
         file "cookbooks/quiche/recipes/default.rb", ""
       end
       it "knife deps reports just the cookbook" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /cookbooks/quiche").should_succeed "/cookbooks/kettle\n/cookbooks/quiche\n"
       end
     end
@@ -148,6 +153,7 @@ depends "kettle"'
       end
 
       it "knife deps reports all dependencies" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /nodes/mort.json").should_succeed <<~EOM
           /environments/desert.json
           /roles/minor.json
@@ -158,6 +164,7 @@ depends "kettle"'
         EOM
       end
       it "knife deps * reports all dependencies of all things" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /nodes/*").should_succeed <<~EOM
           /roles/minor.json
           /nodes/bart.json
@@ -169,6 +176,7 @@ depends "kettle"'
         EOM
       end
       it "knife deps a b reports all dependencies of a and b" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps /nodes/bart.json /nodes/mort.json").should_succeed <<~EOM
           /roles/minor.json
           /nodes/bart.json
@@ -180,6 +188,7 @@ depends "kettle"'
         EOM
       end
       it "knife deps --tree /* shows dependencies in a tree" do
+        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).twice
         knife("deps --tree /nodes/*").should_succeed <<~EOM
           /nodes/bart.json
             /roles/minor.json
@@ -214,11 +223,13 @@ depends "foo"'
         end
 
         it "knife deps prints each once" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(3).times
           knife("deps /cookbooks/foo").should_succeed(
             stdout: "/cookbooks/baz\n/cookbooks/bar\n/cookbooks/foo\n"
           )
         end
         it "knife deps --tree prints each once" do
+          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(3).times
           knife("deps --tree /cookbooks/foo").should_succeed(
             stdout: "/cookbooks/foo\n  /cookbooks/bar\n    /cookbooks/baz\n      /cookbooks/foo\n"
           )
