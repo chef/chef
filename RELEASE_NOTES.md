@@ -37,7 +37,7 @@ The `windows_task` resource is now idempotent when a system is joined to a domai
 
 ### x509_certificate
 
-The `x509_certificate` resource now includes a new `renew_before_expiry` property that allows you to auto renew certicates with a number of days before they expire. Thanks [@julienhuon](https://github.com/julienhuon/) for this improvement.
+The `x509_certificate` resource now includes a new `renew_before_expiry` property that allows you to auto renew certicates a specified number of days before they expire. Thanks [@julienhuon](https://github.com/julienhuon/) for this improvement.
 
 ## Additional Recipe Helpers
 
