@@ -72,6 +72,8 @@ class Chef
             result["ip"] = ip if ip
             result["fqdn"] = fqdn if fqdn
             result["run_list"] = node.run_list if config["run_list"]
+            result["policy_name"] = node.policy_name if config["policy"]
+            result["policy_group"] = node.policy_group if config["policy"]
             result["ohai_time"] = node["ohai_time"]
             result["platform"] = node["platform"] if node["platform"]
             result["platform_version"] = node["platform_version"] if node["platform_version"]
@@ -106,6 +108,11 @@ class Chef
               else
                 run_list = node["run_list"]
               end
+            end
+
+            if config[:policy]
+              policy_name = node["policy_name"]
+              policy_group = node["policy_group"]
             end
 
             line_parts = []
@@ -144,6 +151,9 @@ class Chef
               end
               line_parts << platform
             end
+
+            line_parts << policy_name if policy_name
+            line_parts << policy_group if policy_group
 
             summarized = summarized + line_parts.join(", ") + ".\n"
           end
