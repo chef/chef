@@ -1,55 +1,53 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.30 -->
-## [v15.7.30](https://github.com/chef/chef/tree/v15.7.30) (2020-01-23)
-
-#### Merged Pull Requests
-- Raises error if there is empty cookbook directory at the time of upload [#9256](https://github.com/chef/chef/pull/9256) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.6.10 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Raises error if there is empty cookbook directory at the time of upload [#9256](https://github.com/chef/chef/pull/9256) ([tas50](https://github.com/tas50)) <!-- 15.7.30 -->
-- Add Chef::VersionString to Chef::Utils and add windows helpers [#9254](https://github.com/chef/chef/pull/9254) ([tas50](https://github.com/tas50)) <!-- 15.7.29 -->
-- launchd: Fix capitalization of HardResourceLimits [#9257](https://github.com/chef/chef/pull/9257) ([tas50](https://github.com/tas50)) <!-- 15.7.28 -->
-- Update ohai to 15.7.4 [#9255](https://github.com/chef/chef/pull/9255) ([tas50](https://github.com/tas50)) <!-- 15.7.27 -->
-- Update Ohai to 15.7.4 [#9249](https://github.com/chef/chef/pull/9249) ([tas50](https://github.com/tas50)) <!-- 15.7.26 -->
-- Point at the 15-stable ohai branch [#9240](https://github.com/chef/chef/pull/9240) ([tas50](https://github.com/tas50)) <!-- 15.7.25 -->
-- Prep the chef-15 branch to build stable releases [#9236](https://github.com/chef/chef/pull/9236) ([tas50](https://github.com/tas50)) <!-- 15.7.24 -->
-- Remove RHEL 6 s390x (zLinux) support [#9233](https://github.com/chef/chef/pull/9233) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.7.23 -->
-- Add time_out property in cron resource [#9153](https://github.com/chef/chef/pull/9153) ([Nimesh-Msys](https://github.com/Nimesh-Msys)) <!-- 15.7.22 -->
-- Generate metadata.json from metadata.rb if not exist before knife cookbook upload or knife upload or berkshelf upload [#9073](https://github.com/chef/chef/pull/9073) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.7.21 -->
-- Update openssl to 1.0.2u [#9229](https://github.com/chef/chef/pull/9229) ([tas50](https://github.com/tas50)) <!-- 15.7.20 -->
-- Windows Path on Bootstrap [#8669](https://github.com/chef/chef/pull/8669) ([Xorima](https://github.com/Xorima)) <!-- 15.7.19 -->
-- Use /etc/chef for bootstrapping instead of CONF_DIR [#9226](https://github.com/chef/chef/pull/9226) ([marcparadise](https://github.com/marcparadise)) <!-- 15.7.18 -->
-- Use the right class in knife supermarket install [#9217](https://github.com/chef/chef/pull/9217) ([tas50](https://github.com/tas50)) <!-- 15.7.17 -->
-- Fix for windows task not idempotent on the windows19 and window… [#9223](https://github.com/chef/chef/pull/9223) ([Vasu1105](https://github.com/Vasu1105)) <!-- 15.7.16 -->
-- x509_certificate : Add the capability to automatically renew a certificate [#9187](https://github.com/chef/chef/pull/9187) ([julienhuon](https://github.com/julienhuon)) <!-- 15.7.15 -->
-- Update to license_scout 1.1.2 [#9212](https://github.com/chef/chef/pull/9212) ([tas50](https://github.com/tas50)) <!-- 15.7.12 -->
-- Do not build Chef Infra Client on Windows 2008 R2 [#9203](https://github.com/chef/chef/pull/9203) ([tas50](https://github.com/tas50)) <!-- 15.7.11 -->
-- Clear password flags when setting the password on aix [#9209](https://github.com/chef/chef/pull/9209) ([Triodes](https://github.com/Triodes)) <!-- 15.7.10 -->
-- Fixes for sudo resource fails on 2nd converge when Cmnd_Alias is used [#9186](https://github.com/chef/chef/pull/9186) ([samshinde](https://github.com/samshinde)) <!-- 15.7.9 -->
-- Update all deps to current [#9210](https://github.com/chef/chef/pull/9210) ([tas50](https://github.com/tas50)) <!-- 15.7.8 -->
-- Expand chef-utils yard comments and make consistent [#9188](https://github.com/chef/chef/pull/9188) ([tas50](https://github.com/tas50)) <!-- 15.7.7 -->
-- Remove legacy Net::HTTP not needed in Ruby 2.2+ [#9200](https://github.com/chef/chef/pull/9200) ([tas50](https://github.com/tas50)) <!-- 15.7.6 -->
-- Last batch of wordmarks removal for chef-config [#9176](https://github.com/chef/chef/pull/9176) ([bobchaos](https://github.com/bobchaos)) <!-- 15.7.5 -->
-- Bump chef-vault to 4.0.1, chef-zero to 14.0.17, mixlib-shellout to 3.0.9, and mixlib-authentication to 3.0.6 [#9198](https://github.com/chef/chef/pull/9198) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.4 -->
-- Bump mixlib-archive to 1.0.5 [#9196](https://github.com/chef/chef/pull/9196) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.3 -->
-- Bump ffi-yajl to 2.3.3 [#9195](https://github.com/chef/chef/pull/9195) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.7.2 -->
-- Update libarchive to 1.0 [#9194](https://github.com/chef/chef/pull/9194) ([tas50](https://github.com/tas50)) <!-- 15.7.1 -->
-- Update all omnibus deps to the latest [#9192](https://github.com/chef/chef/pull/9192) ([tas50](https://github.com/tas50)) <!-- 15.7.0 -->
-- Bump mixlib-cli to 2.1.5 as well as Ohai, cheffish, and telemetry [#9191](https://github.com/chef/chef/pull/9191) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.21 -->
-- Fix event log message description format [#9190](https://github.com/chef/chef/pull/9190) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 15.6.20 -->
-- resource archive_file: apply ownership to extracted files only [#9173](https://github.com/chef/chef/pull/9173) ([bobchaos](https://github.com/bobchaos)) <!-- 15.6.19 -->
-- add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly)) <!-- 15.6.18 -->
-- Bump inspec-core to 4.18.51 [#9168](https://github.com/chef/chef/pull/9168) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.17 -->
-- try unit + functional tests [#9163](https://github.com/chef/chef/pull/9163) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.14 -->
-- Bump train-core to 3.2.5 [#9159](https://github.com/chef/chef/pull/9159) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 15.6.12 -->
-- Fix mac_user breakage and logging [#9158](https://github.com/chef/chef/pull/9158) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.6.11 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.7.30](https://github.com/chef/chef/tree/v15.7.30) (2020-01-23)
+
+#### Merged Pull Requests
+- Fix mac_user breakage and logging [#9158](https://github.com/chef/chef/pull/9158) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump train-core to 3.2.5 [#9159](https://github.com/chef/chef/pull/9159) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- try unit + functional tests [#9163](https://github.com/chef/chef/pull/9163) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core to 4.18.51 [#9168](https://github.com/chef/chef/pull/9168) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- add new option bootstrap_product for install cinc via bootstrap [#9112](https://github.com/chef/chef/pull/9112) ([sawanoboly](https://github.com/sawanoboly))
+- resource archive_file: apply ownership to extracted files only [#9173](https://github.com/chef/chef/pull/9173) ([bobchaos](https://github.com/bobchaos))
+- Fix event log message description format [#9190](https://github.com/chef/chef/pull/9190) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Bump mixlib-cli to 2.1.5 as well as Ohai, cheffish, and telemetry [#9191](https://github.com/chef/chef/pull/9191) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update all omnibus deps to the latest [#9192](https://github.com/chef/chef/pull/9192) ([tas50](https://github.com/tas50))
+- Update libarchive to 1.0 [#9194](https://github.com/chef/chef/pull/9194) ([tas50](https://github.com/tas50))
+- Bump ffi-yajl to 2.3.3 [#9195](https://github.com/chef/chef/pull/9195) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump mixlib-archive to 1.0.5 [#9196](https://github.com/chef/chef/pull/9196) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef-vault to 4.0.1, chef-zero to 14.0.17, mixlib-shellout to 3.0.9, and mixlib-authentication to 3.0.6 [#9198](https://github.com/chef/chef/pull/9198) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Last batch of wordmarks removal for chef-config [#9176](https://github.com/chef/chef/pull/9176) ([bobchaos](https://github.com/bobchaos))
+- Remove legacy Net::HTTP not needed in Ruby 2.2+ [#9200](https://github.com/chef/chef/pull/9200) ([tas50](https://github.com/tas50))
+- Expand chef-utils yard comments and make consistent [#9188](https://github.com/chef/chef/pull/9188) ([tas50](https://github.com/tas50))
+- Update all deps to current [#9210](https://github.com/chef/chef/pull/9210) ([tas50](https://github.com/tas50))
+- Fixes for sudo resource fails on 2nd converge when Cmnd_Alias is used [#9186](https://github.com/chef/chef/pull/9186) ([samshinde](https://github.com/samshinde))
+- Clear password flags when setting the password on aix [#9209](https://github.com/chef/chef/pull/9209) ([Triodes](https://github.com/Triodes))
+- Do not build Chef Infra Client on Windows 2008 R2 [#9203](https://github.com/chef/chef/pull/9203) ([tas50](https://github.com/tas50))
+- Update to license_scout 1.1.2 [#9212](https://github.com/chef/chef/pull/9212) ([tas50](https://github.com/tas50))
+- x509_certificate : Add the capability to automatically renew a certificate [#9187](https://github.com/chef/chef/pull/9187) ([julienhuon](https://github.com/julienhuon))
+- Fix for windows task not idempotent on the windows19 and window… [#9223](https://github.com/chef/chef/pull/9223) ([Vasu1105](https://github.com/Vasu1105))
+- Use the right class in knife supermarket install [#9217](https://github.com/chef/chef/pull/9217) ([tas50](https://github.com/tas50))
+- Use /etc/chef for bootstrapping instead of CONF_DIR [#9226](https://github.com/chef/chef/pull/9226) ([marcparadise](https://github.com/marcparadise))
+- Windows Path on Bootstrap [#8669](https://github.com/chef/chef/pull/8669) ([Xorima](https://github.com/Xorima))
+- Update openssl to 1.0.2u [#9229](https://github.com/chef/chef/pull/9229) ([tas50](https://github.com/tas50))
+- Generate metadata.json from metadata.rb if not exist before knife cookbook upload or knife upload or berkshelf upload [#9073](https://github.com/chef/chef/pull/9073) ([Vasu1105](https://github.com/Vasu1105))
+- Add time_out property in cron resource [#9153](https://github.com/chef/chef/pull/9153) ([Nimesh-Msys](https://github.com/Nimesh-Msys))
+- Remove RHEL 6 s390x (zLinux) support [#9233](https://github.com/chef/chef/pull/9233) ([jaymalasinha](https://github.com/jaymalasinha))
+- Prep the chef-15 branch to build stable releases [#9236](https://github.com/chef/chef/pull/9236) ([tas50](https://github.com/tas50))
+- Point at the 15-stable ohai branch [#9240](https://github.com/chef/chef/pull/9240) ([tas50](https://github.com/tas50))
+- Update Ohai to 15.7.4 [#9249](https://github.com/chef/chef/pull/9249) ([tas50](https://github.com/tas50))
+- Update ohai to 15.7.4 [#9255](https://github.com/chef/chef/pull/9255) ([tas50](https://github.com/tas50))
+- launchd: Fix capitalization of HardResourceLimits [#9257](https://github.com/chef/chef/pull/9257) ([tas50](https://github.com/tas50))
+- Add Chef::VersionString to Chef::Utils and add windows helpers [#9254](https://github.com/chef/chef/pull/9254) ([tas50](https://github.com/tas50))
+- Raises error if there is empty cookbook directory at the time of upload [#9256](https://github.com/chef/chef/pull/9256) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.6.10](https://github.com/chef/chef/tree/v15.6.10) (2019-12-12)
 
 #### Merged Pull Requests
@@ -73,7 +71,6 @@
 - Add a new distro constant for chef-apply [#9149](https://github.com/chef/chef/pull/9149) ([bobchaos](https://github.com/bobchaos))
 - Remove duplicate constant for Chef::Dist::SHORT [#9150](https://github.com/chef/chef/pull/9150) ([bobchaos](https://github.com/bobchaos))
 - Bump ohai to 15.6.3 [#9152](https://github.com/chef/chef/pull/9152) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-<!-- latest_stable_release -->
 
 ## [v15.5.17](https://github.com/chef/chef/tree/v15.5.17) (2019-11-21)
 
