@@ -82,7 +82,7 @@ class Chef
       end
 
       def load
-        Chef::Log.warn "Chef::Cookbook::CookbookVersionLoader's load method is deprecated. Please use load! instead."
+        Chef.deprecated(:internal_api, "Chef::Cookbook::CookbookVersionLoader's load method is deprecated. Please use load! instead.")
         metadata # force lazy evaluation to occur
 
         # re-raise any exception that occurred when reading the metadata
@@ -93,7 +93,7 @@ class Chef
         remove_ignored_files
 
         if empty?
-          raise Exceptions::CookbookNotFoundInRepo, "The directory #{cookbook_path} does not contain a cookbook"
+          Chef::Log.warn "Found a directory #{cookbook_name} in the cookbook path, but it contains no cookbook files. skipping."
         end
 
         cookbook_settings
