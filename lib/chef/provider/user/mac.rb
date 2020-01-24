@@ -428,9 +428,7 @@ class Chef
           return false unless prop_is_set?(:gid)
 
           group_name, group_id = user_group_info
-
           current_resource.gid != group_id.to_i
-          end
         end
 
         def password_diverged?
