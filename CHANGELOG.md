@@ -1,19 +1,17 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.7.31 -->
+<!-- latest_release -->
+<!-- latest_release -->
+
+<!-- release_rollup -->
+<!-- release_rollup -->
+
+<!-- latest_stable_release -->
 ## [v15.7.31](https://github.com/chef/chef/tree/v15.7.31) (2020-01-24)
 
 #### Merged Pull Requests
 - Avoid load method deprecation warnings in knife [#9268](https://github.com/chef/chef/pull/9268) ([tas50](https://github.com/tas50))
-<!-- latest_release -->
-
-<!-- release_rollup since=15.7.30 -->
-### Changes not yet released to stable channel
-
-#### Merged Pull Requests
-- Avoid load method deprecation warnings in knife [#9268](https://github.com/chef/chef/pull/9268) ([tas50](https://github.com/tas50)) <!-- 15.7.31 -->
-<!-- release_rollup -->
-
 <!-- latest_stable_release -->
+
 ## [v15.7.30](https://github.com/chef/chef/tree/v15.7.30) (2020-01-23)
 
 #### Merged Pull Requests
@@ -54,7 +52,6 @@
 - launchd: Fix capitalization of HardResourceLimits [#9257](https://github.com/chef/chef/pull/9257) ([tas50](https://github.com/tas50))
 - Add Chef::VersionString to Chef::Utils and add windows helpers [#9254](https://github.com/chef/chef/pull/9254) ([tas50](https://github.com/tas50))
 - Raises error if there is empty cookbook directory at the time of upload [#9256](https://github.com/chef/chef/pull/9256) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.6.10](https://github.com/chef/chef/tree/v15.6.10) (2019-12-12)
 
