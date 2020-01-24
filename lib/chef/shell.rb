@@ -61,6 +61,11 @@ module Shell
     # to get access to the main object before irb starts.
     ::IRB.setup(nil)
 
+    irb_conf[:USE_COLORIZE] = options.config[:use_colorize]
+    irb_conf[:USE_SINGLELINE] = options.config[:use_singleline]
+    irb_conf[:USE_MULTILINE] = options.config[:use_multiline]
+    pp irb_conf[:USE_MULTILINE]
+
     irb = IRB::Irb.new
 
     if solo_mode?
@@ -127,6 +132,8 @@ module Shell
       conf.prompt_n       = "#{Chef::Dist::EXEC}#{leader(m)} ?> "
       conf.prompt_s       = "#{Chef::Dist::EXEC}#{leader(m)}%l> "
       conf.use_tracer     = false
+      conf.instance_variable_set(:@use_multiline, false)
+      conf.instance_variable_set(:@use_singleline, false)
     end
   end
 
@@ -218,6 +225,21 @@ module Shell
             #{Chef::Dist::USER_CONF_DIR}/config.rb     if -s option is given.
             #{Chef::Dist::USER_CONF_DIR}/knife.rb      if -s option is given.
     FOOTER
+
+    option :use_multiline,
+      long: "--[no-]multiline",
+      default: true,
+      description: "[Do not] use multiline editor module"
+
+    option :use_singleline,
+      long: "--[no-]singleline",
+      default: true,
+      description: "[Do not] use singleline editor module"
+
+    option :use_colorize,
+      long: "--[no-]colorize",
+      default: true,
+      description: "[Do not] use colorization"
 
     option :config_file,
       short: "-c CONFIG",

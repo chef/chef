@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2018, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,8 +97,8 @@ class Chef
     #
     # @return [Array<Class>] Modified Priority Array of Provider Classes to use for the resource_name on the node
     #
-    def set_provider_priority_array(resource_name, priority_array, *filter, &block)
-      result = provider_priority_map.set_priority_array(resource_name.to_sym, priority_array, *filter, &block)
+    def set_provider_priority_array(resource_name, priority_array, **filter, &block)
+      result = provider_priority_map.set_priority_array(resource_name.to_sym, priority_array, **filter, &block)
       result = result.dup if result
       result
     end
@@ -112,8 +112,8 @@ class Chef
     #
     # @return [Array<Class>] Modified Priority Array of Resource Classes to use for the resource_name on the node
     #
-    def set_resource_priority_array(resource_name, priority_array, *filter, &block)
-      result = resource_priority_map.set_priority_array(resource_name.to_sym, priority_array, *filter, &block)
+    def set_resource_priority_array(resource_name, priority_array, **filter, &block)
+      result = resource_priority_map.set_priority_array(resource_name.to_sym, priority_array, **filter, &block)
       result = result.dup if result
       result
     end
