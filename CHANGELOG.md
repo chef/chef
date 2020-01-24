@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.7.31 -->
+## [v15.7.31](https://github.com/chef/chef/tree/v15.7.31) (2020-01-24)
+
+#### Merged Pull Requests
+- Avoid load method deprecation warnings in knife [#9268](https://github.com/chef/chef/pull/9268) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.7.30 -->
+### Changes not yet released to stable channel
+
+#### Merged Pull Requests
+- Avoid load method deprecation warnings in knife [#9268](https://github.com/chef/chef/pull/9268) ([tas50](https://github.com/tas50)) <!-- 15.7.31 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
