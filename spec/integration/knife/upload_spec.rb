@@ -178,7 +178,7 @@ describe "knife upload", :workstation do
             file "cookbooks/x/metadata.rb", "name 'x'; version '1.0.0'; depends 'x'"
           end
 
-          it "should fail in Chef 13" do
+          it "fails with RuntimeError" do
             expect { knife("upload /cookbooks") }.to raise_error RuntimeError, /Cookbook depends on itself/
           end
         end
@@ -197,7 +197,6 @@ describe "knife upload", :workstation do
           end
 
           it "knife upload adds the new files" do
-            expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
             knife("upload /").should_succeed <<~EOM
               Created /clients/y.json
               Updated /cookbooks/x
@@ -217,7 +216,6 @@ describe "knife upload", :workstation do
           end
 
           it "knife upload --no-diff adds the new files" do
-            expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
             knife("upload --no-diff /").should_succeed <<~EOM
               Created /clients/y.json
               Updated /cookbooks/x
@@ -494,7 +492,6 @@ describe "knife upload", :workstation do
         # technically we shouldn't have deleted missing files.  But ... cookbooks
         # are a special case.
         it "knife upload of the cookbook itself succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -504,7 +501,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload --purge of the cookbook itself succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -520,7 +516,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload of the cookbook succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -538,7 +533,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload of the cookbook succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -554,7 +548,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload --freeze freezes the cookbook" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload --freeze /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -577,11 +570,9 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload fails to upload the frozen cookbook" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/frozencook").should_fail "ERROR: /cookbooks failed to write: Cookbook frozencook is frozen\n"
         end
         it "knife upload --force uploads the frozen cookbook" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload --force /cookbooks/frozencook").should_succeed <<~EOM
             Updated /cookbooks/frozencook
           EOM
@@ -603,7 +594,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the local version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
@@ -641,7 +631,6 @@ describe "knife upload", :workstation do
             D\t/cookbooks/x/onlyin1.0.1.rb
             A\t/cookbooks/x/onlyin1.0.0.rb
           EOM
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -660,7 +649,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the local version generates metadata.json and uploads it." do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -676,7 +664,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the local version and generates metadata.json before upload and uploads it." do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x/metadata.rb
             D\t/cookbooks/x/onlyin1.0.1.rb
@@ -699,7 +686,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the new version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload --purge /cookbooks/x").should_succeed <<~EOM
             Updated /cookbooks/x
           EOM
@@ -802,7 +788,6 @@ describe "knife upload", :workstation do
           file "cookbooks/x/metadata.rb", cb_metadata("x", "1.0.0", "\nchef_version '~> 999.0'")
         end
         it "knife upload succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /cookbooks/x").should_succeed <<~EOM
             Created /cookbooks/x
           EOM
@@ -953,7 +938,6 @@ describe "knife upload", :workstation do
           end
 
           it "knife upload adds the new files" do
-            expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(3).times
             knife("upload /").should_succeed <<~EOM
               Created /clients/y.json
               Updated /cookbooks/x-1.0.0
@@ -1160,7 +1144,6 @@ describe "knife upload", :workstation do
         # technically we shouldn't have deleted missing files.  But ... cookbooks
         # are a special case.
         it "knife upload of the cookbook itself succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
           EOM
@@ -1168,7 +1151,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload --purge of the cookbook itself succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
           EOM
@@ -1182,7 +1164,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload of the cookbook succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
           EOM
@@ -1198,7 +1179,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload of the cookbook succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
           EOM
@@ -1220,7 +1200,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks uploads the local version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             M\t/cookbooks/x-1.0.0/onlyin1.0.0.rb
             D\t/cookbooks/x-1.0.1
@@ -1239,7 +1218,6 @@ describe "knife upload", :workstation do
           cookbook "x", "0.9.9", { "onlyin0.9.9.rb" => "hi" }
         end
         it "knife upload /cookbooks uploads the local version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Updated /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-0.9.9 (purge is on)
@@ -1254,7 +1232,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the local version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("diff --name-status /cookbooks").should_succeed <<~EOM
             D\t/cookbooks/x-1.0.1
             A\t/cookbooks/x-1.0.0
@@ -1273,7 +1250,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload /cookbooks/x uploads the new version" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload --purge /cookbooks").should_succeed <<~EOM
             Created /cookbooks/x-1.0.0
             Deleted extra entry /cookbooks/x-0.9.9 (purge is on)
@@ -1348,7 +1324,6 @@ describe "knife upload", :workstation do
           file "cookbooks/x-1.0.0/metadata.rb", cb_metadata("x", "1.0.0", "\nchef_version '~> 999.0'")
         end
         it "knife upload succeeds" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).once
           knife("upload /cookbooks/x-1.0.0").should_succeed <<~EOM
             Created /cookbooks/x-1.0.0
           EOM
@@ -1412,7 +1387,6 @@ describe "knife upload", :workstation do
         end
 
         it "knife upload / uploads everything" do
-          expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
           knife("upload /").should_succeed <<~EOM
             Updated /acls/groups/blah.json
             Created /clients/x.json
@@ -1520,7 +1494,6 @@ describe "knife upload", :workstation do
           end
 
           it "knife upload updates everything" do
-            expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/).at_least(2).times
             knife("upload /").should_succeed <<~EOM
               Updated /acls/groups/blah.json
               Updated /clients/x.json

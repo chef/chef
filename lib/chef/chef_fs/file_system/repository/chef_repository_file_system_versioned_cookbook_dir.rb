@@ -33,7 +33,7 @@ class Chef
 
             # KLUDGE: We shouldn't have to use instance_variable_set
             loader.instance_variable_set(:@cookbook_name, canonical_name)
-            loader.load_cookbooks
+            loader.load!
             loader.cookbook_version
           end
         end

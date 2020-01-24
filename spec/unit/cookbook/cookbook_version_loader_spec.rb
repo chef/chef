@@ -125,7 +125,6 @@ describe Chef::Cookbook::CookbookVersionLoader do
       end
 
       it "gives deprecation warning called with #load and raise error for Cookbook not found" do
-        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/)
         expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
       end
 
@@ -150,7 +149,6 @@ describe Chef::Cookbook::CookbookVersionLoader do
       end
 
       it "gives deprecation warning to us load!  when called with #load and raises error" do
-        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/)
         expect { cookbook_loader.load }.to raise_error("THIS METADATA HAS A BUG")
       end
 
@@ -183,7 +181,6 @@ describe Chef::Cookbook::CookbookVersionLoader do
       end
 
       it "gives deprecation warning to use load! method when called with #load and raises error for invalid metadata" do
-        expect(Chef::Log).to receive(:warn).with(/load method is deprecated. Use load! instead/)
         expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
       end
 

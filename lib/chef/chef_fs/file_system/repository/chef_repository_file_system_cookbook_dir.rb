@@ -143,7 +143,7 @@ class Chef
 
           def cookbook_version
             loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
-            loader.load_cookbooks
+            loader.load!
             loader.cookbook_version
           end
         end
