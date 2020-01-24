@@ -66,7 +66,7 @@ class Chef
 
               # Instantiate a proxy loader using the temporary symlink
               proxy_loader = Chef::Cookbook::CookbookVersionLoader.new(proxy_cookbook_path, other.chefignore)
-              proxy_loader.load_cookbooks
+              proxy_loader.load!
 
               cookbook_to_upload = proxy_loader.cookbook_version
               cookbook_to_upload.identifier = identifier
