@@ -137,7 +137,7 @@ class Chef
         def create_user
           cmd = [-"-addUser", new_resource.username]
           cmd += ["-fullName", new_resource.comment] if prop_is_set?(:comment)
-          cmd += ["-UID", new_resource.uid]          if prop_is_set?(:uid)
+          cmd += ["-UID", prop_is_set?(:uid) ? new_resource.uid : get_free_uid]
           cmd += ["-shell", new_resource.shell]
           cmd += ["-home", new_resource.home]
           cmd += ["-admin"] if new_resource.admin
@@ -196,7 +196,7 @@ class Chef
             end.run_action(group_action)
 
             converge_by("create primary group ID") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
             end
           end
 
@@ -272,7 +272,7 @@ class Chef
 
           if diverged?(:gid)
             converge_by("alter group membership") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
             end
           end
 
@@ -343,6 +343,24 @@ class Chef
           end
         end
 
+        # Find the next available uid on the system.
+        # Starting with 200 if `system` is set, 501 otherwise.
+        def get_free_uid(search_limit = 1000)
+          uid = nil
+          base_uid = new_resource.system ? 200 : 501
+          next_uid_guess = base_uid
+          users_uids = run_dscl("list", "/Users", "uid")
+          while next_uid_guess < search_limit + base_uid
+            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+              next_uid_guess += 1
+            else
+              uid = next_uid_guess
+              break
+            end
+          end
+          uid || raise("uid not found. Exhausted. Searched #{search_limit} times")
+        end
+
         # Attempt to resolve the group name, gid, and the action required for
         # associated group resource. If a group exists we'll modify it, otherwise
         # create it.
@@ -411,10 +429,7 @@ class Chef
 
           group_name, group_id = user_group_info
 
-          if current_resource.gid.is_a?(String)
-            current_resource.gid != group_name
-          else
-            current_resource.gid != group_id.to_i
+          current_resource.gid != group_id.to_i
           end
         end
 
