@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.13 -->
-## [v16.0.13](https://github.com/chef/chef/tree/v16.0.13) (2020-01-24)
+<!-- latest_release 16.0.14 -->
+## [v16.0.14](https://github.com/chef/chef/tree/v16.0.14) (2020-01-24)
 
 #### Merged Pull Requests
-- Use .load! in the Cookbook loader not .load_cookbooks [#9266](https://github.com/chef/chef/pull/9266) ([tas50](https://github.com/tas50))
+- Ruby 2.7 IRB and remaining fixes [#9267](https://github.com/chef/chef/pull/9267) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 2.7 IRB and remaining fixes [#9267](https://github.com/chef/chef/pull/9267) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.14 -->
 - Use .load! in the Cookbook loader not .load_cookbooks [#9266](https://github.com/chef/chef/pull/9266) ([tas50](https://github.com/tas50)) <!-- 16.0.13 -->
 - Provider a better error message in Chef::Cookbook::CookbookVersionLoader [#9264](https://github.com/chef/chef/pull/9264) ([tas50](https://github.com/tas50)) <!-- 16.0.12 -->
 - Fixes all notarization issues [#9219](https://github.com/chef/chef/pull/9219) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 16.0.11 -->
