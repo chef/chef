@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.15 -->
-## [v16.0.15](https://github.com/chef/chef/tree/v16.0.15) (2020-01-24)
+<!-- latest_release 16.0.16 -->
+## [v16.0.16](https://github.com/chef/chef/tree/v16.0.16) (2020-01-25)
 
 #### Merged Pull Requests
-- Cleanup the specs for the load_cookbooks warnings [#9269](https://github.com/chef/chef/pull/9269) ([tas50](https://github.com/tas50))
+- switch the load method back to not raising + deprecation [#9274](https://github.com/chef/chef/pull/9274) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- switch the load method back to not raising + deprecation [#9274](https://github.com/chef/chef/pull/9274) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.16 -->
 - Cleanup the specs for the load_cookbooks warnings [#9269](https://github.com/chef/chef/pull/9269) ([tas50](https://github.com/tas50)) <!-- 16.0.15 -->
 - Ruby 2.7 IRB and remaining fixes [#9267](https://github.com/chef/chef/pull/9267) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.14 -->
 - Use .load! in the Cookbook loader not .load_cookbooks [#9266](https://github.com/chef/chef/pull/9266) ([tas50](https://github.com/tas50)) <!-- 16.0.13 -->
