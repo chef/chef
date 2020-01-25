@@ -51,6 +51,7 @@ class Chef
             current_resource.home(user_plist[:home][0])
             current_resource.shell(user_plist[:shell][0])
             current_resource.comment(user_plist[:comment][0])
+            current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
 
             shadow_hash = user_plist[:shadow_hash]
             if shadow_hash
@@ -165,6 +166,10 @@ class Chef
           reload_user_plist
           reload_admin_group_plist
 
+          if prop_is_set?(:hidden)
+            set_hidden
+          end
+
           if prop_is_set?(:password)
             converge_by("set password") { set_password }
           end
@@ -208,7 +213,7 @@ class Chef
         end
 
         def compare_user
-          %i{comment shell uid gid salt password admin secure_token}.any? { |m| diverged?(m) }
+          %i{comment shell uid gid salt password admin secure_token hidden}.any? { |m| diverged?(m) }
         end
 
         def manage_user
@@ -276,6 +281,12 @@ class Chef
             end
           end
 
+          if diverged?(:hidden)
+            converge_by("alter hidden") do
+              set_hidden
+            end
+          end
+
           reload_user_plist
         end
 
@@ -336,6 +347,8 @@ class Chef
             user_group_diverged?
           when :secure_token
             secure_token_diverged?
+          when :hidden
+            hidden_diverged?
           else
             # Other fields are have been set on current resource so just compare
             # them.
@@ -429,6 +442,20 @@ class Chef
 
           group_name, group_id = user_group_info
           current_resource.gid != group_id.to_i
+        end
+
+        def hidden_diverged?
+          return false unless prop_is_set?(:hidden)
+
+          (current_resource.hidden ? 1 : 0) != hidden_value.to_i
+        end
+
+        def set_hidden
+          run_dscl("create", "/Users/#{new_resource.username}", "IsHidden", hidden_value.to_i)
+        end
+
+        def hidden_value
+          new_resource.hidden ? 1 : 0
         end
 
         def password_diverged?
@@ -606,6 +633,7 @@ class Chef
               auth_authority: "dsAttrTypeStandard:AuthenticationAuthority",
               shadow_hash: "dsAttrTypeNative:ShadowHashData",
               group_members: "dsAttrTypeStandard:GroupMembers",
+              is_hidden: "dsAttrTypeNative:IsHidden",
           }.freeze
 
           attr_accessor :plist_hash, :property_map
