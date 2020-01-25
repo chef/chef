@@ -83,3 +83,6 @@ ext/win32-eventlog/chef-log.man
 
 # tool logs
 ext/win32-eventlog/mkmf.log
+
+# ignore byebug command history file.
+.byebug_history
