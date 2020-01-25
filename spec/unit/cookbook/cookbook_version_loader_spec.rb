@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -124,8 +124,9 @@ describe Chef::Cookbook::CookbookVersionLoader do
         expect { cookbook_loader.load! }.to raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
       end
 
-      it "gives deprecation warning called with #load and raise error for Cookbook not found" do
-        expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
+      it "gives deprecation warning called with #load" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        cookbook_loader.load
       end
 
     end
@@ -149,6 +150,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
       end
 
       it "gives deprecation warning to us load!  when called with #load and raises error" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect { cookbook_loader.load }.to raise_error("THIS METADATA HAS A BUG")
       end
 
@@ -181,6 +183,7 @@ describe Chef::Cookbook::CookbookVersionLoader do
       end
 
       it "gives deprecation warning to use load! method when called with #load and raises error for invalid metadata" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
       end
 
