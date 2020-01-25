@@ -153,18 +153,21 @@ class Chef
           cmd.error? ? false : true
         end
 
+        def parse_xcode_cli_label(output)
+        end
         #
         # Return to package label of the latest XCode Command Line Tools update, if available
         #
         # @return [String]
         def xcode_cli_package
-          cmd = <<-EOH.gsub(/^ {14}/, "")
-          softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n' | sed 's/Label: //g'
-          EOH
-          cmd = Mixlib::ShellOut.new(cmd)
-          cmd.run_command
-          cmd.error!
-          cmd.stdout
+          xcode_regex = /\* (Label: )?(?<label>Command Line Tools for Xcode-(?<version>\d{2,}\.\d{1,2}))/
+          packages = shell_out!('softwareupdate -l').stdout.scan(xcode_regex)
+          if packages
+            # Named groups aren't preserved with String.scan
+            packages.sort { |pkg| Gem::Version.new(pkg[1]) }[-1][0]
+          else
+            ''
+          end
         end
       end
 
