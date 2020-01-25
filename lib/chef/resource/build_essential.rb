@@ -152,9 +152,7 @@ class Chef
           # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
         end
-
-        def parse_xcode_cli_label(output)
-        end
+        
         #
         # Return to package label of the latest XCode Command Line Tools update, if available
         #
