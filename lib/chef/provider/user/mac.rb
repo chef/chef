@@ -51,7 +51,10 @@ class Chef
             current_resource.home(user_plist[:home][0])
             current_resource.shell(user_plist[:shell][0])
             current_resource.comment(user_plist[:comment][0])
-            current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
+
+            if user_plist[:is_hidden]
+              current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
+            end
 
             shadow_hash = user_plist[:shadow_hash]
             if shadow_hash
