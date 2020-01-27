@@ -272,15 +272,8 @@ module ChefConfig
 
     # Location of cookbooks on disk. String or array of strings.
     # Defaults to <chef_repo_path>/cookbooks.  If chef_repo_path
-    # is not specified, this is set to [/var/chef/cookbooks, /var/chef/site-cookbooks]).
-    default(:cookbook_path) do
-      if configuration[:chef_repo_path]
-        derive_path_from_chef_repo_path("cookbooks")
-      else
-        Array(derive_path_from_chef_repo_path("cookbooks")).flatten +
-          Array(derive_path_from_chef_repo_path("site-cookbooks")).flatten
-      end
-    end
+    # is not specified, this is set to /var/chef/cookbooks.
+    default(:cookbook_path) { derive_path_from_chef_repo_path("cookbooks") }
 
     # Location of data bags on disk. String or array of strings.
     # Defaults to <chef_repo_path>/data_bags.
