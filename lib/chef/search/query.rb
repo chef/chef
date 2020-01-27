@@ -63,7 +63,7 @@ class Chef
 
         args_h = hashify_args(*args)
         if args_h[:fuzz]
-          if [:node, 'node'].include?(type)
+          if [:node, "node"].include?(type)
             query = fuzzify_node_query(query)
           end
           # FIXME: can i haz proper ruby-2.x named parameters someday plz?
