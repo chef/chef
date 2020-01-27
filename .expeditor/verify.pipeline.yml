@@ -301,6 +301,16 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04
 
+- label: "Test berkshelf gem :ruby: 2.6"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04
+
 #########################################################################
   # START TEST KITCHEN ONLY
 #########################################################################
