@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.18 -->
-## [v16.0.18](https://github.com/chef/chef/tree/v16.0.18) (2020-01-27)
+<!-- latest_release 16.0.19 -->
+## [v16.0.19](https://github.com/chef/chef/tree/v16.0.19) (2020-01-27)
 
 #### Merged Pull Requests
-- add berkshelf as an external test [#9284](https://github.com/chef/chef/pull/9284) ([lamont-granquist](https://github.com/lamont-granquist))
+- [chef-16] Remove the data bag secret short option [#9263](https://github.com/chef/chef/pull/9263) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [chef-16] Remove the data bag secret short option [#9263](https://github.com/chef/chef/pull/9263) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.19 -->
 - add berkshelf as an external test [#9284](https://github.com/chef/chef/pull/9284) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.18 -->
 - berks upload skip syntax check fixes [#9281](https://github.com/chef/chef/pull/9281) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.17 -->
 - switch the load method back to not raising + deprecation [#9274](https://github.com/chef/chef/pull/9274) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.16 -->
