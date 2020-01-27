@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.16 -->
-## [v16.0.16](https://github.com/chef/chef/tree/v16.0.16) (2020-01-25)
+<!-- latest_release 16.0.17 -->
+## [v16.0.17](https://github.com/chef/chef/tree/v16.0.17) (2020-01-27)
 
 #### Merged Pull Requests
-- switch the load method back to not raising + deprecation [#9274](https://github.com/chef/chef/pull/9274) ([lamont-granquist](https://github.com/lamont-granquist))
+- berks upload skip syntax check fixes [#9281](https://github.com/chef/chef/pull/9281) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- berks upload skip syntax check fixes [#9281](https://github.com/chef/chef/pull/9281) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.17 -->
 - switch the load method back to not raising + deprecation [#9274](https://github.com/chef/chef/pull/9274) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.16 -->
 - Cleanup the specs for the load_cookbooks warnings [#9269](https://github.com/chef/chef/pull/9269) ([tas50](https://github.com/tas50)) <!-- 16.0.15 -->
 - Ruby 2.7 IRB and remaining fixes [#9267](https://github.com/chef/chef/pull/9267) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.14 -->
