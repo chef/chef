@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.21 -->
-## [v16.0.21](https://github.com/chef/chef/tree/v16.0.21) (2020-01-27)
+<!-- latest_release 16.0.22 -->
+## [v16.0.22](https://github.com/chef/chef/tree/v16.0.22) (2020-01-27)
 
 #### Merged Pull Requests
-- Remove the deprecated knife cookbook site commands [#9288](https://github.com/chef/chef/pull/9288) ([tas50](https://github.com/tas50))
+- Remove the sites-cookbooks dir from the cookbook_path default config [#9290](https://github.com/chef/chef/pull/9290) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the sites-cookbooks dir from the cookbook_path default config [#9290](https://github.com/chef/chef/pull/9290) ([tas50](https://github.com/tas50)) <!-- 16.0.22 -->
 - Remove the deprecated knife cookbook site commands [#9288](https://github.com/chef/chef/pull/9288) ([tas50](https://github.com/tas50)) <!-- 16.0.21 -->
 - Remove more support for Windows 2008 R2 / RHEL 5 [#9261](https://github.com/chef/chef/pull/9261) ([tas50](https://github.com/tas50)) <!-- 16.0.20 -->
 - [chef-16] Remove the data bag secret short option [#9263](https://github.com/chef/chef/pull/9263) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.19 -->
