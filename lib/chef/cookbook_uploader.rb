@@ -47,7 +47,7 @@ class Chef
 
     def upload_cookbooks
       # Syntax Check
-      validate_cookbooks
+      validate_cookbooks unless opts[:skip_syntax_check]
       # generate checksums of cookbook files and create a sandbox
       checksum_files = {}
       cookbooks.each do |cb|
