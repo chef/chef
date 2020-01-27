@@ -304,6 +304,7 @@ steps:
 - label: "Test berkshelf gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - apt-get install -y graphviz
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
   expeditor:
