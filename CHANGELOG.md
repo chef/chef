@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.22 -->
-## [v16.0.22](https://github.com/chef/chef/tree/v16.0.22) (2020-01-27)
+<!-- latest_release 16.0.23 -->
+## [v16.0.23](https://github.com/chef/chef/tree/v16.0.23) (2020-01-28)
 
 #### Merged Pull Requests
-- Remove the sites-cookbooks dir from the cookbook_path default config [#9290](https://github.com/chef/chef/pull/9290) ([tas50](https://github.com/tas50))
+- Merge pull request #9291 from chef/lcg/chef-utils-doc-touchup [#9291](https://github.com/chef/chef/pull/9291) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Merge pull request #9291 from chef/lcg/chef-utils-doc-touchup [#9291](https://github.com/chef/chef/pull/9291) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.23 -->
 - Remove the sites-cookbooks dir from the cookbook_path default config [#9290](https://github.com/chef/chef/pull/9290) ([tas50](https://github.com/tas50)) <!-- 16.0.22 -->
 - Remove the deprecated knife cookbook site commands [#9288](https://github.com/chef/chef/pull/9288) ([tas50](https://github.com/tas50)) <!-- 16.0.21 -->
 - Remove more support for Windows 2008 R2 / RHEL 5 [#9261](https://github.com/chef/chef/pull/9261) ([tas50](https://github.com/tas50)) <!-- 16.0.20 -->
