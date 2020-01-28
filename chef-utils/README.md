@@ -153,16 +153,34 @@ Architecture Helpers allow you to determine the processor architecture of your n
 
 * `sanitized_path`
 
+## Documentation for Cookbook library authors
+
+To use the helpers in a class or module in a cookbook library file you can include the ChefUtils DSL:
+
+```ruby
+module MyHelper
+  include ChefUtils # or any individual module with DSL methods in it
+
+  def do_something
+    puts "RHEL" if rhel?
+  end
+
+  extend self
+end
+```
+
+Now you can include MyHelper in another class/module, or you can call MyHelper.do_something directly.
+
 ## Documentation for Software Developers
 
 The design of the DSL helper libraries in this gem are designed around the Chef Infra Client use cases. Most of the helpers are
-accessible through the Chef DSL directly via the `ChefUtils::DSL` module. They are also available via class method calls on
+accessible through the Chef DSL directly via the `ChefUtils` module. They are also available via class method calls on
 the ChefUtils module directly (e.g. `ChefUtils.debian?`). For that to be possible there is Chef Infra Client specific wiring in
 the `ChefUtils::Internal` class allowing the helpers to access the `Chef.run_context` global values. This allows them to be
 used from library helpers in cookbooks inside Chef Infra Client.
 
 For external use in other gems, this automatic wiring will not work correctly, and so it will not generally be possible to
-call helpers off of the `ChefUtils` class (somee exceptions that do not require a node-like object or a train connection will
+call helpers off of the `ChefUtils` class (some exceptions that do not require a node-like object or a train connection will
 may still work). For use in other gems you should create your own module and mixin the helper class. If you have a node
 method in your class/module then that method will be used.
 
@@ -170,7 +188,7 @@ You can wire up a module which implements the Chef DSL with your own wiring usin
 
 ```ruby
 module MyDSL
-  include ChefUtils::DSL # or any individual module with DSL methods in it
+  include ChefUtils # or any individual module with DSL methods in it
 
   private
 
