@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.7.33 -->
+## [v15.7.33](https://github.com/chef/chef/tree/v15.7.33) (2020-01-28)
+
+#### Merged Pull Requests
+- Fixes all notarization issues [#9252](https://github.com/chef/chef/pull/9252) ([jonsmorrow](https://github.com/jonsmorrow))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.7.32 -->
+### Changes not yet released to stable channel
+
+#### Merged Pull Requests
+- Fixes all notarization issues [#9252](https://github.com/chef/chef/pull/9252) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 15.7.33 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
