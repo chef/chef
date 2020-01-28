@@ -143,7 +143,7 @@ class Chef::EncryptedDataBagItem
       end
 
       def self.encryptor_keys
-        %w{ encrypted_data iv version cipher auth_tag }
+        %w{ auth_tag cipher encrypted_data iv version }
       end
     end
   end
