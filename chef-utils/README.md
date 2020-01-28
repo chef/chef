@@ -166,7 +166,6 @@ module MyHelper
   end
 
   extend self
-
 end
 ```
 
