@@ -39,6 +39,10 @@ class Chef
       attr_accessor :config_template
       attr_accessor :config_path
 
+      # @api private
+      # @return [String] the major.minor of the net-tools version as a string
+      attr_accessor :ifconfig_version
+
       def initialize(new_resource, run_context)
         super(new_resource, run_context)
         @config_template = nil
@@ -54,15 +58,20 @@ class Chef
         @ifconfig_version = nil
 
         @net_tools_version = shell_out("ifconfig", "--version")
+        @net_tools_version.stdout.each_line do |line|
+          if line =~ /^net-tools (\d+\.\d+)/
+            @ifconfig_version = line.match(/^net-tools (\d+\.\d+)/)[1]
+          end
+        end
         @net_tools_version.stderr.each_line do |line|
-          if line =~ /^net-tools (\d+.\d+)/
-            @ifconfig_version = line.match(/^net-tools (\d+.\d+)/)[1]
+          if line =~ /^net-tools (\d+\.\d+)/
+            @ifconfig_version = line.match(/^net-tools (\d+\.\d+)/)[1]
           end
         end
 
         if @ifconfig_version.nil?
           raise "net-tools not found - this is required for ifconfig"
-        elsif @ifconfig_version.to_f < 2.0
+        elsif @ifconfig_version.to_i < 2
           # Example output for 1.60 is as follows: (sanitized but format intact)
           # eth0      Link encap:Ethernet  HWaddr 00:00:00:00:00:00
           #           inet addr:192.168.1.1  Bcast:192.168.0.1  Mask:255.255.248.0
@@ -99,7 +108,7 @@ class Chef
             current_resource.mtu(@interface["mtu"])
             current_resource.metric(@interface["metric"])
           end
-        elsif @ifconfig_version.to_f >= 2.0
+        elsif @ifconfig_version.to_i >= 2
           # Example output for 2.10-alpha is as follows: (sanitized but format intact)
           # eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
           #       inet 192.168.1.1  netmask 255.255.240.0  broadcast 192.168.0.1
