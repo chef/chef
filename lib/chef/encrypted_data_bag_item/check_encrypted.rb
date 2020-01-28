@@ -58,9 +58,9 @@ class Chef::EncryptedDataBagItem
 
       case data["version"]
         when 1
-          Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor.encryptor_keys.sort == data.keys.sort
+          %w{ cipher encrypted_data iv version } == data.keys.sort
         when 2
-          Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor.encryptor_keys.sort == data.keys.sort
+          %w{ cipher encrypted_data hmac iv version } == data.keys.sort
         when 3
           Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor.encryptor_keys.sort == data.keys.sort
         else

@@ -37,61 +37,33 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
 
   context "when the item is encrypted" do
 
-    let(:default_secret) { "abc123SECRET" }
-    let(:item_name) { "item_name" }
-    let(:raw_data) do
-      {
-        "id" => item_name,
-        "greeting" => "hello",
-        "nested" => {
-            "a1" => [1, 2, 3],
-            "a2" => { "b1" => true },
-        },
-    }
-    end
+    context "when the item version is unknown (perhaps a future version)" do
+      let(:data) { { "id" => "test1", "foo" => { "encrypted_data" => "zNry4rkhV55Oltzf38eyHc/DF9a3tg==\n", "iv" => "vN3s6sSQZPKisnCr\n", "auth_tag" => "wDDEXbEMk802jrzKdRKXFQ==\n", "version" => 4, "cipher" => "aes-256-gcm" } } }
 
-    let(:version) { 1 }
-    let(:encoded_data) do
-      Chef::Config[:data_bag_encrypt_version] = version
-      Chef::EncryptedDataBagItem.encrypt_data_bag_item(raw_data, default_secret)
-    end
-
-    it "does not detect encryption when the item version is unknown" do
-      # It shouldn't be possible for someone to normally encrypt an item with an unknown version - they would have to
-      # do something funky like encrypting it and then manually changing the version
-      modified_encoded_data = encoded_data
-      modified_encoded_data["greeting"]["version"] = 4
-      expect(tester.encrypted?(modified_encoded_data)).to eq(false)
+      it "detects the item is not encrypted" do
+        expect(tester.encrypted?(data)).to eq(false)
+      end
     end
 
     shared_examples_for "encryption detected" do
       it "detects encrypted data bag" do
-        expect( encryptor ).to receive(:encryptor_keys).at_least(:once).and_call_original
-        expect(tester.encrypted?(encoded_data)).to eq(true)
+        expect(tester.encrypted?(data)).to eq(true)
       end
     end
 
     context "when encryption version is 1" do
-      include_examples "encryption detected" do
-        let(:version) { 1 }
-        let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version1Encryptor }
-      end
+      let(:data) { { "id" => "test1", "foo" => { "encrypted_data" => "Vt21byoOCqjA3DGbQ/lc+xAB+Ku/56U1pD/D8jqALM4=\n", "iv" => "ZCOtnZide5/Su5DNBx+qRg==\n", "version" => 1, "cipher" => "aes-256-cbc" } } }
+      include_examples "encryption detected"
     end
 
     context "when encryption version is 2" do
-      include_examples "encryption detected" do
-        let(:version) { 2 }
-        let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version2Encryptor }
-      end
+      let(:data) { { "id" => "test1", "foo" => { "encrypted_data" => "58mIocj2ab0qyhciEVy87Jot3KwPQuWNitWrOQjGm3U=\n", "hmac" => "g0SuXbzs2bKt/EARFawbd26n4XkDAiLjsxcQS/EMKT8=\n", "iv" => "ynzwVUWIKzTOi+TaDaVRrA==\n", "version" => 2, "cipher" => "aes-256-cbc" } } }
+      include_examples "encryption detected"
     end
 
-    context "when encryption version is 3", :aes_256_gcm_only do
-      include_examples "encryption detected" do
-        let(:version) { 3 }
-        let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }
-      end
+    context "when encryption version is 3" do
+      let(:data) { { "id" => "test1", "foo" => { "encrypted_data" => "zNry4rkhV55Oltzf38eyHc/DF9a3tg==\n", "iv" => "vN3s6sSQZPKisnCr\n", "auth_tag" => "wDDEXbEMk802jrzKdRKXFQ==\n", "version" => 3, "cipher" => "aes-256-gcm" } } }
+      include_examples "encryption detected"
     end
-
   end
-
 end
