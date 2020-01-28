@@ -120,7 +120,7 @@ class Chef
 
       property :components, Array,
         description: "Package groupings, such as 'main' and 'stable'.",
-        default: lazy { [] }
+        default: lazy { [] }, default_description: "'main' if using a PPA repository."
 
       property :arch, [String, nil, FalseClass],
         description: "Constrain packages to a particular CPU architecture such as 'i386' or 'amd64'."
