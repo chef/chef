@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.24 -->
-## [v16.0.24](https://github.com/chef/chef/tree/v16.0.24) (2020-01-28)
+<!-- latest_release 16.0.25 -->
+## [v16.0.25](https://github.com/chef/chef/tree/v16.0.25) (2020-01-28)
 
 #### Merged Pull Requests
-- apt_repository: add a description for components when using a PPA [#9289](https://github.com/chef/chef/pull/9289) ([tas50](https://github.com/tas50))
+- Update knife status --long to use cloud attributes not ec2 specific attributes [#7882](https://github.com/chef/chef/pull/7882) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update knife status --long to use cloud attributes not ec2 specific attributes [#7882](https://github.com/chef/chef/pull/7882) ([tas50](https://github.com/tas50)) <!-- 16.0.25 -->
 - apt_repository: add a description for components when using a PPA [#9289](https://github.com/chef/chef/pull/9289) ([tas50](https://github.com/tas50)) <!-- 16.0.24 -->
 - Merge pull request #9291 from chef/lcg/chef-utils-doc-touchup [#9291](https://github.com/chef/chef/pull/9291) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.23 -->
 - Remove the sites-cookbooks dir from the cookbook_path default config [#9290](https://github.com/chef/chef/pull/9290) ([tas50](https://github.com/tas50)) <!-- 16.0.22 -->
