@@ -83,9 +83,7 @@ class Chef::EncryptedDataBagItem
       end
 
       #
-      # Returns the used encryption algorithm
-      #
-      # @return [String]
+      # @return [String] the used decryption algorithm
       #
       def algorithm
         AEAD_ALGORITHM

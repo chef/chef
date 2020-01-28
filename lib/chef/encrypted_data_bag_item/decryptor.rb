@@ -28,7 +28,6 @@ require_relative "assertions"
 
 class Chef::EncryptedDataBagItem
 
-  #=== Decryptor
   # For backwards compatibility, Chef implements decryption/deserialization for
   # older encrypted data bag item formats in addition to the current version.
   # Each decryption/deserialization strategy is implemented as a class in this
@@ -78,7 +77,9 @@ class Chef::EncryptedDataBagItem
         @key = key
       end
 
-      # Returns the used decryption algorithm
+      #
+      # @return [String] the used decryption algorithm
+      #
       def algorithm
         ALGORITHM
       end
@@ -173,6 +174,9 @@ class Chef::EncryptedDataBagItem
         super
       end
 
+      #
+      # @return [Boolean] is the hmac valid
+      #
       def validate_hmac!
         digest = OpenSSL::Digest.new("sha256")
         raw_hmac = OpenSSL::HMAC.digest(digest, key, @encrypted_data["encrypted_data"])
@@ -204,7 +208,7 @@ class Chef::EncryptedDataBagItem
         assert_aead_requirements_met!(algorithm)
       end
 
-      # Returns the used decryption algorithm
+      # @return [String] the used decryption algorithm
       def algorithm
         AEAD_ALGORITHM
       end

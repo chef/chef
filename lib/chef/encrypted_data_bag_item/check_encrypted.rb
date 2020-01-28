@@ -21,8 +21,13 @@ require_relative "encryptor"
 class Chef::EncryptedDataBagItem
   # Common code for checking if a data bag appears encrypted
   module CheckEncrypted
-
+    #
     # Tries to autodetect if the item's raw hash appears to be encrypted.
+    #
+    # @param [String] raw_data
+    #
+    # @return [Boolean]
+    #
     def encrypted?(raw_data)
       data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
       # Assume hashes containing only the "id" key are not encrypted.
@@ -34,10 +39,13 @@ class Chef::EncryptedDataBagItem
 
     private
 
+    #
     # Checks if data looks like it has been encrypted by
     # Chef::EncryptedDataBagItem::Encryptor::VersionXEncryptor. Returns
-    # true only when there is an exact match between the VersionXEncryptor
-    # keys and the hash's keys.
+    # true only when
+    #
+    # @return [Boolean] There is an exact match between the VersionXEncryptor keys and the hash's keys.
+    #
     def looks_like_encrypted?(data)
       return false unless data.is_a?(Hash) && data.key?("version")
 

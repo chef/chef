@@ -52,20 +52,10 @@ class Chef::EncryptedDataBagItem
   AEAD_ALGORITHM = "aes-256-gcm".freeze
 
   #
-  # === Synopsis
+  # EncryptedDataBagItem.new(hash, secret)
   #
-  #   EncryptedDataBagItem.new(hash, secret)
-  #
-  # === Args
-  #
-  # +enc_hash+::
-  #   The encrypted hash to be decrypted
-  # +secret+::
-  #   The raw secret key
-  #
-  # === Description
-  #
-  # Create a new encrypted data bag item for reading (decryption)
+  # @param [String] enc_hash The encrypted hash to be decrypted
+  # @param [String] secret The raw secret key
   #
   def initialize(enc_hash, secret)
     @enc_hash = enc_hash
@@ -85,6 +75,9 @@ class Chef::EncryptedDataBagItem
     raise ArgumentError, "assignment not supported for #{self.class}"
   end
 
+  #
+  # @return Hash
+  #
   def to_h
     @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
   end
@@ -103,24 +96,13 @@ class Chef::EncryptedDataBagItem
   end
 
   #
-  # === Synopsis
-  #
-  #   EncryptedDataBagItem.load(data_bag, name, secret = nil)
-  #
-  # === Args
-  #
-  # +data_bag+::
-  #   The name of the data bag to fetch
-  # +name+::
-  #   The name of the data bag item to fetch
-  # +secret+::
-  #   The raw secret key. If the +secret+ is nil, the value of the file at
-  #   +Chef::Config[:encrypted_data_bag_secret]+ is loaded. See +load_secret+
-  #   for more information.
-  #
-  # === Description
-  #
   # Loads and decrypts the data bag item with the given name.
+  #
+  # @see Chef::EncryptedDataBagItem.load_secret
+  #
+  # @param [<Type>] data_bag The name of the data bag to fetch
+  # @param [<Type>] name The name of the data bag item to fetch
+  # @param [<Type>] secret The raw secret key. If the `secret` is nil, the value of the file at `Chef::Config[:encrypted_data_bag_secret]` is loaded.
   #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
@@ -128,6 +110,9 @@ class Chef::EncryptedDataBagItem
     new(raw_hash, secret)
   end
 
+  #
+  # @param [String] path Path to the encrypted data bag secret
+  #
   def self.load_secret(path = nil)
     path ||= Chef::Config[:encrypted_data_bag_secret]
     unless path
