@@ -24,17 +24,24 @@ class Chef::EncryptedDataBagItem
     #
     # Tries to autodetect if the item's raw hash appears to be encrypted.
     #
-    # @param [String] raw_data
+    # @param [Hash] raw_data The raw encrypted data bag hash
     #
     # @return [Boolean]
     #
     def encrypted?(raw_data)
-      data = raw_data.reject { |k, _| k == "id" } # Remove the "id" key.
+      data = raw_data
+
+      data.delete("id") # Remove the "id" key.
+
       # Assume hashes containing only the "id" key are not encrypted.
-      # Otherwise, remove the keys that don't appear to be encrypted and compare
-      # the result with the hash. If some entry has been removed, then some entry
-      # doesn't appear to be encrypted and we assume the entire hash is not encrypted.
-      data.empty? ? false : data.reject { |_, v| !looks_like_encrypted?(v) } == data
+      return false if data.empty?
+
+      # return false if any of the keys don't appear to be encrypted
+      data.each_value do |v|
+        return false unless looks_like_encrypted?(v)
+      end
+
+      return true
     end
 
     private
