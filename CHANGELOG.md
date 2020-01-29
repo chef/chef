@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.27 -->
-## [v16.0.27](https://github.com/chef/chef/tree/v16.0.27) (2020-01-28)
+<!-- latest_release 16.0.28 -->
+## [v16.0.28](https://github.com/chef/chef/tree/v16.0.28) (2020-01-29)
 
 #### Merged Pull Requests
-- debian 10 ifconfig fix [#9294](https://github.com/chef/chef/pull/9294) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.28 -->
 - debian 10 ifconfig fix [#9294](https://github.com/chef/chef/pull/9294) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.27 -->
 - Remove DK wording from knife warning [#9293](https://github.com/chef/chef/pull/9293) ([tas50](https://github.com/tas50)) <!-- 16.0.26 -->
 - Update knife status --long to use cloud attributes not ec2 specific attributes [#7882](https://github.com/chef/chef/pull/7882) ([tas50](https://github.com/tas50)) <!-- 16.0.25 -->
