@@ -1,0 +1,91 @@
+#
+# Author:: Ashwini Nehate (<anehate@chef.io>)
+# Copyright:: Copyright 2019-2020, Chef Software, Inc.
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require "spec_helper"
+require "functional/resource/base"
+require "chef/mixin/powershell_out"
+
+describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
+  include Chef::Mixin::PowershellOut
+  before(:all) {
+    powershell_out!("Install-Module -Name cSecurityOptions -Force") if powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+  }
+
+  let(:id) { "MaximumPasswordAge" }
+  let(:secvalue) { "30" }
+  let(:windows_test_run_context) do
+    node = Chef::Node.new
+    node.consume_external_attrs(OHAI_SYSTEM.data, {}) # node[:languages][:powershell][:version]
+    node.automatic["os"] = "windows"
+    node.automatic["platform"] = "windows"
+    node.automatic["platform_version"] = "6.1"
+    node.automatic["kernel"][:machine] = :x86_64 # Only 64-bit architecture is supported
+    empty_events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, empty_events)
+  end
+
+  subject do
+    new_resource = Chef::Resource::WindowsSecurityPolicy.new(id, windows_test_run_context)
+    new_resource.id = id
+    new_resource.secvalue = secvalue
+    new_resource
+  end
+
+  describe "Set MaximumPasswordAge Policy" do
+    after {
+      subject.secvalue("60")
+      subject.run_action(:set)
+    }
+
+    it "should set MaximumPasswordAge to 30" do
+      subject.secvalue("30")
+      subject.run_action(:set)
+      expect(subject).to be_updated_by_last_action
+    end
+
+    it "should be idempotent" do
+      subject.run_action(:set)
+      subject.run_action(:set)
+      expect(subject).not_to be_updated_by_last_action
+    end
+  end
+
+  describe "secoption and id: " do
+    it "accepts 'MinimumPasswordAge', 'MinimumPasswordAge', 'MaximumPasswordAge', 'MinimumPasswordLength', 'PasswordComplexity', 'PasswordHistorySize', 'LockoutBadCount', 'RequireLogonToChangePassword', 'ForceLogoffWhenHourExpire', 'NewAdministratorName', 'NewGuestName', 'ClearTextPassword', 'LSAAnonymousNameLookup', 'EnableAdminAccount', 'EnableGuestAccount' " do
+      expect { subject.id("MinimumPasswordAge") }.not_to raise_error
+      expect { subject.id("MaximumPasswordAge") }.not_to raise_error
+      expect { subject.id("MinimumPasswordLength") }.not_to raise_error
+      expect { subject.id("PasswordComplexity") }.not_to raise_error
+      expect { subject.id("PasswordHistorySize") }.not_to raise_error
+      expect { subject.id("LockoutBadCount") }.not_to raise_error
+      expect { subject.id("RequireLogonToChangePassword") }.not_to raise_error
+      expect { subject.id("ForceLogoffWhenHourExpire") }.not_to raise_error
+      expect { subject.id("NewAdministratorName") }.not_to raise_error
+      expect { subject.id("NewGuestName") }.not_to raise_error
+      expect { subject.id("ClearTextPassword") }.not_to raise_error
+      expect { subject.id("LSAAnonymousNameLookup") }.not_to raise_error
+      expect { subject.id("EnableAdminAccount") }.not_to raise_error
+      expect { subject.id("EnableGuestAccount") }.not_to raise_error
+    end
+
+    it "rejects any other option" do
+      expect { subject.id "XYZ" }.to raise_error(ArgumentError)
+      expect { subject.secoption "ABC" }.to raise_error(ArgumentError)
+    end
+  end
+end
