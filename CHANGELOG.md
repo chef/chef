@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.29 -->
-## [v16.0.29](https://github.com/chef/chef/tree/v16.0.29) (2020-01-29)
+<!-- latest_release 16.0.30 -->
+## [v16.0.30](https://github.com/chef/chef/tree/v16.0.30) (2020-01-29)
 
 #### Merged Pull Requests
-- Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato))
+- add bk testing against merge commit [#9296](https://github.com/chef/chef/pull/9296) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- add bk testing against merge commit [#9296](https://github.com/chef/chef/pull/9296) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.30 -->
 - Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato)) <!-- 16.0.29 -->
 - Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.28 -->
 - debian 10 ifconfig fix [#9294](https://github.com/chef/chef/pull/9294) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.27 -->
