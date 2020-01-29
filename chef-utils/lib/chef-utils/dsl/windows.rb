@@ -20,6 +20,8 @@ require_relative "../internal"
 module ChefUtils
   module DSL
     module Windows
+      require "chef-utils/version_string"
+
       include Internal
 
       # Determine if the current node is Windows Server Core.
@@ -50,6 +52,26 @@ module ChefUtils
       #
       def windows_server?(node = __getnode)
         node["kernel"]["product_type"] == "Server"
+      end
+
+      # Determine the current Windows NT version. The NT version often differs from the marketing version, but offers a good way to find desktop and server releases that are based on the same codebase. IE: NT 6.3 is Windows 8.1 and Windows 2012 R2.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [ChefUtils::VersionString]
+      #
+      def windows_nt_version(node = __getnode)
+        ChefUtils::VersionString.new(node["os_version"])
+      end
+
+      # Determine the installed version of PowerShell
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [ChefUtils::VersionString]
+      #
+      def powershell_version(node = __getnode)
+        ChefUtils::VersionString.new(node["languages"]["powershell"]["version"])
       end
 
       extend self
