@@ -3,8 +3,8 @@
 #
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
-override :rubygems, version: "3.0.3" # rubygems ships its own bundler which may differ from bundler defined below and then we get double bundler which results in performance issues / CLI warnings. Make sure these versions match before bumping either.
-override :bundler, version: "1.17.2" # currently pinned to what ships in Ruby to prevent double bundler
+override :rubygems, version: "3.1.2" # pin to what ships in the ruby version
+override :bundler, version: "2.1.2" # pin to what ships in the ruby version
 override "libarchive", version: "3.4.0"
 override "libffi", version: "3.2.1"
 override "libiconv", version: "1.15"
