@@ -23,7 +23,7 @@ if [[ "$BUILDKITE_BRANCH" != "master" ]]; then
   git config user.name "Your Name"
   master=$(git show-ref -s --abbrev origin/master)
   pr_head=$(git show-ref -s --abbrev HEAD)
-  github="https://github.com/chef/automate/commit/"
+  github="https://github.com/chef/chef/commit/"
   if git rebase origin/master >/dev/null; then
     buildkite-agent annotate --style success --context "rebase-pr-branch-${master}" \
       "Rebased onto master ([${master}](${github}${master}))."
