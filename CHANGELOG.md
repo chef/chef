@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.28 -->
-## [v16.0.28](https://github.com/chef/chef/tree/v16.0.28) (2020-01-29)
+<!-- latest_release 16.0.29 -->
+## [v16.0.29](https://github.com/chef/chef/tree/v16.0.29) (2020-01-29)
 
 #### Merged Pull Requests
-- Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato)) <!-- 16.0.29 -->
 - Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.28 -->
 - debian 10 ifconfig fix [#9294](https://github.com/chef/chef/pull/9294) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.27 -->
 - Remove DK wording from knife warning [#9293](https://github.com/chef/chef/pull/9293) ([tas50](https://github.com/tas50)) <!-- 16.0.26 -->
