@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.31 -->
-## [v16.0.31](https://github.com/chef/chef/tree/v16.0.31) (2020-01-30)
+<!-- latest_release 16.0.32 -->
+## [v16.0.32](https://github.com/chef/chef/tree/v16.0.32) (2020-01-30)
 
 #### Merged Pull Requests
-- Add windows_nt_version and powershell_version helpers to chef-utils [#9297](https://github.com/chef/chef/pull/9297) ([tas50](https://github.com/tas50))
+- declare_resource.rb: consistently use `/x/y.txt` [#9273](https://github.com/chef/chef/pull/9273) ([michel-slm](https://github.com/michel-slm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- declare_resource.rb: consistently use `/x/y.txt` [#9273](https://github.com/chef/chef/pull/9273) ([michel-slm](https://github.com/michel-slm)) <!-- 16.0.32 -->
 - Add windows_nt_version and powershell_version helpers to chef-utils [#9297](https://github.com/chef/chef/pull/9297) ([tas50](https://github.com/tas50)) <!-- 16.0.31 -->
 - add bk testing against merge commit [#9296](https://github.com/chef/chef/pull/9296) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.30 -->
 - Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato)) <!-- 16.0.29 -->
