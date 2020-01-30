@@ -279,8 +279,6 @@ class Chef
 
         if CHEF_ORGANIZATION_MANAGEMENT.include?(args[0])
           list_commands("CHEF ORGANIZATION MANAGEMENT")
-        elsif OPSCODE_HOSTED_CHEF_ACCESS_CONTROL.include?(args[0])
-          list_commands("OPSCODE HOSTED CHEF ACCESS CONTROL")
         elsif category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
