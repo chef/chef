@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.30 -->
-## [v16.0.30](https://github.com/chef/chef/tree/v16.0.30) (2020-01-29)
+<!-- latest_release 16.0.31 -->
+## [v16.0.31](https://github.com/chef/chef/tree/v16.0.31) (2020-01-30)
 
 #### Merged Pull Requests
-- add bk testing against merge commit [#9296](https://github.com/chef/chef/pull/9296) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add windows_nt_version and powershell_version helpers to chef-utils [#9297](https://github.com/chef/chef/pull/9297) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add windows_nt_version and powershell_version helpers to chef-utils [#9297](https://github.com/chef/chef/pull/9297) ([tas50](https://github.com/tas50)) <!-- 16.0.31 -->
 - add bk testing against merge commit [#9296](https://github.com/chef/chef/pull/9296) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.30 -->
 - Fix fuzzy node search to work when the search type is a string rather than a symbol [#9287](https://github.com/chef/chef/pull/9287) ([mimato](https://github.com/mimato)) <!-- 16.0.29 -->
 - Add ruby 2.7 expeditor testing [#9271](https://github.com/chef/chef/pull/9271) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.28 -->
