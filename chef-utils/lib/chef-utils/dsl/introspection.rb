@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018-2019, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -96,6 +96,17 @@ module ChefUtils
           file_exist?("#{load_path}/systemd/system/#{svc_name}")
         end
       end
+
+      # Determine if the current node includes the given recipe name.
+      #
+      # @param [String] recipe_name
+      #
+      # @return [Boolean]
+      #
+      def includes_recipe?(recipe_name, node = __getnode)
+        node.recipe?(recipe_name)
+      end
+      alias_method :include_recipe?, :includes_recipe?
 
       extend self
     end
