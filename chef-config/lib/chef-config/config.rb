@@ -464,7 +464,7 @@ module ChefConfig
       # When set to a String, Chef Zero disables multitenant support.  This is
       # what you want when using Chef Zero to serve a single Chef Repo. Setting
       # this to `false` enables multi-tenant.
-      default :single_org, ChefConfig::Dist::SHORT
+      default :single_org, "chef"
 
       # Whether Chef Zero should operate in a mode analogous to OSS Chef Server
       # 11 (true) or Chef Server 12 (false). Chef Zero can still serve
