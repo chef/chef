@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.36 -->
-## [v16.0.36](https://github.com/chef/chef/tree/v16.0.36) (2020-01-30)
+<!-- latest_release 16.0.37 -->
+## [v16.0.37](https://github.com/chef/chef/tree/v16.0.37) (2020-01-30)
 
 #### Merged Pull Requests
-- chef-utils: add which/train_helpers/path_sanity to the DSL [#9303](https://github.com/chef/chef/pull/9303) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add chef-sugar include_recipe? helper [#9304](https://github.com/chef/chef/pull/9304) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add chef-sugar include_recipe? helper [#9304](https://github.com/chef/chef/pull/9304) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.37 -->
 - chef-utils: add which/train_helpers/path_sanity to the DSL [#9303](https://github.com/chef/chef/pull/9303) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.36 -->
 - Add cloud helpers from chef-sugar [#9302](https://github.com/chef/chef/pull/9302) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.35 -->
 - Move knife-acl gem commands into chef in their own namespaces [#9292](https://github.com/chef/chef/pull/9292) ([tas50](https://github.com/tas50)) <!-- 16.0.34 -->
