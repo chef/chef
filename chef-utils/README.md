@@ -133,6 +133,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `systemd?` - if the init system is systemd
 * `kitchen?` - if ENV['TEST_KITCHEN'] is set
 * `ci?` - if ENV['CI'] is set
+* `include_recipe?(recipe_name)` - if the `recipe_name` is in the run list, the expanded run list, or has been `include_recipe`'d.
 
 ### Service Helpers
 
