@@ -17,13 +17,15 @@
 
 require "spec_helper"
 
+WINDOWS_BOOL_HELPERS = %i{windows_server_core? windows_server? windows_workstation?}.freeze
+
 def windows_reports_true_for(*args)
   args.each do |method|
     it "reports true for #{method}" do
       expect(described_class.send(method, node)).to be true
     end
   end
-  (WINDOWS_HELPERS - args).each do |method|
+  (WINDOWS_BOOL_HELPERS - args).each do |method|
     it "reports false for #{method}" do
       expect(described_class.send(method, node)).to be false
     end
@@ -43,21 +45,39 @@ RSpec.describe ChefUtils::DSL::Windows do
     end
   end
 
-  context "on Windows Server Core" do
-    let(:node) { { "kernel" => { "server_core" => true } } }
+  context "windows boolean helpers" do
+    context "on Windows Server Core" do
+      let(:node) { { "kernel" => { "server_core" => true } } }
 
-    windows_reports_true_for(:windows_server_core?)
+      windows_reports_true_for(:windows_server_core?)
+    end
+
+    context "on Windows Workstation" do
+      let(:node) { { "kernel" => { "product_type" => "Workstation" } } }
+
+      windows_reports_true_for(:windows_workstation?)
+    end
+
+    context "on Windows Server" do
+      let(:node) { { "kernel" => { "product_type" => "Server" } } }
+
+      windows_reports_true_for(:windows_server?)
+    end
   end
 
-  context "on Windows Workstation" do
-    let(:node) { { "kernel" => { "product_type" => "Workstation" } } }
-
-    windows_reports_true_for(:windows_workstation?)
+  context "#windows_nt_version on Windows Server 2012 R2" do
+    let(:node) { { "os_version" => "6.3.9600" } }
+    it "it returns a ChefUtils::VersionString object with 6.3.9600" do
+      expect(described_class.send(:windows_nt_version, node)).to eq "6.3.9600"
+      expect(described_class.send(:windows_nt_version, node)).to be_a_kind_of ChefUtils::VersionString
+    end
   end
 
-  context "on Windows Server" do
-    let(:node) { { "kernel" => { "product_type" => "Server" } } }
-
-    windows_reports_true_for(:windows_server?)
+  context "#powershell_version on Windows Server 2012 R2" do
+    let(:node) { { "languages" => { "powershell" => { "version" => "4.0" } } } }
+    it "it returns a ChefUtils::VersionString object with 4.0" do
+      expect(described_class.send(:powershell_version, node)).to eq "4.0"
+      expect(described_class.send(:powershell_version, node)).to be_a_kind_of ChefUtils::VersionString
+    end
   end
 end
