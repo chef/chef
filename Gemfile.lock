@@ -27,12 +27,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.0.34)
+    chef (16.0.35)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 16.0.34)
-      chef-utils (= 16.0.34)
+      chef-config (= 16.0.35)
+      chef-utils (= 16.0.35)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -59,12 +59,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.0.34-universal-mingw32)
+    chef (16.0.35-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 16.0.34)
-      chef-utils (= 16.0.34)
+      chef-config (= 16.0.35)
+      chef-utils (= 16.0.35)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -107,15 +107,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.0.34)
-      chef (= 16.0.34)
+    chef-bin (16.0.35)
+      chef (= 16.0.35)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.0.34)
+    chef-config (16.0.35)
       addressable
-      chef-utils (= 16.0.34)
+      chef-utils (= 16.0.35)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -124,7 +124,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.0.34)
+    chef-utils (16.0.35)
 
 GEM
   remote: https://rubygems.org/
@@ -416,7 +416,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (2.1.4)
+    win32-service (2.1.5)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
