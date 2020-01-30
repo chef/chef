@@ -76,19 +76,19 @@ module ChefConfig
 
     # On *nix, /etc/chef
     def self.etc_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows? ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+      path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
       PathHelper.cleanpath(path)
     end
 
     # On *nix, /var/chef
     def self.var_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows? ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
+      path = is_windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
       PathHelper.cleanpath(path)
     end
 
     # On *nix, the root of /var/, used to test if we can create and write in /var/chef
     def self.var_root_dir(is_windows = ChefUtils.windows?)
-      path = is_windows? ? c_chef_dir : "/var"
+      path = is_windows ? c_chef_dir : "/var"
       PathHelper.cleanpath(path)
     end
 
