@@ -3,6 +3,7 @@ require "chef-utils"
 # FIXME: dynamically generate this for accuracy
 HELPER_MODULES = [
   ChefUtils::DSL::Architecture,
+  ChefUtils::DSL::Cloud,
   ChefUtils::DSL::Introspection,
   ChefUtils::DSL::OS,
   ChefUtils::DSL::PathSanity,
@@ -19,6 +20,7 @@ PLATFORM_HELPERS = (ChefUtils::DSL::Platform.methods - Module.methods).freeze
 PLATFORM_FAMILY_HELPERS = (ChefUtils::DSL::PlatformFamily.methods - Module.methods).freeze
 INTROSPECTION_HELPERS = (ChefUtils::DSL::Introspection.methods - Module.methods).freeze
 WINDOWS_HELPERS = (ChefUtils::DSL::Windows.methods - Module.methods).freeze
+CLOUD_HELPERS = (ChefUtils::DSL::Cloud.methods - Module.methods).freeze
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

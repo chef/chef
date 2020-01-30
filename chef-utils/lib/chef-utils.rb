@@ -16,6 +16,7 @@
 #
 
 require_relative "chef-utils/dsl/architecture"
+require_relative "chef-utils/dsl/cloud"
 require_relative "chef-utils/dsl/introspection"
 require_relative "chef-utils/dsl/os"
 require_relative "chef-utils/dsl/path_sanity"
@@ -30,10 +31,11 @@ require_relative "chef-utils/mash"
 # This is the Chef Infra Client DSL, not everytihng needs to go in here
 module ChefUtils
   include ChefUtils::DSL::Architecture
-  include ChefUtils::DSL::OS
-  include ChefUtils::DSL::PlatformFamily
-  include ChefUtils::DSL::Platform
+  include ChefUtils::DSL::Cloud
   include ChefUtils::DSL::Introspection
+  include ChefUtils::DSL::OS
+  include ChefUtils::DSL::Platform
+  include ChefUtils::DSL::PlatformFamily
   include ChefUtils::DSL::Windows
   # FIXME: include ChefUtils::DSL::Which in Chef 16.0
   # FIXME: include ChefUtils::DSL::PathSanity in Chef 16.0
