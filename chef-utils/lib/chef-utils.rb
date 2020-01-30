@@ -34,12 +34,12 @@ module ChefUtils
   include ChefUtils::DSL::Cloud
   include ChefUtils::DSL::Introspection
   include ChefUtils::DSL::OS
+  include ChefUtils::DSL::PathSanity
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::PlatformFamily
+  include ChefUtils::DSL::TrainHelpers
+  include ChefUtils::DSL::Which
   include ChefUtils::DSL::Windows
-  # FIXME: include ChefUtils::DSL::Which in Chef 16.0
-  # FIXME: include ChefUtils::DSL::PathSanity in Chef 16.0
-  # FIXME: include ChefUtils::DSL::TrainHelpers in Chef 16.0
   # ChefUtils::DSL::Service is deliberately excluded
 
   CANARY = 1 # used as a guard for requires
