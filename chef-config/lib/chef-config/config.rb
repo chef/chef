@@ -75,7 +75,6 @@ module ChefConfig
     end
 
     # On *nix, /etc/chef
-
     def self.etc_chef_dir(is_windows = ChefUtils.windows?)
       path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
       PathHelper.cleanpath(path)
@@ -97,6 +96,12 @@ module ChefConfig
     def self.c_chef_dir
       drive = windows_installation_drive || "C:"
       path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.cleanpath(path)
+    end
+
+    def self.c_opscode_dir
+      drive = windows_installation_drive || "C:"
+      path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
       PathHelper.cleanpath(path)
     end
 
