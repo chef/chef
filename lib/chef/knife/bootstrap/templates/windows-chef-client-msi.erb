@@ -120,11 +120,11 @@ If !ERRORLEVEL!==0 (
 )
 
 :install
-@rem If user has provided the custom installation command for <%= Chef::Dist::CLIENT %> then execute it
+@rem If user has provided the custom installation command, execute it
 <% if @chef_config[:knife][:bootstrap_install_command] %>
   <%= @chef_config[:knife][:bootstrap_install_command] %>
 <% else %>
-  @rem Install Chef using <%= Chef::Dist::CLIENT %> MSI installer
+  @rem Install Chef using the MSI installer
 
   @set "LOCAL_DESTINATION_MSI_PATH=<%= local_download_path %>"
   @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\<%= Chef::Dist::CLIENT %>-msi%RANDOM%.log"
