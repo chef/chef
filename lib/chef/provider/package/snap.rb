@@ -45,6 +45,7 @@ class Chef
             a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
+          raise Chef::Exceptions::Package, "You can not specify multiple packages via an array when also specifying pinned versions" if is_versions_passed?
 
           super
         end
@@ -65,9 +66,7 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            names_with_version(new_version_array).each do |pkg, version|
-              install_snaps(pkg, version)
-            end
+            install_snaps(new_resource.package_name, new_resource.version)
           end
         end
 
@@ -75,14 +74,12 @@ class Chef
           if new_resource.source
             install_snap_from_source(names, new_resource.source)
           else
-            names_with_version(new_version_array).each do |pkg, version|
-              update_snaps(pkg, version)
-            end
+            update_snaps(new_resource.package_name, new_resource.version)
           end
         end
 
         def remove_package(names, _versions)
-          names.each { |pkg| uninstall_snaps(pkg) }
+          uninstall_snaps(names)
         end
 
         alias purge_package remove_package
@@ -100,15 +97,6 @@ class Chef
                                         end
 
           @available_version[index]
-        end
-
-        # Helper to construct Hash of names-to-versions, requested on the new_resource.
-        # If new_resource.version is nil, then all values will be nil.
-        #
-        # @return [Hash] Mapping of requested names to versions
-        def names_with_version(versions)
-          versions ||= new_resource.package_name.map { nil }
-          Hash[*Array(new_resource.package_name).zip(versions).flatten]
         end
 
         # @return [Array<Version>]
@@ -226,20 +214,20 @@ class Chef
           response.error!
         end
 
-        def install_snaps(snap_name, version)
-          response = post_snaps(snap_name, "install", new_resource.channel, new_resource.options, version)
+        def install_snaps(snap_names, version)
+          response = post_snaps(snap_names, "install", new_resource.channel, new_resource.options, version)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
-        def update_snaps(snap_name, version)
-          response = post_snaps(snap_name, "refresh", new_resource.channel, new_resource.options, version)
+        def update_snaps(snap_names, version)
+          response = post_snaps(snap_names, "refresh", new_resource.channel, new_resource.options, version)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
 
-        def uninstall_snaps(snap_name)
-          response = post_snaps(snap_name, "remove", new_resource.channel, new_resource.options)
+        def uninstall_snaps(snap_names)
+          response = post_snaps(snap_names, "remove", new_resource.channel, new_resource.options)
           id = get_id_from_async_response(response)
           wait_for_completion(id)
         end
@@ -288,12 +276,17 @@ class Chef
         #   @param options [Array] An array of configuration Options
         #   @param version [String] A snap package version
         #   @param revision [String] A revision/version
-        def generate_snap_json(action, channel, options, version, revision = nil)
+        def generate_snap_json(snap_names, action, channel, options, version, revision = nil)
           request = {
-              "action" => action,
+            "action" => action,
           }
-          if %w{install refresh switch}.include?(action)
-            request["channel"] = version ? "#{version}/#{channel}" : channel
+
+          if snap_names.is_a?(String)
+            if %w{install refresh switch}.include?(action)
+              request["channel"] = version ? "#{version}/#{channel}" : channel
+            end
+          else
+            request["snaps"] = snap_names
           end
 
           # No defensive handling of params
@@ -311,15 +304,16 @@ class Chef
 
         # Post to the snap api to update snaps
         #
-        #   @param snap_name [String] The snap package name to install
+        #   @param snap_names [String] or [Array] The snap package name to install
         #   @param action [String] The action.  install, refresh, remove, revert, enable, disable or switch
         #   @param channel [String] The release channel.  Ex. stable
         #   @param options [Array] An array of configuration Options
         #   @param version [String] A snap package version
         #   @param revision [String] A revision/version
-        def post_snaps(snap_name, action, channel, options, version = nil, revision = nil)
-          json = generate_snap_json(action, channel, options, version, revision = nil)
-          call_snap_api("POST", "/v2/snaps/#{snap_name}", json)
+        def post_snaps(snap_names, action, channel, options, version = nil, revision = nil)
+          json = generate_snap_json(snap_names, action, channel, options, version, revision = nil)
+          api_url = snap_names.is_a?(String) ? "/v2/snaps/#{snap_names}" : "/v2/snaps"
+          call_snap_api("POST", api_url, json)
         end
 
         def get_package_version(name, channel, new_version)
@@ -334,7 +328,7 @@ class Chef
           channels_list = json["result"][0]["channels"]
           matched_channel = channels_list["#{new_version}/#{channel}"]
           unless matched_channel
-            raise Chef::Exceptions::Package, "snap #{name} is not available on #{new_version}/#{channel}, but is available to install on the following\n\n#{available_versions(channels_list.keys)}"
+            raise Chef::Exceptions::Package, "snap #{name} is not available on #{new_version}/#{channel}, but is available to install on the following\n\n#{snap_package_versions(channels_list.keys)}"
           end
 
           matched_channel["version"]
@@ -380,13 +374,17 @@ class Chef
         # Helper to construct error message
         #
         # @return [String] a formatted error message
-        def available_versions(elements)
+        def snap_package_versions(elements)
           format = "%-8s %s"
           message = ""
           version_and_channel = elements.map { |element| element.split("/") }
           version_and_channel.unshift(%w{version channel})
           version_and_channel.map { |version_with_channel| message += "#{format % version_with_channel}\n" }
           message
+        end
+
+        def is_versions_passed?
+          new_resource.package_name.is_a?(Array) && !new_resource.version.nil?
         end
       end
     end

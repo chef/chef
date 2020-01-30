@@ -195,15 +195,30 @@ describe Chef::Provider::Package::Snap do
 
   describe Chef::Provider::Package::Snap do
 
-    it "should post the correct json" do
-      snap_names = ["hello"]
-      action = "install"
-      channel = "stable"
-      options = []
-      revision = nil
-      actual = provider.send(:generate_snap_json, action, channel, options, revision)
+    context "When installing single package" do
+      it "should post the correct json" do
+        snap_names = "hello"
+        action = "install"
+        channel = "stable"
+        options = []
+        revision = nil
+        actual = provider.send(:generate_snap_json, snap_names, action, channel, options, revision)
 
-      expect(actual).to eq("{\"action\":\"install\",\"channel\":\"stable\"}")
+        expect(actual).to eq("{\"action\":\"install\",\"channel\":\"stable\"}")
+      end
+    end
+
+    context "When installing multiple packages" do
+      it "should post the correct json" do
+        snap_names = %w{hello hello-world}
+        action = "install"
+        channel = "stable"
+        options = []
+        revision = nil
+        actual = provider.send(:generate_snap_json, snap_names, action, channel, options, revision)
+
+        expect(actual).to eq("{\"action\":\"install\",\"snaps\":[\"hello\",\"hello-world\"]}")
+      end
     end
   end
 
@@ -286,7 +301,7 @@ describe Chef::Provider::Package::Snap do
     describe "#action_remove" do
       context "When package is installed" do
         before do
-          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"remove\"}").and_return(async_result_success)
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps", "{\"action\":\"remove\",\"snaps\":[\"hello\"]}").and_return(async_result_success)
           allow(provider).to receive(:get_installed_package_version_by_name).and_return("2.10")
           provider.load_current_resource
         end
@@ -316,23 +331,34 @@ describe Chef::Provider::Package::Snap do
     end
 
     describe "when version is supplied" do
-      let(:package) { "kubectl" }
-      before do
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(kubectl_find_result)
-        allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"install\",\"channel\":\"1.6/stable\"}").and_return(async_result_success)
-      end
+      context "When installing single packages" do
+        let(:package) { "kubectl" }
+        before do
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("GET", "/v2/find?name=#{package}").and_return(kubectl_find_result)
+          allow_any_instance_of(Chef::Provider::Package::Snap).to receive(:call_snap_api).with("POST", "/v2/snaps/#{package}", "{\"action\":\"install\",\"channel\":\"[\\\"1.6\\\"]/stable\"}").and_return(async_result_success)
+        end
 
-      context "When valid package version passed" do
-        it "does not raise an exception" do
-          new_resource.version = "1.6"
-          expect { provider.run_action(:install) }.not_to raise_error
+        context "When valid package version passed" do
+          it "does not raise an exception" do
+            # new_resource.package_name = "kubectl"
+            new_resource.version = "1.6"
+            expect { provider.run_action(:install) }.not_to raise_error
+          end
+        end
+
+        context "When invalid package version passed" do
+          it "raises an exception" do
+            new_resource.version = "1.44"
+            expect { provider.run_action(:install) }.to raise_error
+          end
         end
       end
 
-      context "When invalid package version passed" do
+      context "When installing multiple packages" do
         it "raises an exception" do
-          new_resource.version = "1.44"
-          expect { provider.run_action(:install) }.to raise_error
+          new_resource.package_name = %w{hello hello-world}
+          new_resource.version = ["1.44", "1.33"]
+          expect { provider.run_action(:install) }.to raise_error("You can not install multipackages with pinned versions")
         end
       end
     end
