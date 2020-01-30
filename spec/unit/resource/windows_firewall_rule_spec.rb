@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::Resource::WindowsFirewallRule do
   let(:resource) { Chef::Resource::WindowsFirewallRule.new("rule") }
-  let(:provider) { resource.provider_for_action(:enable) }
+  let(:provider) { resource.provider_for_action(:create) }
 
   it "has a resource name of :windows_firewall_rule" do
     expect(resource.resource_name).to eql(:windows_firewall_rule)
