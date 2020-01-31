@@ -69,7 +69,7 @@ class Chef
       # @return [Chef::Resource] The resource
       #
       # @example
-      #   delete_resource!(:template, '/x/y.txy')
+      #   delete_resource!(:template, '/x/y.txt')
       #
       def delete_resource!(type, name, run_context: self.run_context)
         run_context.resource_collection.delete("#{type}[#{name}]").tap do |resource|
@@ -93,7 +93,7 @@ class Chef
       # @return [Chef::Resource] The resource
       #
       # @example
-      #   delete_resource(:template, '/x/y.txy')
+      #   delete_resource(:template, '/x/y.txt')
       #
       def delete_resource(type, name, run_context: self.run_context)
         delete_resource!(type, name, run_context: run_context)
@@ -114,7 +114,7 @@ class Chef
       # @return [Chef::Resource] The updated resource
       #
       # @example
-      #   edit_resource!(:template, '/x/y.txy') do
+      #   edit_resource!(:template, '/x/y.txt') do
       #     cookbook_name: cookbook_name
       #   end
       #
@@ -147,8 +147,8 @@ class Chef
       # @return [Chef::Resource] The updated or created resource
       #
       # @example
-      #   resource = edit_resource(:template, '/x/y.txy') do
-      #     source "y.txy.erb"
+      #   resource = edit_resource(:template, '/x/y.txt') do
+      #     source "y.txt.erb"
       #     variables {}
       #   end
       #   resource.variables.merge!({ home: "/home/klowns"  })
@@ -199,7 +199,7 @@ class Chef
       # @return [Chef::Resource] The updated resource
       #
       # @example
-      #   resource = find_resource!(:template, '/x/y.txy')
+      #   resource = find_resource!(:template, '/x/y.txt')
       #
       def find_resource!(type, name, run_context: self.run_context)
         raise ArgumentError, "find_resource! does not take a block" if block_given?
@@ -219,7 +219,7 @@ class Chef
       # @return [Chef::Resource] The updated resource
       #
       # @example
-      #   if ( find_resource(:template, '/x/y.txy') )
+      #   if ( find_resource(:template, '/x/y.txt') )
       #     # do something
       #   else
       #     # don't worry about the error
@@ -259,7 +259,7 @@ class Chef
       # @return [Chef::Resource] The new resource.
       #
       # @example
-      #   declare_resource(:file, '/x/y.txy', caller[0]) do
+      #   declare_resource(:file, '/x/y.txt', caller[0]) do
       #     action :delete
       #   end
       #   # Equivalent to
@@ -293,7 +293,7 @@ class Chef
       # @return [Chef::Resource] The new resource.
       #
       # @example
-      #   build_resource(:file, '/x/y.txy', caller[0]) do
+      #   build_resource(:file, '/x/y.txt', caller[0]) do
       #     action :delete
       #   end
       #
