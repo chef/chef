@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -97,6 +97,8 @@ class Chef
       rescue Chef::Exceptions::NoSuchAttribute
         nil
       end
+
+      alias :dig :read
 
       # non-autovivifying reader that throws an exception if the attribute does not exist
       def read!(*path)
