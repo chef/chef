@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.3 -->
-## [v15.8.3](https://github.com/chef/chef/tree/v15.8.3) (2020-01-31)
+<!-- latest_release 15.8.4 -->
+## [v15.8.4](https://github.com/chef/chef/tree/v15.8.4) (2020-01-31)
 
 #### Merged Pull Requests
-- debian 10 ifconfig fix [#9311](https://github.com/chef/chef/pull/9311) ([tas50](https://github.com/tas50))
+- Revert Dist value for chef-zero default org [#9309](https://github.com/chef/chef/pull/9309) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Revert Dist value for chef-zero default org [#9309](https://github.com/chef/chef/pull/9309) ([tas50](https://github.com/tas50)) <!-- 15.8.4 -->
 - debian 10 ifconfig fix [#9311](https://github.com/chef/chef/pull/9311) ([tas50](https://github.com/tas50)) <!-- 15.8.3 -->
 - Fix fuzzy node search to work when the search type is a string rather than a symbol [#9308](https://github.com/chef/chef/pull/9308) ([tas50](https://github.com/tas50)) <!-- 15.8.2 -->
 - declare_resource.rb: consistently use `/x/y.txt` [#9310](https://github.com/chef/chef/pull/9310) ([tas50](https://github.com/tas50)) <!-- 15.8.1 -->
