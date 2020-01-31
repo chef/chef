@@ -120,6 +120,19 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `s390x?`
 * `s390?`
 
+### Cloud Helpers
+
+* `cloud?` - if the node is running in any cloud, including internal ones
+* `ec2?` - if the node is running in ec2
+* `gce?` - if the node is running in gce
+* `rackspace?` - if the node is running in rackspace
+* `eucalyptus?` - if the node is running under eucalyptus
+* `linode?` - if the node is running in linode
+* `openstack?` - if the node is running under openstack
+* `azure?` - if the node is running in azure
+* `digital_ocean?` - if the node is running in digital ocean
+* `softlayer?` - if the node is running in softlayer
+
 ### Train Helpers
 
 **EXPERIMENTAL**: APIs may have breaking changes any time without warning
