@@ -233,11 +233,18 @@ describe Chef::Search::Query do
       end
     end
 
-    it "fuzzifies node searches when fuzz is set" do
+    it "fuzzifies node searches when fuzz is set and type is a symbol" do
       expect(rest).to receive(:get).with(
         "search/node?q=tags:*free.messi*%20OR%20roles:*free.messi*%20OR%20fqdn:*free.messi*%20OR%20addresses:*free.messi*%20OR%20policy_name:*free.messi*%20OR%20policy_group:*free.messi*&start=0&rows=#{default_rows}"
       ).and_return(response)
       query.search(:node, "free.messi", fuzz: true)
+    end
+
+    it "fuzzifies node searches when fuzz is set and type is a string" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=tags:*free.messi*%20OR%20roles:*free.messi*%20OR%20fqdn:*free.messi*%20OR%20addresses:*free.messi*%20OR%20policy_name:*free.messi*%20OR%20policy_group:*free.messi*&start=0&rows=#{default_rows}"
+      ).and_return(response)
+      query.search("node", "free.messi", fuzz: true)
     end
 
     it "does not fuzzify node searches when fuzz is not set" do
