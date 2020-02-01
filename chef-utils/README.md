@@ -135,14 +135,15 @@ Architecture Helpers allow you to determine the processor architecture of your n
 
 ### Virtualization Helpers
 
-* `kvm?` - if the node is a kvm guest
-* `lxc?` - if the node is an lxc guest
-* `parallels?`- if the node is a parallels guest
-* `vbox?` - if the node is a virtualbox guest
-* `vmware?` - if the node is a vmware guest
-* `openvz?` - if the node is an openvz guest
-* `virtual?` - if any of the above are true (guest of any detected virtualization system)
-* `physical?` - strictly the logical opposite of `virtual?`
+* `kvm?` - if the node is a kvm (guest or host)
+* `lxc?` - if the node is an lxc (guest or host)
+* `parallels?`- if the node is a parallels (guest or host)
+* `vbox?` - if the node is a virtualbox (guest or host)
+* `vmware?` - if the node is a vmware (guest or host)
+* `openvz?` - if the node is an openvz (guest or host)
+* `guest?` - if the node is detected as any kind of guest
+* `virtual_host?` - if the node is detected as being any kind of virtual host
+* `physical?` - strictly the logical opposite of `guest?`
 * `vagrant?` - attempts to identify the node as a vagrant guest (this check may be error prone)
 
 ### Train Helpers

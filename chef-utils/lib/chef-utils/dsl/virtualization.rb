@@ -94,11 +94,23 @@ module ChefUtils
       #
       # @return [Boolean]
       #
-      def virtual?(node = __getnode)
-        openvz?(node) || vmware?(node) || virtualbox?(node) || parallels?(node) || lxc?(node) || kvm?(node)
+      def guest?(node = __getnode)
+        node.dig("virtualization", "role") == "guest"
       end
 
-      # Determine if the current node is NOT running under any virutalization environment
+      alias_method :virtual?, :guest?
+
+      # Determine if the current node is running under any virutalization environment
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def virtual_host?(node = __getnode)
+        node.dig("virtualization", "role") == "host"
+      end
+
+      # Determine if the current node is NOT running under any virutalization environment (virtual hosts or just plain on metal)
       #
       # @param [Chef::Node] node
       #
