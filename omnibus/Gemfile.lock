@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: d642ae6fd57f4a74846e325fecadebb132069894
+  revision: 5baaf7a1d4ee66a9273e127c7e09ce0bb3b33d90
   branch: master
   specs:
-    omnibus (7.0.1)
+    omnibus (7.0.2)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -166,9 +166,9 @@ GEM
     erubis (2.7.0)
     faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.12.1)
-    ffi (1.12.1-x64-mingw32)
-    ffi (1.12.1-x86-mingw32)
+    ffi (1.12.2)
+    ffi (1.12.2-x64-mingw32)
+    ffi (1.12.2-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
