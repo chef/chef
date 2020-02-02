@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: d642ae6fd57f4a74846e325fecadebb132069894
+  revision: 5baaf7a1d4ee66a9273e127c7e09ce0bb3b33d90
   branch: master
   specs:
-    omnibus (7.0.1)
+    omnibus (7.0.2)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.267.0)
+    aws-partitions (1.269.0)
     aws-sdk-core (3.89.1)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -166,9 +166,9 @@ GEM
     erubis (2.7.0)
     faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
-    ffi (1.12.1)
-    ffi (1.12.1-x64-mingw32)
-    ffi (1.12.1-x86-mingw32)
+    ffi (1.12.2)
+    ffi (1.12.2-x64-mingw32)
+    ffi (1.12.2-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
@@ -226,7 +226,7 @@ GEM
     mixlib-versioning (1.2.12)
     molinillo (0.6.6)
     multi_json (1.14.1)
-    multipart-post (2.0.0)
+    multipart-post (2.1.1)
     necromancer (0.5.1)
     net-scp (2.0.0)
       net-ssh (>= 2.6.5, < 6.0.0)
@@ -257,17 +257,19 @@ GEM
     pastel (0.7.3)
       equatable (~> 0.6)
       tty-color (~> 0.5)
-    pedump (0.5.2)
+    pedump (0.5.4)
       awesome_print
       iostruct (>= 0.0.4)
-      multipart-post (~> 2.0.0)
+      multipart-post (>= 2.0.0)
       progressbar
+      rainbow
       zhexdump (>= 0.0.2)
     plist (3.5.0)
     progressbar (1.10.1)
     proxifier (1.0.3)
     public_suffix (4.0.3)
     rack (2.1.1)
+    rainbow (3.0.0)
     retryable (3.0.5)
     ruby-progressbar (1.10.1)
     rubyntlm (0.6.2)
