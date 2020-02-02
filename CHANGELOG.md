@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.39 -->
-## [v16.0.39](https://github.com/chef/chef/tree/v16.0.39) (2020-01-31)
+<!-- latest_release 16.0.40 -->
+## [v16.0.40](https://github.com/chef/chef/tree/v16.0.40) (2020-02-02)
 
 #### Merged Pull Requests
-- Fix wrong windows_firewall_rule specs which is passing :enable action which does not existurce does not have enable action so passing… [#9298](https://github.com/chef/chef/pull/9298) ([Vasu1105](https://github.com/Vasu1105))
+- Adding entitlement for unsigned memory execution [#9317](https://github.com/chef/chef/pull/9317) ([jonsmorrow](https://github.com/jonsmorrow))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adding entitlement for unsigned memory execution [#9317](https://github.com/chef/chef/pull/9317) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 16.0.40 -->
 - Fix wrong windows_firewall_rule specs which is passing :enable action which does not existurce does not have enable action so passing… [#9298](https://github.com/chef/chef/pull/9298) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.0.39 -->
 - Bump win32-service to 2.1.5 [#9301](https://github.com/chef/chef/pull/9301) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.38 -->
 - Add chef-sugar include_recipe? helper [#9304](https://github.com/chef/chef/pull/9304) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.37 -->
