@@ -1,5 +1,41 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# UNRELEASED
+
+### sysctl now accepts a comments parameter
+
+The `sysctl` resource has been updated to allow the inclusion of descriptive comments. Comments may be passed as an array or as a string. Any comments provided are prefixed with '#' signs and precede the `sysctl` setting in generated files.
+
+An example:
+
+```ruby
+sysctl 'vm.swappiness' do
+  value 10
+  comment [
+     "define how aggressively the kernel will swap memory pages.",
+     "Higher values will increase aggressiveness",
+     "lower values decrease the amount of swap.",
+     "A value of 0 instructs the kernel not to initiate swap",
+     "until the amount of free and file-backed pages is less",
+     "than the high water mark in a zone.",
+     "The default value is 60."
+    ]
+end
+```
+
+which results in `/etc/sysctl.d/99-chef-vm.swappiness.conf` as follows:
+
+```
+# define how aggressively the kernel will swap memory pages.
+# Higher values will increase aggressiveness
+# lower values decrease the amount of swap.
+# A value of 0 instructs the kernel not to initiate swap
+# until the amount of free and file-backed pages is less
+# than the high water mark in a zone.
+# The default value is 60.
+vm.swappiness = 10
+```
+
 # Chef Infra Client 15.7
 
 ## Updated Resources
