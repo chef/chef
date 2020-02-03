@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.42 -->
-## [v16.0.42](https://github.com/chef/chef/tree/v16.0.42) (2020-02-03)
+<!-- latest_release 16.0.43 -->
+## [v16.0.43](https://github.com/chef/chef/tree/v16.0.43) (2020-02-03)
 
 #### Merged Pull Requests
-- Add comment block to sysctl resource [#8409](https://github.com/chef/chef/pull/8409) ([lanky](https://github.com/lanky))
+- Add an introduced field to sysctl and expand testing [#9321](https://github.com/chef/chef/pull/9321) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add an introduced field to sysctl and expand testing [#9321](https://github.com/chef/chef/pull/9321) ([tas50](https://github.com/tas50)) <!-- 16.0.43 -->
 - Add comment block to sysctl resource [#8409](https://github.com/chef/chef/pull/8409) ([lanky](https://github.com/lanky)) <!-- 16.0.42 -->
 - mac_user: fixing gid and system properties, and adding hidden property [#9275](https://github.com/chef/chef/pull/9275) ([chilcote](https://github.com/chilcote)) <!-- 16.0.41 -->
 - Adding entitlement for unsigned memory execution [#9317](https://github.com/chef/chef/pull/9317) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 16.0.40 -->
