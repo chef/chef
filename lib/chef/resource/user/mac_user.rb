@@ -1,6 +1,6 @@
 #
 # Author:: Ryan Cragun (<ryan@chef.io>)
-# Copyright:: Copyright 2019, Chef Software Inc.
+# Copyright:: Copyright 2019-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,6 +99,9 @@ class Chef
         property :home, String, description: "The user home directory", default: lazy { "/Users/#{name}" }
 
         property :admin, [TrueClass, FalseClass], description: "Create the user as an admin", default: false
+
+        # Hide a user account in the macOS login window
+        property :hidden, [TrueClass, FalseClass, nil], description: "Hide account from loginwindow and system preferences", default: nil, introduced: "15.8"
 
         # TCC on macOS >= 10.14 requires admin credentials of an Admin user that
         # has SecureToken enabled in order to toggle SecureToken.
