@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.8 -->
-## [v15.8.8](https://github.com/chef/chef/tree/v15.8.8) (2020-02-02)
+<!-- latest_release 15.8.9 -->
+## [v15.8.9](https://github.com/chef/chef/tree/v15.8.9) (2020-02-03)
 
 #### Merged Pull Requests
-- Adding entitlement for unsigned memory execution [#9318](https://github.com/chef/chef/pull/9318) ([jonsmorrow](https://github.com/jonsmorrow))
+- Pinning ohai branch to get tests building [#9320](https://github.com/chef/chef/pull/9320) ([tyler-ball](https://github.com/tyler-ball))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Pinning ohai branch to get tests building [#9320](https://github.com/chef/chef/pull/9320) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.8.9 -->
 - Adding entitlement for unsigned memory execution [#9318](https://github.com/chef/chef/pull/9318) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 15.8.8 -->
 - Update train-core and win32-service [#9312](https://github.com/chef/chef/pull/9312) ([tas50](https://github.com/tas50)) <!-- 15.8.7 -->
 - Add chef-sugar include_recipe? helper [#9306](https://github.com/chef/chef/pull/9306) ([tas50](https://github.com/tas50)) <!-- 15.8.6 -->
