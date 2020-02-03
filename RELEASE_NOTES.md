@@ -1,5 +1,79 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
+# Chef Infra Client 15.7
+
+## Updated Resources
+
+### archive_file
+
+The `archive_file` resource will now only change ownership on files and directories that were part of the archive itself. This prevents changing permissions on important high level directories such as /etc or /bin when you extract a file into those directories. Thanks for this fix, [@bobchaos](https://github.com/bobchaos/).
+
+### cron and cron_d
+
+The `cron` and `cron_d` resources now include a `timeout` property, which allows you to configure actions to perform when a job times out. This property accepts a hash of timeout configuration options:
+
+- `preserve-status`: `true`/`false` with a default of `false`
+- `foreground`: `true`/`false` with a default of `false`
+- `kill-after`: `Integer` for the timeout in seconds
+- `signal`: `String` or `Integer` to send to the process such as `HUP`
+
+### launchd
+
+The `launchd` resource has been updated to properly capitalize `HardResourceLimits`. Thanks for this fix, [@rb2k](https://github.com/rb2k/).
+
+### sudo
+
+The `sudo` resource no longer fails on the second Chef Infra Client run when using a `Cmnd_Alias`. Thanks for reporting this issue, [@Rudikza](https://github.com/Rudikza).
+
+### user
+
+The `user` resource on AIX no longer forces the user to change the password after Chef Infra Client modifies the password. Thanks for this fix, [@Triodes](https://github.com/Triodes).
+
+The `user` resource on macOS 10.15 has received several important fixes to improve logging and prevent failures.
+
+### windows_task
+
+The `windows_task` resource is now idempotent when a system is joined to a domain and the job runs under a local user account.
+
+### x509_certificate
+
+The `x509_certificate` resource now includes a new `renew_before_expiry` property that allows you to auto renew certicates a specified number of days before they expire. Thanks [@julienhuon](https://github.com/julienhuon/) for this improvement.
+
+## Additional Recipe Helpers
+
+We have added new helpers for identifying Windows releases that can be used in any part of your cookbooks.
+
+### windows_workstation?
+
+Returns `true` if the system is a Windows Workstation edition.
+
+### windows_server?
+
+Returns `true` if the system is a Windows Server edition.
+
+### windows_server_core?
+
+Returns `true` if the system is a Windows Server Core edition.
+
+## Notable Changes and Fixes
+
+- `knife upload` and `knife cookbook upload` will now generate a metadata.json file from metadata.rb when uploading a cookbook to the Chef Infra Server.
+- A bug in `knife bootstrap` behavior that caused failures when bootstrapping Windows hosts from non-Windows hosts and vice versa has been resolved.
+- The existing system path is now preserved when bootstrapping Windows nodes. Thanks for this fix, [@Xorima](https://github.com/Xorima/).
+- Ohai now properly returns the drive name on Windows and includes new drive_type fields to allow you to determine the type of attached disk. Thanks for this improvement [@sshock](https://github.com/sshock/).
+- Ohai has been updated to properly return DMI data to Chef Infra Client. Thanks for troubleshooting this, [@zmscwx](https://github.com/zmscwx) and [@Sliim](https://github.com/Sliim).
+
+## Platform Support
+
+- Chef Infra Clients packages are no longer produced for Windows 2008 R2 as this release reached its end of life on Jan 14th, 2020.
+- Chef Infra Client packages are no longer produced for RHEL 6 on the s390x platform. Builds will continue to be published for RHEL 7 on the s390x platform.
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2u to resolve [CVE-2019-1551](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551)
+
 # Chef Infra Client 15.6
 
 ## Updated Resources
