@@ -46,27 +46,27 @@ RSpec.describe ChefUtils::DSL::Virtualization do
 
   context "on kvm" do
     virtualization_reports_true_for(:guest?, :virtual?, :kvm?, node: { "virtualization" => { "system" => "kvm",  "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :kvm?, node: { "virtualization" => { "system" => "kvm", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :kvm_host?, node: { "virtualization" => { "system" => "kvm", "role" => "host" } })
   end
   context "on lxc" do
     virtualization_reports_true_for(:guest?, :virtual?, :lxc?, node: { "virtualization" => { "system" => "lxc", "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :lxc?, node: { "virtualization" => { "system" => "lxc", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :lxc_host?, node: { "virtualization" => { "system" => "lxc", "role" => "host" } })
   end
   context "on parallels" do
     virtualization_reports_true_for(:guest?, :virtual?, :parallels?, node: { "virtualization" => { "system" => "parallels", "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :parallels?, node: { "virtualization" => { "system" => "parallels", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :parallels_host?, node: { "virtualization" => { "system" => "parallels", "role" => "host" } })
   end
   context "on virtualbox" do
     virtualization_reports_true_for(:guest?, :virtual?, :virtualbox?, :vbox?, node: { "virtualization" => { "system" => "vbox", "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :virtualbox?, :vbox?, node: { "virtualization" => { "system" => "vbox", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :vbox_host?, node: { "virtualization" => { "system" => "vbox", "role" => "host" } })
   end
   context "on vmware" do
     virtualization_reports_true_for(:guest?, :virtual?, :vmware?, node: { "virtualization" => { "system" => "vmware", "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :vmware?, node: { "virtualization" => { "system" => "vmware", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :vmware_host?, node: { "virtualization" => { "system" => "vmware", "role" => "host" } })
   end
   context "on openvz" do
     virtualization_reports_true_for(:guest?, :virtual?, :openvz?, node: { "virtualization" => { "system" => "openvz", "role" => "guest" } })
-    virtualization_reports_true_for(:virtual_host?, :physical?, :openvz?, node: { "virtualization" => { "system" => "openvz", "role" => "host" } })
+    virtualization_reports_true_for(:virtual_host?, :physical?, :openvz_host?, node: { "virtualization" => { "system" => "openvz", "role" => "host" } })
   end
   context "on metal which is not a virt host" do
     virtualization_reports_true_for(:physical?, node: {} )

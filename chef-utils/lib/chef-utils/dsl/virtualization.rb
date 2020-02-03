@@ -22,14 +22,24 @@ module ChefUtils
     module Virtualization
       include Internal
 
-      # Determine if the current node is running under KVM.
+      # Determine if the current node is a KVM guest.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
       def kvm?(node = __getnode)
-        node.dig("virtualization", "system") == "kvm"
+        node.dig("virtualization", "system") == "kvm" && node.dig("virtualization", "role") == "guest"
+      end
+
+      # Determine if the current node is a KVM host.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def kvm_host?(node = __getnode)
+        node.dig("virtualization", "system") == "kvm" && node.dig("virtualization", "role") == "host"
       end
 
       # Determine if the current node is running in a linux container.
@@ -39,10 +49,19 @@ module ChefUtils
       # @return [Boolean]
       #
       def lxc?(node = __getnode)
-        node.dig("virtualization", "system") == "lxc"
+        node.dig("virtualization", "system") == "lxc" && node.dig("virtualization", "role") == "guest"
       end
 
+      # Determine if the current node is a linux container host.
       #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def lxc_host?(node = __getnode)
+        node.dig("virtualization", "system") == "lxc" && node.dig("virtualization", "role") == "host"
+      end
+
       # Determine if the current node is running under Parallels Desktop.
       #
       # @param [Chef::Node] node
@@ -52,40 +71,81 @@ module ChefUtils
       #   otherwise
       #
       def parallels?(node = __getnode)
-        node.dig("virtualization", "system") == "parallels"
+        node.dig("virtualization", "system") == "parallels" && node.dig("virtualization", "role") == "guest"
       end
 
-      # Determine if the current node is running under VirtualBox.
+      # Determine if the current node is a Parallels Desktop host.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #   true if the machine is currently running under Parallels Desktop, false
+      #   otherwise
+      #
+      def parallels_host?(node = __getnode)
+        node.dig("virtualization", "system") == "parallels" && node.dig("virtualization", "role") == "host"
+      end
+
+      # Determine if the current node is a VirtualBox guest.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
       def vbox?(node = __getnode)
-        node.dig("virtualization", "system") == "vbox"
+        node.dig("virtualization", "system") == "vbox" && node.dig("virtualization", "role") == "guest"
+      end
+
+      # Determine if the current node is a VirtualBox host.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def vbox_host?(node = __getnode)
+        node.dig("virtualization", "system") == "vbox" && node.dig("virtualization", "role") == "host"
       end
 
       alias_method :virtualbox?, :vbox?
 
-      #
-      # Determine if the current node is running under VMware.
+      # Determine if the current node is a VMWare guest.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
       def vmware?(node = __getnode)
-        node.dig("virtualization", "system") == "vmware"
+        node.dig("virtualization", "system") == "vmware" && node.dig("virtualization", "role") == "guest"
       end
 
-      # Determine if the current node is running under openvz.
+      # Determine if the current node is VMware host.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def vmware_host?(node = __getnode)
+        node.dig("virtualization", "system") == "vmware" && node.dig("virtualization", "role") == "host"
+      end
+
+      # Determine if the current node is an openvz guest.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
       def openvz?(node = __getnode)
-        node.dig("virtualization", "system") == "openvz"
+        node.dig("virtualization", "system") == "openvz" && node.dig("virtualization", "role") == "guest"
+      end
+
+      # Determine if the current node is an openvz host.
+      #
+      # @param [Chef::Node] node
+      #
+      # @return [Boolean]
+      #
+      def openvz_host?(node = __getnode)
+        node.dig("virtualization", "system") == "openvz" && node.dig("virtualization", "role") == "host"
       end
 
       # Determine if the current node is running under any virutalization environment
@@ -120,7 +180,7 @@ module ChefUtils
         !virtual?(node)
       end
 
-      # Determine if the current node is running in vagrant mode.
+      # Determine if the current node is running as a vagrant guest.
       #
       # Note that this API is equivalent to just looking for the vagrant user or the
       # vagrantup.com domain in the hostname, which is the best API we have.
