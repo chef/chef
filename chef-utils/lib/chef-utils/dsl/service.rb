@@ -28,6 +28,8 @@ module ChefUtils
 
       # Returns if debian's old rc.d manager is installed (not necessarily the primary init system).
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def debianrcd?
@@ -35,6 +37,8 @@ module ChefUtils
       end
 
       # Returns if debian's old invoke rc.d manager is installed (not necessarily the primary init system).
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -44,6 +48,8 @@ module ChefUtils
 
       # Returns if upstart is installed (not necessarily the primary init system).
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def upstart?
@@ -52,6 +58,8 @@ module ChefUtils
 
       # Returns if insserv is installed (not necessarily the primary init system).
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def insserv?
@@ -59,6 +67,8 @@ module ChefUtils
       end
 
       # Returns if redhat's init system is installed (not necessarily the primary init system).
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #

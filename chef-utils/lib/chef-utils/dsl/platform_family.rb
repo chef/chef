@@ -24,7 +24,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'arch' family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -36,7 +37,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'aix' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -46,7 +48,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'debian' platform family (Debian, Ubuntu and derivatives).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -54,9 +57,10 @@ module ChefUtils
         node["platform_family"] == "debian"
       end
 
-      # Determine if the current node is a member of the 'fedora' platform family (Fedora and Arist).
+      # Determine if the current node is a member of the 'fedora' platform family (Fedora and Arista).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -66,7 +70,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'mac_os_x' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -82,7 +87,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'rhel' platform family (Red Hat, CentOS, Oracle or Scientific Linux, but NOT Amazon Linux or Fedora).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -94,7 +100,8 @@ module ChefUtils
 
       # Determine if the current node is a rhel6 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -104,7 +111,8 @@ module ChefUtils
 
       # Determine if the current node is a rhel7 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -114,7 +122,8 @@ module ChefUtils
 
       # Determine if the current node is a rhel8 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -124,7 +133,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'amazon' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -136,7 +146,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'solaris2' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -148,7 +159,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'smartos' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -156,9 +168,10 @@ module ChefUtils
         node["platform_family"] == "smartos"
       end
 
-      # Determine if the current node is a member of the 'suse' platform family  (openSUSE, SLES, and SLED).
+      # Determine if the current node is a member of the 'suse' platform family (openSUSE, SLES, and SLED).
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -168,7 +181,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'gentoo' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -178,7 +192,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'freebsd' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -188,7 +203,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'openbsd' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -198,7 +214,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'netbsd' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -208,7 +225,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'dragonflybsd' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -218,7 +236,8 @@ module ChefUtils
 
       # Determine if the current node is a member of the 'windows' platform family.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -236,8 +255,10 @@ module ChefUtils
         node ? node["platform_family"] == "windows" : windows_ruby?
       end
 
-      # Determine if the ruby VM is currently running on a windows node (chefspec can never stub
-      # this behavior, so this is useful for code which can never be parsed on a non-windows box).
+      # Determine if the Ruby VM is currently running on a Windows node (ChefSpec can never stub
+      # this behavior, so this is useful for code which can never be parsed on a non-Windows box).
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -257,7 +278,8 @@ module ChefUtils
       # less useful since in no way can AIX trace its lineage back to old redhat distros.  This is most useful for
       # "smells like redhat, including SuSE".
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -265,11 +287,12 @@ module ChefUtils
         fedora_derived?(node) || node["platform_family"] == "suse"
       end
 
-      # RPM-based distros which are not SuSE and are very loosely similar to fedora, using yum or dnf.  The historical
-      # lineage of the distro should have forked off from old redhat fedora distros at some point.  Currently rhel,
-      # fedora and amazon.  This is most useful for "smells like redhat, but isn't SuSE".
+      # RPM-based distros which are not SuSE and are very loosely similar to fedora, using yum or dnf. The historical
+      # lineage of the distro should have forked off from old redhat fedora distros at some point. Currently rhel,
+      # fedora and amazon. This is most useful for "smells like redhat, but isn't SuSE".
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -277,10 +300,11 @@ module ChefUtils
         redhat_based?(node) || node["platform_family"] == "amazon"
       end
 
-      # RedHat distros -- fedora and rhel platform_families, nothing else.  This is most likely not as useful as the
+      # RedHat distros -- fedora and rhel platform_families, nothing else. This is most likely not as useful as the
       # "fedora_dervied?" helper.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -290,7 +314,8 @@ module ChefUtils
 
       # All of the Solaris-lineage.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -300,9 +325,10 @@ module ChefUtils
 
       # All of the BSD-lineage.
       #
-      # Note that MacOSX is not included since Mac deviates so significantly from BSD that including it would not be useful.
+      # Note that macOS is not included since macOS deviates so significantly from BSD that including it would not be useful.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
