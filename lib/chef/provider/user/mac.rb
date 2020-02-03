@@ -52,6 +52,10 @@ class Chef
             current_resource.shell(user_plist[:shell][0])
             current_resource.comment(user_plist[:comment][0])
 
+            if user_plist[:is_hidden]
+              current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
+            end
+
             shadow_hash = user_plist[:shadow_hash]
             if shadow_hash
               current_resource.password(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*")[0])
@@ -137,7 +141,7 @@ class Chef
         def create_user
           cmd = [-"-addUser", new_resource.username]
           cmd += ["-fullName", new_resource.comment] if prop_is_set?(:comment)
-          cmd += ["-UID", new_resource.uid]          if prop_is_set?(:uid)
+          cmd += ["-UID", prop_is_set?(:uid) ? new_resource.uid : get_free_uid]
           cmd += ["-shell", new_resource.shell]
           cmd += ["-home", new_resource.home]
           cmd += ["-admin"] if new_resource.admin
@@ -164,6 +168,10 @@ class Chef
           # Reload with up-to-date user information
           reload_user_plist
           reload_admin_group_plist
+
+          if prop_is_set?(:hidden)
+            set_hidden
+          end
 
           if prop_is_set?(:password)
             converge_by("set password") { set_password }
@@ -196,7 +204,7 @@ class Chef
             end.run_action(group_action)
 
             converge_by("create primary group ID") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
             end
           end
 
@@ -208,7 +216,7 @@ class Chef
         end
 
         def compare_user
-          %i{comment shell uid gid salt password admin secure_token}.any? { |m| diverged?(m) }
+          %i{comment shell uid gid salt password admin secure_token hidden}.any? { |m| diverged?(m) }
         end
 
         def manage_user
@@ -272,7 +280,13 @@ class Chef
 
           if diverged?(:gid)
             converge_by("alter group membership") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
+            end
+          end
+
+          if diverged?(:hidden)
+            converge_by("alter hidden") do
+              set_hidden
             end
           end
 
@@ -336,11 +350,31 @@ class Chef
             user_group_diverged?
           when :secure_token
             secure_token_diverged?
+          when :hidden
+            hidden_diverged?
           else
             # Other fields are have been set on current resource so just compare
             # them.
             !new_resource.send(prop).nil? && (new_resource.send(prop) != current_resource.send(prop))
           end
+        end
+
+        # Find the next available uid on the system.
+        # Starting with 200 if `system` is set, 501 otherwise.
+        def get_free_uid(search_limit = 1000)
+          uid = nil
+          base_uid = new_resource.system ? 200 : 501
+          next_uid_guess = base_uid
+          users_uids = run_dscl("list", "/Users", "uid")
+          while next_uid_guess < search_limit + base_uid
+            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+              next_uid_guess += 1
+            else
+              uid = next_uid_guess
+              break
+            end
+          end
+          uid || raise("uid not found. Exhausted. Searched #{search_limit} times")
         end
 
         # Attempt to resolve the group name, gid, and the action required for
@@ -410,12 +444,21 @@ class Chef
           return false unless prop_is_set?(:gid)
 
           group_name, group_id = user_group_info
+          current_resource.gid != group_id.to_i
+        end
 
-          if current_resource.gid.is_a?(String)
-            current_resource.gid != group_name
-          else
-            current_resource.gid != group_id.to_i
-          end
+        def hidden_diverged?
+          return false unless prop_is_set?(:hidden)
+
+          (current_resource.hidden ? 1 : 0) != hidden_value.to_i
+        end
+
+        def set_hidden
+          run_dscl("create", "/Users/#{new_resource.username}", "IsHidden", hidden_value.to_i)
+        end
+
+        def hidden_value
+          new_resource.hidden ? 1 : 0
         end
 
         def password_diverged?
@@ -593,6 +636,7 @@ class Chef
               auth_authority: "dsAttrTypeStandard:AuthenticationAuthority",
               shadow_hash: "dsAttrTypeNative:ShadowHashData",
               group_members: "dsAttrTypeStandard:GroupMembers",
+              is_hidden: "dsAttrTypeNative:IsHidden",
           }.freeze
 
           attr_accessor :plist_hash, :property_map

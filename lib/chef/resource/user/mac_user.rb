@@ -100,6 +100,9 @@ class Chef
 
         property :admin, [TrueClass, FalseClass], description: "Create the user as an admin", default: false
 
+        # Hide a user account in the macOS login window
+        property :hidden, [TrueClass, FalseClass, nil], description: "Hide account from loginwindow and system preferences", default: nil
+
         # TCC on macOS >= 10.14 requires admin credentials of an Admin user that
         # has SecureToken enabled in order to toggle SecureToken.
         property :admin_username, String, description: "Admin username for superuser actions"
