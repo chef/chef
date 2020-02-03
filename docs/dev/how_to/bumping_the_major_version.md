@@ -35,6 +35,7 @@ Once you’ve forked to a new stable branch such as `chef-15` you’ll want to c
 - In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to master.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15
+- In tasks/bin/run_external_test update the ohai branch to point to your new stable ohai branch
 - In Gemfile set ohai to pull from the ohai stable branch
 - Run `rake dependencies:update`
 
