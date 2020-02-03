@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.41 -->
-## [v16.0.41](https://github.com/chef/chef/tree/v16.0.41) (2020-02-03)
+<!-- latest_release 16.0.42 -->
+## [v16.0.42](https://github.com/chef/chef/tree/v16.0.42) (2020-02-03)
 
 #### Merged Pull Requests
-- mac_user: fixing gid and system properties, and adding hidden property [#9275](https://github.com/chef/chef/pull/9275) ([chilcote](https://github.com/chilcote))
+- Add comment block to sysctl resource [#8409](https://github.com/chef/chef/pull/8409) ([lanky](https://github.com/lanky))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add comment block to sysctl resource [#8409](https://github.com/chef/chef/pull/8409) ([lanky](https://github.com/lanky)) <!-- 16.0.42 -->
 - mac_user: fixing gid and system properties, and adding hidden property [#9275](https://github.com/chef/chef/pull/9275) ([chilcote](https://github.com/chilcote)) <!-- 16.0.41 -->
 - Adding entitlement for unsigned memory execution [#9317](https://github.com/chef/chef/pull/9317) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 16.0.40 -->
 - Fix wrong windows_firewall_rule specs which is passing :enable action which does not existurce does not have enable action so passing… [#9298](https://github.com/chef/chef/pull/9298) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.0.39 -->
