@@ -1,6 +1,6 @@
 #
 # Copyright:: 2018, Webb Agile Solutions Ltd.
-# Copyright:: 2018-2018, Chef Software Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ class Chef
 
       property :comment, [Array, String],
         description: "Comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
-        default: []
+        default: [],
+        introduced: "15.8"
 
       property :conf_dir, String,
         description: "The configuration directory to write the config to.",
@@ -84,13 +85,8 @@ class Chef
 
           directory new_resource.conf_dir
 
-          # construct a string, joining members of new_resource.comment
-          sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
-
-          sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
-
           file "#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do
-            content sysctl_lines.join("\n")
+            content contruct_sysctl_content
           end
 
           execute "Load sysctl values" do
@@ -121,8 +117,27 @@ class Chef
       end
 
       action_class do
+        #
+        # Shell out to set the sysctl value
+        #
+        # @param [String] key The sysctl key
+        # @param [String] value The value of the sysctl key
+        #
         def set_sysctl_param(key, value)
           shell_out!("sysctl #{"-e " if new_resource.ignore_error}-w \"#{key}=#{value}\"")
+        end
+
+        #
+        # construct a string, joining members of new_resource.comment and new_resource.value
+        #
+        # @return [String] The text file content
+        #
+        def contruct_sysctl_content
+          sysctl_lines = Array(new_resource.comment).map { |c| "# #{c.strip}" }
+
+          sysctl_lines << "#{new_resource.key} = #{new_resource.value}"
+
+          sysctl_lines.join("\n")
         end
       end
 
