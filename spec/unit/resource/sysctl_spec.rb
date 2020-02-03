@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018, Chef Software, Inc.
+# Copyright:: Copyright 2018-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@ require "spec_helper"
 
 describe Chef::Resource::Sysctl do
   let(:resource) { Chef::Resource::Sysctl.new("fakey_fakerton") }
+  let(:provider) { resource.provider_for_action(:create) }
 
   it "sets resource name as :sysctl" do
     expect(resource.resource_name).to eql(:sysctl)
@@ -50,5 +51,26 @@ describe Chef::Resource::Sysctl do
   it "coerces Floats in the value property to Strings" do
     resource.value 1.1
     expect(resource.value).to eql("1.1")
+  end
+
+  context "#contruct_sysctl_content" do
+    before do
+      resource.key("foo")
+      resource.value("bar")
+    end
+
+    context "when comment is a String" do
+      it "Returns content for use with a file resource" do
+        resource.comment("This sets foo / bar on our system")
+        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\nfoo = bar")
+      end
+    end
+
+    context "when comment is an Array" do
+      it "Returns content for use with a file resource" do
+        resource.comment(["This sets foo / bar on our system", "We need for baz"])
+        expect(provider.contruct_sysctl_content).to eql("# This sets foo / bar on our system\n# We need for baz\nfoo = bar")
+      end
+    end
   end
 end
