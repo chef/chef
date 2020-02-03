@@ -29,9 +29,10 @@ module ChefUtils
       # only the platform helper should be added.
       #
 
-      # Determine if the current node is linux.
+      # Determine if the current node is Linux.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -39,9 +40,10 @@ module ChefUtils
         node["os"] == "linux"
       end
 
-      # Determine if the current node is darwin.
+      # Determine if the current node is Darwin.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #

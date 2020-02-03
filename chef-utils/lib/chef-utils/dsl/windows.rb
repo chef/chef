@@ -26,7 +26,8 @@ module ChefUtils
 
       # Determine if the current node is Windows Server Core.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.7
       #
       # @return [Boolean]
       #
@@ -34,9 +35,10 @@ module ChefUtils
         node["kernel"]["server_core"] == true
       end
 
-      # Determine if the current node is Windows Workstation
+      # Determine if the current node is Windows Workstation.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.7
       #
       # @return [Boolean]
       #
@@ -44,9 +46,10 @@ module ChefUtils
         node["kernel"]["product_type"] == "Workstation"
       end
 
-      # Determine if the current node is Windows Server
+      # Determine if the current node is Windows Server.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.7
       #
       # @return [Boolean]
       #
@@ -56,7 +59,8 @@ module ChefUtils
 
       # Determine the current Windows NT version. The NT version often differs from the marketing version, but offers a good way to find desktop and server releases that are based on the same codebase. IE: NT 6.3 is Windows 8.1 and Windows 2012 R2.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [ChefUtils::VersionString]
       #
@@ -64,9 +68,10 @@ module ChefUtils
         ChefUtils::VersionString.new(node["os_version"])
       end
 
-      # Determine the installed version of PowerShell
+      # Determine the installed version of PowerShell.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [ChefUtils::VersionString]
       #

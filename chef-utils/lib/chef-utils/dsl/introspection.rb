@@ -30,7 +30,8 @@ module ChefUtils
 
       # Determine if the node is a docker container.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -42,7 +43,8 @@ module ChefUtils
 
       # Determine if the node uses the systemd init system.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -52,7 +54,8 @@ module ChefUtils
 
       # Determine if the node is running in Test Kitchen.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -62,7 +65,8 @@ module ChefUtils
 
       # Determine if the node is running in a CI system that sets the CI env var.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -73,6 +77,7 @@ module ChefUtils
       # Determine if the a systemd service unit is present on the system.
       #
       # @param [String] svc_name
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -87,6 +92,7 @@ module ChefUtils
       # Determine if the a systemd unit of any type is present on the system.
       #
       # @param [String] svc_name
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -100,6 +106,7 @@ module ChefUtils
       # Determine if the current node includes the given recipe name.
       #
       # @param [String] recipe_name
+      # @since 15.8
       #
       # @return [Boolean]
       #
