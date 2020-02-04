@@ -160,17 +160,17 @@ module ChefUtils
 
       alias_method :virtual?, :guest?
 
-      # Determine if the current node is running under any virutalization environment
+      # Determine if the current node supports running guests under any virtualization environment
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def virtual_host?(node = __getnode)
+      def hypervisor?(node = __getnode)
         node.dig("virtualization", "role") == "host"
       end
 
-      # Determine if the current node is NOT running under any virutalization environment (virtual hosts or just plain on metal)
+      # Determine if the current node is NOT running under any virtualization environment (plain metal or hypervisor on metal)
       #
       # @param [Chef::Node] node
       #
