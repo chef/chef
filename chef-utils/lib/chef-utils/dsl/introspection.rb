@@ -106,6 +106,7 @@ module ChefUtils
       def includes_recipe?(recipe_name, node = __getnode)
         node.recipe?(recipe_name)
       end
+      # chef-sugar backcompat method
       alias_method :include_recipe?, :includes_recipe?
 
       extend self
