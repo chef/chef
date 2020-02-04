@@ -149,7 +149,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `openvz_host?` - if the node is an openvz host
 * `guest?` - if the node is detected as any kind of guest
 * `hypervisor?` - if the node is detected as being any kind of hypervisor
-* `physical?` - the node is not running as a guest (may be a hypervisor or may be plain metal)
+* `physical?` - the node is not running as a guest (may be a hypervisor or may be bare-metal)
 * `vagrant?` - attempts to identify the node as a vagrant guest (this check may be error prone)
 
 ### Train Helpers

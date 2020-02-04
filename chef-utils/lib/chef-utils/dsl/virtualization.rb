@@ -186,7 +186,7 @@ module ChefUtils
         node.dig("virtualization", "role") == "host"
       end
 
-      # Determine if the current node is NOT running under any virtualization environment (plain metal or hypervisor on metal)
+      # Determine if the current node is NOT running under any virtualization environment (bare-metal or hypervisor on metal)
       #
       # @param [Chef::Node] node
       # @since 15.8
