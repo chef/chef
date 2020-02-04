@@ -71,6 +71,7 @@ module ChefUtils
       #
       # @param [Symbol] type The type of init system. :initd, :upstart, :xinetd, :etc_rcd, or :systemd
       # @param [String] script The name of the service
+      # @since 15.5
       #
       # @return [Boolean]
       #
