@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -452,6 +452,8 @@ class Chef
       def read(*path)
         merged_attributes.read(*path)
       end
+
+      alias :dig :read
 
       def read!(*path)
         merged_attributes.read!(*path)
