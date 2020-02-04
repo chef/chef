@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.45 -->
-## [v16.0.45](https://github.com/chef/chef/tree/v16.0.45) (2020-02-04)
+<!-- latest_release 16.0.46 -->
+## [v16.0.46](https://github.com/chef/chef/tree/v16.0.46) (2020-02-04)
 
 #### Merged Pull Requests
-- Expand the chef-utils yard for better vscode plugin generation [#9326](https://github.com/chef/chef/pull/9326) ([tas50](https://github.com/tas50))
+- Add chef-sugar virtualization helpers [#9315](https://github.com/chef/chef/pull/9315) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add chef-sugar virtualization helpers [#9315](https://github.com/chef/chef/pull/9315) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.46 -->
 - Expand the chef-utils yard for better vscode plugin generation [#9326](https://github.com/chef/chef/pull/9326) ([tas50](https://github.com/tas50)) <!-- 16.0.45 -->
 - Document the new hidden field in mac_user ships in 15.8 [#9322](https://github.com/chef/chef/pull/9322) ([tas50](https://github.com/tas50)) <!-- 16.0.44 -->
 - Add an introduced field to sysctl and expand testing [#9321](https://github.com/chef/chef/pull/9321) ([tas50](https://github.com/tas50)) <!-- 16.0.43 -->
