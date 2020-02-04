@@ -32,7 +32,7 @@ module ChefUtils
       def arch?(node = __getnode)
         node["platform_family"] == "arch"
       end
-      # chef-sugar backcompat methods
+      # chef-sugar backcompat method
       alias_method :arch_linux?, :arch?
 
       # Determine if the current node is a member of the 'aix' platform family.
@@ -78,8 +78,11 @@ module ChefUtils
       def macos?(node = __getnode)
         node["platform_family"] == "mac_os_x"
       end
+      # chef-sugar backcompat method
       alias_method :osx?, :macos?
+      # chef-sugar backcompat method
       alias_method :mac?, :macos?
+      # chef-sugar backcompat method
       alias_method :mac_os_x?, :macos?
 
       # Determine if the current node is a member of the 'rhel' platform family (Red Hat, CentOS, Oracle or Scientific Linux, but NOT Amazon Linux or Fedora).
@@ -92,6 +95,7 @@ module ChefUtils
       def rhel?(node = __getnode)
         node["platform_family"] == "rhel"
       end
+      # chef-sugar backcompat method
       alias_method :el?, :rhel?
 
       # Determine if the current node is a rhel6 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
@@ -137,6 +141,7 @@ module ChefUtils
       def amazon?(node = __getnode)
         node["platform_family"] == "amazon"
       end
+      # chef-sugar backcompat method
       alias_method :amazon_linux?, :amazon?
 
       # Determine if the current node is a member of the 'solaris2' platform family.
@@ -149,7 +154,7 @@ module ChefUtils
       def solaris2?(node = __getnode)
         node["platform_family"] == "solaris2"
       end
-      # chef-sugar backcompat methods
+      # chef-sugar backcompat method
       alias_method :solaris?, :solaris2?
 
       # Determine if the current node is a member of the 'smartos' platform family.
