@@ -76,6 +76,7 @@ module ChefUtils
       def eucalyptus?(node = __getnode)
         node.key?("eucalyptus")
       end
+      # chef-sugar backcompat method
       alias_method :euca?, :eucalyptus?
 
       # Return true if the current current node is in Linode.
@@ -121,6 +122,7 @@ module ChefUtils
       def digital_ocean?(node = __getnode)
         node.key?("digital_ocean")
       end
+      # chef-sugar backcompat method
       alias_method :digitalocean?, :digital_ocean?
 
       # Return true if the current current node is in SoftLayer.
