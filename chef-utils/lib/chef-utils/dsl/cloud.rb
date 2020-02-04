@@ -24,7 +24,8 @@ module ChefUtils
 
       # Determine if the current node is "in the cloud".
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -32,9 +33,10 @@ module ChefUtils
         node.key?("cloud")
       end
 
-      # Return true if the current current node is in EC2
+      # Return true if the current current node is in EC2.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -42,9 +44,10 @@ module ChefUtils
         node.key?("ec2")
       end
 
-      # Return true if the current current node is in GCE
+      # Return true if the current current node is in GCE.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -52,9 +55,10 @@ module ChefUtils
         node.key?("gce")
       end
 
-      # Return true if the current current node is in Rackspace
+      # Return true if the current current node is in Rackspace.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -62,9 +66,10 @@ module ChefUtils
         node.key?("rackspace")
       end
 
-      # Return true if the current current node is in Eucalyptus
+      # Return true if the current current node is in Eucalyptus.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -73,9 +78,10 @@ module ChefUtils
       end
       alias_method :euca?, :eucalyptus?
 
-      # Return true if the current current node is in Linode
+      # Return true if the current current node is in Linode.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -83,9 +89,10 @@ module ChefUtils
         node.key?("linode")
       end
 
-      # Return true if the current current node is in Openstack
+      # Return true if the current current node is in OpenStack.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -93,9 +100,10 @@ module ChefUtils
         node.key?("openstack")
       end
 
-      # Return true if the current current node is in Azure
+      # Return true if the current current node is in Azure.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -103,10 +111,10 @@ module ChefUtils
         node.key?("azure")
       end
 
-      # Return true if the current current node is in DigitalOcean
+      # Return true if the current current node is in DigitalOcean.
       #
-      # @param [Chef::Node] node
-      #   the node to check
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -115,10 +123,10 @@ module ChefUtils
       end
       alias_method :digitalocean?, :digital_ocean?
 
-      # Return true if the current current node is in SoftLayer
+      # Return true if the current current node is in SoftLayer.
       #
-      # @param [Chef::Node] node
-      #   the node to check
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [Boolean]
       #
