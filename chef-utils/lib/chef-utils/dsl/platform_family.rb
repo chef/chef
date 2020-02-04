@@ -98,7 +98,7 @@ module ChefUtils
       # chef-sugar backcompat method
       alias_method :el?, :rhel?
 
-      # Determine if the current node is a rhel6 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel6 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
       # @param [Chef::Node] node the node to check
       # @since 15.5
@@ -109,7 +109,7 @@ module ChefUtils
         node["platform_family"] == "rhel" && node["platform_version"].to_f >= 6.0 && node["platform_version"].to_f < 7.0
       end
 
-      # Determine if the current node is a rhel7 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel7 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
       # @param [Chef::Node] node the node to check
       # @since 15.5
@@ -120,7 +120,7 @@ module ChefUtils
         node["platform_family"] == "rhel" && node["platform_version"].to_f >= 7.0 && node["platform_version"].to_f < 8.0
       end
 
-      # Determine if the current node is a rhel8 compatible build (Red Hat, CentOS, Oracle or Scientific Linux)
+      # Determine if the current node is a rhel8 compatible build (Red Hat, CentOS, Oracle or Scientific Linux).
       #
       # @param [Chef::Node] node the node to check
       # @since 15.5
