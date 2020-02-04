@@ -281,7 +281,7 @@ module ChefUtils
         node["platform"] == "dragonfly"
       end
 
-      # Determine if the current node is MacOS.
+      # Determine if the current node is macOS.
       #
       # @param [Chef::Node] node
       #
@@ -293,7 +293,7 @@ module ChefUtils
       # chef-sugar backcompat method
       alias_method :mac_os_x_platform?, :macos_platform?
 
-      # Determine if the current node is gentoo
+      # Determine if the current node is Gentoo.
       #
       # @param [Chef::Node] node
       #
@@ -303,7 +303,7 @@ module ChefUtils
         node["platform"] == "gentoo"
       end
 
-      # Determine if the current node is slackware.
+      # Determine if the current node is Slackware.
       #
       # @param [Chef::Node] node
       #
