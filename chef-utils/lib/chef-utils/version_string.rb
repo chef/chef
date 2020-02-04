@@ -139,5 +139,11 @@ module ChefUtils
       end
     end
 
+    # Back-compat API for chef-sugar.  The other APIs are preferable.
+    #
+    # @api private
+    def satisfies?(*constraints)
+      Gem::Requirement.new(*constraints).satisfied_by?(@parsed_version)
+    end
   end
 end
