@@ -77,7 +77,8 @@ class Chef
                description: "The frequency with which to run the task."
 
       property :start_day, String,
-        description: "Specifies the first date on which the task runs in MM/DD/YYYY format."
+        description: "Specifies the first date on which the task runs in MM/DD/YYYY format.",
+        default_description: "The current date."
 
       property :start_time, String,
         description: "Specifies the start time to run the task, in HH:mm format."
