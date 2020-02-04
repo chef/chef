@@ -128,7 +128,7 @@ class Chef
       if options.key?(:name_attribute)
         # If we have both name_attribute and name_property and they differ, raise an error
         if options.key?(:name_property)
-          raise ArgumentError, "name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property #{self}"
+          raise ArgumentError, "name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property #{self} of resource #{resource_name}"
         end
 
         # replace name_property with name_attribute in place
@@ -137,7 +137,7 @@ class Chef
       end
 
       if options.key?(:default) && options.key?(:name_property)
-        raise ArgumentError, "A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property #{self}"
+        raise ArgumentError, "A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property #{self} of resource #{resource_name}"
       end
 
       # Recursively freeze the default if it isn't a lazy value.
@@ -406,7 +406,8 @@ class Chef
       end
 
       if value.nil? && required?
-        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
+        resource_str = resource_name ? " of the #{resource_name} resource" : ""
+        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property#{resource_str}"
       else
         value
       end
@@ -435,7 +436,8 @@ class Chef
       end
 
       if value.nil? && required?
-        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property"
+        resource_str = resource_name ? " of the #{resource_name} resource" : ""
+        raise Chef::Exceptions::ValidationFailed, "#{name} is a required property#{resource_str}"
       else
         value
       end
@@ -546,6 +548,15 @@ class Chef
       self.class.new(**options.merge(modified_options))
     end
 
+    # Helper class for safely requesting a resource_name.
+    #
+    # @api private
+    def resource_name
+      if declared_in
+        declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
+      end
+    end
+
     #
     # Emit the DSL for this property into the resource class (`declared_in`).
     #
@@ -562,7 +573,6 @@ class Chef
       # Object#hash method on the resource, and overriding that with a property will cause
       # very confusing results.
       if property_redefines_method?
-        resource_name = declared_in.respond_to?(:resource_name) ? declared_in.resource_name : declared_in
         raise ArgumentError, "Property `#{name}` of resource `#{resource_name}` overwrites an existing method. A different name should be used for this property."
       end
 
