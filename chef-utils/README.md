@@ -133,6 +133,25 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `digital_ocean?` - if the node is running in digital ocean
 * `softlayer?` - if the node is running in softlayer
 
+### Virtualization Helpers
+
+* `kvm?` - if the node is a kvm guest
+* `kvm_host?` - if the node is a kvm host
+* `lxc?` - if the node is an lxc guest
+* `lxc_host?` - if the node is an lxc host
+* `parallels?`- if the node is a parallels guest
+* `parallels_host?`- if the node is a parallels host
+* `vbox?` - if the node is a virtualbox guest
+* `vbox_host?` - if the node is a virtualbox host
+* `vmware?` - if the node is a vmware guest
+* `vmware_host?` - if the node is a vmware host
+* `openvz?` - if the node is an openvz guest
+* `openvz_host?` - if the node is an openvz host
+* `guest?` - if the node is detected as any kind of guest
+* `hypervisor?` - if the node is detected as being any kind of hypervisor
+* `physical?` - the node is not running as a guest (may be a hypervisor or may be plain metal)
+* `vagrant?` - attempts to identify the node as a vagrant guest (this check may be error prone)
+
 ### Train Helpers
 
 **EXPERIMENTAL**: APIs may have breaking changes any time without warning

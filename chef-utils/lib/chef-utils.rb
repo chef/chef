@@ -24,11 +24,12 @@ require_relative "chef-utils/dsl/platform"
 require_relative "chef-utils/dsl/platform_family"
 require_relative "chef-utils/dsl/service"
 require_relative "chef-utils/dsl/train_helpers"
+require_relative "chef-utils/dsl/virtualization"
 require_relative "chef-utils/dsl/which"
 require_relative "chef-utils/dsl/windows"
 require_relative "chef-utils/mash"
 
-# This is the Chef Infra Client DSL, not everytihng needs to go in here
+# This is the Chef Infra Client DSL, not everything needs to go in here
 module ChefUtils
   include ChefUtils::DSL::Architecture
   include ChefUtils::DSL::Cloud
@@ -38,6 +39,7 @@ module ChefUtils
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::PlatformFamily
   include ChefUtils::DSL::TrainHelpers
+  include ChefUtils::DSL::Virtualization
   include ChefUtils::DSL::Which
   include ChefUtils::DSL::Windows
   # ChefUtils::DSL::Service is deliberately excluded
