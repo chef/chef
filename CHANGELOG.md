@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.48 -->
-## [v16.0.48](https://github.com/chef/chef/tree/v16.0.48) (2020-02-05)
+<!-- latest_release 16.0.49 -->
+## [v16.0.49](https://github.com/chef/chef/tree/v16.0.49) (2020-02-05)
 
 #### Merged Pull Requests
-- Add a default_description in windows_task [#9329](https://github.com/chef/chef/pull/9329) ([tas50](https://github.com/tas50))
+- Swap the methods and the aliases in the chef-utils platforms [#9327](https://github.com/chef/chef/pull/9327) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Swap the methods and the aliases in the chef-utils platforms [#9327](https://github.com/chef/chef/pull/9327) ([tas50](https://github.com/tas50)) <!-- 16.0.49 -->
 - Add a default_description in windows_task [#9329](https://github.com/chef/chef/pull/9329) ([tas50](https://github.com/tas50)) <!-- 16.0.48 -->
 - Add some version string backcompat APIs [#9330](https://github.com/chef/chef/pull/9330) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.47 -->
 - Add chef-sugar virtualization helpers [#9315](https://github.com/chef/chef/pull/9315) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.46 -->
