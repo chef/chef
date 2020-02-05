@@ -76,6 +76,15 @@ module ChefUtils
         file_exist?("/sbin/chkconfig")
       end
 
+      #
+      # Returns if a particular service exists for a particular service init system. Init systems may be :initd, :upstart, :etc_rcd, :xinetd, and :systemd. Example: service_script_exist?(:systemd, 'ntpd')
+      #
+      # @param [Symbol] type The type of init system. :initd, :upstart, :xinetd, :etc_rcd, or :systemd
+      # @param [String] script The name of the service
+      # @since 15.5
+      #
+      # @return [Boolean]
+      #
       def service_script_exist?(type, script)
         case type
         when :initd
