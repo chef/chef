@@ -26,7 +26,7 @@ describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
     powershell_out!("Install-Module -Name cSecurityOptions -Force") if powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
   }
 
-  let(:id) { "MaximumPasswordAge" }
+  let(:secoption) { "MaximumPasswordAge" }
   let(:secvalue) { "30" }
   let(:windows_test_run_context) do
     node = Chef::Node.new
@@ -40,8 +40,8 @@ describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
   end
 
   subject do
-    new_resource = Chef::Resource::WindowsSecurityPolicy.new(id, windows_test_run_context)
-    new_resource.id = id
+    new_resource = Chef::Resource::WindowsSecurityPolicy.new(secoption, windows_test_run_context)
+    new_resource.secoption = secoption
     new_resource.secvalue = secvalue
     new_resource
   end
@@ -67,25 +67,24 @@ describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
 
   describe "secoption and id: " do
     it "accepts 'MinimumPasswordAge', 'MinimumPasswordAge', 'MaximumPasswordAge', 'MinimumPasswordLength', 'PasswordComplexity', 'PasswordHistorySize', 'LockoutBadCount', 'RequireLogonToChangePassword', 'ForceLogoffWhenHourExpire', 'NewAdministratorName', 'NewGuestName', 'ClearTextPassword', 'LSAAnonymousNameLookup', 'EnableAdminAccount', 'EnableGuestAccount' " do
-      expect { subject.id("MinimumPasswordAge") }.not_to raise_error
-      expect { subject.id("MaximumPasswordAge") }.not_to raise_error
-      expect { subject.id("MinimumPasswordLength") }.not_to raise_error
-      expect { subject.id("PasswordComplexity") }.not_to raise_error
-      expect { subject.id("PasswordHistorySize") }.not_to raise_error
-      expect { subject.id("LockoutBadCount") }.not_to raise_error
-      expect { subject.id("RequireLogonToChangePassword") }.not_to raise_error
-      expect { subject.id("ForceLogoffWhenHourExpire") }.not_to raise_error
-      expect { subject.id("NewAdministratorName") }.not_to raise_error
-      expect { subject.id("NewGuestName") }.not_to raise_error
-      expect { subject.id("ClearTextPassword") }.not_to raise_error
-      expect { subject.id("LSAAnonymousNameLookup") }.not_to raise_error
-      expect { subject.id("EnableAdminAccount") }.not_to raise_error
-      expect { subject.id("EnableGuestAccount") }.not_to raise_error
+      expect { subject.secoption("MinimumPasswordAge") }.not_to raise_error
+      expect { subject.secoption("MaximumPasswordAge") }.not_to raise_error
+      expect { subject.secoption("MinimumPasswordLength") }.not_to raise_error
+      expect { subject.secoption("PasswordComplexity") }.not_to raise_error
+      expect { subject.secoption("PasswordHistorySize") }.not_to raise_error
+      expect { subject.secoption("LockoutBadCount") }.not_to raise_error
+      expect { subject.secoption("RequireLogonToChangePassword") }.not_to raise_error
+      expect { subject.secoption("ForceLogoffWhenHourExpire") }.not_to raise_error
+      expect { subject.secoption("NewAdministratorName") }.not_to raise_error
+      expect { subject.secoption("NewGuestName") }.not_to raise_error
+      expect { subject.secoption("ClearTextPassword") }.not_to raise_error
+      expect { subject.secoption("LSAAnonymousNameLookup") }.not_to raise_error
+      expect { subject.secoption("EnableAdminAccount") }.not_to raise_error
+      expect { subject.secoption("EnableGuestAccount") }.not_to raise_error
     end
 
     it "rejects any other option" do
-      expect { subject.id "XYZ" }.to raise_error(ArgumentError)
-      expect { subject.secoption "ABC" }.to raise_error(ArgumentError)
+      expect { subject.secoption "XYZ" }.to raise_error(ArgumentError)
     end
   end
 end
