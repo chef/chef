@@ -25,6 +25,7 @@ module ChefUtils
       # Determine if the current node is a KVM guest.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -35,6 +36,7 @@ module ChefUtils
       # Determine if the current node is a KVM host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -45,6 +47,7 @@ module ChefUtils
       # Determine if the current node is running in a linux container.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -55,6 +58,7 @@ module ChefUtils
       # Determine if the current node is a linux container host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -65,6 +69,7 @@ module ChefUtils
       # Determine if the current node is running under Parallels Desktop.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #   true if the machine is currently running under Parallels Desktop, false
@@ -77,6 +82,7 @@ module ChefUtils
       # Determine if the current node is a Parallels Desktop host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #   true if the machine is currently running under Parallels Desktop, false
@@ -89,6 +95,7 @@ module ChefUtils
       # Determine if the current node is a VirtualBox guest.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -99,6 +106,7 @@ module ChefUtils
       # Determine if the current node is a VirtualBox host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -106,11 +114,13 @@ module ChefUtils
         node.dig("virtualization", "system") == "vbox" && node.dig("virtualization", "role") == "host"
       end
 
+      # chef-sugar backcompat method
       alias_method :virtualbox?, :vbox?
 
       # Determine if the current node is a VMWare guest.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -121,6 +131,7 @@ module ChefUtils
       # Determine if the current node is VMware host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -131,6 +142,7 @@ module ChefUtils
       # Determine if the current node is an openvz guest.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -141,6 +153,7 @@ module ChefUtils
       # Determine if the current node is an openvz host.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -151,6 +164,7 @@ module ChefUtils
       # Determine if the current node is running under any virutalization environment
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -158,11 +172,13 @@ module ChefUtils
         node.dig("virtualization", "role") == "guest"
       end
 
+      # chef-sugar backcompat method
       alias_method :virtual?, :guest?
 
       # Determine if the current node supports running guests under any virtualization environment
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -170,9 +186,10 @@ module ChefUtils
         node.dig("virtualization", "role") == "host"
       end
 
-      # Determine if the current node is NOT running under any virtualization environment (plain metal or hypervisor on metal)
+      # Determine if the current node is NOT running under any virtualization environment (bare-metal or hypervisor on metal)
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #
@@ -186,6 +203,7 @@ module ChefUtils
       # vagrantup.com domain in the hostname, which is the best API we have.
       #
       # @param [Chef::Node] node
+      # @since 15.8
       #
       # @return [Boolean]
       #   true if the machine is currently running vagrant, false

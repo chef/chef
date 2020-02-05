@@ -33,37 +33,41 @@ module ChefUtils
       #
       # @return [Boolean]
       #
-      def linuxmint?(node = __getnode)
+      def linuxmint_platform?(node = __getnode)
         node["platform"] == "linuxmint"
       end
-      # chef-sugar backcompat methods
-      alias_method :mint?, :linuxmint?
-      alias_method :linux_mint?, :linuxmint?
-      alias_method :linuxmint_platform?, :linuxmint?
+      # chef-sugar backcompat method
+      alias_method :mint?, :linuxmint_platform?
+      # chef-sugar backcompat method
+      alias_method :linux_mint?, :linuxmint_platform?
+      # chef-sugar backcompat method
+      alias_method :linuxmint?, :linuxmint_platform?
 
-      # Determine if the current node is ubuntu.
+      # Determine if the current node is Ubuntu.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def ubuntu?(node = __getnode)
+      def ubuntu_platform?(node = __getnode)
         node["platform"] == "ubuntu"
       end
-      alias_method :ubuntu_platform?, :ubuntu?
+      # chef-sugar backcompat method
+      alias_method :ubuntu?, :ubuntu_platform?
 
-      # Determine if the current node is raspbian.
+      # Determine if the current node is Raspbian.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def raspbian?(node = __getnode)
+      def raspbian_platform?(node = __getnode)
         node["platform"] == "raspbian"
       end
-      alias_method :raspbian_platform?, :raspbian?
+      # chef-sugar backcompat method
+      alias_method :raspbian?, :raspbian_platform?
 
-      # Determine if the current node is debian.
+      # Determine if the current node is Debian.
       #
       # @param [Chef::Node] node
       #
@@ -73,7 +77,7 @@ module ChefUtils
         node["platform"] == "debian"
       end
 
-      # Determine if the current node is amazon linux.
+      # Determine if the current node is Amazon Linux.
       #
       # @param [Chef::Node] node
       #
@@ -83,69 +87,75 @@ module ChefUtils
         node["platform"] == "amazon"
       end
 
-      # Determine if the current node is redhat enterprise.
+      # Determine if the current node is Red Hat Enterprise Linux.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def redhat?(node = __getnode)
+      def redhat_platform?(node = __getnode)
         node["platform"] == "redhat"
       end
-      # chef-sugar backcompat methods
-      alias_method :redhat_enterprise?, :redhat?
-      alias_method :redhat_enterprise_linux?, :redhat?
-      alias_method :redhat_platform?, :redhat?
+      # chef-sugar backcompat method
+      alias_method :redhat_enterprise?, :redhat_platform?
+      # chef-sugar backcompat method
+      alias_method :redhat_enterprise_linux?, :redhat_platform?
+      # chef-sugar backcompat method
+      alias_method :redhat?, :redhat_platform?
 
-      # Determine if the current node is centos.
+      # Determine if the current node is CentOS.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def centos?(node = __getnode)
+      def centos_platform?(node = __getnode)
         node["platform"] == "centos"
       end
-      alias_method :centos_platform?, :centos?
+      # chef-sugar backcompat method
+      alias_method :centos?, :centos_platform?
 
-      # Determine if the current node is oracle linux.
+      # Determine if the current node is Oracle Linux.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def oracle?(node = __getnode)
+      def oracle_platform?(node = __getnode)
         node["platform"] == "oracle"
       end
-      # chef-sugar backcompat methods
-      alias_method :oracle_linux?, :oracle?
-      alias_method :oracle_platform?, :oracle?
+      # chef-sugar backcompat method
+      alias_method :oracle_linux?, :oracle_platform?
+      # chef-sugar backcompat method
+      alias_method :oracle?, :oracle_platform?
 
-      # Determine if the current node is scientific linux.
+      # Determine if the current node is Scientific Linux.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def scientific?(node = __getnode)
+      def scientific_platform?(node = __getnode)
         node["platform"] == "scientific"
       end
-      # chef-sugar backcompat methods
-      alias_method :scientific_linux?, :scientific?
-      alias_method :scientific_platform?, :scientific?
+      # chef-sugar backcompat method
+      alias_method :scientific_linux?, :scientific_platform?
+      # chef-sugar backcompat method
+      alias_method :scientific?, :scientific_platform?
 
-      # Determine if the current node is clearos.
+      # Determine if the current node is ClearOS.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def clearos?(node = __getnode)
+      def clearos_platform?(node = __getnode)
         node["platform"] == "clearos"
       end
-      alias_method :clearos_platform?, :clearos?
+      # chef-sugar backcompat method
+      alias_method :clearos?, :clearos_platform?
 
-      # Determine if the current node is fedora.
+      # Determine if the current node is Fedora.
       #
       # @param [Chef::Node] node
       #
@@ -155,7 +165,7 @@ module ChefUtils
         node["platform"] == "fedora"
       end
 
-      # Determine if the current node is arch
+      # Determine if the current node is Arch Linux
       #
       # @param [Chef::Node] node
       #
@@ -165,7 +175,7 @@ module ChefUtils
         node["platform"] == "arch"
       end
 
-      # Determine if the current node is solaris2
+      # Determine if the current node is Solaris2.
       #
       # @param [Chef::Node] node
       #
@@ -175,7 +185,7 @@ module ChefUtils
         node["platform"] == "solaris2"
       end
 
-      # Determine if the current node is smartos
+      # Determine if the current node is SmartOS.
       #
       # @param [Chef::Node] node
       #
@@ -185,40 +195,43 @@ module ChefUtils
         node["platform"] == "smartos"
       end
 
-      # Determine if the current node is omnios
+      # Determine if the current node is OmniOS.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def omnios?(node = __getnode)
+      def omnios_platform?(node = __getnode)
         node["platform"] == "omnios"
       end
-      alias_method :omnios_platform?, :omnios?
+      # chef-sugar backcompat method
+      alias_method :omnios?, :omnios_platform?
 
-      # Determine if the current node is openindiana
+      # Determine if the current node is OpenIndiana.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def openindiana?(node = __getnode)
+      def openindiana_platform?(node = __getnode)
         node["platform"] == "openindiana"
       end
-      alias_method :openindiana_platform?, :openindiana?
+      # chef-sugar backcompat method
+      alias_method :openindiana?, :openindiana_platform?
 
-      # Determine if the current node is nexentacore
+      # Determine if the current node is Nexenta Core Platform aka Nexenta OS.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def nexentacore?(node = __getnode)
+      def nexentacore_platform?(node = __getnode)
         node["platform"] == "nexentacore"
       end
-      alias_method :nexentacore_platform?, :nexentacore?
+      # chef-sugar backcompat method
+      alias_method :nexentacore?, :nexentacore_platform?
 
-      # Determine if the current node is aix
+      # Determine if the current node is AIX.
       #
       # @param [Chef::Node] node
       #
@@ -228,7 +241,7 @@ module ChefUtils
         node["platform"] == "aix"
       end
 
-      # Determine if the current node is freebsd
+      # Determine if the current node is FreeBSD.
       #
       # @param [Chef::Node] node
       #
@@ -238,7 +251,7 @@ module ChefUtils
         node["platform"] == "freebsd"
       end
 
-      # Determine if the current node is openbsd
+      # Determine if the current node is OpenBSD.
       #
       # @param [Chef::Node] node
       #
@@ -248,7 +261,7 @@ module ChefUtils
         node["platform"] == "openbsd"
       end
 
-      # Determine if the current node is netbsd
+      # Determine if the current node is NetBSD.
       #
       # @param [Chef::Node] node
       #
@@ -258,7 +271,7 @@ module ChefUtils
         node["platform"] == "netbsd"
       end
 
-      # Determine if the current node is dragonflybsd
+      # Determine if the current node is DragonFly BSD.
       #
       # @param [Chef::Node] node
       #
@@ -268,7 +281,7 @@ module ChefUtils
         node["platform"] == "dragonfly"
       end
 
-      # Determine if the current node is MacOS.
+      # Determine if the current node is macOS.
       #
       # @param [Chef::Node] node
       #
@@ -277,9 +290,10 @@ module ChefUtils
       def macos_platform?(node = __getnode)
         node["platform"] == "mac_os_x"
       end
+      # chef-sugar backcompat method
       alias_method :mac_os_x_platform?, :macos_platform?
 
-      # Determine if the current node is gentoo
+      # Determine if the current node is Gentoo.
       #
       # @param [Chef::Node] node
       #
@@ -289,7 +303,7 @@ module ChefUtils
         node["platform"] == "gentoo"
       end
 
-      # Determine if the current node is slackware.
+      # Determine if the current node is Slackware.
       #
       # @param [Chef::Node] node
       #
@@ -309,18 +323,21 @@ module ChefUtils
         node["platform"] == "suse"
       end
 
-      # Determine if the current node is OpenSuSE.
+      # Determine if the current node is OpenSUSE.
       #
       # @param [Chef::Node] node
       #
       # @return [Boolean]
       #
-      def opensuse?(node = __getnode)
+      def opensuse_platform?(node = __getnode)
         node["platform"] == "opensuse" || node["platform"] == "opensuseleap"
       end
-      alias_method :opensuse_platform?, :opensuse?
-      alias_method :opensuseleap_platform?, :opensuse?
-      alias_method :leap_platform?, :opensuse?
+      # chef-sugar backcompat method
+      alias_method :opensuse?, :opensuse_platform?
+      # chef-sugar backcompat method
+      alias_method :opensuseleap_platform?, :opensuse_platform?
+      # chef-sugar backcompat method
+      alias_method :leap_platform?, :opensuse_platform?
       # NOTE: to anyone adding :tumbleweed_platform? - :[opensuse]leap_platform? should be false on tumbleweed, :opensuse[_platform]? should be true
 
       # Determine if the current node is Windows.
