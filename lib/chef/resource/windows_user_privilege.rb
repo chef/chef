@@ -70,6 +70,8 @@ class Chef
       resource_name :windows_user_privilege
       description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege. \n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
+      introduced "16.0"
+
       property :principal, String,
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
         name_property: true
