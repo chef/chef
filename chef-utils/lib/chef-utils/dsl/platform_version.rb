@@ -25,7 +25,8 @@ module ChefUtils
       # Return the platform_version for the node. Acts like a String
       # but also provides a mechanism for checking version constraints.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.8
       #
       # @return [ChefUtils::VersionString]
       #
