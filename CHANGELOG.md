@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.13 -->
-## [v15.8.13](https://github.com/chef/chef/tree/v15.8.13) (2020-02-05)
+<!-- latest_release 15.8.14 -->
+## [v15.8.14](https://github.com/chef/chef/tree/v15.8.14) (2020-02-05)
 
 #### Merged Pull Requests
-- Add some version string backcompat APIs [#9331](https://github.com/chef/chef/pull/9331) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pull the windows Ruby installer from S3 for tests [#9333](https://github.com/chef/chef/pull/9333) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Pull the windows Ruby installer from S3 for tests [#9333](https://github.com/chef/chef/pull/9333) ([tas50](https://github.com/tas50)) <!-- 15.8.14 -->
 - Add some version string backcompat APIs [#9331](https://github.com/chef/chef/pull/9331) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.13 -->
 - Add chef-sugar virtualization helpers (Chef 15 backport) [#9316](https://github.com/chef/chef/pull/9316) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.12 -->
 - sysctl: Add new comments property for adding comments to configs [#9324](https://github.com/chef/chef/pull/9324) ([tas50](https://github.com/tas50)) <!-- 15.8.11 -->
