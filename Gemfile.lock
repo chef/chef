@@ -100,7 +100,7 @@ PATH
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
       win32-process (~> 0.8.2)
-      win32-service (>= 2.1.2, < 3.0)
+      win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
 
