@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.15 -->
-## [v15.8.15](https://github.com/chef/chef/tree/v15.8.15) (2020-02-05)
+<!-- latest_release 15.8.16 -->
+## [v15.8.16](https://github.com/chef/chef/tree/v15.8.16) (2020-02-05)
 
 #### Merged Pull Requests
-- Add a default_description in windows_task [#9334](https://github.com/chef/chef/pull/9334) ([tas50](https://github.com/tas50))
+- Swap the methods and the aliases in the chef-utils platforms [#9335](https://github.com/chef/chef/pull/9335) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Swap the methods and the aliases in the chef-utils platforms [#9335](https://github.com/chef/chef/pull/9335) ([tas50](https://github.com/tas50)) <!-- 15.8.16 -->
 - Add a default_description in windows_task [#9334](https://github.com/chef/chef/pull/9334) ([tas50](https://github.com/tas50)) <!-- 15.8.15 -->
 - Pull the windows Ruby installer from S3 for tests [#9333](https://github.com/chef/chef/pull/9333) ([tas50](https://github.com/tas50)) <!-- 15.8.14 -->
 - Add some version string backcompat APIs [#9331](https://github.com/chef/chef/pull/9331) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.13 -->
