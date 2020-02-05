@@ -22,6 +22,7 @@ require_relative "chef-utils/dsl/os"
 require_relative "chef-utils/dsl/path_sanity"
 require_relative "chef-utils/dsl/platform"
 require_relative "chef-utils/dsl/platform_family"
+require_relative "chef-utils/dsl/platform_version"
 require_relative "chef-utils/dsl/service"
 require_relative "chef-utils/dsl/train_helpers"
 require_relative "chef-utils/dsl/virtualization"
@@ -38,6 +39,7 @@ module ChefUtils
   include ChefUtils::DSL::PathSanity
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::PlatformFamily
+  include ChefUtils::DSL::PlatformVersion
   include ChefUtils::DSL::TrainHelpers
   include ChefUtils::DSL::Virtualization
   include ChefUtils::DSL::Which
