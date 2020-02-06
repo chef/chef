@@ -263,7 +263,7 @@ module Shell
     option :standalone,
       short: "-a",
       long: "--standalone",
-      description: "standalone session",
+      description: "Standalone session",
       default: true,
       boolean: true
 
@@ -277,7 +277,7 @@ module Shell
     option :client,
       short: "-z",
       long: "--client",
-      description: "#{Chef::Dist::CLIENT} session",
+      description: "#{Chef::Dist::PRODUCT} session",
       boolean: true
 
     option :solo_legacy_shell,
