@@ -204,7 +204,7 @@ module Shell
         else
           puts help_banner
         end
-        :ucanhaz_halp
+        :help
       end
       alias :halp :help
 
