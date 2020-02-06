@@ -13,6 +13,7 @@ builder-to-testers-map:
   debian-8-x86_64:
     - debian-8-x86_64
     - debian-9-x86_64
+    - debian-10-x86_64
   el-6-i686:
     - el-6-i686
   el-6-x86_64:
