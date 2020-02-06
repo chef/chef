@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.37 -->
-## [v14.14.37](https://github.com/chef/chef/tree/v14.14.37) (2020-01-16)
+<!-- latest_release 14.14.38 -->
+## [v14.14.38](https://github.com/chef/chef/tree/v14.14.38) (2020-02-06)
 
 #### Merged Pull Requests
-- Update all deps to the latest + openssl 1.0.2u [#9221](https://github.com/chef/chef/pull/9221) ([tas50](https://github.com/tas50))
+- Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.38 -->
 - Update all deps to the latest + openssl 1.0.2u [#9221](https://github.com/chef/chef/pull/9221) ([tas50](https://github.com/tas50)) <!-- 14.14.37 -->
 - Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50)) <!-- 14.14.36 -->
 - Update Chef 14 deps to the latest + trim the install size [#9143](https://github.com/chef/chef/pull/9143) ([tas50](https://github.com/tas50)) <!-- 14.14.35 -->
