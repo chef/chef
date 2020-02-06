@@ -49,13 +49,13 @@ class Chef
       property :secvalue, String, required: true,
       description: "Policy value to be set for policy name."
 
-      property :sensitive, [true, false], default: true,
+      property :sensitive, [TrueClass, FalseClass], default: true,
       description: "Ensure that sensitive resource data is not logged by Chef Infra Client.",
       default_description: "true"
 
       action :set do
         security_option = new_resource.secoption
-        if powershell_out!("(Get-PackageSource -Name PSGallery -WarningAction SilentlyContinue).name").stdout.empty? || powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+        if powershell_exec("(Get-PackageSource -Name PSGallery).name").result.empty? || powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
           raise "This resource needs Powershell module cSecurityOptions to be installed. \n Please install it and then re-run the recipe. \n https://www.powershellgallery.com/packages/cSecurityOptions/3.1.3"
         end
 

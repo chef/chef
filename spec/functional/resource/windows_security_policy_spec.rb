@@ -21,9 +21,9 @@ require "functional/resource/base"
 require "chef/mixin/powershell_out"
 
 describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
-  include Chef::Mixin::PowershellOut
+  include Chef::Mixin::PowershellExec
   before(:all) {
-    powershell_out!("Install-Module -Name cSecurityOptions -Force") if powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+    powershell_exec("Install-Module -Name cSecurityOptions -Force") if powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
   }
 
   let(:secoption) { "MaximumPasswordAge" }
