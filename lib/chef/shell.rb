@@ -166,11 +166,10 @@ module Shell
 
     puts "run `help' for help, `exit' or ^D to quit."
     puts
-    puts "Ohai2u#{greeting}!"
   end
 
   def self.greeting
-    " #{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
+    "#{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
   rescue NameError, ArgumentError
     ""
   end
