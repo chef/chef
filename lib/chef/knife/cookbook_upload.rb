@@ -108,7 +108,7 @@ class Chef
 
         if cookbooks.empty?
           cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
-          ui.warn("Could not find any cookbooks in your cookbook path: #{cookbook_path}. Use --cookbook-path to specify the desired path.")
+          ui.warn("Could not find any cookbooks in your cookbook path: '#{File.expand_path(cookbook_path)}'. Use --cookbook-path to specify the desired path.")
         else
           begin
             tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array(cookbooks)
