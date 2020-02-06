@@ -295,7 +295,7 @@ module Shell
     option :chef_server_url,
       short: "-S CHEFSERVERURL",
       long: "--server CHEFSERVERURL",
-      description: "The #{Chef::Dist::PRODUCT} server URL",
+      description: "The #{Chef::Dist::SERVER_PRODUCT} URL",
       proc: nil
 
     option :version,
