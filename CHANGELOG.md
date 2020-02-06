@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.54 -->
-## [v16.0.54](https://github.com/chef/chef/tree/v16.0.54) (2020-02-06)
+<!-- latest_release 16.0.55 -->
+## [v16.0.55](https://github.com/chef/chef/tree/v16.0.55) (2020-02-06)
 
 #### Merged Pull Requests
-- Lazy load as many knife deps as possible [#9343](https://github.com/chef/chef/pull/9343) ([tas50](https://github.com/tas50))
+- Expand the path in knife cookbook upload errors [#9344](https://github.com/chef/chef/pull/9344) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Expand the path in knife cookbook upload errors [#9344](https://github.com/chef/chef/pull/9344) ([tas50](https://github.com/tas50)) <!-- 16.0.55 -->
 - Lazy load as many knife deps as possible [#9343](https://github.com/chef/chef/pull/9343) ([tas50](https://github.com/tas50)) <!-- 16.0.54 -->
 - Improve welcome text in chef-shell [#9342](https://github.com/chef/chef/pull/9342) ([tas50](https://github.com/tas50)) <!-- 16.0.53 -->
 - Add Debian 10 (Buster) Tester [#9341](https://github.com/chef/chef/pull/9341) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.52 -->
