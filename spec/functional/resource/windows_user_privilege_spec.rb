@@ -1,6 +1,6 @@
 #
 # Author:: Vasundhara Jagdale (<vasundhara.jagdale@chef.io>)
-# Copyright 2008-2019, Chef Software, Inc.
+# Copyright 2008-2020, Chef Software, Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ require_relative "../../spec_helper"
 require_relative "../../functional/resource/base"
 
 describe Chef::Resource::WindowsUserPrivilege, :windows_only do
-  include Chef::Mixin::PowershellOut
+  include Chef::Mixin::PowershellExec
 
   let(:principal) { nil }
   let(:privilege) { nil }
@@ -65,7 +65,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
 
   describe "#set privilege" do
     before(:all) {
-      powershell_out!("Uninstall-Module -Name cSecurityOptions") unless powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+      powershell_exec("Uninstall-Module -Name cSecurityOptions") unless powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
     }
 
     let(:principal) { "user_privilege" }
@@ -80,7 +80,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
 
   describe "#set privilege" do
     before(:all) {
-      powershell_out!("Install-Module -Name cSecurityOptions -Force") if powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+      powershell_exec("Install-Module -Name cSecurityOptions -Force") if powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
     }
 
     after { remove_user_privilege("Administrator", subject.privilege) }

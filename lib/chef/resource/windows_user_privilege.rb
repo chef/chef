@@ -1,7 +1,7 @@
 #
 # Author:: Jared Kauppila (<jared@kauppi.la>)
 # Author:: Vasundhara Jagdale(<vasundhara.jagdale@chef.io>)
-# Copyright 2008-2019, Chef Software, Inc.
+# Copyright 2008-2020, Chef Software, Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class Chef
            },
          }
 
-      property :sensitive, [true, false], default: true
+      property :sensitive, [TrueClass, FalseClass], default: true
 
       load_current_value do |new_resource|
         unless new_resource.principal.nil?
@@ -111,7 +111,7 @@ class Chef
           raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
         end
 
-        if powershell_out!("Get-PackageSource -Name PSGallery").stdout.empty? || powershell_out!("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").stdout.empty?
+        if powershell_exec("(Get-PackageSource -Name PSGallery).name").result.empty? || powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
           raise "This resource needs Powershell module cSecurityOptions to be installed. \n Please install it and then re-run the recipe. \n https://www.powershellgallery.com/packages/cSecurityOptions/3.1.3"
         end
 
