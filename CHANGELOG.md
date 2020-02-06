@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.52 -->
-## [v16.0.52](https://github.com/chef/chef/tree/v16.0.52) (2020-02-06)
+<!-- latest_release 16.0.53 -->
+## [v16.0.53](https://github.com/chef/chef/tree/v16.0.53) (2020-02-06)
 
 #### Merged Pull Requests
-- Add Debian 10 (Buster) Tester [#9341](https://github.com/chef/chef/pull/9341) ([christopher-snapp](https://github.com/christopher-snapp))
+- Improve welcome text in chef-shell [#9342](https://github.com/chef/chef/pull/9342) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve welcome text in chef-shell [#9342](https://github.com/chef/chef/pull/9342) ([tas50](https://github.com/tas50)) <!-- 16.0.53 -->
 - Add Debian 10 (Buster) Tester [#9341](https://github.com/chef/chef/pull/9341) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.52 -->
 - Update FFI and pin win32-service to 2.1.5+ [#9337](https://github.com/chef/chef/pull/9337) ([tas50](https://github.com/tas50)) <!-- 16.0.51 -->
 - Pull the windows Ruby installer from S3 for tests [#9332](https://github.com/chef/chef/pull/9332) ([tas50](https://github.com/tas50)) <!-- 16.0.50 -->
