@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "../config"
 require_relative "../dist"
 
 class Chef
@@ -25,6 +24,7 @@ class Chef
     class SslCheck < Chef::Knife
 
       deps do
+        require_relative "../config"
         require "pp" unless defined?(PP)
         require "socket" unless defined?(Socket)
         require "uri" unless defined?(URI)

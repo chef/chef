@@ -17,12 +17,15 @@
 #
 
 require_relative "../knife"
-require_relative "../util/path_helper"
 require_relative "../dist"
 
 class Chef::Knife::Exec < Chef::Knife
 
   banner "knife exec [SCRIPT] (options)"
+
+  deps do
+    require_relative "../util/path_helper"
+  end
 
   option :exec,
     short: "-E CODE",
