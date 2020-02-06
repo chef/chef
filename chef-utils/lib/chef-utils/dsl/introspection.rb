@@ -31,7 +31,7 @@ module ChefUtils
       # Determine if the node is a docker container.
       #
       # @param [Chef::Node] node the node to check
-      # @since 15.5
+      # @since 12.11
       #
       # @return [Boolean]
       #
