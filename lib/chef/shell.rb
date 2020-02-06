@@ -166,11 +166,10 @@ module Shell
 
     puts "run `help' for help, `exit' or ^D to quit."
     puts
-    puts "Ohai2u#{greeting}!"
   end
 
   def self.greeting
-    " #{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
+    "#{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
   rescue NameError, ArgumentError
     ""
   end
@@ -263,7 +262,7 @@ module Shell
     option :standalone,
       short: "-a",
       long: "--standalone",
-      description: "standalone session",
+      description: "Standalone session",
       default: true,
       boolean: true
 
@@ -277,7 +276,7 @@ module Shell
     option :client,
       short: "-z",
       long: "--client",
-      description: "#{Chef::Dist::CLIENT} session",
+      description: "#{Chef::Dist::PRODUCT} session",
       boolean: true
 
     option :solo_legacy_shell,
@@ -295,7 +294,7 @@ module Shell
     option :chef_server_url,
       short: "-S CHEFSERVERURL",
       long: "--server CHEFSERVERURL",
-      description: "The #{Chef::Dist::PRODUCT} server URL",
+      description: "The #{Chef::Dist::SERVER_PRODUCT} URL",
       proc: nil
 
     option :version,
