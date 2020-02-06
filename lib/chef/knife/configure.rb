@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "../util/path_helper"
 require_relative "../dist"
 
 class Chef
@@ -27,6 +26,7 @@ class Chef
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
       deps do
+        require_relative "../util/path_helper"
         require "ohai" unless defined?(Ohai::System)
         Chef::Knife::ClientCreate.load_deps
         Chef::Knife::UserCreate.load_deps

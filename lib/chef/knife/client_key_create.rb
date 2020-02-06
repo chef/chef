@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "key_create"
 require_relative "key_create_base"
 
 class Chef
@@ -32,6 +31,10 @@ class Chef
       include Chef::Knife::KeyCreateBase
 
       banner "knife client key create CLIENT (options)"
+
+      deps do
+        require_relative "key_create"
+      end
 
       attr_reader :actor
 
