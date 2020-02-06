@@ -18,7 +18,6 @@
 #
 
 require_relative "../knife"
-require_relative "../util/path_helper"
 require_relative "data_bag_secret_options"
 
 class Chef
@@ -27,6 +26,7 @@ class Chef
       include DataBagSecretOptions
 
       deps do
+        require_relative "../util/path_helper"
         require_relative "../data_bag"
         require_relative "../data_bag_item"
         require_relative "core/object_loader"

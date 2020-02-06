@@ -15,7 +15,6 @@
 #
 
 require_relative "../knife"
-require_relative "../http"
 
 class Chef
   class Knife

@@ -15,14 +15,16 @@
 # limitations under the License.
 #
 
-require "fileutils" unless defined?(FileUtils)
-
 require_relative "../knife"
 
 class Chef
   class Knife
     class ConfigUseProfile < Knife
       banner "knife config use-profile PROFILE"
+
+      deps do
+        require "fileutils" unless defined?(FileUtils)
+      end
 
       # Disable normal config loading since this shouldn't fail if the profile
       # doesn't exist of the config is otherwise corrupted.

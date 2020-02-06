@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "key_list"
 require_relative "key_list_base"
 
 class Chef
@@ -32,6 +31,10 @@ class Chef
       include Chef::Knife::KeyListBase
 
       banner "knife client key list CLIENT (options)"
+
+      deps do
+        require_relative "key_list"
+      end
 
       attr_reader :actor
 

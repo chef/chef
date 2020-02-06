@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "key_edit"
 require_relative "key_edit_base"
 
 class Chef
@@ -32,6 +31,10 @@ class Chef
       include Chef::Knife::KeyEditBase
 
       banner "knife user key edit USER KEYNAME (options)"
+
+      deps do
+        require_relative "key_edit"
+      end
 
       attr_reader :actor
 
