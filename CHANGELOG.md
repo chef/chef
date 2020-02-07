@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.57 -->
-## [v16.0.57](https://github.com/chef/chef/tree/v16.0.57) (2020-02-07)
+<!-- latest_release 16.0.58 -->
+## [v16.0.58](https://github.com/chef/chef/tree/v16.0.58) (2020-02-07)
 
 #### Merged Pull Requests
-- Update docker? help comment to show it&#39;s since 12.11 [#9348](https://github.com/chef/chef/pull/9348) ([tas50](https://github.com/tas50))
+- Add notify_group resource [#9349](https://github.com/chef/chef/pull/9349) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add notify_group resource [#9349](https://github.com/chef/chef/pull/9349) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.58 -->
 - Update docker? help comment to show it&#39;s since 12.11 [#9348](https://github.com/chef/chef/pull/9348) ([tas50](https://github.com/tas50)) <!-- 16.0.57 -->
 - Bump inspec-core to 4.18.85 [#9346](https://github.com/chef/chef/pull/9346) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.56 -->
 - Expand the path in knife cookbook upload errors [#9344](https://github.com/chef/chef/pull/9344) ([tas50](https://github.com/tas50)) <!-- 16.0.55 -->
