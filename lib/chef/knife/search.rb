@@ -18,7 +18,6 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
-require "addressable/uri" unless defined?(Addressable::URI)
 
 class Chef
   class Knife
@@ -27,6 +26,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
+        require "addressable/uri" unless defined?(Addressable::URI)
         require_relative "../node"
         require_relative "../environment"
         require_relative "../api_client"

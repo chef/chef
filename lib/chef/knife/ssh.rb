@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/shell_out"
 require_relative "../knife"
 
 class Chef
@@ -24,15 +23,16 @@ class Chef
     class Ssh < Knife
 
       deps do
+        require_relative "../mixin/shell_out"
         require "net/ssh" unless defined?(Net::SSH)
         require "net/ssh/multi"
         require "readline"
         require_relative "../exceptions"
         require_relative "../search/query"
         require_relative "../util/path_helper"
-      end
 
-      include Chef::Mixin::ShellOut
+        include Chef::Mixin::ShellOut
+      end
 
       attr_writer :password
 

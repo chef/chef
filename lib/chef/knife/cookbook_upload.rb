@@ -19,19 +19,16 @@
 #
 
 require_relative "../knife"
-require_relative "../cookbook_uploader"
-require_relative "../mixin/file_class"
 
 class Chef
   class Knife
     class CookbookUpload < Knife
-
-      include Chef::Mixin::FileClass
-
       CHECKSUM = "checksum".freeze
       MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
 
       deps do
+        require_relative "../mixin/file_class"
+        include Chef::Mixin::FileClass
         require_relative "../exceptions"
         require_relative "../cookbook_loader"
         require_relative "../cookbook_uploader"
