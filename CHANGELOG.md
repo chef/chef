@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.22 -->
-## [v15.8.22](https://github.com/chef/chef/tree/v15.8.22) (2020-02-07)
+<!-- latest_release 15.8.23 -->
+## [v15.8.23](https://github.com/chef/chef/tree/v15.8.23) (2020-02-07)
 
 #### Merged Pull Requests
-- Lazy load as many knife deps as possible [#9351](https://github.com/chef/chef/pull/9351) ([tas50](https://github.com/tas50))
+- Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.23 -->
 - Lazy load as many knife deps as possible [#9351](https://github.com/chef/chef/pull/9351) ([tas50](https://github.com/tas50)) <!-- 15.8.22 -->
 - Expand the path in knife cookbook upload errors [#9352](https://github.com/chef/chef/pull/9352) ([tas50](https://github.com/tas50)) <!-- 15.8.21 -->
 - Update inspec-core to 4.18.85 [#9350](https://github.com/chef/chef/pull/9350) ([tas50](https://github.com/tas50)) <!-- 15.8.20 -->
