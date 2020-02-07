@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.19 -->
-## [v15.8.19](https://github.com/chef/chef/tree/v15.8.19) (2020-02-06)
+<!-- latest_release 15.8.20 -->
+## [v15.8.20](https://github.com/chef/chef/tree/v15.8.20) (2020-02-07)
 
 #### Merged Pull Requests
-- Improve welcome text in chef-shell [#9345](https://github.com/chef/chef/pull/9345) ([tas50](https://github.com/tas50))
+- Update inspec-core to 4.18.85 [#9350](https://github.com/chef/chef/pull/9350) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.7.32 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Update inspec-core to 4.18.85 [#9350](https://github.com/chef/chef/pull/9350) ([tas50](https://github.com/tas50)) <!-- 15.8.20 -->
 - Improve welcome text in chef-shell [#9345](https://github.com/chef/chef/pull/9345) ([tas50](https://github.com/tas50)) <!-- 15.8.19 -->
 - Add Debian 10 Tester to Chef 15 [#9339](https://github.com/chef/chef/pull/9339) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.8.18 -->
 - Update all the Chef 15 deps to the latest [#9336](https://github.com/chef/chef/pull/9336) ([tas50](https://github.com/tas50)) <!-- 15.8.17 -->
