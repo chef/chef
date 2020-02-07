@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2019, Chef Software, Inc.
+# Copyright:: Copyright 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,7 @@ require_relative "resource/macports_package"
 require_relative "resource/macos_userdefaults"
 require_relative "resource/mdadm"
 require_relative "resource/mount"
+require_relative "resource/notify_group"
 require_relative "resource/ohai"
 require_relative "resource/ohai_hint"
 require_relative "resource/openbsd_package"
