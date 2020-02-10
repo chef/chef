@@ -1,8 +1,127 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
 
-# UNRELEASED
+# Chef Infra Client 15.8
 
-### sysctl now accepts a comments parameter
+## New notify_group functionality
+
+Chef Infra Client now includes a new `notify_group` feature that can be used to extract multiple common notifies out of individual resources to reduce duplicate code in your cookbooks and custom resources. Previously cookbook authors would often use a `log` resource to achieve a similar outcome, but using the log resource results in unnecessary Chef Infra Client log output. The `notify_group` method produces no additional logging, but fires all defined notifications when the `:run` action is set.
+
+Example notify_group that stops, sleeps, and then starts service when a service config is updated:
+
+```ruby
+  service "crude" do
+    action [ :enable, :start ]
+  end
+
+  chef_sleep "60" do
+    action :nothing
+  end
+
+  notify_group "crude_stop_and_start" do
+    notifies :stop, "service[crude]", :immediately
+    notifies :sleep, "chef_sleep[60]", :immediately
+    notifies :start, "service[crude]", :immediately
+  end
+
+  template "/etc/crude/crude.conf" do
+    source "crude.conf.erb"
+    variables node["crude"]
+    notifies :run, "notify_group[crude_stop_and_start]", :immediately
+  end
+```
+
+## Chef InSpec 4.18.85
+
+Chef InSpec has been updated from 4.18.39 to 4.18.85. This release includes a large number of bug fixes in addition to some great resource enhancements:
+
+* The service resource features new support for yocto-based linux distributions. Thank you to [@michaellihs](https://github.com/michaellihs) for this addition!
+* The package resource now includes support for FreeBSD. Thank you to [@fzipi](https://github.com/fzipi) for this work!
+* We standardized the platform for the etc_hosts, virtualization, ini, and xml resources.
+* The oracledb_session resource works again due to a missing quote fix.
+* The groups resource on macOS no longer reports duplicates anymore.
+command.exist? now conforms to POSIX standards. Thanks to [@PiQuer](https://github.com/PiQuer)!
+* Changed the postfix_conf resource's supported platform to the broader unix. Thank you to [@fzipi](https://github.com/fzipi) for this fix!
+
+## New Cookbook Helpers
+
+New helpers have been added to make writing cookbooks easier.
+
+### Platform Version Helpers
+
+New helpers for checking platform versions have been added. These helpers return parsed version strings so there's no need to convert the returned values to Integers or Floats before comparing them. Additionally, comparisons with version objects properly understand the order of versions so `5.11` will compare as larger than `5.9`, whereas converting those values to Floats would result in `5.9` being larger than `5.11`.
+
+* `windows_nt_version` returns the NT kernel version which often differs from Microsoft's marketing versions. This helper offers a good way to find desktop and server releases that are based on the same codebase. For example, NT 6.3 is both Windows 8.1 and Windows 2012 R2.
+* `powershell_version` returns the version of PowerShell installed on the system.
+* `platform_version` returns the value of node['platform_version'].
+
+Example comparison using windows_nt_version:
+
+```ruby
+if windows_nt_version >= 10
+  some_modern_windows_things
+end
+```
+
+### Cloud Helpers
+
+The cloud helpers from chef-sugar have been ported to Chef Infra Client:
+
+* `cloud?` - if the node is running in any cloud, including internal clouds
+* `ec2?` - if the node is running in ec2
+* `gce?` - if the node is running in gce
+* `rackspace?` - if the node is running in rackspace
+* `eucalyptus?` - if the node is running under eucalyptus
+* `linode?` - if the node is running in linode
+* `openstack?` - if the node is running under openstack
+* `azure?` - if the node is running in azure
+* `digital_ocean?` - if the node is running in digital ocean
+* `softlayer?` - if the node is running in softlayer
+
+### Virtualization Helpers
+
+The virtualization helpers from chef-sugar have been ported to Chef Infra Client and extended with helpers to detect hypervisor hosts, physical, and guest systems.
+
+* `kvm?` - if the node is a kvm guest
+* `kvm_host?` - if the node is a kvm host
+* `lxc?` - if the node is an lxc guest
+* `lxc_host?` - if the node is an lxc host
+* `parallels?`- if the node is a parallels guest
+* `parallels_host?`- if the node is a parallels host
+* `vbox?` - if the node is a virtualbox guest
+* `vbox_host?` - if the node is a virtualbox host
+* `vmware?` - if the node is a vmware guest
+* `vmware_host?` - if the node is a vmware host
+* `openvz?` - if the node is an openvz guest
+* `openvz_host?` - if the node is an openvz host
+* `guest?` - if the node is detected as any kind of guest
+* `hypervisor?` - if the node is detected as being any kind of hypervisor
+* `physical?` - the node is not running as a guest (may be a hypervisor or may be bare-metal)
+* `vagrant?` - attempts to identify the node as a vagrant guest (this check may be error-prone)
+
+### include_recipe? helper
+
+chef-sugar's `include_recipe?` has been added to Chef Infra Client providing a simple way to see if a recipe has been included on a node already.
+
+Example usage in a not_if conditional:
+
+```ruby
+execute 'install my_app'
+  command '/tmp/my_app_install.sh'
+  not_if { include_recipe?('my_app::install') }
+end
+```
+
+## Updated Resources
+
+### ifconfig
+
+The `ifconfig` resource now supports the newer `ifconfig` release that ships in Debian 10.
+
+### mac_user
+
+The `mac_user` resource, used when creating a user on Mac systems, has been improved to work better with macOS Catalina (10.15). The resource now properly looks up the numeric GID when creating a user, once again supports the `system` property, and includes a new `hidden` property which prevents the user from showing on the login screen. Thanks [@chilcote](https://github.com/chilcote) for these fixes and improvements.
+
+### sysctl
 
 The `sysctl` resource has been updated to allow the inclusion of descriptive comments. Comments may be passed as an array or as a string. Any comments provided are prefixed with '#' signs and precede the `sysctl` setting in generated files.
 
@@ -35,6 +154,14 @@ which results in `/etc/sysctl.d/99-chef-vm.swappiness.conf` as follows:
 # The default value is 60.
 vm.swappiness = 10
 ```
+
+## Platform Support
+
+* Chef Infra Clients packages are now validated for Debian 10.
+
+## macOS Binary Signing
+
+Each binary in the macOS Chef Infra Client installation is now signed to improve the integrity of the installation and ensure compatibility with macOS Catalina security requirements.
 
 # Chef Infra Client 15.7
 
