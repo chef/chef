@@ -159,6 +159,10 @@ vm.swappiness = 10
 
 * Chef Infra Clients packages are now validated for Debian 10.
 
+## macOS Binary Signing
+
+Each binary in the macOS Chef Infra Client installation is now signed to improve the integrity of the installation and ensure compatibility with macOS Catalina security requirements.
+
 # Chef Infra Client 15.7
 
 ## Updated Resources
