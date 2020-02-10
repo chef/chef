@@ -50,7 +50,7 @@ New helpers have been added to make writing cookbooks easier.
 
 New helpers for checking platform versions have been added. These helpers return parsed version strings so there's no need to convert the returned values to Integers or Floats before comparing them. Additionally, comparisons with version objects properly understand the order of versions so `5.11` will compare as larger than `5.9`, whereas converting those values to Floats would result in `5.9` being larger than `5.11`.
 
-* `windows_nt_version` returns the NT kernel version, which often differs from Microsoft's marketing versions. This helper offers a good way to find desktop and server releases that are based on the same codebase. For example NT 6.3 is both Windows 8.1 and Windows 2012 R2.
+* `windows_nt_version` returns the NT kernel version which often differs from Microsoft's marketing versions. This helper offers a good way to find desktop and server releases that are based on the same codebase. For example, NT 6.3 is both Windows 8.1 and Windows 2012 R2.
 * `powershell_version` returns the version of PowerShell installed on the system.
 * `platform_version` returns the value of node['platform_version'],
 
