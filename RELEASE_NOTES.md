@@ -34,7 +34,7 @@ Example notify_group that stops, sleeps, and then starts service when a service 
 
 Chef InSpec has been updated from 4.18.39 to 4.18.85. This release includes a large number of bug fixes in addition to some great resource enhancements:
 
-* The service resource features new support for yocto-based linux distributions. Thank you to @michaellihs 1 for this addition!
+* The service resource features new support for yocto-based linux distributions. Thank you to [@michaellihs](https://github.com/michaellihs) for this addition!
 * The package resource now includes support for FreeBSD. Thank you to [@fzipi](https://github.com/fzipi) for this work!
 * We standardized the platform for the etc_hosts, virtualization, ini, and xml resources.
 * The oracledb_session resource works again due to a missing quote fix.
