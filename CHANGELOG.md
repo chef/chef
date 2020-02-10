@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.58 -->
-## [v16.0.58](https://github.com/chef/chef/tree/v16.0.58) (2020-02-07)
+<!-- latest_release 16.0.59 -->
+## [v16.0.59](https://github.com/chef/chef/tree/v16.0.59) (2020-02-10)
 
 #### Merged Pull Requests
-- Add notify_group resource [#9349](https://github.com/chef/chef/pull/9349) ([lamont-granquist](https://github.com/lamont-granquist))
+- update syntax of `update-rc.d` commands in enable &amp; disable actions [#8884](https://github.com/chef/chef/pull/8884) ([robuye](https://github.com/robuye))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update syntax of `update-rc.d` commands in enable &amp; disable actions [#8884](https://github.com/chef/chef/pull/8884) ([robuye](https://github.com/robuye)) <!-- 16.0.59 -->
 - Add notify_group resource [#9349](https://github.com/chef/chef/pull/9349) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.58 -->
 - Update docker? help comment to show it&#39;s since 12.11 [#9348](https://github.com/chef/chef/pull/9348) ([tas50](https://github.com/tas50)) <!-- 16.0.57 -->
 - Bump inspec-core to 4.18.85 [#9346](https://github.com/chef/chef/pull/9346) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.56 -->
