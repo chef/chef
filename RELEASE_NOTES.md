@@ -100,7 +100,7 @@ The virtualization helpers from chef-sugar have been ported to Chef Infra Client
 
 ### include_recipe? helper
 
-chef-sugar's `include_recipe?` has been added to Chef Infra Client, providing a simple way to see if a recipe has been included on a node already.
+chef-sugar's `include_recipe?` has been added to Chef Infra Client providing a simple way to see if a recipe has been included on a node already.
 
 Example usage in a not_if conditional:
 
