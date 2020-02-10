@@ -1,48 +1,45 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.23 -->
-## [v15.8.23](https://github.com/chef/chef/tree/v15.8.23) (2020-02-07)
-
-#### Merged Pull Requests
-- Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.7.32 -->
-### Changes not yet released to stable channel
-
-#### Merged Pull Requests
-- Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.23 -->
-- Lazy load as many knife deps as possible [#9351](https://github.com/chef/chef/pull/9351) ([tas50](https://github.com/tas50)) <!-- 15.8.22 -->
-- Expand the path in knife cookbook upload errors [#9352](https://github.com/chef/chef/pull/9352) ([tas50](https://github.com/tas50)) <!-- 15.8.21 -->
-- Update inspec-core to 4.18.85 [#9350](https://github.com/chef/chef/pull/9350) ([tas50](https://github.com/tas50)) <!-- 15.8.20 -->
-- Improve welcome text in chef-shell [#9345](https://github.com/chef/chef/pull/9345) ([tas50](https://github.com/tas50)) <!-- 15.8.19 -->
-- Add Debian 10 Tester to Chef 15 [#9339](https://github.com/chef/chef/pull/9339) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.8.18 -->
-- Update all the Chef 15 deps to the latest [#9336](https://github.com/chef/chef/pull/9336) ([tas50](https://github.com/tas50)) <!-- 15.8.17 -->
-- Swap the methods and the aliases in the chef-utils platforms [#9335](https://github.com/chef/chef/pull/9335) ([tas50](https://github.com/tas50)) <!-- 15.8.16 -->
-- Add a default_description in windows_task [#9334](https://github.com/chef/chef/pull/9334) ([tas50](https://github.com/tas50)) <!-- 15.8.15 -->
-- Pull the windows Ruby installer from S3 for tests [#9333](https://github.com/chef/chef/pull/9333) ([tas50](https://github.com/tas50)) <!-- 15.8.14 -->
-- Add some version string backcompat APIs [#9331](https://github.com/chef/chef/pull/9331) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.13 -->
-- Add chef-sugar virtualization helpers (Chef 15 backport) [#9316](https://github.com/chef/chef/pull/9316) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.8.12 -->
-- sysctl: Add new comments property for adding comments to configs [#9324](https://github.com/chef/chef/pull/9324) ([tas50](https://github.com/tas50)) <!-- 15.8.11 -->
-- mac_user: fixing gid and system properties, and adding hidden property [#9323](https://github.com/chef/chef/pull/9323) ([tas50](https://github.com/tas50)) <!-- 15.8.10 -->
-- Pinning ohai branch to get tests building [#9320](https://github.com/chef/chef/pull/9320) ([tyler-ball](https://github.com/tyler-ball)) <!-- 15.8.9 -->
-- Adding entitlement for unsigned memory execution [#9318](https://github.com/chef/chef/pull/9318) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 15.8.8 -->
-- Update train-core and win32-service [#9312](https://github.com/chef/chef/pull/9312) ([tas50](https://github.com/tas50)) <!-- 15.8.7 -->
-- Add chef-sugar include_recipe? helper [#9306](https://github.com/chef/chef/pull/9306) ([tas50](https://github.com/tas50)) <!-- 15.8.6 -->
-- Add chef-sugar cloud helpers to chef-utils [#9305](https://github.com/chef/chef/pull/9305) ([tas50](https://github.com/tas50)) <!-- 15.8.5 -->
-- Revert Dist value for chef-zero default org [#9309](https://github.com/chef/chef/pull/9309) ([tas50](https://github.com/tas50)) <!-- 15.8.4 -->
-- debian 10 ifconfig fix [#9311](https://github.com/chef/chef/pull/9311) ([tas50](https://github.com/tas50)) <!-- 15.8.3 -->
-- Fix fuzzy node search to work when the search type is a string rather than a symbol [#9308](https://github.com/chef/chef/pull/9308) ([tas50](https://github.com/tas50)) <!-- 15.8.2 -->
-- declare_resource.rb: consistently use `/x/y.txt` [#9310](https://github.com/chef/chef/pull/9310) ([tas50](https://github.com/tas50)) <!-- 15.8.1 -->
-- Add windows_nt_version and powershell_version helpers to chef-utils [#9307](https://github.com/chef/chef/pull/9307) ([tas50](https://github.com/tas50)) <!-- 15.8.0 -->
-- Fixes all notarization issues [#9252](https://github.com/chef/chef/pull/9252) ([jonsmorrow](https://github.com/jonsmorrow)) <!-- 15.7.33 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.8.23](https://github.com/chef/chef/tree/v15.8.23) (2020-02-10)
+
+#### Merged Pull Requests
+- Fixes all notarization issues [#9252](https://github.com/chef/chef/pull/9252) ([jonsmorrow](https://github.com/jonsmorrow))
+- Add windows_nt_version and powershell_version helpers to chef-utils [#9307](https://github.com/chef/chef/pull/9307) ([tas50](https://github.com/tas50))
+- declare_resource.rb: consistently use `/x/y.txt` [#9310](https://github.com/chef/chef/pull/9310) ([tas50](https://github.com/tas50))
+- Fix fuzzy node search to work when the search type is a string rather than a symbol [#9308](https://github.com/chef/chef/pull/9308) ([tas50](https://github.com/tas50))
+- debian 10 ifconfig fix [#9311](https://github.com/chef/chef/pull/9311) ([tas50](https://github.com/tas50))
+- Revert Dist value for chef-zero default org [#9309](https://github.com/chef/chef/pull/9309) ([tas50](https://github.com/tas50))
+- Add chef-sugar cloud helpers to chef-utils [#9305](https://github.com/chef/chef/pull/9305) ([tas50](https://github.com/tas50))
+- Add chef-sugar include_recipe? helper [#9306](https://github.com/chef/chef/pull/9306) ([tas50](https://github.com/tas50))
+- Update train-core and win32-service [#9312](https://github.com/chef/chef/pull/9312) ([tas50](https://github.com/tas50))
+- Adding entitlement for unsigned memory execution [#9318](https://github.com/chef/chef/pull/9318) ([jonsmorrow](https://github.com/jonsmorrow))
+- Pinning ohai branch to get tests building [#9320](https://github.com/chef/chef/pull/9320) ([tyler-ball](https://github.com/tyler-ball))
+- mac_user: fixing gid and system properties, and adding hidden property [#9323](https://github.com/chef/chef/pull/9323) ([tas50](https://github.com/tas50))
+- sysctl: Add new comments property for adding comments to configs [#9324](https://github.com/chef/chef/pull/9324) ([tas50](https://github.com/tas50))
+- Add chef-sugar virtualization helpers (Chef 15 backport) [#9316](https://github.com/chef/chef/pull/9316) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add some version string backcompat APIs [#9331](https://github.com/chef/chef/pull/9331) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pull the windows Ruby installer from S3 for tests [#9333](https://github.com/chef/chef/pull/9333) ([tas50](https://github.com/tas50))
+- Add a default_description in windows_task [#9334](https://github.com/chef/chef/pull/9334) ([tas50](https://github.com/tas50))
+- Swap the methods and the aliases in the chef-utils platforms [#9335](https://github.com/chef/chef/pull/9335) ([tas50](https://github.com/tas50))
+- Update all the Chef 15 deps to the latest [#9336](https://github.com/chef/chef/pull/9336) ([tas50](https://github.com/tas50))
+- Add Debian 10 Tester to Chef 15 [#9339](https://github.com/chef/chef/pull/9339) ([christopher-snapp](https://github.com/christopher-snapp))
+- Improve welcome text in chef-shell [#9345](https://github.com/chef/chef/pull/9345) ([tas50](https://github.com/tas50))
+- Update inspec-core to 4.18.85 [#9350](https://github.com/chef/chef/pull/9350) ([tas50](https://github.com/tas50))
+- Expand the path in knife cookbook upload errors [#9352](https://github.com/chef/chef/pull/9352) ([tas50](https://github.com/tas50))
+- Lazy load as many knife deps as possible [#9351](https://github.com/chef/chef/pull/9351) ([tas50](https://github.com/tas50))
+- Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v15.7.32](https://github.com/chef/chef/tree/v15.7.32) (2020-01-27)
 
 #### Merged Pull Requests
 - Chef 15 backport of #9281 and #9274 [#9283](https://github.com/chef/chef/pull/9283) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v15.7.31](https://github.com/chef/chef/tree/v15.7.31) (2020-01-24)
 
