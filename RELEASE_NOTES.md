@@ -2,6 +2,34 @@ This file holds "in progress" release notes for the current release under develo
 
 # Chef Infra Client 15.8
 
+## New notify_group functionality
+
+Chef Infra Client now includes a new `notify_group` feature that can be used to extract multiple common notifies out of individual resources to reduce duplicate code in your cookbooks and custom resources. Previously cookbook authors would often use a `log` resource to achieve a similar outcome, but using the log resource results in unnecessary Chef Infra Client log output. The `notify_group` method produces no additional logging, but fires all defined notification when the `:run` action is set.
+
+Example notify_group that stops, sleeps, and then starts service when a service config is updated:
+
+```ruby
+  service "crude" do
+    action [ :enable, :start ]
+  end
+
+  chef_sleep "60" do
+    action :nothing
+  end
+
+  notify_group "crude_stop_and_start" do
+    notifies :stop, "service[crude]", :immediately
+    notifies :sleep, "chef_sleep[60]", :immediately
+    notifies :start, "service[crude]", :immediately
+  end
+
+  template "/etc/crude/crude.conf" do
+    source "crude.conf.erb"
+    variables node["crude"]
+    notifies :run, "notify_group[crude_stop_and_start]", :immediately
+  end
+```
+
 ## Chef InSpec 4.18.85
 
 Chef InSpec has been updated from 4.18.39 to 4.18.85. This release includes a large number of bug fixes in addition to some great resource enhancements:
