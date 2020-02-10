@@ -149,44 +149,102 @@ class Chef
         end
 
         def enable_service
-          if new_resource.priority.is_a? Integer
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults #{new_resource.priority} #{100 - new_resource.priority}")
-          elsif new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling
-            # users passing a Hash are responsible for setting their own start priorities
+          # We call the same command regardless if we're enabling or disabling
+          # Users passing a Hash are responsible for setting their own stop priorities
+          if new_resource.priority.is_a? Hash
             set_priority
-          else # No priority, go with update-rc.d defaults
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+            return
           end
+
+          start_priority = new_resource.priority.is_a?(Integer) ? new_resource.priority : 20
+          # Stop processes in reverse order of start using '100 - start_priority'.
+          stop_priority = 100 - start_priority
+
+          shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults #{start_priority} #{stop_priority}")
         end
 
         def disable_service
-          if new_resource.priority.is_a? Integer
-            # Stop processes in reverse order of start using '100 - start_priority'
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop #{100 - new_resource.priority} 2 3 4 5 .")
-          elsif new_resource.priority.is_a? Hash
-            # we call the same command regardless of we're enabling or disabling
-            # users passing a Hash are responsible for setting their own stop priorities
+          if new_resource.priority.is_a? Hash
+            # We call the same command regardless if we're enabling or disabling
+            # Users passing a Hash are responsible for setting their own stop priorities
             set_priority
+            return
+          end
+
+          shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
+
+          # Use legacy syntax if update-rc.d supports it for backward compatibility.
+          if use_legacy_update_rc_d?
+            # If no priority was given assume 20 (update-rc.d default).
+            start_priority = new_resource.priority.is_a?(Integer) ? new_resource.priority : 20
+            # Stop processes in reverse order of start using '100 - start_priority'.
+            stop_priority = 100 - start_priority
+
+            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop #{stop_priority} 2 3 4 5 .")
           else
-            # no priority, using '100 - 20 (update-rc.d default)' to stop in reverse order of start
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop 80 2 3 4 5 .")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} disable")
           end
         end
 
         def set_priority
-          args = ""
-          new_resource.priority.each do |level, o|
-            action = o[0]
-            priority = o[1]
-            args += "#{action} #{priority} #{level} . "
-          end
           shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{args}")
+
+          # Use legacy syntax if update-rc.d supports it for backward compatibility.
+          if use_legacy_update_rc_d?
+            args = ""
+            new_resource.priority.each do |level, o|
+              action = o[0]
+              priority = o[1]
+              args += "#{action} #{priority} #{level} . "
+            end
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{args}")
+            return
+          end
+
+          # Use modern syntax, ignoring priorities as update-rc.d does not support it.
+          #
+          # Reset priorities to default values before applying customizations. This way
+          # the final state will always be consistent, regardless if all runlevels were
+          # provided.
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+          new_resource.priority.each do |level, (action, _priority)|
+            disable_or_enable = (action == :start ? "enable" : "disable")
+
+            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{disable_or_enable} #{level}")
+          end
+        end
+
+        # Ancient Debian releases used run levels and priorities to manage dependencies ordering.
+        # Old syntax no longer works and new syntax does not support priorities. If Chef detects
+        # ancient update-rc.d it will prefer legacy syntax so priorities can be set correctly in
+        # case the host is in fact running SysVinit.
+        #
+        # Additional context: https://lists.debian.org/debian-devel/2013/05/msg01109.html
+        def use_legacy_update_rc_d?
+          @sysv_rc_version ||= shell_out!("dpkg-query -W --showformat '${Version}' sysv-rc").stdout.strip
+
+          # sysv-rc is not installed therefore we're on modern Debian and legacy syntax does not work
+          if @sysv_rc_version.empty?
+            logger.trace("sysv-rc package is not installed. update-rc.d will use modern syntax")
+            return false
+          end
+
+          # sysv-rc is installed and update-rc.d is old enough to support legacy syntax and features
+          if @sysv_rc_version.to_f < 2.88
+            logger.trace("sysv-rc #{@sysv_rc_version} detected. update-rc.d will use legacy syntax")
+            return true
+          end
+
+          # sysv-rc 2.88dsf-42 drops the legacy syntax
+          if @sysv_rc_version.to_f == 2.88 && @sysv_rc_version[8..9].to_i < 42
+            logger.trace("sysv-rc #{@sysv_rc_version} detected. update-rc.d will use legacy syntax")
+            return true
+          end
+
+          # default to modern syntax
+          false
         end
       end
     end
