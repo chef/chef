@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## New notify_group functionality
 
-Chef Infra Client now includes a new `notify_group` feature that can be used to extract multiple common notifies out of individual resources to reduce duplicate code in your cookbooks and custom resources. Previously cookbook authors would often use a `log` resource to achieve a similar outcome, but using the log resource results in unnecessary Chef Infra Client log output. The `notify_group` method produces no additional logging, but fires all defined notification when the `:run` action is set.
+Chef Infra Client now includes a new `notify_group` feature that can be used to extract multiple common notifies out of individual resources to reduce duplicate code in your cookbooks and custom resources. Previously cookbook authors would often use a `log` resource to achieve a similar outcome, but using the log resource results in unnecessary Chef Infra Client log output. The `notify_group` method produces no additional logging, but fires all defined notifications when the `:run` action is set.
 
 Example notify_group that stops, sleeps, and then starts service when a service config is updated:
 
