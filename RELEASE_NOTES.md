@@ -52,7 +52,7 @@ New helpers for checking platform versions have been added. These helpers return
 
 * `windows_nt_version` returns the NT kernel version which often differs from Microsoft's marketing versions. This helper offers a good way to find desktop and server releases that are based on the same codebase. For example, NT 6.3 is both Windows 8.1 and Windows 2012 R2.
 * `powershell_version` returns the version of PowerShell installed on the system.
-* `platform_version` returns the value of node['platform_version'],
+* `platform_version` returns the value of node['platform_version'].
 
 Example comparison using windows_nt_version:
 
