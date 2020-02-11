@@ -297,7 +297,7 @@ GEM
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
     public_suffix (4.0.3)
-    rack (2.1.2)
+    rack (2.2.1)
     rainbow (3.0.0)
     rake (12.3.2)
     rb-readline (0.5.5)
@@ -353,7 +353,7 @@ GEM
     term-ansicolor (1.7.1)
       tins (~> 1.0)
     thor (1.0.1)
-    tins (1.24.0)
+    tins (1.24.1)
       sync
     tomlrb (1.2.9)
     train-core (3.2.20)
