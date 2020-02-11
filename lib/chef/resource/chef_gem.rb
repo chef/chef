@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2012-2019, Chef Software Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,21 +43,6 @@ class Chef
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG["bindir"]}/gem" },
                }
-      property :compile_time, [TrueClass, FalseClass],
-        description: "Controls the phase during which a gem is installed on a node. Set to 'true' to install a gem while the resource collection is being built (the 'compile phase'). Set to 'false' to install a gem while the #{Chef::Dist::CLIENT} is configuring the node (the 'converge phase').",
-        default: false, desired_state: false
-
-      # force the resource to compile time if the compile time property has been set
-      #
-      # @return [void]
-      def after_created
-        if compile_time
-          Array(action).each do |action|
-            run_action(action)
-          end
-          Gem.clear_paths
-        end
-      end
     end
   end
 end

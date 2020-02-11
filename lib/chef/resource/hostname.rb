@@ -30,10 +30,6 @@ class Chef
         description: "An optional property to set the hostname if it differs from the resource block's name.",
         name_property: true
 
-      property :compile_time, [ TrueClass, FalseClass ],
-        description: "Determines whether or not the resource should be run at compile time.",
-        default: true, desired_state: false
-
       property :ipaddress, String,
         description: "The IP address to use when configuring the hosts file.",
         default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
@@ -41,6 +37,11 @@ class Chef
       property :aliases, [ Array, nil ],
         description: "An array of hostname aliases to use when configuring the hosts file.",
         default: nil
+
+      # override compile_time property to be true by default
+      property :compile_time, [ TrueClass, FalseClass ],
+        description: "Determines whether or not the resource should be run at compile time.",
+        default: true, desired_state: false
 
       property :windows_reboot, [ TrueClass, FalseClass ],
         description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
@@ -248,17 +249,6 @@ class Chef
             reason "chef setting hostname"
             action :nothing
             only_if { new_resource.windows_reboot }
-          end
-        end
-      end
-
-      # this resource forces itself to run at compile_time
-      #
-      # @return [void]
-      def after_created
-        if compile_time
-          Array(action).each do |action|
-            run_action(action)
           end
         end
       end

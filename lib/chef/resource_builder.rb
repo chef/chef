@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2017, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -72,6 +72,14 @@ class Chef
 
       # Run optional resource hook
       resource.after_created
+
+      # Force to compile_time execution if the flag is set
+      if resource.compile_time
+        Array(resource.action).each do |action|
+          resource.run_action(action)
+        end
+        resource.action :nothing
+      end
 
       resource
     end

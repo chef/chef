@@ -415,7 +415,6 @@ class Chef
       @not_if
     end
 
-    #
     # The number of times to retry this resource if it fails by throwing an
     # exception while running an action.  Default: 0
     #
@@ -427,7 +426,6 @@ class Chef
     #
     property :retries, Integer, default: 0, desired_state: false
 
-    #
     # The number of seconds to wait between retries.  Default: 2.
     #
     # @param arg [Integer] The number of seconds to wait between retries.
@@ -435,7 +433,6 @@ class Chef
     #
     property :retry_delay, Integer, default: 2, desired_state: false
 
-    #
     # Whether to treat this resource's data as sensitive.  If set, no resource
     # data will be displayed in log output.
     #
@@ -444,7 +441,16 @@ class Chef
     #
     property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
 
+    # If this is set the resource will be set to run at compile time and the converge time
+    # action will be set to :nothing.
     #
+    # @param arg [Boolean] Whether or not to force this resource to run at compile time.
+    # @return [Boolean] Whether or not to force this resource to run at compile time.
+    #
+    property :compile_time, [TrueClass, FalseClass],
+      description: "Determines whether or not the resource is executed during the compile time phase.",
+      default: false, desired_state: false
+
     # The time it took (in seconds) to run the most recently-run action.  Not
     # cumulative across actions.  This is set to 0 as soon as a new action starts
     # running, and set to the elapsed time at the end of the action.
@@ -458,7 +464,6 @@ class Chef
     #
     attr_accessor :executed_by_runner
 
-    #
     # The guard interpreter that will be used to process `only_if` and `not_if`
     # statements.  If left unset, the #default_guard_interpreter will be used.
     #

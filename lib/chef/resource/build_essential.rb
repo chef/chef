@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software Inc.
+# Copyright:: 2008-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,10 +42,6 @@ class Chef
 
       # this allows us to use build_essential without setting a name
       property :name, String, default: ""
-
-      property :compile_time, [TrueClass, FalseClass],
-        description: "Install the build essential packages at compile time.",
-        default: false, desired_state: false
 
       property :raise_if_unsupported, [TrueClass, FalseClass],
         description: "Raise a hard error on platforms where this resource is unsupported.",
@@ -147,17 +143,6 @@ class Chef
           cmd.run_command
           # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
-        end
-      end
-
-      # this resource forces itself to run at compile_time
-      #
-      # @return [void]
-      def after_created
-        return unless compile_time
-
-        Array(action).each do |action|
-          run_action(action)
         end
       end
     end
