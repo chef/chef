@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2011-2018, Chef Software, Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,6 +33,7 @@ class Chef
       property :content, Hash,
         description: "Values to include in the hint file."
 
+      # override compile_time property to default to true
       property :compile_time, [TrueClass, FalseClass],
         description: "Determines whether or not the resource is executed during the compile time phase.",
         default: true, desired_state: false
@@ -81,17 +82,6 @@ class Chef
           return "" if content.nil? || content.empty?
 
           JSON.pretty_generate(content)
-        end
-      end
-
-      # this resource forces itself to run at compile_time
-      #
-      # @return [void]
-      def after_created
-        return unless compile_time
-
-        Array(action).each do |action|
-          run_action(action)
         end
       end
     end
