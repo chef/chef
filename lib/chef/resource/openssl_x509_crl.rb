@@ -28,6 +28,17 @@ class Chef
 
       description "Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
       introduced "14.4"
+      examples <<~DOC
+        Generate a CRL file given a cert file and key file
+
+        ```ruby
+        openssl_x509_crl '/etc/ssl_files/my_ca2.crl' do
+          ca_cert_file '/etc/ssl_files/my_ca2.crt'
+          ca_key_file '/etc/ssl_files/my_ca2.key'
+          expire 1
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",

@@ -29,6 +29,42 @@ class Chef
 
       description "Use the openssl_x509_certificate resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. Note: This resource was renamed from openssl_x509 to openssl_x509_certificate. The legacy name will continue to function, but cookbook code should be updated for the new resource name."
       introduced "14.4"
+      examples <<~DOC
+        Create a simple self-signed certificate file
+
+        ```ruby
+        openssl_x509_certificate '/etc/httpd/ssl/mycert.pem' do
+          common_name 'www.f00bar.com'
+          org 'Foo Bar'
+          org_unit 'Lab'
+          country 'US'
+        end
+        ```
+
+        Create a certificate using additional options
+
+        ```ruby
+        openssl_x509_certificate '/etc/ssl_files/my_signed_cert.crt' do
+          common_name 'www.f00bar.com'
+          ca_key_file '/etc/ssl_files/my_ca.key'
+          ca_cert_file '/etc/ssl_files/my_ca.crt'
+          expire 365
+          extensions(
+            'keyUsage' => {
+              'values' => %w(
+                keyEncipherment
+                digitalSignature),
+              'critical' => true,
+            },
+            'extendedKeyUsage' => {
+              'values' => %w(serverAuth),
+              'critical' => false,
+            }
+          )
+          subject_alt_name ['IP:127.0.0.1', 'DNS:localhost.localdomain']
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
