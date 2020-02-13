@@ -27,11 +27,10 @@ class Chef
 
       description "The notify_group resource does nothing, and always fires notifications which are set on it.  Use it to DRY blocks of notifications that are common to multiple resources, and provide a single target for other resources to notify.  Unlike most resources, its default action is :nothing."
       introduced "15.8"
-
       examples <<~DOC
         Wire up a notification from a service resource to stop and start the service with a 60 second delay.
 
-        ```
+        ```ruby
         service "crude" do
           action [ :enable, :start ]
         end

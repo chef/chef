@@ -29,6 +29,26 @@ class Chef
 
       description "Use the openssl_rsa_private_key resource to generate RSA private key files. If a valid RSA key file can be opened at the specified location, no new file will be created. If the RSA key file cannot be opened, either because it does not exist or because the password to the RSA key file does not match the password in the recipe, it will be overwritten."
       introduced "14.0"
+      examples <<~DOC
+        Generate new 2048bit key with the default des3 cipher
+
+        ```ruby
+        openssl_rsa_private_key '/etc/ssl_files/rsakey_des3.pem' do
+          key_length 2048
+          action :create
+        end
+        ```
+
+        Generate new 1024bit key with the aes-128-cbc cipher
+
+        ```ruby
+        openssl_rsa_key '/etc/ssl_files/rsakey_aes128cbc.pem' do
+          key_length 1024
+          key_cipher 'aes-128-cbc'
+          action :create
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",

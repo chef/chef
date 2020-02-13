@@ -28,6 +28,28 @@ class Chef
 
       description "Use the openssl_ec_private_key resource to generate an elliptic curve (EC) private key file. If a valid EC key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, then it will be overwritten."
       introduced "14.4"
+      examples <<~DOC
+        Generate a new ec privatekey with prime256v1 key curve and default des3 cipher
+
+        ```ruby
+        openssl_ec_private_key '/etc/ssl_files/eckey_prime256v1_des3.pem' do
+          key_curve 'prime256v1'
+          key_pass 'something'
+          action :create
+        end
+        ```
+
+        Generate a new ec private key with prime256v1 key curve and aes-128-cbc cipher
+
+        ```ruby
+        openssl_ec_private_key '/etc/ssl_files/eckey_prime256v1_des3.pem' do
+          key_curve 'prime256v1'
+          key_cipher 'aes-128-cbc'
+          key_pass 'something'
+          action :create
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",

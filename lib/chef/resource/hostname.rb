@@ -22,9 +22,24 @@ class Chef
       resource_name :hostname
       provides :hostname
 
-      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config"\
-                  " file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
+      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
+      examples <<~DOC
+        Set the hostname using the IP address, as detected by Ohai
+
+        ```ruby
+        hostname 'example'
+        ```
+
+        Manually specify the hostname and IP address
+
+        ```ruby
+        hostname 'statically_configured_host' do
+          hostname 'example'
+          ipaddress '198.51.100.2'
+        end
+        ```
+      DOC
 
       property :hostname, String,
         description: "An optional property to set the hostname if it differs from the resource block's name.",
