@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.64 -->
-## [v16.0.64](https://github.com/chef/chef/tree/v16.0.64) (2020-02-13)
+<!-- latest_release 16.0.65 -->
+## [v16.0.65](https://github.com/chef/chef/tree/v16.0.65) (2020-02-13)
 
 #### Merged Pull Requests
-- Add chef_vault_secret resource from chef-vault cookbook [#9364](https://github.com/chef/chef/pull/9364) ([tas50](https://github.com/tas50))
+- Add examples to various resources [#9366](https://github.com/chef/chef/pull/9366) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add examples to various resources [#9366](https://github.com/chef/chef/pull/9366) ([tas50](https://github.com/tas50)) <!-- 16.0.65 -->
 - Add chef_vault_secret resource from chef-vault cookbook [#9364](https://github.com/chef/chef/pull/9364) ([tas50](https://github.com/tas50)) <!-- 16.0.64 -->
 - Bump all deps to the latest [#9365](https://github.com/chef/chef/pull/9365) ([tas50](https://github.com/tas50)) <!-- 16.0.63 -->
 - Add missing require_relative in chef-utils [#9363](https://github.com/chef/chef/pull/9363) ([tas50](https://github.com/tas50)) <!-- 16.0.62 -->
