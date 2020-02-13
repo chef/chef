@@ -29,7 +29,7 @@ describe Chef::Resource::ChefVaultSecret do
   end
 
   it "id is the name property" do
-    expect(resource.id).to eql(foo)
+    expect(resource.id).to eql("foo")
   end
 
   it "supports :create, :create_if_missing, and :delete actions" do
