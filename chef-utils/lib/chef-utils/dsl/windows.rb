@@ -20,7 +20,7 @@ require_relative "../internal"
 module ChefUtils
   module DSL
     module Windows
-      require "chef-utils/version_string"
+      require_relative "../version_string"
 
       include Internal
 
