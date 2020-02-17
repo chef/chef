@@ -588,7 +588,7 @@ class Chef
       begin
         return if should_skip?(action)
 
-        provider_for_action(action).run_action(action)
+        provider_for_action(action).run_action
       rescue StandardError => e
         if ignore_failure
           logger.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
