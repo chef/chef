@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.65 -->
-## [v16.0.65](https://github.com/chef/chef/tree/v16.0.65) (2020-02-13)
+<!-- latest_release 16.0.66 -->
+## [v16.0.66](https://github.com/chef/chef/tree/v16.0.66) (2020-02-18)
 
 #### Merged Pull Requests
-- Add examples to various resources [#9366](https://github.com/chef/chef/pull/9366) ([tas50](https://github.com/tas50))
+- windows_ad_join: Fix joining specific domains when domain trusts are involved [#9370](https://github.com/chef/chef/pull/9370) ([srb3](https://github.com/srb3))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_ad_join: Fix joining specific domains when domain trusts are involved [#9370](https://github.com/chef/chef/pull/9370) ([srb3](https://github.com/srb3)) <!-- 16.0.66 -->
 - Add examples to various resources [#9366](https://github.com/chef/chef/pull/9366) ([tas50](https://github.com/tas50)) <!-- 16.0.65 -->
 - Add chef_vault_secret resource from chef-vault cookbook [#9364](https://github.com/chef/chef/pull/9364) ([tas50](https://github.com/tas50)) <!-- 16.0.64 -->
 - Bump all deps to the latest [#9365](https://github.com/chef/chef/pull/9365) ([tas50](https://github.com/tas50)) <!-- 16.0.63 -->
