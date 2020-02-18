@@ -65,7 +65,7 @@ class Chef
           if http_response.body
             Chef::Log.trace("Response body contains:\n#{http_response.body.length < 256 ? http_response.body : http_response.body[0..256] + " [...truncated...]"}")
           end
-          return [http_response, rest_request, http_response.body.to_s]
+          [http_response, rest_request, http_response.body.to_s]
         end
       end
 

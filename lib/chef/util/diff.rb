@@ -152,14 +152,14 @@ class Chef
 
         if !diff_str.empty? && diff_str != "No differences encountered\n"
           if diff_str.length > diff_output_threshold
-            return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
+            "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
             diff_str = encode_diff_for_json(diff_str)
             @diff = diff_str.split("\n")
-            return "(diff available)"
+            "(diff available)"
           end
         else
-          return "(no diff)"
+          "(no diff)"
         end
       end
 
