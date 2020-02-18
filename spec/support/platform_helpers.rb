@@ -222,16 +222,16 @@ def selinux_enabled?
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1
-      return false
+      false
     when 0
-      return true
+      true
     else
       raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
     end
   else
     # We assume selinux is not enabled if selinux utils are not
     # installed.
-    return false
+    false
   end
 end
 

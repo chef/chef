@@ -104,7 +104,7 @@ class Chef
         needs_delete = new_values.any? { |v| current_values.include?(v) }
         if !needs_delete
           logger.trace("#{new_resource} element '#{new_resource.value}' does not exist")
-          return true # do not delete the key
+          true # do not delete the key
         else
           new_value =
             current_values.select do |item|
@@ -112,13 +112,13 @@ class Chef
             end.join(new_resource.delim)
 
           if new_value.empty?
-            return false # nothing left here, delete the key
+            false # nothing left here, delete the key
           else
             old_value = new_resource.value(new_value)
             create_env
             logger.trace("#{new_resource} deleted #{old_value} element")
             new_resource.updated_by_last_action(true)
-            return true # we removed the element and updated; do not delete the key
+            true # we removed the element and updated; do not delete the key
           end
         end
       end
