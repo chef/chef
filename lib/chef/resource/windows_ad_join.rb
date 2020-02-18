@@ -70,7 +70,7 @@ class Chef
 
         unless on_desired_domain?
           cmd = "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
-          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}@#{new_resource.domain_name}\",$pswd);"
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Add-Computer -DomainName #{new_resource.domain_name} -Credential $credential"
           cmd << " -OUPath \"#{new_resource.ou_path}\"" if new_resource.ou_path
           cmd << " -NewName \"#{new_resource.new_hostname}\"" if new_resource.new_hostname
@@ -102,7 +102,7 @@ class Chef
         if joined_to_domain?
           cmd = ""
           cmd << "$pswd = ConvertTo-SecureString \'#{new_resource.domain_password}\' -AsPlainText -Force;"
-          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{new_resource.domain_user}@#{new_resource.domain_name}\",$pswd);"
+          cmd << "$credential = New-Object System.Management.Automation.PSCredential (\"#{sanitize_usename}\",$pswd);"
           cmd << "Remove-Computer"
           cmd << " -UnjoinDomainCredential $credential"
           cmd << " -NewName \"#{new_resource.new_hostname}\"" if new_resource.new_hostname
@@ -167,6 +167,23 @@ class Chef
         #
         def on_desired_domain?
           node_domain == new_resource.domain_name.downcase
+        end
+
+        #
+        # @return [String] the correct user and domain to use.
+        #   if the domain_user property contains an @ symbol followed by any number of non white space characheters
+        #   then we assume it is a user from another domain than the one specifed in the resource domain_name property.
+        #   if this is the case we do not append the domain_name property to the domain_user property
+        #   the domain_user and domain_name form the UPN (userPrincipalName)
+        #   The specification for the UPN format is RFC 822
+        #   links: https://docs.microsoft.com/en-us/windows/win32/ad/naming-properties#userprincipalname https://tools.ietf.org/html/rfc822
+        #   regex: https://rubular.com/r/isAWojpTMKzlnp
+        def sanitize_usename
+          if new_resource.domain_user =~ /@/
+            new_resource.domain_user
+          else
+            "#{new_resource.domain_user}@#{new_resource.domain_name}"
+          end
         end
 
         # This resource historically took `:immediate` and `:delayed` as arguments to the reboot property but then
