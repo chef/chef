@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require File.expand_path("../../spec_helper", __FILE__)
+require_relative "../spec_helper"
 require "chef/scan_access_control"
 
 describe Chef::ScanAccessControl do
