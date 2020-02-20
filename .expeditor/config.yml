@@ -75,7 +75,7 @@ merge_actions:
       ignore_labels:
         - "Expeditor: Skip Version Bump"
         - "Expeditor: Skip All"
-  - bash:.expeditor/scripts/scripts/update_version.sh:
+  - bash:.expeditor/scripts/update_version.sh:
       only_if: built_in:bump_version
   - built_in:update_changelog:
       ignore_labels:
@@ -107,6 +107,8 @@ subscriptions:
       - built_in:tag_docker_image
       - built_in:publish_rubygems
       - built_in:notify_chefio_slack_channels
+      - bash:.expeditor/scripts/create_github_release.sh:
+          post_commit: true
 
   # the habitat chain
   - workload: buildkite_hab_build_group_published:{{agent_id}}:*
