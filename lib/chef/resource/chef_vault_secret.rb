@@ -80,7 +80,7 @@ class Chef
           search item.search
         rescue ChefVault::Exceptions::KeysNotFound
           current_value_does_not_exist!
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           current_value_does_not_exist! if e.response_code == "404"
         end
       end
