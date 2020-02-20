@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d86c8139e35e8bb92405d56e4b75d0c89d5472b3
+  revision: 1100200f616fe080048fa49fa5942754904c32ca
   branch: master
   specs:
-    chefstyle (0.14.1)
+    chefstyle (0.14.2)
       rubocop (= 0.75.1)
 
 GIT
@@ -34,7 +34,7 @@ PATH
       chef-config (= 16.0.69)
       chef-utils (= 16.0.69)
       chef-vault
-      chef-zero (>= 14.0.11)
+      chef-zero (>= 15.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
@@ -67,7 +67,7 @@ PATH
       chef-config (= 16.0.69)
       chef-utils (= 16.0.69)
       chef-vault
-      chef-zero (>= 14.0.11)
+      chef-zero (>= 15.0)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
@@ -144,20 +144,20 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.1)
-    chef-telemetry (1.0.2)
+    chef-telemetry (1.0.3)
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
       http (~> 2.2)
     chef-vault (4.0.1)
-    chef-zero (14.0.17)
+    chef-zero (15.0.0)
       ffi-yajl (~> 2.2)
-      hashie (>= 2.0, < 4.0)
+      hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
-    cheffish (14.0.13)
-      chef-zero (~> 14.0)
+    cheffish (15.0.0)
+      chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.2)
     concurrent-ruby (1.1.6)
@@ -357,7 +357,7 @@ GEM
     tins (1.24.1)
       sync
     tomlrb (1.2.9)
-    train-core (3.2.20)
+    train-core (3.2.22)
       addressable (~> 2.5)
       inifile (~> 3.0)
       json (>= 1.8, < 3.0)
@@ -453,7 +453,7 @@ DEPENDENCIES
   chef-config!
   chef-utils!
   chef-vault
-  cheffish (>= 14)
+  cheffish (>= 15)
   chefstyle!
   ed25519
   fauxhai-ng

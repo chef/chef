@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
   s.add_dependency "ffi-libarchive"
-  s.add_dependency "chef-zero", ">= 14.0.11"
+  s.add_dependency "chef-zero", ">= 15.0"
   s.add_dependency "chef-vault"
 
   s.add_dependency "plist", "~> 3.2"
