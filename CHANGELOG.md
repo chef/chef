@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.68 -->
-## [v16.0.68](https://github.com/chef/chef/tree/v16.0.68) (2020-02-19)
+<!-- latest_release 16.0.69 -->
+## [v16.0.69](https://github.com/chef/chef/tree/v16.0.69) (2020-02-20)
 
 #### Merged Pull Requests
-- Update libarchive to 3.4.2 and nokogiri to 1.10.8 [#9377](https://github.com/chef/chef/pull/9377) ([tas50](https://github.com/tas50))
+- Relax the cheffish constraint [#9379](https://github.com/chef/chef/pull/9379) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Relax the cheffish constraint [#9379](https://github.com/chef/chef/pull/9379) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.69 -->
 - Update libarchive to 3.4.2 and nokogiri to 1.10.8 [#9377](https://github.com/chef/chef/pull/9377) ([tas50](https://github.com/tas50)) <!-- 16.0.68 -->
 - Use require_relative within the specs [#9375](https://github.com/chef/chef/pull/9375) ([tas50](https://github.com/tas50)) <!-- 16.0.67 -->
 - windows_ad_join: Fix joining specific domains when domain trusts are involved [#9370](https://github.com/chef/chef/pull/9370) ([srb3](https://github.com/srb3)) <!-- 16.0.66 -->
