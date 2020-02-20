@@ -4,13 +4,15 @@
 # The MIT License (MIT)
 #
 # Copyright 2016-2018, Shopify Inc.
-# Copyright 2018, Chef Software, Inc.
+# Copyright 2018-2020, Chef Software Inc.
 
 require_relative "../resource"
 
 class Chef
   class Resource
     class KernelModule < Chef::Resource
+      unified_mode true
+
       resource_name :kernel_module
 
       description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
@@ -81,15 +83,22 @@ class Chef
       action :install do
         description "Load kernel module, and ensure it loads on reboot."
 
+        with_run_context :root do
+          find_resource(:execute, "update initramfs") do
+            command initramfs_command
+            action :nothing
+          end
+        end
+
         # create options file before loading the module
         unless new_resource.options.nil?
           file "#{new_resource.unload_dir}/options_#{new_resource.modname}.conf" do
             content "options #{new_resource.modname} #{new_resource.options.join(" ")}\n"
-          end.run_action(:create)
+          end
         end
 
         # load the module first before installing
-        new_resource.run_action(:load)
+        action_load
 
         directory new_resource.load_dir do
           recursive true
@@ -99,17 +108,16 @@ class Chef
           content "#{new_resource.modname}\n"
           notifies :run, "execute[update initramfs]", :delayed
         end
+      end
 
+      action :uninstall do
+        description "Unload a kernel module and remove module config, so it doesn't load on reboot."
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
             action :nothing
           end
         end
-      end
-
-      action :uninstall do
-        description "Unload a kernel module and remove module config, so it doesn't load on reboot."
 
         file "#{new_resource.load_dir}/#{new_resource.modname}.conf" do
           action :delete
@@ -125,50 +133,43 @@ class Chef
           action :delete
         end
 
+        action_unload
+      end
+
+      action :blacklist do
+        description "Blacklist a kernel module."
+
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
             action :nothing
           end
         end
-
-        new_resource.run_action(:unload)
-      end
-
-      action :blacklist do
-        description "Blacklist a kernel module."
 
         file "#{new_resource.unload_dir}/blacklist_#{new_resource.modname}.conf" do
           content "blacklist #{new_resource.modname}"
           notifies :run, "execute[update initramfs]", :delayed
         end
 
+        action_unload
+      end
+
+      action :disable do
+        description "Disable a kernel module."
+
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
             action :nothing
           end
         end
-
-        new_resource.run_action(:unload)
-      end
-
-      action :disable do
-        description "Disable a kernel module."
 
         file "#{new_resource.unload_dir}/disable_#{new_resource.modname}.conf" do
           content "install #{new_resource.modname} /bin/false"
           notifies :run, "execute[update initramfs]", :delayed
         end
 
-        with_run_context :root do
-          find_resource(:execute, "update initramfs") do
-            command initramfs_command
-            action :nothing
-          end
-        end
-
-        new_resource.run_action(:unload)
+        action_unload
       end
 
       action :load do

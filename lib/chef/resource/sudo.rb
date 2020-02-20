@@ -4,7 +4,7 @@
 #
 # Copyright:: 2011-2018, Bryan w. Berry
 # Copyright:: 2012-2018, Seth Vargo
-# Copyright:: 2015-2018, Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class Sudo < Chef::Resource
+      unified_mode true
+
       resource_name :sudo
       provides(:sudo) { true }
 
@@ -148,14 +150,13 @@ class Chef
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
-          declare_resource(:package, "sudo") do
-            action :nothing
+          package "sudo" do
             not_if "which sudo"
-          end.run_action(:install)
+          end
         end
 
         target = "#{new_resource.config_prefix}/sudoers.d/"
-        declare_resource(:directory, target) unless ::File.exist?(target)
+        directory(target) unless ::File.exist?(target)
 
         Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
         file_path = "#{target}#{new_resource.filename}"
@@ -163,7 +164,7 @@ class Chef
         if new_resource.template
           logger.trace("Template property provided, all other properties ignored.")
 
-          declare_resource(:template, file_path) do
+          template file_path do
             source new_resource.template
             mode "0440"
             variables new_resource.variables
@@ -171,7 +172,7 @@ class Chef
             action :create
           end
         else
-          declare_resource(:template, file_path) do
+          template file_path do
             source ::File.expand_path("../support/sudoer.erb", __FILE__)
             local true
             mode "0440"

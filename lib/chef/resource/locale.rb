@@ -1,6 +1,6 @@
 #
 # Copyright:: 2011-2016, Heavy Water Software Inc.
-# Copyright:: 2016-2018, Chef Software Inc.
+# Copyright:: 2016-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ require_relative "../dist"
 class Chef
   class Resource
     class Locale < Chef::Resource
+      unified_mode true
       resource_name :locale
 
       description "Use the locale resource to set the system's locale."
@@ -66,12 +67,10 @@ class Chef
 
       action :update do
         description "Update the system's locale."
-        begin
-          unless up_to_date?
-            converge_by "Updating System Locale" do
-              generate_locales unless unavailable_locales.empty?
-              update_locale
-            end
+        unless up_to_date?
+          converge_by "Updating System Locale" do
+            generate_locales unless unavailable_locales.empty?
+            update_locale
           end
         end
       end

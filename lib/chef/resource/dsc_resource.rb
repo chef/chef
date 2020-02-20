@@ -1,7 +1,7 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
 #
-# Copyright:: Copyright 2014-2019, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class DscResource < Chef::Resource
+      unified_mode true
+
       resource_name :dsc_resource
       provides :dsc_resource
 

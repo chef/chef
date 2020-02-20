@@ -2,8 +2,8 @@
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Chef Software Inc.
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright 2011-2020, Chef Software Inc.
+# Copyright 2014-2020, Chef Software Inc.<legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
+      unified_mode true
+
       resource_name :homebrew_package
       provides :package, os: "darwin"
 
