@@ -10,7 +10,7 @@
 # When tests of an unstable build pass within our CI system it will be promoted to the "current" channel and
 # Expeditor will tag that image as "current" on Docker Hub.
 #
-# When a build is promoted to our "stable" channel .expeditor/update_dockerfile.sh is run to update the version
+# When a build is promoted to our "stable" channel .expeditor/scripts/update_dockerfile.sh is run to update the version
 # in this file and also tag that image as "latest" on Docker Hub. Additionally major and minor tags will be
 # applied so 15.0.260 would be tagged as "latest", "15" and "15.0", as well as "15.0.260".
 
