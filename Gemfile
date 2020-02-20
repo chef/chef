@@ -20,7 +20,7 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", "~> 14"
+gem "cheffish", ">= 14"
 
 group(:omnibus_package) do
   gem "appbundler"
