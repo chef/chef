@@ -17,6 +17,7 @@
 #
 
 require "uri" unless defined?(URI)
+require "cgi" unless defined?(CGI)
 require "tempfile" unless defined?(Tempfile)
 require "net/ftp"
 require_relative "../remote_file"

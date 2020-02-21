@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ require_relative "../../resource/windows_package"
 require_relative "../package"
 require_relative "../../util/path_helper"
 require_relative "../../mixin/checksum"
+require "cgi" unless defined?(CGI)
 
 class Chef
   class Provider
