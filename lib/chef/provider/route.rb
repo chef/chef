@@ -78,7 +78,7 @@ class Chef
           IPAddr.new(ip, Socket::AF_INET).to_s
         rescue ArgumentError
           logger.trace("Invalid IP address data: hex=#{hex_ip}, ip=#{ip}")
-          return nil
+          nil
         end
       end
 

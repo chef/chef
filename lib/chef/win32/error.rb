@@ -50,7 +50,7 @@ class Chef
 
         # Extract the string
         begin
-          return buffer.read_pointer.read_wstring(num_chars)
+          buffer.read_pointer.read_wstring(num_chars)
         ensure
           Chef::ReservedNames::Win32::Memory.local_free(buffer.read_pointer)
         end

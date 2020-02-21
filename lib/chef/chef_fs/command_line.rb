@@ -190,9 +190,9 @@ class Chef
           are_same, old_value, new_value = Chef::ChefFS::FileSystem.compare(old_entry, new_entry)
           if are_same
             if old_value == :none
-              return [ [ :both_nonexistent, old_entry, new_entry ] ]
+              [ [ :both_nonexistent, old_entry, new_entry ] ]
             else
-              return [ [ :same, old_entry, new_entry ] ]
+              [ [ :same, old_entry, new_entry ] ]
             end
           else
             if old_value == :none
@@ -235,11 +235,11 @@ class Chef
             end
 
             if old_value == :none || (old_value.nil? && !old_entry.exists?)
-              return [ [ :added, old_entry, new_entry, old_value, new_value ] ]
+              [ [ :added, old_entry, new_entry, old_value, new_value ] ]
             elsif new_value == :none
-              return [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]
+              [ [ :deleted, old_entry, new_entry, old_value, new_value ] ]
             else
-              return [ [ :modified, old_entry, new_entry, old_value, new_value ] ]
+              [ [ :modified, old_entry, new_entry, old_value, new_value ] ]
             end
           end
         end

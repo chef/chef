@@ -75,9 +75,9 @@ class Chef
           cmd = shell_out!(selinuxenabled_path, returns: [0, 1])
           case cmd.exitstatus
           when 1
-            return false
+            false
           when 0
-            return true
+            true
           else
             raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end

@@ -90,9 +90,9 @@ class Chef
 
           case key_matches.length
           when 0
-            return nil
+            nil
           when 1
-            return @values[platform][key_matches.first]
+            @values[platform][key_matches.first]
           else
             raise "Multiple matches detected for #{platform} with values #{@values}. The matches are: #{key_matches}"
           end

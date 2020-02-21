@@ -88,9 +88,9 @@ class Chef
           def install_only_packages(name)
             query_output = query("installonlypkgs", { "package" => name })
             if query_output == "False"
-              return false
+              false
             elsif query_output == "True"
-              return true
+              true
             end
           end
 
