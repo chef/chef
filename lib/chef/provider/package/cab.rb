@@ -1,6 +1,6 @@
 #
 # Author:: Vasundhara Jagdale (<vasundhara.jagdale@msystechnologies.com>)
-# Copyright:: Copyright 2015-2019, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ require_relative "../../resource/cab_package"
 require_relative "../../mixin/shell_out"
 require_relative "../../mixin/uris"
 require_relative "../../mixin/checksum"
+require "cgi" unless defined?(CGI)
 
 class Chef
   class Provider
@@ -58,7 +59,7 @@ class Chef
 
         def default_download_cache_path
           uri = ::URI.parse(new_resource.source)
-          filename = ::File.basename(::URI.unescape(uri.path))
+          filename = ::File.basename(::CGI.unescape(uri.path))
           file_cache_dir = Chef::FileCache.create_cache_path("package/")
           Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
         end

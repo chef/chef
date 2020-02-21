@@ -17,6 +17,7 @@
 #
 
 require "uri" unless defined?(URI)
+require "cgi" unless defined?(CGI)
 require "tempfile" unless defined?(Tempfile)
 require "net/sftp"
 require_relative "../remote_file"
@@ -47,7 +48,7 @@ class Chef
         end
 
         def user
-          URI.unescape(uri.user)
+          CGI.unescape(uri.user)
         end
 
         def fetch
@@ -62,7 +63,7 @@ class Chef
         end
 
         def pass
-          URI.unescape(uri.password)
+          CGI.unescape(uri.password)
         end
 
         def validate_path!
