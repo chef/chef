@@ -19,7 +19,7 @@
 require_relative "../resource"
 require_relative "../http/simple"
 require "tmpdir" unless defined?(Dir.mktmpdir)
-require "cgi" unless defined?(CGI)
+require "addressable" unless defined?(Addressable)
 
 class Chef
   class Resource
@@ -379,7 +379,7 @@ class Chef
         def build_repo(uri, distribution, components, trusted, arch, add_src = false)
           uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
-          uri = CGI.escape(uri)
+          uri = Addressable::URI.parse(uri)
           components = Array(components).join(" ")
           options = []
           options << "arch=#{arch}" if arch
@@ -387,7 +387,7 @@ class Chef
           optstr = unless options.empty?
                      "[" + options.join(" ") + "]"
                    end
-          info = [ optstr, uri, distribution, components ].compact.join(" ")
+          info = [ optstr, uri.normalize.to_s, distribution, components ].compact.join(" ")
           repo =  "deb      #{info}\n"
           repo << "deb-src  #{info}\n" if add_src
           repo
