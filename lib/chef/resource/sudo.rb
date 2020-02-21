@@ -156,7 +156,7 @@ class Chef
         end
 
         target = "#{new_resource.config_prefix}/sudoers.d/"
-        directory(target) unless ::File.exist?(target)
+        directory(target)
 
         Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
         file_path = "#{target}#{new_resource.filename}"
