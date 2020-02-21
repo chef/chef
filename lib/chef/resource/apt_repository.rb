@@ -378,7 +378,7 @@ class Chef
         def build_repo(uri, distribution, components, trusted, arch, add_src = false)
           uri = make_ppa_url(uri) if is_ppa_url?(uri)
 
-          uri = URI.escape(uri)
+          uri = CGI.escape(uri)
           components = Array(components).join(" ")
           options = []
           options << "arch=#{arch}" if arch

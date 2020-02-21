@@ -57,7 +57,7 @@ class Chef
 
         def user
           if uri.userinfo
-            URI.unescape(uri.user)
+            CGI.unescape(uri.user)
           else
             "anonymous"
           end
@@ -65,7 +65,7 @@ class Chef
 
         def pass
           if uri.userinfo
-            URI.unescape(uri.password)
+            CGI.unescape(uri.password)
           else
             nil
           end

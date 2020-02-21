@@ -277,7 +277,7 @@ class Chef
 
         def default_download_cache_path
           uri = ::URI.parse(new_resource.source)
-          filename = ::File.basename(::URI.unescape(uri.path))
+          filename = ::File.basename(::CGI.unescape(uri.path))
           file_cache_dir = Chef::FileCache.create_cache_path("package/")
           Chef::Util::PathHelper.cleanpath("#{file_cache_dir}/#{filename}")
         end
