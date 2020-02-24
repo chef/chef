@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.76 -->
-## [v16.0.76](https://github.com/chef/chef/tree/v16.0.76) (2020-02-24)
+<!-- latest_release 16.0.77 -->
+## [v16.0.77](https://github.com/chef/chef/tree/v16.0.77) (2020-02-24)
 
 #### Merged Pull Requests
-- Parse YAML recipes [#8653](https://github.com/chef/chef/pull/8653) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add distro constants to the bootstrap templates to support non-Chef distros [#9371](https://github.com/chef/chef/pull/9371) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add distro constants to the bootstrap templates to support non-Chef distros [#9371](https://github.com/chef/chef/pull/9371) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.77 -->
 - Parse YAML recipes [#8653](https://github.com/chef/chef/pull/8653) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.76 -->
 - Update HTTPServerException to be HTTPClientException [#9381](https://github.com/chef/chef/pull/9381) ([tas50](https://github.com/tas50)) <!-- 16.0.75 -->
 - Convert more resources to unified_mode [#9386](https://github.com/chef/chef/pull/9386) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.74 -->
