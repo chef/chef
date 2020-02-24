@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.74 -->
-## [v16.0.74](https://github.com/chef/chef/tree/v16.0.74) (2020-02-24)
+<!-- latest_release 16.0.75 -->
+## [v16.0.75](https://github.com/chef/chef/tree/v16.0.75) (2020-02-24)
 
 #### Merged Pull Requests
-- Convert more resources to unified_mode [#9386](https://github.com/chef/chef/pull/9386) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update HTTPServerException to be HTTPClientException [#9381](https://github.com/chef/chef/pull/9381) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update HTTPServerException to be HTTPClientException [#9381](https://github.com/chef/chef/pull/9381) ([tas50](https://github.com/tas50)) <!-- 16.0.75 -->
 - Convert more resources to unified_mode [#9386](https://github.com/chef/chef/pull/9386) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.74 -->
 - fix ruby 2.7 URI.unescape deprecation [#9387](https://github.com/chef/chef/pull/9387) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.73 -->
 - Chefstyle fixes identified with Rubocop 0.80 [#9374](https://github.com/chef/chef/pull/9374) ([tas50](https://github.com/tas50)) <!-- 16.0.72 -->
