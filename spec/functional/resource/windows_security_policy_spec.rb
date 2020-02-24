@@ -22,9 +22,6 @@ require "chef/mixin/powershell_out"
 
 describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
   include Chef::Mixin::PowershellExec
-  before(:all) {
-    powershell_exec("Install-Module -Name cSecurityOptions -Force") if powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
-  }
 
   let(:secoption) { "MaximumPasswordAge" }
   let(:secvalue) { "30" }
@@ -59,9 +56,12 @@ describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
     end
 
     it "should be idempotent" do
+      subject.secvalue("30")
       subject.run_action(:set)
+      guardscript_and_script_time = subject.elapsed_time
       subject.run_action(:set)
-      expect(subject).not_to be_updated_by_last_action
+      only_guardscript_time = subject.elapsed_time
+      expect(only_guardscript_time).to be < guardscript_and_script_time
     end
   end
 

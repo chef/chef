@@ -49,25 +49,42 @@ class Chef
       property :secvalue, String, required: true,
       description: "Policy value to be set for policy name."
 
-      property :sensitive, [TrueClass, FalseClass], default: true,
-      description: "Ensure that sensitive resource data is not logged by Chef Infra Client.",
-      default_description: "true"
-
       action :set do
         security_option = new_resource.secoption
-        if powershell_exec("(Get-PackageSource -Name PSGallery).name").result.empty? || powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
-          raise "This resource needs Powershell module cSecurityOptions to be installed. \n Please install it and then re-run the recipe. \n https://www.powershellgallery.com/packages/cSecurityOptions/3.1.3"
-        end
-
-        sec_hash = {
-          security_option => new_resource.secvalue,
-        }
-        dsc_resource "AccountSettings" do
-          module_name "cSecurityOptions"
-          resource :AccountAndBasicAuditing
-          property :Enable, "$true"
-          property :AccountAndBasicAuditing, sec_hash
-          sensitive new_resource.sensitive
+        security_value = new_resource.secvalue
+        directory 'c:\\chef_temp'
+        powershell_script "#{security_option} set to #{security_value}" do
+          convert_boolean_return true
+          code <<-EOH
+            $security_option = "#{security_option}"
+            if ( ($security_option -match "NewGuestName") -Or ($security_option -match "NewAdministratorName") )
+              {
+                $#{security_option}_Remediation = (Get-Content c:\\chef_temp\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace '#{security_option}\\s*=\\s*\\"\\w*\\"', '#{security_option} = "#{security_value}"' } | Set-Content 'c:\\chef_temp\\#{security_option}_Export.inf'
+                secedit /configure /db $env:windir\\security\\new.sdb /cfg 'c:\\chef_temp\\#{security_option}_Export.inf' /areas SECURITYPOLICY
+              }
+            else
+              {
+                $#{security_option}_Remediation = (Get-Content c:\\chef_temp\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace "#{security_option}\\s*=\\s*\\d*", "#{security_option} = #{security_value}" } | Set-Content 'c:\\chef_temp\\#{security_option}_Export.inf'
+                secedit /configure /db $env:windir\\security\\new.sdb /cfg 'c:\\chef_temp\\#{security_option}_Export.inf' /areas SECURITYPOLICY
+              }
+              Remove-Item 'c:\\chef_temp' -Force -Recurse -ErrorAction SilentlyContinue
+          EOH
+          guard_interpreter :powershell_script
+          not_if <<-EOH
+            $#{security_option}_Export = secedit /export /cfg 'c:\\chef_temp\\#{security_option}_Export.inf'
+            $ExportAudit = (Get-Content c:\\chef_temp\\#{security_option}_Export.inf | Select-String -Pattern #{security_option})
+            $check_digit = $ExportAudit -match '#{security_option} = #{security_value}'
+            $check_string = $ExportAudit -match '#{security_option} = "#{security_value}"'
+            if ( $check_string -Or $check_digit )
+              {
+                Remove-Item 'c:\\chef_temp' -Force -Recurse -ErrorAction SilentlyContinue
+                $true
+              }
+            else
+              {
+                $false
+              }
+          EOH
         end
       end
     end
