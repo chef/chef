@@ -2,7 +2,7 @@
 # Author:: Kirill Kouznetsov <agon.smith@gmail.com>
 #
 # Copyright 2018, Kirill Kouznetsov.
-# Copyright 2018, Chef Software, Inc.
+# Copyright 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class Timezone < Chef::Resource
+      unified_mode true
+
       resource_name :timezone
 
       description "Use the timezone resource to change the system timezone on Windows, Linux, and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values for Linux and macOS here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and for Windows here: https://ss64.com/nt/timezones.html."

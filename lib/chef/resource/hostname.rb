@@ -19,6 +19,8 @@ class Chef
     # Sets the hostname and updates /etc/hosts on *nix systems
     # @since 14.0.0
     class Hostname < Chef::Resource
+      unified_mode true
+
       resource_name :hostname
       provides :hostname
 

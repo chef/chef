@@ -1,6 +1,6 @@
 #
 # Copyright:: 2011-2018, Joshua Timberman
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class MacosUserDefaults < Chef::Resource
+      unified_mode true
+
       # align with apple's marketing department
       resource_name :macos_userdefaults
       provides(:mac_os_x_userdefaults) { true }
@@ -106,7 +108,9 @@ class Chef
           cmd << "-#{type}" if type
           cmd << value
 
-          declare_resource(:execute, cmd.join(" ")) do
+          # FIXME: this should use cmd directly as an array argument, but then the quoting
+          # of indiviual args above needs to be removed as well.
+          execute cmd.join(" ") do
             user new_resource.user unless new_resource.user.nil?
           end
         end
