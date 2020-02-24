@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.77 -->
-## [v16.0.77](https://github.com/chef/chef/tree/v16.0.77) (2020-02-24)
+<!-- latest_release 16.0.78 -->
+## [v16.0.78](https://github.com/chef/chef/tree/v16.0.78) (2020-02-24)
 
 #### Merged Pull Requests
-- Add distro constants to the bootstrap templates to support non-Chef distros [#9371](https://github.com/chef/chef/pull/9371) ([bobchaos](https://github.com/bobchaos))
+- When bootstrapping don&#39;t send an empty run_list if we are using policyfiles instead [#9156](https://github.com/chef/chef/pull/9156) ([NAshwini](https://github.com/NAshwini))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- When bootstrapping don&#39;t send an empty run_list if we are using policyfiles instead [#9156](https://github.com/chef/chef/pull/9156) ([NAshwini](https://github.com/NAshwini)) <!-- 16.0.78 -->
 - Add distro constants to the bootstrap templates to support non-Chef distros [#9371](https://github.com/chef/chef/pull/9371) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.77 -->
 - Parse YAML recipes [#8653](https://github.com/chef/chef/pull/8653) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.76 -->
 - Update HTTPServerException to be HTTPClientException [#9381](https://github.com/chef/chef/pull/9381) ([tas50](https://github.com/tas50)) <!-- 16.0.75 -->
