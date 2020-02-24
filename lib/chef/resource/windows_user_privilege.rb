@@ -105,24 +105,34 @@ class Chef
       end
 
       action :set do
-        uras = new_resource.privilege
-
         if new_resource.users.nil? || new_resource.users.empty?
           raise Chef::Exceptions::ValidationFailed, "Users are required property with set action."
         end
 
-        if powershell_exec("(Get-PackageSource -Name PSGallery).name").result.empty? || powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
-          raise "This resource needs Powershell module cSecurityOptions to be installed. \n Please install it and then re-run the recipe. \n https://www.powershellgallery.com/packages/cSecurityOptions/3.1.3"
+        users = []
+
+        # Getting users with its domain for comparison
+        new_resource.users.each do |user|
+          user = Chef::ReservedNames::Win32::Security.lookup_account_name(user)
+          users << user[1].account if user
         end
 
-        uras.each do |ura|
-          dsc_resource "URA" do
-            module_name "cSecurityOptions"
-            resource :UserRightsAssignment
-            property :Ensure, "Present"
-            property :Privilege, ura
-            property :Identity, new_resource.users
-            sensitive new_resource.sensitive
+        new_resource.privilege.each do |privilege|
+          accounts = Chef::ReservedNames::Win32::Security.get_account_with_user_rights(privilege)
+
+          # comparing the existing accounts for privilege with users
+          unless users == accounts
+            accounts.each do |account|
+              converge_by("removing user #{account[1]} from privilege #{privilege}") do
+                Chef::ReservedNames::Win32::Security.remove_account_right(account[1], privilege)
+              end
+            end
+
+            new_resource.users.each do |user|
+              converge_by("adding user #{user} to privilege #{privilege}") do
+                Chef::ReservedNames::Win32::Security.add_account_right(user, privilege)
+              end
+            end
           end
         end
       end

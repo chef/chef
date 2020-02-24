@@ -199,6 +199,27 @@ describe "Chef::Win32::Security", :windows_only do
     end
   end
 
+  describe ".get_account_with_user_rights" do
+    let(:username) { ENV["USERNAME"] }
+
+    context "when given a valid user right" do
+      it "gets all accounts associated with given user right" do
+        Chef::ReservedNames::Win32::Security.add_account_right(username, "SeBatchLogonRight")
+        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).to include(username)
+        Chef::ReservedNames::Win32::Security.remove_account_right(username, "SeBatchLogonRight")
+        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).not_to include(username)
+      end
+    end
+
+    context "when given an invalid user right" do
+      let(:user_right) { "SeTest" }
+
+      it "returns empty array" do
+        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights(user_right)).to be_empty
+      end
+    end
+  end
+
   describe ".test_and_raise_lsa_nt_status" do
     # NTSTATUS code: 0xC0000001 / STATUS_UNSUCCESSFUL
     # Windows Error: ERROR_GEN_FAILURE / 31 / 0x1F / A device attached to the system is not functioning.

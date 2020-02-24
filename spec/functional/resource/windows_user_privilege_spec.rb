@@ -64,25 +64,6 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   end
 
   describe "#set privilege" do
-    before(:all) {
-      powershell_exec("Uninstall-Module -Name cSecurityOptions") unless powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
-    }
-
-    let(:principal) { "user_privilege" }
-    let(:users) { %w{Administrators Administrator} }
-    let(:privilege) { %w{SeCreateSymbolicLinkPrivilege} }
-
-    it "raises error if cSecurityOptions is not installed." do
-      subject.action(:set)
-      expect { subject.run_action(:set) }.to raise_error(RuntimeError)
-    end
-  end
-
-  describe "#set privilege" do
-    before(:all) {
-      powershell_exec("Install-Module -Name cSecurityOptions -Force") if powershell_exec("(Get-Package -Name cSecurityOptions -WarningAction SilentlyContinue).name").result.empty?
-    }
-
     after { remove_user_privilege("Administrator", subject.privilege) }
 
     let(:principal) { "user_privilege" }
@@ -117,6 +98,47 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
       subject.run_action(:add)
       subject.run_action(:remove)
       expect(subject).to be_updated_by_last_action
+    end
+  end
+
+  describe "running with non admin user" do
+    include Chef::Mixin::UserContext
+
+    let(:user) { "security_user" }
+    let(:password) { "Security@123" }
+    let(:principal) { "user_privilege" }
+    let(:users) { ["Administrators", "#{domain}\\security_user"] }
+    let(:privilege) { %w{SeCreateSymbolicLinkPrivilege} }
+
+    let(:domain) do
+      ENV["COMPUTERNAME"]
+    end
+
+    before do
+      allow_any_instance_of(Chef::Mixin::UserContext).to receive(:node).and_return({ "platform_family" => "windows" })
+      add_user = Mixlib::ShellOut.new("net user #{user} #{password} /ADD")
+      add_user.run_command
+      add_user.error!
+    end
+
+    after do
+      remove_user_privilege("#{domain}\\#{user}", subject.privilege)
+      delete_user = Mixlib::ShellOut.new("net user #{user} /delete")
+      delete_user.run_command
+      delete_user.error!
+    end
+
+    it "sets user to privilege" do
+      subject.action(:set)
+      subject.run_action(:set)
+      expect(subject).to be_updated_by_last_action
+    end
+
+    it "is idempotent" do
+      subject.action(:set)
+      subject.run_action(:set)
+      subject.run_action(:set)
+      expect(subject).not_to be_updated_by_last_action
     end
   end
 
