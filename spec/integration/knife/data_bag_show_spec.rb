@@ -26,7 +26,7 @@ describe "knife data bag show", :workstation do
 
   when_the_chef_server "is empty" do
     it "raises error if try to retrieve it" do
-      expect { knife("data bag show bag") }.to raise_error(Net::HTTPServerException)
+      expect { knife("data bag show bag") }.to raise_error(Net::HTTPClientException)
     end
   end
 
