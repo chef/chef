@@ -85,6 +85,43 @@ class Chef
       end
     end
 
+    def from_yaml_file(filename)
+      self.source_file = filename
+      if File.file?(filename) && File.readable?(filename)
+        from_yaml(IO.read(filename))
+      else
+        raise IOError, "Cannot open or read #{filename}!"
+      end
+    end
+
+    def from_yaml(string)
+      res = ::YAML.safe_load(string)
+      if res.is_a?(Hash)
+        from_hash(res)
+      elsif res.is_a?(Array)
+        from_array(res)
+      else
+        raise "boom"
+      end
+    end
+
+    def from_array(array)
+      Chef::Log.warn "array yaml files are super duper experimental behavior"
+      array.each { |e| from_hash(e) }
+    end
+
+    def from_hash(hash)
+      hash["resources"].each do |rhash|
+        type = rhash.delete("type").to_sym
+        name = rhash.delete("name")
+        res = declare_resource(type, name)
+        rhash.each do |key, value|
+          # FIXME?: we probably need a way to instance_exec a string that contains block code against the property?
+          res.send(key, value)
+        end
+      end
+    end
+
     def to_s
       "cookbook: #{cookbook_name ? cookbook_name : "(none)"}, recipe: #{recipe_name ? recipe_name : "(none)"} "
     end
