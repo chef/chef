@@ -58,6 +58,8 @@ class Chef
       #   the 'password' property corresponds to a plaintext password and will
       #   attempt to use it in place of secure_token_password if it not set.
       class MacUser < Chef::Resource::User
+        unified_mode true
+
         resource_name :mac_user
 
         provides :mac_user

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2019, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -562,7 +562,7 @@ describe Chef::ProviderResolver do
         linux_user: [ Chef::Resource::User::LinuxUser, Chef::Provider::User::Linux ],
         log: [ Chef::Resource::Log, Chef::Provider::Log::ChefLog ],
         macports_package: [ Chef::Resource::MacportsPackage, Chef::Provider::Package::Macports ],
-        mdadm: [ Chef::Resource::Mdadm, Chef::Provider::Mdadm ],
+        mdadm: [ Chef::Resource::Mdadm ],
         mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Mount ],
         pacman_package: [ Chef::Resource::PacmanPackage, Chef::Provider::Package::Pacman ],
         paludis_package: [ Chef::Resource::PaludisPackage, Chef::Provider::Package::Paludis ],

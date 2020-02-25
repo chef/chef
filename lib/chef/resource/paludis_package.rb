@@ -1,6 +1,6 @@
 #
 # Author:: Vasiliy Tolstov (<v.tolstov@selfip.ru>)
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@ require_relative "../provider/package/paludis"
 class Chef
   class Resource
     class PaludisPackage < Chef::Resource::Package
+      unified_mode true
+
       resource_name :paludis_package
       provides :paludis_package
 

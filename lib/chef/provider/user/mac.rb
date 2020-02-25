@@ -1,6 +1,6 @@
 #
 # Author:: Ryan Cragun (<ryan@chef.io>)
-# Copyright:: Copyright (c) 2019-2019, Chef Software Inc.
+# Copyright:: Copyright (c) 2019-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -196,12 +196,12 @@ class Chef
             # group magement should be done outside of the core resource.
             group_name, group_id, group_action = user_group_info
 
-            declare_resource(:group, group_name) do
+            group group_name do
               members new_resource.username
               gid group_id if group_id
-              action :nothing
+              action group_action
               append true
-            end.run_action(group_action)
+            end
 
             converge_by("create primary group ID") do
               run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
@@ -246,16 +246,16 @@ class Chef
 
           if diverged?(:admin)
             converge_by("alter admin group membership") do
-              declare_resource(:group, "admin") do
+              group "admin" do
                 if new_resource.admin
                   members new_resource.username
                 else
                   excluded_members new_resource.username
                 end
 
-                action :nothing
+                action :create
                 append true
-              end.run_action(:create)
+              end
 
               admins = admin_group_plist[:group_members]
               if new_resource.admin
@@ -271,12 +271,12 @@ class Chef
           end
 
           group_name, group_id, group_action = user_group_info
-          declare_resource(:group, group_name) do
+          group group_name do
             gid group_id if group_id
             members new_resource.username
-            action :nothing
+            action group_action
             append true
-          end.run_action(group_action)
+          end
 
           if diverged?(:gid)
             converge_by("alter group membership") do

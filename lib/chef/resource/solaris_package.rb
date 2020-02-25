@@ -1,7 +1,7 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright 2013-2018, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@ require_relative "package"
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
+      unified_mode true
+
       resource_name :solaris_package
       provides :solaris_package
       provides :package, os: "solaris2", platform_family: "nexentacore"

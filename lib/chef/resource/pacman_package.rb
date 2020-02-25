@@ -21,6 +21,8 @@ require_relative "package"
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
+      unified_mode true
+
       resource_name :pacman_package
       provides :pacman_package
 

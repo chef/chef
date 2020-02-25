@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -116,7 +116,7 @@ class Chef
         false
       end
 
-      def action_create
+      action :create do
         if !@user_exists
           converge_by("create user #{new_resource.username}") do
             create_user
@@ -130,7 +130,7 @@ class Chef
         end
       end
 
-      def action_remove
+      action :remove do
         return unless @user_exists
 
         converge_by("remove user #{new_resource.username}") do
@@ -139,7 +139,7 @@ class Chef
         end
       end
 
-      def action_manage
+      action :manage do
         return unless @user_exists && compare_user
 
         converge_by("manage user #{new_resource.username}") do
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      def action_modify
+      action :modify do
         return unless compare_user
 
         converge_by("modify user #{new_resource.username}") do
@@ -157,7 +157,7 @@ class Chef
         end
       end
 
-      def action_lock
+      action :lock do
         if check_lock == false
           converge_by("lock the user #{new_resource.username}") do
             lock_user
@@ -168,7 +168,7 @@ class Chef
         end
       end
 
-      def action_unlock
+      action :unlock do
         if check_lock == true
           converge_by("unlock user #{new_resource.username}") do
             unlock_user
