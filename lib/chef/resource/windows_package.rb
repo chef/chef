@@ -55,9 +55,11 @@ class Chef
         description: "The amount of time (in seconds) to wait before timing out."
 
       # In the past we accepted return code 127 for an unknown reason and 42 because of a bug
-      property :returns, [ String, Integer, Array ], default: [ 0 ],
+      # we accept 3010 which means success, but a reboot is necessary
+      property :returns, [ String, Integer, Array ], default: [ 0, 3010 ],
         desired_state: false,
-        description: "A comma-delimited list of return codes that indicate the success or failure of the package command that was run."
+        description: "A comma-delimited list of return codes that indicate the success or failure of the package command that was run.",
+        default_description: "0 (success) and 3010 (success where a reboot is necessary)"
 
       property :source, String,
         coerce: (proc do |s|
