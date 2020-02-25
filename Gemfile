@@ -45,7 +45,8 @@ end
 
 # Everything except AIX
 group(:ruby_prof) do
-  gem "ruby-prof"
+  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
+  gem "ruby-prof", "< 1.3.0"
 end
 
 # Everything except AIX and Windows
