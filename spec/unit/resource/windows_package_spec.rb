@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2019, Chef Software, Inc.
+# Copyright:: Copyright 2014-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -87,6 +87,10 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     allow(::File).to receive(:absolute_path).and_return("c:\\frost.msi")
     resource.source("c:/frost.msi")
     expect(resource.source).to eql "c:\\frost.msi"
+  end
+
+  it "defaults returns to [0, 3010]" do
+    expect(resource.returns).to eq([0, 3010])
   end
 
   it "defaults source to the resource name" do
