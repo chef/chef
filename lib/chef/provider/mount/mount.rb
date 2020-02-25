@@ -157,7 +157,7 @@ class Chef
 
         # Return appropriate default mount options according to the given os.
         def default_mount_options
-          node[:os] == "linux" ? "defaults" : "rw"
+          linux? ? "defaults" : "rw"
         end
 
         def enable_fs
