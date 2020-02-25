@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ class Chef
             requirements.assert(:all_actions) do |a|
               a.assertion do
                 if prop
-                  node[:platform_family] == "windows"
+                  windows?
                 else
                   true
                 end
