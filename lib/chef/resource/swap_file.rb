@@ -1,6 +1,6 @@
 #
 # Copyright 2012-2018, Seth Vargo
-# Copyright 2017-2018, Chef Software, Inc.
+# Copyright 2017-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class SwapFile < Chef::Resource
+      unified_mode true
+
       resource_name :swap_file
       provides(:swap_file) { true }
 
@@ -60,7 +62,7 @@ class Chef
           end
         end
         if new_resource.swappiness
-          declare_resource(:sysctl, "vm.swappiness") do
+          sysctl "vm.swappiness" do
             value new_resource.swappiness
           end
         end

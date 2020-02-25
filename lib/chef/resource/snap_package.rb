@@ -1,6 +1,6 @@
 #
 # Author:: S.Cavallo (<smcavallo@hotmail.com>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,8 @@ require_relative "package"
 class Chef
   class Resource
     class SnapPackage < Chef::Resource::Package
+      unified_mode true
+
       resource_name :snap_package
 
       description "Use the snap_package resource to manage snap packages on Debian and Ubuntu platforms."
