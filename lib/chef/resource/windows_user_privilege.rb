@@ -88,8 +88,6 @@ class Chef
            },
          }
 
-      property :sensitive, [TrueClass, FalseClass], default: true
-
       load_current_value do |new_resource|
         unless new_resource.principal.nil?
           privilege Chef::ReservedNames::Win32::Security.get_account_right(new_resource.principal) unless new_resource.action.include?(:set)
@@ -139,13 +137,11 @@ class Chef
 
       action :remove do
         curr_res_privilege = current_resource.privilege
-        new_res_privilege = new_resource.privilege
-
-        new_res_privilege = [] << new_res_privilege if new_resource.privilege.is_a?(String)
+        new_res_privilege = new_resource.privilege.is_a?(String) ? Array(new_resource.privilege) : new_resource.privilege
         missing_res_privileges = (new_res_privilege - curr_res_privilege)
 
-        unless missing_res_privileges.empty?
-          Chef::Log.info("Privilege: #{missing_res_privileges.join(", ")} not present. Unable to delete")
+        if missing_res_privileges
+          Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
         end
 
         (new_res_privilege - missing_res_privileges).each do |user_right|
