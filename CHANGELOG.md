@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.81 -->
-## [v16.0.81](https://github.com/chef/chef/tree/v16.0.81) (2020-02-25)
+<!-- latest_release 16.0.83 -->
+## [v16.0.83](https://github.com/chef/chef/tree/v16.0.83) (2020-02-25)
 
 #### Merged Pull Requests
-- Dist windows powershell wrapper [#9065](https://github.com/chef/chef/pull/9065) ([bobchaos](https://github.com/bobchaos))
+- More unified mode conversion and resource cleanup [#9393](https://github.com/chef/chef/pull/9393) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More unified mode conversion and resource cleanup [#9393](https://github.com/chef/chef/pull/9393) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.83 -->
 - Dist windows powershell wrapper [#9065](https://github.com/chef/chef/pull/9065) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.81 -->
 - Bump inspec-core to 4.18.97 [#9388](https://github.com/chef/chef/pull/9388) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.80 -->
 - ChefFS &amp; knife environment matching the output [#8986](https://github.com/chef/chef/pull/8986) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.79 -->
