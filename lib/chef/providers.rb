@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2019, Chef Software Inc.
+# Copyright:: Copyright 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,7 +34,6 @@ require_relative "provider/launchd"
 require_relative "provider/link"
 require_relative "provider/log"
 require_relative "provider/ohai"
-require_relative "provider/mdadm"
 require_relative "provider/mount"
 require_relative "provider/noop"
 require_relative "provider/package"
