@@ -17,6 +17,7 @@ def get_sack():
         conf = base.conf
         conf.read()
         conf.installroot = '/'
+        conf.assumeyes = True
         subst = conf.substitutions
         subst.update_from_etc(conf.installroot)
         try:
