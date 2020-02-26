@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.86 -->
-## [v16.0.86](https://github.com/chef/chef/tree/v16.0.86) (2020-02-26)
+<!-- latest_release 16.0.87 -->
+## [v16.0.87](https://github.com/chef/chef/tree/v16.0.87) (2020-02-26)
 
 #### Merged Pull Requests
-- Migrating windows_user_privilege resource from windows cookbook [#9279](https://github.com/chef/chef/pull/9279) ([Vasu1105](https://github.com/Vasu1105))
+- Bump all deps to current [#9401](https://github.com/chef/chef/pull/9401) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump all deps to current [#9401](https://github.com/chef/chef/pull/9401) ([tas50](https://github.com/tas50)) <!-- 16.0.87 -->
 - Migrating windows_user_privilege resource from windows cookbook [#9279](https://github.com/chef/chef/pull/9279) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.0.86 -->
 - Convert the node[:platform_version] to a Chef::VersionString [#9400](https://github.com/chef/chef/pull/9400) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.85 -->
 - Use the chef-utils helpers in our resources  [#9397](https://github.com/chef/chef/pull/9397) ([tas50](https://github.com/tas50)) <!-- 16.0.84 -->
