@@ -214,6 +214,41 @@ class Chef
         privileges
       end
 
+      def self.get_account_with_user_rights(privilege)
+        privilege_pointer = FFI::MemoryPointer.new LSA_UNICODE_STRING, 1
+        privilege_lsa_string = LSA_UNICODE_STRING.new(privilege_pointer)
+        privilege_lsa_string[:Buffer] = FFI::MemoryPointer.from_string(privilege.to_wstring)
+        privilege_lsa_string[:Length] = privilege.length * 2
+        privilege_lsa_string[:MaximumLength] = (privilege.length + 1) * 2
+
+        buffer = FFI::MemoryPointer.new(:pointer)
+        count = FFI::MemoryPointer.new(:ulong)
+
+        accounts = []
+        with_lsa_policy(nil) do |policy_handle, sid|
+          result = LsaEnumerateAccountsWithUserRight(policy_handle.read_pointer, privilege_pointer, buffer, count)
+          if result == 0
+            win32_error = LsaNtStatusToWinError(result)
+            return [] if win32_error == 1313 # NO_SUCH_PRIVILEGE - https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+
+            test_and_raise_lsa_nt_status(result)
+
+            count.read_ulong.times do |i|
+              sid = LSA_ENUMERATION_INFORMATION.new(buffer.read_pointer + i * LSA_ENUMERATION_INFORMATION.size)
+              sid_name = lookup_account_sid(sid[:Sid])
+              domain, name, use = sid_name
+              account_name = (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
+              accounts << account_name
+            end
+          end
+
+          result = LsaFreeMemory(buffer.read_pointer)
+          test_and_raise_lsa_nt_status(result)
+        end
+
+        accounts
+      end
+
       def self.get_ace(acl, index)
         acl = acl.pointer if acl.respond_to?(:pointer)
         ace = FFI::Buffer.new :pointer
@@ -616,18 +651,21 @@ class Chef
       end
 
       def self.with_lsa_policy(username)
-        sid = lookup_account_name(username)[1]
+        sid = lookup_account_name(username)[1] if username
 
         access = 0
         access |= POLICY_CREATE_ACCOUNT
         access |= POLICY_LOOKUP_NAMES
+        access |= POLICY_VIEW_LOCAL_INFORMATION if username.nil?
 
         policy_handle = FFI::MemoryPointer.new(:pointer)
         result = LsaOpenPolicy(nil, LSA_OBJECT_ATTRIBUTES.new, access, policy_handle)
         test_and_raise_lsa_nt_status(result)
 
+        sid_pointer = username.nil? ? nil : sid.pointer
+
         begin
-          yield policy_handle, sid.pointer
+          yield policy_handle, sid_pointer
         ensure
           result = LsaClose(policy_handle.read_pointer)
           test_and_raise_lsa_nt_status(result)
