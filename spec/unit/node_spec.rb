@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -964,6 +964,13 @@ describe Chef::Node do
       node.consume_external_attrs(@ohai_data, { "foo" => "bar" })
       node.expand!
       expect(node.normal_attrs).to eq({ "foo" => "bar", "tags" => [] })
+    end
+
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.automatic_attrs[:platform_version]).to be_a_kind_of(Chef::VersionString)
+      expect(node[:platform_version]).to be_a_kind_of(Chef::VersionString)
+      expect(node[:platform_version] =~ "~> 23.6").to be true
     end
 
   end
