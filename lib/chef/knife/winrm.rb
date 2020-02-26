@@ -18,20 +18,18 @@
 
 require_relative "../knife"
 require_relative "winrm_knife_base" # WinrmCommandSharedFunctions
-require_relative "winrm_session"
-require_relative "knife_windows_base"
 
 class Chef
   class Knife
     class Winrm < Knife
 
       include Chef::Knife::WinrmCommandSharedFunctions
-      include Chef::Knife::KnifeWindowsBase
 
       deps do
         require_relative "windows_cert_generate"
         require_relative "windows_cert_install"
         require_relative "windows_listener_create"
+        require_relative "winrm_session"
         require "readline"
         require_relative "../search/query"
       end

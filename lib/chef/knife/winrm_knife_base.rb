@@ -19,18 +19,17 @@
 require_relative "../knife"
 require_relative "winrm_base"
 require_relative "winrm_shared_options"
-require_relative "knife_windows_base"
 
 class Chef
   class Knife
     module WinrmCommandSharedFunctions
 
       FAILED_BASIC_HINT ||= "Hint: Please check winrm configuration 'winrm get winrm/config/service' AllowUnencrypted flag on remote server.".freeze
-      FAILED_NOT_BASIC_HINT ||= <<-eos.gsub /^\s+/, ""
+      FAILED_NOT_BASIC_HINT ||= <<-EOS.gsub /^\s+/, ""
         Hint: Make sure to prefix domain usernames with the correct domain name.
         Hint: Local user names should be prefixed with computer name or IP address.
         EXAMPLE: my_domain\\user_namer
-      eos
+      EOS
 
       def self.included(includer)
         includer.class_eval do
@@ -39,7 +38,13 @@ class Chef
 
           include Chef::Knife::WinrmBase
           include Chef::Knife::WinrmSharedOptions
-          include Chef::Knife::KnifeWindowsBase
+
+          def locate_config_value(key)
+            key = key.to_sym
+            value = config[key] || Chef::Config[:knife][key] || default_config[key]
+            Chef::Log.debug("Looking for key #{key} and found value #{value}")
+            value
+          end
 
           def validate_winrm_options!
             winrm_auth_protocol = locate_config_value(:winrm_authentication_protocol)
@@ -64,18 +69,18 @@ class Chef
 
           def resolve_target_nodes
             @list = case config[:manual]
-                   when true
-                     @name_args[0].split(" ")
-                   when false
-                     r = []
-                     q = Chef::Search::Query.new
-                     @action_nodes = q.search(:node, @name_args[0])[0]
-                     @action_nodes.each do |item|
-                       i = extract_nested_value(item, config[:attribute])
-                       r.push(i) unless i.nil?
-                     end
-                     r
-                   end
+                    when true
+                      @name_args[0].split(" ")
+                    when false
+                      r = []
+                      q = Chef::Search::Query.new
+                      @action_nodes = q.search(:node, @name_args[0])[0]
+                      @action_nodes.each do |item|
+                        i = extract_nested_value(item, config[:attribute])
+                        r.push(i) unless i.nil?
+                      end
+                      r
+                    end
 
             if @list.length == 0
               if @action_nodes.length == 0
@@ -86,7 +91,7 @@ class Chef
                          "Try setting another attribute to open the connection using --attribute.")
               end
               exit 10
-           end
+            end
           end
 
           # TODO: Copied from Knife::Core:GenericPresenter. Should be extracted
@@ -307,9 +312,8 @@ class Chef
                 ```
                 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
               WARN
-                end
-              end
-
+            end
+          end
         end
       end
     end
