@@ -19,8 +19,6 @@ require_relative "../../spec_helper"
 require_relative "../../functional/resource/base"
 
 describe Chef::Resource::WindowsUserPrivilege, :windows_only do
-  include Chef::Mixin::PowershellExec
-
   let(:principal) { nil }
   let(:privilege) { nil }
   let(:users) { nil }
@@ -48,18 +46,36 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   describe "#add privilege" do
     after { subject.run_action(:remove) }
 
-    let(:principal) { "Administrator" }
-    let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
+    context "when privilege is passed as string" do
+      let(:principal) { "Administrator" }
+      let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
 
-    it "adds user to privilege" do
-      subject.run_action(:add)
-      expect(subject).to be_updated_by_last_action
+      it "adds user to privilege" do
+        subject.run_action(:add)
+        expect(subject).to be_updated_by_last_action
+      end
+
+      it "is idempotent" do
+        subject.run_action(:add)
+        subject.run_action(:add)
+        expect(subject).not_to be_updated_by_last_action
+      end
     end
 
-    it "is idempotent" do
-      subject.run_action(:add)
-      subject.run_action(:add)
-      expect(subject).not_to be_updated_by_last_action
+    context "when privilege is passed as array" do
+      let(:principal) { "Administrator" }
+      let(:privilege) { ["SeCreateSymbolicLinkPrivilege", "SeCreatePagefilePrivilege"] }
+
+      it "adds user to privilege" do
+        subject.run_action(:add)
+        expect(subject).to be_updated_by_last_action
+      end
+
+      it "is idempotent" do
+        subject.run_action(:add)
+        subject.run_action(:add)
+        expect(subject).not_to be_updated_by_last_action
+      end
     end
   end
 
@@ -92,12 +108,36 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
 
   describe "#remove privilege" do
     let(:principal) { "Administrator" }
-    let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
+    context "when privilege is passed as array" do
+      let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
+      it "remove user from privilege" do
+        subject.run_action(:add)
+        subject.run_action(:remove)
+        expect(subject).to be_updated_by_last_action
+      end
 
-    it "remove user from privilege" do
-      subject.run_action(:add)
-      subject.run_action(:remove)
-      expect(subject).to be_updated_by_last_action
+      it "is idempotent" do
+        subject.run_action(:add)
+        subject.run_action(:remove)
+        subject.run_action(:remove)
+        expect(subject).not_to be_updated_by_last_action
+      end
+    end
+
+    context "when privilege is passed as array" do
+      let(:privilege) { ["SeCreateSymbolicLinkPrivilege", "SeCreatePagefilePrivilege"] }
+      it "remove user from privilege" do
+        subject.run_action(:add)
+        subject.run_action(:remove)
+        expect(subject).to be_updated_by_last_action
+      end
+
+      it "is idempotent" do
+        subject.run_action(:add)
+        subject.run_action(:remove)
+        subject.run_action(:remove)
+        expect(subject).not_to be_updated_by_last_action
+      end
     end
   end
 

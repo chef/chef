@@ -82,9 +82,10 @@ class Chef
       property :privilege, [Array, String],
         description: "Privilege to set for users.",
         required: true,
+        coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
         callbacks: {
            "Option privilege must include any of the: #{privilege_opts}" => lambda {
-             |v| v.is_a?(Array) ? (privilege_opts & v).size == v.size : privilege_opts.include?(v)
+             |v| (privilege_opts & v).size == v.size
            },
          }
 
@@ -137,14 +138,13 @@ class Chef
 
       action :remove do
         curr_res_privilege = current_resource.privilege
-        new_res_privilege = new_resource.privilege.is_a?(String) ? Array(new_resource.privilege) : new_resource.privilege
-        missing_res_privileges = (new_res_privilege - curr_res_privilege)
+        missing_res_privileges = (new_resource.privilege - curr_res_privilege)
 
         if missing_res_privileges
           Chef::Log.info("User \'#{new_resource.principal}\' for Privilege: #{missing_res_privileges.join(", ")} not found. Nothing to remove.")
         end
 
-        (new_res_privilege - missing_res_privileges).each do |user_right|
+        (new_resource.privilege - missing_res_privileges).each do |user_right|
           converge_by("removing user privilege #{user_right}") do
             Chef::ReservedNames::Win32::Security.remove_account_right(new_resource.principal, user_right)
           end
