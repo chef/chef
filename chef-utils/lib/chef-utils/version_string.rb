@@ -27,8 +27,13 @@ module ChefUtils
     #
     # @param val [String] Version string to parse.
     def initialize(val)
-      super
-      @parsed_version = ::Gem::Version.create(self)
+      val = "" unless val
+      super(val)
+      begin
+        @parsed_version = ::Gem::Version.create(self)
+      rescue ArgumentError
+        @parsed_version = nil
+      end
     end
 
     # @!group Compat wrappers for String
@@ -135,7 +140,12 @@ module ChefUtils
       when Regexp
         super
       else
-        Gem::Requirement.create(other) =~ parsed_version
+        begin
+          Gem::Requirement.create(other) =~ parsed_version
+        rescue ArgumentError
+          # one side of the comparison wasn't parseable
+          super
+        end
       end
     end
 

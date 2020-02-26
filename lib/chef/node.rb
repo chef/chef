@@ -2,7 +2,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -363,7 +363,7 @@ class Chef
       # FIXME(log): should be trace
       logger.debug("Platform is #{platform} version #{version}")
       automatic[:platform] = platform
-      automatic[:platform_version] = version
+      automatic[:platform_version] = Chef::VersionString.new(version)
       automatic[:chef_guid] = Chef::Config[:chef_guid] || ( Chef::Config[:chef_guid] = node_uuid )
       automatic[:name] = name
       automatic[:chef_environment] = chef_environment
