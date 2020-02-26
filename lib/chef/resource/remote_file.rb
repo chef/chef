@@ -109,7 +109,7 @@ class Chef
       end
 
       def validate_identity_platform(specified_user, password = nil, specified_domain = nil)
-        if node[:platform_family] == "windows"
+        if windows?
           if specified_user && password.nil?
             raise ArgumentError, "A value for `remote_password` must be specified when a value for `user` is specified on the Windows platform"
           end
