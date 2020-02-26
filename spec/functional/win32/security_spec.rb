@@ -200,14 +200,15 @@ describe "Chef::Win32::Security", :windows_only do
   end
 
   describe ".get_account_with_user_rights" do
+    let(:domain) { ENV["COMPUTERNAME"] }
     let(:username) { ENV["USERNAME"] }
 
     context "when given a valid user right" do
       it "gets all accounts associated with given user right" do
         Chef::ReservedNames::Win32::Security.add_account_right(username, "SeBatchLogonRight")
-        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).to include(username)
+        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).to include("#{domain}\\#{username}")
         Chef::ReservedNames::Win32::Security.remove_account_right(username, "SeBatchLogonRight")
-        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).not_to include(username)
+        expect(Chef::ReservedNames::Win32::Security.get_account_with_user_rights("SeBatchLogonRight").flatten).not_to include("#{domain}\\#{username}")
       end
     end
 

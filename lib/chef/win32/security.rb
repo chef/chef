@@ -227,15 +227,19 @@ class Chef
         accounts = []
         with_lsa_policy(nil) do |policy_handle, sid|
           result = LsaEnumerateAccountsWithUserRight(policy_handle.read_pointer, privilege_pointer, buffer, count)
-          win32_error = LsaNtStatusToWinError(result)
-          return [] if win32_error == 1313 # NO_SUCH_PRIVILEGE - https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
+          if result == 0
+            win32_error = LsaNtStatusToWinError(result)
+            return [] if win32_error == 1313 # NO_SUCH_PRIVILEGE - https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--1300-1699-
 
-          test_and_raise_lsa_nt_status(result)
+            test_and_raise_lsa_nt_status(result)
 
-          count.read_ulong.times do |i|
-            sid = LSA_ENUMERATION_INFORMATION.new(buffer.read_pointer + i * LSA_ENUMERATION_INFORMATION.size)
-            sid_name = lookup_account_sid(sid[:Sid])
-            accounts << sid_name
+            count.read_ulong.times do |i|
+              sid = LSA_ENUMERATION_INFORMATION.new(buffer.read_pointer + i * LSA_ENUMERATION_INFORMATION.size)
+              sid_name = lookup_account_sid(sid[:Sid])
+              domain, name, use = sid_name
+              account_name = (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
+              accounts << account_name
+            end
           end
 
           result = LsaFreeMemory(buffer.read_pointer)

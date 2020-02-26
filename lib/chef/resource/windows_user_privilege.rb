@@ -97,7 +97,7 @@ class Chef
 
       action :add do
         ([*new_resource.privilege] - [*current_resource.privilege]).each do |user_right|
-          converge_by("adding user privilege #{user_right}") do
+          converge_by("adding user '#{new_resource.principal}' privilege #{user_right}") do
             Chef::ReservedNames::Win32::Security.add_account_right(new_resource.principal, user_right)
           end
         end
@@ -113,7 +113,7 @@ class Chef
         # Getting users with its domain for comparison
         new_resource.users.each do |user|
           user = Chef::ReservedNames::Win32::Security.lookup_account_name(user)
-          users << user[1].account if user
+          users << user[1].account_name if user
         end
 
         new_resource.privilege.each do |privilege|
@@ -121,14 +121,16 @@ class Chef
 
           # comparing the existing accounts for privilege with users
           unless users == accounts
-            accounts.each do |account|
-              converge_by("removing user #{account[1]} from privilege #{privilege}") do
-                Chef::ReservedNames::Win32::Security.remove_account_right(account[1], privilege)
+            # Removing only accounts which is not matching with users in new_resource
+            (accounts - users).each do |account|
+              converge_by("removing user '#{account}' from privilege #{privilege}") do
+                Chef::ReservedNames::Win32::Security.remove_account_right(account, privilege)
               end
             end
 
-            new_resource.users.each do |user|
-              converge_by("adding user #{user} to privilege #{privilege}") do
+            # Adding only users which is not already exist
+            (users - accounts).each do |user|
+              converge_by("adding user '#{user}' to privilege #{privilege}") do
                 Chef::ReservedNames::Win32::Security.add_account_right(user, privilege)
               end
             end
@@ -145,7 +147,7 @@ class Chef
         end
 
         (new_resource.privilege - missing_res_privileges).each do |user_right|
-          converge_by("removing user privilege #{user_right}") do
+          converge_by("removing user #{new_resource.principal} from privilege #{user_right}") do
             Chef::ReservedNames::Win32::Security.remove_account_right(new_resource.principal, user_right)
           end
         end

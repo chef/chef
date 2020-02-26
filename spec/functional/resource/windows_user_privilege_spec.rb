@@ -51,6 +51,8 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
       let(:privilege) { "SeCreateSymbolicLinkPrivilege" }
 
       it "adds user to privilege" do
+        # Removing so that add update happens
+        subject.run_action(:remove)
         subject.run_action(:add)
         expect(subject).to be_updated_by_last_action
       end
@@ -64,7 +66,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
 
     context "when privilege is passed as array" do
       let(:principal) { "Administrator" }
-      let(:privilege) { ["SeCreateSymbolicLinkPrivilege", "SeCreatePagefilePrivilege"] }
+      let(:privilege) { %w{SeCreateSymbolicLinkPrivilege SeCreatePagefilePrivilege} }
 
       it "adds user to privilege" do
         subject.run_action(:add)
@@ -125,7 +127,7 @@ describe Chef::Resource::WindowsUserPrivilege, :windows_only do
     end
 
     context "when privilege is passed as array" do
-      let(:privilege) { ["SeCreateSymbolicLinkPrivilege", "SeCreatePagefilePrivilege"] }
+      let(:privilege) { %w{SeCreateSymbolicLinkPrivilege SeCreatePagefilePrivilege} }
       it "remove user from privilege" do
         subject.run_action(:add)
         subject.run_action(:remove)
