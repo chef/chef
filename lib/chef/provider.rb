@@ -23,7 +23,7 @@ require_relative "mixin/enforce_ownership_and_permissions"
 require_relative "mixin/why_run"
 require_relative "mixin/shell_out"
 require_relative "mixin/provides"
-require_relative "dsl/core"
+require_relative "dsl/recipe"
 require_relative "platform/service_helpers"
 require_relative "node_map"
 require "forwardable" unless defined?(Forwardable)
@@ -44,8 +44,7 @@ class Chef
     extend Chef::Mixin::Provides
     extend Forwardable
 
-    # includes the "core" DSL and not the "recipe" DSL by design
-    include Chef::DSL::Core
+    include Chef::DSL::Recipe
     # the class only gets the Universal DSL (no resource_collection at class parsing time)
     extend Chef::DSL::Universal
 

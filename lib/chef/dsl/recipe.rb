@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,22 +22,18 @@ require_relative "resources"
 require_relative "definitions"
 require_relative "include_recipe"
 require_relative "reboot_pending"
-require_relative "core"
+require_relative "universal"
+require_relative "declare_resource"
+require_relative "../mixin/notifying_block"
 require_relative "../mixin/lazy_module_include"
 
 class Chef
   module DSL
     # Part of a family of DSL mixins.
     #
-    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
-    #   - this does not target core chef resources and providers.
+    # Chef::DSL::Recipe mixes into Recipes and Providers.
     #   - this is restricted to recipe/resource/provider context where a resource collection exists.
     #   - cookbook authors should typically include modules into here.
-    #
-    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
-    #   - this adds cores providers on top of the Recipe DSL.
-    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
-    #   - core chef authors should typically include modules into here.
     #
     # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
     #   - this adds resources and attributes files.
@@ -46,7 +42,9 @@ class Chef
     #   - it also pollutes the namespace of nearly every context, watch out.
     #
     module Recipe
-      include Chef::DSL::Core
+      include Chef::DSL::Universal
+      include Chef::DSL::DeclareResource
+      include Chef::Mixin::NotifyingBlock
       include Chef::DSL::IncludeRecipe
       include Chef::DSL::RebootPending
       include Chef::DSL::Resources
@@ -69,6 +67,3 @@ class Chef
     end
   end
 end
-
-# Avoid circular references for things that are only used in instance methods
-require_relative "../resource"

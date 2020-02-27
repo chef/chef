@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2015-2019, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,6 @@ require_relative "../dsl/recipe"
 class Chef
   class Resource
     class ActionClass < Chef::Provider
-      include Chef::DSL::Recipe
-
       def to_s
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
       end
