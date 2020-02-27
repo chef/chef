@@ -15,5 +15,9 @@ module ChefConfig
 
     # The user's configuration directory
     USER_CONF_DIR = ".chef".freeze
+
+    # The legacy conf folder: C:/opscode/chef. Specifically the "opscode" part
+    # DIR_SUFFIX is appended to it in code where relevant
+    LEGACY_CONF_DIR = "opscode".freeze
   end
 end

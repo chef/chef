@@ -80,6 +80,7 @@ docs_site
 
 # Rendered Templates
 ext/win32-eventlog/chef-log.man
+distro/powershell/chef/chef.psm1
 
 # tool logs
 ext/win32-eventlog/mkmf.log

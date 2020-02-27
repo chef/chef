@@ -59,9 +59,9 @@ class Chef
           client_rb = <<~CONFIG
             chef_server_url  "#{@chef_config[:chef_server_url]}"
             validation_client_name "#{@chef_config[:validation_client_name]}"
-            file_cache_path   "c:/chef/cache"
-            file_backup_path  "c:/chef/backup"
-            cache_options     ({:path => "c:/chef/cache/checksums", :skip_expires => true})
+            file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
+            file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
+            cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
           CONFIG
 
           unless @chef_config[:chef_license].nil?
@@ -124,11 +124,11 @@ class Chef
           end
 
           if @config[:secret]
-            client_rb << %Q{encrypted_data_bag_secret "c:/chef/encrypted_data_bag_secret"\n}
+            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(true)}/encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs_script.empty?
-            client_rb << %Q{trusted_certs_dir "c:/chef/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(true)}/trusted_certs"\n}
           end
 
           if Chef::Config[:fips]
@@ -158,8 +158,8 @@ class Chef
 
         def start_chef
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json#{bootstrap_environment_option}\n"
+          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\embedded\\bin\;%PATH%\"\n"
+          start_chef << "chef-client -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
         end
 
         def win_wget
@@ -260,7 +260,7 @@ class Chef
         end
 
         def bootstrap_directory
-          "C:\\chef"
+          ChefConfig::Config.etc_chef_dir(true)
         end
 
         def local_download_path

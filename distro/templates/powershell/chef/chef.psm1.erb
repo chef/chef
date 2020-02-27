@@ -412,40 +412,40 @@ function Run-RubyCommand($command, $argList) {
 }
 
 
-function chef-apply {
-  Run-RubyCommand 'chef-apply' $args
+function <%= Chef::Dist::APPLY %> {
+  Run-RubyCommand '<%= Chef::Dist::APPLY %>' $args
 }
 
-function chef-client {
-  Run-RubyCommand 'chef-client' $args
+function <%= Chef::Dist::CLIENT %> {
+  Run-RubyCommand '<%= Chef::Dist::CLIENT %>' $args
 }
 
-function chef-service-manager {
-  Run-RubyCommand 'chef-service-manager' $args
+function <%= Chef::Dist::EXEC %>-service-manager {
+  Run-RubyCommand '<%= Chef::Dist::EXEC %>-service-manager' $args
 }
 
-function chef-shell {
-  Run-RubyCommand 'chef-shell' $args
+function <%= Chef::Dist::SHELL %> {
+  Run-RubyCommand '<%= Chef::Dist::SHELL %>' $args
 }
 
-function chef-solo {
-  Run-RubyCommand 'chef-solo' $args
+function <%= Chef::Dist::SOLOEXEC %> {
+  Run-RubyCommand '<%= Chef::Dist::SOLOEXEC %>' $args
 }
 
-function chef-windows-service {
-  Run-RubyCommand 'chef-windows-service' $args
+function <%= Chef::Dist::EXEC %>-windows-service {
+  Run-RubyCommand '<%= Chef::Dist::EXEC %>-windows-service' $args
 }
 
 function knife {
   Run-RubyCommand 'knife' $args
 }
 
-Export-ModuleMember -function chef-apply
-Export-ModuleMember -function chef-client
-Export-ModuleMember -function chef-service-manager
-Export-ModuleMember -function chef-shell
-Export-ModuleMember -function chef-solo
-Export-ModuleMember -function chef-windows-service
+Export-ModuleMember -function <%= Chef::Dist::APPLY %>
+Export-ModuleMember -function <%= Chef::Dist::CLIENT %>
+Export-ModuleMember -function <%= Chef::Dist::EXEC %>-service-manager
+Export-ModuleMember -function <%= Chef::Dist::SHELL %>
+Export-ModuleMember -function <%= Chef::Dist::SOLOEXEC %>
+Export-ModuleMember -function <%= Chef::Dist::EXEC %>-windows-service
 Export-ModuleMember -function knife
 
 # To debug this module, uncomment the line below
