@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2015-2020 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmErrataLevel < Chef::Resource
+      unified_mode true
       resource_name :rhsm_errata_level
       provides(:rhsm_errata_level) { true }
 
@@ -35,13 +36,12 @@ class Chef
       action :install do
         description "Install all packages of the specified errata level."
 
-        yum_package "yum-plugin-security" do
-          action :install
-          only_if { node["platform_version"].to_i == 6 }
+        if rhel6?
+          yum_package "yum-plugin-security"
         end
 
         execute "Install any #{new_resource.errata_level} errata" do
-          command "yum update --sec-severity=#{new_resource.errata_level.capitalize} -y"
+          command "{rhel8? ? 'dnf' : 'yum'} update --sec-severity=#{new_resource.errata_level.capitalize} -y"
           default_env true
           action :run
         end

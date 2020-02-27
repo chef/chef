@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2015-2020 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@ require "shellwords" unless defined?(Shellwords)
 class Chef
   class Resource
     class RhsmRegister < Chef::Resource
+      unified_mode true
       resource_name :rhsm_register
       provides(:rhsm_register) { true }
 
@@ -69,11 +70,13 @@ class Chef
           remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
             source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
             action :create
-            notifies :install, "yum_package[katello-ca-consumer-latest]", :immediately
+            notifies :install, "{rhel8? ? 'dnf' : 'yum'}_package[katello-ca-consumer-latest]", :immediately
             not_if { katello_cert_rpm_installed? }
           end
 
-          yum_package "katello-ca-consumer-latest" do
+          resource_type = rhel8? ? :dnf_package : :yum_package
+
+          declare_resource(resource_type, "katello-ca-consumer-latest") do
             options "--nogpgcheck"
             source "#{Chef::Config[:file_cache_path]}/katello-package.rpm"
             action :nothing
@@ -92,9 +95,8 @@ class Chef
           not_if { registered_with_rhsm? } unless new_resource.force
         end
 
-        yum_package "katello-agent" do
-          action :install
-          only_if { new_resource.install_katello_agent && !new_resource.satellite_host.nil? }
+        if new_resource.install_katello_agent && !new_resource.satellite_host.nil?
+          package "katello-agent"
         end
       end
 
