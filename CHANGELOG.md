@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.24 -->
-## [v15.8.24](https://github.com/chef/chef/tree/v15.8.24) (2020-02-11)
+<!-- latest_release 15.8.25 -->
+## [v15.8.25](https://github.com/chef/chef/tree/v15.8.25) (2020-02-27)
 
 #### Merged Pull Requests
-- Update all deps to latest [#9358](https://github.com/chef/chef/pull/9358) ([tas50](https://github.com/tas50))
+- Backport dist bootstrap [#9403](https://github.com/chef/chef/pull/9403) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Backport dist bootstrap [#9403](https://github.com/chef/chef/pull/9403) ([bobchaos](https://github.com/bobchaos)) <!-- 15.8.25 -->
 - Update all deps to latest [#9358](https://github.com/chef/chef/pull/9358) ([tas50](https://github.com/tas50)) <!-- 15.8.24 -->
 <!-- release_rollup -->
 
