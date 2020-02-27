@@ -41,9 +41,15 @@ class Chef
         end
 
         execute "Install any #{new_resource.errata_level} errata" do
-          command "{rhel8? ? 'dnf' : 'yum'} update --sec-severity=#{new_resource.errata_level.capitalize} -y"
+          command "#{package_manager_command} update --sec-severity=#{new_resource.errata_level.capitalize} -y"
           default_env true
           action :run
+        end
+      end
+
+      action_class do
+        def package_manager_command
+          node["platform_version"].to_i >= 8 ? "dnf" : "yum"
         end
       end
     end

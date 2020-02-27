@@ -37,9 +37,15 @@ class Chef
         description "Installs a package for a specific errata ID."
 
         execute "Install errata packages for #{new_resource.errata_id}" do
-          command "{rhel8? ? 'dnf' : 'yum'} update --advisory #{new_resource.errata_id} -y"
+          command "#{package_manager_command} update --advisory #{new_resource.errata_id} -y"
           default_env true
           action :run
+        end
+      end
+
+      action_class do
+        def package_manager_command
+          node["platform_version"].to_i >= 8 ? "dnf" : "yum"
         end
       end
     end

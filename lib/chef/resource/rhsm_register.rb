@@ -70,13 +70,11 @@ class Chef
           remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
             source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
             action :create
-            notifies :install, "{rhel8? ? 'dnf' : 'yum'}_package[katello-ca-consumer-latest]", :immediately
+            notifies :install, "#{package_resource}[katello-ca-consumer-latest]", :immediately
             not_if { katello_cert_rpm_installed? }
           end
 
-          resource_type = rhel8? ? :dnf_package : :yum_package
-
-          declare_resource(resource_type, "katello-ca-consumer-latest") do
+          declare_resource(package_resource.to_sym, "katello-ca-consumer-latest") do
             options "--nogpgcheck"
             source "#{Chef::Config[:file_cache_path]}/katello-package.rpm"
             action :nothing
@@ -119,6 +117,10 @@ class Chef
       end
 
       action_class do
+        def package_resource
+          node["platform_version"].to_i >= 8 ? "dnf_package" : "yum_package"
+        end
+
         def registered_with_rhsm?
           cmd = Mixlib::ShellOut.new("subscription-manager status", env: { LANG: "en_US" })
           cmd.run_command
