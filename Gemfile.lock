@@ -27,12 +27,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.0.89)
+    chef (16.0.90)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 16.0.89)
-      chef-utils (= 16.0.89)
+      chef-config (= 16.0.90)
+      chef-utils (= 16.0.90)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -60,12 +60,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.0.89-universal-mingw32)
+    chef (16.0.90-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 16.0.89)
-      chef-utils (= 16.0.89)
+      chef-config (= 16.0.90)
+      chef-utils (= 16.0.90)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -109,15 +109,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.0.89)
-      chef (= 16.0.89)
+    chef-bin (16.0.90)
+      chef (= 16.0.90)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.0.89)
+    chef-config (16.0.90)
       addressable
-      chef-utils (= 16.0.89)
+      chef-utils (= 16.0.90)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -126,7 +126,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.0.89)
+    chef-utils (16.0.90)
 
 GEM
   remote: https://rubygems.org/
@@ -208,7 +208,7 @@ GEM
     http_parser.rb (0.6.0)
     httpclient (2.8.3)
     inifile (3.0.0)
-    iniparse (1.4.4)
+    iniparse (1.5.0)
     inspec-core (4.18.97)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)

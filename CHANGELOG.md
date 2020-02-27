@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.89 -->
-## [v16.0.89](https://github.com/chef/chef/tree/v16.0.89) (2020-02-26)
+<!-- latest_release 16.0.90 -->
+## [v16.0.90](https://github.com/chef/chef/tree/v16.0.90) (2020-02-27)
 
 #### Merged Pull Requests
-- Cookstyle fixes for our resources [#9395](https://github.com/chef/chef/pull/9395) ([tas50](https://github.com/tas50))
+- Accept exit code 3010 as valid in windows_package [#9396](https://github.com/chef/chef/pull/9396) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Accept exit code 3010 as valid in windows_package [#9396](https://github.com/chef/chef/pull/9396) ([tas50](https://github.com/tas50)) <!-- 16.0.90 -->
 - Cookstyle fixes for our resources [#9395](https://github.com/chef/chef/pull/9395) ([tas50](https://github.com/tas50)) <!-- 16.0.89 -->
 - Update license_scout to 1.1.7 to resolve build failures [#9402](https://github.com/chef/chef/pull/9402) ([tas50](https://github.com/tas50)) <!-- 16.0.88 -->
 - Bump all deps to current [#9401](https://github.com/chef/chef/pull/9401) ([tas50](https://github.com/tas50)) <!-- 16.0.87 -->
