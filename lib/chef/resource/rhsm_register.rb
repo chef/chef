@@ -67,6 +67,12 @@ class Chef
         package "subscription-manager"
 
         unless new_resource.satellite_host.nil? || registered_with_rhsm?
+          declare_resource(package_resource, "katello-ca-consumer-latest") do
+            options "--nogpgcheck"
+            source "#{Chef::Config[:file_cache_path]}/katello-package.rpm"
+            action :nothing
+          end
+
           remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
             source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
             action :create
@@ -74,11 +80,6 @@ class Chef
             not_if { katello_cert_rpm_installed? }
           end
 
-          declare_resource(package_resource.to_sym, "katello-ca-consumer-latest") do
-            options "--nogpgcheck"
-            source "#{Chef::Config[:file_cache_path]}/katello-package.rpm"
-            action :nothing
-          end
 
           file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
             action :delete
@@ -118,7 +119,7 @@ class Chef
 
       action_class do
         def package_resource
-          node["platform_version"].to_i >= 8 ? "dnf_package" : "yum_package"
+          node["platform_version"].to_i >= 8 ? :dnf_package : :yum_package
         end
 
         def registered_with_rhsm?
