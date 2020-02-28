@@ -23,6 +23,8 @@ require_relative "../dsl/recipe"
 class Chef
   class Resource
     class ActionClass < Chef::Provider
+      include Chef::DSL::Recipe
+
       def to_s
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
       end
