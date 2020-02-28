@@ -48,9 +48,9 @@ class Chef
         end
       end
 
+      # @deprecated we don't support any release of Windows that isn't PS 3+
       def supports_powershell_execution_bypass?(node)
-        node[:languages] && node[:languages][:powershell] &&
-          node[:languages][:powershell][:version].to_i >= 3
+        true
       end
 
       def supports_dsc?(node)
