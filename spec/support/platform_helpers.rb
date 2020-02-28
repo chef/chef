@@ -88,11 +88,6 @@ def windows_powershell_dsc?
   supports_dsc
 end
 
-def windows_nano_server?
-  require "chef/platform/query_helpers"
-  Chef::Platform.windows_nano_server?
-end
-
 def windows_user_right?(right)
   return false unless windows?
 

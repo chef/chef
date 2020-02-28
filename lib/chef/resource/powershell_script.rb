@@ -72,8 +72,6 @@ class Chef
 
       # Options that will be passed to Windows PowerShell command
       def default_flags
-        return "" if Chef::Platform.windows_nano_server?
-
         # Execution policy 'Bypass' is preferable since it doesn't require
         # user input confirmation for files such as PowerShell modules
         # downloaded from the Internet. However, 'Bypass' is not supported
