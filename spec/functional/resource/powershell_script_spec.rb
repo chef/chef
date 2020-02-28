@@ -55,8 +55,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns the exit status 27 for a powershell script that exits with 27" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       file = Tempfile.new(["foo", ".ps1"])
       begin
         file.write "exit 27"
@@ -73,7 +71,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     let (:negative_exit_status) { -27 }
     let (:unsigned_exit_status) { (-negative_exit_status ^ 65535) + 1 }
     it "returns the exit status -27 as a signed integer or an unsigned 16-bit 2's complement value of 65509 for a powershell script that exits with -27" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
 
       # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --
       # PowerShell 4.0 and later versions return a 32-bit signed value.
@@ -98,8 +95,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns the process exit code" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code(arbitrary_nonzero_process_exit_code_content)
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
@@ -118,34 +113,24 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns 1 if the last command was a cmdlet that failed" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code(cmdlet_exit_code_not_found_content)
       resource.returns(1)
       resource.run_action(:run)
     end
 
     it "returns 1 if the last command was a cmdlet that failed and was preceded by a successfully executed non-cmdlet Windows binary" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code([windows_process_exit_code_success_content, cmdlet_exit_code_not_found_content].join(";"))
       resource.returns(1)
       expect { resource.run_action(:run) }.not_to raise_error
     end
 
     it "raises a Mixlib::ShellOut::ShellCommandFailed error if the script is not syntactically correct" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code("if({)")
       resource.returns(0)
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     it "raises an error if the script is not syntactically correct even if returns is set to 1 which is what powershell.exe returns for syntactically invalid scripts" do
-      # This test fails because shell_out expects the exit status to be 1, but it is actually 0
-      # The error is a false-positive.
-      skip "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code("if({)")
       resource.returns(1)
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
@@ -160,32 +145,24 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     # errors than 0 or 1, we return that instead, which is acceptable
     # since callers can test for nonzero rather than testing for 1.
     it "returns 1 if the last command was a cmdlet that failed and was preceded by an unsuccessfully executed non-cmdlet Windows binary" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code([arbitrary_nonzero_process_exit_code_content, cmdlet_exit_code_not_found_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
 
     it "returns 0 if the last command was a non-cmdlet Windows binary that succeeded and was preceded by a failed cmdlet" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
 
     it "returns a specific error code if the last command was a non-cmdlet Windows binary that failed and was preceded by cmdlet that succeeded" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code([cmdlet_exit_code_success_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
     end
 
     it "returns a specific error code if the last command was a non-cmdlet Windows binary that failed and was preceded by cmdlet that failed" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code([cmdlet_exit_code_not_found_content, arbitrary_nonzero_process_exit_code_content].join(";"))
       resource.returns(arbitrary_nonzero_process_exit_code)
       resource.run_action(:run)
@@ -204,8 +181,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns 1 for $false as the last line of the script when convert_boolean_return is true" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.convert_boolean_return true
       resource.code "$false"
       resource.returns(1)
@@ -245,8 +220,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     it "returns 1 if an invalid flag is passed to the interpreter" do
-      pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
       resource.code(cmdlet_exit_code_success_content)
       resource.flags(invalid_powershell_interpreter_flag)
       resource.returns(1)
@@ -318,19 +291,13 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       expect(source_contains_case_insensitive_content?( get_script_output, "AMD64" )).to eq(true)
     end
 
-    it "executes a script with a 32-bit process if :i386 arch is specified", :not_supported_on_nano do
+    it "executes a script with a 32-bit process if :i386 arch is specified" do
       resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.architecture(:i386)
       resource.returns(0)
       resource.run_action(:run)
 
       expect(source_contains_case_insensitive_content?( get_script_output, "x86" )).to eq(true)
-    end
-
-    it "raises an error when executing a script with a 32-bit process on Windows Nano Server", :windows_nano_only do
-      resource.code(processor_architecture_script_content + " | out-file -encoding ASCII #{script_output_path}")
-      expect { resource.architecture(:i386) }.to raise_error(Chef::Exceptions::Win32ArchitectureIncorrect,
-        "cannot execute script with requested architecture 'i386' on Windows Nano Server")
     end
   end
 
@@ -385,8 +352,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a powershell $false for a not_if block as true" do
-        pending "powershell.exe always exits with $true on nano" if Chef::Platform.windows_nano_server?
-
         resource.not_if "$false"
         expect(resource.should_skip?(:run)).to be_falsey
       end
@@ -397,8 +362,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a powershell $false for an only_if block as false" do
-        pending "powershell.exe always exits with $true on nano" if Chef::Platform.windows_nano_server?
-
         resource.only_if "$false"
         expect(resource.should_skip?(:run)).to be_truthy
       end
@@ -419,8 +382,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a non-zero powershell exit status for not_if as true" do
-        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
         resource.not_if "exit 37"
         expect(resource.should_skip?(:run)).to be_falsey
       end
@@ -431,8 +392,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a failed executable exit status for not_if as false" do
-        pending "powershell.exe always exits with success on nano" if Chef::Platform.windows_nano_server?
-
         resource.not_if windows_process_exit_code_not_found_content
         expect(resource.should_skip?(:run)).to be_falsey
       end
@@ -443,8 +402,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a failed executable exit status for only_if as false" do
-        pending "powershell.exe always exits with success on nano" if Chef::Platform.windows_nano_server?
-
         resource.only_if windows_process_exit_code_not_found_content
         expect(resource.should_skip?(:run)).to be_truthy
       end
@@ -455,8 +412,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a failed cmdlet exit status for not_if as true" do
-        pending "powershell.exe always exits with success on nano" if Chef::Platform.windows_nano_server?
-
         resource.not_if "throw 'up'"
         expect(resource.should_skip?(:run)).to be_falsey
       end
@@ -467,8 +422,6 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a failed cmdlet exit status for only_if as false" do
-        pending "powershell.exe always exits with success on nano" if Chef::Platform.windows_nano_server?
-
         resource.only_if "throw 'up'"
         expect(resource.should_skip?(:run)).to be_truthy
       end
@@ -511,36 +464,30 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
 
       it "evaluates a 64-bit resource with a 64-bit guard and interprets boolean true as nonzero status code", :windows64_only do
-        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
         resource.architecture :x86_64
         resource.only_if "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'AMD64')"
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code" do
         resource.architecture :i386
         resource.only_if "exit [int32]($env:PROCESSOR_ARCHITECTURE -ne 'X86')"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code" do
         resource.architecture :i386
         resource.only_if "exit [int32]($env:PROCESSOR_ARCHITECTURE -eq 'X86')"
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for only_if" do
-        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
         resource.convert_boolean_return true
         resource.only_if "$false"
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
       it "evaluates a simple boolean false as nonzero status code when convert_boolean_return is true for not_if" do
-        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
         resource.convert_boolean_return true
         resource.not_if "$false"
         expect(resource.should_skip?(:run)).to be_falsey
@@ -558,40 +505,32 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for only_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean false as zero status code using convert_boolean_return for not_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
         expect(resource.should_skip?(:run)).to be_falsey
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for only_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.only_if "$env:PROCESSOR_ARCHITECTURE -ne 'X86'"
         expect(resource.should_skip?(:run)).to be_truthy
       end
 
-      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if", :not_supported_on_nano do
+      it "evaluates a 32-bit resource with a 32-bit guard and interprets boolean true as nonzero status code using convert_boolean_return for not_if" do
         resource.convert_boolean_return true
         resource.architecture :i386
         resource.not_if "$env:PROCESSOR_ARCHITECTURE -eq 'X86'"
         expect(resource.should_skip?(:run)).to be_truthy
-      end
-
-      it "raises an error when a 32-bit guard is used on Windows Nano Server", :windows_nano_only do
-        resource.only_if "$true", architecture: :i386
-        expect { resource.run_action(:run) }.to raise_error(
-          Chef::Exceptions::Win32ArchitectureIncorrect,
-          /cannot execute script with requested architecture 'i386' on Windows Nano Server/
-        )
       end
     end
   end

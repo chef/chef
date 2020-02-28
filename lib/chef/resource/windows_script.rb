@@ -54,10 +54,7 @@ class Chef
       protected
 
       def assert_architecture_compatible!(desired_architecture)
-        if desired_architecture == :i386 && Chef::Platform.windows_nano_server?
-          raise Chef::Exceptions::Win32ArchitectureIncorrect,
-            "cannot execute script with requested architecture 'i386' on Windows Nano Server"
-        elsif ! node_supports_windows_architecture?(node, desired_architecture)
+        unless node_supports_windows_architecture?(node, desired_architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
             "cannot execute script with requested architecture '#{desired_architecture}' on a system with architecture '#{node_windows_architecture(node)}'"
         end

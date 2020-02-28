@@ -99,23 +99,12 @@ shared_context Chef::Resource::WindowsScript do
         end
       end
 
-      context "when the guard's architecture is specified as 32-bit", :not_supported_on_nano do
+      context "when the guard's architecture is specified as 32-bit" do
         let (:guard_architecture) { :i386 }
         it "executes a 32-bit guard" do
           resource.only_if resource_guard_command, architecture: guard_architecture
           resource.run_action(:run)
           expect(get_guard_process_architecture).to eq("x86")
-        end
-      end
-
-      context "when the guard's architecture is specified as 32-bit", :windows_nano_only do
-        let (:guard_architecture) { :i386 }
-        it "raises an error" do
-          resource.only_if resource_guard_command, architecture: guard_architecture
-          expect { resource.run_action(:run) }.to raise_error(
-            Chef::Exceptions::Win32ArchitectureIncorrect,
-            /cannot execute script with requested architecture 'i386' on Windows Nano Server/
-          )
         end
       end
     end
@@ -218,8 +207,6 @@ shared_context Chef::Resource::WindowsScript do
 
     context "when evaluating guards" do
       it "has a guard_interpreter attribute set to the short name of the resource" do
-        pending "powershell.exe always exits with 0 on nano" if Chef::Platform.windows_nano_server?
-
         expect(resource.guard_interpreter).to eq(resource.resource_name)
         resource.not_if "findstr.exe /thiscommandhasnonzeroexitstatus"
         expect(Chef::Resource).to receive(:resource_for_node).and_call_original
@@ -238,7 +225,7 @@ shared_context Chef::Resource::WindowsScript do
       it_behaves_like "a script resource with architecture attribute"
     end
 
-    context "when the architecture attribute is :i386", :not_supported_on_nano do
+    context "when the architecture attribute is :i386" do
       let(:resource_architecture) { :i386 }
       it_behaves_like "a script resource with architecture attribute"
     end

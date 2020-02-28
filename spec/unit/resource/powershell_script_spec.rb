@@ -47,11 +47,6 @@ describe Chef::Resource::PowershellScript do
     expect(@resource.convert_boolean_return).to eq(false)
   end
 
-  it "raises an error when architecture is i386 on Windows Nano Server" do
-    allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
-    expect { @resource.architecture(:i386) }.to raise_error(Chef::Exceptions::Win32ArchitectureIncorrect, "cannot execute script with requested architecture 'i386' on Windows Nano Server")
-  end
-
   context "when using guards" do
     let(:resource) { @resource }
     before(:each) do
