@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,21 +31,11 @@ class Chef
         false
       end
 
+      # @deprecated we added this method due to Windows Server Nano, which is no longer a platform
       def supports_msi?
         return false unless windows?
 
-        require "win32/registry" unless defined?(Win32::Registry)
-
-        key = "System\\CurrentControlSet\\Services\\msiserver"
-        access = ::Win32::Registry::KEY_QUERY_VALUE
-
-        begin
-          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
-            true
-          end
-        rescue ::Win32::Registry::Error
-          false
-        end
+        true
       end
 
       # @deprecated we don't support any release of Windows that isn't PS 3+
