@@ -21,13 +21,10 @@
 require_relative "package"
 require_relative "../provider/package/freebsd/port"
 require_relative "../provider/package/freebsd/pkgng"
-require_relative "../mixin/shell_out"
 
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
-      include Chef::Mixin::ShellOut
-
       unified_mode true
       resource_name :freebsd_package
       provides :package, platform: "freebsd"
