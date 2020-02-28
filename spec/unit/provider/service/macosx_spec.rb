@@ -1,6 +1,7 @@
 #
 # Author:: Igor Afonov <afonov@gmail.com>
 # Copyright:: Copyright 2011-2016, Igor Afonov
+# Copyright:: Copyright 2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -61,16 +62,13 @@ describe Chef::Provider::Service::Macosx do
 
     %w{Daemon Agent}.each do |service_type|
       ["redis-server", "io.redis.redis-server"].each do |service_name|
-        ["10.9", "10.10", "10.11"].each do |platform_version|
+        ["10.10", "10.11"].each do |platform_version|
           let(:plist) { "/Library/LaunchDaemons/io.redis.redis-server.plist" }
           let(:session) { StringIO.new }
           if service_type == "Agent"
             let(:plist) { "/Library/LaunchAgents/io.redis.redis-server.plist" }
             let(:session) { "-S Aqua " }
             let(:su_cmd) { "su -l igor -c" }
-            if platform_version == "10.9"
-              let(:su_cmd) { "su igor -c" }
-            end
           end
           let(:service_label) { "io.redis.redis-server" }
           before do
@@ -92,7 +90,7 @@ describe Chef::Provider::Service::Macosx do
               .and_return(double("Status", stdout: plutil_stdout))
           end
 
-          context "#{service_name} that is a #{service_type} running Osx #{platform_version}" do
+          context "#{service_name} that is a #{service_type} running macOS #{platform_version}" do
             let(:new_resource) { Chef::Resource::MacosxService.new(service_name) }
             let!(:current_resource) { Chef::Resource::MacosxService.new(service_name) }
 
