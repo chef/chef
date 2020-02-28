@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -71,22 +71,12 @@ class Chef
       end
 
       # Options that will be passed to Windows PowerShell command
+      #
+      # @returns [String]
       def default_flags
-        # Execution policy 'Bypass' is preferable since it doesn't require
-        # user input confirmation for files such as PowerShell modules
-        # downloaded from the Internet. However, 'Bypass' is not supported
-        # prior to PowerShell 3.0, so the fallback is 'Unrestricted'
-        execution_policy = Chef::Platform.supports_powershell_execution_bypass?(run_context.node) ? "Bypass" : "Unrestricted"
-
-        [
-          "-NoLogo",
-          "-NonInteractive",
-          "-NoProfile",
-          "-ExecutionPolicy #{execution_policy}",
-          # PowerShell will hang if STDIN is redirected
-          # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-          "-InputFormat None",
-        ].join(" ")
+        # Set InputFormat to None as PowerShell will hang if STDIN is redirected
+        # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
+        "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None"
       end
     end
   end
