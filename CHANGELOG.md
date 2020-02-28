@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.91 -->
-## [v16.0.91](https://github.com/chef/chef/tree/v16.0.91) (2020-02-28)
+<!-- latest_release 16.0.92 -->
+## [v16.0.92](https://github.com/chef/chef/tree/v16.0.92) (2020-02-28)
 
 #### Merged Pull Requests
-- Remove the &quot;Core&quot; DSL for Chef-16 [#9411](https://github.com/chef/chef/pull/9411) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9409](https://github.com/chef/chef/pull/9409) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9409](https://github.com/chef/chef/pull/9409) ([tas50](https://github.com/tas50)) <!-- 16.0.92 -->
 - Remove the &quot;Core&quot; DSL for Chef-16 [#9411](https://github.com/chef/chef/pull/9411) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.91 -->
 - Accept exit code 3010 as valid in windows_package [#9396](https://github.com/chef/chef/pull/9396) ([tas50](https://github.com/tas50)) <!-- 16.0.90 -->
 - Cookstyle fixes for our resources [#9395](https://github.com/chef/chef/pull/9395) ([tas50](https://github.com/tas50)) <!-- 16.0.89 -->
