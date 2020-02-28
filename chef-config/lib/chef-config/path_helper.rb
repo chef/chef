@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2019, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -265,15 +265,15 @@ module ChefConfig
       end
     end
 
-    # Determine if the given path is protected by OS X System Integrity Protection.
+    # Determine if the given path is protected by macOS System Integrity Protection.
     def self.is_sip_path?(path, node)
-      if node["platform"] == "mac_os_x" && Gem::Version.new(node["platform_version"]) >= Gem::Version.new("10.11")
+      if ChefUtils.macos?
           # @todo: parse rootless.conf for this?
         sip_paths = [
           "/System", "/bin", "/sbin", "/usr"
         ]
         sip_paths.each do |sip_path|
-          ChefConfig.logger.info("This is a SIP path, checking if it in exceptions list.")
+          ChefConfig.logger.info("#{sip_path} is a SIP path, checking if it is in the exceptions list.")
           return true if path.start_with?(sip_path)
         end
         false
@@ -293,7 +293,7 @@ module ChefConfig
       sip_exceptions.each do |exception_path|
         return true if path.start_with?(exception_path)
       end
-      ChefConfig.logger.error("Cannot write to a SIP Path on OS X 10.11+")
+      ChefConfig.logger.error("Cannot write to a SIP path #{path} on macOS!")
       false
     end
 
