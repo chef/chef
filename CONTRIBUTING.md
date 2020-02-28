@@ -33,7 +33,7 @@ Code review takes place in GitHub pull requests. See [this article](https://help
 
 Once you open a pull request, project maintainers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. Approvals by two or more members of the owners, approvers, or reviewers groups. See the [Chef Infra OSS Project](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md) for a list of all members.
+1. Two or more members of the owners, approvers, or reviewers groups must approve your PR. See the [Chef Infra OSS Project](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md) for a list of all members.
 2. Your change will be merged into the project's `master` branch
 3. Our Expeditor bot will automatically increment the version and update the project's changelog with your contribution. For projects that ship as a package, Expeditor will kick off a build which will publish the package to the project's `current` channel.
 
