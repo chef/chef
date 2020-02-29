@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.97 -->
-## [v16.0.97](https://github.com/chef/chef/tree/v16.0.97) (2020-02-28)
+<!-- latest_release 16.0.98 -->
+## [v16.0.98](https://github.com/chef/chef/tree/v16.0.98) (2020-02-29)
 
 #### Merged Pull Requests
-- directory resource: Remove support for macOS &lt; 10.11 [#9421](https://github.com/chef/chef/pull/9421) ([tas50](https://github.com/tas50))
+- Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9423](https://github.com/chef/chef/pull/9423) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9423](https://github.com/chef/chef/pull/9423) ([tas50](https://github.com/tas50)) <!-- 16.0.98 -->
 - directory resource: Remove support for macOS &lt; 10.11 [#9421](https://github.com/chef/chef/pull/9421) ([tas50](https://github.com/tas50)) <!-- 16.0.97 -->
 - Deprecate supports_powershell_execution_bypass? check [#9418](https://github.com/chef/chef/pull/9418) ([tas50](https://github.com/tas50)) <!-- 16.0.96 -->
 - Remove support for macOS &lt; 10.12 in the service resource [#9420](https://github.com/chef/chef/pull/9420) ([tas50](https://github.com/tas50)) <!-- 16.0.95 -->
