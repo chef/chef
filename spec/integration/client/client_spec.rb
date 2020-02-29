@@ -540,8 +540,7 @@ describe "chef-client" do
     end
   end
 
-  # Fails on appveyor, but works locally on windows and on windows hosts in Ci.
-  context "when using recipe-url", :skip_appveyor do
+  context "when using recipe-url" do
     before(:each) do
       start_tiny_server
     end
