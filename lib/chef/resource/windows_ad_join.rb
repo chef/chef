@@ -16,7 +16,6 @@
 #
 
 require_relative "../resource"
-require_relative "../mixin/powershell_out"
 require_relative "../dist"
 
 class Chef
@@ -24,8 +23,6 @@ class Chef
     class WindowsAdJoin < Chef::Resource
       resource_name :windows_ad_join
       provides :windows_ad_join
-
-      include Chef::Mixin::PowershellOut
 
       description "Use the windows_ad_join resource to join a Windows Active Directory domain."
       introduced "14.0"
