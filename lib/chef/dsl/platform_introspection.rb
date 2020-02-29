@@ -248,6 +248,8 @@ class Chef
       end
 
       # a simple helper to determine if we're on a windows release pre-2012 / 8
+      #
+      # @deprecated Windows releases before Windows 2012 and 8 are no longer supported
       # @return [Boolean] Is the system older than Windows 8 / 2012
       def older_than_win_2012_or_8?(node = run_context.nil? ? nil : run_context.node)
         node["platform_version"].to_f < 6.2
@@ -256,7 +258,6 @@ class Chef
       # ^^^^^^ NOTE: PLEASE DO NOT CONTINUE TO ADD THESE KINDS OF PLATFORM_VERSION APIS WITHOUT ^^^^^^^
       # ^^^^^^ GOING THROUGH THE DESIGN REVIEW PROCESS AND ADDRESS THE EXISTING CHEF-SUGAR ONES ^^^^^^^
       # ^^^^^^ DO "THE HARD RIGHT THING" AND ADDRESS THE BROADER PROBLEM AND FIX IT ALL.        ^^^^^^^
-
     end
   end
 end
