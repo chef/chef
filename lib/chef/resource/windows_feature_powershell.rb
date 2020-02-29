@@ -190,13 +190,8 @@ class Chef
 
         # fetch the list of available feature names and state in JSON and parse the JSON
         def parsed_feature_list
-          # Grab raw feature information from dism command line
-          # Windows < 2012 doesn't present a state value so we have to check if the feature is installed or not
-          raw_list_of_features = if older_than_win_2012_or_8? # make the older format look like the new format, warts and all
-                                   powershell_out!('Get-WindowsFeature | Select-Object -Property Name, @{Name="InstallState"; Expression = {If ($_.Installed) { 1 } Else { 0 }}} | ConvertTo-Json -Compress', timeout: new_resource.timeout).stdout
-                                 else
-                                   powershell_out!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).stdout
-                                 end
+          # Grab raw feature information from WindowsFeature
+          raw_list_of_features = powershell_out!("Get-WindowsFeature | Select-Object -Property Name,InstallState | ConvertTo-Json -Compress", timeout: new_resource.timeout).stdout
 
           Chef::JSONCompat.from_json(raw_list_of_features)
         end
@@ -205,7 +200,7 @@ class Chef
         # @return [void]
         def add_to_feature_mash(feature_type, feature_details)
           # add the lowercase feature name to the mash unless we're on < 2012 where they're case sensitive
-          node.override["powershell_features_cache"][feature_type] << (older_than_win_2012_or_8? ? feature_details : feature_details.downcase)
+          node.override["powershell_features_cache"][feature_type] << feature_details.downcase
         end
 
         # Fail if any of the packages are in a removed state
