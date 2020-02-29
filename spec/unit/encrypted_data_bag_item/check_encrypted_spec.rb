@@ -85,7 +85,7 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
       end
     end
 
-    context "when encryption version is 3", :aes_256_gcm_only, ruby: "~> 2.0.0" do
+    context "when encryption version is 3", :aes_256_gcm_only do
       include_examples "encryption detected" do
         let(:version) { 3 }
         let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }
