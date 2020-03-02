@@ -98,11 +98,7 @@ class Chef
           package "bison"
           package "gnu-coreutils"
           package "flex"
-          package "gcc" do
-            # lock because we don't use 5 yet
-            version "4.8.2"
-          end
-          package "gcc-3"
+          package "gcc"
           package "gnu-grep"
           package "gnu-make"
           package "gnu-patch"
