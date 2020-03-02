@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.38 -->
-## [v14.14.38](https://github.com/chef/chef/tree/v14.14.38) (2020-02-06)
+<!-- latest_release 14.14.39 -->
+## [v14.14.39](https://github.com/chef/chef/tree/v14.14.39) (2020-03-02)
 
 #### Merged Pull Requests
-- Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp))
+- [Backport]ifconfig: fix regex matching interface name with hyphen [#9405](https://github.com/chef/chef/pull/9405) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Backport]ifconfig: fix regex matching interface name with hyphen [#9405](https://github.com/chef/chef/pull/9405) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.14.39 -->
 - Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.38 -->
 - Update all deps to the latest + openssl 1.0.2u [#9221](https://github.com/chef/chef/pull/9221) ([tas50](https://github.com/tas50)) <!-- 14.14.37 -->
 - Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50)) <!-- 14.14.36 -->
