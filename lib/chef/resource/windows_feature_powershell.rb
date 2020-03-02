@@ -115,18 +115,6 @@ class Chef
       end
 
       action_class do
-        # shellout to determine the actively installed version of powershell
-        # we have this same data in ohai, but it doesn't get updated if powershell is installed mid run
-        # @return [Integer] the powershell version or 0 for nothing
-        def powershell_version
-          cmd = powershell_out("$PSVersionTable.psversion.major")
-          return 1 if cmd.stdout.empty? # PowerShell 1.0 doesn't have a $PSVersionTable
-
-          Regexp.last_match(1).to_i if cmd.stdout =~ /^(\d+)/
-        rescue Errno::ENOENT
-          0 # zero as in nothing is installed
-        end
-
         # @return [Array] features the user has requested to install which need installation
         def features_to_install
           # the intersection of the features to install & disabled features are what needs installing
@@ -199,7 +187,7 @@ class Chef
         # add the features values to the appropriate array
         # @return [void]
         def add_to_feature_mash(feature_type, feature_details)
-          # add the lowercase feature name to the mash unless we're on < 2012 where they're case sensitive
+          # add the lowercase feature name to the mash so we can compare it lowercase later
           node.override["powershell_features_cache"][feature_type] << feature_details.downcase
         end
 
@@ -207,10 +195,8 @@ class Chef
         # @return [void]
         def fail_if_removed
           return if new_resource.source # if someone provides a source then all is well
+          return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
 
-          if node["platform_version"].to_f > 6.2 # 2012R2 or later
-            return if registry_key_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing') && registry_value_exists?('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Servicing', name: "LocalSourcePath") # if source is defined in the registry, still fine
-          end
           removed = new_resource.feature_name & node["powershell_features_cache"]["removed"]
           raise "The Windows feature#{"s" if removed.count > 1} #{removed.join(",")} #{removed.count > 1 ? "are" : "is"} removed from the host and cannot be installed." unless removed.empty?
         end
