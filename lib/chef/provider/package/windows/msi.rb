@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2017, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 # TODO: Allow new_resource.source to be a Product Code as a GUID for uninstall / network install
 
-require_relative "../../../win32/api/installer" if (RUBY_PLATFORM =~ /mswin|mingw32|windows/) && Chef::Platform.supports_msi?
+require_relative "../../../win32/api/installer" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
 require_relative "../../../mixin/shell_out"
 
 class Chef
@@ -26,7 +26,7 @@ class Chef
     class Package
       class Windows
         class MSI
-          include Chef::ReservedNames::Win32::API::Installer if (RUBY_PLATFORM =~ /mswin|mingw32|windows/) && Chef::Platform.supports_msi?
+          include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM =~ /mswin|mingw32|windows/
           include Chef::Mixin::ShellOut
 
           def initialize(resource, uninstall_entries)
