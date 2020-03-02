@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.100 -->
-## [v16.0.100](https://github.com/chef/chef/tree/v16.0.100) (2020-03-02)
+<!-- latest_release 16.0.101 -->
+## [v16.0.101](https://github.com/chef/chef/tree/v16.0.101) (2020-03-02)
 
 #### Merged Pull Requests
-- Update gcc pinning for solaris to 5.4.0 [#9430](https://github.com/chef/chef/pull/9430) ([jaymalasinha](https://github.com/jaymalasinha))
+- Fix gsub so only file endings of .rb and .json are removed. [#9429](https://github.com/chef/chef/pull/9429) ([joerg](https://github.com/joerg))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix gsub so only file endings of .rb and .json are removed. [#9429](https://github.com/chef/chef/pull/9429) ([joerg](https://github.com/joerg)) <!-- 16.0.101 -->
 - Update gcc pinning for solaris to 5.4.0 [#9430](https://github.com/chef/chef/pull/9430) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 16.0.100 -->
 - Deprecate the older_than_win_2012_or_8? helper [#9424](https://github.com/chef/chef/pull/9424) ([tas50](https://github.com/tas50)) <!-- 16.0.99 -->
 - Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9423](https://github.com/chef/chef/pull/9423) ([tas50](https://github.com/tas50)) <!-- 16.0.98 -->
