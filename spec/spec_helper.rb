@@ -140,9 +140,6 @@ RSpec.configure do |config|
   config.filter_run_excluding volatile_on_solaris: true if solaris?
   config.filter_run_excluding volatile_from_verify: false
 
-  config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
-  config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
-
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
   config.filter_run_excluding windows_only: true unless windows?
