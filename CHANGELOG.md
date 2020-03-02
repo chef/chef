@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.103 -->
-## [v16.0.103](https://github.com/chef/chef/tree/v16.0.103) (2020-03-02)
+<!-- latest_release 16.0.104 -->
+## [v16.0.104](https://github.com/chef/chef/tree/v16.0.104) (2020-03-02)
 
 #### Merged Pull Requests
-- Remove the last bits of Appveyor from the specs [#9427](https://github.com/chef/chef/pull/9427) ([tas50](https://github.com/tas50))
+- More removal of Windows 2008 R2 support from windows_feature_powershell [#9426](https://github.com/chef/chef/pull/9426) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More removal of Windows 2008 R2 support from windows_feature_powershell [#9426](https://github.com/chef/chef/pull/9426) ([tas50](https://github.com/tas50)) <!-- 16.0.104 -->
 - Remove the last bits of Appveyor from the specs [#9427](https://github.com/chef/chef/pull/9427) ([tas50](https://github.com/tas50)) <!-- 16.0.103 -->
 - Remove constraints on specs [#9428](https://github.com/chef/chef/pull/9428) ([tas50](https://github.com/tas50)) <!-- 16.0.102 -->
 - Fix gsub so only file endings of .rb and .json are removed. [#9429](https://github.com/chef/chef/pull/9429) ([joerg](https://github.com/joerg)) <!-- 16.0.101 -->
