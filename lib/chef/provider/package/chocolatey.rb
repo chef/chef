@@ -17,13 +17,11 @@
 
 require_relative "../package"
 require_relative "../../resource/chocolatey_package"
-require_relative "../../mixin/powershell_out"
 
 class Chef
   class Provider
     class Package
       class Chocolatey < Chef::Provider::Package
-        include Chef::Mixin::PowershellOut
 
         provides :chocolatey_package
 

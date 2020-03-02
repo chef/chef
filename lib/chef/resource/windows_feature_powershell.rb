@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/powershell_out"
 require_relative "../json_compat"
 require_relative "../resource"
 require_relative "../platform/query_helpers"
@@ -58,8 +57,6 @@ class Chef
         # features aren't case sensitive so let's compare in lowercase
         x.map(&:downcase)
       end
-
-      include Chef::Mixin::PowershellOut
 
       action :install do
         reload_cached_powershell_data unless node["powershell_features_cache"]
