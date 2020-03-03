@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.107 -->
-## [v16.0.107](https://github.com/chef/chef/tree/v16.0.107) (2020-03-02)
+<!-- latest_release 16.0.108 -->
+## [v16.0.108](https://github.com/chef/chef/tree/v16.0.108) (2020-03-03)
 
 #### Merged Pull Requests
-- Bump train-core to 3.2.23 [#9432](https://github.com/chef/chef/pull/9432) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Replace highline.color with pastel.decorate [#9434](https://github.com/chef/chef/pull/9434) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace highline.color with pastel.decorate [#9434](https://github.com/chef/chef/pull/9434) ([btm](https://github.com/btm)) <!-- 16.0.108 -->
 - Bump train-core to 3.2.23 [#9432](https://github.com/chef/chef/pull/9432) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.107 -->
 - Deprecate Chef::Platform.supports_msi? [#9422](https://github.com/chef/chef/pull/9422) ([tas50](https://github.com/tas50)) <!-- 16.0.106 -->
 - Remove the mixin powershell includes from resources [#9425](https://github.com/chef/chef/pull/9425) ([tas50](https://github.com/tas50)) <!-- 16.0.105 -->
