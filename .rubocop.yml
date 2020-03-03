@@ -19,7 +19,7 @@ Lint/AssignmentInCondition:
   Enabled: false
 Lint/AmbiguousBlockAssociation:
   Enabled: false
-Lint/UnneededSplatExpansion:
+Lint/RedundantSplatExpansion:
   Enabled: false
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
