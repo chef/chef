@@ -26,7 +26,7 @@ class Chef
         true
       end
 
-      def action_run
+      action :run do
         converge_by("execute the ruby block #{new_resource.name}") do
           new_resource.block.call
           logger.info("#{new_resource} called")

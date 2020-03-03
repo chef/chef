@@ -30,7 +30,7 @@ class Chef
         add_exit_status_wrapper
       end
 
-      def action_run
+      action :run do
         validate_script_syntax!
         super
       end

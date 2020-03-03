@@ -32,7 +32,7 @@ class Chef
       end
 
       # Send a HEAD request to new_resource.url
-      def action_head
+      action :head do
         message = check_message(new_resource.message)
         # CHEF-4762: we expect a nil return value from Chef::HTTP for a "200 Success" response
         # and false for a "304 Not Modified" response
@@ -49,7 +49,7 @@ class Chef
       end
 
       # Send a GET request to new_resource.url
-      def action_get
+      action :get do
         converge_by("#{new_resource} GET to #{new_resource.url}") do
 
           message = check_message(new_resource.message)
@@ -63,7 +63,7 @@ class Chef
       end
 
       # Send a PATCH request to new_resource.url, with the message as the payload
-      def action_patch
+      action :patch do
         converge_by("#{new_resource} PATCH to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.patch(
@@ -77,7 +77,7 @@ class Chef
       end
 
       # Send a PUT request to new_resource.url, with the message as the payload
-      def action_put
+      action :put do
         converge_by("#{new_resource} PUT to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.put(
@@ -91,7 +91,7 @@ class Chef
       end
 
       # Send a POST request to new_resource.url, with the message as the payload
-      def action_post
+      action :post do
         converge_by("#{new_resource} POST to #{new_resource.url}") do
           message = check_message(new_resource.message)
           body = @http.post(
@@ -105,7 +105,7 @@ class Chef
       end
 
       # Send a DELETE request to new_resource.url
-      def action_delete
+      action :delete do
         converge_by("#{new_resource} DELETE to #{new_resource.url}") do
           body = @http.delete(
             (new_resource.url).to_s,

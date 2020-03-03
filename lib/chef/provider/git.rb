@@ -71,7 +71,7 @@ class Chef
         end
       end
 
-      def action_checkout
+      action :checkout do
         if target_dir_non_existent_or_empty?
           clone
           if new_resource.enable_checkout
@@ -84,14 +84,14 @@ class Chef
         end
       end
 
-      def action_export
+      action :export do
         action_checkout
         converge_by("complete the export by removing #{cwd}.git after checkout") do
           FileUtils.rm_rf(::File.join(cwd, ".git"))
         end
       end
 
-      def action_sync
+      action :sync do
         if existing_git_clone?
           logger.trace "#{new_resource} current revision: #{current_resource.revision} target revision: #{target_revision}"
           unless current_revision_matches_target_revision?

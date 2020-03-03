@@ -137,7 +137,7 @@ class Chef
         end
       end
 
-      def action_create
+      action :create do
         do_generate_content
         do_validate_content
         do_unlink
@@ -148,7 +148,7 @@ class Chef
         load_resource_attributes_from_file(new_resource) unless Chef::Config[:why_run]
       end
 
-      def action_create_if_missing
+      action :create_if_missing do
         unless ::File.exist?(new_resource.path)
           action_create
         else
@@ -156,7 +156,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if ::File.exists?(new_resource.path)
           converge_by("delete file #{new_resource.path}") do
             do_backup unless file_class.symlink?(new_resource.path)
@@ -166,7 +166,7 @@ class Chef
         end
       end
 
-      def action_touch
+      action :touch do
         action_create
         converge_by("update utime on file #{new_resource.path}") do
           time = Time.now

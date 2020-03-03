@@ -80,7 +80,7 @@ class Chef
         end
       end
 
-      def action_enable
+      action :enable do
         if current_resource.enabled
           logger.trace("#{new_resource} already enabled - nothing to do")
         else
@@ -93,7 +93,7 @@ class Chef
         new_resource.enabled(true)
       end
 
-      def action_disable
+      action :disable do
         if current_resource.enabled
           converge_by("disable service #{new_resource}") do
             disable_service
@@ -106,7 +106,7 @@ class Chef
         new_resource.enabled(false)
       end
 
-      def action_mask
+      action :mask do
         if current_resource.masked
           logger.trace("#{new_resource} already masked - nothing to do")
         else
@@ -119,7 +119,7 @@ class Chef
         new_resource.masked(true)
       end
 
-      def action_unmask
+      action :unmask do
         if current_resource.masked
           converge_by("unmask service #{new_resource}") do
             unmask_service
@@ -132,7 +132,7 @@ class Chef
         new_resource.masked(false)
       end
 
-      def action_start
+      action :start do
         unless current_resource.running
           converge_by("start service #{new_resource}") do
             start_service
@@ -145,7 +145,7 @@ class Chef
         new_resource.running(true)
       end
 
-      def action_stop
+      action :stop do
         if current_resource.running
           converge_by("stop service #{new_resource}") do
             stop_service
@@ -158,7 +158,7 @@ class Chef
         new_resource.running(false)
       end
 
-      def action_restart
+      action :restart do
         converge_by("restart service #{new_resource}") do
           restart_service
           logger.info("#{new_resource} restarted")
@@ -167,7 +167,7 @@ class Chef
         new_resource.running(true)
       end
 
-      def action_reload
+      action :reload do
         if current_resource.running
           converge_by("reload service #{new_resource}") do
             reload_service

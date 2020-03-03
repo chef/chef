@@ -1,7 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org), Jesse Nelson (spheromak@gmail.com)
 # Copyright:: Copyright 2009-2016, Bryan McLellan
-# Copyright:: Copyright 2020, Chef Software, Inc.
+# Copyright:: Copyright 2020-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -128,7 +128,7 @@ class Chef
         route_file.close
       end
 
-      def action_add
+      action :add do
         # check to see if load_current_resource found the route
         if is_running
           logger.trace("#{new_resource} route already active - nothing to do")
@@ -144,7 +144,7 @@ class Chef
         generate_config
       end
 
-      def action_delete
+      action :delete do
         if is_running
           command = generate_command(:delete)
           converge_by("run #{command.join(" ")} to delete route ") do
@@ -162,8 +162,10 @@ class Chef
       def generate_config
         if platform_family?("rhel", "amazon", "fedora")
           conf = {}
+          # FIXME FIXME FIXME FIXME: whatever this walking-the-run-context API is, it needs to be removed.
           # walk the collection
-          run_context.resource_collection.each do |resource|
+          rc = run_context.parent_run_context || run_context
+          rc.resource_collection.each do |resource|
             next unless resource.is_a? Chef::Resource::Route
 
             # default to eth0
