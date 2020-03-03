@@ -54,13 +54,6 @@ class Chef
         @presenter = presenter_class.new(self, config)
       end
 
-      def highline
-        @highline ||= begin
-          require "highline"
-          HighLine.new
-        end
-      end
-
       # pastel.decorate is a lightweight replacement for highline.color
       def pastel
         @pastel ||= begin
