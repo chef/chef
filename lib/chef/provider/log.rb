@@ -33,7 +33,7 @@ class Chef
         # Write the log to Chef's log
         #
         # @return [true] Always returns true
-        def action_write
+        action :write do
           logger.send(new_resource.level, new_resource.message)
           new_resource.updated_by_last_action(true) if Chef::Config[:count_log_resource_updates]
         end

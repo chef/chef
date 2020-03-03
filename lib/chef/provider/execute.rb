@@ -47,7 +47,7 @@ class Chef
         new_resource.timeout || 3600
       end
 
-      def action_run
+      action :run do
         if creates && sentinel_file.exist?
           logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false

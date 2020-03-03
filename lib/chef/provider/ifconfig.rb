@@ -171,7 +171,7 @@ class Chef
         end
       end
 
-      def action_add
+      action :add do
         # check to see if load_current_resource found interface in ifconfig
         unless current_resource.inet_addr
           unless new_resource.device == loopback_device
@@ -186,7 +186,7 @@ class Chef
         generate_config
       end
 
-      def action_enable
+      action :enable do
         # check to see if load_current_resource found ifconfig
         # enables, but does not manage config files
         return if current_resource.inet_addr
@@ -199,7 +199,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         # check to see if load_current_resource found the interface
         if current_resource.device
           command = delete_command
@@ -213,7 +213,7 @@ class Chef
         delete_config
       end
 
-      def action_disable
+      action :disable do
         # check to see if load_current_resource found the interface
         # disables, but leaves config files in place.
         if current_resource.device

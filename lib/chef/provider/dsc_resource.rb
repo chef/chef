@@ -33,7 +33,7 @@ class Chef
         @reboot_resource = nil
       end
 
-      def action_run
+      action :run do
         unless test_resource
           converge_by(generate_description) do
             result = set_resource

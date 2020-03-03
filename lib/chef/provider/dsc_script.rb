@@ -40,7 +40,7 @@ class Chef
           end }
       end
 
-      def action_run
+      action :run do
         unless @resource_converged
           converge_by(generate_description) do
             run_configuration(:set)

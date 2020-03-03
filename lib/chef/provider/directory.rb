@@ -121,7 +121,7 @@ class Chef
         end
       end
 
-      def action_create
+      action :create do
         unless ::File.exists?(new_resource.path)
           converge_by("create new directory #{new_resource.path}") do
             if new_resource.recursive == true
@@ -137,7 +137,7 @@ class Chef
         load_resource_attributes_from_file(new_resource) unless Chef::Config[:why_run]
       end
 
-      def action_delete
+      action :delete do
         if ::File.exists?(new_resource.path)
           converge_by("delete existing directory #{new_resource.path}") do
             if new_resource.recursive == true

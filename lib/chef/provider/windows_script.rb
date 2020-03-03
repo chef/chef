@@ -46,7 +46,7 @@ class Chef
 
       public
 
-      def action_run
+      action :run do
         wow64_redirection_state = nil
 
         if @is_wow64

@@ -37,7 +37,7 @@ class Chef
         self.unmount_retries = 20
       end
 
-      def action_mount
+      action :mount do
         unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
@@ -48,7 +48,7 @@ class Chef
         end
       end
 
-      def action_umount
+      action :umount do
         if current_resource.mounted
           converge_by("unmount #{current_resource.device}") do
             umount_fs
@@ -59,7 +59,7 @@ class Chef
         end
       end
 
-      def action_remount
+      action :remount do
         if current_resource.mounted
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
@@ -82,7 +82,7 @@ class Chef
         end
       end
 
-      def action_enable
+      action :enable do
         unless current_resource.enabled && mount_options_unchanged? && device_unchanged?
           converge_by("enable #{current_resource.device}") do
             enable_fs
@@ -93,7 +93,7 @@ class Chef
         end
       end
 
-      def action_disable
+      action :disable do
         if current_resource.enabled
           converge_by("disable #{current_resource.device}") do
             disable_fs

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,13 +51,13 @@ class Chef
         super
       end
 
-      def action_run
+      action :run do
         script_file.puts(code)
         script_file.close
 
         set_owner_and_group
 
-        super
+        super()
 
         unlink_script_file
       end

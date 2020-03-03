@@ -115,7 +115,7 @@ class Chef
           @current_resource
         end
 
-        def action_create
+        action :create do
           set_command_and_arguments if new_resource.command
 
           if current_resource.exists
@@ -152,7 +152,7 @@ class Chef
           end
         end
 
-        def action_run
+        action :run do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "running"
@@ -167,7 +167,7 @@ class Chef
           end
         end
 
-        def action_delete
+        action :delete do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             converge_by("delete scheduled task #{new_resource}") do
@@ -179,7 +179,7 @@ class Chef
           end
         end
 
-        def action_end
+        action :end do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status != "running"
@@ -194,7 +194,7 @@ class Chef
           end
         end
 
-        def action_enable
+        action :enable do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "not scheduled"
@@ -211,7 +211,7 @@ class Chef
           end
         end
 
-        def action_disable
+        action :disable do
           if current_resource.exists
             logger.info "#{new_resource} task exists"
             if %w{ready running}.include?(current_resource.task.status)

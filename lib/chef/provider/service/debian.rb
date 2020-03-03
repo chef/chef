@@ -130,7 +130,7 @@ class Chef
         end
 
         # Override method from parent to ensure priority is up-to-date
-        def action_enable
+        action :enable do
           if new_resource.priority.nil?
             priority_ok = true
           else

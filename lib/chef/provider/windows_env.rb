@@ -78,7 +78,7 @@ class Chef
 
       alias_method :compare_value, :requires_modify_or_create?
 
-      def action_create
+      action :create do
         if @key_exists
           if requires_modify_or_create?
             modify_env
@@ -123,7 +123,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if ( ENV[new_resource.key_name] || @key_exists ) && !delete_element
           delete_env
           logger.info("#{new_resource} deleted")
@@ -131,7 +131,7 @@ class Chef
         end
       end
 
-      def action_modify
+      action :modify do
         if @key_exists
           if requires_modify_or_create?
             modify_env

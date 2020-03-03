@@ -139,7 +139,7 @@ class Chef
           end
         end
 
-        def action_install
+        action :install do
           if uri_scheme?(new_resource.source)
             download_source_file
             load_current_resource

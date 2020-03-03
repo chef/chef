@@ -95,7 +95,7 @@ class Chef
         end
       end
 
-      def action_create
+      action :create do
         crontab = ""
         newcron = ""
         cron_found = false
@@ -155,7 +155,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if @cron_exists
           crontab = ""
           cron_found = false
