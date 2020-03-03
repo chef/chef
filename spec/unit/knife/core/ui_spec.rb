@@ -507,6 +507,22 @@ describe Chef::Knife::UI do
     end
   end
 
+  describe "color" do
+    context "when ui.color? => true" do
+      it "returns colored output" do
+        expect(@ui).to receive(:color?).and_return(true)
+        expect(@ui.color("a_bus_is", :yellow)).to eql("\e[33ma_bus_is\e[0m")
+      end
+    end
+
+    context "when ui.color? => false" do
+      it "returns plain output" do
+        expect(@ui).to receive(:color?).and_return(false)
+        expect(@ui.color("a_bus_is", :yellow)).to eql("a_bus_is")
+      end
+    end
+  end
+
   describe "confirm" do
     let(:stdout) { StringIO.new }
     let(:output) { stdout.string }

@@ -53,6 +53,7 @@ PATH
       net-ssh (>= 4.2, < 6)
       net-ssh-multi (~> 1.2, >= 1.2.1)
       ohai (~> 16.0)
+      pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
@@ -87,6 +88,7 @@ PATH
       net-ssh (>= 4.2, < 6)
       net-ssh-multi (~> 1.2, >= 1.2.1)
       ohai (~> 16.0)
+      pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)

@@ -17,21 +17,12 @@ class Chef
         @semaphore = Mutex.new
       end
 
-      def highline
-        @highline ||= begin
-          require "highline"
-          HighLine.new
+      # pastel.decorate is a lightweight replacement for highline.color
+      def pastel
+        @pastel ||= begin
+          require "pastel"
+          Pastel.new
         end
-      end
-
-      # Print text. This will start a new line and indent if necessary
-      # but will not terminate the line (future print and puts statements
-      # will start off where this print left off).
-      #
-      # @param string [String]
-      # @param args [Array<Hash,Symbol>]
-      def color(string, *args)
-        print(string, from_args(args))
       end
 
       # Print the start of a new line.  This will terminate any existing lines and
@@ -83,7 +74,7 @@ class Chef
       #
       # == Alternative
       #
-      # You may also call print('string', :red) (a list of colors a la Highline.color)
+      # You may also call print('string', :red) (https://github.com/piotrmurach/pastel#3-supported-colors)
       def print(string, *args)
         options = from_args(args)
 
@@ -140,7 +131,7 @@ class Chef
         end
 
         if Chef::Config[:color] && options[:colors]
-          @out.print highline.color(line, *options[:colors])
+          @out.print pastel.decorate(line, *options[:colors])
         else
           @out.print line
         end
