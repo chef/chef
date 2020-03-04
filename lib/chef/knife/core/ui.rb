@@ -208,7 +208,7 @@ class Chef
             tf.sync = true
             tf.puts output
             tf.close
-            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details." unless system("#{config[:editor]} #{tf.path}")
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup/ for details." unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)
           end

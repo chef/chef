@@ -211,7 +211,7 @@ module Shell
       desc "prints information about #{Chef::Dist::PRODUCT}"
       def version
         puts "Welcome to the #{Chef::Dist::SHELL} #{::Chef::VERSION}\n" +
-          "For usage see https://docs.chef.io/chef_shell.html"
+          "For usage see https://docs.chef.io/chef_shell/"
         :ucanhaz_automation
       end
       alias :shell :version
