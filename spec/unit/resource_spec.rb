@@ -1195,7 +1195,7 @@ describe Chef::Resource do
     end
 
     it "does not affect provides by default" do
-      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass)
+      expect(Chef.resource_handler_map).to receive(:set).with(:test_resource, klass, any_args)
       klass.provides(:test_resource)
     end
   end
