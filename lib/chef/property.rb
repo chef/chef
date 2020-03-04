@@ -1,6 +1,7 @@
 #
 # Author:: John Keiser <jkeiser@chef.io>
-# Copyright:: Copyright 2015-2016, John Keiser.
+# Copyright:: Copyright 2015-2016, John Keiser
+# Copyright:: Copyright 2015-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -242,6 +243,15 @@ class Chef
     #
     def default_description
       options[:default_description]
+    end
+
+    #
+    # The equal_to field of this property.
+    #
+    # @return [Array, NilClass]
+    #
+    def equal_to
+      options[:equal_to]
     end
 
     #
