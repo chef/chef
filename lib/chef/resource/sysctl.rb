@@ -22,7 +22,6 @@ class Chef
     class Sysctl < Chef::Resource
       unified_mode true
 
-      resource_name :sysctl
       provides(:sysctl) { true }
       provides(:sysctl_param) { true }
 

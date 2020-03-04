@@ -22,7 +22,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsEnv < Chef::Resource
-      resource_name :windows_env
       provides :windows_env
       provides :env # backwards compat with the pre-Chef 14 resource name
 

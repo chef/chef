@@ -25,7 +25,6 @@ class Chef
     class HomebrewCask < Chef::Resource
       unified_mode true
 
-      resource_name :homebrew_cask
       provides(:homebrew_cask) { true }
 
       description "Use the homebrew_cask resource to install binaries distributed via the Homebrew package manager."

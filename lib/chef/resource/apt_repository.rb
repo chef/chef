@@ -26,7 +26,6 @@ class Chef
     class AptRepository < Chef::Resource
       unified_mode true
 
-      resource_name :apt_repository
       provides(:apt_repository) { true }
 
       description "Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."

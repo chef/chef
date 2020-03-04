@@ -24,7 +24,6 @@ class Chef
   class Resource
     class Cron < Chef::Resource
       unified_mode true
-      resource_name :cron
       provides :cron
 
       description "Use the cron resource to manage cron entries for time-based job scheduling. Properties for a schedule will default to * if not provided. The cron resource requires access to a crontab program, typically cron."

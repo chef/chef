@@ -23,7 +23,6 @@ class Chef
     class PacmanPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :pacman_package
       provides :pacman_package
 
       description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."

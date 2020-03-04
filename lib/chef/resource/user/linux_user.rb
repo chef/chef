@@ -23,8 +23,6 @@ class Chef
       class LinuxUser < Chef::Resource::User
         unified_mode true
 
-        resource_name :linux_user
-
         provides :linux_user
         provides :user, os: "linux"
 

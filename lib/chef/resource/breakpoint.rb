@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ class Chef
       unified_mode true
 
       provides :breakpoint, target_mode: true
-      resource_name :breakpoint
 
       description "Use the breakpoint resource to add breakpoints to recipes. Run the #{Chef::Dist::SHELL} in #{Chef::Dist::PRODUCT} mode, and then use those breakpoints to debug recipes. Breakpoints are ignored by the #{Chef::Dist::CLIENT} during an actual #{Chef::Dist::CLIENT} run. That said, breakpoints are typically used to debug recipes only when running them in a non-production environment, after which they are removed from those recipes before the parent cookbook is uploaded to the Chef server."
       introduced "12.0"

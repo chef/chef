@@ -1,6 +1,6 @@
 #
 # Author:: Vasundhara Jagdale (<vasundhara.jagdale@msystechnologies.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ class Chef
       include Chef::Mixin::Uris
       unified_mode true
 
-      resource_name :cab_package
       provides :cab_package
 
       description "Use the cab_package resource to install or remove Microsoft Windows cabinet (.cab) packages."

@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,6 @@ class Chef
     class MsuPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
-      resource_name :msu_package
       provides :msu_package
 
       description "Use the msu_package resource to install Microsoft Update(MSU) packages on Microsoft Windows machines."

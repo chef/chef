@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2019, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
       unified_mode true
+
+      provides :windows_script
 
       # This is an abstract resource meant to be subclasses; thus no 'provides'
 

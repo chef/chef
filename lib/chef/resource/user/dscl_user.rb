@@ -23,8 +23,6 @@ class Chef
       class DsclUser < Chef::Resource::User
         unified_mode true
 
-        resource_name :dscl_user
-
         provides :dscl_user
         provides :user, platform: "mac_os_x", platform_version: "< 10.14"
 

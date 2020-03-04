@@ -4,7 +4,7 @@
 # Author:: Tim Smith (tsmith@chef.io)
 #
 # Copyright:: 2014-2017, Sölvi Páll Ásgeirsson.
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ require_relative "../util/path_helper"
 class Chef
   class Resource
     class WindowsShare < Chef::Resource
-      resource_name :windows_share
+      provides :windows_share
 
       description "Use the windows_share resource to create, modify and remove Windows shares."
       introduced "14.7"

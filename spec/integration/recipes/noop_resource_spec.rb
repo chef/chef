@@ -6,7 +6,7 @@ describe "Resources with a no-op provider" do
   context "with noop provider providing foo" do
     before(:each) do
       class NoOpFoo < Chef::Resource
-        resource_name "hi_there"
+        provides "hi_there"
         default_action :update
       end
       Chef::Provider::Noop.provides :hi_there

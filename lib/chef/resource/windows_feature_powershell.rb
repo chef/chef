@@ -23,7 +23,6 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeaturePowershell < Chef::Resource
-      resource_name :windows_feature_powershell
       provides(:windows_feature_powershell) { true }
 
       description "Use the windows_feature_powershell resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installation of the Remote Server Administration Tools on non-server releases of Windows."

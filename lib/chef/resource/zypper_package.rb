@@ -23,7 +23,7 @@ class Chef
     class ZypperPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :zypper_package
+      provides :zypper_package
       provides :package, platform_family: "suse"
 
       description "Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."

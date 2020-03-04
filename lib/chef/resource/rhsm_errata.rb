@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2020 Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ class Chef
   class Resource
     class RhsmErrata < Chef::Resource
       unified_mode true
-      resource_name :rhsm_errata
       provides(:rhsm_errata) { true }
 
       description "Use the rhsm_errata resource to install packages associated with a given Red"\

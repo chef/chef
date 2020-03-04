@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,6 @@ class Chef
     class User
       class AixUser < Chef::Resource::User
         unified_mode true
-
-        resource_name :aix_user
 
         provides :aix_user
         provides :user, os: "aix"

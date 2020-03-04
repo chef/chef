@@ -16,6 +16,8 @@ describe "Recipe DSL methods" do
     context "And class Chef::Provider::ProviderThingy with no provides" do
       before :context do
         class Chef::Provider::ProviderThingy < Chef::Provider
+          provides :provider_thingy
+
           def load_current_resource; end
 
           def action_create

@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2020 Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ class Chef
   class Resource
     class RhsmErrataLevel < Chef::Resource
       unified_mode true
-      resource_name :rhsm_errata_level
       provides(:rhsm_errata_level) { true }
 
       description "Use the rhsm_errata_level resource to install all packages of a specified errata level from the Red Hat Subscription Manager. For example, you can ensure that all packages associated with errata marked at a 'Critical' security level are installed."

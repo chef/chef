@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software Inc.
+# Copyright:: 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ class Chef
   class Resource
     class CronD < Chef::Resource
       unified_mode true
-      resource_name :cron_d
+      provides :cron_d
 
       introduced "14.4"
       description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."

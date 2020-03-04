@@ -22,7 +22,7 @@ class Chef
   class Resource
     class Locale < Chef::Resource
       unified_mode true
-      resource_name :locale
+      provides :locale
 
       description "Use the locale resource to set the system's locale."
       introduced "14.5"

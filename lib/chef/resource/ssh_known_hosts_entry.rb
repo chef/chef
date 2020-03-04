@@ -2,7 +2,7 @@
 # Author:: Seth Vargo (<sethvargo@gmail.com>)
 #
 # Copyright:: 2013-2018, Seth Vargo
-# Copyright:: 2017-2018, Chef Software, Inc.
+# Copyright:: 2017-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ require_relative "../dist"
 class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
-      resource_name :ssh_known_hosts_entry
+      provides :ssh_known_hosts_entry
 
       description "Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
       introduced "14.3"

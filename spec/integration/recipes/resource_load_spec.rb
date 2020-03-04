@@ -35,7 +35,7 @@ describe "Resource.load_current_value" do
         new_resource.class.created_x = new_resource.x
       end
     end
-    result.resource_name resource_name
+    result.provides resource_name
     result
   end
 
@@ -126,7 +126,7 @@ describe "Resource.load_current_value" do
       r = Class.new(resource_class) do
         property :y, default: lazy { "default_y #{Namer.incrementing_value}" }
       end
-      r.resource_name subresource_name
+      r.provides subresource_name
       r
     end
 

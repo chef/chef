@@ -1,7 +1,7 @@
 #
 # Author:: Doug MacEachern <dougm@vmware.com>
 # Copyright:: 2010-2018, VMware, Inc.
-# Copyright:: 2017-2018, Chef Software, Inc.
+# Copyright:: 2017-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsShortcut < Chef::Resource
-      resource_name :windows_shortcut
       provides(:windows_shortcut) { true }
 
       description "Use the windows_shortcut resource to create shortcut files on Windows."

@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2020 Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ class Chef
   class Resource
     class RhsmRegister < Chef::Resource
       unified_mode true
-      resource_name :rhsm_register
       provides(:rhsm_register) { true }
 
       description "Use the rhsm_register resource to register a node with the Red Hat Subscription Manager"\

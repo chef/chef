@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2017-2019, Chef Software Inc.
+# Copyright:: Copyright 2017-2020, Chef Software Inc.
 # Author:: Jamie Winsor (<jamie@vialstudios.com>)
 # Author:: Tim Smith (<tsmith@chef.io>)
 #
@@ -25,7 +25,6 @@ class Chef
     class ArchiveFile < Chef::Resource
       unified_mode true
 
-      resource_name :archive_file
       provides :archive_file
       provides :libarchive_file # legacy cookbook name
 

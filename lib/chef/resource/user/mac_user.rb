@@ -60,8 +60,6 @@ class Chef
       class MacUser < Chef::Resource::User
         unified_mode true
 
-        resource_name :mac_user
-
         provides :mac_user
         provides :user, platform: "mac_os_x", platform_version: ">= 10.14"
 

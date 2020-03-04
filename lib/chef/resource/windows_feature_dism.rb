@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 #
-# Copyright:: 2011-2020, Chef Software, Inc.
+# Copyright:: 2011-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource
-      resource_name :windows_feature_dism
       provides(:windows_feature_dism) { true }
 
       description "Use the windows_feature_dism resource to add, remove, or entirely delete Windows features and roles using DISM."

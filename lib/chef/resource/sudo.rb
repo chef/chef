@@ -26,7 +26,6 @@ class Chef
     class Sudo < Chef::Resource
       unified_mode true
 
-      resource_name :sudo
       provides(:sudo) { true }
 
       description "Use the sudo resource to add or remove individual sudo entries using sudoers.d files."\

@@ -24,6 +24,8 @@ class Chef
     class Route < Chef::Resource
       unified_mode true
 
+      provides :route
+
       default_action :add
       allowed_actions :add, :delete
 

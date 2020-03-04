@@ -13,7 +13,7 @@ class Chef
     class KernelModule < Chef::Resource
       unified_mode true
 
-      resource_name :kernel_module
+      provides :kernel_module
 
       description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
       introduced "14.3"

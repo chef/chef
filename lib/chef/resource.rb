@@ -940,13 +940,7 @@ class Chef
     #
     # The display name of this resource type, for printing purposes.
     #
-    # This also automatically calls "provides" to provide DSL with the given
-    # name.
-    #
-    # resource_name defaults to your class name.
-    #
-    # Call `resource_name nil` to remove the resource name (and any
-    # corresponding DSL).
+    # Call `resource_name nil` to remove the resource name
     #
     # @param value [Symbol] The desired name of this resource type (e.g.
     #   `execute`), or `nil` if this class is abstract and has no resource_name.
@@ -956,16 +950,8 @@ class Chef
     def self.resource_name(name = NOT_PASSED)
       # Setter
       if name != NOT_PASSED
-        remove_canonical_dsl
-
-        # Set the resource_name and call provides
         if name
-          name = name.to_sym
-          # If our class is not already providing this name, provide it.
-          unless Chef::ResourceResolver.includes_handler?(name, self)
-            provides name, canonical: true
-          end
-          @resource_name = name
+          @resource_name = name.to_sym
         else
           @resource_name = nil
         end
@@ -975,19 +961,6 @@ class Chef
 
     def self.resource_name=(name)
       resource_name(name)
-    end
-
-    #
-    # Use the class name as the resource name.
-    #
-    # Munges the last part of the class name from camel case to snake case,
-    # and sets the resource_name to that:
-    #
-    # A::B::BlahDBlah -> blah_d_blah
-    #
-    def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(name.split("::")[-1])
-      resource_name automatic_name
     end
 
     # If the resource's action should run in separated compile/converge mode.
@@ -1321,12 +1294,6 @@ class Chef
     def self.inherited(child)
       super
       @@sorted_descendants = nil
-      # set resource_name automatically if it's not set
-      if child.name && !child.resource_name
-        if child.name =~ /^Chef::Resource::(\w+)$/
-          child.resource_name(convert_to_snake_case($1))
-        end
-      end
     end
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
@@ -1371,11 +1338,7 @@ class Chef
     def self.provides(name, **options, &block)
       name = name.to_sym
 
-      # `provides :resource_name, os: 'linux'`) needs to remove the old
-      # canonical DSL before adding the new one.
-      if @resource_name && name == @resource_name
-        remove_canonical_dsl
-      end
+      resource_name name if resource_name.nil?
 
       if @chef_version_for_provides && !options.include?(:chef_version)
         options[:chef_version] = @chef_version_for_provides
@@ -1585,7 +1548,7 @@ class Chef
     # <Chef::Resource>:: returns the proper Chef::Resource class
     #
     def self.resource_matching_short_name(short_name)
-      Chef::ResourceResolver.resolve(short_name, canonical: true)
+      Chef::ResourceResolver.resolve(short_name)
     end
 
     # @api private
@@ -1598,15 +1561,6 @@ class Chef
       # other way reconsider what you're trying to do, since you're likely trying to force a bad design that we
       # can't/won't support.
       self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
-    end
-
-    def self.remove_canonical_dsl
-      if @resource_name
-        remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
-        unless remaining
-          Chef::DSL::Resources.remove_resource_dsl(@resource_name)
-        end
-      end
     end
   end
 end

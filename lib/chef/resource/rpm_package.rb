@@ -23,7 +23,6 @@ class Chef
     class RpmPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :rpm_package
       provides :rpm_package
 
       description "Use the rpm_package resource to manage packages for the RPM Package Manager platform."

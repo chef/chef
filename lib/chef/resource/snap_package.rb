@@ -23,7 +23,7 @@ class Chef
     class SnapPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :snap_package
+      provides :snap_package
 
       description "Use the snap_package resource to manage snap packages on Debian and Ubuntu platforms."
       introduced "15.0"

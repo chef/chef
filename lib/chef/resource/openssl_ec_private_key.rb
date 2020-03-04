@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # Author:: Julien Huon
 # License:: Apache License, Version 2.0
 #
@@ -24,7 +24,7 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_ec_private_key
+      provides :openssl_ec_private_key
 
       description "Use the openssl_ec_private_key resource to generate an elliptic curve (EC) private key file. If a valid EC key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, then it will be overwritten."
       introduced "14.4"

@@ -1,7 +1,7 @@
 #
 # License:: Apache License, Version 2.0
 # Author:: Julien Huon
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_x509_certificate
+      provides :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 
       description "Use the openssl_x509_certificate resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. Note: This resource was renamed from openssl_x509 to openssl_x509_certificate. The legacy name will continue to function, but cookbook code should be updated for the new resource name."

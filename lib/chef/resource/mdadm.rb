@@ -24,7 +24,7 @@ class Chef
     class Mdadm < Chef::Resource
       unified_mode true
 
-      resource_name :mdadm
+      provides :mdadm
 
       description "Use the mdadm resource to manage RAID devices in a Linux environment using the mdadm utility. The mdadm resource"\
                   " will create and assemble an array, but it will not create the config file that is used to persist the array upon"\

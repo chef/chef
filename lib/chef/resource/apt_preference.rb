@@ -1,6 +1,6 @@
 #
 # Author:: Tim Smith (<tsmith@chef.io>)
-# Copyright:: 2016-2019, Chef Software Inc.
+# Copyright:: 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,6 @@ class Chef
     class AptPreference < Chef::Resource
       unified_mode true
 
-      resource_name :apt_preference
       provides(:apt_preference) { true }
 
       description "The apt_preference resource allows for the creation of APT preference files. Preference files are used to control which package versions and sources are prioritized during installation."

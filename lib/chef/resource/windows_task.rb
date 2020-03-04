@@ -1,6 +1,6 @@
 #
 # Author:: Nimisha Sharad (<nimisha.sharad@msystechnologies.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,6 @@ require_relative "../win32/security" if Chef::Platform.windows?
 class Chef
   class Resource
     class WindowsTask < Chef::Resource
-      resource_name :windows_task
       provides(:windows_task) { true }
 
       description "Use the windows_task resource to create, delete or run a Windows scheduled task. Requires Windows Server 2008 or later due to API usage."

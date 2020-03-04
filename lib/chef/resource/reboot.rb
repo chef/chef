@@ -24,7 +24,6 @@ class Chef
     class Reboot < Chef::Resource
       unified_mode true
 
-      resource_name :reboot
       provides :reboot
 
       description "Use the reboot resource to reboot a node, a necessary step with some"\

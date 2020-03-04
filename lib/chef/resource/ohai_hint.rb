@@ -22,7 +22,6 @@ class Chef
     class OhaiHint < Chef::Resource
       unified_mode true
 
-      resource_name :ohai_hint
       provides(:ohai_hint) { true }
 
       description "Use the ohai_hint resource to aid in configuration detection by passing hint data to Ohai."

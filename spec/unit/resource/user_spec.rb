@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@ require "spec_helper"
 describe Chef::Resource::User, "initialize" do
   let(:resource) { Chef::Resource::User.new("notarealuser") }
 
-  it "sets the resource_name to :user_resource_abstract_base_class" do
-    expect(resource.resource_name).to eql(:user_resource_abstract_base_class)
+  it "sets the resource_name to nil" do
+    expect(resource.resource_name).to eql(nil)
   end
 
   it "username property is the name property" do

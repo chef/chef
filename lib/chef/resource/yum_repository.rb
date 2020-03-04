@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016-2017 Chef Software, Inc.
+# Copyright:: Copyright (c) 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class YumRepository < Chef::Resource
-      resource_name :yum_repository
       provides(:yum_repository) { true }
 
       description "Use the yum_repository resource to manage a Yum repository configuration"\

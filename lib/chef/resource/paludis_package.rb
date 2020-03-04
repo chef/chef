@@ -24,7 +24,6 @@ class Chef
     class PaludisPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :paludis_package
       provides :paludis_package
 
       description "Use the paludis_package resource to manage packages for the Paludis platform."

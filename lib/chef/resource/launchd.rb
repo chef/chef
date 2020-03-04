@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class Launchd < Chef::Resource
-      resource_name :launchd
       provides :launchd
 
       description "Use the launchd resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
