@@ -136,7 +136,7 @@ class Chef
       end
 
       property :time, Symbol,
-        description: "A time interval. Possible values: :annually, :daily, :hourly, :midnight, :monthly, :reboot, :weekly, or :yearly.",
+        description: "A time interval.",
         equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
 
       property :mailto, String,

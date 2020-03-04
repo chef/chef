@@ -147,7 +147,7 @@ class Chef
       property :cookbook, String, desired_state: false
 
       property :predefined_value, String,
-        description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
+        description: "Schedule your cron job with one of the special predefined value instead of ** * pattern.",
         equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],

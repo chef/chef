@@ -252,7 +252,7 @@ class Chef
       # @deprecated Windows releases before Windows 2012 and 8 are no longer supported
       # @return [Boolean] Is the system older than Windows 8 / 2012
       def older_than_win_2012_or_8?(node = run_context.nil? ? nil : run_context.node)
-        node["platform_version"].to_f < 6.2
+        false # we don't support platforms that would be true
       end
 
       # ^^^^^^ NOTE: PLEASE DO NOT CONTINUE TO ADD THESE KINDS OF PLATFORM_VERSION APIS WITHOUT ^^^^^^^

@@ -104,7 +104,7 @@ class Chef
         #
         # @example
         #   class MyDeprecation < Base
-        #     target 123, "my_deprecation.html"
+        #     target 123, "my_deprecation"
         #   end
         # @param id [Integer] Deprecation ID number. This must be unique among
         #   all deprecations.
@@ -113,7 +113,7 @@ class Chef
         # @return [void]
         def target(id, page = nil)
           @deprecation_id = id
-          @doc_page = page || "#{deprecation_key}.html"
+          @doc_page = page || "#{deprecation_key}"
         end
       end
     end
@@ -137,7 +137,7 @@ class Chef
     end
 
     class CustomResource < Base
-      target 5, "custom_resource_cleanups.html"
+      target 5, "custom_resource_cleanups"
     end
 
     class EasyInstall < Base
@@ -235,7 +235,7 @@ class Chef
 
     class Generic < Base
       def url
-        "https://docs.chef.io/chef_deprecations_client.html"
+        "https://docs.chef.io/chef_deprecations_client"
       end
 
       def to_s

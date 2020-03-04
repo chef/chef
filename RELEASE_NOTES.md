@@ -1,4 +1,4 @@
-This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes.html> for the official Chef release notes.
+This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
 # Chef Infra Client 15.8
 
@@ -504,11 +504,11 @@ end
 
 ### macOS 10.15 Support
 
-Chef Infra Client is now validated against macOS 10.15 (Catalina) with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html). Additionally, Chef Infra Client will no longer be validated against macOS 10.12.
+Chef Infra Client is now validated against macOS 10.15 (Catalina) with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck/). Additionally, Chef Infra Client will no longer be validated against macOS 10.12.
 
 ### AIX 7.2
 
-Chef Infra Client is now validated against AIX 7.2 with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck.html).
+Chef Infra Client is now validated against AIX 7.2 with packages now available at [downloads.chef.io](https://downloads.chef.io/) and via the [Omnitruck API](https://docs.chef.io/api_omnitruck/).
 
 ## Chef InSpec 4.16
 
@@ -565,11 +565,11 @@ Chef Infra Client 15.2 now includes native packages for RHEL 8 with all builds n
 
 ### SLES 11 EOL
 
-Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase on March 31, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+Packages will no longer be built for SUSE Linux Enterprise Server (SLES) 11 as SLES 11 exited the 'General Support' phase on March 31, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
 
 ### Ubuntu 14.04 EOL
 
-Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance updates on April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance updates on April 30, 2019. See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
 
 ## Ohai 15.2
 
@@ -601,7 +601,7 @@ bzip2 has been updated from 1.0.6 to 1.0.8 to resolve [CVE-2016-3189](https://cv
 
 ### chocolatey_feature
 
-The `chocolatey_feature` resource allows you to enable and disable Chocolatey features. See the [chocolatey_feature documentation](https://docs.chef.io/resource_chocolatey_feauture.html) for full usage information. Thanks [@gep13](https://github.com/gep13) for this new resource.
+The `chocolatey_feature` resource allows you to enable and disable Chocolatey features. See the [chocolatey_feature documentation](https://docs.chef.io/resources/chocolatey_feature/) for full usage information. Thanks [@gep13](https://github.com/gep13) for this new resource.
 
 ## Updated Resources
 
@@ -737,49 +737,49 @@ Chef Solo's `--delete-entire-chef-repo` option has been extended to work in Loca
 
 Use the `archive_file` resource to decompress multiple archive formats without the need for compression tools on the host.
 
-See the [archive_file](https://docs.chef.io/resource_archive_file.html) documentation for more information.
+See the [archive_file](https://docs.chef.io/resources/archive_file/) documentation for more information.
 
 ### windows_uac resource
 
 Use the `windows_uac` resource to configure UAC settings on Windows hosts.
 
-See the [windows_uac](https://docs.chef.io/resource_windows_uac.html) documentation for more information.
+See the [windows_uac](https://docs.chef.io/resources/windows_uac) documentation for more information.
 
 ### windows_dfs_folder resource
 
 Use the `windows_dfs_folder` resource to create and delete Windows DFS folders.
 
-See the [windows_dfs_folder](https://docs.chef.io/resource_windows_dfs_folder.html) documentation for more information.
+See the [windows_dfs_folder](https://docs.chef.io/resources/windows_dfs_folder) documentation for more information.
 
 ### windows_dfs_namespace resources
 
 Use the `windows_dfs_namespace` resource to create and delete Windows DFS namespaces.
 
-See the [windows_dfs_namespace](https://docs.chef.io/resource_windows_dfs_namespace.html) documentation for more information.
+See the [windows_dfs_namespace](https://docs.chef.io/resources/windows_dfs_namespace) documentation for more information.
 
 ### windows_dfs_server resources
 
 Use the `windows_dfs_server` resource to configure Windows DFS server settings.
 
-See the [windows_dfs_server](https://docs.chef.io/resource_windows_dfs_server.html) documentation for more information.
+See the [windows_dfs_server](https://docs.chef.io/resources/windows_dfs_server) documentation for more information.
 
 ### windows_dns_record resource
 
 Use the `windows_dns_record` resource to create or delete DNS records.
 
-See the [windows_dns_record](https://docs.chef.io/resource_windows_dns_record.html) documentation for more information.
+See the [windows_dns_record](https://docs.chef.io/resources/windows_dns_record) documentation for more information.
 
 ### windows_dns_zone resource
 
 Use the `windows_dns_zone` resource to create or delete DNS zones.
 
-See the [windows_dns_zone](https://docs.chef.io/resource_windows_dns_zone.html) documentation for more information.
+See the [windows_dns_zone](https://docs.chef.io/resources/windows_dns_zone) documentation for more information.
 
 ### snap_package resource
 
 Use the `snap_package` resource to install snap packages on Ubuntu hosts.
 
-See the [snap_package](https://docs.chef.io/resource_snap_package.html) documentation for more information.
+See the [snap_package](https://docs.chef.io/resources/snap_package) documentation for more information.
 
 ## Resource Improvements
 
@@ -1369,7 +1369,7 @@ OpenSSL has been updated to 1.0.2q in order to resolve:
 
 Use the `windows_firewall_rule` resource create or delete Windows Firewall rules.
 
-See the [windows_firewall_rule](https://docs.chef.io/resource_windows_firewall_rule.html) documentation for more information.
+See the [windows_firewall_rule](https://docs.chef.io/resources/windows_firewall_rule) documentation for more information.
 
 Thank you [Schuberg Philis](https://schubergphilis.com/) for transferring us the [windows_firewall cookbook](https://supermarket.chef.io/cookbooks/windows_firewall) and to [@Happycoil](https://github.com/Happycoil) for porting it to chef-client with a significant refactoring.
 
@@ -1377,13 +1377,13 @@ Thank you [Schuberg Philis](https://schubergphilis.com/) for transferring us the
 
 Use the `windows_share` resource create or delete Windows file shares.
 
-See the [windows_share](https://docs.chef.io/resource_windows_share.html) documentation for more information.
+See the [windows_share](https://docs.chef.io/resources/windows_share) documentation for more information.
 
 ### windows_certificate
 
 Use the `windows_certificate` resource add, remove, or verify certificates in the system or user certificate stores.
 
-See the [windows_certificate](https://docs.chef.io/resource_windows_certificate.html) documentation for more information.
+See the [windows_certificate](https://docs.chef.io/resources/windows_certificate) documentation for more information.
 
 ## Updated Resources
 
@@ -1519,7 +1519,7 @@ We've added new resources to Chef 14.5. Cookbooks using these resources will con
 
 Use the `windows_workgroup` resource to join or change a Windows host workgroup.
 
-See the [windows_workgroup](https://docs.chef.io/resource_windows_workgroup.html) documentation for more information.
+See the [windows_workgroup](https://docs.chef.io/resources/windows_workgroup) documentation for more information.
 
 Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new resource.
 
@@ -1527,7 +1527,7 @@ Thanks [@derekgroh](https://github.com/derekgroh) for contributing this new reso
 
 Use the `locale` resource to set the system's locale.
 
-See the [locale](https://docs.chef.io/resource_locale.html) documentation for more information.
+See the [locale](https://docs.chef.io/resources/locale) documentation for more information.
 
 Thanks [@vincentaubert](https://github.com/vincentaubert) for contributing this new resource.
 
@@ -1604,39 +1604,39 @@ The following new previous resources were added to Chef 14.4. Cookbooks with the
 
 ### Cron_d
 
-Use the [cron_d](https://docs.chef.io/resource_cron_d.html) resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic `/etc/crontab`. file.
+Use the [cron_d](https://docs.chef.io/resources/cron_d) resource to manage cron definitions in /etc/cron.d. This is similar to the `cron` resource, but it does not use the monolithic `/etc/crontab`. file.
 
 ### Cron_access
 
-Use the [cron_access](https://docs.chef.io/resource_cron_access.html) resource to manage the `/etc/cron.allow` and `/etc/cron.deny` files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
+Use the [cron_access](https://docs.chef.io/resources/cron_access) resource to manage the `/etc/cron.allow` and `/etc/cron.deny` files. This resource previously shipped in the `cron` community cookbook and has fully backwards compatibility with the previous `cron_manage` definition in that cookbook.
 
 ### openssl_x509_certificate
 
-Use the [openssl_x509_certificate](https://docs.chef.io/resource_openssl_x509_certificate.html) resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource automatically generates a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. This resource previously shipped in the `openssl` cookbook as `openssl_x509` and is fully backwards compatible with the legacy resource name.
+Use the [openssl_x509_certificate](https://docs.chef.io/resources/openssl_x509_certificate) resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource automatically generates a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. This resource previously shipped in the `openssl` cookbook as `openssl_x509` and is fully backwards compatible with the legacy resource name.
 
 Thank you [@juju482](https://github.com/juju482) for updating this resource!
 
 ### openssl_x509_request
 
-Use the [openssl_x509_request](https://docs.chef.io/resource_openssl_x509_request.html) resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource automatically generates a passwordless key with the certificate.
+Use the [openssl_x509_request](https://docs.chef.io/resources/openssl_x509_request) resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource automatically generates a passwordless key with the certificate.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_x509_crl
 
-Use the [openssl_x509_crl](https://docs.chef.io/resource_openssl_x509_crl.html)l resource to generate PEM-formatted x509 certificate revocation list (CRL) files.
+Use the [openssl_x509_crl](https://docs.chef.io/resources/openssl_x509_crl)l resource to generate PEM-formatted x509 certificate revocation list (CRL) files.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_ec_private_key
 
-Use the [openssl_ec_private_key](https://docs.chef.io/resource_openssl_ec_private_key.html) resource to generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created.
+Use the [openssl_ec_private_key](https://docs.chef.io/resources/openssl_ec_private_key) resource to generate ec private key files. If a valid ec key file can be opened at the specified location, no new file will be created.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
 ### openssl_ec_public_key
 
-Use the [openssl_ec_public_key](https://docs.chef.io/resource_openssl_ec_public_key.html) resource to generate ec public key files given a private key.
+Use the [openssl_ec_public_key](https://docs.chef.io/resources/openssl_ec_public_key) resource to generate ec public key files given a private key.
 
 Thank you [@juju482](https://github.com/juju482) for contributing this resource.
 
@@ -1666,7 +1666,7 @@ The route resource now supports additional RHEL platform_family systems as well 
 
 ### systemd_unit
 
-The [systemd_unit](https://docs.chef.io/resource_systemd_unit.html) resource now supports specifying options multiple times in the content hash. Instead of setting the value to a string you can now set it to an array of strings.
+The [systemd_unit](https://docs.chef.io/resources/systemd_unit) resource now supports specifying options multiple times in the content hash. Instead of setting the value to a string you can now set it to an array of strings.
 
 Thank you [@dbresson](https://github.com/dbresson) for this contribution.
 
@@ -1868,7 +1868,7 @@ We advise caution in the use of this feature, as excessive or prolonged silencin
 
 As noted above, this release of Chef unifies our shell_out helpers into just shell_out and shell_out!. Previous helpers are now deprecated and will be removed in Chef Infra Client 15.
 
-See [CHEF-26 Deprecation Page](https://docs.chef.io/deprecations_shell_out.html) for details.
+See [CHEF-26 Deprecation Page](https://docs.chef.io/deprecations_shell_out) for details.
 
 ### Legacy FreeBSD pkg provider
 
@@ -2349,7 +2349,7 @@ The Chef Solor `-r` flag has been removed as it was deprecated and replaced with
 
 ### node.set and node.set_unless attribute levels removal
 
-`node.set` and `node.set_unless` were deprecated in Chef 12 and have been removed in Chef 14\. To replicate this same functionality users should use `node.normal` and `node.normal_unless`, although we highly recommend reading our [attribute documentation](https://docs.chef.io/attributes.html) to make sure `normal` is in fact the your desired attribute level.
+`node.set` and `node.set_unless` were deprecated in Chef 12 and have been removed in Chef 14\. To replicate this same functionality users should use `node.normal` and `node.normal_unless`, although we highly recommend reading our [attribute documentation](https://docs.chef.io/attributes) to make sure `normal` is in fact the your desired attribute level.
 
 ### chocolatey_package :uninstall Action
 
@@ -2741,7 +2741,7 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 
 ## `deploy` Resource Is Deprecated
 
-The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated, to be removed in Chef 14\. This is being done because this resource is considered overcomplicated and error-prone in the modern Chef ecosystem. A compatibility cookbook will be available to help users migrate during the Chef 14 release cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource.html) for more information.
+The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated, to be removed in Chef 14\. This is being done because this resource is considered overcomplicated and error-prone in the modern Chef ecosystem. A compatibility cookbook will be available to help users migrate during the Chef 14 release cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource) for more information.
 
 ## zypper_package supports package downgrades
 
@@ -3160,7 +3160,7 @@ Additionally, Chef now always performs a reconfigure after every run when daemon
 
 ### Explicit property methods
 
-<https://docs.chef.io/deprecations_namespace_collisions.html>
+<https://docs.chef.io/deprecations_namespace_collisions>
 
 In Chef 14, custom resources will no longer assume property methods are being called on `new_resource`, and instead require the resource author to be explicit.
 
@@ -3204,7 +3204,7 @@ Ohai now properly detects the [Clear](https://clearlinux.org/) and [ClearOS](htt
 
 ### Removal of IpScopes plugin. (OHAI-13)
 
-<https://docs.chef.io/deprecations_ohai_ipscopes.html>
+<https://docs.chef.io/deprecations_ohai_ipscopes>
 
 In Chef/Ohai 14 (April 2018) we will remove the IpScopes plugin. The data returned by this plugin is nearly identical to information already returned by individual network plugins and this plugin required the installation of an additional gem into the Chef installation. We believe that few users were installing the gem and users would be better served by the data returned from the network plugins.
 
@@ -3220,7 +3220,7 @@ If you use Chef Provisioning with Local Mode, you may need to pass `--listen` to
 
 ### Removal of support for Ohai version 6 plugins (OHAI-10)
 
-<https://docs.chef.io/deprecations_ohai_v6_plugins.html>
+<https://docs.chef.io/deprecations_ohai_v6_plugins>
 
 In Chef/Ohai 14 (April 2018) we will remove support for loading Ohai v6 plugins, which we deprecated in Ohai 7/Chef 11.12.
 
@@ -3296,7 +3296,7 @@ Chef now properly supports managing sys-v services on hosts running systemd. Pre
 
 ### Resource Cloning has been removed
 
-When Chef compiles resources, it will no longer attempt to merge the properties of previously compiled resources with the same name and type in to the new resource. See [the deprecation page](https://docs.chef.io/deprecations_resource_cloning.html) for further information.
+When Chef compiles resources, it will no longer attempt to merge the properties of previously compiled resources with the same name and type in to the new resource. See [the deprecation page](https://docs.chef.io/deprecations_resource_cloning) for further information.
 
 ### It is an error to specify both `default` and `name_property` on a property
 
@@ -3723,35 +3723,35 @@ GCC detection has been improved to collect additional information, and to not pr
 ### Ohai::Config removed
 
 - **Deprecation ID**: OHAI-1
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_legacy_config.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_legacy_config>
 - **Expected Removal**: Ohai 13 (April 2017)
 
 ### sigar gem based plugins removed
 
 - **Deprecation ID**: OHAI-2
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_sigar_plugins.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_sigar_plugins>
 - **Expected Removal**: Ohai 13 (April 2017)
 
 ### run_command and popen4 helper methods removed
 
 - **Deprecation ID**: OHAI-3
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_run_command_helpers.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_run_command_helpers>
 - **Expected Removal**: Ohai 13 (April 2017)
 
 ### libvirt plugin attributes moved
 
 - **Deprecation ID**: OHAI-4
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_libvirt_plugin.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_libvirt_plugin>
 - **Expected Removal**: Ohai 13 (April 2017)
 
 ### Windows CPU plugin attribute changes
 
 - **Deprecation ID**: OHAI-5
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_windows_cpu.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_windows_cpu>
 - **Expected Removal**: Ohai 13 (April 2017)
 
 ### DigitalOcean plugin attribute changes
 
 - **Deprecation ID**: OHAI-6
-- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_digitalocean.html>
+- **Remediation Docs**: <https://docs.chef.io/deprecations_ohai_digitalocean/>
 - **Expected Removal**: Ohai 13 (April 2017)
