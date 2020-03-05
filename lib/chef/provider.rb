@@ -63,7 +63,7 @@ class Chef
     #
     # @return [void]
     def self.action(name, &block)
-      # We need the block directly in a method so that `super` works.
+      # We need the block directly in a method so that `return` works.
       define_method("compile_action_#{name}", &block)
       class_eval <<-EOM
         def action_#{name}
