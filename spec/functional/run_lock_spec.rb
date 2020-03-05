@@ -404,6 +404,8 @@ describe Chef::RunLock do
           example.log_event("#{name}.stop finished (pid #{pid} wasn't running)")
         end
       end
+
+      # close the IO.pipes so we don't leak them as open filehandles
       @read_from_process.close rescue nil
       @write_to_tests.close rescue nil
       @read_from_tests.close rescue nil
