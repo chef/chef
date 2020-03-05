@@ -3,7 +3,7 @@ run_list = ""
 
 local_mode = true
 
-# Positive License Acceptance. See https://docs.chef.io/chef_license_accept
+# Positive License Acceptance. See https://docs.chef.io/chef_license_accept/
 chef_license = "donotaccept"
 
 # Path to the chef client config on disk.  If blank, will default to the one built by habitat.

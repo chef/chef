@@ -6,9 +6,9 @@ title: Upgrading From Chef 12
 
 This is not a general guide on how to upgrade from Chef Infra 12.  There already exists documentation on:
 
-* [How to upgrade from the command line](https://docs.chef.io/upgrade_client)
+* [How to upgrade from the command line](https://docs.chef.io/upgrade_client/)
 * [How to use the `chef_client_updater` cookbook](https://supermarket.chef.io/cookbooks/chef_client_updater)
-* [All of the possible Deprecations and remediation steps](https://docs.chef.io/chef_deprecations_client)
+* [All of the possible Deprecations and remediation steps](https://docs.chef.io/chef_deprecations_client/)
 
 This is strictly expert-level documentation on what the large scale focus should be and what kind of otherwise
 undocumented gotchas can occur.

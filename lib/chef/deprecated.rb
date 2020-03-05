@@ -47,7 +47,7 @@ class Chef
       #
       # @return [String]
       def url
-        "#{BASE_URL}#{self.class.doc_page}"
+        "#{BASE_URL}#{self.class.doc_page}/"
       end
 
       # Render the user-visible message for this deprecation.
@@ -235,7 +235,7 @@ class Chef
 
     class Generic < Base
       def url
-        "https://docs.chef.io/chef_deprecations_client"
+        "https://docs.chef.io/chef_deprecations_client/"
       end
 
       def to_s
