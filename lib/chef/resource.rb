@@ -952,6 +952,11 @@ class Chef
       if name != NOT_PASSED
         if name
           @resource_name = name.to_sym
+          name = name.to_sym
+          # FIXME: determine a way to deprecate this magic behavior
+          unless Chef::ResourceResolver.includes_handler?(name, self)
+            provides name
+          end
         else
           @resource_name = nil
         end
@@ -1338,7 +1343,8 @@ class Chef
     def self.provides(name, **options, &block)
       name = name.to_sym
 
-      resource_name name if resource_name.nil?
+      # deliberately do not go through the accessor here
+      @resource_name = name if resource_name.nil?
 
       if @chef_version_for_provides && !options.include?(:chef_version)
         options[:chef_version] = @chef_version_for_provides
