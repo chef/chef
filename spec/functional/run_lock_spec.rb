@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -404,6 +404,10 @@ describe Chef::RunLock do
           example.log_event("#{name}.stop finished (pid #{pid} wasn't running)")
         end
       end
+      @read_from_process.close rescue nil
+      @write_to_tests.close rescue nil
+      @read_from_tests.close rescue nil
+      @write_to_process.close rescue nil
     end
 
     def fire_event(event)
