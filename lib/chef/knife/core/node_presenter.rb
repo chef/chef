@@ -94,8 +94,8 @@ class Chef
         def summarize(data)
           if data.is_a?(Chef::Node)
             node = data
-            # special case ec2 with their split horizon whatsis.
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
+            # special case clouds with their split horizon whatsis.
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
 
             summarized = <<~SUMMARY
               #{ui.color("Node Name:", :bold)}   #{ui.color(node.name, :bold)}

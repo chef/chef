@@ -95,9 +95,9 @@ class Chef
           summarized = ""
           list.each do |data|
             node = data
-            # special case ec2 with their split horizon whatsis.
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
-            fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            # special case clouds with their split horizon whatsis.
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
+            fqdn = (node[:cloud] && node[:cloud][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
             if config[:run_list]
