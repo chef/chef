@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "support/shared/unit/versioned_class_versions"
 
 describe Chef::HTTP::APIVersions do
   class TestVersionClient < Chef::HTTP

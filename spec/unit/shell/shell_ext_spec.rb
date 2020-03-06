@@ -17,6 +17,8 @@
 #
 
 require "spec_helper"
+require "spec/support/shared/unit/testable_shell_session"
+require "support/shared/unit/test_job_manager.rb"
 
 describe Shell::Extensions do
   describe "extending object for top level methods" do

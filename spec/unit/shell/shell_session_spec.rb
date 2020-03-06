@@ -17,26 +17,7 @@
 
 require "spec_helper"
 require "ostruct"
-
-class TestableShellSession < Shell::ShellSession
-
-  def rebuild_node
-    nil
-  end
-
-  def rebuild_collection
-    nil
-  end
-
-  def loading
-    nil
-  end
-
-  def loading_complete
-    nil
-  end
-
-end
+require "spec/support/shared/unit/testable_shell_session"
 
 describe Shell::ShellSession do
 
