@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.114 -->
-## [v16.0.114](https://github.com/chef/chef/tree/v16.0.114) (2020-03-06)
+<!-- latest_release 16.0.115 -->
+## [v16.0.115](https://github.com/chef/chef/tree/v16.0.115) (2020-03-06)
 
 #### Merged Pull Requests
-- Update all our links to use the new docs site format / cleanup descriptions [#9445](https://github.com/chef/chef/pull/9445) ([tas50](https://github.com/tas50))
+- timezone: Remove support for ubuntu &lt; 16.04 / Debian &lt; 8 [#9452](https://github.com/chef/chef/pull/9452) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- timezone: Remove support for ubuntu &lt; 16.04 / Debian &lt; 8 [#9452](https://github.com/chef/chef/pull/9452) ([tas50](https://github.com/tas50)) <!-- 16.0.115 -->
 - Update all our links to use the new docs site format / cleanup descriptions [#9445](https://github.com/chef/chef/pull/9445) ([tas50](https://github.com/tas50)) <!-- 16.0.114 -->
 - Add windows_security_policy resource [#9280](https://github.com/chef/chef/pull/9280) ([NAshwini](https://github.com/NAshwini)) <!-- 16.0.113 -->
 - Ruby 2.7 omnibus builds [#9454](https://github.com/chef/chef/pull/9454) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.112 -->
