@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, HJK Solutions, LLC
+# Copyright:: Copyright 2008-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -211,34 +211,14 @@ describe Chef::Provider::Service::Debian do
         @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
       end
 
-      context "when modern update-rc.d is detected" do
-        before do
-          expect(@provider).to receive(:use_legacy_update_rc_d?).and_return(false)
-        end
-
-        it "calls update-rc.d remove => defaults => enable|disable <runlevel>" do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} defaults",
-            "/usr/sbin/update-rc.d #{service_name} enable 2",
-            "/usr/sbin/update-rc.d #{service_name} disable 3",
-          ])
-          @provider.enable_service
-        end
-      end
-
-      context "when legacy update-rc.d is detected" do
-        before do
-          expect(@provider).to receive(:use_legacy_update_rc_d?).and_return(true)
-        end
-
-        it "calls update-rc.d remove => start|stop <priority> <levels> ." do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} start 20 2 . stop 55 3 . ",
-          ])
-          @provider.disable_service
-        end
+      it "calls update-rc.d remove => defaults => enable|disable <runlevel>" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
+        ])
+        @provider.enable_service
       end
     end
   end
@@ -246,124 +226,46 @@ describe Chef::Provider::Service::Debian do
   describe "disable_service" do
     let(:service_name) { @new_resource.service_name }
 
-    context "when modern update-rc.d is detected" do
+    context "when the service doesn't set a priority" do
+      it "calls update-rc.d remove => defaults => disable" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
+        ])
+        @provider.disable_service
+      end
+    end
+
+    context "when the service sets a simple priority 75" do
       before do
-        expect(@provider).to receive(:use_legacy_update_rc_d?).and_return(false)
+        @new_resource.priority(75)
       end
 
-      context "when the service doesn't set a priority" do
-        it "calls update-rc.d remove => defaults => disable" do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} defaults",
-            "/usr/sbin/update-rc.d #{service_name} disable",
-          ])
-          @provider.disable_service
-        end
-      end
-
-      context "when the service sets a simple priority 75" do
-        before do
-          @new_resource.priority(75)
-        end
-
-        it "ignores priority and calls update-rc.d remove => defaults => disable" do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} defaults",
-            "/usr/sbin/update-rc.d #{service_name} disable",
-          ])
-          @provider.disable_service
-        end
-      end
-
-      context "when the service sets complex priorities using Hash" do
-        before do
-          @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
-        end
-
-        it "ignores priority and calls update-rc.d remove => defaults => enable|disable <runlevel>" do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} defaults",
-            "/usr/sbin/update-rc.d #{service_name} enable 2",
-            "/usr/sbin/update-rc.d #{service_name} disable 3",
-          ])
-          @provider.disable_service
-        end
+      it "ignores priority and calls update-rc.d remove => defaults => disable" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
+        ])
+        @provider.disable_service
       end
     end
 
-    context "when legacy update-rc.d is detected" do
+    context "when the service sets complex priorities using Hash" do
       before do
-        expect(@provider).to receive(:use_legacy_update_rc_d?).and_return(true)
+        @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
       end
 
-      context "when the service doesn't set a priority" do
-        it "assumes default priority 20 and calls update-rc.d remove => stop 80 2 3 4 5 ." do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d -f #{service_name} stop 80 2 3 4 5 .",
-          ])
-          @provider.disable_service
-        end
+      it "ignores priority and calls update-rc.d remove => defaults => enable|disable <runlevel>" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
+        ])
+        @provider.disable_service
       end
-
-      context "when the service sets a simple priority 75" do
-        before do
-          @new_resource.priority(75)
-        end
-
-        it "reverses priority and calls update-rc.d remove => stop 25 2 3 4 5 ." do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d -f #{service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .",
-          ])
-          @provider.disable_service
-        end
-      end
-
-      context "when the service sets complex priorities using Hash" do
-        before do
-          @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
-        end
-
-        it "calls update-rc.d remove => start|stop <priority> <levels> ." do
-          expect_commands(@provider, [
-            "/usr/sbin/update-rc.d -f #{service_name} remove",
-            "/usr/sbin/update-rc.d #{service_name} start 20 2 . stop 55 3 . ",
-          ])
-          @provider.disable_service
-        end
-      end
-    end
-  end
-
-  describe "use_legacy_update_rc_d?" do
-    let(:dpkg_query_cmd) { "dpkg-query -W --showformat '${Version}' sysv-rc" }
-
-    it "is true when svsv-rc package version < 2.88 is installed" do
-      shellout_result = double(stdout: "2.86.ds1-34\n")
-      expect(@provider).to receive(:shell_out!).with(dpkg_query_cmd).and_return(shellout_result)
-      expect(@provider.use_legacy_update_rc_d?).to eq(true)
-    end
-
-    it "is true when sysv-rc is 2.88 and patch level < ('dsf-')42" do
-      shellout_result = double(stdout: "2.88.dsf-41\n")
-      expect(@provider).to receive(:shell_out!).with(dpkg_query_cmd).and_return(shellout_result)
-      expect(@provider.use_legacy_update_rc_d?).to eq(true)
-    end
-
-    it "is false when sysv-rc package version >= 2.88 is installed" do
-      shellout_result = double(stdout: "2.88dsf-59.9\n")
-      expect(@provider).to receive(:shell_out!).with(dpkg_query_cmd).and_return(shellout_result)
-      expect(@provider.use_legacy_update_rc_d?).to eq(false)
-    end
-
-    it "is false when sysv-rc package is not installed" do
-      shellout_result = double(stdout: "\n")
-      expect(@provider).to receive(:shell_out!).with(dpkg_query_cmd).and_return(shellout_result)
-      expect(@provider.use_legacy_update_rc_d?).to eq(false)
     end
   end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -173,38 +173,13 @@ class Chef
           end
 
           shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
-
-          # Use legacy syntax if update-rc.d supports it for backward compatibility.
-          if use_legacy_update_rc_d?
-            # If no priority was given assume 20 (update-rc.d default).
-            start_priority = new_resource.priority.is_a?(Integer) ? new_resource.priority : 20
-            # Stop processes in reverse order of start using '100 - start_priority'.
-            stop_priority = 100 - start_priority
-
-            shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} stop #{stop_priority} 2 3 4 5 .")
-          else
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} disable")
-          end
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} defaults")
+          shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} disable")
         end
 
         def set_priority
           shell_out!("/usr/sbin/update-rc.d -f #{new_resource.service_name} remove")
 
-          # Use legacy syntax if update-rc.d supports it for backward compatibility.
-          if use_legacy_update_rc_d?
-            args = ""
-            new_resource.priority.each do |level, o|
-              action = o[0]
-              priority = o[1]
-              args += "#{action} #{priority} #{level} . "
-            end
-            shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{args}")
-            return
-          end
-
-          # Use modern syntax, ignoring priorities as update-rc.d does not support it.
-          #
           # Reset priorities to default values before applying customizations. This way
           # the final state will always be consistent, regardless if all runlevels were
           # provided.
@@ -214,37 +189,6 @@ class Chef
 
             shell_out!("/usr/sbin/update-rc.d #{new_resource.service_name} #{disable_or_enable} #{level}")
           end
-        end
-
-        # Ancient Debian releases used run levels and priorities to manage dependencies ordering.
-        # Old syntax no longer works and new syntax does not support priorities. If Chef detects
-        # ancient update-rc.d it will prefer legacy syntax so priorities can be set correctly in
-        # case the host is in fact running SysVinit.
-        #
-        # Additional context: https://lists.debian.org/debian-devel/2013/05/msg01109.html
-        def use_legacy_update_rc_d?
-          @sysv_rc_version ||= shell_out!("dpkg-query -W --showformat '${Version}' sysv-rc").stdout.strip
-
-          # sysv-rc is not installed therefore we're on modern Debian and legacy syntax does not work
-          if @sysv_rc_version.empty?
-            logger.trace("sysv-rc package is not installed. update-rc.d will use modern syntax")
-            return false
-          end
-
-          # sysv-rc is installed and update-rc.d is old enough to support legacy syntax and features
-          if @sysv_rc_version.to_f < 2.88
-            logger.trace("sysv-rc #{@sysv_rc_version} detected. update-rc.d will use legacy syntax")
-            return true
-          end
-
-          # sysv-rc 2.88dsf-42 drops the legacy syntax
-          if @sysv_rc_version.to_f == 2.88 && @sysv_rc_version[8..9].to_i < 42
-            logger.trace("sysv-rc #{@sysv_rc_version} detected. update-rc.d will use legacy syntax")
-            return true
-          end
-
-          # default to modern syntax
-          false
         end
       end
     end
