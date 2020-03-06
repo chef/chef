@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.117 -->
-## [v16.0.117](https://github.com/chef/chef/tree/v16.0.117) (2020-03-06)
+<!-- latest_release 16.0.118 -->
+## [v16.0.118](https://github.com/chef/chef/tree/v16.0.118) (2020-03-06)
 
 #### Merged Pull Requests
-- link resource: Remove checks for symoblic link support on Windows [#9455](https://github.com/chef/chef/pull/9455) ([tas50](https://github.com/tas50))
+- Test on Ubuntu 20.04 in Buildkite [#9458](https://github.com/chef/chef/pull/9458) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test on Ubuntu 20.04 in Buildkite [#9458](https://github.com/chef/chef/pull/9458) ([tas50](https://github.com/tas50)) <!-- 16.0.118 -->
 - link resource: Remove checks for symoblic link support on Windows [#9455](https://github.com/chef/chef/pull/9455) ([tas50](https://github.com/tas50)) <!-- 16.0.117 -->
 - Remove the canonical DSL [#9441](https://github.com/chef/chef/pull/9441) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.116 -->
 - timezone: Remove support for ubuntu &lt; 16.04 / Debian &lt; 8 [#9452](https://github.com/chef/chef/pull/9452) ([tas50](https://github.com/tas50)) <!-- 16.0.115 -->
