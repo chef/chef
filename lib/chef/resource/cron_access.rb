@@ -3,7 +3,7 @@
 # Author:: Tim Smith <tsmith@chef.io>
 #
 # Copyright:: 2014-2018, Sander Botman
-# Copyright:: 2018-2019, Chef Software Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class Chef
   class Resource
     class CronAccess < Chef::Resource
       unified_mode true
-      resource_name :cron_access
+      provides :cron_access
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"

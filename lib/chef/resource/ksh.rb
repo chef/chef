@@ -1,6 +1,6 @@
 #
 # Author:: Nolan Davidson (<nolan.davidson@gmail.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,6 +22,8 @@ class Chef
   class Resource
     class Ksh < Chef::Resource::Script
       unified_mode true
+
+      provides :ksh
 
       description "Use the ksh resource to execute scripts using the Korn shell (ksh)"\
                   " interpreter. This resource may also use any of the actions and properties"\

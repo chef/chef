@@ -1,7 +1,7 @@
 #
 # Author:: Jared Kauppila (<jared@kauppi.la>)
 # Author:: Vasundhara Jagdale(<vasundhara.jagdale@chef.io>)
-# Copyright 2008-2020, Chef Software, Inc.
+# Copyright 2008-2020, Chef Software Inc.
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class Chef
                           SeTakeOwnershipPrivilege
                         }
 
-      resource_name :windows_user_privilege
+      provides :windows_user_privilege
       description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege. \n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
       introduced "16.0"

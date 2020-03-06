@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ class Chef
     class Directory < Chef::Resource
       unified_mode true
 
-      resource_name :directory
+      provides :directory
 
       description "Use the directory resource to manage a directory, which is a hierarchy"\
                   " of folders that comprises all of the information stored on a computer."\

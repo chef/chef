@@ -3,7 +3,7 @@
 # Author:: Tor Magnus Rakvåg (tor.magnus@outlook.com)
 # Author:: Tim Smith (tsmith@chef.io)
 # Copyright:: 2013-2015 Matt Clifton
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 # Copyright:: 2018, Intility AS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ require_relative "../json_compat"
 class Chef
   class Resource
     class WindowsFirewallRule < Chef::Resource
-      resource_name :windows_firewall_rule
+      provides :windows_firewall_rule
 
       description "Use the windows_firewall_rule resource to create, change or remove windows firewall rules."
       introduced "14.7"

@@ -21,7 +21,6 @@ require "chef-vault"
 class Chef
   class Resource
     class ChefVaultSecret < Chef::Resource
-      resource_name :chef_vault_secret
       provides :chef_vault_secret
 
       introduced "16.0"

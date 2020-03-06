@@ -20,7 +20,7 @@ describe "LWRPs with inline resources" do
 
   context "with a use_inline_resources provider with 'def action_a' instead of action :a" do
     class LwrpInlineResourcesTest < Chef::Resource
-      resource_name :lwrp_inline_resources_test
+      provides :lwrp_inline_resources_test
       allowed_actions :a, :nothing
       default_action :a
       property :ran_a
@@ -46,8 +46,8 @@ describe "LWRPs with inline resources" do
 
   context "with an inline resource with a property that shadows the enclosing provider's property" do
     class LwrpShadowedPropertyTest < Chef::Resource
+      provides :lwrp_shadowed_property_test
       PATH = ::File.join(Dir.tmpdir, "shadow-property.txt")
-      use_automatic_resource_name
       allowed_actions :fiddle
       property :content
       action :fiddle do
@@ -73,7 +73,7 @@ describe "LWRPs with inline resources" do
 
   context "with an inline_resources provider with two actions, one calling the other" do
     class LwrpInlineResourcesTest2 < Chef::Resource
-      resource_name :lwrp_inline_resources_test2
+      provides :lwrp_inline_resources_test2
       allowed_actions :a, :b, :nothing
       default_action :b
       property :ran_a

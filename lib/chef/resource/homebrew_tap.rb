@@ -25,7 +25,6 @@ class Chef
     class HomebrewTap < Chef::Resource
       unified_mode true
 
-      resource_name :homebrew_tap
       provides(:homebrew_tap) { true }
 
       description "Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager."

@@ -1,6 +1,6 @@
 #
 # Copyright:: 2014-2018, Schuberg Philis BV.
-# Copyright:: 2017-2018, Chef Software, Inc.
+# Copyright:: 2017-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ class Chef
     class WindowsFont < Chef::Resource
       require_relative "../util/path_helper"
 
-      resource_name :windows_font
       provides(:windows_font) { true }
 
       description "Use the windows_font resource to install font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well."

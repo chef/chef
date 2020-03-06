@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,8 @@ class Chef
     class RemoteFile < Chef::Resource::File
       include Chef::Mixin::Securable
       unified_mode true
+
+      provides :remote_file
 
       description "Use the remote_file resource to transfer a file from a remote location"\
                   " using file specificity. This resource is similar to the file resource."

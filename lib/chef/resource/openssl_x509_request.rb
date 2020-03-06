@@ -1,7 +1,7 @@
 #
 # License:: Apache License, Version 2.0
 # Author:: Julien Huon
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_x509_request
+      provides :openssl_x509_request
 
       description "Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."
       introduced "14.4"

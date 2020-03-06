@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class OsxProfile < Chef::Resource
-      resource_name :osx_profile
       provides :osx_profile
       provides :osx_config_profile
 

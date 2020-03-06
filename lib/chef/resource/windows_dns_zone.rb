@@ -2,7 +2,7 @@
 # Author:: Jason Field
 #
 # Copyright:: 2018, Calastone Ltd.
-# Copyright:: 2019, Chef Software, Inc.
+# Copyright:: 2019-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDnsZone < Chef::Resource
-      resource_name :windows_dns_zone
       provides :windows_dns_zone
 
       description "The windows_dns_zone resource creates an Active Directory Integrated DNS Zone on the local server."

@@ -1,6 +1,6 @@
 #
 # Author:: Tim Smith (<tsmith@chef.io>)
-# Copyright:: Copyright (c) 2017 Chef Software, Inc.
+# Copyright:: Copyright (c) 2017-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class ZypperRepository < Chef::Resource
-      resource_name :zypper_repository
       provides(:zypper_repository) { true }
       provides(:zypper_repo) { true }
 

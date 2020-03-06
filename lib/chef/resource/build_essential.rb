@@ -21,7 +21,6 @@ class Chef
     class BuildEssential < Chef::Resource
       unified_mode true
 
-      resource_name :build_essential
       provides(:build_essential) { true }
 
       description "Use the build_essential resource to install the packages required for compiling C software from source."

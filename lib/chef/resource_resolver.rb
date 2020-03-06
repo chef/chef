@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2017, Chef Software Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,8 +29,8 @@ class Chef
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
     #
-    def self.resolve(resource_name, node: nil, canonical: nil)
-      new(node, resource_name, canonical: canonical).resolve
+    def self.resolve(resource_name, node: nil)
+      new(node, resource_name).resolve
     end
 
     #
@@ -40,11 +40,9 @@ class Chef
     # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.
     #
-    def self.list(resource_name, node: nil, canonical: nil)
-      new(node, resource_name, canonical: canonical).list
+    def self.list(resource_name, node: nil)
+      new(node, resource_name).list
     end
 
     include Chef::Mixin::ConvertToClassName
@@ -55,8 +53,6 @@ class Chef
     attr_reader :resource_name
     # @api private
     attr_reader :action
-    # @api private
-    attr_reader :canonical
 
     #
     # Create a resolver.
@@ -64,14 +60,11 @@ class Chef
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
     # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @api private use Chef::ResourceResolver.resolve or .list instead.
-    def initialize(node, resource_name, canonical: nil)
+    def initialize(node, resource_name)
       @node = node
       @resource_name = resource_name.to_sym
-      @canonical = canonical
     end
 
     # @api private use Chef::ResourceResolver.resolve instead.
@@ -135,7 +128,7 @@ class Chef
 
     # @api private
     def potential_handlers
-      handler_map.list(node, resource_name, canonical: canonical).uniq
+      handler_map.list(node, resource_name).uniq
     end
 
     def enabled_handlers
@@ -146,7 +139,7 @@ class Chef
       @prioritized_handlers ||= begin
         enabled_handlers = self.enabled_handlers
 
-        prioritized = priority_map.list(node, resource_name, canonical: canonical).flatten(1)
+        prioritized = priority_map.list(node, resource_name).flatten(1)
         prioritized &= enabled_handlers # Filter the priority map by the actual enabled handlers
         prioritized |= enabled_handlers # Bring back any handlers that aren't in the priority map, at the *end* (ordered set)
         prioritized

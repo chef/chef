@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_dhparam
       provides(:openssl_dhparam) { true }
 
       description "Use the openssl_dhparam resource to generate dhparam.pem files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."

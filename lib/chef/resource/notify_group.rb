@@ -20,7 +20,6 @@ require_relative "../dist"
 class Chef
   class Resource
     class NotifyGroup < Chef::Resource
-      resource_name :notify_group
       provides :notify_group
 
       unified_mode true

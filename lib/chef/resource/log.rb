@@ -1,7 +1,7 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,7 +31,6 @@ class Chef
     class Log < Chef::Resource
       unified_mode true
 
-      resource_name :log
       provides :log, target_mode: true
 
       description "Use the log resource to create log entries. The log resource behaves"\

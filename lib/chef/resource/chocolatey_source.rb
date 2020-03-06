@@ -1,5 +1,5 @@
 #
-# Copyright:: 2018-2019, Chef Software Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ class Chef
   class Resource
     class ChocolateySource < Chef::Resource
       unified_mode true
-      resource_name :chocolatey_source
+      provides :chocolatey_source
 
       description "Use the chocolatey_source resource to add, remove, enable, or disable Chocolatey sources."
       introduced "14.3"

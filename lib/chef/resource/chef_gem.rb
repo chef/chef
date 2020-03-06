@@ -36,7 +36,7 @@ class Chef
     #    immediately after it is installed
     class ChefGem < Chef::Resource::Package::GemPackage
       unified_mode true
-      resource_name :chef_gem
+      provides :chef_gem
 
       property :gem_binary, default: "#{RbConfig::CONFIG["bindir"]}/gem", default_description: "Chef's built-in gem binary.",
                             description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed.",

@@ -23,7 +23,6 @@ class Chef
     class SmartosPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :smartos_package
       provides :smartos_package
       provides :package, platform_family: "smartos"
 

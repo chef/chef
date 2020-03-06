@@ -1,7 +1,7 @@
 require "support/shared/integration/integration_helper"
 
 class NoActionJackson < Chef::Resource
-  use_automatic_resource_name
+  provides :no_action_jackson
 
   def foo(value = nil)
     @foo = value if value
@@ -14,7 +14,7 @@ class NoActionJackson < Chef::Resource
 end
 
 class WeirdActionJackson < Chef::Resource
-  use_automatic_resource_name
+  provides :weird_action_jackson
 
   class <<self
     attr_accessor :action_was
@@ -163,7 +163,8 @@ module ResourceActionSpec
 
     context "With resource 'action_jackson'" do
       class ActionJackson < Chef::Resource
-        use_automatic_resource_name
+        provides :action_jackson
+
         def foo(value = nil)
           @foo = value if value
           @foo
@@ -256,7 +257,7 @@ module ResourceActionSpec
       context "And 'action_jackgrandson' inheriting from ActionJackson and changing nothing" do
         before(:each) do
           class ActionJackgrandson < ActionJackson
-            use_automatic_resource_name
+            provides :action_jackgrandson
           end
         end
 
@@ -267,7 +268,7 @@ module ResourceActionSpec
 
       context "And 'action_jackalope' inheriting from ActionJackson with an extra attribute, action and custom method" do
         class ActionJackalope < ActionJackson
-          use_automatic_resource_name
+          provides :action_jackalope
 
           def foo(value = nil)
             @foo = "#{value}alope" if value
@@ -380,7 +381,7 @@ module ResourceActionSpec
 
     context "With a resource with a set_or_return property named group (same name as a resource)" do
       class ResourceActionSpecWithGroupAction < Chef::Resource
-        resource_name :resource_action_spec_set_group_to_nil
+        provides :resource_action_spec_set_group_to_nil
         action :set_group_to_nil do
           # Access x during converge to ensure that we emit no warnings there
           resource_action_spec_with_group "hi" do
@@ -391,7 +392,7 @@ module ResourceActionSpec
       end
 
       class ResourceActionSpecWithGroup < Chef::Resource
-        resource_name :resource_action_spec_with_group
+        provides :resource_action_spec_with_group
         def group(value = nil)
           set_or_return(:group, value, {})
         end
@@ -408,7 +409,8 @@ module ResourceActionSpec
 
     context "When a resource has a property with the same name as another resource" do
       class HasPropertyNamedTemplate < Chef::Resource
-        use_automatic_resource_name
+        provides :has_property_named_template
+
         property :template
         action :create do
           template "x" do
@@ -420,7 +422,8 @@ module ResourceActionSpec
 
     context "When a resource declares methods in action_class" do
       class DeclaresActionClassMethods < Chef::Resource
-        use_automatic_resource_name
+        provides :declares_action_class_methods
+
         property :x
         action_class do
           def a
@@ -452,7 +455,8 @@ module ResourceActionSpec
 
       context "And a subclass overrides a method with an action_class block" do
         class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
-          use_automatic_resource_name
+          provides :declares_action_class_methods_too
+
           action_class do
             def a
               5
@@ -477,7 +481,8 @@ module ResourceActionSpec
       context "And a subclass overrides a method with class_eval" do
         # this tests inheritance with *only* an action_class accessor that does not declare a block
         class DeclaresActionClassMethodsToo < DeclaresActionClassMethods
-          use_automatic_resource_name
+          provides :declares_action_class_methods_too
+
           action_class.class_eval <<-EOM
             def a
               5

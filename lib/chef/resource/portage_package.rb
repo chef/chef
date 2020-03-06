@@ -23,7 +23,6 @@ class Chef
     class PortagePackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :portage_package
       provides :portage_package
 
       description "Use the portage_package resource to manage packages for the Gentoo platform."

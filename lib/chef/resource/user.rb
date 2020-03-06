@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +22,6 @@ class Chef
   class Resource
     class User < Chef::Resource
       unified_mode true
-
-      resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
 
       description "Use the user resource to add users, update existing users, remove users, and to lock/unlock user passwords."
 

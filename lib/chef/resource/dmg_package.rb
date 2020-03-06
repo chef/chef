@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
-# Copyright:: 2011-2019, Chef Software Inc.
+# Copyright:: 2011-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ class Chef
   class Resource
     class DmgPackage < Chef::Resource
       unified_mode true
-      resource_name :dmg_package
+
       provides(:dmg_package) { true }
 
       description "Use the dmg_package resource to install a package from a .dmg file. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."

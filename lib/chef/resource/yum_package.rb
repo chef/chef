@@ -24,7 +24,7 @@ class Chef
     class YumPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :yum_package
+      provides :yum_package
       provides :package, platform_family: "fedora_derived"
 
       description "Use the yum_package resource to install, upgrade, and remove packages with Yum"\

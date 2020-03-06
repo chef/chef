@@ -2,7 +2,7 @@
 # Author:: Jason Field
 #
 # Copyright:: 2018, Calastone Ltd.
-# Copyright:: 2019, Chef Software, Inc.
+# Copyright:: 2019-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDfsFolder < Chef::Resource
-      resource_name :windows_dfs_folder
       provides :windows_dfs_folder
 
       description "The windows_dfs_folder resources creates a folder within dfs as many levels deep as required."

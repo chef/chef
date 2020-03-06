@@ -1,5 +1,5 @@
 #
-# Copyright:: 2018-2019, Chef Software Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 class Chef
   class Resource
     class ChocolateyConfig < Chef::Resource
-      resource_name :chocolatey_config
       unified_mode true
+
+      provides :chocolatey_config
 
       description "Use the chocolatey_config resource to add or remove Chocolatey configuration keys."
       introduced "14.3"

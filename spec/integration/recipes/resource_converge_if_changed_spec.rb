@@ -35,7 +35,7 @@ describe "Resource::ActionClass#converge_if_changed" do
           @converged = 0
         end
       end
-      result.resource_name resource_name
+      result.provides resource_name
       result
     end
     let(:converged_recipe) { converge(converge_recipe) }

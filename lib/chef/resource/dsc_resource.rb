@@ -23,7 +23,6 @@ class Chef
     class DscResource < Chef::Resource
       unified_mode true
 
-      resource_name :dsc_resource
       provides :dsc_resource
 
       description "The dsc_resource resource allows any DSC resource to be used in a recipe, as well as any custom resources that have been added to your Windows PowerShell environment. Microsoft frequently adds new resources to the DSC resource collection."

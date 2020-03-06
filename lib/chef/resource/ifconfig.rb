@@ -28,7 +28,7 @@ class Chef
     class Ifconfig < Chef::Resource
       unified_mode true
 
-      resource_name :ifconfig
+      provides :ifconfig
 
       description "Use the ifconfig resource to manage interfaces on Unix and Linux systems."
 

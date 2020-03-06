@@ -2,7 +2,7 @@
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
@@ -25,7 +25,7 @@ require_relative "../provider/package/openbsd"
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
-      resource_name :openbsd_package
+      provides :openbsd_package
       provides :package, os: "openbsd"
 
       description "Use the openbsd_package resource to manage packages for the OpenBSD platform."

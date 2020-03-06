@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmRepo < Chef::Resource
-      resource_name :rhsm_repo
       provides(:rhsm_repo) { true }
 
       description "Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager"\

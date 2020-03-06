@@ -26,7 +26,7 @@ class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
       unified_mode true
-      resource_name :freebsd_package
+      provides :freebsd_package
       provides :package, platform: "freebsd"
 
       description "Use the freebsd_package resource to manage packages for the FreeBSD platform."

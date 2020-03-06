@@ -26,7 +26,7 @@ class Chef
     class HomebrewPackage < Chef::Resource::Package
       unified_mode true
 
-      resource_name :homebrew_package
+      provides :homebrew_package
       provides :package, os: "darwin"
 
       description "Use the homebrew_package resource to manage packages for the macOS platform."

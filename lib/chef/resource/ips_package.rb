@@ -24,9 +24,8 @@ class Chef
     class IpsPackage < ::Chef::Resource::Package
       unified_mode true
 
-      resource_name :ips_package
-      provides :package, os: "solaris2"
       provides :ips_package
+      provides :package, os: "solaris2"
 
       description "Use the ips_package resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform."
 

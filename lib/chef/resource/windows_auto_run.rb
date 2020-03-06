@@ -1,7 +1,7 @@
 #
 # Author:: Paul Morton (<pmorton@biaprotect.com>)
 # Copyright:: 2011-2018, Business Intelligence Associates, Inc.
-# Copyright:: 2017-2018, Chef Software, Inc.
+# Copyright:: 2017-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsAutorun < Chef::Resource
-      resource_name :windows_auto_run
       provides(:windows_auto_run) { true }
 
       description "Use the windows_auto_run resource to set applications to run at login."

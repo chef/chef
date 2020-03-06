@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016-2019, Chef Software Inc.
+# Copyright:: Copyright (c) 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ class Chef
     class AptUpdate < Chef::Resource
       unified_mode true
 
-      resource_name :apt_update
       provides(:apt_update) { true }
 
       description "Use the apt_update resource to manage APT repository updates on Debian and Ubuntu platforms."
