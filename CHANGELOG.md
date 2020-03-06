@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.111 -->
-## [v16.0.111](https://github.com/chef/chef/tree/v16.0.111) (2020-03-05)
+<!-- latest_release 16.0.112 -->
+## [v16.0.112](https://github.com/chef/chef/tree/v16.0.112) (2020-03-06)
 
 #### Merged Pull Requests
-- Fix file descriptor leak in our tests [#9449](https://github.com/chef/chef/pull/9449) ([lamont-granquist](https://github.com/lamont-granquist))
+- Ruby 2.7 omnibus builds [#9454](https://github.com/chef/chef/pull/9454) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 2.7 omnibus builds [#9454](https://github.com/chef/chef/pull/9454) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.112 -->
 - Fix file descriptor leak in our tests [#9449](https://github.com/chef/chef/pull/9449) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.111 -->
 - Use the action DSL consistently [#9433](https://github.com/chef/chef/pull/9433) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.109 -->
 - Replace highline.color with pastel.decorate [#9434](https://github.com/chef/chef/pull/9434) ([btm](https://github.com/btm)) <!-- 16.0.108 -->
