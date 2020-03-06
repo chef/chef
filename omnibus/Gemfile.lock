@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: f38dcb57017e007c7e98a9934e881904a5e09907
+  revision: f389917504c20839ff9607df63fb2e59e2c31b52
   branch: master
   specs:
-    omnibus (7.0.6)
+    omnibus (7.0.7)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 722d2a8b7f74b98ee44efadac6d74daa5559a48d
+  revision: c086d8057ac9a15486fe2010009db0dee1cea682
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.278.0)
+    aws-partitions (1.280.0)
     aws-sdk-core (3.90.1)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -215,7 +215,7 @@ GEM
     mixlib-cli (2.1.5)
     mixlib-config (3.0.6)
       tomlrb
-    mixlib-install (3.11.26)
+    mixlib-install (3.11.28)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -290,7 +290,7 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.3.4)
+    test-kitchen (2.4.0)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (~> 1.0, >= 1.0.11)
@@ -307,7 +307,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.2.9)
-    train-core (3.2.22)
+    train-core (3.2.23)
       addressable (~> 2.5)
       inifile (~> 3.0)
       json (>= 1.8, < 3.0)
@@ -398,4 +398,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   1.17.3
+   2.1.4
