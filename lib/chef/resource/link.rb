@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,11 +44,6 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context = nil)
-        verify_links_supported!
-        super
-      end
-
       property :target_file, String,
         description: "An optional property to set the target file if it differs from the resource block's name.",
         name_property: true, identity: true
@@ -72,22 +67,6 @@ class Chef
       # make link quack like a file (XXX: not for public consumption)
       def path
         target_file
-      end
-
-      private
-
-      # On certain versions of windows links are not supported. Make
-      # sure we are not on such a platform.
-      def verify_links_supported!
-        if ChefUtils.windows?
-          require_relative "../win32/file"
-          begin
-            Chef::ReservedNames::Win32::File.verify_links_supported!
-          rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-            Chef::Log.fatal("Link resource is not supported on this version of Windows")
-            raise e
-          end
-        end
       end
     end
   end
