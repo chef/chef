@@ -45,8 +45,9 @@ the following use cases:
   processes
 
 ## Definitions
+
 This document assumes familiarity with the Chef resource DSL, which is
-documented at <http://docs.chef.io/chef/resources.html>.
+documented at <https://docs.chef.io/dsl_recipe/>.
 
 These definitions are used throughout the discussion:
 
@@ -217,7 +218,7 @@ end
 ## Guard interpreter formal specification
 
 The documented behavior for guards can be found at
-<http://docs.chef.io/resource_common.html>. Guards are expressed via the optional
+<https://docs.chef.io/resource_common/>. Guards are expressed via the optional
 `not_if` and `only_if` attributes. The expression following the attribute
 may be either a block or a string.
 

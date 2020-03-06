@@ -403,7 +403,7 @@ class Chef
                 "Gem options must be passed to gem_package as a string instead of a hash when",
                 "using this installation of #{Chef::Dist::PRODUCT} because it runs with its own packaged Ruby. A hash",
                 "may only be used when installing a gem to the same Ruby installation that #{Chef::Dist::PRODUCT} is",
-                "running under.  See https://docs.chef.io/resource_gem_package.html for more information.",
+                "running under. See https://docs.chef.io/resources/gem_package/ for more information.",
                 "Error raised at #{new_resource} from #{new_resource.source_line}",
               ].join("\n")
               raise ArgumentError, msg

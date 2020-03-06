@@ -604,7 +604,7 @@ class Chef
           msg = <<~OBSOLETED
             The dependency specification syntax you are using is no longer valid. You may not
             specify more than one version constraint for a particular cookbook.
-            Consult https://docs.chef.io/config_rb_metadata.html for the updated syntax.
+            Consult https://docs.chef.io/config_rb_metadata/ for the updated syntax.
 
             Called by: #{caller_name} '#{dep_name}', #{version_constraints.map(&:inspect).join(", ")}
             Called from:
@@ -621,9 +621,10 @@ class Chef
 
         msg = <<~INVALID
           The version constraint syntax you are using is not valid. If you recently
-          upgraded to Chef 0.10.0, be aware that you no may longer use "<<" and ">>" for
-          'less than' and 'greater than'; use '<' and '>' instead.
-          Consult https://docs.chef.io/config_rb_metadata.html for more information.
+          upgraded from Chef Infra releases before 0.10, be aware that you no may
+          longer use "<<" and ">>" for 'less than' and 'greater than'; use '<' and
+          '>' instead. Consult https://docs.chef.io/config_rb_metadata/ for more
+          information.
 
           Called by: #{caller_name} '#{dep_name}', '#{constraint_str}'
           Called from:

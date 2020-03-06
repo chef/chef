@@ -626,7 +626,7 @@ describe Chef::DataCollector do
         it "collects deprecation messages" do
           location = Chef::Log.caller_location
           events.deprecation(Chef::Deprecated.create(:internal_api, "deprecation warning", location))
-          expect_converge_message("deprecations" => [{ location: location, message: "deprecation warning", url: "https://docs.chef.io/deprecations_internal_api.html" }])
+          expect_converge_message("deprecations" => [{ location: location, message: "deprecation warning", url: "https://docs.chef.io/deprecations_internal_api/" }])
           send_run_failed_or_completed_event
         end
       end

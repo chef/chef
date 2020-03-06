@@ -20,7 +20,7 @@ require "chef/deprecated"
 
 describe Chef::Deprecated do
   class TestDeprecation < Chef::Deprecated::Base
-    target 999, "test.html"
+    target 999, "test"
   end
 
   context "loading a deprecation class" do
@@ -44,11 +44,11 @@ describe Chef::Deprecated do
     let(:location) { "the location" }
 
     it "displays the full URL" do
-      expect(TestDeprecation.new.url).to eql("https://docs.chef.io/deprecations_test.html")
+      expect(TestDeprecation.new.url).to eql("https://docs.chef.io/deprecations_test/")
     end
 
     it "formats a complete deprecation message" do
-      expect(TestDeprecation.new(message, location).to_s).to eql("Deprecation CHEF-999 from the location\n\n  A test message\n\nPlease see https://docs.chef.io/deprecations_test.html for further details and information on how to correct this problem.")
+      expect(TestDeprecation.new(message, location).to_s).to eql("Deprecation CHEF-999 from the location\n\n  A test message\n\nPlease see https://docs.chef.io/deprecations_test/ for further details and information on how to correct this problem.")
     end
   end
 
