@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.119 -->
-## [v16.0.119](https://github.com/chef/chef/tree/v16.0.119) (2020-03-06)
+<!-- latest_release 16.0.120 -->
+## [v16.0.120](https://github.com/chef/chef/tree/v16.0.120) (2020-03-06)
 
 #### Merged Pull Requests
-- Disable failing windows tests while we troubleshoot [#9459](https://github.com/chef/chef/pull/9459) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.0.9 [#9461](https://github.com/chef/chef/pull/9461) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.0.9 [#9461](https://github.com/chef/chef/pull/9461) ([tas50](https://github.com/tas50)) <!-- 16.0.120 -->
 - Disable failing windows tests while we troubleshoot [#9459](https://github.com/chef/chef/pull/9459) ([tas50](https://github.com/tas50)) <!-- 16.0.119 -->
 - Test on Ubuntu 20.04 in Buildkite [#9458](https://github.com/chef/chef/pull/9458) ([tas50](https://github.com/tas50)) <!-- 16.0.118 -->
 - link resource: Remove checks for symoblic link support on Windows [#9455](https://github.com/chef/chef/pull/9455) ([tas50](https://github.com/tas50)) <!-- 16.0.117 -->
