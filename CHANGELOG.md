@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.112 -->
-## [v16.0.112](https://github.com/chef/chef/tree/v16.0.112) (2020-03-06)
+<!-- latest_release 16.0.113 -->
+## [v16.0.113](https://github.com/chef/chef/tree/v16.0.113) (2020-03-06)
 
 #### Merged Pull Requests
-- Ruby 2.7 omnibus builds [#9454](https://github.com/chef/chef/pull/9454) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add windows_security_policy resource [#9280](https://github.com/chef/chef/pull/9280) ([NAshwini](https://github.com/NAshwini))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add windows_security_policy resource [#9280](https://github.com/chef/chef/pull/9280) ([NAshwini](https://github.com/NAshwini)) <!-- 16.0.113 -->
 - Ruby 2.7 omnibus builds [#9454](https://github.com/chef/chef/pull/9454) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.112 -->
 - Fix file descriptor leak in our tests [#9449](https://github.com/chef/chef/pull/9449) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.111 -->
 - Use the action DSL consistently [#9433](https://github.com/chef/chef/pull/9433) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.109 -->
