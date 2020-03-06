@@ -37,14 +37,14 @@ class Chef
         description "Set the timezone."
 
         # some linux systems may be missing the timezone data
-        if node["os"] == "linux"
+        if linux?
           package "tzdata" do
-            package_name platform_family?("suse") ? "timezone" : "tzdata"
+            package_name suse? ? "timezone" : "tzdata"
           end
         end
 
-        # Modern Amazon, Fedora, RHEL, Ubuntu & Debian
-        if node["init_package"] == "systemd"
+        # Modern SUSE, Amazon, Fedora, RHEL, Ubuntu & Debian
+        if systemd?
           cmd_set_tz = "/usr/bin/timedatectl --no-ask-password set-timezone #{new_resource.timezone}"
 
           cmd_check_if_set = "/usr/bin/timedatectl status"
@@ -77,19 +77,6 @@ class Chef
             link "/etc/localtime" do
               to "/usr/share/zoneinfo/#{new_resource.timezone}"
               not_if { ::File.executable?("/usr/sbin/tzdata-update") }
-            end
-          # debian < 8 and Ubuntu < 16.04
-          when "debian"
-            file "/etc/timezone" do
-              action :create
-              content "#{new_resource.timezone}\n"
-            end
-
-            bash "dpkg-reconfigure tzdata" do
-              user "root"
-              code "/usr/sbin/dpkg-reconfigure -f noninteractive tzdata"
-              action :nothing
-              subscribes :run, "file[/etc/timezone]", :immediately
             end
           when "mac_os_x"
             unless current_darwin_tz == new_resource.timezone
