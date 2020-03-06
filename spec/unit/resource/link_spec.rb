@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,6 @@ require "spec_helper"
 
 describe Chef::Resource::Link do
   let(:resource) { Chef::Resource::Link.new("fakey_fakerton") }
-
-  before(:each) do
-    expect_any_instance_of(Chef::Resource::Link).to receive(:verify_links_supported!).and_return(true)
-  end
 
   it "the target_file property is the name_property" do
     expect(resource.target_file).to eql("fakey_fakerton")

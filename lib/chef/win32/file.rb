@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Author:: Mark Mzyk (<mmzyk@ospcode.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Author:: Mark Mzyk (<mmzyk@chef.io>)
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -164,14 +164,6 @@ class Chef
 
       def self.version_info(file_name)
         VersionInfo.new(file_name)
-      end
-
-      def self.verify_links_supported!
-        CreateSymbolicLinkW(nil)
-      rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-        raise e
-      rescue Exception
-          # things are ok.
       end
 
       def self.file_access_check(path, desired_access)
