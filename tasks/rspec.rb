@@ -82,6 +82,7 @@ begin
     %i{unit functional integration stress}.each do |sub|
       desc "Run the specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
+        t.verbose = false
         t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
