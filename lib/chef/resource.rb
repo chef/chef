@@ -1320,9 +1320,7 @@ class Chef
     #
     # Since resource_name calls provides the generally correct way of doing this is
     # to do `chef_version_for_provides` first, then `resource_name` and then
-    # any additional options `provides` lines.  Calling `resource_name` is somewhat
-    # important to have the canonical_dsl removed or else that'll stick around
-    # and chef_version won't get applied to it.
+    # any additional options `provides` lines.
     #
     # Once we no longer care about supporting chef < 14.4 then we can deprecate
     # this API.

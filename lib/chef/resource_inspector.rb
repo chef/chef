@@ -92,7 +92,7 @@ module ResourceInspector
                  if File.directory?(arg)
                    extract_cookbook(arg, complete).each { |k, v| acc[k] = v }
                  else
-                   r = Chef::ResourceResolver.resolve(arg.to_sym, canonical: nil)
+                   r = Chef::ResourceResolver.resolve(arg.to_sym)
                    acc[r.resource_name] = extract_resource(r, complete)
                  end
                end
