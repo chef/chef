@@ -95,7 +95,7 @@ class Chef
           if data.is_a?(Chef::Node)
             node = data
             # special case clouds with their split horizon whatsis.
-            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
 
             summarized = <<~SUMMARY
               #{ui.color("Node Name:", :bold)}   #{ui.color(node.name, :bold)}
