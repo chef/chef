@@ -2,11 +2,13 @@
 
 # make sure we have the network tools in place for various network specs
 if [ -f /etc/debian_version ]; then
+  echo "--- Update package cache"
   apt-get update -y
   touch /etc/network/interfaces
 fi
 
 # make sure we have the omnibus_overrides specified version of rubygems / bundler
+echo "--- install proper rubygems / bundler"
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem --version
 gem uninstall bundler -a -x || true
