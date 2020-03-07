@@ -2,8 +2,6 @@
 
 # make sure we have the network tools in place for various network specs
 if [ -f /etc/debian_version ]; then
-  echo "--- Update package cache"
-  apt-get update -y
   touch /etc/network/interfaces
 fi
 
