@@ -26,10 +26,6 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs Ubuntu :ruby: 2.6"
   commands:
@@ -43,9 +39,6 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs Ubuntu :ruby: 2.6"
   commands:
@@ -57,9 +50,6 @@ steps:
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs CentOS :ruby: 2.6"
   commands:
@@ -71,10 +61,6 @@ steps:
       docker:
         image: rubydistros/centos-7
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs CentOS :ruby: 2.6"
   commands:
@@ -87,9 +73,6 @@ steps:
       docker:
         image: rubydistros/centos-7
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs CentOS :ruby: 2.6"
   commands:
@@ -101,9 +84,6 @@ steps:
     executor:
       docker:
         image: rubydistros/centos-7
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
@@ -115,10 +95,6 @@ steps:
       docker:
         image: rubydistros/opensuse-15
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs openSUSE :ruby: 2.6"
   commands:
@@ -131,9 +107,6 @@ steps:
       docker:
         image: rubydistros/opensuse-15
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs openSUSE :ruby: 2.6"
   commands:
@@ -145,9 +118,6 @@ steps:
     executor:
       docker:
         image: rubydistros/opensuse-15
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs Fedora :ruby: 2.6"
   commands:
@@ -159,10 +129,6 @@ steps:
       docker:
         image: rubydistros/fedora-latest
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs Fedora :ruby: 2.6"
   commands:
@@ -189,9 +155,6 @@ steps:
     executor:
       docker:
         image: rubydistros/fedora-latest
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
@@ -259,10 +222,6 @@ steps:
       docker:
         image: ruby:2.7-buster
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - INTEGRATION_SPECS_27=1
 
 - label: "Functional Specs :ruby: 2.7"
   commands:
@@ -276,10 +235,6 @@ steps:
       docker:
         image: ruby:2.7-buster
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - FUNCTIONAL_SPECS_27=1
 
 - label: "Unit Specs :ruby: 2.7"
   commands:
@@ -291,10 +246,6 @@ steps:
     executor:
       docker:
         image: ruby:2.7-buster
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - UNIT_SPECS_27=1
 
 #########################################################################
   # EXTERNAL GEM TESTING
