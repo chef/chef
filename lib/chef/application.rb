@@ -19,7 +19,6 @@
 require "pp" unless defined?(PP)
 require "socket" unless defined?(Socket)
 require_relative "config"
-require_relative "config_fetcher"
 require_relative "exceptions"
 require_relative "local_mode"
 require_relative "log"
@@ -119,6 +118,7 @@ class Chef
 
     # @api private (test injection)
     def chef_configfetcher
+      require_relative "config_fetcher"
       Chef::ConfigFetcher
     end
 
