@@ -59,7 +59,7 @@ describe "LWRPs with inline resources" do
       end
     end
 
-    after { File.delete(LwrpShadowedPropertyTest::PATH) if File.exists?(LwrpShadowedPropertyTest::PATH) }
+    after { File.delete(LwrpShadowedPropertyTest::PATH) if File.exist?(LwrpShadowedPropertyTest::PATH) }
 
     # https://github.com/chef/chef/issues/4334
     it "does not warn spuriously" do

@@ -96,7 +96,7 @@ def windows_user_right?(right)
 end
 
 def mac_osx_106?
-  if File.exists? "/usr/bin/sw_vers"
+  if File.exist? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
       if line =~ /^ProductVersion:\s10.6.*$/
@@ -118,7 +118,7 @@ def mac_osx_1014?
 end
 
 def mac_osx?
-  if File.exists? "/usr/bin/sw_vers"
+  if File.exist? "/usr/bin/sw_vers"
     result = ShellHelpers.shell_out("/usr/bin/sw_vers")
     result.stdout.each_line do |line|
       if line =~ /^ProductName:\sMac OS X.*$/
@@ -231,8 +231,8 @@ def selinux_enabled?
 end
 
 def suse?
-  ::File.exists?("/etc/SuSE-release") ||
-    ( ::File.exists?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release")) )
+  ::File.exist?("/etc/SuSE-release") ||
+    ( ::File.exist?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release")) )
 end
 
 def root?
