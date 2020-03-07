@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
 require "tmpdir"
 if windows?
   require "chef/win32/file"

@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
-
 shared_examples_for "an execute resource" do
 
   before(:each) do

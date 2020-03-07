@@ -1,3 +1,4 @@
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 
 class NoActionJackson < Chef::Resource

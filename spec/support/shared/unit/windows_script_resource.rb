@@ -16,8 +16,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
-
 require "support/shared/unit/execute_resource"
 require "support/shared/unit/script_resource"
 

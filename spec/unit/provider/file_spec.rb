@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "spec_helper"
 require "support/shared/unit/provider/file"
 
 describe Chef::Provider::File do
