@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.125 -->
-## [v16.0.125](https://github.com/chef/chef/tree/v16.0.125) (2020-03-09)
+<!-- latest_release 16.0.126 -->
+## [v16.0.126](https://github.com/chef/chef/tree/v16.0.126) (2020-03-09)
 
 #### Merged Pull Requests
-- Remove support in debian service init for old update-rc [#9453](https://github.com/chef/chef/pull/9453) ([tas50](https://github.com/tas50))
-- Use the aws cli to download ruby in the windows tests [#9468](https://github.com/chef/chef/pull/9468) ([tas50](https://github.com/tas50))
+- Update Fauxhai to 8.0 [#9471](https://github.com/chef/chef/pull/9471) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Fauxhai to 8.0 [#9471](https://github.com/chef/chef/pull/9471) ([tas50](https://github.com/tas50)) <!-- 16.0.126 -->
 - Remove support in debian service init for old update-rc [#9453](https://github.com/chef/chef/pull/9453) ([tas50](https://github.com/tas50)) <!-- 16.0.125 -->
 - Use the aws cli to download ruby in the windows tests [#9468](https://github.com/chef/chef/pull/9468) ([tas50](https://github.com/tas50)) <!-- 16.0.124 -->
 - Pin to Rake 13.0.1 to prevent double rake [#9464](https://github.com/chef/chef/pull/9464) ([tas50](https://github.com/tas50)) <!-- 16.0.124 -->
