@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.126 -->
-## [v16.0.126](https://github.com/chef/chef/tree/v16.0.126) (2020-03-09)
+<!-- latest_release 16.0.127 -->
+## [v16.0.127](https://github.com/chef/chef/tree/v16.0.127) (2020-03-09)
 
 #### Merged Pull Requests
-- Update Fauxhai to 8.0 [#9471](https://github.com/chef/chef/pull/9471) ([tas50](https://github.com/tas50))
+- Fix require breaking windows functional tests in BK [#9472](https://github.com/chef/chef/pull/9472) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix require breaking windows functional tests in BK [#9472](https://github.com/chef/chef/pull/9472) ([phiggins](https://github.com/phiggins)) <!-- 16.0.127 -->
 - Update Fauxhai to 8.0 [#9471](https://github.com/chef/chef/pull/9471) ([tas50](https://github.com/tas50)) <!-- 16.0.126 -->
 - Remove support in debian service init for old update-rc [#9453](https://github.com/chef/chef/pull/9453) ([tas50](https://github.com/tas50)) <!-- 16.0.125 -->
 - Use the aws cli to download ruby in the windows tests [#9468](https://github.com/chef/chef/pull/9468) ([tas50](https://github.com/tas50)) <!-- 16.0.124 -->
