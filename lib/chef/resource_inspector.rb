@@ -1,4 +1,4 @@
-# Copyright:: Copyright 2018, Chef Software, Inc
+# Copyright:: Copyright 2018-2020, Chef Software, Inc
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,7 +58,8 @@ module ResourceInspector
                deprecated: opts[:deprecated] || false,
                required: opts[:required] || false,
                default: opts[:default_description] || get_default(opts[:default]),
-               name_property: opts[:name_property] || false }
+               name_property: opts[:name_property] || false,
+               equal_to: opts[:equal_to] || [] }
     end
     data
   end
