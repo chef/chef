@@ -5,11 +5,7 @@ Get-CimInstance Win32_OperatingSystem | Select-Object $Properties | Format-Table
 # chocolatey functional tests fail so delete the chocolatey binary to avoid triggering them
 Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyContinue
 
-#
-# Software Languages
-#
-
-# Install Ruby + Devkit
+echo "--- install ruby + devkit"
 $ErrorActionPreference = 'Stop'
 
 echo "Downloading Ruby + DevKit"
@@ -24,6 +20,8 @@ echo "Closing out the layer (this can take awhile)"
 
 # Set-Item -Path Env:Path -Value to include ruby26
 $Env:Path+=";C:\ruby26\bin"
+
+echo "--- configure winrm"
 
 winrm quickconfig -q
 
