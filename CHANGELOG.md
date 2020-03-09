@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.122 -->
-## [v16.0.122](https://github.com/chef/chef/tree/v16.0.122) (2020-03-07)
+<!-- latest_release 16.0.123 -->
+## [v16.0.123](https://github.com/chef/chef/tree/v16.0.123) (2020-03-09)
 
 #### Merged Pull Requests
-- Stop installing packages on our constainers that are already there [#9465](https://github.com/chef/chef/pull/9465) ([tas50](https://github.com/tas50))
+- Fix windows_certificate functional tests under buildkite [#9467](https://github.com/chef/chef/pull/9467) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix windows_certificate functional tests under buildkite [#9467](https://github.com/chef/chef/pull/9467) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.123 -->
 - Stop installing packages on our constainers that are already there [#9465](https://github.com/chef/chef/pull/9465) ([tas50](https://github.com/tas50)) <!-- 16.0.122 -->
 - Use Ohai&#39;s cloud attributes in knife node / status presenters [#9460](https://github.com/chef/chef/pull/9460) ([tas50](https://github.com/tas50)) <!-- 16.0.121 -->
 - Update Ohai to 16.0.9 [#9461](https://github.com/chef/chef/pull/9461) ([tas50](https://github.com/tas50)) <!-- 16.0.120 -->
