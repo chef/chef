@@ -20,6 +20,7 @@ builder-to-testers-map:
     - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
+    - el-8-aarch64
   el-7-ppc64:
     - el-7-ppc64
   el-7-ppc64le:
