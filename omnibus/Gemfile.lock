@@ -215,7 +215,7 @@ GEM
     mixlib-cli (2.1.5)
     mixlib-config (3.0.6)
       tomlrb
-    mixlib-install (3.11.28)
+    mixlib-install (3.11.29)
       mixlib-shellout
       mixlib-versioning
       thor
@@ -323,7 +323,7 @@ GEM
       tty-cursor (~> 0.7)
     tty-color (0.5.1)
     tty-cursor (0.7.1)
-    tty-prompt (0.20.0)
+    tty-prompt (0.21.0)
       necromancer (~> 0.5.0)
       pastel (~> 0.7.0)
       tty-reader (~> 0.7.0)

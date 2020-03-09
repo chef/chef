@@ -178,7 +178,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.0)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (7.6.0)
+    fauxhai-ng (8.0.0)
       net-ssh
     ffi (1.12.2)
     ffi (1.12.2-x64-mingw32)
@@ -384,7 +384,7 @@ GEM
       tty-cursor (~> 0.7)
     tty-color (0.5.1)
     tty-cursor (0.7.1)
-    tty-prompt (0.20.0)
+    tty-prompt (0.21.0)
       necromancer (~> 0.5.0)
       pastel (~> 0.7.0)
       tty-reader (~> 0.7.0)
