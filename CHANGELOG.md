@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.124 -->
-## [v16.0.124](https://github.com/chef/chef/tree/v16.0.124) (2020-03-09)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Pin to Rake 13.0.1 to prevent double rake [#9464](https://github.com/chef/chef/pull/9464) ([tas50](https://github.com/tas50))
+- Use the aws cli to download ruby in the windows tests [#9468](https://github.com/chef/chef/pull/9468) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use the aws cli to download ruby in the windows tests [#9468](https://github.com/chef/chef/pull/9468) ([tas50](https://github.com/tas50)) <!-- 16.0.124 -->
 - Pin to Rake 13.0.1 to prevent double rake [#9464](https://github.com/chef/chef/pull/9464) ([tas50](https://github.com/tas50)) <!-- 16.0.124 -->
 - Fix windows_certificate functional tests under buildkite [#9467](https://github.com/chef/chef/pull/9467) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.123 -->
 - Stop installing packages on our constainers that are already there [#9465](https://github.com/chef/chef/pull/9465) ([tas50](https://github.com/tas50)) <!-- 16.0.122 -->
