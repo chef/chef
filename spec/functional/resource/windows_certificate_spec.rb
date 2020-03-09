@@ -65,11 +65,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
   let(:p7b_path) { File.join(certificate_path, "test.p7b") }
   let(:pfx_path) { File.join(certificate_path, "test.pfx") }
   let(:out_path) { File.join(certificate_path, "testout.pem") }
-  let(:tests_thumbprint) { "3180B3E3217862600BD7B2D28067B03D41576A4F" }
+  let(:tests_thumbprint) { "e45a4a7ff731e143cf20b8bfb9c7c4edd5238bb3" }
   let(:other_cer_path) { File.join(certificate_path, "othertest.cer") }
-  let(:others_thumbprint) { "AD393859B2D2D4161D224F16CBD3D16555753A20" }
-  let(:p7b_thumbprint) { "50954A52DDFA2043F36EA9026FDD95EC252048D0" }
-  let(:p7b_nested_thumbprint) { "4A3333FC4E1274995AF5A95810881C86F2DF7FBD" }
+  let(:others_thumbprint) { "6eae1deefaf59daf1a97c9ceeff39c98b3da38cb" }
+  let(:p7b_thumbprint) { "f867e25b928061318ed2c36ca517681774b06260" }
+  let(:p7b_nested_thumbprint) { "dc395eae6be5b69951b8b6e1090cfc33df30d2cd" }
 
   before do
     opts = { store_name: store }
@@ -127,10 +127,10 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Does not imports certificate into store" do
         expect(no_of_certificates).to eq(1)
       end
-      # it "Idempotent: Does not converge while addition" do
-      #   expect(no_of_certificates).to eq(1)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while addition" do
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
     end
 
     context "Again adding the same certificate of other format" do
@@ -141,10 +141,10 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Does not imports certificate into store" do
         expect(no_of_certificates).to eq(1)
       end
-      # it "Idempotent: Does not converge while addition" do
-      #   expect(no_of_certificates).to eq(1)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while addition" do
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
     end
 
     context "Adding another certificate" do
@@ -171,11 +171,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Imports certificate into store" do
         expect(no_of_certificates).to eq(1)
       end
-      # it "Idempotent: Does not converge while adding again" do
-      #   win_certificate.run_action(:create)
-      #   expect(no_of_certificates).to eq(1)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
     end
 
     context "Adds Base64 Encoded CER" do
@@ -186,11 +186,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Imports certificate into store" do
         expect(no_of_certificates).to eq(1)
       end
-      # it "Idempotent: Does not converge while adding again" do
-      #   win_certificate.run_action(:create)
-      #   expect(no_of_certificates).to eq(1)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
     end
 
     context "Adds PEM" do
@@ -201,11 +201,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Imports certificate into store" do
         expect(no_of_certificates).to eq(1)
       end
-      # it "Idempotent: Does not converge while adding again" do
-      #   win_certificate.run_action(:create)
-      #   expect(no_of_certificates).to eq(1)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(1)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
     end
 
     context "Adds P7B" do
@@ -216,12 +216,12 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       it "Imports certificate into store" do
         expect(no_of_certificates).not_to eq(0)
       end
-      # it "Idempotent: Does not converge while adding again" do
-      #   win_certificate.run_action(:create)
-      #   expect(win_certificate).not_to be_updated_by_last_action
-      # end
+      it "Idempotent: Does not converge while adding again" do
+        win_certificate.run_action(:create)
+        expect(win_certificate).not_to be_updated_by_last_action
+      end
       it "Nested certificates are also imported" do
-        expect(no_of_certificates).to eq(2)
+        expect(no_of_certificates).to eq(3)
       end
     end
 
@@ -235,11 +235,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         it "Imports certificate into store" do
           expect(no_of_certificates).to eq(1)
         end
-        # it "Idempotent: Does not converge while adding again" do
-        #   win_certificate.run_action(:create)
-        #   expect(no_of_certificates).to eq(1)
-        #   expect(win_certificate).not_to be_updated_by_last_action
-        # end
+        it "Idempotent: Does not converge while adding again" do
+          win_certificate.run_action(:create)
+          expect(no_of_certificates).to eq(1)
+          expect(win_certificate).not_to be_updated_by_last_action
+        end
       end
 
       context "With Invalid password" do
@@ -285,9 +285,9 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         it "Initial check if certificate is present" do
           expect(no_of_certificates).to eq(1)
         end
-        # it "Displays correct message" do
-        #   expect(stdout.string.strip).to eq("Certificate is valid")
-        # end
+        it "Displays correct message" do
+          expect(stdout.string.strip).to eq("Certificate is valid")
+        end
         it "Does not converge while verifying" do
           expect(win_certificate).not_to be_updated_by_last_action
         end
@@ -322,11 +322,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
           win_certificate.run_action(:verify)
         end
         it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(2)
+          expect(no_of_certificates).to eq(3)
         end
-        # it "Displays correct message" do
-        #   expect(stdout.string.strip).to eq("Certificate is valid")
-        # end
+        it "Displays correct message" do
+          expect(stdout.string.strip).to eq("Certificate is valid")
+        end
         it "Does not converge while verifying" do
           expect(win_certificate).not_to be_updated_by_last_action
         end
@@ -338,7 +338,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
           win_certificate.run_action(:verify)
         end
         it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(2)
+          expect(no_of_certificates).to eq(3)
         end
         it "Displays correct message" do
           expect(stdout.string.strip).to eq("Certificate is valid")
@@ -354,7 +354,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
           win_certificate.run_action(:verify)
         end
         it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(2)
+          expect(no_of_certificates).to eq(3)
         end
         it "Displays correct message" do
           expect(stdout.string.strip).to eq("Certificate not found")
@@ -471,22 +471,22 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         expect(no_of_certificates).to eq(0)
         expect(win_certificate).not_to be_updated_by_last_action
       end
-      # it "Deletes the valid certificate" do
-      #   # Add another certificate"
-      #   win_certificate.source = other_cer_path
-      #   win_certificate.run_action(:create)
-      #   expect(no_of_certificates).to eq(2)
+      it "Deletes the valid certificate" do
+        # Add another certificate"
+        win_certificate.source = other_cer_path
+        win_certificate.run_action(:create)
+        expect(no_of_certificates).to eq(2)
 
-      #   # Delete previously added certificate
-      #   win_certificate.source = tests_thumbprint
-      #   win_certificate.run_action(:delete)
-      #   expect(no_of_certificates).to eq(1)
+        # Delete previously added certificate
+        win_certificate.source = tests_thumbprint
+        win_certificate.run_action(:delete)
+        expect(no_of_certificates).to eq(1)
 
-      #   # Verify another certificate still exists
-      #   win_certificate.source = others_thumbprint
-      #   win_certificate.run_action(:verify)
-      #   expect(stdout.string.strip).to eq("Certificate is valid")
-      # end
+        # Verify another certificate still exists
+        win_certificate.source = others_thumbprint
+        win_certificate.run_action(:verify)
+        expect(stdout.string.strip).to eq("Certificate is valid")
+      end
     end
   end
 end
