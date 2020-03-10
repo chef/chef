@@ -95,7 +95,7 @@ class Chef
         # @returns [Hash] a hash of package information where the key is the package name
         def brew_info
           @brew_info ||= begin
-            command_array = ["info", "--json=v1"].concat new_resource.package_name
+            command_array = ["info", "--json=v1"].concat Array(new_resource.package_name)
             # convert the array of hashes into a hash where the key is the package name
             Hash[Chef::JSONCompat.from_json(brew(command_array)).collect { |pkg| [pkg["name"], pkg] }]
           end
