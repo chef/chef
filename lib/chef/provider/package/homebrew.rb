@@ -54,8 +54,7 @@ class Chef
         end
 
         def install_package(names, versions)
-          packages = names.select { |x| x unless x.nil? }
-          brew("install", options, packages)
+          brew("install", options, names.compact)
         end
 
         def upgrade_package(name, version)
@@ -69,14 +68,12 @@ class Chef
         end
 
         def remove_package(names, versions)
-          packages = names.select { |x| x unless x.nil? }
-          brew("uninstall", options, packages)
+          brew("uninstall", options, names.compact)
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
         def purge_package(names, versions)
-          packages = names.select { |x| x unless x.nil? }
-          brew("uninstall", "--force", options, packages)
+          brew("uninstall", "--force", options, names.compact)
         end
 
         def brew(*args)
