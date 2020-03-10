@@ -106,7 +106,7 @@ class Chef
         # @return [Hash] Package information
         #
         def package_info(package_name)
-          # return the package name if it's in the brew info hash
+          # return the package hash if it's in the brew info hash
           return brew_info[package_name] if brew_info[package_name]
 
           # check each item in the hash to see if we were passed an alias
