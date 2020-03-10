@@ -19,6 +19,7 @@
 
 require_relative "platform_introspection"
 require_relative "data_query"
+require_relative "chef_vault"
 require_relative "registry_helper"
 require_relative "powershell"
 require_relative "../mixin/powershell_exec"
@@ -43,6 +44,7 @@ class Chef
     module Universal
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
+      include Chef::DSL::ChefVault
       include Chef::DSL::RegistryHelper
       include Chef::DSL::Powershell
       include Chef::Mixin::PowershellExec
