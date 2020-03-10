@@ -30,3 +30,14 @@ chef_vault_secret "super_secret_2" do
   raw_data("auth" => "4321")
   admins "bob_bobberson"
 end
+
+ruby_block "load vault item" do
+  block do
+    begin
+      chef_vault_item("creds", "super_secret_1")
+    rescue ChefVault::Exceptions::SecretDecryption
+      puts "Not authorized for this key!"
+    end
+  end
+  action :run
+end
