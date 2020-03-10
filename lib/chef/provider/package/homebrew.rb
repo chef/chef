@@ -101,6 +101,25 @@ class Chef
           end
         end
 
+        #
+        # Return the package information given a package name or package alias
+        #
+        # @param [String] name_or_alias The name of the package or its alias
+        #
+        # @return [Hash] Package information
+        #
+        def package_info(package_name)
+          # return the package name if it's in the brew info hash
+          return brew_info[package_name] if brew_info[package_name]
+
+          # check each item in the hash to see if we were passed an alias
+          brew_info.each_value do |p|
+            return p if p["aliases"].include?(package_name)
+          end
+
+          {}
+        end
+
         # Some packages (formula) are "keg only" and aren't linked,
         # because multiple versions installed can cause conflicts. We
         # handle this by using the last installed version as the
@@ -111,14 +130,16 @@ class Chef
         #
         # @returns [String] package version
         def installed_version(i)
-          if brew_info[i]["keg_only"]
-            if brew_info[i]["installed"].empty?
+          p_data = package_info(i)
+
+          if p_data["keg_only"]
+            if p_data["installed"].empty?
               nil
             else
-              brew_info[i]["installed"].last["version"]
+              p_data["installed"].last["version"]
             end
           else
-            brew_info[i]["linked_keg"]
+            p_data["linked_keg"]
           end
         end
 
@@ -136,7 +157,9 @@ class Chef
         #
         # @returns [String] package version
         def available_version(i)
-          brew_info[i]["versions"]["stable"]
+          p_data = package_info(i)
+
+          p_data["versions"]["stable"]
         end
 
         private
