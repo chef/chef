@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.130 -->
-## [v16.0.130](https://github.com/chef/chef/tree/v16.0.130) (2020-03-11)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Bring in the extended Ruby cleanup used in chef-workstation [#9478](https://github.com/chef/chef/pull/9478) ([tas50](https://github.com/tas50))
+- Fix load path in test runs. [#9479](https://github.com/chef/chef/pull/9479) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix load path in test runs. [#9479](https://github.com/chef/chef/pull/9479) ([phiggins](https://github.com/phiggins)) <!-- 16.0.130 -->
 - Bring in the extended Ruby cleanup used in chef-workstation [#9478](https://github.com/chef/chef/pull/9478) ([tas50](https://github.com/tas50)) <!-- 16.0.130 -->
 - Add the chef-vault helpers from the chef-vault cookbook [#9477](https://github.com/chef/chef/pull/9477) ([tas50](https://github.com/tas50)) <!-- 16.0.129 -->
 - Expose equal_to values in property / chef-resource-inspector [#9444](https://github.com/chef/chef/pull/9444) ([tas50](https://github.com/tas50)) <!-- 16.0.128 -->
