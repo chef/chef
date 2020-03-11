@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require_relative "resource/alternatives"
 require_relative "resource/apt_package"
 require_relative "resource/apt_preference"
 require_relative "resource/apt_repository"
