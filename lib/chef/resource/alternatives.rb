@@ -126,7 +126,7 @@ class Chef
         def current_path
           # https://rubular.com/r/ylsuvzUtquRPqc
           match = shell_out(alternatives_cmd, "--display", new_resource.link_name).stdout.match(/link currently points to (.*)/)
-          match.nil? ? nil : match[1]
+          match[1]
         end
 
         #
