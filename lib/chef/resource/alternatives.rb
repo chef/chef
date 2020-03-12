@@ -99,7 +99,7 @@ class Chef
 
       action_class do
         def alternatives_cmd
-          if platform_family?("rhel", "amazon", "fedora")
+          if fedora_derived?
             "alternatives"
           else
             "update-alternatives"
