@@ -77,6 +77,20 @@ describe Chef::Resource::Alternatives do
     end
   end
 
+  describe "#current_path" do
+    it "extracts the current path by running alternatives --display" do
+      allow(provider).to receive(:shell_out).with("alternatives", "--display", "fakey_fakerton").and_return(alternatives_display_exists)
+      expect(provider.current_path).to eql("/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java")
+    end
+  end
+
+  describe "#path_priority" do
+    it "extracts the path priority by running alternatives --display" do
+      allow(provider).to receive(:shell_out).with("alternatives", "--display", "fakey_fakerton").and_return(alternatives_display_exists)
+      expect(provider.path_priority).to eql(1081)
+    end
+  end
+
   describe "#alternatives_cmd" do
     it "returns alternatives on fedora" do
       node.automatic_attrs[:platform_family] = "fedora"

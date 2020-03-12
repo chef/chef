@@ -115,7 +115,7 @@ class Chef
         def path_priority
           # https://rubular.com/r/IcUlEU0mSNaMm3
           escaped_path = Regexp.new(Regexp.escape("#{new_resource.path} - priority ") + "(.*)")
-          match = shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match(escaped_path)
+          match = shell_out(alternatives_cmd, "--display", new_resource.link_name).stdout.match(escaped_path)
 
           match.nil? ? nil : match[1].to_i
         end
