@@ -58,7 +58,7 @@ class Chef
 
         if path_priority != new_resource.priority
           converge_by("adding alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}") do
-            output = shell_out("#{alternatives_cmd} --install #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}")
+            output = shell_out(alternatives_cmd, "--install", new_resource.link, new_resource.link_name, new_resource.path, new_resource.priority)
             unless output.exitstatus == 0
               raise "failed to add alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}"
             end
@@ -69,7 +69,7 @@ class Chef
       action :set do
         if current_path != new_resource.path
           converge_by("setting alternative #{new_resource.link_name} #{new_resource.path}") do
-            output = shell_out("#{alternatives_cmd} --set #{new_resource.link_name} #{new_resource.path}")
+            output = shell_out(alternatives_cmd, "--set", new_resource.link_name, new_resource.path)
             unless output.exitstatus == 0
               raise "failed to set alternative #{new_resource.link_name} #{new_resource.path} \n #{output.stdout.strip}"
             end
@@ -80,20 +80,20 @@ class Chef
       action :remove do
         if path_exists?
           converge_by("removing alternative #{new_resource.link_name} #{new_resource.path}") do
-            shell_out("#{alternatives_cmd} --remove #{new_resource.link_name} #{new_resource.path}")
+            shell_out(alternatives_cmd, "--remove", new_resource.link_name, new_resource.path)
           end
         end
       end
 
       action :auto do
         converge_by("setting auto alternative #{new_resource.link_name}") do
-          shell_out("#{alternatives_cmd} --auto #{new_resource.link_name}")
+          shell_out(alternatives_cmd, "--auto", new_resource.link_name)
         end
       end
 
       action :refresh do
         converge_by("refreshing alternative #{new_resource.link_name}") do
-          shell_out("#{alternatives_cmd} --refresh #{new_resource.link_name}")
+          shell_out(alternatives_cmd, "--refresh", new_resource.link_name)
         end
       end
 
@@ -108,7 +108,6 @@ class Chef
             "update-alternatives"
           end
         end
-
 
         #
         # @return [Integer] The current path priority for the link_name alternative
@@ -126,7 +125,7 @@ class Chef
         #
         def current_path
           # https://rubular.com/r/ylsuvzUtquRPqc
-          match = shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match(/link currently points to (.*)/)
+          match = shell_out(alternatives_cmd, "--display", new_resource.link_name).stdout.match(/link currently points to (.*)/)
           match.nil? ? nil : match[1]
         end
 
@@ -136,7 +135,7 @@ class Chef
         def path_exists?
           # https://rubular.com/r/ogvDdq8h2IKRff
           escaped_path = Regexp.new(Regexp.escape("#{new_resource.path} - priority"))
-          shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match?(escaped_path)
+          shell_out(alternatives_cmd, "--display", new_resource.link_name).stdout.match?(escaped_path)
         end
       end
     end
