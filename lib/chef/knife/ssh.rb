@@ -134,6 +134,12 @@ class Chef
         boolean: true,
         default: false
 
+      option :ssh_pty,
+        long: "--ssh-pty",
+        description: "PTY flag. Provide this option if PTY is configured on node.",
+        boolean: true,
+        default: false
+
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:on_error]
@@ -366,7 +372,11 @@ class Chef
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            chan.request_pty
+            if config[:ssh_pty]
+              chan.request_pty do |ch, success|
+                raise Train::Transports::SSHPTYFailed, "Requesting PTY failed" unless success
+              end
+            end
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
 
