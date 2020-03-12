@@ -25,6 +25,22 @@ describe Chef::Resource::Alternatives do
   let(:resource) { Chef::Resource::Alternatives.new("fakey_fakerton", run_context) }
   let(:provider) { resource.provider_for_action(:install) }
 
+  let(:alternatives_display_exists) do
+    double("shellout", stdout: <<-STDOUT)
+    java - auto mode
+    link best version is /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    link currently points to /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+    link java is /usr/bin/java
+    slave java.1.gz is /usr/share/man/man1/java.1.gz
+/usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java - priority 1081
+    slave java.1.gz: /usr/lib/jvm/java-8-openjdk-amd64/jre/man/man1/java.1.gz
+    STDOUT
+  end
+
+  let(:alternatives_display_does_not_exist) do
+    double("shellout", stdout: "update-alternatives: error: no alternatives for fakey_fakerton")
+  end
+
   it "the link_name property is the name_property" do
     expect(resource.link_name).to eql("fakey_fakerton")
   end
@@ -47,6 +63,18 @@ describe Chef::Resource::Alternatives do
     expect { resource.action :auto }.not_to raise_error
     expect { resource.action :refresh }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+  end
+
+  describe "#path_exists?" do
+    it "returns true if the path exists according to alternatives --display" do
+      allow(provider).to receive(:shell_out).with("alternatives", "--display", "fakey_fakerton").and_return(alternatives_display_exists)
+      expect(provider.path_exists?).to eql(true)
+    end
+
+    it "returns false if alternatives --display does not find a path" do
+      allow(provider).to receive(:shell_out).with("alternatives", "--display", "fakey_fakerton").and_return(alternatives_display_does_not_exist)
+      expect(provider.path_exists?).to eql(false)
+    end
   end
 
   describe "#alternatives_cmd" do
