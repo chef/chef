@@ -102,10 +102,10 @@ class Chef
         # @return [String] The appropriate alternatives command based on the platform
         #
         def alternatives_cmd
-          if fedora_derived?
-            "alternatives"
-          else
+          if debian?
             "update-alternatives"
+          else
+            "alternatives"
           end
         end
 

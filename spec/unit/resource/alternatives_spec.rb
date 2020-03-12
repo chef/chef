@@ -60,6 +60,11 @@ describe Chef::Resource::Alternatives do
       expect(provider.alternatives_cmd).to eql("alternatives")
     end
 
+    it "returns alternatives on suse" do
+      node.automatic_attrs[:platform_family] = "suse"
+      expect(provider.alternatives_cmd).to eql("alternatives")
+    end
+
     it "returns alternatives on redhat" do
       node.automatic_attrs[:platform_family] = "rhel"
       expect(provider.alternatives_cmd).to eql("alternatives")
