@@ -35,12 +35,20 @@ class Chef
       property :priority, [String, Integer], coerce: proc { |n| n.to_i }
 
       def define_resource_requirements
+        requirements.assert(:install) do |a|
+          a.assertion do
+            !new_resource.priority.nil?
+          end
+
+          a.failure_message("Could not set alternatives for #{new_resource.link_name}, you must provide the :priority property")
+        end
+
         requirements.assert(:install, :set, :remove) do |a|
           a.assertion do
             !new_resource.path.nil?
           end
 
-          a.failure_message("Could not set alternatives for #{new_resource.link_name}, must provide :path property")
+          a.failure_message("Could not set alternatives for #{new_resource.link_name}, you must provide the :path property")
         end
 
         requirements.assert(:install, :set, :remove) do |a|
@@ -54,8 +62,6 @@ class Chef
       end
 
       action :install do
-        raise "missing :priority" unless new_resource.priority
-
         if path_priority != new_resource.priority
           converge_by("adding alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}") do
             output = shell_out(alternatives_cmd, "--install", new_resource.link, new_resource.link_name, new_resource.path, new_resource.priority)
