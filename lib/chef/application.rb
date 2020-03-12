@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -392,7 +392,11 @@ class Chef
         Chef::FileCache.store("#{Chef::Dist::SHORT}-stacktrace.out", chef_stacktrace_out)
         logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{Chef::Dist::SHORT}-stacktrace.out", false)}")
         logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
-        logger.debug(message)
+        if Chef::Config[:always_dump_stacktrace]
+          logger.fatal(message)
+        else
+          logger.debug(message)
+        end
         true
       end
 
