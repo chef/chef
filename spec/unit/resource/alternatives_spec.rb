@@ -23,6 +23,7 @@ describe Chef::Resource::Alternatives do
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::Alternatives.new("fakey_fakerton", run_context) }
+  let(:provider) { resource.provider_for_action(:install) }
 
   it "the link_name property is the name_property" do
     expect(resource.link_name).to eql("fakey_fakerton")
@@ -46,5 +47,27 @@ describe Chef::Resource::Alternatives do
     expect { resource.action :auto }.not_to raise_error
     expect { resource.action :refresh }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
+  end
+
+  describe "#alternatives_cmd" do
+    it "returns alternatives on fedora" do
+      node.automatic_attrs[:platform_family] = "fedora"
+      expect(provider.alternatives_cmd).to eql("alternatives")
+    end
+
+    it "returns alternatives on amazon" do
+      node.automatic_attrs[:platform_family] = "amazon"
+      expect(provider.alternatives_cmd).to eql("alternatives")
+    end
+
+    it "returns alternatives on redhat" do
+      node.automatic_attrs[:platform_family] = "rhel"
+      expect(provider.alternatives_cmd).to eql("alternatives")
+    end
+
+    it "returns update-alternatives on debian" do
+      node.automatic_attrs[:platform_family] = "debian"
+      expect(provider.alternatives_cmd).to eql("update-alternatives")
+    end
   end
 end
