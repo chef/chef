@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 32c232ae6e52834108bb736928e2ba3dd09d6df0
+  revision: ebbcec68f08a048406764ceae8d2ac33a33507af
   branch: master
   specs:
-    chefstyle (0.15.0)
+    chefstyle (0.15.1)
       rubocop (= 0.80.1)
 
 GIT
@@ -406,7 +406,7 @@ GEM
     unicode_utils (1.4.0)
     uri_template (0.7.0)
     uuidtools (2.1.5)
-    webmock (3.8.2)
+    webmock (3.8.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
