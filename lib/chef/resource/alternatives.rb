@@ -98,6 +98,9 @@ class Chef
       end
 
       action_class do
+        #
+        # @return [String] The appropriate alternatives command based on the platform
+        #
         def alternatives_cmd
           if fedora_derived?
             "alternatives"
@@ -106,6 +109,10 @@ class Chef
           end
         end
 
+
+        #
+        # @return [Integer] The current path priority for the link_name alternative
+        #
         def path_priority
           # https://rubular.com/r/IcUlEU0mSNaMm3
           escaped_path = Regexp.new(Regexp.escape("#{new_resource.path} - priority ") + "(.*)")
@@ -114,16 +121,22 @@ class Chef
           match.nil? ? nil : match[1].to_i
         end
 
+        #
+        # @return [String] The current path for the link_name alternative
+        #
         def current_path
           # https://rubular.com/r/ylsuvzUtquRPqc
           match = shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match(/link currently points to (.*)/)
           match.nil? ? nil : match[1]
         end
 
+        #
+        # @return [Boolean] does the path exist for the link_name alternative
+        #
         def path_exists?
           # https://rubular.com/r/ogvDdq8h2IKRff
           escaped_path = Regexp.new(Regexp.escape("#{new_resource.path} - priority"))
-          shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match(escaped_path)
+          shell_out("#{alternatives_cmd} --display #{new_resource.link_name}").stdout.match?(escaped_path)
         end
       end
     end
