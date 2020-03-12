@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -399,6 +399,9 @@ module ChefConfig
 
     # Using `force_logger` causes chef to default to logger output when STDOUT is a tty
     default :force_logger, false
+
+    # When set to true always print the stacktrace even if we haven't done -l debug
+    default :always_dump_stacktrace, false
 
     # Using 'stream_execute_output' will have Chef always stream the execute output
     default :stream_execute_output, false

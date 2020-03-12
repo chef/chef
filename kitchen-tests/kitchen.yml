@@ -12,21 +12,22 @@ provisioner:
   name: dokken
   client_rb:
     diff_disabled: true
+    always_dump_stacktrace: true
   chef_license: "accept-no-persist"
 
 lifecycle:
   pre_converge:
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/embedded/bin/chef-client -v
-    - remote: /opt/chef/embedded/bin/ohai -v
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
     - remote: /opt/chef/embedded/bin/rake --version
     - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
     - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/embedded/bin/chef-client -v
-    - remote: /opt/chef/embedded/bin/ohai -v
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
 
 verifier:
   name: inspec

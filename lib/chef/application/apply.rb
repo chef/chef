@@ -76,6 +76,12 @@ class Chef::Application::Apply < Chef::Application
     description: "Set the log level (trace, debug, info, warn, error, fatal).",
     proc: lambda { |l| l.to_sym }
 
+  option :always_dump_stacktrace,
+    long: "--[no-]always-dump-stacktrace",
+    boolean: true,
+    default: false,
+    description: "Always dump the stacktrace regardless of the log_level setting."
+
   option :help,
     short: "-h",
     long: "--help",
