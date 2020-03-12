@@ -55,6 +55,14 @@ class Chef
       property :options, [ String, Hash, Array, nil ],
         description: "Options for the gem install, either a Hash or a String. When a hash is given, the options are passed to Gem::DependencyInstaller.new, and the gem will be installed via the gems API. When a String is given, the gem will be installed by shelling out to the gem command. Using a Hash of options with an explicit gem_binary will result in undefined behavior.",
         desired_state: false
+
+      def clear_sources?
+        if clear_sources.nil?
+          !!source
+        else
+          clear_sources
+        end
+      end
     end
   end
 end

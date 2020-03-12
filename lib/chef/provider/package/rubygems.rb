@@ -555,7 +555,7 @@ class Chef
           if new_resource.source.is_a?(String) && new_resource.source =~ /\.gem$/i
             name = new_resource.source
           else
-            src << "--clear-sources" if new_resource.clear_sources
+            src << "--clear-sources" if new_resource.clear_sources?
             src += gem_sources.map { |s| "--source=#{s}" }
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
