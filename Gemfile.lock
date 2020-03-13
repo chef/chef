@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: c19ec6e4977601111827301138c8d1f707abfb2c
+  revision: 10615b80e8abd2a8a3263a3514822a90158c14d1
   branch: master
   specs:
-    ohai (16.0.9)
+    ohai (16.0.12)
       chef-config (>= 12.8, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -319,7 +319,7 @@ GEM
       rspec-mocks (~> 3.9.0)
     rspec-core (3.9.1)
       rspec-support (~> 3.9.1)
-    rspec-expectations (3.9.0)
+    rspec-expectations (3.9.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-its (1.3.0)
