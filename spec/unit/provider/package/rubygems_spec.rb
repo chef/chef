@@ -992,3 +992,48 @@ describe Chef::Provider::Package::Rubygems do
     end
   end
 end
+
+describe Chef::Provider::Package::Rubygems, "clear_sources?" do
+  let(:new_resource) do
+    Chef::Resource::GemPackage.new("foo")
+  end
+
+  let(:provider) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    Chef::Provider::Package::Rubygems.new(new_resource, run_context)
+  end
+
+  it "is false when clear_sources is unset" do
+    expect(provider.clear_sources?).to be false
+  end
+
+  it "is false when clear_sources is set false" do
+    new_resource.clear_sources(false)
+    expect(provider.clear_sources?).to be false
+  end
+
+  it "is true when clear_sources is set true" do
+    new_resource.clear_sources(true)
+    expect(provider.clear_sources?).to be true
+  end
+
+  context "when a source is set" do
+    before do
+      new_resource.source("http://mirror.ops.rhcloud.com/mirror/ruby")
+    end
+
+    it "is true when clear_sources is unset" do
+      expect(provider.clear_sources?).to be true
+    end
+
+    it "is false when clear_sources is set false" do
+      new_resource.clear_sources(false)
+      expect(provider.clear_sources?).to be false
+    end
+
+    it "is true when clear_sources is set true" do
+      new_resource.clear_sources(true)
+      expect(provider.clear_sources?).to be true
+    end
+  end
+end

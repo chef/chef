@@ -550,12 +550,20 @@ class Chef
           new_resource.gem_binary || "gem"
         end
 
+        def clear_sources?
+          if new_resource.clear_sources.nil?
+            !!new_resource.source
+          else
+            new_resource.clear_sources
+          end
+        end
+
         def install_via_gem_command(name, version)
           src = []
           if new_resource.source.is_a?(String) && new_resource.source =~ /\.gem$/i
             name = new_resource.source
           else
-            src << "--clear-sources" if new_resource.clear_sources?
+            src << "--clear-sources" if clear_sources?
             src += gem_sources.map { |s| "--source=#{s}" }
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"
