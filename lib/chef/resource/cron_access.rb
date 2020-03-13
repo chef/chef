@@ -44,7 +44,7 @@ class Chef
 
         Specify the username with the user property
         ```ruby
-        cron_access 'Deny the tomcat access to cron for security purposes' do
+        cron_access 'Deny the jenkins user access to cron for security purposes' do
           user 'jenkins'
           action :deny
         end
