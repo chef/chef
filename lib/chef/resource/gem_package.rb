@@ -41,7 +41,7 @@ class Chef
       property :source, [ String, Array ],
         description: "Optional. The URL, or list of URLs, at which the gem package is located. This list is added to the source configured in Chef::Config[:rubygems_url] (see also include_default_source) to construct the complete list of rubygems sources. Users in an 'airgapped' environment should set Chef::Config[:rubygems_url] to their local RubyGems mirror."
 
-      property :clear_sources, [ TrueClass, FalseClass ],
+      property :clear_sources, [ TrueClass, FalseClass, nil ],
         description: "Set to 'true' to download a gem from the path specified by the source property (and not from RubyGems).",
         default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
 
