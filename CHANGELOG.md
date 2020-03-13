@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.134 -->
-## [v16.0.134](https://github.com/chef/chef/tree/v16.0.134) (2020-03-13)
+<!-- latest_release 16.0.135 -->
+## [v16.0.135](https://github.com/chef/chef/tree/v16.0.135) (2020-03-13)
 
 #### Merged Pull Requests
-- Remove some of the ruby cleanup to fix builds [#9486](https://github.com/chef/chef/pull/9486) ([tas50](https://github.com/tas50))
+- Fix typo in the cron_access docs [#9485](https://github.com/chef/chef/pull/9485) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix typo in the cron_access docs [#9485](https://github.com/chef/chef/pull/9485) ([tas50](https://github.com/tas50)) <!-- 16.0.135 -->
 - Remove some of the ruby cleanup to fix builds [#9486](https://github.com/chef/chef/pull/9486) ([tas50](https://github.com/tas50)) <!-- 16.0.134 -->
 - Add alternatives resource for Linux [#9481](https://github.com/chef/chef/pull/9481) ([tas50](https://github.com/tas50)) <!-- 16.0.133 -->
 - Update all deps to current [#9483](https://github.com/chef/chef/pull/9483) ([tas50](https://github.com/tas50)) <!-- 16.0.132 -->
