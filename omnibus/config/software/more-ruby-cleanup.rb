@@ -24,9 +24,6 @@ license :project_license
 
 source path: "#{project.files_path}/#{name}"
 
-dependency "ruby"
-dependency "rubygems"
-
 build do
   block "Removing additional non-code files from installed gems" do
     # find the embedded ruby gems dir and clean it up for globbing
@@ -74,25 +71,6 @@ build do
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
-    end
-  end
-
-  block "Removing Gemspec / Rakefile / Gemfile unless there's a bin dir" do
-    # find the embedded ruby gems dir and clean it up for globbing
-    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
-    files = %w{
-      *.gemspec
-      Gemfile
-      Rakefile
-      tasks/*.rake
-    }
-
-    Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
-      # don't delete these files if there's a bin dir in the same dir
-      unless Dir.exist?(File.join(File.dirname(f), "bin"))
-        puts "Deleting #{f}"
-        File.delete(f)
-      end
     end
   end
 end
