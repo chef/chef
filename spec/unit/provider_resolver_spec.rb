@@ -560,7 +560,7 @@ describe Chef::ProviderResolver do
         ips_package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
         link: [ Chef::Resource::Link, Chef::Provider::Link ],
         linux_user: [ Chef::Resource::User::LinuxUser, Chef::Provider::User::Linux ],
-        log: [ Chef::Resource::Log, Chef::Provider::Log::ChefLog ],
+        log: [ Chef::Resource::Log ],
         macports_package: [ Chef::Resource::MacportsPackage, Chef::Provider::Package::Macports ],
         mdadm: [ Chef::Resource::Mdadm ],
         mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Mount ],

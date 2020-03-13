@@ -834,7 +834,7 @@ module ChefConfig
 
     # Whether the resource count should be updated for log resource
     # on running chef-client
-    default :count_log_resource_updates, true
+    default :count_log_resource_updates, false
 
     # The selected profile when using credentials.
     default :profile, nil

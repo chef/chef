@@ -49,6 +49,18 @@ class Chef
 
       allowed_actions :write
       default_action :write
+
+      def suppress_up_to_date_messages?
+        true
+      end
+
+      # Write the log to Chef's log
+      #
+      # @return [true] Always returns true
+      action :write do
+        logger.send(new_resource.level, new_resource.message)
+        new_resource.updated_by_last_action(true) if Chef::Config[:count_log_resource_updates]
+      end
     end
   end
 end

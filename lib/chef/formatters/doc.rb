@@ -273,7 +273,7 @@ class Chef
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
         @up_to_date_resources += 1
-        puts " (up to date)", stream: resource
+        puts " (up to date)", stream: resource unless resource.suppress_up_to_date_messages?
         unindent
       end
 
