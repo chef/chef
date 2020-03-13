@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.132 -->
-## [v16.0.132](https://github.com/chef/chef/tree/v16.0.132) (2020-03-12)
+<!-- latest_release 16.0.133 -->
+## [v16.0.133](https://github.com/chef/chef/tree/v16.0.133) (2020-03-13)
 
 #### Merged Pull Requests
-- Update all deps to current [#9483](https://github.com/chef/chef/pull/9483) ([tas50](https://github.com/tas50))
+- Add alternatives resource for Linux [#9481](https://github.com/chef/chef/pull/9481) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add alternatives resource for Linux [#9481](https://github.com/chef/chef/pull/9481) ([tas50](https://github.com/tas50)) <!-- 16.0.133 -->
 - Update all deps to current [#9483](https://github.com/chef/chef/pull/9483) ([tas50](https://github.com/tas50)) <!-- 16.0.132 -->
 - Add always_dump_stacktrace config option &amp; workaround to fix the encoding bugs [#9474](https://github.com/chef/chef/pull/9474) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.131 -->
 - Fix load path in test runs. [#9479](https://github.com/chef/chef/pull/9479) ([phiggins](https://github.com/phiggins)) <!-- 16.0.130 -->
