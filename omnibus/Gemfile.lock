@@ -193,7 +193,7 @@ GEM
     kitchen-vagrant (1.6.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.13)
+    license-acceptance (1.0.18)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
