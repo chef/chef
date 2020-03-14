@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.136 -->
-## [v16.0.136](https://github.com/chef/chef/tree/v16.0.136) (2020-03-13)
+<!-- latest_release 16.0.137 -->
+## [v16.0.137](https://github.com/chef/chef/tree/v16.0.137) (2020-03-14)
 
 #### Merged Pull Requests
-- Update Ohai to 16.0.12 [#9488](https://github.com/chef/chef/pull/9488) ([tas50](https://github.com/tas50))
+- Remove additional files from the gems in our builds [#9489](https://github.com/chef/chef/pull/9489) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove additional files from the gems in our builds [#9489](https://github.com/chef/chef/pull/9489) ([tas50](https://github.com/tas50)) <!-- 16.0.137 -->
 - Update Ohai to 16.0.12 [#9488](https://github.com/chef/chef/pull/9488) ([tas50](https://github.com/tas50)) <!-- 16.0.136 -->
 - Fix typo in the cron_access docs [#9485](https://github.com/chef/chef/pull/9485) ([tas50](https://github.com/tas50)) <!-- 16.0.135 -->
 - Remove some of the ruby cleanup to fix builds [#9486](https://github.com/chef/chef/pull/9486) ([tas50](https://github.com/tas50)) <!-- 16.0.134 -->
