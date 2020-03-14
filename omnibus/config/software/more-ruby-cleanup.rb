@@ -63,6 +63,11 @@ build do
       warning.txt
       website
       yard-template
+      minitest
+      INSTALL.txt
+      features
+      *Upgrade.md
+      vendor
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
