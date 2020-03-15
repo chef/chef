@@ -68,6 +68,9 @@ build do
       features
       *Upgrade.md
       vendor
+      *.blurb
+      autotest
+      VERSION
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
@@ -86,7 +89,7 @@ build do
       *.gemspec
       Gemfile
       Rakefile
-      tasks/*.rake
+      tasks
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
