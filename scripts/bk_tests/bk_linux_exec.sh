@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Enable IPv6 in docker
+echo "--- Enabling ipv6 on docker"
 sudo systemctl stop docker
 echo "Enabling IPv6 in Docker config"
 dockerd_config="/etc/docker/daemon.json"
@@ -12,9 +13,11 @@ docker version
 sudo service docker status
 
 # Install C and C++
+echo "--- Installing package deps"
 sudo yum install -y gcc gcc-c++ openssl-devel readline-devel zlib-devel
 
 # Install omnibus-toolchain for git bundler and gem
+echo "--- Installing omnibus toolchain"
 curl -fsSL https://chef.io/chef/install.sh | sudo bash -s -- -P omnibus-toolchain
 
 # Set Environment Variables

@@ -24,17 +24,15 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
-# Ruby 1.9 Compat
-$:.unshift File.expand_path("../..", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../..", __FILE__)
+
+$LOAD_PATH.unshift File.expand_path("../../chef-config/lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../chef-utils/lib", __FILE__)
 
 require "rubygems"
 require "rspec/mocks"
 
 require "webmock/rspec"
-
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.expand_path("../lib", __FILE__))
-$:.unshift(File.dirname(__FILE__))
 
 if ENV["COVERAGE"]
   require "simplecov"
@@ -139,9 +137,6 @@ RSpec.configure do |config|
   config.filter_run_excluding volatile: true
   config.filter_run_excluding volatile_on_solaris: true if solaris?
   config.filter_run_excluding volatile_from_verify: false
-
-  config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
-  config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
 
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 

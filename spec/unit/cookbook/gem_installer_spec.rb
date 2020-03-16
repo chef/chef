@@ -1,5 +1,5 @@
 require "spec_helper"
-require "bundler/dsl"
+require "bundler"
 
 describe Chef::Cookbook::GemInstaller do
   let(:cookbook_collection) do
