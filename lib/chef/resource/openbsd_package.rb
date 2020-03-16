@@ -21,13 +21,10 @@
 
 require_relative "package"
 require_relative "../provider/package/openbsd"
-require_relative "../mixin/shell_out"
 
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
-      include Chef::Mixin::ShellOut
-
       resource_name :openbsd_package
       provides :package, os: "openbsd"
 
