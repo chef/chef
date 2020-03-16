@@ -585,7 +585,7 @@ describe Chef::Provider::Package::Rubygems do
 
         it "determines the candidate version by querying the remote gem servers" do
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
-            .with(gem_dep, source, Chef::Config[:rubygems_url])
+            .with(gem_dep, source, "https://www.rubygems.org")
             .and_return(Gem::Version.new(target_version))
           expect(provider.candidate_version).to eq(target_version)
         end
@@ -605,7 +605,7 @@ describe Chef::Provider::Package::Rubygems do
 
         it "determines the candidate version by querying the remote gem servers" do
           expect(provider.gem_env).to receive(:candidate_version_from_remote)
-            .with(gem_dep, *[source, Chef::Config[:rubygems_url] ].flatten)
+            .with(gem_dep, *[source, "https://www.rubygems.org" ].flatten)
             .and_return(Gem::Version.new(target_version))
           expect(provider.candidate_version).to eq(target_version)
         end
@@ -645,13 +645,13 @@ describe Chef::Provider::Package::Rubygems do
 
       before do
         expected_source = [ source ]
-        expected_source << Chef::Config[:rubygems_url] if include_default_source
+        expected_source << "https://www.rubygems.org" if include_default_source
         allow(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, *expected_source.flatten.compact).and_return(version)
       end
 
       describe "in the current gem environment" do
         it "installs the gem via the gems api when no explicit options are used" do
-          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ])
+          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ "https://www.rubygems.org" ])
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
         end
@@ -660,7 +660,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:source) { "http://gems.example.org" }
 
           it "installs the gem via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [source, Chef::Config[:rubygems_url]])
+            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [source, "https://www.rubygems.org"])
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -691,7 +691,7 @@ describe Chef::Provider::Package::Rubygems do
         it "installs the gem via the gems api, when the package has no file separator characters in it, but a matching file exists in cwd" do
           allow(::File).to receive(:exist?).and_return(true)
           new_resource.package_name("rspec-core")
-          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ])
+          expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ "https://www.rubygems.org" ])
           provider.run_action(:install)
           expect(new_resource).to be_updated_by_last_action
         end
@@ -828,7 +828,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:options) { { install_dir: "/alt/install/location" } }
 
           it "installs the gem via the gems api when options are given as a Hash" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, { sources: [ Chef::Config[:rubygems_url] ] }.merge(options))
+            expect(provider.gem_env).to receive(:install).with(gem_dep, { sources: [ "https://www.rubygems.org" ] }.merge(options))
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end
@@ -838,7 +838,7 @@ describe Chef::Provider::Package::Rubygems do
           let(:target_version) { "9000.0.2" }
 
           it "installs the gem via the gems api" do
-            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ Chef::Config[:rubygems_url] ] )
+            expect(provider.gem_env).to receive(:install).with(gem_dep, sources: [ "https://www.rubygems.org" ] )
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
           end

@@ -1219,7 +1219,7 @@ module ChefConfig
     default :ruby_encoding, Encoding::UTF_8
 
     # can be set to a string or array of strings for URIs to set as rubygems sources
-    default :rubygems_url, "https://www.rubygems.org"
+    default :rubygems_url, nil
 
     # globally sets the default of the clear_sources property on the gem_package and chef_gem resources
     default :clear_gem_sources, nil
