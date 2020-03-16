@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.32 -->
-## [v15.8.32](https://github.com/chef/chef/tree/v15.8.32) (2020-03-16)
+<!-- latest_release 15.9.0 -->
+## [v15.9.0](https://github.com/chef/chef/tree/v15.9.0) (2020-03-16)
 
 #### Merged Pull Requests
-- Chefstyle fixes identified with Rubocop 0.80 [#9502](https://github.com/chef/chef/pull/9502) ([tas50](https://github.com/tas50))
+- Update InSpec 4.18.100, Ohai to 15.8, and Fauxhai to 8 [#9503](https://github.com/chef/chef/pull/9503) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Update InSpec 4.18.100, Ohai to 15.8, and Fauxhai to 8 [#9503](https://github.com/chef/chef/pull/9503) ([tas50](https://github.com/tas50)) <!-- 15.9.0 -->
 - Chefstyle fixes identified with Rubocop 0.80 [#9502](https://github.com/chef/chef/pull/9502) ([tas50](https://github.com/tas50)) <!-- 15.8.32 -->
 - Multiple testing fixes backported from master [#9499](https://github.com/chef/chef/pull/9499) ([tas50](https://github.com/tas50)) <!-- 15.8.31 -->
 - chef_fs: Fix gsub so only file endings of .rb and .json are removed.  [#9498](https://github.com/chef/chef/pull/9498) ([tas50](https://github.com/tas50)) <!-- 15.8.30 -->
