@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2015-2020 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,6 +20,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmErrata < Chef::Resource
+      unified_mode true
       resource_name :rhsm_errata
       provides(:rhsm_errata) { true }
 
@@ -36,9 +37,15 @@ class Chef
         description "Installs a package for a specific errata ID."
 
         execute "Install errata packages for #{new_resource.errata_id}" do
-          command "yum update --advisory #{new_resource.errata_id} -y"
+          command "#{package_manager_command} update --advisory #{new_resource.errata_id} -y"
           default_env true
           action :run
+        end
+      end
+
+      action_class do
+        def package_manager_command
+          node["platform_version"].to_i >= 8 ? "dnf" : "yum"
         end
       end
     end
