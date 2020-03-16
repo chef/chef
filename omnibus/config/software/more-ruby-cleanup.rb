@@ -68,10 +68,42 @@ build do
       features
       *Upgrade.md
       vendor
+      *.blurb
+      autotest
+      VERSION
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
       # chef stores the powershell dlls in the ext dir
+      next if File.basename(File.expand_path("..", f)).start_with?("chef-")
+
+      puts "Deleting #{f}"
+      FileUtils.rm_rf(f)
+    end
+  end
+
+  block "Removing Gemspec / Rakefile / Gemfile unless there's a bin dir / not a chef gem" do
+    # find the embedded ruby gems dir and clean it up for globbing
+    target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
+    files = %w{
+      *.gemspec
+      Gemfile
+      Rakefile
+      tasks
+    }
+
+    Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
+      # don't delete these files if there's a bin dir in the same dir or we're in a chef owned gem
+      next if Dir.exist?(File.join(File.dirname(f), "bin")) || File.basename(File.expand_path("..", f)).start_with?("chef-")
+
+      puts "Deleting #{f}"
+      FileUtils.rm_rf(f)
+    end
+  end
+
+  block "Removing spec dirs from non-Chef gems" do
+    Dir.glob(Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/spec".tr('\\', "/"))).each do |f|
+      # if we're in a chef- gem then don't remove the specs
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 
       puts "Deleting #{f}"
