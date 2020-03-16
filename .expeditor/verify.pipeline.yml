@@ -26,10 +26,6 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs Ubuntu :ruby: 2.6"
   commands:
@@ -43,9 +39,6 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs Ubuntu :ruby: 2.6"
   commands:
@@ -57,9 +50,6 @@ steps:
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs CentOS :ruby: 2.6"
   commands:
@@ -71,10 +61,6 @@ steps:
       docker:
         image: rubydistros/centos-7
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs CentOS :ruby: 2.6"
   commands:
@@ -87,9 +73,6 @@ steps:
       docker:
         image: rubydistros/centos-7
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs CentOS :ruby: 2.6"
   commands:
@@ -101,9 +84,6 @@ steps:
     executor:
       docker:
         image: rubydistros/centos-7
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
@@ -115,10 +95,6 @@ steps:
       docker:
         image: rubydistros/opensuse-15
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs openSUSE :ruby: 2.6"
   commands:
@@ -131,9 +107,6 @@ steps:
       docker:
         image: rubydistros/opensuse-15
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Unit Specs openSUSE :ruby: 2.6"
   commands:
@@ -145,9 +118,6 @@ steps:
     executor:
       docker:
         image: rubydistros/opensuse-15
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs Fedora :ruby: 2.6"
   commands:
@@ -159,10 +129,6 @@ steps:
       docker:
         image: rubydistros/fedora-latest
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - BUNDLE_GEMFILE=/workdir/Gemfile
 
 - label: "Functional Specs Fedora :ruby: 2.6"
   commands:
@@ -189,9 +155,6 @@ steps:
     executor:
       docker:
         image: rubydistros/fedora-latest
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
 
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
@@ -257,29 +220,21 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:2.5-stretch
+        image: ruby:2.5-buster
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - INTEGRATION_SPECS_25=1
 
 - label: "Functional Specs :ruby: 2.5"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
-    - apt-get install -y cron locales # needed for functional tests to pass
+    - apt-get install -y cron locales ifconfig # needed for functional tests to pass
     - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
     - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
-        image: ruby:2.5-stretch
+        image: ruby:2.5-buster
         privileged: true
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - FUNCTIONAL_SPECS_25=1
 
 - label: "Unit Specs :ruby: 2.5"
   commands:
@@ -290,11 +245,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:2.5-stretch
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-          - UNIT_SPECS_25=1
+        image: ruby:2.5-buster
 
 #########################################################################
   # EXTERNAL GEM TESTING
@@ -421,6 +372,21 @@ steps:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
     - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen Tests Ubuntu: 20.04"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-2004
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
