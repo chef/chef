@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.26 -->
-## [v15.8.26](https://github.com/chef/chef/tree/v15.8.26) (2020-03-16)
+<!-- latest_release 15.8.27 -->
+## [v15.8.27](https://github.com/chef/chef/tree/v15.8.27) (2020-03-16)
 
 #### Merged Pull Requests
-- Use the chef-utils helpers in our resources [#9494](https://github.com/chef/chef/pull/9494) ([tas50](https://github.com/tas50))
+- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9496](https://github.com/chef/chef/pull/9496) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9496](https://github.com/chef/chef/pull/9496) ([tas50](https://github.com/tas50)) <!-- 15.8.27 -->
 - Use the chef-utils helpers in our resources [#9494](https://github.com/chef/chef/pull/9494) ([tas50](https://github.com/tas50)) <!-- 15.8.26 -->
 - Backport dist bootstrap [#9403](https://github.com/chef/chef/pull/9403) ([bobchaos](https://github.com/bobchaos)) <!-- 15.8.25 -->
 - Update all deps to latest [#9358](https://github.com/chef/chef/pull/9358) ([tas50](https://github.com/tas50)) <!-- 15.8.24 -->
