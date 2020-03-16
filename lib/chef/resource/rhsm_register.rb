@@ -80,7 +80,6 @@ class Chef
             not_if { katello_cert_rpm_installed? }
           end
 
-
           file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
             action :delete
           end
