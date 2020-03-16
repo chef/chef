@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.8.30 -->
-## [v15.8.30](https://github.com/chef/chef/tree/v15.8.30) (2020-03-16)
+<!-- latest_release 15.8.31 -->
+## [v15.8.31](https://github.com/chef/chef/tree/v15.8.31) (2020-03-16)
 
 #### Merged Pull Requests
-- chef_fs: Fix gsub so only file endings of .rb and .json are removed.  [#9498](https://github.com/chef/chef/pull/9498) ([tas50](https://github.com/tas50))
+- Multiple testing fixes backported from master [#9499](https://github.com/chef/chef/pull/9499) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Multiple testing fixes backported from master [#9499](https://github.com/chef/chef/pull/9499) ([tas50](https://github.com/tas50)) <!-- 15.8.31 -->
 - chef_fs: Fix gsub so only file endings of .rb and .json are removed.  [#9498](https://github.com/chef/chef/pull/9498) ([tas50](https://github.com/tas50)) <!-- 15.8.30 -->
 - Cookstyle fixes for our resources [#9495](https://github.com/chef/chef/pull/9495) ([tas50](https://github.com/tas50)) <!-- 15.8.29 -->
 - Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9497](https://github.com/chef/chef/pull/9497) ([tas50](https://github.com/tas50)) <!-- 15.8.28 -->
