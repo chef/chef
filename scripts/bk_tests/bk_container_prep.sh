@@ -1,5 +1,7 @@
 # This script gets a container ready to run our various tests in BuildKite
 
+echo "--- preparing..."
+
 export FORCE_FFI_YAJL="ext"
 export CHEF_LICENSE="accept-no-persist"
 export BUNDLE_GEMFILE="/workdir/Gemfile"
@@ -18,8 +20,4 @@ gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
 bundle --version
 rm -f .bundle/config
 
-# force all .rspec tests into progress display to reduce line count
-echo --color > .rspec
-echo -fp >> .rspec
-
-echo "--- Run tests"
+echo +++ testing

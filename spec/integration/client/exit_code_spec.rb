@@ -1,4 +1,5 @@
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "tiny_server"

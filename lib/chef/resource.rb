@@ -961,6 +961,8 @@ class Chef
           @resource_name = nil
         end
       end
+
+      @resource_name = nil unless defined?(@resource_name)
       @resource_name
     end
 
@@ -973,7 +975,7 @@ class Chef
     # @param flag [Boolean] value to set unified_mode to
     # @return [Boolean] unified_mode value
     def self.unified_mode(flag = nil)
-      @unified_mode = Chef::Config[:resource_unified_mode_default] if @unified_mode.nil?
+      @unified_mode = Chef::Config[:resource_unified_mode_default] if !defined?(@unified_mode) || @unified_mode.nil?
       @unified_mode = flag unless flag.nil?
       !!@unified_mode
     end
@@ -1018,7 +1020,7 @@ class Chef
         self.allowed_actions |= @default_action
       end
 
-      if @default_action
+      if defined?(@default_action) && @default_action
         @default_action
       elsif superclass.respond_to?(:default_action)
         superclass.default_action
@@ -1340,6 +1342,9 @@ class Chef
     #
     def self.provides(name, **options, &block)
       name = name.to_sym
+
+      # quell warnings
+      @chef_version_for_provides = nil unless defined?(@chef_version_for_provides)
 
       # deliberately do not go through the accessor here
       @resource_name = name if resource_name.nil?

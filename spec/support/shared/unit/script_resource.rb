@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
-
 shared_examples_for "a script resource" do
 
   it "should create a new Chef::Resource::Script" do
