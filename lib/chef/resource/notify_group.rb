@@ -62,6 +62,13 @@ class Chef
         new_resource.updated_by_last_action(true)
       end
 
+      # This is deliberate.  Users should be sending a single notification to a notify_group resource which then
+      # distributes multiple notifications.  Having a notify_group run by default is unnecessary indirection and
+      # should be replaced by just running the resources in order.  If resources need to be batch run multiple times
+      # per invocation then the resources themselves are not properly declarative idempotent resources, and the user
+      # is attempting to turn Chef into an imperative language using this construct and/or the batch of resources
+      # need to be turned into a custom resource.
+      #
       default_action :nothing
     end
   end

@@ -1566,6 +1566,16 @@ class Chef
       # can't/won't support.
       self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
+
+    # This is used to suppress the "(up to date)" message in the doc formatter
+    # for the log resource (where it is nonsensical).
+    #
+    # This is not exactly a private API, but its doubtful there exist many other sane
+    # use cases for this.
+    #
+    def suppress_up_to_date_messages?
+      false
+    end
   end
 end
 

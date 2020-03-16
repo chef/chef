@@ -1,6 +1,6 @@
 #
 # Author:: Cary Penniman (<cary@rightscale.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Log::ChefLog do
+describe Chef::Resource::Log do
 
   let(:log_str) { "this is my test string to log" }
 
@@ -28,9 +28,9 @@ describe Chef::Provider::Log::ChefLog do
 
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
-  let(:new_resource) { Chef::Resource::Log.new(log_str) }
+  let(:new_resource) { Chef::Resource::Log.new(log_str, run_context) }
 
-  let(:provider) { Chef::Provider::Log::ChefLog.new(new_resource, run_context) }
+  let(:provider) { new_resource.provider_for_action(:run) }
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
   before do
