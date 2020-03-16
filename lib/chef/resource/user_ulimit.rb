@@ -27,7 +27,7 @@ class Chef
       provides :user_ulimit
 
       introduced "16.0"
-      description "Use the user_ulimit resource to creates individual ulimit files that are installed into the `/etc/security/limits.d/` directory."
+      description "Use the user_ulimit resource to create individual ulimit files that are installed into the `/etc/security/limits.d/` directory."
       examples <<~DOC
         set filehandle limit for the tomcat user
         ```ruby
@@ -108,7 +108,6 @@ class Chef
           action :delete
         end
       end
-
     end
   end
 end
