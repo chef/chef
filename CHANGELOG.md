@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.141 -->
-## [v16.0.141](https://github.com/chef/chef/tree/v16.0.141) (2020-03-16)
+<!-- latest_release 16.0.142 -->
+## [v16.0.142](https://github.com/chef/chef/tree/v16.0.142) (2020-03-16)
 
 #### Merged Pull Requests
-- Turn off notifications from log resource by default [#9484](https://github.com/chef/chef/pull/9484) ([lamont-granquist](https://github.com/lamont-granquist))
+- Pull in many of Zenspider&#39;s rspec improvements [#9493](https://github.com/chef/chef/pull/9493) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in many of Zenspider&#39;s rspec improvements [#9493](https://github.com/chef/chef/pull/9493) ([tas50](https://github.com/tas50)) <!-- 16.0.142 -->
 - Turn off notifications from log resource by default [#9484](https://github.com/chef/chef/pull/9484) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.141 -->
 - Add user_ulimit resource from the ulimit cookbook [#9487](https://github.com/chef/chef/pull/9487) ([tas50](https://github.com/tas50)) <!-- 16.0.140 -->
 - Cleanup a bunch more files and pull in the smaller license-acceptance [#9490](https://github.com/chef/chef/pull/9490) ([tas50](https://github.com/tas50)) <!-- 16.0.139 -->
