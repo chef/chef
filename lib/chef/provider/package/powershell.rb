@@ -36,7 +36,7 @@ class Chef
 
         def define_resource_requirements
           super
-          if powershell_out("$PSVersionTable.PSVersion.Major").stdout.strip.to_i < 5
+          if ChefUtils.powershell_version(node).strip.to_i < 5
             raise "Minimum installed PowerShell Version required is 5"
           end
 
