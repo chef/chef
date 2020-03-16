@@ -95,7 +95,7 @@ class Chef
                  end
 
         # For linux, we use /proc/net/route file to read proc table info
-        return if node[:os] != "linux"
+        return unless linux?
 
         route_file = ::File.open("/proc/net/route", "r")
 

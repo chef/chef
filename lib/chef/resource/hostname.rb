@@ -82,7 +82,7 @@ class Chef
       action :set do
         description "Sets the node's hostname."
 
-        if node["platform_family"] != "windows"
+        if !windows?
           ohai "reload hostname" do
             plugin "hostname"
             action :nothing
@@ -125,7 +125,7 @@ class Chef
               not_if { shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
               notifies :reload, "ohai[reload hostname]"
             end
-          when node["os"] == "linux"
+          when linux?
             case
             when ::File.exist?("/usr/bin/hostnamectl") && !docker?
               # use hostnamectl whenever we find it on linux (as systemd takes over the world)

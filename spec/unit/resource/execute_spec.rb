@@ -109,7 +109,7 @@ describe Chef::Resource::Execute do
   shared_examples_for "a consumer of the Execute resource" do
     context "when running on Windows" do
       before do
-        allow(resource).to receive(:node).and_return({ platform_family: "windows" })
+        allow(resource).to receive(:windows?).and_return(true)
       end
 
       context "when no user, domain, or password is specified" do
