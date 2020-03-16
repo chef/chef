@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.137 -->
-## [v16.0.137](https://github.com/chef/chef/tree/v16.0.137) (2020-03-14)
+<!-- latest_release 16.0.138 -->
+## [v16.0.138](https://github.com/chef/chef/tree/v16.0.138) (2020-03-16)
 
 #### Merged Pull Requests
-- Remove additional files from the gems in our builds [#9489](https://github.com/chef/chef/pull/9489) ([tas50](https://github.com/tas50))
+- Use Dist constants in resource erb templates [#9491](https://github.com/chef/chef/pull/9491) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use Dist constants in resource erb templates [#9491](https://github.com/chef/chef/pull/9491) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.138 -->
 - Remove additional files from the gems in our builds [#9489](https://github.com/chef/chef/pull/9489) ([tas50](https://github.com/tas50)) <!-- 16.0.137 -->
 - Update Ohai to 16.0.12 [#9488](https://github.com/chef/chef/pull/9488) ([tas50](https://github.com/tas50)) <!-- 16.0.136 -->
 - Fix typo in the cron_access docs [#9485](https://github.com/chef/chef/pull/9485) ([tas50](https://github.com/tas50)) <!-- 16.0.135 -->
