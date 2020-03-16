@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -76,10 +76,7 @@ class Chef
         end
 
         def append_flags
-          case node[:platform]
-          when "openbsd", "netbsd", "aix", "smartos", "omnios"
-            "-G"
-          end
+          "-G" if platform?("openbsd", "netbsd", "aix", "smartos", "omnios")
         end
 
       end

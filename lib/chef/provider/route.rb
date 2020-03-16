@@ -1,6 +1,7 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org), Jesse Nelson (spheromak@gmail.com)
 # Copyright:: Copyright 2009-2016, Bryan McLellan
+# Copyright:: Copyright 2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -159,8 +160,7 @@ class Chef
       end
 
       def generate_config
-        case node[:platform_family]
-        when "rhel", "amazon", "fedora"
+        if platform_family?("rhel", "amazon", "fedora")
           conf = {}
           # walk the collection
           run_context.resource_collection.each do |resource|
