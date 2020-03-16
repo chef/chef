@@ -209,9 +209,9 @@ class Chef
 
               # the most unprocessed characters left wins
               if (x_pos_max - x_pos) > (y_pos_max - y_pos)
-                return 1
+                1
               else
-                return -1
+                -1
               end
             end
 
@@ -522,9 +522,9 @@ class Chef
           def lookup(package_name)
             pkgs = @rpms[package_name]
             if pkgs
-              return pkgs.sort.reverse
+              pkgs.sort.reverse
             else
-              return nil
+              nil
             end
           end
 
