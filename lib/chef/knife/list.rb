@@ -90,7 +90,7 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children| # rubocop:disable Performance/HashEachMethods
+          dir_results.each do |result, children| # rubocop:disable Style/HashEachMethods
             results += children
           end
           dir_results = []
