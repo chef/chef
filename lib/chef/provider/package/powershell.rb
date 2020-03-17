@@ -36,7 +36,7 @@ class Chef
 
         def define_resource_requirements
           super
-          if node["languages"] && node["languages"]["powershell"] && node["languages"]["powershell"]["version"].strip.to_i < 5
+          if powershell_version < 5
             raise "Minimum installed PowerShell Version required is 5"
           end
 
