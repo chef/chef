@@ -30,7 +30,7 @@ class Chef
       # the source can either be a path to a package source like:
       #   source /var/tmp/mygem-1.2.3.4.gem
       # or it can be a url rubygems source like:
-      #   https://www.rubygems.org
+      #   https://rubygems.org
       # the default has to be nil in order for the magical wiring up of the name property to
       # the source pathname to work correctly.
       #

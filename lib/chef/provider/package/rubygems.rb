@@ -485,7 +485,7 @@ class Chef
 
         def gem_sources
           srcs = [ new_resource.source ]
-          srcs << (Chef::Config[:rubygems_url] || "https://www.rubygems.org") if new_resource.include_default_source
+          srcs << (Chef::Config[:rubygems_url] || "https://rubygems.org") if new_resource.include_default_source
           srcs.flatten.compact
         end
 
