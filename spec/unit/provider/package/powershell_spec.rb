@@ -28,6 +28,7 @@ describe Chef::Provider::Package::Powershell do
 
   let(:provider) do
     node = Chef::Node.new
+    node.consume_external_attrs(OHAI_SYSTEM.data.dup, {})
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::Package::Powershell.new(new_resource, run_context)
