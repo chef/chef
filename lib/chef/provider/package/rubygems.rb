@@ -552,11 +552,12 @@ class Chef
 
         ##
         # If `clear_sources` is nil, clearing sources is implied if a `source`
-        # was added. If `clear_sources` is not nil, it has been set explicitly
-        # on the resource and its value should be used.
+        # was added or if the global rubygems URL is set. If `clear_sources`
+        # is not nil, it has been set explicitly on the resource and its value
+        # should be used.
         def clear_sources?
           if new_resource.clear_sources.nil?
-            !!new_resource.source
+            !!(new_resource.source || Chef::Config[:rubygems_url])
           else
             new_resource.clear_sources
           end

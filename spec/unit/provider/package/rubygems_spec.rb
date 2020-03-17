@@ -731,7 +731,7 @@ describe Chef::Provider::Package::Rubygems do
           it "installs the gem with rubygems.org as an added source" do
             Chef::Config[:rubygems_url] = "https://mirror1"
             expect(provider.gem_env).to receive(:candidate_version_from_remote).with(gem_dep, Chef::Config[:rubygems_url]).and_return(version)
-            expected = "#{gem_binary} install rspec-core -q --no-document -v \"#{target_version}\" --source=https://mirror1"
+            expected = "#{gem_binary} install rspec-core -q --no-document -v \"#{target_version}\" --clear-sources --source=https://mirror1"
             expect(provider).to receive(:shell_out_compacted!).with(expected, env: nil, timeout: 900)
             provider.run_action(:install)
             expect(new_resource).to be_updated_by_last_action
@@ -1020,6 +1020,26 @@ describe Chef::Provider::Package::Rubygems, "clear_sources?" do
   context "when a source is set" do
     before do
       new_resource.source("http://mirror.ops.rhcloud.com/mirror/ruby")
+    end
+
+    it "is true when clear_sources is unset" do
+      expect(provider.clear_sources?).to be true
+    end
+
+    it "is false when clear_sources is set false" do
+      new_resource.clear_sources(false)
+      expect(provider.clear_sources?).to be false
+    end
+
+    it "is true when clear_sources is set true" do
+      new_resource.clear_sources(true)
+      expect(provider.clear_sources?).to be true
+    end
+  end
+
+  context "when Chef::Config[:rubygems_url] is set" do
+    before do
+      Chef::Config.rubygems_url = "https://example.com/"
     end
 
     it "is true when clear_sources is unset" do
