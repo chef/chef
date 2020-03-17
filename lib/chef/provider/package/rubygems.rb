@@ -550,6 +550,10 @@ class Chef
           new_resource.gem_binary || "gem"
         end
 
+        ##
+        # If `clear_sources` is nil, clearing sources is implied if a `source`
+        # was added. If `clear_sources` is not nil, it has been set explicitly
+        # on the resource and its value should be used.
         def clear_sources?
           if new_resource.clear_sources.nil?
             !!new_resource.source
