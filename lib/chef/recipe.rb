@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "yaml"
 require_relative "dsl/recipe"
 require_relative "mixin/from_file"
 require_relative "mixin/deprecation"
@@ -89,7 +90,7 @@ class Chef
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
         yaml_contents = IO.read(filename)
-        if YAML.load_stream(yaml_contents).length > 1
+        if ::YAML.load_stream(yaml_contents).length > 1
           raise ArgumentError, "YAML recipe '#{filename}' contains multiple documents, only one is supported"
         end
 
