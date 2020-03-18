@@ -39,7 +39,7 @@ class Chef
 
       property :group, String,
         description: "Specifies that only matching firewall rules of the indicated group association are copied.",
-        introduced: "15.9"
+        introduced: "16.0"
 
       property :local_address, String,
         description: "The local address the firewall rule applies to."
