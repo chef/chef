@@ -39,7 +39,7 @@ class Chef
 
       property :group, String,
         description: "Specifies that only matching firewall rules of the indicated group association are copied.",
-        introduced: "15.2"
+        introduced: "15.9"
 
       property :local_address, String,
         description: "The local address the firewall rule applies to."
@@ -129,11 +129,11 @@ class Chef
         description "Create a Windows firewall entry."
 
         if current_resource
-          converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :description,
-            :direction, :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
-            cmd = firewall_command("Set")
-            powershell_out!(cmd)
-          end
+          converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :direction,
+            :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
+              cmd = firewall_command("Set")
+              powershell_out!(cmd)
+            end
           converge_if_changed :group do
             powershell_out!("Remove-NetFirewallRule -Name '#{new_resource.rule_name}'")
             cmd = firewall_command("New")
