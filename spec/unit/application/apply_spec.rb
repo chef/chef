@@ -46,6 +46,7 @@ describe Chef::Application::Apply do
     it "should read text properly" do
       expect(@app.read_recipe_file(@recipe_file_name)[0]).to eq(@recipe_text)
     end
+
     it "should return a file_handle" do
       expect(@app.read_recipe_file(@recipe_file_name)[1]).to be_instance_of(RSpec::Mocks::Double)
     end
@@ -57,6 +58,7 @@ describe Chef::Application::Apply do
         @app.read_recipe_file(nil)
       end
     end
+
     describe "when recipe doesn't exist" do
       before do
         allow(File).to receive(:exist?).with(@recipe_path).and_return(false)
@@ -67,7 +69,22 @@ describe Chef::Application::Apply do
         @app.read_recipe_file(@recipe_file_name)
       end
     end
+
+    describe "when the recipe filename ends in .yml" do
+      it "configures for parsing the recipe as YAML" do
+        @recipe_file_name = "foo.yml"
+        @recipe_path = File.expand_path(@recipe_file_name)
+        @recipe_file = double("Tempfile (mock)", read: @recipe_text)
+        allow(@app).to receive(:open).with(@recipe_path).and_return(@recipe_file)
+        allow(File).to receive(:exist?).with(@recipe_path).and_return(true)
+        allow(Chef::Application).to receive(:fatal!).and_return(true)
+
+        @app.read_recipe_file(@recipe_file_name)
+        expect(@app.config[:yaml]).to eq(true)
+      end
+    end
   end
+
   describe "temp_recipe_file" do
     before do
       @app.instance_variable_set(:@recipe_text, @recipe_text)

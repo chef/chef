@@ -105,6 +105,12 @@ class Chef::Application::Apply < Chef::Application
     description: "Enable whyrun mode.",
     boolean: true
 
+  option :yaml,
+    long: "--yaml",
+    description: "Parse recipe as YAML",
+    boolean: true,
+    default: false
+
   option :profile_ruby,
     long: "--[no-]profile-ruby",
     description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only).",
@@ -148,6 +154,10 @@ class Chef::Application::Apply < Chef::Application
     if file_name.nil?
       Chef::Application.fatal!("No recipe file was provided", Chef::Exceptions::RecipeNotFound.new)
     else
+      if file_name =~ /\.yml$/
+        logger.info "Recipe file name ends with .yml, parsing as YAML"
+        config[:yaml] = true
+      end
       recipe_path = File.expand_path(file_name)
       unless File.exist?(recipe_path)
         Chef::Application.fatal!("No file exists at #{recipe_path}", Chef::Exceptions::RecipeNotFound.new)
@@ -198,7 +208,11 @@ class Chef::Application::Apply < Chef::Application
       @recipe_text, @recipe_fh = read_recipe_file @recipe_filename
     end
     recipe, run_context = get_recipe_and_run_context
-    recipe.instance_eval(@recipe_text, @recipe_filename, 1)
+    if config[:yaml]
+      recipe.from_yaml(@recipe_text)
+    else
+      recipe.instance_eval(@recipe_text, @recipe_filename, 1)
+    end
     runner = Chef::Runner.new(run_context)
     catch(:end_client_run_early) do
       begin
