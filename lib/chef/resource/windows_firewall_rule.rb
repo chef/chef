@@ -37,6 +37,10 @@ class Chef
         default: "Firewall rule",
         description: "The description to assign to the firewall rule."
 
+      property :group, String,
+        description: "Specifies that only matching firewall rules of the indicated group association are copied.",
+        introduced: "15.9"
+
       property :local_address, String,
         description: "The local address the firewall rule applies to."
 
@@ -106,6 +110,7 @@ class Chef
         else
           state = Chef::JSONCompat.from_json(output.stdout)
         end
+        group state["group"]
         local_address state["local_address"]
         local_port Array(state["local_port"]).sort
         remote_address state["remote_address"]
@@ -129,6 +134,11 @@ class Chef
               cmd = firewall_command("Set")
               powershell_out!(cmd)
             end
+          converge_if_changed :group do
+            powershell_out!("Remove-NetFirewallRule -Name '#{new_resource.rule_name}'")
+            cmd = firewall_command("New")
+            powershell_out!(cmd)
+          end
         else
           converge_by("create firewall rule #{new_resource.rule_name}") do
             cmd = firewall_command("New")
@@ -155,6 +165,7 @@ class Chef
         def firewall_command(cmdlet_type)
           cmd = "#{cmdlet_type}-NetFirewallRule -Name '#{new_resource.rule_name}'"
           cmd << " -DisplayName '#{new_resource.rule_name}'" if cmdlet_type == "New"
+          cmd << " -Group '#{new_resource.group}'" if new_resource.group && cmdlet_type == "New"
           cmd << " -Description '#{new_resource.description}'" if new_resource.description
           cmd << " -LocalAddress '#{new_resource.local_address}'" if new_resource.local_address
           cmd << " -LocalPort '#{new_resource.local_port.join("', '")}'" if new_resource.local_port
@@ -189,6 +200,7 @@ class Chef
           ([PSCustomObject]@{
             rule_name = $rule.Name
             description = $rule.Description
+            group = $rule.Group
             local_address = $addressFilter.LocalAddress
             local_port = $portFilter.LocalPort
             remote_address = $addressFilter.RemoteAddress
