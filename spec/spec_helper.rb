@@ -24,17 +24,15 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
-# Ruby 1.9 Compat
-$:.unshift File.expand_path("../..", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../..", __FILE__)
+
+$LOAD_PATH.unshift File.expand_path("../../chef-config/lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../chef-utils/lib", __FILE__)
 
 require "rubygems"
 require "rspec/mocks"
 
 require "webmock/rspec"
-
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.expand_path("../lib", __FILE__))
-$:.unshift(File.dirname(__FILE__))
 
 if ENV["COVERAGE"]
   require "simplecov"
@@ -123,8 +121,10 @@ RSpec.configure do |config|
   config.filter_run_excluding external: true
 
   # Explicitly disable :should syntax
+  # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.
   config.expect_with :rspec do |c|
     c.syntax = :expect
+    c.max_formatted_output_length = nil
   end
   config.mock_with :rspec do |c|
     c.syntax = :expect
@@ -138,9 +138,6 @@ RSpec.configure do |config|
   config.filter_run_excluding volatile_on_solaris: true if solaris?
   config.filter_run_excluding volatile_from_verify: false
 
-  config.filter_run_excluding skip_appveyor: true if ENV["APPVEYOR"]
-  config.filter_run_excluding appveyor_only: true unless ENV["APPVEYOR"]
-
   config.filter_run_excluding skip_buildkite: true if ENV["BUILDKITE"]
 
   config.filter_run_excluding windows_only: true unless windows?
@@ -151,11 +148,9 @@ RSpec.configure do |config|
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
-  config.filter_run_excluding not_supported_on_nano: true if windows_nano_server?
   config.filter_run_excluding win2012r2_only: true unless windows_2012r2?
   config.filter_run_excluding windows64_only: true unless windows64?
   config.filter_run_excluding windows32_only: true unless windows32?
-  config.filter_run_excluding windows_nano_only: true unless windows_nano_server?
   config.filter_run_excluding windows_gte_10: true unless windows_gte_10?
   config.filter_run_excluding windows_lt_10: true if windows_gte_10?
   config.filter_run_excluding ruby64_only: true unless ruby_64bit?

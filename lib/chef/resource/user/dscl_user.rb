@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ class Chef
   class Resource
     class User
       class DsclUser < Chef::Resource::User
-        resource_name :dscl_user
+        unified_mode true
 
         provides :dscl_user
         provides :user, platform: "mac_os_x", platform_version: "< 10.14"

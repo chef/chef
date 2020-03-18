@@ -120,6 +120,38 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `s390x?`
 * `s390?`
 
+### Cloud Helpers
+
+* `cloud?` - if the node is running in any cloud, including internal ones
+* `ec2?` - if the node is running in ec2
+* `gce?` - if the node is running in gce
+* `rackspace?` - if the node is running in rackspace
+* `eucalyptus?` - if the node is running under eucalyptus
+* `linode?` - if the node is running in linode
+* `openstack?` - if the node is running under openstack
+* `azure?` - if the node is running in azure
+* `digital_ocean?` - if the node is running in digital ocean
+* `softlayer?` - if the node is running in softlayer
+
+### Virtualization Helpers
+
+* `kvm?` - if the node is a kvm guest
+* `kvm_host?` - if the node is a kvm host
+* `lxc?` - if the node is an lxc guest
+* `lxc_host?` - if the node is an lxc host
+* `parallels?`- if the node is a parallels guest
+* `parallels_host?`- if the node is a parallels host
+* `vbox?` - if the node is a virtualbox guest
+* `vbox_host?` - if the node is a virtualbox host
+* `vmware?` - if the node is a vmware guest
+* `vmware_host?` - if the node is a vmware host
+* `openvz?` - if the node is an openvz guest
+* `openvz_host?` - if the node is an openvz host
+* `guest?` - if the node is detected as any kind of guest
+* `hypervisor?` - if the node is detected as being any kind of hypervisor
+* `physical?` - the node is not running as a guest (may be a hypervisor or may be bare-metal)
+* `vagrant?` - attempts to identify the node as a vagrant guest (this check may be error prone)
+
 ### Train Helpers
 
 **EXPERIMENTAL**: APIs may have breaking changes any time without warning
@@ -133,6 +165,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 * `systemd?` - if the init system is systemd
 * `kitchen?` - if ENV['TEST_KITCHEN'] is set
 * `ci?` - if ENV['CI'] is set
+* `include_recipe?(recipe_name)` - if the `recipe_name` is in the run list, the expanded run list, or has been `include_recipe`'d.
 
 ### Service Helpers
 
@@ -153,16 +186,34 @@ Architecture Helpers allow you to determine the processor architecture of your n
 
 * `sanitized_path`
 
+## Documentation for Cookbook library authors
+
+To use the helpers in a class or module in a cookbook library file you can include the ChefUtils DSL:
+
+```ruby
+module MyHelper
+  include ChefUtils # or any individual module with DSL methods in it
+
+  def do_something
+    puts "RHEL" if rhel?
+  end
+
+  extend self
+end
+```
+
+Now you can include MyHelper in another class/module, or you can call MyHelper.do_something directly.
+
 ## Documentation for Software Developers
 
 The design of the DSL helper libraries in this gem are designed around the Chef Infra Client use cases. Most of the helpers are
-accessible through the Chef DSL directly via the `ChefUtils::DSL` module. They are also available via class method calls on
+accessible through the Chef DSL directly via the `ChefUtils` module. They are also available via class method calls on
 the ChefUtils module directly (e.g. `ChefUtils.debian?`). For that to be possible there is Chef Infra Client specific wiring in
 the `ChefUtils::Internal` class allowing the helpers to access the `Chef.run_context` global values. This allows them to be
 used from library helpers in cookbooks inside Chef Infra Client.
 
 For external use in other gems, this automatic wiring will not work correctly, and so it will not generally be possible to
-call helpers off of the `ChefUtils` class (somee exceptions that do not require a node-like object or a train connection will
+call helpers off of the `ChefUtils` class (some exceptions that do not require a node-like object or a train connection will
 may still work). For use in other gems you should create your own module and mixin the helper class. If you have a node
 method in your class/module then that method will be used.
 
@@ -170,7 +221,7 @@ You can wire up a module which implements the Chef DSL with your own wiring usin
 
 ```ruby
 module MyDSL
-  include ChefUtils::DSL # or any individual module with DSL methods in it
+  include ChefUtils # or any individual module with DSL methods in it
 
   private
 

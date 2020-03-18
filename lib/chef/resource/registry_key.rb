@@ -1,7 +1,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ class Chef
     class RegistryKey < Chef::Resource
       unified_mode true
 
-      resource_name :registry_key
       provides(:registry_key) { true }
 
       description "Use the registry_key resource to create and delete registry keys in Microsoft Windows."

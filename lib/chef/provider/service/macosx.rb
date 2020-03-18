@@ -1,6 +1,7 @@
 #
 # Author:: Igor Afonov <afonov@gmail.com>
 # Copyright:: Copyright 2011-2016, Igor Afonov
+# Copyright:: Copyright 2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -42,10 +43,6 @@ class Chef
 
         PLIST_DIRS = gather_plist_dirs
 
-        def this_version_or_newer?(this_version)
-          Gem::Version.new(node["platform_version"]) >= Gem::Version.new(this_version)
-        end
-
         def load_current_resource
           @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
@@ -59,10 +56,8 @@ class Chef
           if @console_user
             @console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
             logger.trace("#{new_resource} console_user: '#{@console_user}'")
-            cmd = "su "
-            param = this_version_or_newer?("10.10") ? "" : "-l "
-            param = "-l " if this_version_or_newer?("10.12")
-            @base_user_cmd = cmd + param + "#{@console_user} -c"
+            cmd = "su -l"
+            @base_user_cmd = cmd + "#{@console_user} -c"
             # Default LaunchAgent session should be Aqua
             @session_type = "Aqua" if @session_type.nil?
           end
@@ -140,10 +135,10 @@ class Chef
           end
         end
 
-        # On OS/X, enabling a service has the side-effect of starting it,
+        # On macOS, enabling a service has the side-effect of starting it,
         # and disabling a service has the side-effect of stopping it.
         #
-        # This makes some sense on OS/X since launchctl is an "init"-style
+        # This makes some sense on macOS since launchctl is an "init"-style
         # supervisor that will restart daemons that are crashing, etc.
         def enable_service
           if @current_resource.enabled

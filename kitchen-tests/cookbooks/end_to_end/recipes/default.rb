@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: default
 #
-# Copyright:: 2014-2019, Chef Software, Inc.
+# Copyright:: 2014-2020, Chef Software Inc.
 #
 
 hostname "chef-bk-ci.chef.io"
@@ -33,10 +33,12 @@ yum_repository "epel" do
   gpgkey "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{node["platform_version"].to_i}"
   gpgcheck true
   mirrorlist "https://mirrors.fedoraproject.org/metalink?repo=epel-#{node["platform_version"].to_i}&arch=$basearch"
-  only_if { platform_family?("rhel") }
+  only_if { rhel? }
 end
 
-build_essential
+build_essential do
+  raise_if_unsupported true
+end
 
 include_recipe "::packages"
 
@@ -50,7 +52,6 @@ users_manage "sysadmin" do
 end
 
 ssh_known_hosts_entry "github.com"
-ssh_known_hosts_entry "travis.org"
 
 sudo "sysadmins" do
   group ["sysadmin", "%superadmin"]
@@ -116,4 +117,6 @@ end
   end
 end
 
+include_recipe "::chef-vault" unless includes_recipe?("end_to_end::chef-vault")
+include_recipe "::alternatives"
 include_recipe "::tests"

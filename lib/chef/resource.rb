@@ -415,7 +415,6 @@ class Chef
       @not_if
     end
 
-    #
     # The number of times to retry this resource if it fails by throwing an
     # exception while running an action.  Default: 0
     #
@@ -427,7 +426,6 @@ class Chef
     #
     property :retries, Integer, default: 0, desired_state: false
 
-    #
     # The number of seconds to wait between retries.  Default: 2.
     #
     # @param arg [Integer] The number of seconds to wait between retries.
@@ -435,7 +433,6 @@ class Chef
     #
     property :retry_delay, Integer, default: 2, desired_state: false
 
-    #
     # Whether to treat this resource's data as sensitive.  If set, no resource
     # data will be displayed in log output.
     #
@@ -444,7 +441,16 @@ class Chef
     #
     property :sensitive, [ TrueClass, FalseClass ], default: false, desired_state: false
 
+    # If this is set the resource will be set to run at compile time and the converge time
+    # action will be set to :nothing.
     #
+    # @param arg [Boolean] Whether or not to force this resource to run at compile time.
+    # @return [Boolean] Whether or not to force this resource to run at compile time.
+    #
+    property :compile_time, [TrueClass, FalseClass],
+      description: "Determines whether or not the resource is executed during the compile time phase.",
+      default: false, desired_state: false
+
     # The time it took (in seconds) to run the most recently-run action.  Not
     # cumulative across actions.  This is set to 0 as soon as a new action starts
     # running, and set to the elapsed time at the end of the action.
@@ -458,7 +464,6 @@ class Chef
     #
     attr_accessor :executed_by_runner
 
-    #
     # The guard interpreter that will be used to process `only_if` and `not_if`
     # statements.  If left unset, the #default_guard_interpreter will be used.
     #
@@ -935,13 +940,7 @@ class Chef
     #
     # The display name of this resource type, for printing purposes.
     #
-    # This also automatically calls "provides" to provide DSL with the given
-    # name.
-    #
-    # resource_name defaults to your class name.
-    #
-    # Call `resource_name nil` to remove the resource name (and any
-    # corresponding DSL).
+    # Call `resource_name nil` to remove the resource name
     #
     # @param value [Symbol] The desired name of this resource type (e.g.
     #   `execute`), or `nil` if this class is abstract and has no resource_name.
@@ -951,20 +950,19 @@ class Chef
     def self.resource_name(name = NOT_PASSED)
       # Setter
       if name != NOT_PASSED
-        remove_canonical_dsl
-
-        # Set the resource_name and call provides
         if name
+          @resource_name = name.to_sym
           name = name.to_sym
-          # If our class is not already providing this name, provide it.
+          # FIXME: determine a way to deprecate this magic behavior
           unless Chef::ResourceResolver.includes_handler?(name, self)
-            provides name, canonical: true
+            provides name
           end
-          @resource_name = name
         else
           @resource_name = nil
         end
       end
+
+      @resource_name = nil unless defined?(@resource_name)
       @resource_name
     end
 
@@ -972,25 +970,12 @@ class Chef
       resource_name(name)
     end
 
-    #
-    # Use the class name as the resource name.
-    #
-    # Munges the last part of the class name from camel case to snake case,
-    # and sets the resource_name to that:
-    #
-    # A::B::BlahDBlah -> blah_d_blah
-    #
-    def self.use_automatic_resource_name
-      automatic_name = convert_to_snake_case(name.split("::")[-1])
-      resource_name automatic_name
-    end
-
     # If the resource's action should run in separated compile/converge mode.
     #
     # @param flag [Boolean] value to set unified_mode to
     # @return [Boolean] unified_mode value
     def self.unified_mode(flag = nil)
-      @unified_mode = Chef::Config[:resource_unified_mode_default] if @unified_mode.nil?
+      @unified_mode = Chef::Config[:resource_unified_mode_default] if !defined?(@unified_mode) || @unified_mode.nil?
       @unified_mode = flag unless flag.nil?
       !!@unified_mode
     end
@@ -1035,7 +1020,7 @@ class Chef
         self.allowed_actions |= @default_action
       end
 
-      if @default_action
+      if defined?(@default_action) && @default_action
         @default_action
       elsif superclass.respond_to?(:default_action)
         superclass.default_action
@@ -1316,12 +1301,6 @@ class Chef
     def self.inherited(child)
       super
       @@sorted_descendants = nil
-      # set resource_name automatically if it's not set
-      if child.name && !child.resource_name
-        if child.name =~ /^Chef::Resource::(\w+)$/
-          child.resource_name(convert_to_snake_case($1))
-        end
-      end
     end
 
     # If an unknown method is invoked, determine whether the enclosing Provider's
@@ -1343,9 +1322,7 @@ class Chef
     #
     # Since resource_name calls provides the generally correct way of doing this is
     # to do `chef_version_for_provides` first, then `resource_name` and then
-    # any additional options `provides` lines.  Calling `resource_name` is somewhat
-    # important to have the canonical_dsl removed or else that'll stick around
-    # and chef_version won't get applied to it.
+    # any additional options `provides` lines.
     #
     # Once we no longer care about supporting chef < 14.4 then we can deprecate
     # this API.
@@ -1366,17 +1343,17 @@ class Chef
     def self.provides(name, **options, &block)
       name = name.to_sym
 
-      # `provides :resource_name, os: 'linux'`) needs to remove the old
-      # canonical DSL before adding the new one.
-      if @resource_name && name == @resource_name
-        remove_canonical_dsl
-      end
+      # quell warnings
+      @chef_version_for_provides = nil unless defined?(@chef_version_for_provides)
+
+      # deliberately do not go through the accessor here
+      @resource_name = name if resource_name.nil?
 
       if @chef_version_for_provides && !options.include?(:chef_version)
         options[:chef_version] = @chef_version_for_provides
       end
 
-      result = Chef.resource_handler_map.set(name, self, options, &block)
+      result = Chef.resource_handler_map.set(name, self, **options, &block)
       Chef::DSL::Resources.add_resource_dsl(name)
       result
     end
@@ -1580,7 +1557,7 @@ class Chef
     # <Chef::Resource>:: returns the proper Chef::Resource class
     #
     def self.resource_matching_short_name(short_name)
-      Chef::ResourceResolver.resolve(short_name, canonical: true)
+      Chef::ResourceResolver.resolve(short_name)
     end
 
     # @api private
@@ -1595,13 +1572,14 @@ class Chef
       self.class.resource_for_node(name, node).new("name", run_context).provider_for_action(action).class
     end
 
-    def self.remove_canonical_dsl
-      if @resource_name
-        remaining = Chef.resource_handler_map.delete_canonical(@resource_name, self)
-        unless remaining
-          Chef::DSL::Resources.remove_resource_dsl(@resource_name)
-        end
-      end
+    # This is used to suppress the "(up to date)" message in the doc formatter
+    # for the log resource (where it is nonsensical).
+    #
+    # This is not exactly a private API, but its doubtful there exist many other sane
+    # use cases for this.
+    #
+    def suppress_up_to_date_messages?
+      false
     end
   end
 end

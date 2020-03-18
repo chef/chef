@@ -85,7 +85,7 @@ class Chef
         ChefUtils.windows? ? path.tr("/", '\\') : path
       end
 
-      def action_create
+      action :create do
         # current_resource is the symlink that currently exists
         # new_resource is the symlink we need to create
         #   to - the location to link to
@@ -141,7 +141,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if current_resource.to # Exists
           if ChefUtils.windows? && ::File.directory?(current_resource.target_file)
             converge_by("delete link to dir at #{new_resource.target_file}") do

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,49 +26,21 @@ class Chef
         ChefUtils.windows?
       end
 
+      # @deprecated Windows Nano is not a thing anymore so this check shouldn't be used
       def windows_nano_server?
-        return false unless windows?
-
-        require "win32/registry" unless defined?(Win32::Registry)
-
-        # This method may be called before ohai runs (e.g., it may be used to
-        # determine settings in config.rb). Chef::Win32::Registry.new uses
-        # node attributes to verify the machine architecture which aren't
-        # accessible before ohai runs.
-        nano = nil
-        key = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Server\\ServerLevels"
-        access = ::Win32::Registry::KEY_QUERY_VALUE | 0x0100 # nano is 64-bit only
-        begin
-          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
-            nano = reg["NanoServer"]
-          end
-        rescue ::Win32::Registry::Error
-          # If accessing the registry key failed, then we're probably not on
-          # nano. Fail through.
-        end
-        nano == 1
+        false
       end
 
+      # @deprecated we added this method due to Windows Server Nano, which is no longer a platform
       def supports_msi?
         return false unless windows?
 
-        require "win32/registry" unless defined?(Win32::Registry)
-
-        key = "System\\CurrentControlSet\\Services\\msiserver"
-        access = ::Win32::Registry::KEY_QUERY_VALUE
-
-        begin
-          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
-            true
-          end
-        rescue ::Win32::Registry::Error
-          false
-        end
+        true
       end
 
+      # @deprecated we don't support any release of Windows that isn't PS 3+
       def supports_powershell_execution_bypass?(node)
-        node[:languages] && node[:languages][:powershell] &&
-          node[:languages][:powershell][:version].to_i >= 3
+        true
       end
 
       def supports_dsc?(node)

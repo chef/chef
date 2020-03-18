@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2012-2017, Chef Software Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,28 +35,14 @@ class Chef
     #  - Runs Gem.clear_paths after the action, ensuring that gem is aware of changes so that it can be required
     #    immediately after it is installed
     class ChefGem < Chef::Resource::Package::GemPackage
-      resource_name :chef_gem
+      unified_mode true
+      provides :chef_gem
 
       property :gem_binary, default: "#{RbConfig::CONFIG["bindir"]}/gem", default_description: "Chef's built-in gem binary.",
                             description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed.",
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG["bindir"]}/gem" },
                }
-      property :compile_time, [TrueClass, FalseClass],
-        description: "Controls the phase during which a gem is installed on a node. Set to 'true' to install a gem while the resource collection is being built (the 'compile phase'). Set to 'false' to install a gem while the #{Chef::Dist::CLIENT} is configuring the node (the 'converge phase').",
-        default: false, desired_state: false
-
-      # force the resource to compile time if the compile time property has been set
-      #
-      # @return [void]
-      def after_created
-        if compile_time
-          Array(action).each do |action|
-            run_action(action)
-          end
-          Gem.clear_paths
-        end
-      end
     end
   end
 end

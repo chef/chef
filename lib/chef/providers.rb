@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2018, Chef Software Inc.
+# Copyright:: Copyright 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "provider/apt_update"
-require_relative "provider/apt_preference"
-require_relative "provider/apt_repository"
 require_relative "provider/batch"
 require_relative "provider/cookbook_file"
 require_relative "provider/cron"
@@ -35,15 +32,12 @@ require_relative "provider/http_request"
 require_relative "provider/ifconfig"
 require_relative "provider/launchd"
 require_relative "provider/link"
-require_relative "provider/log"
 require_relative "provider/ohai"
-require_relative "provider/mdadm"
 require_relative "provider/mount"
 require_relative "provider/noop"
 require_relative "provider/package"
 require_relative "provider/powershell_script"
 require_relative "provider/osx_profile"
-require_relative "provider/reboot"
 require_relative "provider/remote_directory"
 require_relative "provider/remote_file"
 require_relative "provider/route"

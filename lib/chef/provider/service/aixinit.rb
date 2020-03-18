@@ -38,7 +38,7 @@ class Chef
           @current_resource
         end
 
-        def action_enable
+        action :enable do
           if @new_resource.priority.nil?
             priority_ok = true
           else

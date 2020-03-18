@@ -1,6 +1,6 @@
 #
 # Author:: Ryan Cragun (<ryan@chef.io>)
-# Copyright:: Copyright (c) 2019, Chef Software Inc.
+# Copyright:: Copyright (c) 2019-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +52,10 @@ class Chef
             current_resource.shell(user_plist[:shell][0])
             current_resource.comment(user_plist[:comment][0])
 
+            if user_plist[:is_hidden]
+              current_resource.hidden(user_plist[:is_hidden][0] == "1" ? true : false)
+            end
+
             shadow_hash = user_plist[:shadow_hash]
             if shadow_hash
               current_resource.password(shadow_hash[0]["SALTED-SHA512-PBKDF2"]["entropy"].string.unpack("H*")[0])
@@ -91,6 +95,8 @@ class Chef
           return nil if user_xml.nil? || user_xml == ""
 
           @user_plist = Plist.new(::Plist.parse_xml(user_xml))
+
+          return unless user_plist[:shadow_hash]
 
           shadow_hash_hex = user_plist[:shadow_hash][0]
           return unless shadow_hash_hex && shadow_hash_hex != ""
@@ -135,7 +141,7 @@ class Chef
         def create_user
           cmd = [-"-addUser", new_resource.username]
           cmd += ["-fullName", new_resource.comment] if prop_is_set?(:comment)
-          cmd += ["-UID", new_resource.uid]          if prop_is_set?(:uid)
+          cmd += ["-UID", prop_is_set?(:uid) ? new_resource.uid : get_free_uid]
           cmd += ["-shell", new_resource.shell]
           cmd += ["-home", new_resource.home]
           cmd += ["-admin"] if new_resource.admin
@@ -148,14 +154,12 @@ class Chef
             cmd += ["-adminPassword", new_resource.admin_password]
           end
 
-          converge_by "create user" do
-            # sysadminctl doesn't exit with a non-zero exit code if it encounters
-            # a problem. We'll check stderr and make sure we see that it finished
-            # correctly.
-            res = run_sysadminctl(cmd)
-            unless res.downcase =~ /creating user/
-              raise Chef::Exceptions::User, "error when creating user: #{res}"
-            end
+          # sysadminctl doesn't exit with a non-zero exit code if it encounters
+          # a problem. We'll check stderr and make sure we see that it finished
+          # correctly.
+          res = run_sysadminctl(cmd)
+          unless res.downcase =~ /creating user/
+            raise Chef::Exceptions::User, "error when creating user: #{res}"
           end
 
           # Wait for the user to show up in the ds cache
@@ -164,6 +168,10 @@ class Chef
           # Reload with up-to-date user information
           reload_user_plist
           reload_admin_group_plist
+
+          if prop_is_set?(:hidden)
+            set_hidden
+          end
 
           if prop_is_set?(:password)
             converge_by("set password") { set_password }
@@ -188,15 +196,15 @@ class Chef
             # group magement should be done outside of the core resource.
             group_name, group_id, group_action = user_group_info
 
-            declare_resource(:group, group_name) do
+            group group_name do
               members new_resource.username
               gid group_id if group_id
-              action :nothing
+              action group_action
               append true
-            end.run_action(group_action)
+            end
 
             converge_by("create primary group ID") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
             end
           end
 
@@ -208,7 +216,7 @@ class Chef
         end
 
         def compare_user
-          %i{comment shell uid gid salt password admin secure_token}.any? { |m| diverged?(m) }
+          %i{comment shell uid gid salt password admin secure_token hidden}.any? { |m| diverged?(m) }
         end
 
         def manage_user
@@ -238,16 +246,16 @@ class Chef
 
           if diverged?(:admin)
             converge_by("alter admin group membership") do
-              declare_resource(:group, "admin") do
+              group "admin" do
                 if new_resource.admin
                   members new_resource.username
                 else
                   excluded_members new_resource.username
                 end
 
-                action :nothing
+                action :create
                 append true
-              end.run_action(:create)
+              end
 
               admins = admin_group_plist[:group_members]
               if new_resource.admin
@@ -263,16 +271,22 @@ class Chef
           end
 
           group_name, group_id, group_action = user_group_info
-          declare_resource(:group, group_name) do
+          group group_name do
             gid group_id if group_id
             members new_resource.username
-            action :nothing
+            action group_action
             append true
-          end.run_action(group_action)
+          end
 
           if diverged?(:gid)
             converge_by("alter group membership") do
-              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", new_resource.gid)
+              run_dscl("create", "/Users/#{new_resource.username}", "PrimaryGroupID", group_id)
+            end
+          end
+
+          if diverged?(:hidden)
+            converge_by("alter hidden") do
+              set_hidden
             end
           end
 
@@ -289,11 +303,9 @@ class Chef
 
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
           # a problem. We'll check stderr and make sure we see that it finished
-          converge_by "remove user" do
-            res = run_sysadminctl(cmd)
-            unless res.downcase =~ /deleting record|not found/
-              raise Chef::Exceptions::User, "error deleting user: #{res}"
-            end
+          res = run_sysadminctl(cmd)
+          unless res.downcase =~ /deleting record|not found/
+            raise Chef::Exceptions::User, "error deleting user: #{res}"
           end
 
           reload_user_plist
@@ -301,18 +313,15 @@ class Chef
         end
 
         def lock_user
-          converge_by "lock user" do
-            run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
-          end
+          run_dscl("append", "/Users/#{new_resource.username}", "AuthenticationAuthority", ";DisabledUser;")
 
           reload_user_plist
         end
 
         def unlock_user
           auth_string = user_plist[:auth_authority].reject! { |tag| tag == ";DisabledUser;" }.join.strip
-          converge_by "unlock user" do
-            run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
-          end
+
+          run_dscl("create", "/Users/#{new_resource.username}", "AuthenticationAuthority", auth_string)
 
           reload_user_plist
         end
@@ -341,11 +350,31 @@ class Chef
             user_group_diverged?
           when :secure_token
             secure_token_diverged?
+          when :hidden
+            hidden_diverged?
           else
             # Other fields are have been set on current resource so just compare
             # them.
             !new_resource.send(prop).nil? && (new_resource.send(prop) != current_resource.send(prop))
           end
+        end
+
+        # Find the next available uid on the system.
+        # Starting with 200 if `system` is set, 501 otherwise.
+        def get_free_uid(search_limit = 1000)
+          uid = nil
+          base_uid = new_resource.system ? 200 : 501
+          next_uid_guess = base_uid
+          users_uids = run_dscl("list", "/Users", "uid")
+          while next_uid_guess < search_limit + base_uid
+            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+              next_uid_guess += 1
+            else
+              uid = next_uid_guess
+              break
+            end
+          end
+          uid || raise("uid not found. Exhausted. Searched #{search_limit} times")
         end
 
         # Attempt to resolve the group name, gid, and the action required for
@@ -415,12 +444,21 @@ class Chef
           return false unless prop_is_set?(:gid)
 
           group_name, group_id = user_group_info
+          current_resource.gid != group_id.to_i
+        end
 
-          if current_resource.gid.is_a?(String)
-            current_resource.gid != group_name
-          else
-            current_resource.gid != group_id.to_i
-          end
+        def hidden_diverged?
+          return false unless prop_is_set?(:hidden)
+
+          (current_resource.hidden ? 1 : 0) != hidden_value.to_i
+        end
+
+        def set_hidden
+          run_dscl("create", "/Users/#{new_resource.username}", "IsHidden", hidden_value.to_i)
+        end
+
+        def hidden_value
+          new_resource.hidden ? 1 : 0
         end
 
         def password_diverged?
@@ -483,7 +521,7 @@ class Chef
             )
           end
 
-          shadow_hash = user_plist[:shadow_hash][0]
+          shadow_hash = user_plist[:shadow_hash] ? user_plist[:shadow_hash][0] : {}
           shadow_hash["SALTED-SHA512-PBKDF2"] = {
             "entropy" => entropy,
             "salt" => salt,
@@ -533,7 +571,7 @@ class Chef
           run_dsimport(import_file, "/Local/Default", "M")
           run_dscl("create", "/Users/#{new_resource.username}", "Password", "********")
         ensure
-          ::File.delete(import_file) if defined?(import_file) && ::File.exist?(import_file)
+          ::File.delete(import_file) if import_file && ::File.exist?(import_file)
         end
 
         def wait_for_user
@@ -598,6 +636,7 @@ class Chef
               auth_authority: "dsAttrTypeStandard:AuthenticationAuthority",
               shadow_hash: "dsAttrTypeNative:ShadowHashData",
               group_members: "dsAttrTypeStandard:GroupMembers",
+              is_hidden: "dsAttrTypeNative:IsHidden",
           }.freeze
 
           attr_accessor :plist_hash, :property_map

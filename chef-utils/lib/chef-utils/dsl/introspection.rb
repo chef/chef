@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018-2019, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,9 +28,10 @@ module ChefUtils
     module Introspection
       include TrainHelpers
 
-      # Returns whether the node is a docker container.
+      # Determine if the node is a docker container.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 12.11
       #
       # @return [Boolean]
       #
@@ -40,7 +41,10 @@ module ChefUtils
         !!(node && node.read("virtualization", "systems", "docker") == "guest")
       end
 
-      # @param [Chef::Node] node
+      # Determine if the node uses the systemd init system.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -48,7 +52,10 @@ module ChefUtils
         file_exist?("/proc/1/comm") && file_open("/proc/1/comm").gets.chomp == "systemd"
       end
 
-      # @param [Chef::Node] node
+      # Determine if the node is running in Test Kitchen.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -56,7 +63,10 @@ module ChefUtils
         ENV.key?("TEST_KITCHEN")
       end
 
-      # @param [Chef::Node] node
+      # Determine if the node is running in a CI system that sets the CI env var.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -64,7 +74,10 @@ module ChefUtils
         ENV.key?("CI")
       end
 
+      # Determine if the a systemd service unit is present on the system.
+      #
       # @param [String] svc_name
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -76,7 +89,10 @@ module ChefUtils
         end
       end
 
+      # Determine if the a systemd unit of any type is present on the system.
+      #
       # @param [String] svc_name
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -86,6 +102,19 @@ module ChefUtils
           file_exist?("#{load_path}/systemd/system/#{svc_name}")
         end
       end
+
+      # Determine if the current node includes the given recipe name.
+      #
+      # @param [String] recipe_name
+      # @since 15.8
+      #
+      # @return [Boolean]
+      #
+      def includes_recipe?(recipe_name, node = __getnode)
+        node.recipe?(recipe_name)
+      end
+      # chef-sugar backcompat method
+      alias_method :include_recipe?, :includes_recipe?
 
       extend self
     end

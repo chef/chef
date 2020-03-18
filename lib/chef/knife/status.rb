@@ -1,6 +1,6 @@
 #
 # Author:: Ian Meyer (<ianmmeyer@gmail.com>)
-# Copyright:: Copyright 2010-2016, Ian Meyer
+# Copyright:: Copyright 2010-2020, Ian Meyer
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,7 +59,7 @@ class Chef
         else
           opts = { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
+                   cloud: ["cloud"], run_list: ["run_list"], platform: ["platform"],
                    platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
         end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Nicolas DUPEUX (<nicolas.dupeux@arkea.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -67,8 +67,8 @@ class Chef
 
             result["name"] = node["name"] || node.name
             result["chef_environment"] = node["chef_environment"]
-            ip = (node["ec2"] && node["ec2"]["public_ipv4"]) || node["ipaddress"]
-            fqdn = (node["ec2"] && node["ec2"]["public_hostname"]) || node["fqdn"]
+            ip = (node["cloud"] && node["cloud"]["public_ipv4_addrs"].first) || node["ipaddress"]
+            fqdn = (node["cloud"] && node["cloud"]["public_hostname"]) || node["fqdn"]
             result["ip"] = ip if ip
             result["fqdn"] = fqdn if fqdn
             result["run_list"] = node.run_list if config["run_list"]
@@ -95,9 +95,9 @@ class Chef
           summarized = ""
           list.each do |data|
             node = data
-            # special case ec2 with their split horizon whatsis.
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
-            fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            # special case clouds with their split horizon whatsis.
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
+            fqdn = (node[:cloud] && node[:cloud][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
             if config[:run_list]

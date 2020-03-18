@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/cookbook_upload"
@@ -84,6 +85,16 @@ describe "knife cookbook upload", :workstation do
           Uploading y            [1.0.0]
           Uploaded all cookbooks.
         EOM
+      end
+    end
+
+    when_the_repository "has cookbook metadata without name attribute in metadata file" do
+      before do
+        file "cookbooks/x/metadata.rb", cb_metadata(nil, "1.0.0")
+      end
+
+      it "knife cookbook upload x " do
+        expect { knife("cookbook upload x -o #{cb_dir}") }.to raise_error(Chef::Exceptions::MetadataNotValid)
       end
     end
   end

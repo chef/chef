@@ -1,5 +1,5 @@
 # Author:: Dheeraj Dubey(dheeraj.dubey@msystechnologies.com)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ class Chef
     class PowershellPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
 
-      resource_name :powershell_package
       provides :powershell_package
 
       description "Use the powershell_package resource to install and manage packages via the PowerShell Package Manager for the Microsoft Windows platform. The powershell_package resource requires administrative access, and a source must be configured in the PowerShell Package Manager via the powershell_package_source resource."

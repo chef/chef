@@ -1,5 +1,5 @@
 #
-# Copyright:: 2015-2018 Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "shellwords" unless defined?(Shellwords)
 class Chef
   class Resource
     class RhsmRegister < Chef::Resource
-      resource_name :rhsm_register
+      unified_mode true
       provides(:rhsm_register) { true }
 
       description "Use the rhsm_register resource to register a node with the Red Hat Subscription Manager"\
@@ -66,17 +66,17 @@ class Chef
         package "subscription-manager"
 
         unless new_resource.satellite_host.nil? || registered_with_rhsm?
-          remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
-            source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
-            action :create
-            notifies :install, "yum_package[katello-ca-consumer-latest]", :immediately
-            not_if { katello_cert_rpm_installed? }
-          end
-
-          yum_package "katello-ca-consumer-latest" do
+          declare_resource(package_resource, "katello-ca-consumer-latest") do
             options "--nogpgcheck"
             source "#{Chef::Config[:file_cache_path]}/katello-package.rpm"
             action :nothing
+          end
+
+          remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
+            source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
+            action :create
+            notifies :install, "#{package_resource}[katello-ca-consumer-latest]", :immediately
+            not_if { katello_cert_rpm_installed? }
           end
 
           file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
@@ -92,9 +92,8 @@ class Chef
           not_if { registered_with_rhsm? } unless new_resource.force
         end
 
-        yum_package "katello-agent" do
-          action :install
-          only_if { new_resource.install_katello_agent && !new_resource.satellite_host.nil? }
+        if new_resource.install_katello_agent && !new_resource.satellite_host.nil?
+          package "katello-agent"
         end
       end
 
@@ -117,6 +116,10 @@ class Chef
       end
 
       action_class do
+        def package_resource
+          node["platform_version"].to_i >= 8 ? :dnf_package : :yum_package
+        end
+
         def registered_with_rhsm?
           cmd = Mixlib::ShellOut.new("subscription-manager status", env: { LANG: "en_US" })
           cmd.run_command

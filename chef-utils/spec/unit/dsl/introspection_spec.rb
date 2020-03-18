@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018-2019, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -163,6 +163,25 @@ RSpec.describe ChefUtils::DSL::Introspection do
         expect(File).to receive(:exist?).with("#{base}/systemd/system/example.mount").and_return(true)
         expect(ChefUtils.has_systemd_unit?("example.mount")).to be true
       end
+    end
+  end
+
+  context "#include_recipe?" do
+    it "is true when the recipe has been seen by the node" do
+      expect(node).to receive(:recipe?).with("myrecipe").and_return(true)
+      expect(ChefUtils.include_recipe?("myrecipe", node)).to be true
+    end
+    it "is false when the recipe has not been seen by the node" do
+      expect(node).to receive(:recipe?).with("myrecipe").and_return(false)
+      expect(ChefUtils.include_recipe?("myrecipe", node)).to be false
+    end
+    it "the alias is true when the recipe has been seen by the node" do
+      expect(node).to receive(:recipe?).with("myrecipe").and_return(true)
+      expect(ChefUtils.includes_recipe?("myrecipe", node)).to be true
+    end
+    it "the alias is false when the recipe has not been seen by the node" do
+      expect(node).to receive(:recipe?).with("myrecipe").and_return(false)
+      expect(ChefUtils.includes_recipe?("myrecipe", node)).to be false
     end
   end
 end

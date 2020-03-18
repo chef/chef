@@ -22,7 +22,9 @@ require_relative "../resource"
 class Chef
   class Resource
     class Mdadm < Chef::Resource
-      resource_name :mdadm
+      unified_mode true
+
+      provides :mdadm
 
       description "Use the mdadm resource to manage RAID devices in a Linux environment using the mdadm utility. The mdadm resource"\
                   " will create and assemble an array, but it will not create the config file that is used to persist the array upon"\
@@ -62,6 +64,64 @@ class Chef
 
       property :layout, String,
         description: "The RAID5 parity algorithm. Possible values: left-asymmetric (or la), left-symmetric (or ls), right-asymmetric (or ra), or right-symmetric (or rs)."
+
+      action_class do
+        def load_current_resource
+          @current_resource = Chef::Resource::Mdadm.new(new_resource.name)
+          current_resource.raid_device(new_resource.raid_device)
+          logger.trace("#{new_resource} checking for software raid device #{current_resource.raid_device}")
+
+          device_not_found = 4
+          mdadm = shell_out!("mdadm", "--detail", "--test", new_resource.raid_device, returns: [0, device_not_found])
+          exists = (mdadm.status == 0)
+          current_resource.exists(exists)
+        end
+      end
+
+      action :create do
+        unless current_resource.exists
+          converge_by("create RAID device #{new_resource.raid_device}") do
+            command = "yes | mdadm --create #{new_resource.raid_device} --level #{new_resource.level}"
+            command << " --chunk=#{new_resource.chunk}" unless new_resource.level == 1
+            command << " --metadata=#{new_resource.metadata}"
+            command << " --bitmap=#{new_resource.bitmap}" if new_resource.bitmap
+            command << " --layout=#{new_resource.layout}" if new_resource.layout
+            command << " --raid-devices #{new_resource.devices.length} #{new_resource.devices.join(" ")}"
+            logger.trace("#{new_resource} mdadm command: #{command}")
+            shell_out!(command)
+            logger.info("#{new_resource} created raid device (#{new_resource.raid_device})")
+          end
+        else
+          logger.trace("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
+        end
+      end
+
+      action :assemble do
+        unless current_resource.exists
+          converge_by("assemble RAID device #{new_resource.raid_device}") do
+            command = "yes | mdadm --assemble #{new_resource.raid_device} #{new_resource.devices.join(" ")}"
+            logger.trace("#{new_resource} mdadm command: #{command}")
+            shell_out!(command)
+            logger.info("#{new_resource} assembled raid device (#{new_resource.raid_device})")
+          end
+        else
+          logger.trace("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
+        end
+      end
+
+      action :stop do
+        if current_resource.exists
+          converge_by("stop RAID device #{new_resource.raid_device}") do
+            command = "yes | mdadm --stop #{new_resource.raid_device}"
+            logger.trace("#{new_resource} mdadm command: #{command}")
+            shell_out!(command)
+            logger.info("#{new_resource} stopped raid device (#{new_resource.raid_device})")
+          end
+        else
+          logger.trace("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
+        end
+      end
+
     end
   end
 end

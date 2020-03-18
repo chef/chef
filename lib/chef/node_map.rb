@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2019, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,14 +55,13 @@ class Chef
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, canonical: nil, override: nil, chef_version: nil, target_mode: nil, &block)
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, override: nil, chef_version: nil, target_mode: nil, &block)
       new_matcher = { klass: klass }
       new_matcher[:platform] = platform if platform
       new_matcher[:platform_version] = platform_version if platform_version
       new_matcher[:platform_family] = platform_family if platform_family
       new_matcher[:os] = os if os
       new_matcher[:block] = block if block
-      new_matcher[:canonical] = canonical if canonical
       new_matcher[:override] = override if override
       new_matcher[:target_mode] = target_mode
 
@@ -113,16 +112,14 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @return [Object] Class
     #
-    def get(node, key, canonical: nil)
+    def get(node, key)
       return nil unless map.key?(key)
 
       map[key].map do |matcher|
-        return matcher[:klass] if node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
+        return matcher[:klass] if node_matches?(node, matcher)
       end
       nil
     end
@@ -134,16 +131,14 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @return [Object] Class
     #
-    def list(node, key, canonical: nil)
+    def list(node, key)
       return [] unless map.key?(key)
 
       map[key].select do |matcher|
-        node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
+        node_matches?(node, matcher)
       end.map { |matcher| matcher[:klass] }
     end
 
@@ -172,21 +167,6 @@ class Chef
         map.delete(key) if matchers.empty?
       end
       deleted
-    end
-
-    # Seriously, don't use this, it's nearly certain to change on you
-    # @return remaining
-    # @api private
-    def delete_canonical(key, klass)
-      remaining = map[key]
-      if remaining
-        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:klass]) == Array(klass) }
-        if remaining.empty?
-          map.delete(key)
-          remaining = nil
-        end
-      end
-      remaining
     end
 
     # Check if this map has been locked.
@@ -297,12 +277,6 @@ class Chef
       return true unless node
 
       filters_match?(node, matcher) && block_matches?(node, matcher[:block])
-    end
-
-    def canonical_matches?(canonical, matcher)
-      return true if canonical.nil?
-
-      !!canonical == !!matcher[:canonical]
     end
 
     #

@@ -16,12 +16,15 @@
 #
 
 require_relative "../knife"
-require_relative "../workstation_config_loader"
 
 class Chef
   class Knife
     class ConfigListProfiles < Knife
       banner "knife config list-profiles (options)"
+
+      deps do
+        require_relative "../workstation_config_loader"
+      end
 
       option :ignore_knife_rb,
         short: "-i",

@@ -154,7 +154,7 @@ class Chef
             return true
           end
         rescue ::Win32::Registry::Error => e
-          return false
+          false
         end
       end
 

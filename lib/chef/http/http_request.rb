@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, 2010-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2016, 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,6 +21,7 @@
 # limitations under the License.
 #
 require "uri" unless defined?(URI)
+require "cgi" unless defined?(CGI)
 require "net/http" unless defined?(Net::HTTP)
 require_relative "../dist"
 
@@ -176,8 +177,8 @@ class Chef
         @http_request.body = request_body if request_body && @http_request.request_body_permitted?
         # Optionally handle HTTP Basic Authentication
         if url.user
-          user = URI.unescape(url.user)
-          password = URI.unescape(url.password) if url.password
+          user = CGI.unescape(url.user)
+          password = CGI.unescape(url.password) if url.password
           @http_request.basic_auth(user, password)
         end
 

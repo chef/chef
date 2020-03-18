@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,6 +29,8 @@ class Chef
     class File < Chef::Resource
       include Chef::Mixin::Securable
       unified_mode true
+
+      provides :file
 
       description "Use the file resource to manage files directly on a node."
 

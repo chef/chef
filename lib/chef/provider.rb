@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2016, 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ require_relative "mixin/enforce_ownership_and_permissions"
 require_relative "mixin/why_run"
 require_relative "mixin/shell_out"
 require_relative "mixin/provides"
-require_relative "dsl/core"
+require_relative "dsl/recipe"
 require_relative "platform/service_helpers"
 require_relative "node_map"
 require "forwardable" unless defined?(Forwardable)
@@ -44,8 +44,7 @@ class Chef
     extend Chef::Mixin::Provides
     extend Forwardable
 
-    # includes the "core" DSL and not the "recipe" DSL by design
-    include Chef::DSL::Core
+    include Chef::DSL::Recipe
     # the class only gets the Universal DSL (no resource_collection at class parsing time)
     extend Chef::DSL::Universal
 
@@ -64,7 +63,7 @@ class Chef
     #
     # @return [void]
     def self.action(name, &block)
-      # We need the block directly in a method so that `super` works.
+      # We need the block directly in a method so that `return` works.
       define_method("compile_action_#{name}", &block)
       class_eval <<-EOM
         def action_#{name}
@@ -334,7 +333,7 @@ class Chef
     end
 
     def self.provides(short_name, opts = {}, &block)
-      Chef.provider_handler_map.set(short_name, self, opts, &block)
+      Chef.provider_handler_map.set(short_name, self, **opts, &block)
     end
 
     def self.provides?(node, resource)

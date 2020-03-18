@@ -23,7 +23,7 @@ require_relative "../provider/cron" # do not remove. we actually need this below
 class Chef
   class Resource
     class Cron < Chef::Resource
-      resource_name :cron
+      unified_mode true
       provides :cron
 
       description "Use the cron resource to manage cron entries for time-based job scheduling. Properties for a schedule will default to * if not provided. The cron resource requires access to a crontab program, typically cron."
@@ -135,7 +135,7 @@ class Chef
       end
 
       property :time, Symbol,
-        description: "A time interval. Possible values: :annually, :daily, :hourly, :midnight, :monthly, :reboot, :weekly, or :yearly.",
+        description: "A time interval.",
         equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
 
       property :mailto, String,
@@ -161,6 +161,35 @@ class Chef
       property :environment, Hash,
         description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
         default: lazy { {} }
+
+      TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
+      TIMEOUT_REGEX = /\A\S+/.freeze
+
+      property :time_out, Hash,
+        description: "A Hash of timeouts in the form of ({'OPTION' => 'VALUE'}).
+        Accepted valid options are:
+        preserve-status (BOOL, default: 'false'),
+        foreground (BOOL, default: 'false'),
+        kill-after (in seconds),
+        signal (a name like 'HUP' or a number)",
+        default: lazy { {} },
+        introduced: "15.7",
+        coerce: proc { |h|
+          if h.is_a?(Hash)
+            invalid_keys = h.keys - TIMEOUT_OPTS
+            unless invalid_keys.empty?
+              error_msg = "Key of option time_out must be equal to one of: \"#{TIMEOUT_OPTS.join('", "')}\"!  You passed \"#{invalid_keys.join(", ")}\"."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            unless h.values.all? { |x| x =~ TIMEOUT_REGEX }
+              error_msg = "Values of option time_out should be non-empty string without any leading whitespaces."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            h
+          elsif h.is_a?(Integer) || h.is_a?(String)
+            { "duration" => h }
+          end
+        }
 
       private
 

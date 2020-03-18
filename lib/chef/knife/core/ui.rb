@@ -61,6 +61,14 @@ class Chef
         end
       end
 
+      # pastel.decorate is a lightweight replacement for highline.color
+      def pastel
+        @pastel ||= begin
+          require "pastel"
+          Pastel.new
+        end
+      end
+
       # Prints a message to stdout. Aliased as +info+ for compatibility with
       # the logger API.
       #
@@ -134,7 +142,7 @@ class Chef
 
       def color(string, *colors)
         if color?
-          highline.color(string, *colors)
+          pastel.decorate(string, *colors)
         else
           string
         end
@@ -208,7 +216,7 @@ class Chef
             tf.sync = true
             tf.puts output
             tf.close
-            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup.html for details." unless system("#{config[:editor]} #{tf.path}")
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup/ for details." unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)
           end

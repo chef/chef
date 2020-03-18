@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/raw"
@@ -142,7 +143,21 @@ describe "knife raw", :workstation do
           /roles/x.json:
           {
             "name": "x",
-            "description": "eek"
+            "description": "eek",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+
+            },
+            "override_attributes": {
+
+            },
+            "run_list": [
+
+            ],
+            "env_run_lists": {
+
+            }
           }
         EOM
       end
@@ -178,7 +193,21 @@ describe "knife raw", :workstation do
           /roles/y.json:
           {
             "name": "y",
-            "description": "eek"
+            "description": "eek",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+
+            },
+            "override_attributes": {
+
+            },
+            "run_list": [
+
+            ],
+            "env_run_lists": {
+
+            }
           }
         EOM
       end

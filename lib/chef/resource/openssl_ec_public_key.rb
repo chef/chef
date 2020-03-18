@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # Author:: Julien Huon
 # License:: Apache License, Version 2.0
 #
@@ -24,10 +24,30 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_ec_public_key
+      provides :openssl_ec_public_key
 
       description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files from a given EC private key."
       introduced "14.4"
+      examples <<~DOC
+        Generate new ec public key from a private key on disk
+
+        ```ruby
+        openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3.pub' do
+          private_key_path '/etc/ssl_files/eckey_prime256v1_des3.pem'
+          private_key_pass 'something'
+          action :create
+        end
+        ```
+
+        Generate new ec public key by passing in a private key
+
+        ```ruby
+        openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3_2.pub' do
+          private_key_content "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEII2VAU9re44mAUzYPWCg+qqwdmP8CplsEg0b/DYPXLg2oAoGCCqGSM49\nAwEHoUQDQgAEKkpMCbIQ2C6Qlp/B+Odp1a9Y06Sm8yqPvCVIkWYP7M8PX5+RmoIv\njGBVf/+mVBx77ji3NpTilMUt2KPZ87lZ3w==\n-----END EC PRIVATE KEY-----\n"
+          action :create
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",

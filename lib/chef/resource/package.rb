@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class Package < Chef::Resource
-      resource_name :package
+      provides :package
 
       description "Use the package resource to manage packages. When the package is"\
                   " installed from a local file (such as with RubyGems, dpkg, or RPM"\

@@ -1,8 +1,9 @@
 # Building and Installing
 
 Chef Infra can be built and installed in two distinct ways:
-	- A gem built from this repository and installed into your own Ruby installation
-	- A system native package containing its own Ruby built using our Omnibus packaging system
+
+- A gem built from this repository and installed into your own Ruby installation
+- A system native package containing its own Ruby built using our Omnibus packaging system
 
 **NOTE:** As an end user, please download the [Chef Infra package](https://downloads.chef.io/chef) for managing systems, or the [Chef Workstation package](https://downloads.chef.io/chef-workstation) for authoring Chef cookbooks and administering your Chef infrastructure.
 
@@ -14,7 +15,7 @@ We do not recommend for end users to install Chef from gems or build from source
 
 - git
 - C compiler, header files, etc.
-- Ruby 2.5 or later
+- Ruby 2.6 or later
 - Bundler gem
 
 **NOTE:** Chef supports a large number of platforms, and there are many different ways to manage Ruby installs on each of those platforms. We assume you will install Ruby in a way appropriate for your development platform, but do not provide instructions for setting up Ruby.

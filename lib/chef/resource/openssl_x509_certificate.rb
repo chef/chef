@@ -1,7 +1,7 @@
 #
 # License:: Apache License, Version 2.0
 # Author:: Julien Huon
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,11 +24,47 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_x509_certificate
+      provides :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 
       description "Use the openssl_x509_certificate resource to generate signed or self-signed, PEM-formatted x509 certificates. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate. If a CA private key and certificate are provided, the certificate will be signed with them. Note: This resource was renamed from openssl_x509 to openssl_x509_certificate. The legacy name will continue to function, but cookbook code should be updated for the new resource name."
       introduced "14.4"
+      examples <<~DOC
+        Create a simple self-signed certificate file
+
+        ```ruby
+        openssl_x509_certificate '/etc/httpd/ssl/mycert.pem' do
+          common_name 'www.f00bar.com'
+          org 'Foo Bar'
+          org_unit 'Lab'
+          country 'US'
+        end
+        ```
+
+        Create a certificate using additional options
+
+        ```ruby
+        openssl_x509_certificate '/etc/ssl_files/my_signed_cert.crt' do
+          common_name 'www.f00bar.com'
+          ca_key_file '/etc/ssl_files/my_ca.key'
+          ca_cert_file '/etc/ssl_files/my_ca.crt'
+          expire 365
+          extensions(
+            'keyUsage' => {
+              'values' => %w(
+                keyEncipherment
+                digitalSignature),
+              'critical' => true,
+            },
+            'extendedKeyUsage' => {
+              'values' => %w(serverAuth),
+              'critical' => false,
+            }
+          )
+          subject_alt_name ['IP:127.0.0.1', 'DNS:localhost.localdomain']
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",
@@ -109,30 +145,41 @@ class Chef
       property :ca_key_pass, String,
         description: "The passphrase for CA private key's passphrase."
 
+      property :renew_before_expiry, Integer,
+        description: "The number of days before the expiry. The certificate will be automaticaly renewed when the value is reached.",
+        introduced: "15.7"
+
       action :create do
         description "Generate a certificate"
 
-        unless ::File.exist? new_resource.path
-          converge_by("Create #{@new_resource}") do
-            file new_resource.path do
-              action :create_if_missing
-              owner new_resource.owner unless new_resource.owner.nil?
-              group new_resource.group unless new_resource.group.nil?
-              mode new_resource.mode unless new_resource.mode.nil?
-              sensitive true
-              content cert.to_pem
-            end
+        file new_resource.path do
+          action :create_if_missing
+          owner new_resource.owner unless new_resource.owner.nil?
+          group new_resource.group unless new_resource.group.nil?
+          mode new_resource.mode unless new_resource.mode.nil?
+          sensitive true
+          content cert.to_pem
+        end
 
-            if new_resource.csr_file.nil?
-              file new_resource.key_file do
-                action :create_if_missing
-                owner new_resource.owner unless new_resource.owner.nil?
-                group new_resource.group unless new_resource.group.nil?
-                mode new_resource.mode unless new_resource.mode.nil?
-                sensitive true
-                content key.to_pem
-              end
-            end
+        if !new_resource.renew_before_expiry.nil? && cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry)
+          file new_resource.path do
+            action :create
+            owner new_resource.owner unless new_resource.owner.nil?
+            group new_resource.group unless new_resource.group.nil?
+            mode new_resource.mode unless new_resource.mode.nil?
+            sensitive true
+            content cert.to_pem
+          end
+        end
+
+        if new_resource.csr_file.nil?
+          file new_resource.key_file do
+            action :create_if_missing
+            owner new_resource.owner unless new_resource.owner.nil?
+            group new_resource.group unless new_resource.group.nil?
+            mode new_resource.mode unless new_resource.mode.nil?
+            sensitive true
+            content key.to_pem
           end
         end
       end

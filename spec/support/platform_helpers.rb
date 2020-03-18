@@ -88,11 +88,6 @@ def windows_powershell_dsc?
   supports_dsc
 end
 
-def windows_nano_server?
-  require "chef/platform/query_helpers"
-  Chef::Platform.windows_nano_server?
-end
-
 def windows_user_right?(right)
   return false unless windows?
 
@@ -222,16 +217,16 @@ def selinux_enabled?
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1
-      return false
+      false
     when 0
-      return true
+      true
     else
       raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
     end
   else
     # We assume selinux is not enabled if selinux utils are not
     # installed.
-    return false
+    false
   end
 end
 

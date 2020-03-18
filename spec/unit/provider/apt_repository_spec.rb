@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: 2016-2018, Chef Software Inc.
+# Copyright:: 2016-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,15 +44,13 @@ GPG_FINGER = <<~EOF.freeze
   sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
 EOF
 
-describe Chef::Provider::AptRepository do
-  let(:new_resource) { Chef::Resource::AptRepository.new("multiverse") }
-
-  let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::AptRepository.new(new_resource, run_context)
-  end
+describe "Chef::Provider::AptRepository" do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:collection) { double("resource collection") }
+  let(:new_resource) { Chef::Resource::AptRepository.new("multiverse", run_context) }
+  let(:provider) { new_resource.provider_for_action(:add) }
 
   let(:apt_key_finger_cmd) do
     %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}
@@ -226,27 +224,32 @@ C5986B4F1257FFA86632CBA746181433FBB75451
 
   describe "#build_repo" do
     it "creates a repository string" do
-      target = %Q{deb      "http://test/uri" unstable main\n}
+      target = "deb      http://test/uri unstable main\n"
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil)).to eql(target)
     end
 
+    it "creates a repository string with spaces" do
+      target = "deb      http://test/uri%20with%20spaces unstable main\n"
+      expect(provider.build_repo("http://test/uri with spaces", "unstable", "main", false, nil)).to eql(target)
+    end
+
     it "creates a repository string with no distribution" do
-      target = %Q{deb      "http://test/uri" main\n}
+      target = "deb      http://test/uri main\n"
       expect(provider.build_repo("http://test/uri", nil, "main", false, nil)).to eql(target)
     end
 
     it "creates a repository string with source" do
-      target = %Q{deb      "http://test/uri" unstable main\ndeb-src  "http://test/uri" unstable main\n}
+      target = "deb      http://test/uri unstable main\ndeb-src  http://test/uri unstable main\n"
       expect(provider.build_repo("http://test/uri", "unstable", "main", false, nil, true)).to eql(target)
     end
 
     it "creates a repository string with options" do
-      target = %Q{deb      [trusted=yes] "http://test/uri" unstable main\n}
+      target = "deb      [trusted=yes] http://test/uri unstable main\n"
       expect(provider.build_repo("http://test/uri", "unstable", "main", true, nil)).to eql(target)
     end
 
     it "handles a ppa repo" do
-      target = %Q{deb      "http://ppa.launchpad.net/chef/main/ubuntu" unstable main\n}
+      target = "deb      http://ppa.launchpad.net/chef/main/ubuntu unstable main\n"
       expect(provider).to receive(:make_ppa_url).with("ppa:chef/main").and_return("http://ppa.launchpad.net/chef/main/ubuntu")
       expect(provider.build_repo("ppa:chef/main", "unstable", "main", false, nil)).to eql(target)
     end

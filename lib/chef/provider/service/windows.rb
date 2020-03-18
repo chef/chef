@@ -217,7 +217,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     converge_delayed_start
   end
 
-  def action_enable
+  action :enable do
     if current_startup_type != :automatic
       converge_by("enable service #{@new_resource}") do
         enable_service
@@ -230,7 +230,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     @new_resource.enabled(true)
   end
 
-  def action_disable
+  action :disable do
     if current_startup_type != :disabled
       converge_by("disable service #{@new_resource}") do
         disable_service
@@ -243,7 +243,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     @new_resource.enabled(false)
   end
 
-  def action_configure_startup
+  action :configure_startup do
     startup_type = @new_resource.startup_type
     if current_startup_type != startup_type
       converge_by("set service #{@new_resource} startup type to #{startup_type}") do

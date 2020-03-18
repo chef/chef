@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2019, Chef Software, Inc.
+# Copyright:: Copyright 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 
+require_relative "resource/alternatives"
 require_relative "resource/apt_package"
 require_relative "resource/apt_preference"
 require_relative "resource/apt_repository"
@@ -29,6 +30,7 @@ require_relative "resource/cookbook_file"
 require_relative "resource/chef_gem"
 require_relative "resource/chef_handler"
 require_relative "resource/chef_sleep"
+require_relative "resource/chef_vault_secret"
 require_relative "resource/chocolatey_config"
 require_relative "resource/chocolatey_feature"
 require_relative "resource/chocolatey_package"
@@ -66,6 +68,7 @@ require_relative "resource/macports_package"
 require_relative "resource/macos_userdefaults"
 require_relative "resource/mdadm"
 require_relative "resource/mount"
+require_relative "resource/notify_group"
 require_relative "resource/ohai"
 require_relative "resource/ohai_hint"
 require_relative "resource/openbsd_package"
@@ -121,6 +124,7 @@ require_relative "resource/user/mac_user"
 require_relative "resource/user/pw_user"
 require_relative "resource/user/solaris_user"
 require_relative "resource/user/windows_user"
+require_relative "resource/user_ulimit"
 require_relative "resource/whyrun_safe_ruby_block"
 require_relative "resource/windows_env"
 require_relative "resource/windows_package"
@@ -156,3 +160,5 @@ require_relative "resource/windows_task"
 require_relative "resource/windows_uac"
 require_relative "resource/windows_workgroup"
 require_relative "resource/timezone"
+require_relative "resource/windows_user_privilege"
+require_relative "resource/windows_security_policy"

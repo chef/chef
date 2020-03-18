@@ -17,7 +17,6 @@
 #
 
 require_relative "../knife"
-require_relative "key_show"
 
 class Chef
   class Knife
@@ -29,6 +28,10 @@ class Chef
     # @attr_reader [String] actor the name of the client that this key is for
     class ClientKeyShow < Knife
       banner "knife client key show CLIENT KEYNAME (options)"
+
+      deps do
+        require_relative "key_show"
+      end
 
       attr_reader :actor
 

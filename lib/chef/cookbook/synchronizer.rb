@@ -47,6 +47,7 @@ class Chef
     end
 
     def reset!
+      @skip_removal = nil
       @valid_cache_entries = {}
     end
 

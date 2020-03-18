@@ -78,7 +78,7 @@ class Chef
 
       alias_method :compare_value, :requires_modify_or_create?
 
-      def action_create
+      action :create do
         if @key_exists
           if requires_modify_or_create?
             modify_env
@@ -104,7 +104,7 @@ class Chef
         needs_delete = new_values.any? { |v| current_values.include?(v) }
         if !needs_delete
           logger.trace("#{new_resource} element '#{new_resource.value}' does not exist")
-          return true # do not delete the key
+          true # do not delete the key
         else
           new_value =
             current_values.select do |item|
@@ -112,18 +112,18 @@ class Chef
             end.join(new_resource.delim)
 
           if new_value.empty?
-            return false # nothing left here, delete the key
+            false # nothing left here, delete the key
           else
             old_value = new_resource.value(new_value)
             create_env
             logger.trace("#{new_resource} deleted #{old_value} element")
             new_resource.updated_by_last_action(true)
-            return true # we removed the element and updated; do not delete the key
+            true # we removed the element and updated; do not delete the key
           end
         end
       end
 
-      def action_delete
+      action :delete do
         if ( ENV[new_resource.key_name] || @key_exists ) && !delete_element
           delete_env
           logger.info("#{new_resource} deleted")
@@ -131,7 +131,7 @@ class Chef
         end
       end
 
-      def action_modify
+      action :modify do
         if @key_exists
           if requires_modify_or_create?
             modify_env

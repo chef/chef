@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require_relative "package"
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
-      resource_name :macports_package
+      provides :macports_package
 
       description "Use the macports_package resource to manage packages for the macOS platform."
     end

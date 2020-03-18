@@ -21,7 +21,8 @@ require_relative "service"
 class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
-      resource_name :macosx_service
+      unified_mode true
+
       provides :macosx_service
       provides :service, os: "darwin"
 

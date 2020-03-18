@@ -5,16 +5,11 @@ Get-CimInstance Win32_OperatingSystem | Select-Object $Properties | Format-Table
 # chocolatey functional tests fail so delete the chocolatey binary to avoid triggering them
 Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyContinue
 
-#
-# Software Languages
-#
-
-# Install Ruby + Devkit
+echo "--- install ruby + devkit"
 $ErrorActionPreference = 'Stop'
 
 echo "Downloading Ruby + DevKit"
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-(New-Object System.Net.WebClient).DownloadFile('https://github.com/oneclick/rubyinstaller2/releases/download/RubyInstaller-2.6.5-1/rubyinstaller-devkit-2.6.5-1-x64.exe', 'c:\\rubyinstaller-devkit-2.6.5-1-x64.exe')
+aws s3 cp s3://public-cd-buildkite-cache/rubyinstaller-devkit-2.6.5-1-x64.exe c:/rubyinstaller-devkit-2.6.5-1-x64.exe
 
 echo "Installing Ruby + DevKit"
 Start-Process c:\rubyinstaller-devkit-2.6.5-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
@@ -26,8 +21,26 @@ echo "Closing out the layer (this can take awhile)"
 # Set-Item -Path Env:Path -Value to include ruby26
 $Env:Path+=";C:\ruby26\bin"
 
+echo "--- configure winrm"
+
 winrm quickconfig -q
+
+echo "--- update bundler and rubygems"
+
 ruby -v
+
+$env:RUBYGEMS_VERSION=$(findstr rubygems omnibus_overrides.rb | %{ $_.split(" ")[3] })
+$env:BUNDLER_VERSION=$(findstr bundler omnibus_overrides.rb | %{ $_.split(" ")[3] })
+
+$env:RUBYGEMS_VERSION=($env:RUBYGEMS_VERSION -replace '"', "")
+$env:BUNDLER_VERSION=($env:BUNDLER_VERSION -replace '"', "")
+
+echo $env:RUBYGEMS_VERSION
+echo $env:BUNDLER_VERSION
+
+gem update --system $env:RUBYGEMS_VERSION
+gem --version
+gem install bundler -v $env:BUNDLER_VERSION --force --no-document --quiet
 bundle --version
 
 echo "--- bundle install"

@@ -17,6 +17,7 @@
 #
 
 require "uri" unless defined?(URI)
+require "cgi" unless defined?(CGI)
 require "tempfile" unless defined?(Tempfile)
 require_relative "../remote_file"
 
@@ -40,7 +41,7 @@ class Chef
 
         def source_path
           @source_path ||= begin
-            path = URI.unescape(uri.path)
+            path = CGI.unescape(uri.path)
             ChefUtils.windows? ? fix_windows_path(path) : path
           end
         end

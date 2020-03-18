@@ -413,6 +413,11 @@ class Chef
             :Buffer, :PWSTR
         end
 
+        # https://docs.microsoft.com/en-us/windows/win32/api/ntsecapi/ns-ntsecapi-lsa_enumeration_information
+        class LSA_ENUMERATION_INFORMATION < FFI::Struct
+          layout :Sid, :PSID
+        end
+
         ffi_lib "advapi32"
 
         safe_attach_function :AccessCheck, %i{pointer HANDLE DWORD pointer pointer pointer pointer pointer}, :BOOL
@@ -448,6 +453,7 @@ class Chef
         safe_attach_function :LookupPrivilegeDisplayNameW, %i{LPCWSTR LPCWSTR LPWSTR LPDWORD LPDWORD}, :BOOL
         safe_attach_function :LookupPrivilegeValueW, %i{LPCWSTR LPCWSTR PLUID}, :BOOL
         safe_attach_function :LsaAddAccountRights, %i{pointer pointer pointer ULONG}, :NTSTATUS
+        safe_attach_function :LsaEnumerateAccountsWithUserRight, %i{LSA_HANDLE PLSA_UNICODE_STRING PVOID PULONG}, :NTSTATUS
         safe_attach_function :LsaRemoveAccountRights, %i{pointer pointer BOOL pointer ULONG}, :NTSTATUS
         safe_attach_function :LsaClose, [ :LSA_HANDLE ], :NTSTATUS
         safe_attach_function :LsaEnumerateAccountRights, %i{LSA_HANDLE PSID PLSA_UNICODE_STRING PULONG}, :NTSTATUS

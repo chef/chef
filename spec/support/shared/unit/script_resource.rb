@@ -17,8 +17,6 @@
 # limitations under the License.
 #
 
-require "spec_helper"
-
 shared_examples_for "a script resource" do
 
   it "should create a new Chef::Resource::Script" do
@@ -30,7 +28,7 @@ shared_examples_for "a script resource" do
     expect(script_resource.resource_name).to eql(resource_name)
   end
 
-  it "should set command to nil on the resource", chef: ">= 13" do
+  it "should set command to nil on the resource" do
     expect(script_resource.command).to be nil
   end
 
@@ -44,7 +42,7 @@ shared_examples_for "a script resource" do
     expect(script_resource.flags.strip).to eql("-f")
   end
 
-  it "should raise an exception if users set command on the resource", chef: ">= 13" do
+  it "should raise an exception if users set command on the resource" do
     expect { script_resource.command("foo") }.to raise_error(Chef::Exceptions::Script)
   end
 

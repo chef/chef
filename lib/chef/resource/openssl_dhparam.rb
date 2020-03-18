@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,11 +23,20 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_dhparam
       provides(:openssl_dhparam) { true }
 
       description "Use the openssl_dhparam resource to generate dhparam.pem files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."
       introduced "14.0"
+      examples <<~DOC
+        Create a 1024bit dhparam file
+
+        ```ruby
+        openssl_dhparam '/etc/ssl_files/dhparam.pem' do
+          key_length 1024
+          action :create
+        end
+        ```
+      DOC
 
       property :path, String,
         description: "An optional property for specifying the path to write the file to if it differs from the resource block's name.",

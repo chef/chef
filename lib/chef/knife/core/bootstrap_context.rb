@@ -158,15 +158,23 @@ class Chef
           end
 
           if encrypted_data_bag_secret
-            client_rb << %Q{encrypted_data_bag_secret "#{Chef::Dist::CONF_DIR}/encrypted_data_bag_secret"\n}
+            client_rb << %Q{encrypted_data_bag_secret "/etc/chef/encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs.empty?
-            client_rb << %Q{trusted_certs_dir "#{Chef::Dist::CONF_DIR}/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "/etc/chef/trusted_certs"\n}
           end
 
           if Chef::Config[:fips]
             client_rb << "fips true\n"
+          end
+
+          unless @chef_config[:file_cache_path].nil?
+            client_rb << "file_cache_path \"#{@chef_config[:file_cache_path]}\"\n"
+          end
+
+          unless @chef_config[:file_backup_path].nil?
+            client_rb << "file_backup_path \"#{@chef_config[:file_backup_path]}\"\n"
           end
 
           client_rb
@@ -175,7 +183,7 @@ class Chef
         def start_chef
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
           client_path = @chef_config[:chef_client_path] || "#{Chef::Dist::CLIENT}"
-          s = "#{client_path} -j #{Chef::Dist::CONF_DIR}/first-boot.json"
+          s = "#{client_path} -j /etc/chef/first-boot.json"
           if @config[:verbosity] && @config[:verbosity] >= 3
             s << " -l trace"
           elsif @config[:verbosity] && @config[:verbosity] >= 2
@@ -205,14 +213,13 @@ class Chef
         end
 
         def first_boot
-          (@config[:first_boot_attributes] || {}).tap do |attributes|
+          (@config[:first_boot_attributes] = Mash.new(@config[:first_boot_attributes]) || Mash.new).tap do |attributes|
             if @config[:policy_name] && @config[:policy_group]
               attributes[:policy_name] = @config[:policy_name]
               attributes[:policy_group] = @config[:policy_group]
             else
               attributes[:run_list] = @run_list
             end
-
             attributes.delete(:run_list) if attributes[:policy_name] && !attributes[:policy_name].empty?
             attributes.merge!(tags: @config[:tags]) if @config[:tags] && !@config[:tags].empty?
           end
@@ -226,7 +233,7 @@ class Chef
           content = ""
           if @chef_config[:trusted_certs_dir]
             Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
-              content << "cat > #{Chef::Dist::CONF_DIR}/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
+              content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
                 IO.read(File.expand_path(cert)) + "\nEOP\n"
             end
           end
@@ -240,7 +247,7 @@ class Chef
             root.find do |f|
               relative = f.relative_path_from(root)
               if f != root
-                file_on_node = "#{Chef::Dist::CONF_DIR}/client.d/#{relative}"
+                file_on_node = "/etc/chef/client.d/#{relative}"
                 if f.directory?
                   content << "mkdir #{file_on_node}\n"
                 else

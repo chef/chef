@@ -1,5 +1,5 @@
 #
-# Copyright:: 2019, Chef Software Inc.
+# Copyright:: 2019-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ require_relative "../dist"
 class Chef
   class Resource
     class ChefSleep < Chef::Resource
-      resource_name :chef_sleep
       provides :chef_sleep
 
       unified_mode true

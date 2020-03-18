@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,9 +30,9 @@ class Chef
         add_exit_status_wrapper
       end
 
-      def action_run
+      action :run do
         validate_script_syntax!
-        super
+        super()
       end
 
       def command
@@ -47,14 +47,7 @@ class Chef
         # error status of a failed Windows process that ran at the
         # end of the script, it gets changed to '1'.
         #
-        # Nano only supports -Command
-        cmd = "\"#{interpreter_path}\" #{new_resource.flags}"
-        if Chef::Platform.windows_nano_server?
-          cmd << " -Command \". '#{script_file.path}'\""
-        else
-          cmd << " -File \"#{script_file.path}\""
-        end
-        cmd
+        "\"#{interpreter_path}\" #{new_resource.flags} -File \"#{script_file.path}\""
       end
 
       protected

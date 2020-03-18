@@ -382,7 +382,7 @@ describe Chef::Knife::Bootstrap do
       k
     end
 
-    let(:options) { ["--bootstrap-no-proxy", setting, "-s", "foo"] }
+    let(:options) { ["--bootstrap-no-proxy", setting] }
 
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
 

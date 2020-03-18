@@ -191,7 +191,7 @@ class Chef
       config_loader.profile = profile
       config_loader.load
 
-      ui.warn("No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.") if config_loader.no_config_found?
+      ui.warn("No knife configuration file found. See https://docs.chef.io/config_rb/ for details.") if config_loader.no_config_found?
 
       config_loader
     rescue Exceptions::ConfigurationError => e
@@ -279,12 +279,10 @@ class Chef
 
         if CHEF_ORGANIZATION_MANAGEMENT.include?(args[0])
           list_commands("CHEF ORGANIZATION MANAGEMENT")
-        elsif OPSCODE_HOSTED_CHEF_ACCESS_CONTROL.include?(args[0])
-          list_commands("OPSCODE HOSTED CHEF ACCESS CONTROL")
         elsif category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
-          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into ChefDK / Chef Workstation")
+          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into Chef Workstation")
         else
           list_commands
         end

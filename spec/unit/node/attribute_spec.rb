@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -1259,12 +1259,12 @@ describe Chef::Node::Attribute do
   describe "frozen immutable strings" do
     it "strings in hashes should be frozen" do
       @attributes.default["foo"]["bar"]["baz"] = "fizz"
-      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+      expect { @attributes["foo"]["bar"]["baz"] << "buzz" }.to raise_error(FrozenError, /can't modify frozen String/)
     end
 
     it "strings in arrays should be frozen" do
       @attributes.default["foo"]["bar"] = [ "fizz" ]
-      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(RuntimeError, "can't modify frozen String")
+      expect { @attributes["foo"]["bar"][0] << "buzz" }.to raise_error(FrozenError, /can't modify frozen String/)
     end
   end
 

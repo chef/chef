@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,8 @@ require_relative "package"
 class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
-      resource_name :dpkg_package
+      unified_mode true
+
       provides :dpkg_package
 
       description "Use the dpkg_package resource to manage packages for the dpkg platform. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."

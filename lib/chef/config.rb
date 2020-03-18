@@ -56,7 +56,7 @@ class Chef
 
     default :event_loggers do
       evt_loggers = []
-      if ChefUtils.windows? && !Chef::Platform.windows_nano_server?
+      if ChefUtils.windows?
         evt_loggers << :win_evt
       end
       evt_loggers

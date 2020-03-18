@@ -177,7 +177,7 @@ do_download() {
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P chef -c <%= @config[:channel] %> -v <%= version_to_install %>
+    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 
@@ -185,55 +185,55 @@ if test "x$tmp_dir" != "x"; then
   rm -r "$tmp_dir"
 fi
 
-mkdir -p <%= Chef::Dist::CONF_DIR %>
+mkdir -p <%= ChefConfig::Config.etc_chef_dir(false) %>
 
 <% if client_pem -%>
-(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/client.pem <<'EOP'
+(umask 077 && (cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/client.pem <<'EOP'
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
 )) || exit 1
 <% end -%>
 
 <% if validation_key -%>
-(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/validation.pem <<'EOP'
+(umask 077 && (cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
 )) || exit 1
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-(umask 077 && (cat > <%= Chef::Dist::CONF_DIR %>/encrypted_data_bag_secret <<'EOP'
+(umask 077 && (cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
 )) || exit 1
 <% end -%>
 
 <% unless trusted_certs.empty? -%>
-mkdir -p <%= Chef::Dist::CONF_DIR %>/trusted_certs
+mkdir -p <%= ChefConfig::Config.etc_chef_dir(false) %>/trusted_certs
 <%= trusted_certs %>
 <% end -%>
 
 <%# Generate Ohai Hints -%>
 <% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
-mkdir -p <%= Chef::Dist::CONF_DIR %>/ohai/hints
+mkdir -p <%= ChefConfig::Config.etc_chef_dir(false) %>/ohai/hints
 
 <% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > <%= Chef::Dist::CONF_DIR %>/ohai/hints/<%= name %>.json <<'EOP'
+cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/ohai/hints/<%= name %>.json <<'EOP'
 <%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
 <% end -%>
 
-cat > <%= Chef::Dist::CONF_DIR %>/client.rb <<'EOP'
+cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/client.rb <<'EOP'
 <%= config_content %>
 EOP
 
-cat > <%= Chef::Dist::CONF_DIR %>/first-boot.json <<'EOP'
+cat > <%= ChefConfig::Config.etc_chef_dir(false) %>/first-boot.json <<'EOP'
 <%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
 <% unless client_d.empty? -%>
-mkdir -p <%= Chef::Dist::CONF_DIR %>/client.d
+mkdir -p /etc/chef/client.d
 <%= client_d %>
 <% end -%>
 

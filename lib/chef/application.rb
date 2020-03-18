@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (mmzyk@chef.io)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,6 @@
 require "pp" unless defined?(PP)
 require "socket" unless defined?(Socket)
 require_relative "config"
-require_relative "config_fetcher"
 require_relative "exceptions"
 require_relative "local_mode"
 require_relative "log"
@@ -119,6 +118,7 @@ class Chef
 
     # @api private (test injection)
     def chef_configfetcher
+      require_relative "config_fetcher"
       Chef::ConfigFetcher
     end
 
@@ -343,7 +343,7 @@ class Chef
           exit 0
         end
       end
-      logger.trace "Fork successful. Waiting for new chef pid: #{pid}"
+      logger.trace "Fork successful. Waiting for new #{Chef::Dist::CLIENT} pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
       logger.trace "Forked instance successfully reaped (pid: #{pid})"
@@ -355,9 +355,9 @@ class Chef
       return true if status.success?
 
       message = if status.signaled?
-                  "Chef run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+                  "#{Chef::Dist::PRODUCT} run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
                 else
-                  "Chef run process exited unsuccessfully (exit code #{status.exitstatus})"
+                  "#{Chef::Dist::PRODUCT} run process exited unsuccessfully (exit code #{status.exitstatus})"
                 end
       raise Exceptions::ChildConvergeError, message
     end
@@ -389,10 +389,14 @@ class Chef
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
-        Chef::FileCache.store("chef-stacktrace.out", chef_stacktrace_out)
-        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("chef-stacktrace.out", false)}")
+        Chef::FileCache.store("#{Chef::Dist::SHORT}-stacktrace.out", chef_stacktrace_out)
+        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{Chef::Dist::SHORT}-stacktrace.out", false)}")
         logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
-        logger.debug(message)
+        if Chef::Config[:always_dump_stacktrace]
+          logger.fatal(message)
+        else
+          logger.debug(message)
+        end
         true
       end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
-# Copyright:: 2011-2019, Chef Software Inc.
+# Copyright:: 2011-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class DmgPackage < Chef::Resource
-      resource_name :dmg_package
+      unified_mode true
+
       provides(:dmg_package) { true }
 
       description "Use the dmg_package resource to install a package from a .dmg file. The resource will retrieve the dmg file from a remote URL, mount it using OS X's hdidutil, copy the application (.app directory) to the specified destination (/Applications), and detach the image using hdiutil. The dmg file will be stored in the Chef::Config[:file_cache_path]."
@@ -129,8 +130,8 @@ class Chef
             end
           end
 
-          ruby_block "attach #{dmg_file}" do
-            block do
+          unless dmg_attached?
+            converge_by "attach #{dmg_file}" do
               raise "This DMG package requires EULA acceptance. Add 'accept_eula true' to dmg_package resource to accept the EULA during installation." if software_license_agreement? && !new_resource.accept_eula
 
               attach_cmd = new_resource.accept_eula ? "yes | " : ""
@@ -138,7 +139,6 @@ class Chef
 
               shell_out!(attach_cmd, env: { "PAGER" => "true" })
             end
-            not_if { dmg_attached? }
           end
 
           case new_resource.type

@@ -2,7 +2,7 @@
 # Author:: Joshua Timberman (<jtimberman@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright:: 2011-2018, Chef Software, Inc.
+# Copyright:: 2011-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ require_relative "../mixin/homebrew_user"
 class Chef
   class Resource
     class HomebrewTap < Chef::Resource
-      resource_name :homebrew_tap
+      unified_mode true
+
       provides(:homebrew_tap) { true }
 
       description "Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager."

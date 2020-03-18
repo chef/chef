@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/show"
@@ -80,7 +81,19 @@ describe "knife show", :workstation do
         knife("show /environments/x.json").should_succeed <<~EOM
           /environments/x.json:
           {
-            "name": "x"
+            "name": "x",
+            "description": "",
+            "cookbook_versions": {
+
+            },
+            "default_attributes": {
+
+            },
+            "override_attributes": {
+
+            },
+            "json_class": "Chef::Environment",
+            "chef_type": "environment"
           }
         EOM
       end
@@ -96,7 +109,22 @@ describe "knife show", :workstation do
         knife("show /roles/x.json").should_succeed <<~EOM
           /roles/x.json:
           {
-            "name": "x"
+            "name": "x",
+            "description": "",
+            "json_class": "Chef::Role",
+            "chef_type": "role",
+            "default_attributes": {
+
+            },
+            "override_attributes": {
+
+            },
+            "run_list": [
+
+            ],
+            "env_run_lists": {
+
+            }
           }
         EOM
       end
@@ -149,7 +177,9 @@ describe "knife show", :workstation do
           },
           "override_attributes": {
             "x": "y"
-          }
+          },
+          "json_class": "Chef::Environment",
+          "chef_type": "environment"
         }
       EOM
     end

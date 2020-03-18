@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2018, Chef Software Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -131,6 +131,10 @@ describe Chef::ProviderResolver do
               expect(provider).to receive(:action=).with(action)
               expect(expected_provider).to receive(:new).with(resource, run_context).and_return(provider)
               expect(resolved_provider).to eql(expected_provider)
+            end
+          elsif expected_resource
+            it "'#{name}' resolves to resource #{expected_resource}", *tags do
+              expect(resource.class).to eql(expected_resource)
             end
           else
             it "'#{name}' fails to resolve (since #{name.inspect} is unsupported on #{platform} #{platform_version})", *tags do
@@ -556,9 +560,9 @@ describe Chef::ProviderResolver do
         ips_package: [ Chef::Resource::IpsPackage, Chef::Provider::Package::Ips ],
         link: [ Chef::Resource::Link, Chef::Provider::Link ],
         linux_user: [ Chef::Resource::User::LinuxUser, Chef::Provider::User::Linux ],
-        log: [ Chef::Resource::Log, Chef::Provider::Log::ChefLog ],
+        log: [ Chef::Resource::Log ],
         macports_package: [ Chef::Resource::MacportsPackage, Chef::Provider::Package::Macports ],
-        mdadm: [ Chef::Resource::Mdadm, Chef::Provider::Mdadm ],
+        mdadm: [ Chef::Resource::Mdadm ],
         mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Mount ],
         pacman_package: [ Chef::Resource::PacmanPackage, Chef::Provider::Package::Pacman ],
         paludis_package: [ Chef::Resource::PaludisPackage, Chef::Provider::Package::Paludis ],
@@ -583,6 +587,7 @@ describe Chef::ProviderResolver do
         windows_service: [ Chef::Resource::WindowsService, Chef::Provider::Service::Windows ],
         windows_user: [ Chef::Resource::User::WindowsUser, Chef::Provider::User::Windows ],
         yum_package: [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
+        build_essential: [ Chef::Resource::BuildEssential ],
 
         "linux" => {
           "debian" => {

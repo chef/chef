@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -58,8 +58,8 @@ class Chef
 
       # Handle action :create.
       #
-      def action_create
-        super
+      action :create do
+        super()
 
         # Transfer files
         files_to_transfer.each do |cookbook_file_relative_path|
@@ -73,7 +73,7 @@ class Chef
 
       # Handle action :create_if_missing.
       #
-      def action_create_if_missing
+      action :create_if_missing do
         # if this action is called, ignore the existing overwrite flag
         @overwrite = false
         action_create

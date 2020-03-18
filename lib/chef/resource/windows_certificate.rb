@@ -2,7 +2,7 @@
 # Author:: Richard Lavey (richard.lavey@calastone.com)
 #
 # Copyright:: 2015-2017, Calastone Ltd.
-# Copyright:: 2018-2019, Chef Software Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ require_relative "../dist"
 class Chef
   class Resource
     class WindowsCertificate < Chef::Resource
-      resource_name :windows_certificate
+      provides :windows_certificate
 
       description "Use the windows_certificate resource to install a certificate into the Windows certificate store from a file. The resource grants read-only access to the private key for designated accounts. Due to current limitations in WinRM, installing certificates remotely may not work if the operation requires a user profile. Operations on the local machine store should still work."
       introduced "14.7"
@@ -85,7 +85,6 @@ class Chef
         guard_script << cert_exists_script(hash)
 
         powershell_script "setting the acls on #{new_resource.source} in #{cert_location}\\#{new_resource.store_name}" do
-          guard_interpreter :powershell_script
           convert_boolean_return true
           code code_script
           only_if guard_script
@@ -310,7 +309,6 @@ class Chef
         def import_certificates(cert_objs, is_pfx)
           [cert_objs].flatten.each do |cert_obj|
             thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
-
             # Need to check if return value is Boolean:true
             # If not then the given certificate should be added in certstore
             if verify_cert(thumbprint) == true

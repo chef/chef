@@ -122,7 +122,7 @@ class Chef
         true
       end
 
-      def action_create
+      action :create do
         case @group_exists
         when false
           converge_by("create group #{new_resource.group_name}") do
@@ -139,7 +139,7 @@ class Chef
         end
       end
 
-      def action_remove
+      action :remove do
         return unless @group_exists
 
         converge_by("remove group #{new_resource.group_name}") do
@@ -148,7 +148,7 @@ class Chef
         end
       end
 
-      def action_manage
+      action :manage do
         return unless @group_exists && compare_group
 
         converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
@@ -157,7 +157,7 @@ class Chef
         end
       end
 
-      def action_modify
+      action :modify do
         return unless compare_group
 
         converge_by(["modify group #{new_resource.group_name}"] + change_desc) do

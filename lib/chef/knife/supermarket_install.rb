@@ -17,13 +17,13 @@
 #
 
 require_relative "../knife"
-require_relative "../exceptions"
 
 class Chef
   class Knife
     class SupermarketInstall < Knife
 
       deps do
+        require_relative "../exceptions"
         require "shellwords" unless defined?(Shellwords)
         require "mixlib/archive" unless defined?(Mixlib::Archive)
         require_relative "core/cookbook_scm_repo"
@@ -137,7 +137,7 @@ class Chef
       end
 
       def download_cookbook_to(download_path)
-        downloader = Chef::Knife::CookbookSiteDownload.new
+        downloader = Chef::Knife::SupermarketDownload.new
         downloader.config[:file] = download_path
         downloader.config[:supermarket_site] = config[:supermarket_site]
         downloader.name_args = name_args

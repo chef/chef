@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2018, Chef Software Inc.
+# Copyright:: Copyright 2009-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ class Chef
   class Resource
     class Mount < Chef::Resource
       description "Use the mount resource to manage a mounted file system."
+
+      provides :mount
 
       default_action :mount
       allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable

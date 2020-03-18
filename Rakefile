@@ -17,10 +17,15 @@
 # limitations under the License.
 #
 
-require_relative "tasks/rspec"
-require_relative "tasks/dependencies"
-require_relative "tasks/announce"
-require_relative "tasks/docs"
+begin
+  require_relative "tasks/rspec"
+  require_relative "tasks/dependencies"
+  require_relative "tasks/announce"
+  require_relative "tasks/docs"
+  require_relative "lib/chef/dist"
+rescue LoadError => e
+  puts "Skipping missing rake dep: #{e}"
+end
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 
@@ -31,6 +36,14 @@ task :super_install do
     Dir.chdir(path)
     sh("rake install")
   end
+
+# Templating the powershell extensions so we can inject distro constants
+  template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
+  psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
+  FileUtils.mkdir_p psm1_path
+  template = ERB.new(IO.read(template_file))
+  chef_psm1 = template.result
+  File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
 end
 
 task install: :super_install

@@ -17,13 +17,13 @@
 #
 
 require_relative "../knife"
-require_relative "../config"
 
 class Chef
   class Knife
     class SslFetch < Chef::Knife
 
       deps do
+        require_relative "../config"
         require "pp" unless defined?(PP)
         require "socket" unless defined?(Socket)
         require "uri" unless defined?(URI)

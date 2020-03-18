@@ -24,7 +24,6 @@ class Chef
     class WindowsPrinterPort < Chef::Resource
       require "resolv"
 
-      resource_name :windows_printer_port
       provides(:windows_printer_port) { true }
 
       description "Use the windows_printer_port resource to create and delete TCP/IPv4 printer ports on Windows."

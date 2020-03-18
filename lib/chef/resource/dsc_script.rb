@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright 2014-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ class Chef
     class DscScript < Chef::Resource
       include Chef::DSL::Powershell
 
-      resource_name :dsc_script
+      unified_mode true
       provides :dsc_script
 
       description "Many DSC resources are comparable to built-in #{Chef::Dist::PRODUCT} resources. For example, both DSC and #{Chef::Dist::PRODUCT} have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a resource in #{Chef::Dist::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{Chef::Dist::PRODUCT} recipe."

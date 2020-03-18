@@ -7,7 +7,6 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
-# necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
 gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
@@ -21,7 +20,7 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", "~> 14"
+gem "cheffish", ">= 14"
 
 group(:omnibus_package) do
   gem "appbundler"
@@ -46,7 +45,8 @@ end
 
 # Everything except AIX
 group(:ruby_prof) do
-  gem "ruby-prof", "< 0.18" # 0.18 includes a x64-mingw32 gem, which doesn't load correctly. See https://github.com/ruby-prof/ruby-prof/issues/255
+  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
+  gem "ruby-prof", "< 1.3.0"
 end
 
 # Everything except AIX and Windows
@@ -58,7 +58,7 @@ group(:development, :test) do
   # we pin rake as a copy of rake is installed from the ruby source
   # if you bump the ruby version you should confirm we don't end up with
   # two rake gems installed again
-  gem "rake", "<= 12.3.2"
+  gem "rake", "<= 13.0.1"
 
   gem "rspec-core", "~> 3.5"
   gem "rspec-mocks", "~> 3.5"

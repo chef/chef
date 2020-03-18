@@ -1,6 +1,6 @@
 #
 # Author:: Jason Williams (<williamsjj@digitar.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +22,10 @@ require_relative "../provider/package/ips"
 class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
-      resource_name :ips_package
-      provides :package, os: "solaris2"
+      unified_mode true
+
       provides :ips_package
+      provides :package, os: "solaris2"
 
       description "Use the ips_package resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform."
 

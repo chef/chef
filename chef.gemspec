@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.email = "adam@chef.io"
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.5.0"
+  s.required_ruby_version = ">= 2.6.0"
 
   s.add_dependency "chef-config", "= #{Chef::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::VERSION}"
@@ -26,7 +26,7 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
   s.add_dependency "mixlib-shellout", ">= 3.0.3", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
-  s.add_dependency "ohai", "~> 15.0"
+  s.add_dependency "ohai", "~> 16.0"
 
   s.add_dependency "ffi", "~> 1.9", ">= 1.9.25"
   s.add_dependency "ffi-yajl", "~> 2.2"
@@ -37,10 +37,12 @@ Gem::Specification.new do |s|
   s.add_dependency "bcrypt_pbkdf", "~> 1.0" # ed25519 ssh key support
   s.add_dependency "highline", ">= 1.6.9", "< 2"
   s.add_dependency "tty-screen", "~> 0.6" # knife list
+  s.add_dependency "pastel" # knife ui.color
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
   s.add_dependency "ffi-libarchive"
   s.add_dependency "chef-zero", ">= 14.0.11"
+  s.add_dependency "chef-vault"
 
   s.add_dependency "plist", "~> 3.2"
   s.add_dependency "iniparse", "~> 1.4"
@@ -58,5 +60,8 @@ Gem::Specification.new do |s|
   s.executables  = %w{ knife }
 
   s.require_paths = %w{ lib }
-  s.files = %w{Gemfile Rakefile LICENSE README.md} + Dir.glob("{lib,tasks,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } + Dir.glob("*.gemspec")
+  s.files = %w{Gemfile Rakefile LICENSE README.md} +
+    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
+    Dir.glob("*.gemspec") +
+    Dir.glob("tasks/rspec.rb")
 end

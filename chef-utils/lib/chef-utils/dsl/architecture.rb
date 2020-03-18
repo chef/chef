@@ -22,7 +22,9 @@ module ChefUtils
     module Architecture
       include Internal
 
-      # Determine if the current architecture is 64-bit
+      # Determine if the current architecture is 64-bit.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -31,7 +33,9 @@ module ChefUtils
           .include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is 32-bit
+      # Determine if the current architecture is 32-bit.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -39,7 +43,9 @@ module ChefUtils
         !_64_bit?(node)
       end
 
-      # Determine if the current architecture is i386
+      # Determine if the current architecture is i386.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -49,6 +55,8 @@ module ChefUtils
 
       # Determine if the current architecture is Intel.
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def intel?(node = __getnode)
@@ -57,13 +65,17 @@ module ChefUtils
 
       # Determine if the current architecture is SPARC.
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def sparc?(node = __getnode)
         %w{sun4u sun4v}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is Powerpc64 Big Endian
+      # Determine if the current architecture is PowerPC 64bit Big Endian.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -71,7 +83,9 @@ module ChefUtils
         %w{ppc64}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is Powerpc64 Little Endian
+      # Determine if the current architecture is PowerPC 64bit Little Endian.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -81,13 +95,17 @@ module ChefUtils
 
       # Determine if the current architecture is PowerPC.
       #
+      # @since 15.5
+      #
       # @return [Boolean]
       #
       def powerpc?(node = __getnode)
         %w{powerpc}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is 32-bit ARM
+      # Determine if the current architecture is 32-bit ARM.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -95,7 +113,9 @@ module ChefUtils
         %w{armhf}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is s390x
+      # Determine if the current architecture is s390x.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -103,7 +123,9 @@ module ChefUtils
         %w{s390x}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is s390
+      # Determine if the current architecture is s390.
+      #
+      # @since 15.5
       #
       # @return [Boolean]
       #

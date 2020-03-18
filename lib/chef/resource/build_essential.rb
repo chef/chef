@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software Inc.
+# Copyright:: 2008-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class BuildEssential < Chef::Resource
-      resource_name :build_essential
+      unified_mode true
+
       provides(:build_essential) { true }
 
       description "Use the build_essential resource to install the packages required for compiling C software from source."
@@ -41,28 +42,25 @@ class Chef
       # this allows us to use build_essential without setting a name
       property :name, String, default: ""
 
-      property :compile_time, [TrueClass, FalseClass],
-        description: "Install the build essential packages at compile time.",
-        default: false, desired_state: false
+      property :raise_if_unsupported, [TrueClass, FalseClass],
+        description: "Raise a hard error on platforms where this resource is unsupported.",
+        default: false, desired_state: false # FIXME: make this default to true
 
       action :install do
 
         description "Install build essential packages"
 
-        case node["platform_family"]
-        when "debian"
+        case
+        when debian?
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
         when fedora_derived?
           package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
-
-          # Ensure GCC 4 is available on older pre-6 EL
-          package %w{ gcc44 gcc44-c++ } if platform_family?("rhel") && node["platform_version"].to_i < 6
-        when "freebsd"
+        when freebsd?
           package "devel/gmake"
           package "devel/autoconf"
           package "devel/m4"
           package "devel/gettext"
-        when "mac_os_x"
+        when macos?
           unless xcode_cli_installed?
             # This script was graciously borrowed and modified from Tim Sutton's
             # osx-vm-templates at https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
@@ -80,7 +78,7 @@ class Chef
               EOH
             end
           end
-        when "omnios"
+        when omnios?
           package "developer/gcc48"
           package "developer/object-file"
           package "developer/linker"
@@ -93,17 +91,13 @@ class Chef
           # $PATH, so add it to the running process environment
           # http://omnios.omniti.com/wiki.php/DevEnv
           ENV["PATH"] = "#{ENV["PATH"]}:/opt/gcc-4.7.2/bin"
-        when "solaris2"
+        when solaris2?
           package "autoconf"
           package "automake"
           package "bison"
           package "gnu-coreutils"
           package "flex"
-          package "gcc" do
-            # lock because we don't use 5 yet
-            version "4.8.2"
-          end
-          package "gcc-3"
+          package "gcc"
           package "gnu-grep"
           package "gnu-make"
           package "gnu-patch"
@@ -111,21 +105,26 @@ class Chef
           package "make"
           package "pkg-config"
           package "ucb"
-        when "smartos"
+        when smartos?
           package "autoconf"
           package "binutils"
           package "build-essential"
           package "gcc47"
           package "gmake"
           package "pkg-config"
-        when "suse"
+        when suse?
           package %w{ autoconf bison flex gcc gcc-c++ kernel-default-devel make m4 }
           package %w{ gcc48 gcc48-c++ } if node["platform_version"].to_i < 12
         else
-          Chef::Log.warn <<-EOH
+          msg = <<-EOH
         The build_essential resource does not currently support the '#{node["platform_family"]}'
         platform family. Skipping...
           EOH
+          if new_resource.raise_if_unsupported
+            raise msg
+          else
+            Chef::Log.warn msg
+          end
         end
       end
 
@@ -139,17 +138,6 @@ class Chef
           cmd.run_command
           # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
-        end
-      end
-
-      # this resource forces itself to run at compile_time
-      #
-      # @return [void]
-      def after_created
-        return unless compile_time
-
-        Array(action).each do |action|
-          run_action(action)
         end
       end
     end

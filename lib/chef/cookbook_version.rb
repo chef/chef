@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2019, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -137,6 +137,18 @@ class Chef
       end
     end
 
+    def recipe_yml_filenames_by_name
+      @recipe_ym_filenames_by_name ||= begin
+        name_map = yml_filenames_by_name(files_for("recipes"))
+        root_alias = cookbook_manifest.root_files.find { |record| record[:name] == "root_files/recipe.yml" }
+        if root_alias
+          Chef::Log.error("Cookbook #{name} contains both recipe.yml and and recipes/default.yml, ignoring recipes/default.yml") if name_map["default"]
+          name_map["default"] = root_alias[:full_path]
+        end
+        name_map
+      end
+    end
+
     def recipe_filenames_by_name
       @recipe_filenames_by_name ||= begin
         name_map = filenames_by_name(files_for("recipes"))
@@ -184,10 +196,29 @@ class Chef
 
     # called from DSL
     def load_recipe(recipe_name, run_context)
-      unless recipe_filenames_by_name.key?(recipe_name)
+      if recipe_filenames_by_name.key?(recipe_name)
+        load_ruby_recipe(recipe_name, run_context)
+      elsif recipe_yml_filenames_by_name.key?(recipe_name)
+        load_yml_recipe(recipe_name, run_context)
+      else
         raise Chef::Exceptions::RecipeNotFound, "could not find recipe #{recipe_name} for cookbook #{name}"
       end
+    end
 
+    def load_yml_recipe(recipe_name, run_context)
+      Chef::Log.trace("Found recipe #{recipe_name} in cookbook #{name}")
+      recipe = Chef::Recipe.new(name, recipe_name, run_context)
+      recipe_filename = recipe_yml_filenames_by_name[recipe_name]
+
+      unless recipe_filename
+        raise Chef::Exceptions::RecipeNotFound, "could not find #{recipe_name} files for cookbook #{name}"
+      end
+
+      recipe.from_yaml_file(recipe_filename)
+      recipe
+    end
+
+    def load_ruby_recipe(recipe_name, run_context)
       Chef::Log.trace("Found recipe #{recipe_name} in cookbook #{name}")
       recipe = Chef::Recipe.new(name, recipe_name, run_context)
       recipe_filename = recipe_filenames_by_name[recipe_name]
@@ -445,6 +476,10 @@ class Chef
       end
     end
 
+    def has_metadata_file?
+      all_files.include?(metadata_json_file) || all_files.include?(metadata_rb_file)
+    end
+
     ##
     # REST API
     ##
@@ -513,6 +548,19 @@ class Chef
       @cookbook_manifest ||= CookbookManifest.new(self)
     end
 
+    def compile_metadata(path = root_dir)
+      json_file = "#{path}/metadata.json"
+      rb_file = "#{path}/metadata.rb"
+      return nil if File.exist?(json_file)
+
+      md = Chef::Cookbook::Metadata.new
+      md.from_file(rb_file)
+      f = File.open(json_file, "w")
+      f.write(Chef::JSONCompat.to_json_pretty(md))
+      f.close
+      f.path
+    end
+
     private
 
     def find_preferred_manifest_record(node, segment, filename)
@@ -532,6 +580,10 @@ class Chef
     # or attribute file) to on disk location
     def filenames_by_name(records)
       records.select { |record| record[:name] =~ /\.rb$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".rb")] = record[:full_path]; memo }
+    end
+
+    def yml_filenames_by_name(records)
+      records.select { |record| record[:name] =~ /\.yml$/ }.inject({}) { |memo, record| memo[File.basename(record[:name], ".yml")] = record[:full_path]; memo }
     end
 
     def file_vendor

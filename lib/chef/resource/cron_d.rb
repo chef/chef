@@ -1,5 +1,5 @@
 #
-# Copyright:: 2008-2019, Chef Software, Inc.
+# Copyright:: 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class CronD < Chef::Resource
-      resource_name :cron_d
+      unified_mode true
+      provides :cron_d
 
       introduced "14.4"
       description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
@@ -146,7 +147,7 @@ class Chef
       property :cookbook, String, desired_state: false
 
       property :predefined_value, String,
-        description: 'Schedule your cron job with one of the special predefined value instead of ** * pattern. This correspond to "@reboot", "@yearly", "@annually", "@monthly", "@weekly", "@daily", "@midnight" or "@hourly".',
+        description: "Schedule your cron job with one of the special predefined value instead of ** * pattern.",
         equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],
@@ -205,6 +206,35 @@ class Chef
       property :environment, Hash,
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
         default: lazy { {} }
+
+      TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
+      TIMEOUT_REGEX = /\A\S+/.freeze
+
+      property :time_out, Hash,
+        description: "A Hash of timeouts in the form of ({'OPTION' => 'VALUE'}).
+        Accepted valid options are:
+        preserve-status (BOOL, default: 'false'),
+        foreground (BOOL, default: 'false'),
+        kill-after (in seconds),
+        signal (a name like 'HUP' or a number)",
+        default: lazy { {} },
+        introduced: "15.7",
+        coerce: proc { |h|
+          if h.is_a?(Hash)
+            invalid_keys = h.keys - TIMEOUT_OPTS
+            unless invalid_keys.empty?
+              error_msg = "Key of option time_out must be equal to one of: \"#{TIMEOUT_OPTS.join('", "')}\"!  You passed \"#{invalid_keys.join(", ")}\"."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            unless h.values.all? { |x| x =~ TIMEOUT_REGEX }
+              error_msg = "Values of option time_out should be non-empty string without any leading whitespaces."
+              raise Chef::Exceptions::ValidationFailed, error_msg
+            end
+            h
+          elsif h.is_a?(Integer) || h.is_a?(String)
+            { "duration" => h }
+          end
+        }
 
       property :mode, [String, Integer],
         description: "The octal mode of the generated crontab file.",

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,6 +23,8 @@ class Chef
   class Resource
     class Ruby < Chef::Resource::Script
       unified_mode true
+
+      provides :ruby
 
       description "Use the ruby resource to execute scripts using the Ruby interpreter. This"\
                   " resource may also use any of the actions and properties that are available"\

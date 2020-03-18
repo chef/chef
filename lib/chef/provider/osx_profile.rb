@@ -95,7 +95,7 @@ class Chef
         end
       end
 
-      def action_install
+      action :install do
         unless profile_installed?
           converge_by("install profile #{@new_profile_identifier}") do
             profile_path = write_profile_to_disk
@@ -105,7 +105,7 @@ class Chef
         end
       end
 
-      def action_remove
+      action :remove do
         # Clean up profile after removing it
         if profile_installed?
           converge_by("remove profile #{@new_profile_identifier}") do

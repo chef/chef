@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore <schisamo@chef.io>
-# Copyright:: 2011-2018, Chef Software, Inc <legal@chef.io>
+# Copyright:: 2011-2020, Chef Software Inc.<legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class ChefHandler < Chef::Resource
-      resource_name :chef_handler
+      unified_mode true
+
       provides(:chef_handler) { true }
 
       description "Use the chef_handler resource to install or uninstall reporting/exception handlers."

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -137,7 +137,7 @@ class Chef
         end
       end
 
-      def action_create
+      action :create do
         do_generate_content
         do_validate_content
         do_unlink
@@ -148,7 +148,7 @@ class Chef
         load_resource_attributes_from_file(new_resource) unless Chef::Config[:why_run]
       end
 
-      def action_create_if_missing
+      action :create_if_missing do
         unless ::File.exist?(new_resource.path)
           action_create
         else
@@ -156,7 +156,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if ::File.exists?(new_resource.path)
           converge_by("delete file #{new_resource.path}") do
             do_backup unless file_class.symlink?(new_resource.path)
@@ -166,7 +166,7 @@ class Chef
         end
       end
 
-      def action_touch
+      action :touch do
         action_create
         converge_by("update utime on file #{new_resource.path}") do
           time = Time.now
@@ -341,7 +341,10 @@ class Chef
         if tempfile
           new_resource.verify.each do |v|
             unless v.verify(tempfile.path)
-              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? "[sensitive]" : v}"
+              backupfile = "#{Chef::Config[:file_cache_path]}/failed_validations/#{::File.basename(tempfile.path)}"
+              FileUtils.mkdir_p ::File.dirname(backupfile)
+              FileUtils.cp tempfile.path, backupfile
+              raise Chef::Exceptions::ValidationFailed.new "Proposed content for #{new_resource.path} failed verification #{new_resource.sensitive ? "[sensitive]" : "#{v}\n#{v.output}"}\nTemporary file moved to #{backupfile}"
             end
           end
         end
@@ -378,7 +381,7 @@ class Chef
 
       def update_file_contents
         do_backup unless needs_creating?
-        deployment_strategy.deploy(tempfile.path, ::File.realpath(new_resource.path))
+        deployment_strategy.deploy(tempfile.path, ::File.realpath(new_resource.path).force_encoding(Chef::Config[:ruby_encoding]))
         logger.info("#{new_resource} updated file contents #{new_resource.path}")
         if managing_content?
           # save final checksum for reporting.

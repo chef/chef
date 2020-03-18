@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 
 require_relative "platform_introspection"
 require_relative "data_query"
+require_relative "chef_vault"
 require_relative "registry_helper"
 require_relative "powershell"
 require_relative "../mixin/powershell_exec"
@@ -30,15 +31,9 @@ class Chef
   module DSL
     # Part of a family of DSL mixins.
     #
-    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
-    #   - this does not target core chef resources and providers.
+    # Chef::DSL::Recipe mixes into Recipes and Providers.
     #   - this is restricted to recipe/resource/provider context where a resource collection exists.
     #   - cookbook authors should typically include modules into here.
-    #
-    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
-    #   - this adds cores providers on top of the Recipe DSL.
-    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
-    #   - core chef authors should typically include modules into here.
     #
     # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
     #   - this adds resources and attributes files.
@@ -49,6 +44,7 @@ class Chef
     module Universal
       include Chef::DSL::PlatformIntrospection
       include Chef::DSL::DataQuery
+      include Chef::DSL::ChefVault
       include Chef::DSL::RegistryHelper
       include Chef::DSL::Powershell
       include Chef::Mixin::PowershellExec

@@ -113,7 +113,7 @@ class Chef
         end
       end
 
-      def action_create
+      action :create do
         unless registry.key_exists?(current_resource.key)
           converge_by("create key #{new_resource.key}") do
             registry.create_key(new_resource.key, new_resource.recursive)
@@ -150,7 +150,7 @@ class Chef
         end
       end
 
-      def action_create_if_missing
+      action :create_if_missing do
         unless registry.key_exists?(new_resource.key)
           converge_by("create key #{new_resource.key}") do
             registry.create_key(new_resource.key, new_resource.recursive)
@@ -171,7 +171,7 @@ class Chef
         end
       end
 
-      def action_delete
+      action :delete do
         if registry.key_exists?(new_resource.key)
           new_resource.unscrubbed_values.each do |value|
             if @name_hash.key?(value[:name].downcase)
@@ -186,7 +186,7 @@ class Chef
         end
       end
 
-      def action_delete_key
+      action :delete_key do
         if registry.key_exists?(new_resource.key)
           converge_by("delete key #{new_resource.key}") do
             registry.delete_key(new_resource.key, new_resource.recursive)

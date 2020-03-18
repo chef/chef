@@ -19,7 +19,6 @@
 require_relative "../mixin/shell_out"
 require "rexml/document" unless defined?(REXML::Document)
 require "iso8601" if ChefUtils.windows?
-require_relative "../mixin/powershell_out"
 require_relative "../provider"
 require_relative "../util/path_helper"
 require "win32/taskscheduler" if ChefUtils.windows?
@@ -28,7 +27,6 @@ class Chef
   class Provider
     class WindowsTask < Chef::Provider
       include Chef::Mixin::ShellOut
-      include Chef::Mixin::PowershellOut
 
       if ChefUtils.windows?
         include Win32
@@ -115,7 +113,7 @@ class Chef
           @current_resource
         end
 
-        def action_create
+        action :create do
           set_command_and_arguments if new_resource.command
 
           if current_resource.exists
@@ -152,7 +150,7 @@ class Chef
           end
         end
 
-        def action_run
+        action :run do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "running"
@@ -167,7 +165,7 @@ class Chef
           end
         end
 
-        def action_delete
+        action :delete do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             converge_by("delete scheduled task #{new_resource}") do
@@ -179,7 +177,7 @@ class Chef
           end
         end
 
-        def action_end
+        action :end do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status != "running"
@@ -194,7 +192,7 @@ class Chef
           end
         end
 
-        def action_enable
+        action :enable do
           if current_resource.exists
             logger.trace "#{new_resource} task exists"
             if current_resource.task.status == "not scheduled"
@@ -211,7 +209,7 @@ class Chef
           end
         end
 
-        def action_disable
+        action :disable do
           if current_resource.exists
             logger.info "#{new_resource} task exists"
             if %w{ready running}.include?(current_resource.task.status)
@@ -328,7 +326,7 @@ class Chef
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
-            flag = (task.account_information != new_resource.user ||
+            flag = (task.author != new_resource.user ||
             task.application_name != new_resource.command ||
             description_needs_update?(task) ||
             task.parameters != new_resource.command_arguments.to_s ||
@@ -352,7 +350,7 @@ class Chef
                 current_task_trigger[:type] != new_task_trigger[:type] ||
                 current_task_trigger[:random_minutes_interval].to_i != new_task_trigger[:random_minutes_interval].to_i ||
                 current_task_trigger[:minutes_interval].to_i != new_task_trigger[:minutes_interval].to_i ||
-                task.account_information.to_s.casecmp(new_resource.user.to_s) != 0 ||
+                task.author.to_s.casecmp(new_resource.user.to_s) != 0 ||
                 task.application_name != new_resource.command ||
                 description_needs_update?(task) ||
                 task.parameters != new_resource.command_arguments.to_s ||

@@ -1,3 +1,4 @@
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
@@ -15,11 +16,13 @@ describe "notifications" do
           apt_update do
             action :nothing
           end
-          log "foo" do
+          notify_group "foo" do
             notifies :nothing, 'apt_update', :delayed
+            action :run
           end
-          log "bar" do
+          notify_group "bar" do
             notifies :nothing, 'apt_update[]', :delayed
+            action :run
           end
         EOM
       end
@@ -34,7 +37,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
-      expect(result.stdout).to match(/\* apt_update\[\] action nothing \(skipped due to action :nothing\)\s+\* log\[foo\] action write\s+\* log\[bar\] action write\s+\* apt_update\[\] action nothing \(skipped due to action :nothing\)/)
+      expect(result.stdout).to match(/\* apt_update\[\] action nothing \(skipped due to action :nothing\)\s+\* notify_group\[foo\] action run\s+\* notify_group\[bar\] action run\s+\* apt_update\[\] action nothing \(skipped due to action :nothing\)/)
       result.error!
     end
   end
@@ -49,8 +52,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, 'log[foo]', :delayed
+              action :run
             end
           end
         EOM
@@ -75,7 +79,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
-      expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[bar\] action run\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
       result.error!
     end
   end
@@ -90,8 +94,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, 'log[foo]', :delayed
+              action :run
             end
           end
         EOM
@@ -101,8 +106,9 @@ describe "notifications" do
             action :nothing
           end
           notifying_test "whatever"
-          log "baz" do
+          notify_group "baz" do
             notifies :write, 'log[foo]', :delayed
+            action :run
           end
         EOM
 
@@ -118,7 +124,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # our delayed notification should run at the end of the parent run_context after the baz resource
-      expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[bar\] action run\s+\* notify_group\[baz\] action run\s+\* log\[foo\] action write/)
       # and only run once
       expect(result.stdout).not_to match(/\* log\[foo\] action write.*\* log\[foo\] action write/)
       result.error!
@@ -135,8 +141,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, 'log[foo]', :delayed
+              action :run
             end
           end
         EOM
@@ -145,9 +152,10 @@ describe "notifications" do
           log "foo" do
             action :nothing
           end
-          log "quux" do
+          notify_group "quux" do
             notifies :write, 'log[foo]', :delayed
             notifies :write, 'log[baz]', :delayed
+            action :run
           end
           notifying_test "whatever"
           log "baz"
@@ -165,7 +173,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
-      expect(result.stdout).to match(/\* log\[quux\] action write\s+\* notifying_test\[whatever\] action run\s+\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[quux\] action run\s+\* notifying_test\[whatever\] action run\s+\* notify_group\[bar\] action run\s+\* log\[baz\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       # and only run once
       expect(result.stdout).not_to match(/\* log\[foo\] action write.*\* log\[foo\] action write/)
       result.error!
@@ -179,11 +187,13 @@ describe "notifications" do
           log "foo" do
             action :nothing
           end
-          log "bar" do
+          notify_group "bar" do
             notifies :write, 'log[foo]', :delayed
+            action :run
           end
-          log "baz" do
+          notify_group "baz" do
             notifies :write, 'log[foo]', :delayed
+            action :run
           end
         EOM
 
@@ -199,7 +209,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
-      expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[baz\] action write\s+\* log\[foo\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[bar\] action run\s+\* notify_group\[baz\] action run\s+\* log\[foo\] action write/)
       # and only run once
       expect(result.stdout).not_to match(/\* log\[foo\] action write.*\* log\[foo\] action write/)
       result.error!
@@ -216,8 +226,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, 'log[foo]', :immediately
+              action :run
             end
           end
         EOM
@@ -241,7 +252,7 @@ describe "notifications" do
       EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[bar\] action run\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       result.error!
     end
   end
@@ -256,8 +267,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, resources(log: "foo"), :immediately
+              action :run
             end
           end
         EOM
@@ -281,7 +293,7 @@ describe "notifications" do
       EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      expect(result.stdout).to match(/\* log\[bar\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[bar\] action run\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
       result.error!
     end
   end
@@ -296,8 +308,9 @@ describe "notifications" do
           resource_name :notifying_test
 
           action :run do
-            log "bar" do
+            notify_group "bar" do
               notifies :write, "log[foo]"
+              action :run
             end
           end
         EOM
@@ -371,8 +384,9 @@ describe "notifications" do
             action :nothing
           end
 
-          log "doit" do
+          notify_group "doit" do
             notifies :write, "log[a, b]"
+            action :run
           end
         EOM
       end

@@ -55,15 +55,15 @@ class Chef
         types[type]
       end
 
-      def action_create
+      action :create do
         manage_plist(:create)
       end
 
-      def action_create_if_missing
+      action :create_if_missing do
         manage_plist(:create_if_missing)
       end
 
-      def action_delete
+      action :delete do
         # If you delete a service you want to make sure its not loaded or
         # the service will be in memory and you wont be able to stop it.
         if ::File.exists?(@path)
@@ -72,7 +72,7 @@ class Chef
         manage_plist(:delete)
       end
 
-      def action_enable
+      action :enable do
         if manage_plist(:create)
           manage_service(:restart)
         else
@@ -80,11 +80,11 @@ class Chef
         end
       end
 
-      def action_disable
+      action :disable do
         manage_service(:disable)
       end
 
-      def action_restart
+      action :restart do
         manage_service(:restart)
       end
 
@@ -194,7 +194,7 @@ class Chef
           "environment_variables" => "EnvironmentVariables",
           "exit_timeout" => "ExitTimeout",
           "ld_group" => "GroupName",
-          "hard_resource_limits" => "HardreSourceLimits",
+          "hard_resource_limits" => "HardResourceLimits",
           "inetd_compatibility" => "inetdCompatibility",
           "init_groups" => "InitGroups",
           "keep_alive" => "KeepAlive",

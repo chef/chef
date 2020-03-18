@@ -152,6 +152,10 @@ elif [[ -d /usr/local/etc/sudoers.d ]]; then
   sudo chmod 440 "/usr/local/etc/sudoers.d/$(id -un)-preserve_path"
 fi
 
+# accept license
+CHEF_LICENSE=accept-no-persist
+
 cd "$chef_gem"
 sudo -E bundle install
+# FIXME: we need to add back unit and integration tests here.  we have no converage of those on e.g. AIX
 sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional

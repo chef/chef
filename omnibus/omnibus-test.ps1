@@ -82,12 +82,17 @@ Get-Location
 # ffi-yajl must run in c-extension mode for perf, so force it so we don't accidentally fall back to ffi
 $Env:FORCE_FFI_YAJL = "ext"
 
+# accept license
+$Env:CHEF_LICENSE = "accept-no-persist"
+
 # some tests need winrm configured
 winrm quickconfig -quiet
 
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-# chocolatey functional tests fail so disable that tag directly
+# FIXME: we need to add back unit and integration tests here.  we have no converage of those on e.g. AIX
+#
+# chocolatey functional tests fail so disable that tag directly <-- and this is a bug that needs fixing.
 bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation --tag ~choco_installed spec/functional
 If ($lastexitcode -ne 0) { Exit $lastexitcode }

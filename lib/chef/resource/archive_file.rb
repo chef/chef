@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2017-2019, Chef Software Inc.
+# Copyright:: Copyright 2017-2020, Chef Software Inc.
 # Author:: Jamie Winsor (<jamie@vialstudios.com>)
 # Author:: Tim Smith (<tsmith@chef.io>)
 #
@@ -23,8 +23,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class ArchiveFile < Chef::Resource
+      unified_mode true
 
-      resource_name :archive_file
       provides :archive_file
       provides :libarchive_file # legacy cookbook name
 
@@ -102,8 +102,11 @@ class Chef
         end
 
         if new_resource.owner || new_resource.group
-          converge_by("set owner of #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            FileUtils.chown_R(new_resource.owner, new_resource.group, new_resource.destination)
+          converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
+            archive = Archive::Reader.open_filename(new_resource.path)
+            archive.each_entry do |e|
+              FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
+            end
           end
         end
       end

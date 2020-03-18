@@ -163,15 +163,15 @@ describe Chef::Node::VividMash do
     end
 
     it "throws an exception when attributes do not exist" do
-      expect { vivid.read!("one", "five", "six") }.to raise_error(Chef::Exceptions::NoSuchAttribute)
+      expect { vivid.read!("one", "five", "six") }.to raise_error(Chef::Exceptions::NoSuchAttribute, "one.five.six")
     end
 
     it "throws an exception when traversing a non-container" do
-      expect { vivid.read!("one", "two", "three", "four") }.to raise_error(Chef::Exceptions::NoSuchAttribute)
+      expect { vivid.read!("one", "two", "three", "four") }.to raise_error(Chef::Exceptions::NoSuchAttribute, "one.two.three.four")
     end
 
     it "throws an exception when an array element does not exist" do
-      expect { vivid.read!("array", 3) }.to raise_error(Chef::Exceptions::NoSuchAttribute)
+      expect { vivid.read!("array", 3) }.to raise_error(Chef::Exceptions::NoSuchAttribute, "array.3")
     end
   end
 

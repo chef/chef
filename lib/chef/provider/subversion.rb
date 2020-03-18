@@ -55,7 +55,7 @@ class Chef
         end
       end
 
-      def action_checkout
+      action :checkout do
         if target_dir_non_existent_or_empty?
           converge_by("perform checkout of #{new_resource.repository} into #{new_resource.destination}") do
             shell_out!(checkout_command, run_options)
@@ -65,7 +65,7 @@ class Chef
         end
       end
 
-      def action_export
+      action :export do
         if target_dir_non_existent_or_empty?
           action_force_export
         else
@@ -73,13 +73,13 @@ class Chef
         end
       end
 
-      def action_force_export
+      action :force_export do
         converge_by("export #{new_resource.repository} into #{new_resource.destination}") do
           shell_out!(export_command, run_options)
         end
       end
 
-      def action_sync
+      action :sync do
         assert_target_directory_valid!
         if ::File.exist?(::File.join(new_resource.destination, ".svn"))
           current_rev = find_current_revision

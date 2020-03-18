@@ -1,7 +1,7 @@
 #
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza.
 # License:: Apache License, Version 2.0
 #
@@ -21,14 +21,12 @@
 require_relative "package"
 require_relative "../provider/package/freebsd/port"
 require_relative "../provider/package/freebsd/pkgng"
-require_relative "../mixin/shell_out"
 
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
-      include Chef::Mixin::ShellOut
-
-      resource_name :freebsd_package
+      unified_mode true
+      provides :freebsd_package
       provides :package, platform: "freebsd"
 
       description "Use the freebsd_package resource to manage packages for the FreeBSD platform."

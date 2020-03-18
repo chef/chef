@@ -23,7 +23,12 @@ require "chef/cookbook_uploader"
 require "timeout"
 
 describe Chef::Knife::CookbookUpload do
-  let(:cookbook) { Chef::CookbookVersion.new("test_cookbook", "/tmp/blah.txt") }
+  let(:cookbook) do
+    cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
+    allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+    allow(cookbook.metadata).to receive(:name).and_return(cookbook.name)
+    cookbook
+  end
 
   let(:cookbooks_by_name) do
     { cookbook.name => cookbook }
@@ -33,6 +38,9 @@ describe Chef::Knife::CookbookUpload do
     cookbook_loader = cookbooks_by_name.dup
     allow(cookbook_loader).to receive(:merged_cookbooks).and_return([])
     allow(cookbook_loader).to receive(:load_cookbooks).and_return(cookbook_loader)
+    allow(cookbook_loader).to receive(:compile_metadata).and_return(nil)
+    allow(cookbook_loader).to receive(:freeze_versions).and_return(nil)
+    allow(cookbook_loader).to receive(:unlink!).and_return(nil)
     cookbook_loader
   end
 
@@ -52,6 +60,7 @@ describe Chef::Knife::CookbookUpload do
 
   before(:each) do
     allow(Chef::CookbookLoader).to receive(:new).and_return(cookbook_loader)
+    allow(Chef::CookbookLoader).to receive(:copy_to_tmp_dir_from_array).and_return(cookbook_loader)
   end
 
   describe "with --concurrency" do
@@ -61,6 +70,7 @@ describe Chef::Knife::CookbookUpload do
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
+      allow(cookbook_loader).to receive(:tmp_working_dir_path).and_return("/tmp/blah")
       expect(Chef::CookbookUploader).to receive(:new)
         .with( kind_of(Array), { force: nil, concurrency: 3 })
         .and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
@@ -79,6 +89,34 @@ describe Chef::Knife::CookbookUpload do
       expect(knife).to receive(:show_usage)
       expect(knife.ui).to receive(:fatal)
       expect { knife.run }.to raise_error(SystemExit)
+    end
+
+    describe "when specifying cookbook without metadata.rb or metadata.json" do
+      let(:name_args) { ["test_cookbook1"] }
+      let(:cookbook) do
+        cookbook = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
+        allow(cookbook).to receive(:has_metadata_file?).and_return(false)
+        cookbook
+      end
+
+      it "should upload the cookbook" do
+        expect { knife.run }.to raise_error(Chef::Exceptions::MetadataNotFound)
+      end
+    end
+
+    describe "when name attribute in metadata not set" do
+      let(:name_args) { ["test_cookbook1"] }
+
+      let(:cookbook) do
+        cookbook = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
+        allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+        allow(cookbook.metadata).to receive(:name).and_return(nil)
+        cookbook
+      end
+
+      it "should upload the cookbook" do
+        expect { knife.run }.to raise_error(Chef::Exceptions::MetadataNotValid)
+      end
     end
 
     describe "when specifying a cookbook name" do
@@ -105,12 +143,15 @@ describe Chef::Knife::CookbookUpload do
     describe "when specifying a cookbook name among many" do
       let(:name_args) { ["test_cookbook1"] }
 
+      let(:cookbook) do
+        cookbook = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
+        allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+        allow(cookbook.metadata).to receive(:name).and_return(cookbook.name)
+        cookbook
+      end
+
       let(:cookbooks_by_name) do
-        {
-          "test_cookbook1" => Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah"),
-          "test_cookbook2" => Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah"),
-          "test_cookbook3" => Chef::CookbookVersion.new("test_cookbook3", "/tmp/blah"),
-        }
+        { cookbook.name => cookbook }
       end
 
       it "should read only one cookbook" do
@@ -119,7 +160,7 @@ describe Chef::Knife::CookbookUpload do
       end
 
       it "should not read all cookbooks" do
-        expect(cookbook_loader).not_to receive(:load_cookbooks)
+        expect(cookbook_loader).to receive(:load_cookbooks)
         knife.run
       end
 
@@ -133,17 +174,18 @@ describe Chef::Knife::CookbookUpload do
     describe "when specifying a cookbook name with dependencies" do
       let(:name_args) { ["test_cookbook2"] }
 
-      let(:cookbooks_by_name) do
-        { "test_cookbook1" => test_cookbook1,
-          "test_cookbook2" => test_cookbook2,
-          "test_cookbook3" => test_cookbook3 }
+      let(:test_cookbook1) do
+        cookbook = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
+        allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+        allow(cookbook.metadata).to receive(:name).and_return(cookbook.name)
+        cookbook
       end
-
-      let(:test_cookbook1) { Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah") }
 
       let(:test_cookbook2) do
         c = Chef::CookbookVersion.new("test_cookbook2")
         c.metadata.depends("test_cookbook3")
+        allow(c).to receive(:has_metadata_file?).and_return(true)
+        allow(c.metadata).to receive(:name).and_return(c.name)
         c
       end
 
@@ -151,7 +193,15 @@ describe Chef::Knife::CookbookUpload do
         c = Chef::CookbookVersion.new("test_cookbook3")
         c.metadata.depends("test_cookbook1")
         c.metadata.depends("test_cookbook2")
+        allow(c).to receive(:has_metadata_file?).and_return(true)
+        allow(c.metadata).to receive(:name).and_return(c.name)
         c
+      end
+
+      let(:cookbooks_by_name) do
+        { "test_cookbook1" => test_cookbook1,
+          "test_cookbook2" => test_cookbook2,
+          "test_cookbook3" => test_cookbook3 }
       end
 
       it "should upload all dependencies once" do
@@ -182,7 +232,6 @@ describe Chef::Knife::CookbookUpload do
 
       it "should exit and not upload the cookbook" do
         expect(cookbook_loader).to receive(:[]).once.with("test_cookbook")
-        expect(cookbook_loader).not_to receive(:load_cookbooks)
         expect(cookbook_uploader).not_to receive(:upload_cookbooks)
         expect { knife.run }.to raise_error(SystemExit)
       end
@@ -214,7 +263,7 @@ describe Chef::Knife::CookbookUpload do
 
     it "should freeze the version of the cookbooks if --freeze is specified" do
       knife.config[:freeze] = true
-      expect(cookbook).to receive(:freeze_version).once
+      expect(cookbook_loader).to receive(:freeze_versions).once
       knife.run
     end
 
@@ -224,10 +273,22 @@ describe Chef::Knife::CookbookUpload do
       end
 
       context "when cookbooks exist in the cookbook path" do
+        let(:test_cookbook1) do
+          cookbook = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
+          allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+          allow(cookbook.metadata).to receive(:name).and_return(cookbook.name)
+          cookbook
+        end
+
+        let(:test_cookbook2) do
+          cookbook = Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah")
+          allow(cookbook).to receive(:has_metadata_file?).and_return(true)
+          allow(cookbook.metadata).to receive(:name).and_return(cookbook.name)
+          cookbook
+        end
+
         before(:each) do
-          @test_cookbook1 = Chef::CookbookVersion.new("test_cookbook1", "/tmp/blah")
-          @test_cookbook2 = Chef::CookbookVersion.new("test_cookbook2", "/tmp/blah")
-          allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", @test_cookbook1).and_yield("test_cookbook2", @test_cookbook2)
+          allow(cookbook_loader).to receive(:each).and_yield("test_cookbook1", test_cookbook1).and_yield("test_cookbook2", test_cookbook2)
           allow(cookbook_loader).to receive(:cookbook_names).and_return(%w{test_cookbook1 test_cookbook2})
         end
 
@@ -264,7 +325,7 @@ describe Chef::Knife::CookbookUpload do
           it "should warn users that no cookbooks exist" do
             knife.config[:cookbook_path] = ["/chef-repo/cookbooks", "/home/user/cookbooks"]
             expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path].join(', ')}\. Use --cookbook-path to specify the desired path\./
+              /Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path].join(', ')}'\. Use --cookbook-path to specify the desired path\./
             )
             knife.run
           end
@@ -274,7 +335,7 @@ describe Chef::Knife::CookbookUpload do
           it "should warn users that no cookbooks exist" do
             knife.config[:cookbook_path] = "/chef-repo/cookbooks"
             expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: #{knife.config[:cookbook_path]}\. Use --cookbook-path to specify the desired path\./
+              /Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path]}'\. Use --cookbook-path to specify the desired path\./
             )
             knife.run
           end

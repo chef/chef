@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/deps"
@@ -242,7 +243,7 @@ depends "foo"'
         it "knife deps --tree prints each once" do
           knife("deps --tree /roles/foo.json /roles/self.json") do
             expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
-            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb/ for details.\n")
           end
         end
       end
@@ -580,7 +581,7 @@ depends "self"' }
         it "knife deps --tree prints each once" do
           knife("deps --remote --tree /roles/foo.json /roles/self.json") do
             expect(stdout).to eq("/roles/foo.json\n  /roles/bar.json\n    /roles/baz.json\n      /roles/foo.json\n/roles/self.json\n  /roles/self.json\n")
-            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb_knife.html for details.\n")
+            expect(stderr).to eq("WARNING: No knife configuration file found. See https://docs.chef.io/config_rb/ for details.\n")
           end
         end
       end

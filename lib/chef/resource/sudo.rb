@@ -4,7 +4,7 @@
 #
 # Copyright:: 2011-2018, Bryan w. Berry
 # Copyright:: 2012-2018, Seth Vargo
-# Copyright:: 2015-2018, Chef Software, Inc.
+# Copyright:: 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class Sudo < Chef::Resource
-      resource_name :sudo
+      unified_mode true
+
       provides(:sudo) { true }
 
       description "Use the sudo resource to add or remove individual sudo entries using sudoers.d files."\
@@ -148,29 +149,29 @@ class Chef
         validate_properties
 
         if docker? # don't even put this into resource collection unless we're in docker
-          declare_resource(:package, "sudo") do
-            action :nothing
+          package "sudo" do
             not_if "which sudo"
-          end.run_action(:install)
+          end
         end
 
         target = "#{new_resource.config_prefix}/sudoers.d/"
-        declare_resource(:directory, target) unless ::File.exist?(target)
+        directory(target)
 
         Chef::Log.warn("#{new_resource.filename} will be rendered, but will not take effect because the #{new_resource.config_prefix}/sudoers config lacks the includedir directive that loads configs from #{new_resource.config_prefix}/sudoers.d/!") if ::File.readlines("#{new_resource.config_prefix}/sudoers").grep(/includedir/).empty?
+        file_path = "#{target}#{new_resource.filename}"
 
         if new_resource.template
           logger.trace("Template property provided, all other properties ignored.")
 
-          declare_resource(:template, "#{target}#{new_resource.filename}") do
+          template file_path do
             source new_resource.template
             mode "0440"
             variables new_resource.variables
-            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
+            verify visudo_content(file_path) if visudo_present?
             action :create
           end
         else
-          declare_resource(:template, "#{target}#{new_resource.filename}") do
+          template file_path do
             source ::File.expand_path("../support/sudoer.erb", __FILE__)
             local true
             mode "0440"
@@ -185,7 +186,7 @@ class Chef
                       setenv:             new_resource.setenv,
                       env_keep_add:       new_resource.env_keep_add,
                       env_keep_subtract:  new_resource.env_keep_subtract
-            verify "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -" if visudo_present?
+            verify visudo_content(file_path) if visudo_present?
             action :create
           end
         end
@@ -224,6 +225,14 @@ class Chef
           return true if ::File.exist?(new_resource.visudo_binary)
 
           Chef::Log.warn("The visudo binary cannot be found at '#{new_resource.visudo_binary}'. Skipping sudoer file validation. If visudo is on this system you can specify the path using the 'visudo_binary' property.")
+        end
+
+        def visudo_content(path)
+          if ::File.exists?(path)
+            "cat #{new_resource.config_prefix}/sudoers | #{new_resource.visudo_binary} -cf - && #{new_resource.visudo_binary} -cf %{path}"
+          else
+            "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -"
+          end
         end
       end
     end

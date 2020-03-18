@@ -1,6 +1,6 @@
 #
-# Copyright 2012-2018, Seth Vargo
-# Copyright 2017-2018, Chef Software, Inc.
+# Copyright:: 2012-2018, Seth Vargo
+# Copyright:: 2017-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class SwapFile < Chef::Resource
-      resource_name :swap_file
+      unified_mode true
+
       provides(:swap_file) { true }
 
       description "Use the swap_file resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host."
@@ -60,7 +61,7 @@ class Chef
           end
         end
         if new_resource.swappiness
-          declare_resource(:sysctl, "vm.swappiness") do
+          sysctl "vm.swappiness" do
             value new_resource.swappiness
           end
         end

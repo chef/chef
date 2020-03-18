@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,6 @@ class Chef
     class Execute < Chef::Resource
       unified_mode true
 
-      resource_name :execute
       provides :execute, target_mode: true
 
       description "Use the execute resource to execute a single command. Commands that"\
@@ -131,7 +130,7 @@ class Chef
       end
 
       def validate_identity_platform(specified_user, password = nil, specified_domain = nil, elevated = false)
-        if node[:platform_family] == "windows"
+        if windows?
           if specified_user && password.nil?
             raise ArgumentError, "A value for `password` must be specified when a value for `user` is specified on the Windows platform"
           end

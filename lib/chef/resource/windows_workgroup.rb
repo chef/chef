@@ -22,7 +22,6 @@ require_relative "../dist"
 class Chef
   class Resource
     class WindowsWorkgroup < Chef::Resource
-      resource_name :windows_workgroup
       provides :windows_workgroup
 
       include Chef::Mixin::PowershellOut

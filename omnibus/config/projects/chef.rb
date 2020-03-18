@@ -70,6 +70,9 @@ end
 
 dependency "ruby-cleanup"
 
+# further gem cleanup other projects might not yet want to use
+dependency "more-ruby-cleanup"
+
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
   compression_level 1
@@ -84,7 +87,7 @@ end
 proj_to_work_around_cleanroom = self # wat voodoo hackery is this?
 package :pkg do
   identifier "com.getchef.pkg.#{proj_to_work_around_cleanroom.name}"
-  signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
+  signing_identity "Chef Software, Inc. (EU3VF8YLX2)"
 end
 compress :dmg
 

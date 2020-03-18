@@ -21,7 +21,8 @@ require_relative "package"
 class Chef
   class Resource
     class PacmanPackage < Chef::Resource::Package
-      resource_name :pacman_package
+      unified_mode true
+
       provides :pacman_package
 
       description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."

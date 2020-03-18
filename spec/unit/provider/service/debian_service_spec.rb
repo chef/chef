@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, HJK Solutions, LLC
+# Copyright:: Copyright 2008-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -183,21 +183,21 @@ describe Chef::Provider::Service::Debian do
   describe "enable_service" do
     let(:service_name) { @new_resource.service_name }
     context "when the service doesn't set a priority" do
-      it "calls update-rc.d 'service_name' defaults" do
+      it "assumes default priority 20 and calls update-rc.d remove => defaults 20 80" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} defaults 20 80",
         ])
         @provider.enable_service
       end
     end
 
-    context "when the service sets a simple priority" do
+    context "when the service sets a simple priority 75" do
       before do
         @new_resource.priority(75)
       end
 
-      it "calls update-rc.d 'service_name' defaults" do
+      it "calls update-rc.d remove => defaults 75 25" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
           "/usr/sbin/update-rc.d #{service_name} defaults 75 25",
@@ -206,15 +206,17 @@ describe Chef::Provider::Service::Debian do
       end
     end
 
-    context "when the service sets complex priorities" do
+    context "when the service sets complex priorities using Hash" do
       before do
         @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
       end
 
-      it "calls update-rc.d 'service_name' with those priorities" do
+      it "calls update-rc.d remove => defaults => enable|disable <runlevel>" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d #{service_name} start 20 2 . stop 55 3 . ",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
         ])
         @provider.enable_service
       end
@@ -223,25 +225,44 @@ describe Chef::Provider::Service::Debian do
 
   describe "disable_service" do
     let(:service_name) { @new_resource.service_name }
+
     context "when the service doesn't set a priority" do
-      it "calls update-rc.d -f 'service_name' remove + stop with default priority" do
+      it "calls update-rc.d remove => defaults => disable" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d -f #{service_name} stop 80 2 3 4 5 .",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
         ])
         @provider.disable_service
       end
     end
 
-    context "when the service sets a simple priority" do
+    context "when the service sets a simple priority 75" do
       before do
         @new_resource.priority(75)
       end
 
-      it "calls update-rc.d -f 'service_name' remove + stop with the specified priority" do
+      it "ignores priority and calls update-rc.d remove => defaults => disable" do
         expect_commands(@provider, [
           "/usr/sbin/update-rc.d -f #{service_name} remove",
-          "/usr/sbin/update-rc.d -f #{service_name} stop #{100 - @new_resource.priority} 2 3 4 5 .",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} disable",
+        ])
+        @provider.disable_service
+      end
+    end
+
+    context "when the service sets complex priorities using Hash" do
+      before do
+        @new_resource.priority(2 => [:start, 20], 3 => [:stop, 55])
+      end
+
+      it "ignores priority and calls update-rc.d remove => defaults => enable|disable <runlevel>" do
+        expect_commands(@provider, [
+          "/usr/sbin/update-rc.d -f #{service_name} remove",
+          "/usr/sbin/update-rc.d #{service_name} defaults",
+          "/usr/sbin/update-rc.d #{service_name} enable 2",
+          "/usr/sbin/update-rc.d #{service_name} disable 3",
         ])
         @provider.disable_service
       end

@@ -204,16 +204,14 @@ module Shell
         else
           puts help_banner
         end
-        :ucanhaz_halp
+        :help
       end
       alias :halp :help
 
-      desc "prints information about chef"
+      desc "prints information about #{Chef::Dist::PRODUCT}"
       def version
-        puts "This is the #{Chef::Dist::SHELL}.\n" +
-          " #{Chef::Dist::PRODUCT} Version: #{::Chef::VERSION}\n" +
-          " #{Chef::Dist::WEBSITE}\n" +
-          " https://docs.chef.io/"
+        puts "Welcome to the #{Chef::Dist::SHELL} #{::Chef::VERSION}\n" +
+          "For usage see https://docs.chef.io/chef_shell/"
         :ucanhaz_automation
       end
       alias :shell :version

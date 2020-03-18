@@ -22,6 +22,10 @@ require_relative "../resource"
 class Chef
   class Resource
     class Route < Chef::Resource
+      unified_mode true
+
+      provides :route
+
       default_action :add
       allowed_actions :add, :delete
 

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2019, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,8 @@ class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
       unified_mode true
+
+      provides :windows_script
 
       # This is an abstract resource meant to be subclasses; thus no 'provides'
 
@@ -54,10 +56,7 @@ class Chef
       protected
 
       def assert_architecture_compatible!(desired_architecture)
-        if desired_architecture == :i386 && Chef::Platform.windows_nano_server?
-          raise Chef::Exceptions::Win32ArchitectureIncorrect,
-            "cannot execute script with requested architecture 'i386' on Windows Nano Server"
-        elsif ! node_supports_windows_architecture?(node, desired_architecture)
+        unless node_supports_windows_architecture?(node, desired_architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
             "cannot execute script with requested architecture '#{desired_architecture}' on a system with architecture '#{node_windows_architecture(node)}'"
         end

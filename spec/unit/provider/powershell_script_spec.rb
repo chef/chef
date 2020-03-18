@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2017, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -53,73 +53,33 @@ describe Chef::Provider::PowershellScript, "action_run" do
   end
 
   context "when setting interpreter flags" do
-    context "on nano" do
-      before(:each) do
-        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
-        allow(provider).to receive(:is_forced_32bit).and_return(false)
-        os_info_double = double("os_info")
-        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
-        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
-      end
-
-      it "sets the -Command flag as the last flag" do
-        flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
-        expect(flags.pop).to eq("-Command")
-      end
+    before(:each) do
+      allow(provider).to receive(:is_forced_32bit).and_return(false)
+      os_info_double = double("os_info")
+      allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
+      allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
     end
 
-    context "not on nano" do
-      before(:each) do
-        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(false)
-        allow(provider).to receive(:is_forced_32bit).and_return(false)
-        os_info_double = double("os_info")
-        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
-        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
-      end
+    it "sets the -File flag as the last flag" do
+      flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
+      expect(flags.pop).to eq("-File")
+    end
 
-      it "sets the -File flag as the last flag" do
-        flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
-        expect(flags.pop).to eq("-File")
-      end
+    let(:execution_policy_flag) do
+      provider_flags = provider.flags.split(" ")
+      # Last occurance of "executionpolicy"
+      execution_policy_index = provider_flags.map(&:downcase).rindex("-executionpolicy")
 
-      let(:execution_policy_flag) do
-        provider_flags = provider.flags.split(" ")
-        # Last occurance of "executionpolicy"
-        execution_policy_index = provider_flags.map(&:downcase).rindex("-executionpolicy")
+      execution_policy_index ? provider_flags[execution_policy_index + 1] : nil
+    end
 
-        execution_policy_index ? provider_flags[execution_policy_index + 1] : nil
-      end
+    it "sets default -ExecutionPolicy flag to 'Bypass'" do
+      expect(execution_policy_flag).to eq("Bypass")
+    end
 
-      context "when running with an unspecified PowerShell version" do
-        let(:powershell_version) { nil }
-        it "sets default -ExecutionPolicy flag to 'Unrestricted'" do
-          expect(execution_policy_flag.downcase).to eq("unrestricted".downcase)
-        end
-        it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
-          set_user_defined_flag
-          expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
-        end
-      end
-
-      { "2.0" => "Unrestricted",
-        "2.5" => "Unrestricted",
-        "3.0" => "Bypass",
-        "3.6" => "Bypass",
-        "4.0" => "Bypass",
-        "5.0" => "Bypass" }.each do |version_policy|
-          let(:powershell_version) { version_policy[0].to_f }
-          context "when running PowerShell version #{version_policy[0]}" do
-            let(:powershell_version) { version_policy[0].to_f }
-
-            it "sets default -ExecutionPolicy flag to '#{version_policy[1]}'" do
-              expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
-            end
-            it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
-              set_user_defined_flag
-              expect(execution_policy_flag.downcase).to eq("RemoteSigned".downcase)
-            end
-          end
-        end
+    it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
+      set_user_defined_flag
+      expect(execution_policy_flag).to eq("RemoteSigned")
     end
   end
 end

@@ -19,20 +19,32 @@ class Chef
     # Sets the hostname and updates /etc/hosts on *nix systems
     # @since 14.0.0
     class Hostname < Chef::Resource
-      resource_name :hostname
+      unified_mode true
+
       provides :hostname
 
-      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config"\
-                  " file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
+      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
+      examples <<~DOC
+        Set the hostname using the IP address, as detected by Ohai
+
+        ```ruby
+        hostname 'example'
+        ```
+
+        Manually specify the hostname and IP address
+
+        ```ruby
+        hostname 'statically_configured_host' do
+          hostname 'example'
+          ipaddress '198.51.100.2'
+        end
+        ```
+      DOC
 
       property :hostname, String,
         description: "An optional property to set the hostname if it differs from the resource block's name.",
         name_property: true
-
-      property :compile_time, [ TrueClass, FalseClass ],
-        description: "Determines whether or not the resource should be run at compile time.",
-        default: true, desired_state: false
 
       property :ipaddress, String,
         description: "The IP address to use when configuring the hosts file.",
@@ -41,6 +53,11 @@ class Chef
       property :aliases, [ Array, nil ],
         description: "An array of hostname aliases to use when configuring the hosts file.",
         default: nil
+
+      # override compile_time property to be true by default
+      property :compile_time, [ TrueClass, FalseClass ],
+        description: "Determines whether or not the resource should be run at compile time.",
+        default: true, desired_state: false
 
       property :windows_reboot, [ TrueClass, FalseClass ],
         description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
@@ -82,7 +99,7 @@ class Chef
       action :set do
         description "Sets the node's hostname."
 
-        if node["platform_family"] != "windows"
+        if !windows?
           ohai "reload hostname" do
             plugin "hostname"
             action :nothing
@@ -125,7 +142,7 @@ class Chef
               not_if { shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
               notifies :reload, "ohai[reload hostname]"
             end
-          when node["os"] == "linux"
+          when linux?
             case
             when ::File.exist?("/usr/bin/hostnamectl") && !docker?
               # use hostnamectl whenever we find it on linux (as systemd takes over the world)
@@ -248,17 +265,6 @@ class Chef
             reason "chef setting hostname"
             action :nothing
             only_if { new_resource.windows_reboot }
-          end
-        end
-      end
-
-      # this resource forces itself to run at compile_time
-      #
-      # @return [void]
-      def after_created
-        if compile_time
-          Array(action).each do |action|
-            run_action(action)
           end
         end
       end

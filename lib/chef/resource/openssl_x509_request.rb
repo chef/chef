@@ -1,7 +1,7 @@
 #
 # License:: Apache License, Version 2.0
 # Author:: Julien Huon
-# Copyright:: Copyright 2018, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,10 +24,46 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
-      resource_name :openssl_x509_request
+      provides :openssl_x509_request
 
       description "Use the openssl_x509_request resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."
       introduced "14.4"
+      examples <<~DOC
+        Generate new ec key and csr file
+
+        ```ruby
+        openssl_x509_request '/etc/ssl_files/my_ec_request.csr' do
+          common_name 'myecrequest.example.com'
+          org 'Test Kitchen Example'
+          org_unit 'Kitchens'
+          country 'UK'
+        end
+        ```
+
+        Generate a new csr file from an existing ec key
+
+        ```ruby
+        openssl_x509_request '/etc/ssl_files/my_ec_request2.csr' do
+          common_name 'myecrequest2.example.com'
+          org 'Test Kitchen Example'
+          org_unit 'Kitchens'
+          country 'UK'
+          key_file '/etc/ssl_files/my_ec_request.key'
+        end
+        ```
+
+        Generate new rsa key and csr file
+
+        ```ruby
+        openssl_x509_request '/etc/ssl_files/my_rsa_request.csr' do
+          common_name 'myrsarequest.example.com'
+          org 'Test Kitchen Example'
+          org_unit 'Kitchens'
+          country 'UK'
+          key_type 'rsa'
+        end
+        ```
+      DOC
 
       property :path, String, name_property: true,
                description: "An optional property for specifying the path to write the file to if it differs from the resource block's name."

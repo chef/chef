@@ -542,7 +542,7 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq ""
         end
         it "x is immutable" do
-          expect { resource.x << "foo" }.to raise_error(RuntimeError, "can't modify frozen String")
+          expect { resource.x << "foo" }.to raise_error(FrozenError, /can't modify frozen String/)
         end
       end
 
@@ -562,7 +562,7 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq({})
         end
         it "x is immutable" do
-          expect { resource.x["foo"] = "bar" }.to raise_error(RuntimeError, "can't modify frozen Hash")
+          expect { resource.x["foo"] = "bar" }.to raise_error(FrozenError, /can't modify frozen Hash/)
         end
         it "The same exact value is returned multiple times in a row" do
           value = resource.x
@@ -595,13 +595,13 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq([{ foo: "bar" }])
         end
         it "x is immutable" do
-          expect { resource.x << :other }.to raise_error(RuntimeError, "can't modify frozen Array")
+          expect { resource.x << :other }.to raise_error(FrozenError, /can't modify frozen Array/)
         end
         it "x.first is immutable" do
-          expect { resource.x.first[:foo] = "other" }.to raise_error(RuntimeError, "can't modify frozen Hash")
+          expect { resource.x.first[:foo] = "other" }.to raise_error(FrozenError, /can't modify frozen Hash/)
         end
         it "x.first[:foo] is immutable" do
-          expect { resource.x.first[:foo] << "other" }.to raise_error(RuntimeError, "can't modify frozen String")
+          expect { resource.x.first[:foo] << "other" }.to raise_error(FrozenError, /can't modify frozen String/)
         end
       end
     end
@@ -1072,13 +1072,13 @@ describe "Chef::Resource.property" do
 
   it "raises an error if both name_property and name_attribute are specified" do
     expect { resource_class.property :x, name_property: false, name_attribute: 1 }.to raise_error ArgumentError,
-      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, name_property: false, name_attribute: nil }.to raise_error ArgumentError,
-      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, name_property: false, name_attribute: false }.to raise_error ArgumentError,
-      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)/
     expect { resource_class.property :x, name_property: true, name_attribute: true }.to raise_error ArgumentError,
-      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)./
+      /name_attribute and name_property are functionally identical and both cannot be specified on a property at once. Use just one on property x of resource chef_resource_property_spec_(\d+)/
   end
 
   context "property_type" do

@@ -3,7 +3,7 @@
 # Author:: Tim Smith <tsmith@chef.io>
 #
 # Copyright:: 2014-2018, Sander Botman
-# Copyright:: 2018-2019, Chef Software, Inc.
+# Copyright:: 2018-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class CronAccess < Chef::Resource
-      resource_name :cron_access
+      unified_mode true
+      provides :cron_access
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"
@@ -43,7 +44,7 @@ class Chef
 
         Specify the username with the user property
         ```ruby
-        cron_access 'Deny the tomcat access to cron for security purposes' do
+        cron_access 'Deny the jenkins user access to cron for security purposes' do
           user 'jenkins'
           action :deny
         end

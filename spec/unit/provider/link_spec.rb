@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -358,7 +358,6 @@ describe Chef::Resource::Link do
         allow(Chef::Resource::Link).to receive(:new).with(
           provider.new_resource.name
         ).and_return(resource_link)
-        allow(resource_link).to receive(:verify_links_supported!)
         allow(ChefUtils).to receive(:windows?).and_return(true)
       end
 
