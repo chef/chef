@@ -788,7 +788,7 @@ describe Chef::Provider::Package::Rubygems do
             let(:include_default_source) { true }
 
             it "installs the gem with rubygems as a source" do
-            expected = "#{gem_binary} install rspec-core -q --no-document -v \"#{target_version}\" --clear-sources --source=https://mirror1 --source=https://mirror2 --source=https://rubygems.org"
+              expected = "#{gem_binary} install rspec-core -q --no-document -v \"#{target_version}\" --clear-sources --source=https://mirror1 --source=https://mirror2 --source=https://rubygems.org"
               expect(provider).to receive(:shell_out_compacted!).with(expected, env: nil, timeout: 900)
               provider.run_action(:install)
               expect(new_resource).to be_updated_by_last_action
