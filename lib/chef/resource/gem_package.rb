@@ -48,9 +48,9 @@ class Chef
       property :gem_binary, String, desired_state: false,
         description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed."
 
-      property :include_default_source, [ TrueClass, FalseClass ],
+      property :include_default_source, [ TrueClass, FalseClass, nil ],
         description: "Set to 'false' to not include 'Chef::Config[:rubygems_url]'' in the sources.",
-        default: true, introduced: "13.0"
+        default: nil, introduced: "13.0"
 
       property :options, [ String, Hash, Array, nil ],
         description: "Options for the gem install, either a Hash or a String. When a hash is given, the options are passed to Gem::DependencyInstaller.new, and the gem will be installed via the gems API. When a String is given, the gem will be installed by shelling out to the gem command. Using a Hash of options with an explicit gem_binary will result in undefined behavior.",
