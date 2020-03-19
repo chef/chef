@@ -484,11 +484,11 @@ class Chef
         end
 
         ##
-        # TODO: Fix comment
-        # If `clear_sources` is nil, clearing sources is implied if a `source`
-        # was added or if the global rubygems URL is set. If `clear_sources`
-        # is not nil, it has been set explicitly on the resource and its value
-        # should be used.
+        # If `include_default_source` is nil, return true if the global
+        # `rubygems_url` was set or if `clear_sources` and `source` on the
+        # resource are not set.
+        # If `include_default_source` is not nil, it has been set explicitly on
+        # the resource and that value should be used.
         def include_default_source?
           if new_resource.include_default_source.nil?
             !!Chef::Config[:rubygems_url] || !(new_resource.source || new_resource.clear_sources)
