@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.145 -->
-## [v16.0.145](https://github.com/chef/chef/tree/v16.0.145) (2020-03-18)
+<!-- latest_release 16.0.146 -->
+## [v16.0.146](https://github.com/chef/chef/tree/v16.0.146) (2020-03-19)
 
 #### Merged Pull Requests
-- powershell_package: Use ohai data to get the powershell release instead of shelling out [#9492](https://github.com/chef/chef/pull/9492) ([sanga1794](https://github.com/sanga1794))
+- Refresh DNF package provider and add aarch el8 testing support [#9500](https://github.com/chef/chef/pull/9500) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refresh DNF package provider and add aarch el8 testing support [#9500](https://github.com/chef/chef/pull/9500) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.146 -->
 - powershell_package: Use ohai data to get the powershell release instead of shelling out [#9492](https://github.com/chef/chef/pull/9492) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.145 -->
 - add group to windows_firewall_rule resource [#8729](https://github.com/chef/chef/pull/8729) ([pschaumburg](https://github.com/pschaumburg)) <!-- 16.0.144 -->
 - Use the correct constant in the resource support files [#9506](https://github.com/chef/chef/pull/9506) ([tas50](https://github.com/tas50)) <!-- 16.0.143 -->
