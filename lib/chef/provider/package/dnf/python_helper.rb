@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2017, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 require_relative "../../../mixin/which"
 require_relative "../../../mixin/shell_out"
 require_relative "version"
+require "singleton" unless defined?(Singleton)
 require "timeout" unless defined?(Timeout)
 
 class Chef
@@ -32,6 +33,8 @@ class Chef
           attr_accessor :stdin
           attr_accessor :stdout
           attr_accessor :stderr
+          attr_accessor :inpipe
+          attr_accessor :outpipe
           attr_accessor :wait_thr
 
           DNF_HELPER = ::File.expand_path(::File.join(::File.dirname(__FILE__), "dnf_helper.py")).freeze
@@ -50,16 +53,28 @@ class Chef
 
           def start
             ENV["PYTHONUNBUFFERED"] = "1"
-            @stdin, @stdout, @stderr, @wait_thr = Open3.popen3(dnf_command)
+            @inpipe, inpipe_write = IO.pipe
+            outpipe_read, @outpipe = IO.pipe
+            @stdin, @stdout, @stderr, @wait_thr = Open3.popen3("#{dnf_command} #{outpipe_read.fileno} #{inpipe_write.fileno}", outpipe_read.fileno => outpipe_read, inpipe_write.fileno => inpipe_write, close_others: false)
+            outpipe_read.close
+            inpipe_write.close
           end
 
           def reap
             unless wait_thr.nil?
-              Process.kill("KILL", wait_thr.pid) rescue nil
+              Process.kill("INT", wait_thr.pid) rescue nil
+              begin
+                Timeout.timeout(3) do
+                  wait_thr.value # this calls waitpid()
+                end
+              rescue Timeout::Error
+                Process.kill("KILL", wait_thr.pid) rescue nil
+              end
               stdin.close unless stdin.nil?
               stdout.close unless stdout.nil?
               stderr.close unless stderr.nil?
-              wait_thr.value # this calls waitpit()
+              inpipe.close unless inpipe.nil?
+              outpipe.close unless outpipe.nil?
             end
           end
 
@@ -68,26 +83,39 @@ class Chef
           end
 
           def compare_versions(version1, version2)
-            with_helper do
-              json = build_version_query("versioncompare", [version1, version2])
-              Chef::Log.trace "sending '#{json}' to python helper"
-              stdin.syswrite json + "\n"
-              stdout.sysread(4096).chomp.to_i
+            query("versioncompare", { "versions" => [version1, version2] }).to_i
+          end
+
+          def options_params(options)
+            options.each_with_object({}) do |opt, h|
+              if opt =~ /--enablerepo=(.+)/
+                $1.split(",").each do |repo|
+                  h["repos"] ||= []
+                  h["repos"].push( { "enable" => repo } )
+                end
+              end
+              if opt =~ /--disablerepo=(.+)/
+                $1.split(",").each do |repo|
+                  h["repos"] ||= []
+                  h["repos"].push( { "disable" => repo } )
+                end
+              end
             end
           end
 
           # @return Array<Version>
-          def query(action, provides, version = nil, arch = nil)
-            with_helper do
-              json = build_query(action, provides, version, arch)
-              Chef::Log.trace "sending '#{json}' to python helper"
-              stdin.syswrite json + "\n"
-              output = stdout.sysread(4096).chomp
-              Chef::Log.trace "got '#{output}' from python helper"
-              version = parse_response(output)
-              Chef::Log.trace "parsed #{version} from python helper"
-              version
-            end
+          # NB: "options" here is the dnf_package options hash and is deliberately not **opts
+          def package_query(action, provides, version: nil, arch: nil, options: {})
+            parameters = { "provides" => provides, "version" => version, "arch" => arch }
+            repo_opts = options_params(options || {})
+            parameters.merge!(repo_opts)
+            # XXX: for now we restart before and after every query with an enablerepo/disablerepo to clean the helpers internal state
+            restart unless repo_opts.empty?
+            query_output = query(action, parameters)
+            version = parse_response(query_output.lines.last)
+            Chef::Log.trace "parsed #{version} from python helper"
+            restart unless repo_opts.empty?
+            version
           end
 
           def restart
@@ -116,17 +144,28 @@ class Chef
             hash["version"] = version
           end
 
-          def build_query(action, provides, version, arch)
-            hash = { "action" => action }
-            hash["provides"] = provides
-            add_version(hash, version) unless version.nil?
-            hash["arch" ] = arch unless arch.nil?
-            FFI_Yajl::Encoder.encode(hash)
+          def query(action, parameters)
+            with_helper do
+              json = build_query(action, parameters)
+              Chef::Log.trace "sending '#{json}' to python helper"
+              outpipe.syswrite json + "\n"
+              output = inpipe.sysread(4096).chomp
+              Chef::Log.trace "got '#{output}' from python helper"
+              return output
+            end
           end
 
-          def build_version_query(action, versions)
+          def build_query(action, parameters)
             hash = { "action" => action }
-            hash["versions"] = versions
+            parameters.each do |param_name, param_value|
+              hash[param_name] = param_value unless param_value.nil?
+            end
+
+            # Special handling for certain action / param combos
+            if %i{whatinstalled whatavailable}.include?(action)
+              add_version(hash, parameters["version"]) unless parameters["version"].nil?
+            end
+
             FFI_Yajl::Encoder.encode(hash)
           end
 
@@ -135,12 +174,16 @@ class Chef
             array.each_slice(3).map { |x| Version.new(*x) }.first
           end
 
-          def drain_stderr
+          def drain_fds
             output = ""
-            output += stderr.sysread(4096).chomp until IO.select([stderr], nil, nil, 0).nil?
+            fds, = IO.select([stderr, stdout, inpipe], nil, nil, 0)
+            unless fds.nil?
+              fds.each do |fd|
+                output += fd.sysread(4096) rescue ""
+              end
+            end
             output
-          rescue
-            # we must rescue EOFError, and we don't much care about errors on stderr anyway
+          rescue => e
             output
           end
 
@@ -151,23 +194,23 @@ class Chef
               check
               ret = yield
             end
-            output = drain_stderr
+            output = drain_fds
             unless output.empty?
-              Chef::Log.trace "discarding output on stderr from python helper: #{output}"
+              Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
           rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
-            output = drain_stderr
+            output = drain_fds
             if ( max_retries -= 1 ) > 0
               unless output.empty?
-                Chef::Log.trace "discarding output on stderr from python helper: #{output}"
+                Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end
               restart
               retry
             else
               raise e if output.empty?
 
-              raise "dnf-helper.py had stderr output:\n\n#{output}"
+              raise "dnf-helper.py had stderr/stdout output:\n\n#{output}"
             end
           end
         end

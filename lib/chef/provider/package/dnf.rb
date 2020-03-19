@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2018, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -118,21 +118,77 @@ class Chef
           flushcache
         end
 
+        # NB: the dnf_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `dnf versionlock | grep '^pattern`` kind of approach
+        def lock_package(names, versions)
+          dnf("-d0", "-e0", "-y", options, "versionlock", "add", resolved_package_lock_names(names))
+        end
+
+        # NB: the dnf_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `dnf versionlock | grep '^pattern`` kind of approach
+        def unlock_package(names, versions)
+          # dnf versionlock delete on rhel6 needs the glob nonsense in the following command
+          dnf("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "*:#{n}-*" })
+        end
+
         private
 
-        def resolve_source_to_version_obj
-          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
-            # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
-            # does not match what the dnf library accepts.
-            case line
-            when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
-              return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+        # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
+        def resolved_package_lock_names(names)
+          names.each_with_index.map do |name, i|
+            unless name.nil?
+              if installed_version(i).version.nil?
+                available_version(i).name
+              else
+                installed_version(i).name
+              end
             end
           end
         end
 
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = dnf("versionlock", "list")
+              locked.stdout.each_line.map do |line|
+                line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+              end
+            end
+        end
+
+        def packages_all_locked?(names, versions)
+          resolved_package_lock_names(names).all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          !resolved_package_lock_names(names).any? { |n| locked_packages.include? n }
+        end
+
+        def version_gt?(v1, v2)
+          return false if v1.nil? || v2.nil?
+
+          python_helper.compare_versions(v1, v2) == 1
+        end
+
+        def version_equals?(v1, v2)
+          return false if v1.nil? || v2.nil?
+
+          python_helper.compare_versions(v1, v2) == 0
+        end
+
         def version_compare(v1, v2)
           python_helper.compare_versions(v1, v2)
+        end
+
+        def resolve_source_to_version_obj
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
+            # does not match what the yum library accepts.
+            case line
+              when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+            end
+          end
         end
 
         # @return Array<Version>
@@ -142,7 +198,7 @@ class Chef
           @available_version[index] ||= if new_resource.source
                                           resolve_source_to_version_obj
                                         else
-                                          python_helper.query(:whatavailable, package_name_array[index], safe_version_array[index], safe_arch_array[index])
+                                          python_helper.package_query(:whatavailable, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
                                         end
 
           @available_version[index]
@@ -152,9 +208,9 @@ class Chef
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source
-                                          python_helper.query(:whatinstalled, available_version(index).name, safe_version_array[index], safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
                                         else
-                                          python_helper.query(:whatinstalled, package_name_array[index], safe_version_array[index], safe_arch_array[index])
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
                                         end
           @installed_version[index]
         end
