@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,11 +33,15 @@ class Chef
           end
 
           def to_s
-            "#{name}-#{version}.#{arch}"
+            "#{name}-#{version}.#{arch}" unless version.nil?
           end
 
           def version_with_arch
             "#{version}.#{arch}" unless version.nil?
+          end
+
+          def name_with_arch
+            "#{name}.#{arch}" unless name.nil?
           end
 
           def matches_name_and_arch?(other)

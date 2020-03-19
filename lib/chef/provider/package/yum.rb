@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016-2018, Chef Software Inc.
+# Copyright:: Copyright 2016-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -200,14 +200,6 @@ class Chef
           return false if v1.nil? || v2.nil?
 
           python_helper.compare_versions(v1, v2)
-        end
-
-        # Generate the yum syntax for the package
-        def yum_syntax(name, version, arch)
-          s = name
-          s += "-#{version}" if version
-          s += ".#{arch}" if arch
-          s
         end
 
         def resolve_source_to_version_obj
