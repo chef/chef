@@ -26,23 +26,23 @@ class Chef
       description "Use the chef_client_cron resource to setup the Chef Infra Client to run as a cron job."
       introduced "16.0"
 
-      property :user, String, default: 'root'
+      property :user, String, default: "root"
 
-      property :minute, [String, Integer], default: '0,30'
-      property :hour, [String, Integer], default: '*'
-      property :weekday, [String, Integer], default: '*'
+      property :minute, [String, Integer], default: "0,30"
+      property :hour, [String, Integer], default: "*"
+      property :weekday, [String, Integer], default: "*"
       property :mailto, String
 
-      property :job_name, String, default: 'chef-client'
+      property :job_name, String, default: "chef-client"
       property :splay, [Integer, String], default: 300
 
       property :env_vars, Hash
 
-      property :config_directory, String, default: '/etc/chef'
-      property :log_directory, String, default: lazy { platform?('mac_os_x') ? '/Library/Logs/Chef' : '/var/log/chef' }
-      property :log_file_name, String, default: 'client.log'
+      property :config_directory, String, default: "/etc/chef"
+      property :log_directory, String, default: lazy { platform?("mac_os_x") ? "/Library/Logs/Chef" : "/var/log/chef" }
+      property :log_file_name, String, default: "client.log"
       property :append_log_file, [true, false], default: false
-      property :chef_binary_path, String, default: '/opt/chef/bin/chef-client'
+      property :chef_binary_path, String, default: "/opt/chef/bin/chef-client"
       property :daemon_options, Array, default: []
 
       action :add do
@@ -63,12 +63,20 @@ class Chef
       end
 
       action_class do
+        # Generate a uniformly distributed unique number to sleep.
+        def splay_sleep_time(splay)
+          if splay.to_i > 0
+            seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
+            seed % splay.to_i
+          end
+        end
+
         def cron_command
-          cmd = ''
+          cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
           cmd << "#{new_resource.env_vars} " if new_resource.env_vars
-          cmd << "#{new_resource.chef_binary_path} #{new_resource.daemon_options.join(' ')}"
-          cmd << " #{new_resource.append_log_file ? '>>' : '>'} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
+          cmd << "#{new_resource.chef_binary_path} #{new_resource.daemon_options.join(" ")}"
+          cmd << " #{new_resource.append_log_file ? ">>" : ">"} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           cmd << ' || echo "Chef Infra Client execution failed"' if new_resource.mailto
           cmd
         end
