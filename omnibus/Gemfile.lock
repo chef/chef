@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: c086d8057ac9a15486fe2010009db0dee1cea682
-  branch: master
+  revision: 7c4a4eb39aed6b319e6ff00ee8f21e5f4cf03a11
+  branch: jsinha/remove_dependencies
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 5.6.1)
@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.281.0)
-    aws-sdk-core (3.91.0)
+    aws-partitions (1.287.0)
+    aws-sdk-core (3.92.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -183,7 +183,6 @@ GEM
     hashie (4.1.0)
     highline (1.7.10)
     httpclient (2.8.3)
-    inifile (3.0.0)
     iniparse (1.5.0)
     iostruct (0.0.4)
     ipaddress (0.8.3)
@@ -306,10 +305,9 @@ GEM
     thor (0.20.3)
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
-    tomlrb (1.2.9)
-    train-core (3.2.23)
+    tomlrb (1.3.0)
+    train-core (3.2.26)
       addressable (~> 2.5)
-      inifile (~> 3.0)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 3.0)

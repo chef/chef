@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "omnibus", git: "https://github.com/chef/omnibus", branch: "master"
-gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "master"
+gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: 'jsinha/remove_dependencies'
 gem "artifactory"
 
 gem "pedump"
