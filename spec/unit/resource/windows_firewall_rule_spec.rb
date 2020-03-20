@@ -244,7 +244,7 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets a displayname" do
         resource.displayname("New displayname")
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New Displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalAddress" do
@@ -364,7 +364,7 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets a displayname" do
         resource.displayname("New displayname")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'New Displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'New displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalAddress" do
@@ -463,7 +463,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.service("SomeService")
         resource.interface_type(:remoteaccess)
         resource.enabled(false)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second'  -NewDisplayName 'some cool display name' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second' -NewDisplayName 'some cool display name' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
       end
     end
   end
