@@ -119,7 +119,7 @@ class Chef
         # Need to reverse `$rule.Profile.ToString()` in powershell command
         current_profiles = state["profile"].split(", ").map(&:to_sym)
 
-        description state['description']
+        description state["description"]
         displayname state["displayname"]
         group state["group"]
         local_address state["local_address"]
