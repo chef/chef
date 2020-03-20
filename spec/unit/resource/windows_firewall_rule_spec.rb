@@ -242,6 +242,11 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'New description' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
+      it "sets a displayname" do
+        resource.displayname("New displayname")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
       it "sets LocalAddress" do
         resource.local_address("127.0.0.1")
         expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'test_rule' -Description 'Firewall rule' -LocalAddress '127.0.0.1' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
@@ -330,6 +335,7 @@ describe Chef::Resource::WindowsFirewallRule do
       it "sets all properties" do
         resource.rule_name("test_rule_the_second")
         resource.description("some other rule")
+        resource.displayname("some cool display name")
         resource.local_address("192.168.40.40")
         resource.local_port("80")
         resource.remote_address("8.8.4.4")
@@ -342,103 +348,109 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.service("SomeService")
         resource.interface_type(:remoteaccess)
         resource.enabled(false)
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule_the_second' -DisplayName 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule_the_second' -DisplayName 'some cool display name' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
       end
     end
 
     context "#set" do
       it "build a minimal command" do
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets a description" do
         resource.description("New description")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'New description' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'New description' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+      end
+
+      it "sets a displayname" do
+        resource.displayname("New displayname")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'New displayname' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalAddress" do
         resource.local_address("127.0.0.1")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalAddress '127.0.0.1' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -LocalAddress '127.0.0.1' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalPort" do
         resource.local_port("80")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalPort with int" do
         resource.local_port(80)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets multiple LocalPorts (must be comma-plus-space delimited for PowerShell to treat as an array)" do
         resource.local_port(%w{80 8080})
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -LocalPort '80', '8080' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -LocalPort '80', '8080' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets RemoteAddress" do
         resource.remote_address("8.8.8.8")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemoteAddress '8.8.8.8' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -RemoteAddress '8.8.8.8' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets RemotePort" do
         resource.remote_port("443")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets RemotePort with int" do
         resource.remote_port(443)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets multiple RemotePorts (must be comma-plus-space delimited for PowerShell to treat as an array)" do
         resource.remote_port(%w{443 445})
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -RemotePort '443', '445' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Direction" do
         resource.direction(:outbound)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'outbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'outbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Protocol" do
         resource.protocol("UDP")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'UDP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'UDP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Action" do
         resource.firewall_action(:block)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'block' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'block' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Profile" do
         resource.profile(:private)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'private' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Program" do
         resource.program("C:/calc.exe")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -Program 'C:/calc.exe' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -Program 'C:/calc.exe' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets Service" do
         resource.service("Spooler")
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -Service 'Spooler' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -Service 'Spooler' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets InterfaceType" do
         resource.interface_type(:wired)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'wired' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'wired' -Enabled 'true'")
       end
 
       it "sets Enabled" do
         resource.enabled(false)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'false'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule' -NewDisplayName 'test_rule' -Description 'Firewall rule' -Direction 'inbound' -Protocol 'TCP' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'false'")
       end
 
       it "sets all properties" do
         resource.rule_name("test_rule_the_second")
         resource.description("some other rule")
+        resource.displayname("some cool display name")
         resource.local_address("192.168.40.40")
         resource.local_port("80")
         resource.remote_address("8.8.4.4")
@@ -451,7 +463,7 @@ describe Chef::Resource::WindowsFirewallRule do
         resource.service("SomeService")
         resource.interface_type(:remoteaccess)
         resource.enabled(false)
-        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
+        expect(provider.firewall_command("Set")).to eql("Set-NetFirewallRule -Name 'test_rule_the_second' -NewDisplayName 'some cool display name' -Description 'some other rule' -LocalAddress '192.168.40.40' -LocalPort '80' -RemoteAddress '8.8.4.4' -RemotePort '8081' -Direction 'outbound' -Protocol 'UDP' -Action 'notconfigured' -Profile 'domain' -Program '%WINDIR%\\System32\\lsass.exe' -Service 'SomeService' -InterfaceType 'remoteaccess' -Enabled 'false'")
       end
     end
   end
