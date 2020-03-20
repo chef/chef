@@ -37,6 +37,11 @@ class Chef
         default: "Firewall rule",
         description: "The description to assign to the firewall rule."
 
+      property :displayname, String,
+        description: "The displayname to assign to the firewall rule.",
+        default: lazy { rule_name },
+        introduced: "16.0"
+
       property :group, String,
         description: "Specifies that only matching firewall rules of the indicated group association are copied.",
         introduced: "16.0"
@@ -114,6 +119,8 @@ class Chef
         # Need to reverse `$rule.Profile.ToString()` in powershell command
         current_profiles = state["profile"].split(", ").map(&:to_sym)
 
+        description state['description']
+        displayname state["displayname"]
         group state["group"]
         local_address state["local_address"]
         local_port Array(state["local_port"]).sort
@@ -133,8 +140,9 @@ class Chef
         description "Create a Windows firewall entry."
 
         if current_resource
-          converge_if_changed :rule_name, :local_address, :local_port, :remote_address, :remote_port, :direction,
-            :protocol, :firewall_action, :profile, :program, :service, :interface_type, :enabled do
+          converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
+            :remote_port, :direction, :protocol, :firewall_action, :profile, :program, :service, :interface_type,
+            :enabled do
               cmd = firewall_command("Set")
               powershell_out!(cmd)
             end
@@ -168,7 +176,8 @@ class Chef
         # @return [String] firewall create command
         def firewall_command(cmdlet_type)
           cmd = "#{cmdlet_type}-NetFirewallRule -Name '#{new_resource.rule_name}'"
-          cmd << " -DisplayName '#{new_resource.rule_name}'" if cmdlet_type == "New"
+          cmd << " -DisplayName '#{new_resource.displayname}'" if new_resource.displayname && cmdlet_type == "New"
+          cmd << " -NewDisplayName '#{new_resource.displayname}'" if new_resource.displayname && cmdlet_type == "Set"
           cmd << " -Group '#{new_resource.group}'" if new_resource.group && cmdlet_type == "New"
           cmd << " -Description '#{new_resource.description}'" if new_resource.description
           cmd << " -LocalAddress '#{new_resource.local_address}'" if new_resource.local_address
@@ -204,6 +213,7 @@ class Chef
           ([PSCustomObject]@{
             rule_name = $rule.Name
             description = $rule.Description
+            displayname = $rule.DisplayName
             group = $rule.Group
             local_address = $addressFilter.LocalAddress
             local_port = $portFilter.LocalPort
