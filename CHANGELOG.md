@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.147 -->
-## [v16.0.147](https://github.com/chef/chef/tree/v16.0.147) (2020-03-19)
+<!-- latest_release 16.0.148 -->
+## [v16.0.148](https://github.com/chef/chef/tree/v16.0.148) (2020-03-20)
 
 #### Merged Pull Requests
-- Fix windows_firewall_rule resource for rules with multiple profiles [#9511](https://github.com/chef/chef/pull/9511) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- extend windows_firewall_rule abilities with displayname and description [#9514](https://github.com/chef/chef/pull/9514) ([pschaumburg](https://github.com/pschaumburg))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- extend windows_firewall_rule abilities with displayname and description [#9514](https://github.com/chef/chef/pull/9514) ([pschaumburg](https://github.com/pschaumburg)) <!-- 16.0.148 -->
 - Fix windows_firewall_rule resource for rules with multiple profiles [#9511](https://github.com/chef/chef/pull/9511) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.0.147 -->
 - Refresh DNF package provider and add aarch el8 testing support [#9500](https://github.com/chef/chef/pull/9500) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.146 -->
 - powershell_package: Use ohai data to get the powershell release instead of shelling out [#9492](https://github.com/chef/chef/pull/9492) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.145 -->
