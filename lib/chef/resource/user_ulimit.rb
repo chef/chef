@@ -79,6 +79,7 @@ class Chef
       action :create do
         template "/etc/security/limits.d/#{new_resource.filename}" do
           source ::File.expand_path("../support/ulimit.erb", __FILE__)
+          local true
           mode "0644"
           variables(
             ulimit_user: new_resource.username,
