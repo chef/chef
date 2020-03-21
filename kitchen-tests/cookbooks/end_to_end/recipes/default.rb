@@ -138,6 +138,16 @@ user_ulimit "tomcat" do
   rtprio_hard_limit 60
 end
 
+chef_client_cron "Run chef-client as a cron job"
+
+chef_client_cron "Run chef-client with base recipe" do
+  minute 0
+  hour "0,12"
+  job_name "chef-client-base"
+  log_file_name "chef-client-base.log"
+  daemon_options ["--override-runlist mycorp_base::default"]
+end
+
 include_recipe "::chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::alternatives"
 include_recipe "::tests"
