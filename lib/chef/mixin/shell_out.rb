@@ -26,10 +26,6 @@ class Chef
       #
       # all consumers should now call shell_out!/shell_out.
       #
-      # on unix the shell_out API supports the clean_array() kind of syntax (below) so that
-      # array args are flat/compact/to_s'd.  on windows, array args aren't supported to its
-      # up to the caller to join(" ") on arrays of strings.
-      #
       # the shell_out_compacted/shell_out_compacted! APIs are private but are intended for use
       # in rspec tests, and should ideally always be used to make code refactorings that do not
       # change behavior easier:
