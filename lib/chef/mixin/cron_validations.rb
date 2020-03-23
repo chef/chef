@@ -52,7 +52,6 @@ class Chef
         if spec.respond_to? :to_int
           validate_numeric(spec, 1, 12)
         elsif spec.respond_to? :to_str
-          return true if spec == "*"
           # Named abbreviations are permitted but not as part of a range or with stepping
           return true if %w{jan feb mar apr may jun jul aug sep oct nov dec}.include? spec.downcase
 
