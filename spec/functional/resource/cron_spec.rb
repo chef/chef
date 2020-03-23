@@ -57,10 +57,6 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user "root"
     new_resource.minute "0"
-    new_resource.hour ""
-    new_resource.day ""
-    new_resource.month ""
-    new_resource.weekday ""
     new_resource.command "/bin/true"
     new_resource
   end
