@@ -29,9 +29,7 @@ class Chef
         return true if spec == "*"
 
         if spec.respond_to? :to_int
-          return false unless spec >= min && spec <= max
-
-          return true
+          return spec >= min && spec <= max
         end
 
         # Lists of invidual values, ranges, and step values all share the validity range for type
