@@ -56,7 +56,7 @@ describe Chef::Mixin::CronValidations do
       expect(Chef::Mixin::CronValidations.validate_month(13)).to be false
     end
 
-    it "returns false for an invalid string" do
+    it "returns false for an invalid string (typo)" do
       expect(Chef::Mixin::CronValidations.validate_month("janurary")).to be false
     end
   end
@@ -66,8 +66,12 @@ describe Chef::Mixin::CronValidations do
       expect(Chef::Mixin::CronValidations.validate_numeric(5, 1, 100)).to be true
     end
 
-    it "returns false if the value is out of the allowed range" do
+    it "returns false if the value less than the allowed range" do
       expect(Chef::Mixin::CronValidations.validate_numeric(-1, 1, 100)).to be false
+    end
+
+    it "returns false if the value more than the allowed range" do
+      expect(Chef::Mixin::CronValidations.validate_numeric(101, 1, 100)).to be false
     end
   end
 end
