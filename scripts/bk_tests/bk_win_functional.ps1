@@ -15,7 +15,7 @@ echo "Installing Ruby + DevKit"
 Start-Process c:\rubyinstaller-devkit-2.6.5-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
 
 echo "Cleaning up installation"
-Remove-Item c:\rubyinstaller-devkit-2.6.5-1-x64.exe -Force
+Remove-Item c:\rubyinstaller-devkit-2.6.5-1-x64.exe -Force -ErrorAction SilentlyContinue
 echo "Closing out the layer (this can take awhile)"
 
 # Set-Item -Path Env:Path -Value to include ruby26
