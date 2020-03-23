@@ -81,7 +81,13 @@ directory "/etc/ssl"
 
 cron_access "bob"
 
-cron_d "some random cron job" do
+cron "some random cron job" do
+  minute  0
+  hour    23
+  command "/usr/bin/true"
+end
+
+cron_d "another random cron job" do
   minute  0
   hour    23
   command "/usr/bin/true"
