@@ -18,6 +18,7 @@
 #
 
 require_relative "../resource"
+require_relative "helpers/cron_validations"
 require_relative "../provider/cron" # do not remove. we actually need this below
 
 class Chef
@@ -35,80 +36,33 @@ class Chef
 
       def initialize(name, run_context = nil)
         super
-        @minute = "*"
-        @hour = "*"
-        @day = "*"
         @month = "*"
         @weekday = "*"
       end
 
-      def minute(arg = nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
-        begin
-          if integerize(arg) > 59 then raise RangeError end
-        rescue ArgumentError
-        end
-        set_or_return(
-          :minute,
-          converted_arg,
-          kind_of: String
-        )
-      end
+      property :minute, [Integer, String],
+        description: "The minute at which the cron entry should run (0 - 59).",
+        default: "*", callbacks: {
+          "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
+        }
 
-      def hour(arg = nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
-        begin
-          if integerize(arg) > 23 then raise RangeError end
-        rescue ArgumentError
-        end
-        set_or_return(
-          :hour,
-          converted_arg,
-          kind_of: String
-        )
-      end
+      property :hour, [Integer, String],
+        description: "The hour at which the cron entry is to run (0 - 23).",
+        default: "*", callbacks: {
+          "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
+        }
 
-      def day(arg = nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
-        begin
-          if integerize(arg) > 31 then raise RangeError end
-        rescue ArgumentError
-        end
-        set_or_return(
-          :day,
-          converted_arg,
-          kind_of: String
-        )
-      end
+      property :day, [Integer, String],
+        description: "The day of month at which the cron entry should run (1 - 31).",
+        default: "*", callbacks: {
+          "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
+        }
 
-      def month(arg = nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
-        begin
-          if integerize(arg) > 12 then raise RangeError end
-        rescue ArgumentError
-        end
-        set_or_return(
-          :month,
-          converted_arg,
-          kind_of: String
-        )
-      end
+      property :month, [Integer, String],
+        description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
+        default: "*", callbacks: {
+          "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
+        }
 
       def weekday(arg = nil)
         if arg.is_a?(Integer)

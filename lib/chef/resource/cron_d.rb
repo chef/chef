@@ -16,6 +16,7 @@
 #
 
 require_relative "../resource"
+require_relative "helpers/cron_validations"
 require "shellwords" unless defined?(Shellwords)
 require_relative "../dist"
 
@@ -73,73 +74,6 @@ class Chef
         ```
       DOC
 
-      # validate a provided value is between two other provided values
-      # we also allow * as a valid input
-      # @param spec the value to validate
-      # @param min the lowest value allowed
-      # @param max the highest value allowed
-      # @return [Boolean] valid or not?
-      def self.validate_numeric(spec, min, max)
-        return true if spec == "*"
-
-        #  binding.pry
-        if spec.respond_to? :to_int
-          return false unless spec >= min && spec <= max
-
-          return true
-        end
-
-        # Lists of invidual values, ranges, and step values all share the validity range for type
-        spec.split(%r{\/|-|,}).each do |x|
-          next if x == "*"
-          return false unless x =~ /^\d+$/
-
-          x = x.to_i
-          return false unless x >= min && x <= max
-        end
-        true
-      end
-
-      # validate the provided month value to be jan - dec, 1 - 12, or *
-      # @param spec the value to validate
-      # @return [Boolean] valid or not?
-      def self.validate_month(spec)
-        return true if spec == "*"
-
-        if spec.respond_to? :to_int
-          validate_numeric(spec, 1, 12)
-        elsif spec.respond_to? :to_str
-          return true if spec == "*"
-          # Named abbreviations are permitted but not as part of a range or with stepping
-          return true if %w{jan feb mar apr may jun jul aug sep oct nov dec}.include? spec.downcase
-
-          # 1-12 are legal for months
-          validate_numeric(spec, 1, 12)
-        else
-          false
-        end
-      end
-
-      # validate the provided day of the week is sun-sat, 0-7, or *
-      # @param spec the value to validate
-      # @return [Boolean] valid or not?
-      def self.validate_dow(spec)
-        return true if spec == "*"
-
-        if spec.respond_to? :to_int
-          validate_numeric(spec, 0, 7)
-        elsif spec.respond_to? :to_str
-          return true if spec == "*"
-          # Named abbreviations are permitted but not as part of a range or with stepping
-          return true if %w{sun mon tue wed thu fri sat}.include? spec.downcase
-
-          # 0-7 are legal for days of week
-          validate_numeric(spec, 0, 7)
-        else
-          false
-        end
-      end
-
       property :cron_name, String,
         description: "An optional property to set the cron name if it differs from the resource block's name.",
         name_property: true
@@ -153,31 +87,31 @@ class Chef
       property :minute, [Integer, String],
         description: "The minute at which the cron entry should run (0 - 59).",
         default: "*", callbacks: {
-          "should be a valid minute spec" => ->(spec) { validate_numeric(spec, 0, 59) },
+          "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
         }
 
       property :hour, [Integer, String],
         description: "The hour at which the cron entry is to run (0 - 23).",
         default: "*", callbacks: {
-          "should be a valid hour spec" => ->(spec) { validate_numeric(spec, 0, 23) },
+          "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
         }
 
       property :day, [Integer, String],
         description: "The day of month at which the cron entry should run (1 - 31).",
         default: "*", callbacks: {
-          "should be a valid day spec" => ->(spec) { validate_numeric(spec, 1, 31) },
+          "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
         }
 
       property :month, [Integer, String],
         description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
         default: "*", callbacks: {
-          "should be a valid month spec" => ->(spec) { validate_month(spec) },
+          "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
         }
 
       property :weekday, [Integer, String],
         description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
         default: "*", callbacks: {
-          "should be a valid weekday spec" => ->(spec) { validate_dow(spec) },
+          "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
         }
 
       property :command, String,

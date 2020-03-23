@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan (btm@loftninjas.org)
-# Copyright:: Copyright 2009-2016, Bryan McLellan
+# Copyright:: Copyright 2009-2020, Bryan McLellan
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -403,7 +403,7 @@ describe Chef::Provider::Cron do
 
     %i{minute hour day month weekday command mailto path shell home}.each do |property|
       it "should return true if #{property} doesn't match" do
-        @new_resource.send(property, "something_else")
+        @new_resource.send(property, "1") # we use 1 in order to pass resource validation. We're just using a value that's different.
         expect(@provider.cron_different?).to eql(true)
       end
     end
