@@ -66,8 +66,8 @@ class Chef
       # @param spec the value to validate
       # @return [Boolean] valid or not?
       def self.validate_dow(spec)
-        return spec == "*" || 
-          validate_numeric(spec, 0, 7) || 
+        spec == "*" ||
+          validate_numeric(spec, 0, 7) ||
           %w{sun mon tue wed thu fri sat}.include?(String(spec).downcase)
       end
     end
