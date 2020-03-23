@@ -144,6 +144,7 @@ chef_client_cron "Run chef-client with base recipe" do
   minute 0
   hour "0,12"
   job_name "chef-client-base"
+  log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
 end
