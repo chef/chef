@@ -25,7 +25,7 @@ class Chef
 
       provides :chef_client_cron
 
-      description "Use the chef_client_cron resource to setup the #{Chef::Dist::PRODUCT} to run as a cron job."
+      description "Use the chef_client_cron resource to setup the #{Chef::Dist::PRODUCT} to run as a cron job. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
       Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
@@ -125,6 +125,15 @@ class Chef
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
 
       action :add do
+        # TODO: Replace this with a :create_if_missing action on directory when that exists
+        unless ::Dir.exist?(new_resource.log_directory)
+          directory new_resource.log_directory do
+            owner new_resource.user
+            mode "0640"
+            recursive true
+          end
+        end
+
         cron_d new_resource.job_name do
           minute  new_resource.minute
           hour    new_resource.hour
