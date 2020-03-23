@@ -14,64 +14,64 @@
 # limitations under the License.
 
 require "spec_helper"
-require "chef/mixin/cron_validations"
+require "chef/resource/helpers/cron_validations"
 
-describe Chef::Mixin::CronValidations do
+describe Chef::ResourceHelpers::CronValidations do
   context "#validate_dow" do
     it "it accepts a string day" do
-      expect(Chef::Mixin::CronValidations.validate_dow("mon")).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow("mon")).to be true
     end
 
     it "it accepts an integer day" do
-      expect(Chef::Mixin::CronValidations.validate_dow(0)).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow(0)).to be true
     end
 
     it "it accepts the string of *" do
-      expect(Chef::Mixin::CronValidations.validate_dow("*")).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow("*")).to be true
     end
 
     it "returns false for an out of range integer" do
-      expect(Chef::Mixin::CronValidations.validate_dow(8)).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow(8)).to be false
     end
 
     it "returns false for an invalid string" do
-      expect(Chef::Mixin::CronValidations.validate_dow("monday")).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow("monday")).to be false
     end
   end
 
   context "#validate_month" do
     it "it accepts a string month" do
-      expect(Chef::Mixin::CronValidations.validate_month("feb")).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_month("feb")).to be true
     end
 
     it "it accepts an integer month" do
-      expect(Chef::Mixin::CronValidations.validate_month(2)).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_month(2)).to be true
     end
 
     it "it accepts the string of *" do
-      expect(Chef::Mixin::CronValidations.validate_month("*")).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_month("*")).to be true
     end
 
     it "returns false for an out of range integer" do
-      expect(Chef::Mixin::CronValidations.validate_month(13)).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_month(13)).to be false
     end
 
     it "returns false for an invalid string (typo)" do
-      expect(Chef::Mixin::CronValidations.validate_month("janurary")).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_month("janurary")).to be false
     end
   end
 
   context "#validate_numeric" do
     it "returns true if the value is in the allowed range" do
-      expect(Chef::Mixin::CronValidations.validate_numeric(5, 1, 100)).to be true
+      expect(Chef::ResourceHelpers::CronValidations.validate_numeric(5, 1, 100)).to be true
     end
 
     it "returns false if the value less than the allowed range" do
-      expect(Chef::Mixin::CronValidations.validate_numeric(-1, 1, 100)).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_numeric(-1, 1, 100)).to be false
     end
 
     it "returns false if the value more than the allowed range" do
-      expect(Chef::Mixin::CronValidations.validate_numeric(101, 1, 100)).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_numeric(101, 1, 100)).to be false
     end
   end
 end

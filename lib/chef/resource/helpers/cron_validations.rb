@@ -16,7 +16,7 @@
 #
 
 class Chef
-  module Mixin
+  module ResourceHelpers
     # a collection of methods for validating cron times. Used in the various cron-like resources
     module CronValidations
       # validate a provided value is between two other provided values
