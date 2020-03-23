@@ -1,7 +1,7 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "yaml"
 require_relative "dsl/recipe"
 require_relative "mixin/from_file"
 require_relative "mixin/deprecation"
@@ -88,26 +89,24 @@ class Chef
     def from_yaml_file(filename)
       self.source_file = filename
       if File.file?(filename) && File.readable?(filename)
-        from_yaml(IO.read(filename))
+        yaml_contents = IO.read(filename)
+        if ::YAML.load_stream(yaml_contents).length > 1
+          raise ArgumentError, "YAML recipe '#{filename}' contains multiple documents, only one is supported"
+        end
+
+        from_yaml(yaml_contents)
       else
-        raise IOError, "Cannot open or read #{filename}!"
+        raise IOError, "Cannot open or read file '#{filename}'!"
       end
     end
 
     def from_yaml(string)
       res = ::YAML.safe_load(string)
-      if res.is_a?(Hash)
-        from_hash(res)
-      elsif res.is_a?(Array)
-        from_array(res)
-      else
-        raise "boom"
+      unless res.is_a?(Hash) && res.key?("resources")
+        raise ArgumentError, "YAML recipe '#{source_file}' must contain a top-level 'resources' hash (YAML sequence), i.e. 'resources:'"
       end
-    end
 
-    def from_array(array)
-      Chef::Log.warn "array yaml files are super duper experimental behavior"
-      array.each { |e| from_hash(e) }
+      from_hash(res)
     end
 
     def from_hash(hash)

@@ -576,6 +576,74 @@ describe Chef::Recipe do
     end
   end
 
+  describe "from_yaml_file" do
+    it "raises ArgumentError if the YAML file contains multiple documents" do
+      filename = "multiple_docs.yaml"
+      yaml = "---\n- resources:\n  - type: false\n---\n-resources:\n  - type: false\n"
+      allow(File).to receive(:file?).and_call_original
+      allow(File).to receive(:readable?).and_call_original
+      allow(IO).to receive(:read).and_call_original
+      allow(File).to receive(:file?).with(filename).and_return(true)
+      allow(File).to receive(:readable?).with(filename).and_return(true)
+      allow(IO).to receive(:read).with(filename).and_return(yaml)
+      expect { recipe.from_yaml_file(filename) }.to raise_error(ArgumentError, /contains multiple documents/)
+    end
+
+    it "raises IOError if the file does not exist" do
+      filename = "/nonexistent"
+      allow(File).to receive(:file?).and_call_original
+      allow(File).to receive(:file?).with(filename).and_return(false)
+      expect { recipe.from_yaml_file(filename) }.to raise_error(IOError, /Cannot open or read/)
+    end
+  end
+
+  describe "from_yaml" do
+    it "raises ArgumentError if the YAML is not a top-level hash" do
+      yaml = <<~YAML
+        ---
+        - one
+        - resources
+        - three
+      YAML
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "raises ArgumentError if the YAML does not contain a resources hash" do
+      yaml = <<~YAML
+        ---
+        - airplanes:
+          - type: "execute"
+            command: "whoami"
+      YAML
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "does not raise if the YAML contains a resources hash" do
+      yaml = <<~YAML
+        ---
+        resources:
+        - type: "execute"
+          command: "whoami"
+      YAML
+      expect(recipe).to receive(:from_hash).with({ "resources" => [{ "command" => "whoami", "type" => "execute" }] })
+      recipe.from_yaml(yaml)
+    end
+  end
+
+  describe "from_hash" do
+    it "declares resources from a hash" do
+      resources = { "resources" => [
+        { "name" => "running some commands", "type" => "execute", "command" => "whoami" },
+        { "name" => "preparing the bits", "type" => "service", "action" => "start", "service_name" => "bit_launcher" },
+      ] }
+
+      recipe.from_hash(resources)
+      expect(recipe.resources(execute: "running some commands").command).to eql("whoami")
+      expect(recipe.resources(service: "preparing the bits").service_name).to eql("bit_launcher")
+      expect(recipe.resources(service: "preparing the bits").action).to eql([:start])
+    end
+  end
+
   describe "included DSL" do
     it "should respond to :ps_credential from Chef::DSL::Powershell" do
       expect(recipe.respond_to?(:ps_credential)).to be true

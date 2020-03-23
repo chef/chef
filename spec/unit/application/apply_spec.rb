@@ -46,6 +46,7 @@ describe Chef::Application::Apply do
     it "should read text properly" do
       expect(@app.read_recipe_file(@recipe_file_name)[0]).to eq(@recipe_text)
     end
+
     it "should return a file_handle" do
       expect(@app.read_recipe_file(@recipe_file_name)[1]).to be_instance_of(RSpec::Mocks::Double)
     end
@@ -57,6 +58,7 @@ describe Chef::Application::Apply do
         @app.read_recipe_file(nil)
       end
     end
+
     describe "when recipe doesn't exist" do
       before do
         allow(File).to receive(:exist?).with(@recipe_path).and_return(false)
@@ -68,6 +70,7 @@ describe Chef::Application::Apply do
       end
     end
   end
+
   describe "temp_recipe_file" do
     before do
       @app.instance_variable_set(:@recipe_text, @recipe_text)
