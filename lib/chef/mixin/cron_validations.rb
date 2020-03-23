@@ -66,19 +66,9 @@ class Chef
       # @param spec the value to validate
       # @return [Boolean] valid or not?
       def self.validate_dow(spec)
-        return true if spec == "*"
-
-        if spec.respond_to? :to_int
-          validate_numeric(spec, 0, 7)
-        elsif spec.respond_to? :to_str
-          # Named abbreviations are permitted but not as part of a range or with stepping
-          return true if %w{sun mon tue wed thu fri sat}.include? spec.downcase
-
-          # 0-7 are legal for days of week
-          validate_numeric(spec, 0, 7)
-        else
-          false
-        end
+        return spec == "*" || 
+          validate_numeric(spec, 0, 7) || 
+          %w{sun mon tue wed thu fri sat}.include?(String(spec).downcase)
       end
     end
   end
