@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2017, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,13 +55,8 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Actual tests
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
-    new_resource.user  "root"
-    # @hourly is not supported on solaris, aix
-    if ohai[:platform] == "solaris2" || ohai[:platform] == "aix"
-      new_resource.minute "0 * * * *"
-    else
-      new_resource.minute "@hourly"
-    end
+    new_resource.user "root"
+    new_resource.minute "0"
     new_resource.hour ""
     new_resource.day ""
     new_resource.month ""
@@ -106,7 +101,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   exclude_solaris = %w{solaris opensolaris solaris2 omnios}.include?(ohai[:platform])
   describe "create action with various attributes", external: exclude_solaris do
-    def create_and_validate_with_attribute(resource, attribute, value)
+    def create_and_validate_with_property(resource, attribute, value)
       if ohai[:platform] == "aix"
         expect { resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron, /Aix cron entry does not support environment variables. Please set them in script and use script in cron./)
       else
@@ -130,28 +125,28 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
     it "should create a crontab entry for mailto attribute" do
       new_resource.mailto "cheftest@example.com"
-      create_and_validate_with_attribute(new_resource, "mailto", "cheftest@example.com")
+      create_and_validate_with_property(new_resource, "mailto", "cheftest@example.com")
     end
 
     it "should create a crontab entry for path attribute" do
       new_resource.path "/usr/local/bin"
-      create_and_validate_with_attribute(new_resource, "path", "/usr/local/bin")
+      create_and_validate_with_property(new_resource, "path", "/usr/local/bin")
     end
 
     it "should create a crontab entry for shell attribute" do
       new_resource.shell "/bin/bash"
-      create_and_validate_with_attribute(new_resource, "shell", "/bin/bash")
+      create_and_validate_with_property(new_resource, "shell", "/bin/bash")
     end
 
     it "should create a crontab entry for home attribute" do
       new_resource.home "/home/opscode"
-      create_and_validate_with_attribute(new_resource, "home", "/home/opscode")
+      create_and_validate_with_property(new_resource, "home", "/home/opscode")
     end
 
     %i{ home mailto path shell }.each do |attr|
       it "supports an empty string for #{attr} attribute" do
         new_resource.send(attr, "")
-        create_and_validate_with_attribute(new_resource, attr.to_s, "")
+        create_and_validate_with_property(new_resource, attr.to_s, "")
       end
     end
   end
