@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.150 -->
-## [v16.0.150](https://github.com/chef/chef/tree/v16.0.150) (2020-03-20)
+<!-- latest_release 16.0.151 -->
+## [v16.0.151](https://github.com/chef/chef/tree/v16.0.151) (2020-03-23)
 
 #### Merged Pull Requests
-- Fix loading the template file in the user_ulimit resource [#9516](https://github.com/chef/chef/pull/9516) ([tas50](https://github.com/tas50))
+- Add support for parsing YAML recipes with chef-apply [#9507](https://github.com/chef/chef/pull/9507) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add support for parsing YAML recipes with chef-apply [#9507](https://github.com/chef/chef/pull/9507) ([btm](https://github.com/btm)) <!-- 16.0.151 -->
 - Fix loading the template file in the user_ulimit resource [#9516](https://github.com/chef/chef/pull/9516) ([tas50](https://github.com/tas50)) <!-- 16.0.150 -->
 - Bump train-core to 3.2.26 [#9515](https://github.com/chef/chef/pull/9515) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.149 -->
 - extend windows_firewall_rule abilities with displayname and description [#9514](https://github.com/chef/chef/pull/9514) ([pschaumburg](https://github.com/pschaumburg)) <!-- 16.0.148 -->
