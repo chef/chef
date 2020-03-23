@@ -152,17 +152,10 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       new_resource.run_action(:delete)
     end
 
-    it "should not create cron with invalid minute" do
-      expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::ValidationFailed)
-      new_resource.minute "invalid"
-      cron_should_not_exists(new_resource.name)
-    end
-
     it "should not create cron with invalid user" do
       new_resource.user "1-really-really-invalid-user-name"
       expect { new_resource.run_action(:create) }.to raise_error(Chef::Exceptions::Cron)
       cron_should_not_exists(new_resource.name)
     end
-
   end
 end
