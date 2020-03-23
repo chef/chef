@@ -28,7 +28,6 @@ class Chef
       def self.validate_numeric(spec, min, max)
         return true if spec == "*"
 
-        #  binding.pry
         if spec.respond_to? :to_int
           return false unless spec >= min && spec <= max
 
