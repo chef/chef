@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018, Chef Software, Inc.
+# Copyright:: Copyright 2018-2020, Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,5 +32,17 @@ describe Chef::Resource::CronD do
 
   it "the cron_name property is the name_property" do
     expect(resource.cron_name).to eql("cronify")
+  end
+
+  it "the mode property defaults to '0600'" do
+    expect(resource.mode).to eql("0600")
+  end
+
+  it "the user property defaults to 'root'" do
+    expect(resource.user).to eql("root")
+  end
+
+  it "the command property is required" do
+    expect { resource.command nil }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end
