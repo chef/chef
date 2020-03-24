@@ -54,6 +54,10 @@ class Chef
     # The user's configuration directory
     USER_CONF_DIR = ChefConfig::Dist::USER_CONF_DIR.freeze
 
+    # The suffix for Chef's /etc/chef, /var/chef and C:\\Chef directories
+    # "cinc" => /etc/cinc, /var/cinc, C:\\cinc
+    DIR_SUFFIX = ChefConfig::Dist::DIR_SUFFIX.freeze
+
     # The server's configuration directory
     SERVER_CONF_DIR = "/etc/chef-server".freeze
   end
