@@ -29,17 +29,26 @@ describe Chef::Resource::ChefClientCron do
     expect(resource.action).to eql([:add])
   end
 
+  it "coerces splay to an Integer" do
+    resource.splay "10"
+    expect(resource.splay).to eql(10)
+  end
+
+  it "raises an error if splay is not a positive number" do
+    expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
   it "builds a default value for chef_binary_path dist values" do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
 
-  it "log_directory is on macOS" do
+  it "log_directory is /Library/Logs/Chef on macOS systems" do
     node.automatic_attrs[:platform_family] = "mac_os_x"
     node.automatic_attrs[:platform] = "mac_os_x"
     expect(resource.log_directory).to eql("/Library/Logs/Chef")
   end
 
-  it "log_directory is on non-macOS systems" do
+  it "log_directory is /var/log/chef on non-macOS systems" do
     node.automatic_attrs[:platform_family] = "ubuntu"
     expect(resource.log_directory).to eql("/var/log/chef")
   end

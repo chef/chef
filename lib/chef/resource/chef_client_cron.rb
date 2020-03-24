@@ -93,6 +93,8 @@ class Chef
 
       property :splay, [Integer, String],
         default: 300,
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
 
       property :environment, Hash,
@@ -123,7 +125,7 @@ class Chef
         description: "The path to the #{Chef::Dist::CLIENT} binary."
 
       property :daemon_options, Array,
-        default: [],
+        default: lazy { [] },
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
 
       action :add do
