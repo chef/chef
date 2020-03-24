@@ -83,7 +83,8 @@ class Chef
           "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
         }
 
-      property :mailto, String
+      property :mailto, String,
+        description: "The e-mail address to e-mail any cron task failures to."
 
       property :job_name, String,
         default: Chef::Dist::CLIENT,
