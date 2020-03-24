@@ -1,5 +1,5 @@
 #
-# Copyright:: 2020, Chef Software Inc.
+# Copyright:: 2020-2020, Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,6 +50,8 @@ class Chef
       ```
       DOC
 
+      extend Chef::ResourceHelpers::CronValidations
+
       property :user, String,
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
         default: "root"
@@ -57,31 +59,31 @@ class Chef
       property :minute, [Integer, String],
         description: "The minute at which #{Chef::Dist::PRODUCT} is to run (0 - 59) or a cron pattern such as '0,30'.",
         default: "0,30", callbacks: {
-          "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
+          "should be a valid minute spec" => method(:validate_minute),
         }
 
       property :hour, [Integer, String],
         description: "The hour at which #{Chef::Dist::PRODUCT} is to run (0 - 23) or a cron pattern such as '0,12'.",
         default: "*", callbacks: {
-          "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
+          "should be a valid hour spec" => method(:validate_hour),
         }
 
       property :day, [Integer, String],
         description: "The day of month at which #{Chef::Dist::PRODUCT} is to run (1 - 31) or a cron pattern such as '1,7,14,21,28'.",
         default: "*", callbacks: {
-          "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
+          "should be a valid day spec" => method(:validate_day),
         }
 
       property :month, [Integer, String],
         description: "The month in the year on which #{Chef::Dist::PRODUCT} is to run (1 - 12, jan-dec, or *).",
         default: "*", callbacks: {
-          "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
+          "should be a valid month spec" => method(:validate_month),
         }
 
       property :weekday, [Integer, String],
         description: "The day of the week on which #{Chef::Dist::PRODUCT} is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
         default: "*", callbacks: {
-          "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
+          "should be a valid weekday spec" => method(:validate_dow),
         }
 
       property :mailto, String,

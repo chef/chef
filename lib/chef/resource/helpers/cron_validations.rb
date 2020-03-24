@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2020, Chef Software Inc.
+# Copyright:: Copyright 2020-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ class Chef
       # @param min the lowest value allowed
       # @param max the highest value allowed
       # @return [Boolean] valid or not?
-      def self.validate_numeric(spec, min, max)
+      def validate_numeric(spec, min, max)
         return true if spec == "*"
 
         if spec.respond_to? :to_int
@@ -46,7 +46,7 @@ class Chef
       # validate the provided month value to be jan - dec, 1 - 12, or *
       # @param spec the value to validate
       # @return [Boolean] valid or not?
-      def self.validate_month(spec)
+      def validate_month(spec)
         return true if spec == "*"
 
         if spec.respond_to? :to_int
@@ -65,11 +65,34 @@ class Chef
       # validate the provided day of the week is sun-sat, 0-7, or *
       # @param spec the value to validate
       # @return [Boolean] valid or not?
-      def self.validate_dow(spec)
+      def validate_dow(spec)
         spec == "*" ||
           validate_numeric(spec, 0, 7) ||
           %w{sun mon tue wed thu fri sat}.include?(String(spec).downcase)
       end
+
+      # validate the day of the month is 1-31
+      # @param spec the value to validate
+      # @return [Boolean] valid or not?
+      def validate_day(spec)
+        validate_numeric(spec, 1, 31)
+      end
+
+      # validate the hour is 0-23
+      # @param spec the value to validate
+      # @return [Boolean] valid or not?
+      def validate_hour(spec)
+        validate_numeric(spec, 0, 23)
+      end
+
+      # validate the minute is 0-59
+      # @param spec the value to validate
+      # @return [Boolean] valid or not?
+      def validate_minute(spec)
+        validate_numeric(spec, 0, 59)
+      end
+
+      extend self
     end
   end
 end
