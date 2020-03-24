@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.153 -->
-## [v16.0.153](https://github.com/chef/chef/tree/v16.0.153) (2020-03-24)
+<!-- latest_release 16.0.154 -->
+## [v16.0.154](https://github.com/chef/chef/tree/v16.0.154) (2020-03-24)
 
 #### Merged Pull Requests
-- Add chef_client_cron resource from chef-client cookbook [#9518](https://github.com/chef/chef/pull/9518) ([tas50](https://github.com/tas50))
+- clean up chef_client_cron [#9527](https://github.com/chef/chef/pull/9527) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- clean up chef_client_cron [#9527](https://github.com/chef/chef/pull/9527) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.154 -->
 - Add chef_client_cron resource from chef-client cookbook [#9518](https://github.com/chef/chef/pull/9518) ([tas50](https://github.com/tas50)) <!-- 16.0.153 -->
 - Move cron_d validation methods to a helper and use that in the cron resource [#9522](https://github.com/chef/chef/pull/9522) ([tas50](https://github.com/tas50)) <!-- 16.0.152 -->
 - Add support for parsing YAML recipes with chef-apply [#9507](https://github.com/chef/chef/pull/9507) ([btm](https://github.com/btm)) <!-- 16.0.151 -->
