@@ -103,7 +103,7 @@ describe Chef::Resource::ChefClientCron do
 
     it "appends to the log file appending if set" do
       resource.append_log_file true
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client >> /var/log/chef/client.log 2>&1")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -L /var/log/chef/client.log")
     end
   end
 end

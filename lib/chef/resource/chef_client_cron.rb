@@ -159,21 +159,45 @@ class Chef
       end
 
       action_class do
-        # Generate a uniformly distributed unique number to sleep.
+        #
+        # Generate a uniformly distributed unique number to sleep from 0 to the splay time
+        #
+        # @param [Integer] splay The number of seconds to splay
+        #
+        # @return [Integer]
+        #
         def splay_sleep_time(splay)
           seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
           random = Random.new(seed.to_i)
           random.rand(splay)
         end
 
+        #
+        # The complete cron command to run
+        #
+        # @return [String]
+        #
         def cron_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
-          cmd << "#{new_resource.append_log_file ? ">>" : ">"} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
+          cmd << log_command
           cmd << " || echo \"#{Chef::Dist::PRODUCT} execution failed\"" if new_resource.mailto
           cmd
+        end
+
+        #
+        # The portion of the overall cron job that handles logging based on the append_log_file property
+        #
+        # @return [String]
+        #
+        def log_command
+          if new_resource.append_log_file
+            "-L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          else
+            "> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
+          end
         end
       end
     end
