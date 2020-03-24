@@ -16,6 +16,7 @@
 #
 
 require_relative "../resource"
+require_relative "../dist"
 require "shellwords" unless defined?(Shellwords)
 
 class Chef
@@ -61,6 +62,11 @@ class Chef
         description: "If true, the system will be registered even if it is already registered. Normally, any register operations will fail if the machine has already been registered.",
         default: false, desired_state: false
 
+      property :https_for_ca_consumer, [TrueClass, FalseClass],
+        description: "If true, #{Chef::Dist::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
+        default: false, desired_state: false,
+        introduced: "15.9"
+
       action :register do
         description "Register the node with RHSM."
 
@@ -74,7 +80,7 @@ class Chef
           end
 
           remote_file "#{Chef::Config[:file_cache_path]}/katello-package.rpm" do
-            source "http://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
+            source ca_consumer_package_source
             action :create
             notifies :install, "#{package_resource}[katello-ca-consumer-latest]", :immediately
             not_if { katello_cert_rpm_installed? }
@@ -131,6 +137,11 @@ class Chef
           cmd = Mixlib::ShellOut.new("rpm -qa | grep katello-ca-consumer")
           cmd.run_command
           !cmd.stdout.match(/katello-ca-consumer/).nil?
+        end
+
+        def ca_consumer_package_source
+          protocol = new_resource.https_for_ca_consumer ? "https" : "http"
+          "#{protocol}://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
         end
 
         def register_command
