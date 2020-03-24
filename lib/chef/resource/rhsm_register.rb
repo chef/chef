@@ -63,7 +63,8 @@ class Chef
 
       property :https_for_ca_consumer, [TrueClass, FalseClass],
         description: "If true, #{Chef::Dist::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
-        default: false, desired_state: false
+        default: false, desired_state: false,
+        introduced: "16.0"
 
       action :register do
         description "Register the node with RHSM."
