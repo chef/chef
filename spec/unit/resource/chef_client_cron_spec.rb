@@ -61,4 +61,40 @@ describe Chef::Resource::ChefClientCron do
       expect(provider.splay_sleep_time(300)).to eql(114)
     end
   end
+
+  describe "#cron_command" do
+    before do
+      node.automatic_attrs[:shard_seed] = "73399073"
+    end
+
+    it "creates a valid command if using all default properties" do
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /opt/chef/bin/chef-client > /var/log/chef/client.log 2>&1")
+    end
+
+    it "uses daemon_options if set" do
+      resource.daemon_options ["--foo 1", "--bar 2"]
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /opt/chef/bin/chef-client --foo 1 --bar 2 > /var/log/chef/client.log 2>&1")
+    end
+
+    it "uses custom log files / paths if set" do
+      resource.log_file_name "my-client.log"
+      resource.log_directory "/var/log/my-chef/"
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /opt/chef/bin/chef-client > /var/log/my-chef/my-client.log 2>&1")
+    end
+
+    it "uses mailto if set" do
+      resource.mailto "bob@example.com"
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /opt/chef/bin/chef-client > /var/log/chef/client.log 2>&1 || echo \"Chef Infra Client execution failed\"")
+    end
+
+    it "uses custom chef-client binary if set" do
+      resource.chef_binary_path "/usr/local/bin/chef-client"
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /usr/local/bin/chef-client > /var/log/chef/client.log 2>&1")
+    end
+
+    it "appends to the log file appending if set" do
+      resource.append_log_file true
+      expect(provider.cron_command).to eql("/bin/sleep 73399073; /opt/chef/bin/chef-client >> /var/log/chef/client.log 2>&1")
+    end
+  end
 end

@@ -165,9 +165,10 @@ class Chef
         def cron_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
-          cmd << "#{new_resource.env_vars} " if new_resource.env_vars
-          cmd << "#{new_resource.chef_binary_path} #{new_resource.daemon_options.join(" ")}"
-          cmd << " #{new_resource.append_log_file ? ">>" : ">"} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
+          cmd << "#{new_resource.environment} " unless new_resource.environment.empty?
+          cmd << "#{new_resource.chef_binary_path} "
+          cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
+          cmd << "#{new_resource.append_log_file ? ">>" : ">"} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           cmd << " || echo \"#{Chef::Dist::PRODUCT} execution failed\"" if new_resource.mailto
           cmd
         end
