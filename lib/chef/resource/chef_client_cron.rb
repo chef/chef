@@ -17,6 +17,7 @@
 require_relative "../resource"
 require_relative "../dist"
 require_relative "helpers/cron_validations"
+require "digest/md5"
 
 class Chef
   class Resource
@@ -54,19 +55,19 @@ class Chef
         default: "root"
 
       property :minute, [Integer, String],
-        description: "The minute at which #{Chef::Dist::PRODUCT} is to run (0 - 59).",
+        description: "The minute at which #{Chef::Dist::PRODUCT} is to run (0 - 59) or a cron pattern such as '0,30'.",
         default: "0,30", callbacks: {
           "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
         }
 
       property :hour, [Integer, String],
-        description: "The hour at which #{Chef::Dist::PRODUCT} is to run (0 - 23).",
+        description: "The hour at which #{Chef::Dist::PRODUCT} is to run (0 - 23) or a cron pattern such as '0,12'.",
         default: "*", callbacks: {
           "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
         }
 
       property :day, [Integer, String],
-        description: "The day of month at which #{Chef::Dist::PRODUCT} is to run (1 - 31).",
+        description: "The day of month at which #{Chef::Dist::PRODUCT} is to run (1 - 31) or a cron pattern such as '1,7,14,21,28'.",
         default: "*", callbacks: {
           "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
         }
@@ -158,10 +159,9 @@ class Chef
       action_class do
         # Generate a uniformly distributed unique number to sleep.
         def splay_sleep_time(splay)
-          if splay.to_i > 0
-            seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
-            seed % splay.to_i
-          end
+          seed = node["shard_seed"] || Digest::MD5.hexdigest(node.name).to_s.hex
+          random = Random.new(seed.to_i)
+          random.rand(splay)
         end
 
         def cron_command
