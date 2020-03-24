@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.154 -->
-## [v16.0.154](https://github.com/chef/chef/tree/v16.0.154) (2020-03-24)
+<!-- latest_release 16.0.155 -->
+## [v16.0.155](https://github.com/chef/chef/tree/v16.0.155) (2020-03-24)
 
 #### Merged Pull Requests
-- clean up chef_client_cron [#9527](https://github.com/chef/chef/pull/9527) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add : https_for_ca_consumer property to rhsm_register resource [#9525](https://github.com/chef/chef/pull/9525) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add : https_for_ca_consumer property to rhsm_register resource [#9525](https://github.com/chef/chef/pull/9525) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.0.155 -->
 - clean up chef_client_cron [#9527](https://github.com/chef/chef/pull/9527) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.154 -->
 - Add chef_client_cron resource from chef-client cookbook [#9518](https://github.com/chef/chef/pull/9518) ([tas50](https://github.com/tas50)) <!-- 16.0.153 -->
 - Move cron_d validation methods to a helper and use that in the cron resource [#9522](https://github.com/chef/chef/pull/9522) ([tas50](https://github.com/tas50)) <!-- 16.0.152 -->
