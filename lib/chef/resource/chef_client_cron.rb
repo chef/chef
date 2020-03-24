@@ -117,8 +117,8 @@ class Chef
         description: "The name of the log file to use."
 
       property :append_log_file, [true, false],
-        default: false,
-        description: "Append to the log file instead of creating a new file on each run."
+        default: true,
+        description: "Append to the log file instead of overwriting the log file on each run."
 
       property :chef_binary_path, String,
         default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}",
