@@ -58,6 +58,10 @@ class Chef
     # "cinc" => /etc/cinc, /var/cinc, C:\\cinc
     DIR_SUFFIX = ChefConfig::Dist::DIR_SUFFIX.freeze
 
+    # The legacy conf folder: C:/opscode/chef. Specifically the "opscode" part
+    # DIR_SUFFIX is appended to it in code where relevant
+    LEGACY_CONF_DIR = ChefConfig::Dist::LEGACY_CONF_DIR.freeze
+
     # The server's configuration directory
     SERVER_CONF_DIR = "/etc/chef-server".freeze
   end
