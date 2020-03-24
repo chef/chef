@@ -179,6 +179,30 @@ describe Chef::Resource::RhsmRegister do
     end
   end
 
+  describe "#ca_consumer_package_source" do
+    let(:satellite_host) { "sat-host" }
+
+    before do
+      resource.satellite_host = satellite_host
+    end
+
+    context "when https_for_ca_consumer is true" do
+      before { resource.https_for_ca_consumer true }
+
+      it "returns url with https" do
+        expect(provider.ca_consumer_package_source).to eq("https://#{satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm")
+      end
+    end
+
+    context "when https_for_ca_consumer is false" do
+      before { resource.https_for_ca_consumer false }
+
+      it "returns url with http" do
+        expect(provider.ca_consumer_package_source).to eq("http://#{satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm")
+      end
+    end
+  end
+
   describe "#registered_with_rhsm?" do
     let(:cmd) { double("cmd") }
 
