@@ -136,15 +136,16 @@ class Chef
         end
 
         cron_d new_resource.job_name do
-          minute  new_resource.minute
-          hour    new_resource.hour
-          day     new_resource.day
-          weekday new_resource.weekday
-          month   new_resource.month
-          mailto  new_resource.mailto if new_resource.mailto
-          user    new_resource.user
-          comment new_resource.comment if new_resource.comment
-          command cron_command
+          minute      new_resource.minute
+          hour        new_resource.hour
+          day         new_resource.day
+          weekday     new_resource.weekday
+          month       new_resource.month
+          environment new_resource.environment
+          mailto      new_resource.mailto if new_resource.mailto
+          user        new_resource.user
+          comment     new_resource.comment if new_resource.comment
+          command     cron_command
         end
       end
 
@@ -166,7 +167,6 @@ class Chef
         def cron_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
-          cmd << "#{new_resource.environment} " unless new_resource.environment.empty?
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
           cmd << "#{new_resource.append_log_file ? ">>" : ">"} #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
