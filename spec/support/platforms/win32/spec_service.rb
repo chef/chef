@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@lambda.local>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw|windows/
+if ChefUtils.windows_ruby?
   require "win32/daemon"
 
   class SpecService < ::Win32::Daemon
