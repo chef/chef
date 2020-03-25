@@ -140,6 +140,14 @@ class Chef
         log("#{color("FATAL:", :red, :bold)} #{message}")
       end
 
+      # Print a message describing a fatal error and exit 1
+      #
+      # @param message [String] the text string
+      def fatal!(message)
+        fatal(message)
+        exit 1
+      end
+
       def color(string, *colors)
         if color?
           pastel.decorate(string, *colors)
