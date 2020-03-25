@@ -138,6 +138,14 @@ class Chef
           flushcache
         end
 
+        action :swap do
+          if node["packages"].keys.include?(new_resource.swap_from)
+            execute "yum swap #{new_resource.swap_from} #{new_resource.package_name}"
+          else
+            new_resource.run_action(:install)
+          end
+        end
+
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
         # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `yum versionlock | grep '^pattern`` kind of approach
         def lock_package(names, versions)

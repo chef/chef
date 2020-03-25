@@ -53,6 +53,10 @@ class Chef
         description: "The architecture of the package to be installed or upgraded. This value can also be passed as part of the package name.",
         coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
+      property :swap_from, [ String ],
+        description: "The name of the package you want to swap out in favor of package_name.",
+        introduced: "15.9"
+
       property :flush_cache, Hash,
         description: "Flush the in-memory cache before or after a Yum operation that installs, upgrades, or removes a package. Accepts a Hash in the form: { :before => true/false, :after => true/false } or an Array in the form [ :before, :after ].\nYum automatically synchronizes remote metadata to a local cache. The #{Chef::Dist::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{Chef::Dist::CLIENT} run. The in-memory cache allows packages to be installed during the #{Chef::Dist::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{Chef::Dist::CLIENT} run is in-progress.",
         default: { before: false, after: false },
