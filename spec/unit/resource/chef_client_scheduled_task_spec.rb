@@ -67,4 +67,36 @@ describe Chef::Resource::ChefClientScheduledTask do
     expect { resource.action :add }.not_to raise_error
     expect { resource.action :remove }.not_to raise_error
   end
+
+  describe "#client_cmd" do
+    it "creates a valid command if using all default properties" do
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb")
+    end
+
+    it "uses daemon_options if set" do
+      resource.daemon_options ["--foo 1", "--bar 2"]
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2")
+    end
+
+    it "uses custom config dir if set" do
+      resource.config_directory "C:/foo/bar"
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/log/client.log -c C:/foo/bar/client.rb")
+    end
+
+    it "uses custom log files / paths if set" do
+      resource.log_file_name "my-client.log"
+      resource.log_directory "C:/foo/bar"
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c /etc/chef/client.rb")
+    end
+
+    it "uses custom chef-client binary if set" do
+      resource.chef_binary_path "C:/foo/bar/chef-client"
+      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb")
+    end
+
+    it "sets the license acceptance flag if set" do
+      resource.accept_chef_license true
+      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept")
+    end
+  end
 end

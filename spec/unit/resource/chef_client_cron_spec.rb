@@ -77,33 +77,43 @@ describe Chef::Resource::ChefClientCron do
     end
 
     it "creates a valid command if using all default properties" do
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -L /var/log/chef/client.log")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/chef/client.rb -L /var/log/chef/client.log")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -L /var/log/chef/client.log")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -c /etc/chef/client.rb -L /var/log/chef/client.log")
+    end
+
+    it "uses custom config dir if set" do
+      resource.config_directory "/etc/some_other_dir"
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /var/log/chef/client.log")
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -L /var/log/my-chef/my-client.log")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/chef/client.rb -L /var/log/my-chef/my-client.log")
     end
 
     it "uses mailto if set" do
       resource.mailto "bob@example.com"
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -L /var/log/chef/client.log || echo \"Chef Infra Client execution failed\"")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/chef/client.rb -L /var/log/chef/client.log || echo \"Chef Infra Client execution failed\"")
     end
 
     it "uses custom chef-client binary if set" do
       resource.chef_binary_path "/usr/local/bin/chef-client"
-      expect(provider.cron_command).to eql("/bin/sleep 123; /usr/local/bin/chef-client -L /var/log/chef/client.log")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /usr/local/bin/chef-client -c /etc/chef/client.rb -L /var/log/chef/client.log")
     end
 
     it "appends to the log file appending if set to false" do
       resource.append_log_file false
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client > /var/log/chef/client.log 2>&1")
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/chef/client.rb > /var/log/chef/client.log 2>&1")
+    end
+
+    it "sets the license acceptance flag if set" do
+      resource.accept_chef_license true
+      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/chef/client.rb --chef-license accept -L /var/log/chef/client.log")
     end
   end
 end
