@@ -2,6 +2,9 @@
 
 set -eu
 
+# Only execute in the verify pipeline
+[[ "$BUILDKITE_PIPELINE_NAME" =~ verify$ ]] || exit 0
+
 docker ps || true
 free -m || true
 
