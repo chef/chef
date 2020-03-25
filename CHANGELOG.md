@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.156 -->
-## [v16.0.156](https://github.com/chef/chef/tree/v16.0.156) (2020-03-24)
+<!-- latest_release 16.0.157 -->
+## [v16.0.157](https://github.com/chef/chef/tree/v16.0.157) (2020-03-25)
 
 #### Merged Pull Requests
-- Add chef_client_windows_task resource from chef-client cookbook [#9528](https://github.com/chef/chef/pull/9528) ([tas50](https://github.com/tas50))
+- Switch to RUBY_PLATFORM for the windows check [#9531](https://github.com/chef/chef/pull/9531) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Switch to RUBY_PLATFORM for the windows check [#9531](https://github.com/chef/chef/pull/9531) ([tas50](https://github.com/tas50)) <!-- 16.0.157 -->
 - Add chef_client_windows_task resource from chef-client cookbook [#9528](https://github.com/chef/chef/pull/9528) ([tas50](https://github.com/tas50)) <!-- 16.0.156 -->
 - Add : https_for_ca_consumer property to rhsm_register resource [#9525](https://github.com/chef/chef/pull/9525) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.0.155 -->
 - clean up chef_client_cron [#9527](https://github.com/chef/chef/pull/9527) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.154 -->
