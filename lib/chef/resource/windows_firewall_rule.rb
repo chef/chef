@@ -34,7 +34,6 @@ class Chef
         description: "An optional property to set the name of the firewall rule to assign if it differs from the resource block's name."
 
       property :description, String,
-        default: "Firewall rule",
         description: "The description to assign to the firewall rule."
 
       property :displayname, String,
