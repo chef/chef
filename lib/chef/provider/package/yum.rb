@@ -78,6 +78,18 @@ class Chef
             a.whyrun "assuming #{new_resource.source} would have previously been created"
           end
 
+          requirements.assert(:swap) do |a|
+            a.assertion { !new_resource.swap_from.nil? }
+            a.failure_message Chef::Exceptions::Package, ":swap action requires the swap_from property"
+            a.whyrun "assuming #{new_resource.source} would have previously been created"
+          end
+
+          requirements.assert(:swap) do |a|
+            a.assertion { new_resource.package_name.length == 1 }
+            a.failure_message Chef::Exceptions::Package, ":swap action only supports a single package_name"
+            a.whyrun "assuming #{new_resource.source} would have previously been created"
+          end
+
           super
         end
 
