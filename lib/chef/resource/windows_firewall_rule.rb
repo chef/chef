@@ -70,6 +70,11 @@ class Chef
         default: "TCP",
         description: "The protocol the firewall rule applies to."
 
+      property :icmp_type, [String, Integer],
+      description: "Specifies the ICMP Type parameter for using a protocol starting with ICMP",
+      default: "Any",
+      introduced: "16.0"
+
       property :firewall_action, [Symbol, String],
         default: :allow, equal_to: %i{allow block notconfigured},
         description: "The action of the firewall rule.",
@@ -127,6 +132,7 @@ class Chef
         remote_port Array(state["remote_port"]).sort
         direction state["direction"]
         protocol state["protocol"]
+        icmp_type state['icmp_type']
         firewall_action state["firewall_action"]
         profile current_profiles
         program state["program"]
@@ -140,8 +146,8 @@ class Chef
 
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
-            :remote_port, :direction, :protocol, :firewall_action, :profile, :program, :service, :interface_type,
-            :enabled do
+            :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
+            :interface_type, :enabled do
               cmd = firewall_command("Set")
               powershell_out!(cmd)
             end
@@ -185,6 +191,7 @@ class Chef
           cmd << " -RemotePort '#{new_resource.remote_port.join("', '")}'" if new_resource.remote_port
           cmd << " -Direction '#{new_resource.direction}'" if new_resource.direction
           cmd << " -Protocol '#{new_resource.protocol}'" if new_resource.protocol
+          cmd << " -IcmpType '#{new_resource.icmp_type}'"
           cmd << " -Action '#{new_resource.firewall_action}'" if new_resource.firewall_action
           cmd << " -Profile '#{new_resource.profile.join("', '")}'" if new_resource.profile
           cmd << " -Program '#{new_resource.program}'" if new_resource.program
@@ -220,6 +227,7 @@ class Chef
             remote_port = $portFilter.RemotePort
             direction = $rule.Direction.ToString()
             protocol = $portFilter.Protocol
+            icmp_type = $portFilter.IcmpType
             firewall_action = $rule.Action.ToString()
             profile = $rule.Profile.ToString()
             program = $applicationFilter.Program
