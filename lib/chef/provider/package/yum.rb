@@ -94,9 +94,12 @@ class Chef
         end
 
         def get_swap_from_current_version
-          # TODO: Figure out what to do given that when git is queried it returns results for git216... How Will
-          # that effect things downstream. Don't forget this.
-          python_helper.package_query(:whatinstalled, swap_from_current_resource.package_name).version_with_arch
+          pkg = python_helper.package_query(:whatinstalled, swap_from_current_resource.package_name)
+
+          # This seems weird, but the reason it's here is that the RPM database Returns
+          # drop in replacement packages when queried. For example if git216 is installed and you query
+          # if git is installed, it will return git216. This guardrails against that from happening.
+          pkg.version_with_arch if pkg.name == swap_from_current_resource.package_name
         end
 
         def available_version_for(package_name)
@@ -162,7 +165,7 @@ class Chef
         action :swap do
           # If package is already installed, don't do anything.
           return if new_resource.package_name == current_resource.package_name &&
-            new_resource.package_version == current_resource.package_version
+            !current_resource.package_version.nil?
 
           if swap_from_is_installed?
             # TODO: raise exception if the package_name contains more than a single package
