@@ -41,6 +41,8 @@ class Chef
 
         provides :yum_package
 
+        attr_accessor :swap_from_current_resource
+
         #
         # Most of the magic in this class happens in the python helper script.  The ruby side of this
         # provider knows only enough to translate Chef-style new_resource name+package+version into
@@ -60,6 +62,11 @@ class Chef
           @current_resource = Chef::Resource::YumPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(get_current_versions)
+
+          if new_resource.actions.include?(:swap)
+            @swap_from_current_resource = Chef::Resource::YumPackage.new(new_resource.swap_from)
+            swap_from_current_resource.version(get_swap_from_current_version)
+          end
 
           current_resource
         end
@@ -84,6 +91,20 @@ class Chef
           package_name_array.each_with_index.map do |pkg, i|
             installed_version(i).version_with_arch
           end
+        end
+
+        def get_swap_from_current_version
+          # TODO: Figure out what to do given that when git is queried it returns results for git216... How Will
+          # that effect things downstream. Don't forget this.
+          python_helper.package_query(:whatinstalled, swap_from_current_resource.package_name).version_with_arch
+        end
+
+        def available_version_for(package_name)
+          python_helper.package_query(:whatavailable, package_name, version: safe_version_array[index], arch: safe_arch_array[index], options: options)
+        end
+
+        def installed_version_for(package_name)
+          python_helper.package_query(:whatinstalled, package_name, version: safe_version_array[index], arch: safe_arch_array[index], options: options)
         end
 
         def install_package(names, versions)
@@ -139,11 +160,36 @@ class Chef
         end
 
         action :swap do
-          if node["packages"].keys.include?(new_resource.swap_from)
-            execute "yum swap #{new_resource.swap_from} #{new_resource.package_name}"
+          # If package is already installed, don't do anything.
+          return if new_resource.package_name == current_resource.package_name &&
+            new_resource.package_version == current_resource.package_version
+
+          if swap_from_is_installed?
+            # TODO: raise exception if the package_name contains more than a single package
+            # TODO: Eventually we want to be smart enough to swap a list of packages with a list of another, e.g.
+            #          yum(options, "-y", "swap", "-- remove", remove_package_resolved_names, "-- install", resolved_names)
+
+            # run swap
+            converge_by("Swap #{new_resource.swap_from} with #{new_resource.package_name}") do
+              yum(options, "-y", "swap", new_resource.swap_from, new_resource.package_name)
+            end
           else
-            new_resource.run_action(:install)
+            # run normal install
+            converge_by(install_description) do
+              multipackage_api_adapter(package_names_for_targets, versions_for_targets) do |names, versions|
+                resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
+                install_package(name, version)
+              end
+              logger.info("#{new_resource} installed #{package_names_for_targets} at #{versions_for_targets}")
+            end
           end
+        end
+
+        def swap_from_is_installed?
+          # TODO: Make sure this guards against the fact that a query for git
+          # returns git216.
+          iv = installed_version_for(new_resource.swap_from)
+          iv.name == new_resource.swap_from
         end
 
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
