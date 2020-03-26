@@ -67,6 +67,10 @@ class Chef
         description: "Numeric value to go with the scheduled task frequency",
         default: 30
 
+      property :accept_chef_license, [true, false],
+        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
+        default: false
+
       property :start_date, String,
         description: "The start date for the task in m:d:Y format (ex: 12/17/2020).",
         regex: [%r{^[0-1][0-9]\/[0-3][0-9]\/\d{4}$}]
@@ -80,6 +84,10 @@ class Chef
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time.",
         default: 300
+
+      property :run_on_battery, [true, false],
+        description: "Run the #{Chef::Dist::PRODUCT} task when the system is on batteries.",
+        default: true
 
       property :config_directory, String,
         description: "The path of the config directory.",
@@ -115,22 +123,20 @@ class Chef
           end
         end
 
-        # Fetch path of cmd.exe through environment variable comspec
-        cmd_path = ENV["COMSPEC"]
-
         # According to https://docs.microsoft.com/en-us/windows/desktop/taskschd/schtasks,
         # the :once, :onstart, :onlogon, and :onidle schedules don't accept schedule modifiers
         windows_task new_resource.task_name do
-          run_level          :highest
-          command            "#{cmd_path} /c \"#{client_cmd}\""
-          user               new_resource.user
-          password           new_resource.password
-          frequency          new_resource.frequency.to_sym
-          frequency_modifier new_resource.frequency_modifier if frequency_supports_frequency_modifier?
-          start_time         new_resource.start_time
-          start_day          new_resource.start_date unless new_resource.start_date.nil?
-          random_delay       new_resource.splay if frequency_supports_random_delay?
-          action             %i{create enable}
+          run_level                      :highest
+          command                        full_command
+          user                           new_resource.user
+          password                       new_resource.password
+          frequency                      new_resource.frequency.to_sym
+          frequency_modifier             new_resource.frequency_modifier if frequency_supports_frequency_modifier?
+          start_time                     new_resource.start_time
+          start_day                      new_resource.start_date unless new_resource.start_date.nil?
+          random_delay                   new_resource.splay if frequency_supports_random_delay?
+          disallow_start_if_on_batteries new_resource.splay unless new_resource.run_on_battery
+          action                         %i{create enable}
         end
       end
 
@@ -141,6 +147,18 @@ class Chef
       end
 
       action_class do
+        #
+        # The full command to run in the scheduled task
+        #
+        # @return [String]
+        #
+        def full_command
+          # Fetch path of cmd.exe through environment variable comspec
+          cmd_path = ENV["COMSPEC"]
+
+          "#{cmd_path} /c \'#{client_cmd}\'"
+        end
+
         # Build command line to pass to cmd.exe
         #
         # @return [String]
@@ -151,6 +169,7 @@ class Chef
 
           # Add custom options
           cmd << " #{new_resource.daemon_options.join(" ")}" if new_resource.daemon_options.any?
+          cmd << " --chef-license accept" if new_resource.accept_chef_license
           cmd
         end
 

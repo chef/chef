@@ -89,6 +89,10 @@ class Chef
       property :mailto, String,
         description: "The e-mail address to e-mail any cron task failures to."
 
+      property :accept_chef_license, [true, false],
+        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
+        default: false
+
       property :job_name, String,
         default: Chef::Dist::CLIENT,
         description: "The name of the cron job to create."
@@ -184,6 +188,8 @@ class Chef
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
+          cmd << "-c #{::File.join(new_resource.config_directory, "client.rb")} "
+          cmd << "--chef-license accept " if new_resource.accept_chef_license
           cmd << log_command
           cmd << " || echo \"#{Chef::Dist::PRODUCT} execution failed\"" if new_resource.mailto
           cmd
