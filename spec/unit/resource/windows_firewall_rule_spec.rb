@@ -49,8 +49,8 @@ describe Chef::Resource::WindowsFirewallRule do
   end
 
   it "the group property accepts strings" do
-    resource.protocol("New group")
-    expect(resource.protocol).to eql("New group")
+    resource.group("New group")
+    expect(resource.group).to eql("New group")
   end
 
   it "the local_address property accepts strings" do
