@@ -483,9 +483,23 @@ class Chef
                                       end
         end
 
+        ##
+        # If `include_default_source` is nil, return true if the global
+        # `rubygems_url` was set or if `clear_sources` and `source` on the
+        # resource are not set.
+        # If `include_default_source` is not nil, it has been set explicitly on
+        # the resource and that value should be used.
+        def include_default_source?
+          if new_resource.include_default_source.nil?
+            !!Chef::Config[:rubygems_url] || !(new_resource.source || new_resource.clear_sources)
+          else
+            new_resource.include_default_source
+          end
+        end
+
         def gem_sources
           srcs = [ new_resource.source ]
-          srcs << Chef::Config[:rubygems_url] if new_resource.include_default_source
+          srcs << (Chef::Config[:rubygems_url] || "https://rubygems.org") if include_default_source?
           srcs.flatten.compact
         end
 
@@ -550,12 +564,25 @@ class Chef
           new_resource.gem_binary || "gem"
         end
 
+        ##
+        # If `clear_sources` is nil, clearing sources is implied if a `source`
+        # was added or if the global rubygems URL is set. If `clear_sources`
+        # is not nil, it has been set explicitly on the resource and its value
+        # should be used.
+        def clear_sources?
+          if new_resource.clear_sources.nil?
+            !!(new_resource.source || Chef::Config[:rubygems_url])
+          else
+            new_resource.clear_sources
+          end
+        end
+
         def install_via_gem_command(name, version)
           src = []
           if new_resource.source.is_a?(String) && new_resource.source =~ /\.gem$/i
             name = new_resource.source
           else
-            src << "--clear-sources" if new_resource.clear_sources
+            src << "--clear-sources" if clear_sources?
             src += gem_sources.map { |s| "--source=#{s}" }
           end
           src_str = src.empty? ? "" : " #{src.join(" ")}"

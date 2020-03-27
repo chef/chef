@@ -78,7 +78,7 @@ describe Chef::Cookbook::GemInstaller do
 
   it "generates a valid Gemfile when Chef::Config[:rubygems_url] is set to a String" do
     expect(gem_installer).to receive(:shell_out!).and_return(shell_out)
-    Chef::Config[:rubygems_url] = "https://www.rubygems.org"
+    Chef::Config[:rubygems_url] = "https://rubygems.org"
     expect { gem_installer.install }.to_not raise_error
 
     expect(bundler_dsl.dependencies.find { |d| d.name == "httpclient" }.requirements_list.length).to eql(2)
@@ -86,7 +86,7 @@ describe Chef::Cookbook::GemInstaller do
 
   it "generates a valid Gemfile when Chef::Config[:rubygems_url] is set to an Array" do
     expect(gem_installer).to receive(:shell_out!).and_return(shell_out)
-    Chef::Config[:rubygems_url] = [ "https://www.rubygems.org" ]
+    Chef::Config[:rubygems_url] = [ "https://rubygems.org" ]
 
     expect { gem_installer.install }.to_not raise_error
 
