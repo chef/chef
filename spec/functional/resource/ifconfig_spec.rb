@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ require "chef/mixin/shell_out"
 # run this test only for following platforms.
 include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai[:platform_family] == "rhel" && ohai[:platform_version].to_i < 7))
 
-describe Chef::Resource::Ifconfig, :requires_root, external: include_flag do
+describe Chef::Resource::Ifconfig, :requires_root, :requires_ifconfig, external: include_flag do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do

@@ -275,6 +275,10 @@ rescue SocketError
   false
 end
 
+def ifconfig?
+  which("ifconfig")
+end
+
 def choco_installed?
   result = ShellHelpers.powershell_out("choco --version")
   result.stderr.empty? ? true : false
