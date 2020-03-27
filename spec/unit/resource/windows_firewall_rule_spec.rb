@@ -131,12 +131,12 @@ describe Chef::Resource::WindowsFirewallRule do
   end
 
   it "the icmp_type property accepts strings" do
-    resource.protocol("Any")
+    resource.icmp_type("Any")
     expect(resource.protocol).to eql("Any")
   end
 
   it "the icmp_type property accepts integers" do
-    resource.protocol(8)
+    resource.icmp_type(8)
     expect(resource.protocol).to eql(8)
   end
 
