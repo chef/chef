@@ -132,7 +132,7 @@ class Chef
         remote_port Array(state["remote_port"]).sort
         direction state["direction"]
         protocol state["protocol"]
-        icmp_type state['icmp_type']
+        icmp_type state["icmp_type"]
         firewall_action state["firewall_action"]
         profile current_profiles
         program state["program"]
