@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.161 -->
-## [v16.0.161](https://github.com/chef/chef/tree/v16.0.161) (2020-03-27)
+<!-- latest_release 16.0.162 -->
+## [v16.0.162](https://github.com/chef/chef/tree/v16.0.162) (2020-03-27)
 
 #### Merged Pull Requests
-- Fixed windows share cannot modify frozen string bug [#9524](https://github.com/chef/chef/pull/9524) ([sanga1794](https://github.com/sanga1794))
+- Fix unintuitive behavior of sources on gem resources [#9480](https://github.com/chef/chef/pull/9480) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix unintuitive behavior of sources on gem resources [#9480](https://github.com/chef/chef/pull/9480) ([phiggins](https://github.com/phiggins)) <!-- 16.0.162 -->
 - Fixed windows share cannot modify frozen string bug [#9524](https://github.com/chef/chef/pull/9524) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.161 -->
 - Improve chef_client_* resources [#9540](https://github.com/chef/chef/pull/9540) ([tas50](https://github.com/tas50)) <!-- 16.0.160 -->
 - Add a `knife yaml convert` tool [#9508](https://github.com/chef/chef/pull/9508) ([btm](https://github.com/btm)) <!-- 16.0.159 -->
