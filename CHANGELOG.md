@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.163 -->
-## [v16.0.163](https://github.com/chef/chef/tree/v16.0.163) (2020-03-27)
+<!-- latest_release 16.0.164 -->
+## [v16.0.164](https://github.com/chef/chef/tree/v16.0.164) (2020-03-27)
 
 #### Merged Pull Requests
-- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9549](https://github.com/chef/chef/pull/9549) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 (x86_64) Tester [#9523](https://github.com/chef/chef/pull/9523) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Ubuntu 20.04 (x86_64) Tester [#9523](https://github.com/chef/chef/pull/9523) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.164 -->
 - Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9549](https://github.com/chef/chef/pull/9549) ([tas50](https://github.com/tas50)) <!-- 16.0.163 -->
 - Fix unintuitive behavior of sources on gem resources [#9480](https://github.com/chef/chef/pull/9480) ([phiggins](https://github.com/phiggins)) <!-- 16.0.162 -->
 - Fixed windows share cannot modify frozen string bug [#9524](https://github.com/chef/chef/pull/9524) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.161 -->
