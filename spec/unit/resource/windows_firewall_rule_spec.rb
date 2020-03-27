@@ -259,12 +259,12 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets a displayname" do
         resource.displayname("New displayname")
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Direction 'inbound' -Protocol 'TCP'  -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets a group" do
         resource.group("New groupname")
-        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Group 'New groupname' -Direction 'inbound' -Protocol 'TCP'  -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("New")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Group 'New groupname' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalAddress" do
@@ -397,12 +397,12 @@ describe Chef::Resource::WindowsFirewallRule do
 
       it "sets a group" do
         resource.group("New groupname")
-        expect(provider.firewall_command("Set")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Group 'New groupname' -Direction 'inbound' -Protocol 'TCP'  -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Group 'New groupname' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets a group" do
         resource.displayname("New groupname")
-        expect(provider.firewall_command("Set")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Direction 'inbound' -Protocol 'TCP'  -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
+        expect(provider.firewall_command("Set")).to eql("New-NetFirewallRule -Name 'test_rule' -DisplayName 'New displayname' -Direction 'inbound' -Protocol 'TCP' -IcmpType 'Any' -Action 'allow' -Profile 'any' -InterfaceType 'any' -Enabled 'true'")
       end
 
       it "sets LocalAddress" do
