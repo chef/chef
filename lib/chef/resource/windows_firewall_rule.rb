@@ -28,6 +28,34 @@ class Chef
 
       description "Use the windows_firewall_rule resource to create, change or remove windows firewall rules."
       introduced "14.7"
+      examples <<~DOC
+      Allowing port 80 access
+      ```ruby
+      windows_firewall_rule 'IIS' do
+        local_port '80'
+        protocol 'TCP'
+        firewall_action :allow
+      end
+      ```
+
+      Blocking WinRM over HTTP on a particular IP
+      ```ruby
+      windows_firewall_rule 'Disable WinRM over HTTP' do
+        local_port '5985'
+        protocol 'TCP'
+        firewall_action :block
+        local_address '192.168.1.1'
+      end
+      ```
+
+      Deleting an existing rule
+      ```ruby
+      windows_firewall_rule 'Remove the SSH rule' do
+        rule_name 'ssh'
+        action :delete
+      end
+      ```
+      DOC
 
       property :rule_name, String,
         name_property: true,
