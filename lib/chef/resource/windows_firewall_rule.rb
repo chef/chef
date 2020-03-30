@@ -252,6 +252,7 @@ class Chef
           elsif icmp_type.is_a?(String)
             return false if !protocol.start_with?("ICMP") && icmp_type !~ /^\D+$/
             return false if icmp_type.count("a-zA-Z") > 0 && icmp_type.count(":") > 1
+            return false if !(0..255).include?(icmp_type.to_i)
 
             if protocol.start_with?("ICMP") && icmp_type.include?(":")
               return icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
