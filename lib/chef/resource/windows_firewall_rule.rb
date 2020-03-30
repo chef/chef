@@ -99,9 +99,9 @@ class Chef
         description: "The protocol the firewall rule applies to."
 
       property :icmp_type, [String, Integer],
-      description: "Specifies the ICMP Type parameter for using a protocol starting with ICMP",
-      default: "Any",
-      introduced: "16.0"
+        description: "Specifies the ICMP Type parameter for using a protocol starting with ICMP",
+        default: "Any",
+        introduced: "16.0"
 
       property :firewall_action, [Symbol, String],
         default: :allow, equal_to: %i{allow block notconfigured},
@@ -174,8 +174,8 @@ class Chef
 
         unless is_set_properly?(new_resource.icmp_type, new_resource.protocol)
           error_msg = "Verification for \"#{new_resource.rule_name}\" failed.\n" +
-                      "It's mostly a combination of protocol (#{new_resource.protocol}) and icmp_type (#{new_resource.icmp_type}) which are not allowed.\n" +
-                      "Please refer to: https://docs.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule"
+            "It's mostly a combination of protocol (#{new_resource.protocol}) and icmp_type (#{new_resource.icmp_type}) which are not allowed.\n" +
+            "Please refer to: https://docs.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule"
           raise Chef::Exceptions::ValidationFailed, error_msg
         end
 
@@ -257,7 +257,7 @@ class Chef
             end
           end
 
-          return true
+          return true # rubocop:disable Style/RedundantReturn:
         end
       end
 

@@ -502,4 +502,65 @@ describe Chef::Resource::WindowsFirewallRule do
       end
     end
   end
+  describe "#is_set_properly?" do
+    context "#TCP" do
+      it "protocol is TCP and icmp_type is empty" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("", "TCP")).to be false
+      end
+
+      it "protocol is TCP and icmp_type is 'Any'" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("Any", "TCP")).to be true
+      end
+
+      it "protocol is TCP and icmp_type is 123 as String" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("123", "TCP")).to be false
+      end
+
+      it "protocol is TCP and icmp_type is 123 as Integer" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?(123, "TCP")).to be false
+      end
+
+      it "protocol is TCP and icmp_type is '1:3' as code pair" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("1:3", "TCP")).to be false
+      end
+
+      it "protocol is TCP and icmp_type is '123:456' as code pair out of range" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("123:456", "TCP")).to be false
+      end
+
+      it "protocol is TCP and icmp_type is nil" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?(nil, "TCP")).to be false
+      end
+    end
+
+    context "#ICMPv6" do
+      it "protocol is ICMPv6 and icmp_type is empty" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("", "ICMPv6")).to be false
+      end
+
+      it "protocol is ICMPv6 and icmp_type is 'Any'" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("Any", "ICMPv6")).to be true
+      end
+
+      it "protocol is ICMPv6 and icmp_type is 123 as String" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("123", "ICMPv6")).to be true
+      end
+
+      it "protocol is ICMPv6 and icmp_type is 123 as Integer" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?(123, "ICMPv6")).to be true
+      end
+
+      it "protocol is ICMPv6 and icmp_type is '1:3' as code pair" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("1:3", "ICMPv6")).to be true
+      end
+
+      it "protocol is ICMPv6 and icmp_type is '123:456' as code pair out of range" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?("123:456", "ICMPv6")).to be false
+      end
+
+      it "protocol is ICMPv6 and icmp_type is nil" do
+        expect(Chef::Resource::WindowsFirewallRule.is_set_properly?(nil, "ICMPv6")).to be false
+      end
+    end
+  end
 end
