@@ -147,7 +147,7 @@ class Chef
         #
         # @return [true, false]
         def xcode_cli_installed?
-          cmd = shell_out("pkgutil --pkgs=com.apple.pkg.CLTools_Executables")
+          cmd = shell_out("pkgutil", "--pkgs=com.apple.pkg.CLTools_Executables")
           # pkgutil returns an error if the package isn't found aka not installed
           cmd.error? ? false : true
         end
