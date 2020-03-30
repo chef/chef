@@ -506,89 +506,61 @@ describe Chef::Resource::WindowsFirewallRule do
   describe "#is_set_properly?" do
     context "#TCP" do
       it "icmp_type is empty" do
-        resource.icmp_type("")
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("", "TCP")).to eql(false)
       end
 
       it "icmp_type is 'Any'" do
-        resource.icmp_type("Any")
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(true)
+        expect(provider.is_set_properly?("Any", "TCP")).to eql(true)
       end
 
       it "icmp_type is 123 as String" do
-        resource.icmp_type("123")
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("123", "TCP")).to eql(false)
       end
 
       it "icmp_type is 123 as Integer" do
-        resource.icmp_type(123)
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?(123, "TCP")).to eql(false)
       end
 
       it "icmp_type is '1:3' as code pair" do
-        resource.icmp_type("1:3")
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("1:3", "TCP")).to eql(false)
       end
 
       it "icmp_type is '123:456' as code pair out of range" do
-        resource.icmp_type("123:456")
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("123:456", "TCP")).to eql(false)
       end
 
       it "icmp_type is nil" do
-        resource.icmp_type(nil)
-        resource.protocol("TCP")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?(nil, "TCP")).to eql(false)
       end
     end
 
     context "#ICMPv6" do
       it "icmp_type is empty" do
-        resource.icmp_type("")
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("", "ICMPv6")).to eql(false)
       end
 
       it "icmp_type is 'Any'" do
-        resource.icmp_type("Any")
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(true)
+        expect(provider.is_set_properly?("Any", "ICMPv6")).to eql(true)
       end
 
       it "icmp_type is 123 as String" do
-        resource.icmp_type("123")
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(true)
+        expect(provider.is_set_properly?("123", "ICMPv6")).to eql(true)
       end
 
       it "icmp_type is 123 as Integer" do
-        resource.icmp_type(123)
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(true)
+        expect(provider.is_set_properly?(123, "ICMPv6")).to eql(true)
       end
 
       it "icmp_type is '1:3' as code pair" do
-        resource.icmp_type("1:3")
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(true)
+        expect(provider.is_set_properly?("1:3", "ICMPv6")).to eql(true)
       end
 
       it "icmp_type is '123:456' as code pair out of range" do
-        resource.icmp_type("123:456")
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?("123:456", "ICMPv6")).to eql(false)
       end
 
       it "icmp_type is nil" do
-        resource.icmp_type(nil)
-        resource.protocol("ICMPv6")
-        expect(provider.is_set_properly?).to eql(false)
+        expect(provider.is_set_properly?(nil, "ICMPv6")).to eql(false)
       end
     end
   end
