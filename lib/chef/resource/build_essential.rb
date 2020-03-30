@@ -67,8 +67,8 @@ class Chef
           package "devel/m4"
           package "devel/gettext"
         when macos?
-          update_label = xcode_cli_package
-          unless xcode_cli_installed? && update_label.empty?
+          update_pkg_label = xcode_cli_package_label
+          unless xcode_cli_installed? && update_pkg_label.nil?
             # This script was graciously borrowed and modified from Tim Sutton's
             # osx-vm-templates at https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
             execute "install XCode Command Line tools" do
@@ -77,7 +77,7 @@ class Chef
                 # in Apple's SUS catalog
                 touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
                 # find the CLI Tools update. We tail here because sometimes there's 2 and newest is last
-                PROD=#{update_label}
+                PROD=#{update_pkg_label}
                 # install it
                 softwareupdate -i "$PROD" --verbose
                 # Remove the placeholder to prevent perpetual appearance in the update utility
@@ -153,16 +153,20 @@ class Chef
         end
 
         #
-        # Return to package label of the latest XCode Command Line Tools update, if available
+        # Return to package label of the latest Xcode Command Line Tools update, if available
         #
-        # @return [String]
-        def xcode_cli_package
-          cmd = <<-EOH.gsub(/^ {14}/, "")
-          softwareupdate -l | grep "\*.*Command Line" | tail -n 1 | awk -F"*" '{print $2}' | sed -e 's/^ *//' | tr -d '\n' | sed 's/Label: //g'
-          EOH
-          cmd.run_command
-          cmd.error!
-          cmd.stdout
+        # @return [String, NilClass]
+        def xcode_cli_package_label
+          available_updates = shell_out("softwareupdate", "--list")
+
+          # raise if we fail to check
+          available_updates.error!
+
+          # https://rubular.com/r/UPEE5P7mZLvXNs
+          label_match = available_updates.stdout.match(/^\s*\* (?:Label: )?(Command Line Tools.*)/)
+
+          # this will return the match or nil
+          label_match&.first
         end
       end
 
