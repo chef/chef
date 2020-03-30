@@ -241,7 +241,7 @@ class Chef
         # @return [Boolean]
         def is_set_properly?(icmp_type, protocol)
           if icmp_type.to_s.empty?
-            return false
+            return false # rubocop:disable Style/RedundantReturn
 
           elsif icmp_type.is_a?(Integer)
             return false unless protocol.start_with?("ICMP")
