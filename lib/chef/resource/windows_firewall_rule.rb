@@ -257,7 +257,7 @@ class Chef
             end
 
           else
-            true
+            return true
           end
         end
       end
