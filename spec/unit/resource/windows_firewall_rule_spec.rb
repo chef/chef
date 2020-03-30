@@ -505,6 +505,10 @@ describe Chef::Resource::WindowsFirewallRule do
 
   describe "#is_set_properly?" do
     context "#TCP" do
+      it "icmp_type is nil" do
+        expect(provider.is_set_properly?(nil, "TCP")).to eql(false)
+      end
+
       it "icmp_type is empty" do
         expect(provider.is_set_properly?("", "TCP")).to eql(false)
       end
@@ -521,6 +525,14 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.is_set_properly?(123, "TCP")).to eql(false)
       end
 
+      it "icmp_type is 345 as String" do
+        expect(provider.is_set_properly?("345", "TCP")).to eql(false)
+      end
+
+      it "icmp_type is 345 as Integer" do
+        expect(provider.is_set_properly?(345, "TCP")).to eql(false)
+      end
+
       it "icmp_type is '1:3' as code pair" do
         expect(provider.is_set_properly?("1:3", "TCP")).to eql(false)
       end
@@ -528,13 +540,13 @@ describe Chef::Resource::WindowsFirewallRule do
       it "icmp_type is '123:456' as code pair out of range" do
         expect(provider.is_set_properly?("123:456", "TCP")).to eql(false)
       end
-
-      it "icmp_type is nil" do
-        expect(provider.is_set_properly?(nil, "TCP")).to eql(false)
-      end
     end
 
     context "#ICMPv6" do
+      it "icmp_type is nil" do
+        expect(provider.is_set_properly?(nil, "ICMPv6")).to eql(false)
+      end
+
       it "icmp_type is empty" do
         expect(provider.is_set_properly?("", "ICMPv6")).to eql(false)
       end
@@ -551,16 +563,20 @@ describe Chef::Resource::WindowsFirewallRule do
         expect(provider.is_set_properly?(123, "ICMPv6")).to eql(true)
       end
 
+      it "icmp_type is 345 as String" do
+        expect(provider.is_set_properly?("345", "ICMPv6")).to eql(false)
+      end
+
+      it "icmp_type is 345 as Integer" do
+        expect(provider.is_set_properly?(345, "ICMPv6")).to eql(false)
+      end
+
       it "icmp_type is '1:3' as code pair" do
         expect(provider.is_set_properly?("1:3", "ICMPv6")).to eql(true)
       end
 
       it "icmp_type is '123:456' as code pair out of range" do
         expect(provider.is_set_properly?("123:456", "ICMPv6")).to eql(false)
-      end
-
-      it "icmp_type is nil" do
-        expect(provider.is_set_properly?(nil, "ICMPv6")).to eql(false)
       end
     end
   end
