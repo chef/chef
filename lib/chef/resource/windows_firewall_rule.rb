@@ -172,6 +172,13 @@ class Chef
       action :create do
         description "Create a Windows firewall entry."
 
+        unless is_set_properly?(new_resource.icmp_type, new_resource.protocol)
+          error_msg = "Verification for \"#{new_resource.rule_name}\" failed.\n" +
+                      "It's mostly a combination of protocol (#{new_resource.protocol}) and icmp_type (#{new_resource.icmp_type}) which are not allowed.\n" +
+                      "Please refer to: https://docs.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule"
+          raise Chef::Exceptions::ValidationFailed, error_msg
+        end
+
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
             :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
@@ -229,12 +236,35 @@ class Chef
 
           cmd
         end
+
+        # return the current firewall rule settings for icmp_type and protocol are correct
+        # @return [Boolean]
+        def is_set_properly?(icmp_type, protocol)
+          if icmp_type.to_s.empty?
+            return false
+
+          elsif icmp_type.is_a?(Integer)
+            return false unless protocol.start_with?("ICMP")
+            return false unless (0..255).include?(icmp_type)
+
+          elsif icmp_type.is_a?(String)
+            return false if !protocol.start_with?("ICMP") && icmp_type !~ /^\D+$/
+
+            return false if icmp_type.count("a-zA-Z") > 0 || icmp_type.count(":") > 1
+
+            if protocol.start_with?("ICMP") && icmp_type.include?(":")
+              return icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
+            end
+          end
+
+          return true
+        end
       end
 
       private
 
       # build the command to load the current resource
-      # # @return [String] current firewall state
+      # @return [String] current firewall state
       def load_firewall_state(rule_name)
         <<-EOH
           Remove-TypeData System.Array # workaround for PS bug here: https://bit.ly/2SRMQ8M
