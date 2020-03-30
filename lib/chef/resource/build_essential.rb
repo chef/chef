@@ -72,14 +72,12 @@ class Chef
             # This script was graciously borrowed and modified from Tim Sutton's
             # osx-vm-templates at https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
             execute "install XCode Command Line tools" do
-              command <<-EOH.gsub(/^ {14}/, "")
+              command <<-EOH
                 # create the placeholder file that's checked by CLI updates' .dist code
                 # in Apple's SUS catalog
                 touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-                # find the CLI Tools update. We tail here because sometimes there's 2 and newest is last
-                PROD=#{update_pkg_label}
                 # install it
-                softwareupdate -i "$PROD" --verbose
+                softwareupdate -i "#{update_pkg_label}" --verbose
                 # Remove the placeholder to prevent perpetual appearance in the update utility
                 rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
               EOH
