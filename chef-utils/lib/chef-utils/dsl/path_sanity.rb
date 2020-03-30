@@ -23,6 +23,7 @@ module ChefUtils
     module PathSanity
       include Internal
 
+      # @since 15.5
       def sanitized_path(env = nil)
         env_path = env ? env["PATH"] : __env_path
         env_path = "" if env_path.nil?

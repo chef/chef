@@ -29,7 +29,8 @@ module ChefUtils
 
       # Determine if the current node is linux mint.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -45,7 +46,8 @@ module ChefUtils
 
       # Determine if the current node is Ubuntu.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -57,7 +59,8 @@ module ChefUtils
 
       # Determine if the current node is Raspbian.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -69,7 +72,8 @@ module ChefUtils
 
       # Determine if the current node is Debian.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -79,7 +83,8 @@ module ChefUtils
 
       # Determine if the current node is Amazon Linux.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -89,7 +94,8 @@ module ChefUtils
 
       # Determine if the current node is Red Hat Enterprise Linux.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -105,7 +111,8 @@ module ChefUtils
 
       # Determine if the current node is CentOS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -117,7 +124,8 @@ module ChefUtils
 
       # Determine if the current node is Oracle Linux.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -131,7 +139,8 @@ module ChefUtils
 
       # Determine if the current node is Scientific Linux.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -145,7 +154,8 @@ module ChefUtils
 
       # Determine if the current node is ClearOS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -157,7 +167,8 @@ module ChefUtils
 
       # Determine if the current node is Fedora.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -167,7 +178,8 @@ module ChefUtils
 
       # Determine if the current node is Arch Linux
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -177,7 +189,8 @@ module ChefUtils
 
       # Determine if the current node is Solaris2.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -187,7 +200,8 @@ module ChefUtils
 
       # Determine if the current node is SmartOS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -197,7 +211,8 @@ module ChefUtils
 
       # Determine if the current node is OmniOS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -209,7 +224,8 @@ module ChefUtils
 
       # Determine if the current node is OpenIndiana.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -221,7 +237,8 @@ module ChefUtils
 
       # Determine if the current node is Nexenta Core Platform aka Nexenta OS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -233,7 +250,8 @@ module ChefUtils
 
       # Determine if the current node is AIX.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -243,7 +261,8 @@ module ChefUtils
 
       # Determine if the current node is FreeBSD.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -253,7 +272,8 @@ module ChefUtils
 
       # Determine if the current node is OpenBSD.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -263,7 +283,8 @@ module ChefUtils
 
       # Determine if the current node is NetBSD.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -273,7 +294,8 @@ module ChefUtils
 
       # Determine if the current node is DragonFly BSD.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -283,7 +305,8 @@ module ChefUtils
 
       # Determine if the current node is macOS.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -295,7 +318,8 @@ module ChefUtils
 
       # Determine if the current node is Gentoo.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -305,7 +329,8 @@ module ChefUtils
 
       # Determine if the current node is Slackware.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -315,7 +340,8 @@ module ChefUtils
 
       # Determine if the current node is SuSE.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -325,7 +351,8 @@ module ChefUtils
 
       # Determine if the current node is OpenSUSE.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
@@ -342,7 +369,8 @@ module ChefUtils
 
       # Determine if the current node is Windows.
       #
-      # @param [Chef::Node] node
+      # @param [Chef::Node] node the node to check
+      # @since 15.5
       #
       # @return [Boolean]
       #
