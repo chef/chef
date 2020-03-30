@@ -247,6 +247,8 @@ class Chef
             return false unless protocol.start_with?("ICMP")
             return false unless (0..255).include?(icmp_type)
 
+            true
+
           elsif icmp_type.is_a?(String)
             return false if !protocol.start_with?("ICMP") && icmp_type !~ /^\D+$/
 
@@ -256,8 +258,7 @@ class Chef
               return icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
             end
 
-          else
-            return true
+            true
           end
         end
       end
