@@ -255,9 +255,10 @@ class Chef
             if protocol.start_with?("ICMP") && icmp_type.include?(":")
               return icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
             end
-          end
 
-          return true # rubocop:disable Style/RedundantReturn:
+          else
+            true
+          end
         end
       end
 
