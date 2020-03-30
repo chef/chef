@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.2 -->
-## [v15.9.2](https://github.com/chef/chef/tree/v15.9.2) (2020-03-24)
+<!-- latest_release 15.9.3 -->
+## [v15.9.3](https://github.com/chef/chef/tree/v15.9.3) (2020-03-30)
 
 #### Merged Pull Requests
-- Backport rhsm_register resource :https_for_ca_consumer property [#9530](https://github.com/chef/chef/pull/9530) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50)) <!-- 15.9.3 -->
 - Backport rhsm_register resource :https_for_ca_consumer property [#9530](https://github.com/chef/chef/pull/9530) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.9.2 -->
 - Backport more testing improvements from master [#9504](https://github.com/chef/chef/pull/9504) ([tas50](https://github.com/tas50)) <!-- 15.9.1 -->
 - Update InSpec 4.18.100, Ohai to 15.8, and Fauxhai to 8 [#9503](https://github.com/chef/chef/pull/9503) ([tas50](https://github.com/tas50)) <!-- 15.9.0 -->
