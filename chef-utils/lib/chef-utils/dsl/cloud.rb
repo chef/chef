@@ -30,7 +30,8 @@ module ChefUtils
       # @return [Boolean]
       #
       def cloud?(node = __getnode)
-        node.key?("cloud")
+        # cloud is always present, but nil if not on a cloud
+        !node["cloud"].nil?
       end
 
       # Return true if the current current node is in EC2.
