@@ -118,8 +118,8 @@ class Chef
         if macos?
           pkg_label = xcode_cli_package_label
 
-          # with upgrade action we should install if it's not install or if there's an available update to install
-          # xcode_cli_package_label will be nil if there's not update
+          # With upgrade action we should install if it's not installed or if there's an available update.
+          # `xcode_cli_package_label` will be nil if there's no update.
           install_xcode_cli_tools(pkg_label) if !xcode_cli_installed? || xcode_cli_package_label
         else
           Chef::Log.info "The build_essential resource :upgrade action is only supported on macOS systems. Skipping..."
