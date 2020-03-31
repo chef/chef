@@ -59,12 +59,12 @@ describe Chef::Resource::BuildEssential do
 
   describe "#xcode_cli_installed?" do
     it "returns true if the CLI is in the InstallHistory plist" do
-      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return("spec/unit/resource/data/InstallHistory_with_CLT.plist")
+      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return(::File.join(::File.dirname(__FILE__), "data/InstallHistory_with_CLT.plist"))
       expect(provider.xcode_cli_installed?).to eql(true)
     end
 
     it "returns false if the pkgutil doesn't list the package" do
-      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return("spec/unit/resource/data/InstallHistory_without_CLT.plist")
+      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return(::File.join(::File.dirname(__FILE__), "data/InstallHistory_without_CLT.plist"))
       expect(provider.xcode_cli_installed?).to eql(false)
     end
   end
