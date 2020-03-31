@@ -38,9 +38,11 @@ describe Chef::Resource::WindowsShare do
   end
 
   it "coerces path to a single path separator format" do
-    resource.path("C:/chef")
+    resource.path("C:/chef".freeze)
     expect(resource.path).to eql("C:\\chef")
     resource.path("C:\\chef")
+    expect(resource.path).to eql("C:\\chef")
+    resource.path("C:/chef".dup)
     expect(resource.path).to eql("C:\\chef")
   end
 end
