@@ -25,14 +25,6 @@ describe Chef::Resource::BuildEssential do
   let(:resource) { Chef::Resource::BuildEssential.new("foo", run_context) }
   let(:provider) { resource.provider_for_action(:install) }
 
-  let(:pkgutil_cli_exists) do
-    double("shell_out", stdout: "com.apple.pkg.CLTools_Executables", exitstatus: 0, error?: false)
-  end
-
-  let(:pkgutil_cli_doesnt_exist) do
-    double("shell_out", exitstatus: 1, error?: true)
-  end
-
   it "has a resource name of :build_essential" do
     expect(resource.resource_name).to eql(:build_essential)
   end
@@ -54,13 +46,13 @@ describe Chef::Resource::BuildEssential do
   end
 
   describe "#xcode_cli_installed?" do
-    it "returns true if the pkgutil lists the package" do
-      allow(provider).to receive(:shell_out).with("pkgutil", "--pkgs=com.apple.pkg.CLTools_Executables").and_return(pkgutil_cli_exists)
+    it "returns true if the CLI is in the InstallHistory plist" do
+      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return("spec/unit/resource/data/InstallHistory_with_CLT.plist")
       expect(provider.xcode_cli_installed?).to eql(true)
     end
 
     it "returns false if the pkgutil doesn't list the package" do
-      allow(provider).to receive(:shell_out).with("pkgutil", "--pkgs=com.apple.pkg.CLTools_Executables").and_return(pkgutil_cli_doesnt_exist)
+      allow(::File).to receive(:open).with("/Library/Receipts/InstallHistory.plist", "r").and_return("spec/unit/resource/data/InstallHistory_without_CLT.plist")
       expect(provider.xcode_cli_installed?).to eql(false)
     end
   end
