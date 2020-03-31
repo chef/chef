@@ -190,10 +190,8 @@ class Chef
           available_updates.error!
 
           # https://rubular.com/r/UPEE5P7mZLvXNs
-          label_match = available_updates.stdout.match(/^\s*\* (?:Label: )?(Command Line Tools.*)/)
-
           # this will return the match or nil
-          label_match[1] unless label_match.nil?
+          available_updates.stdout[/^\s*\* (?:Label: )?(Command Line Tools.*)/, 1]
         end
       end
 
