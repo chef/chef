@@ -88,7 +88,7 @@ class Chef
     # @return [Chef::CookbookVersion]
     def load_cookbook(cookbook_name)
       unless cookbook_version_loaders.key?(cookbook_name)
-        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook_name}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
+        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook_name}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata/)"
       end
 
       return cookbooks_by_name[cookbook_name] if cookbooks_by_name.key?(cookbook_name)

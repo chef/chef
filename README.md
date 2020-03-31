@@ -22,7 +22,7 @@ For Chef Infra usage, please refer to our [Learn Chef Rally](https://learn.chef.
 
 Other useful resources for Chef Infra users:
 
-- Documentation: <https://docs.chef.io>
+- Documentation: <https://docs.chef.io/>
 - Source: <https://github.com/chef/chef/tree/master>
 - Tickets/Issues: <https://github.com/chef/chef/issues>
 - Slack: [Chef Community Slack](https://community-slack.chef.io/)
