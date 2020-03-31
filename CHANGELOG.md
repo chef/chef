@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.168 -->
-## [v16.0.168](https://github.com/chef/chef/tree/v16.0.168) (2020-03-31)
+<!-- latest_release 16.0.169 -->
+## [v16.0.169](https://github.com/chef/chef/tree/v16.0.169) (2020-03-31)
 
 #### Merged Pull Requests
-- Simplify the matching code per code review [#9552](https://github.com/chef/chef/pull/9552) ([tas50](https://github.com/tas50))
+- Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50)) <!-- 16.0.169 -->
 - Simplify the matching code per code review [#9552](https://github.com/chef/chef/pull/9552) ([tas50](https://github.com/tas50)) <!-- 16.0.168 -->
 - build_essential resource: fix macOS 10.15 and improve installation support with a new :upgrade action for macOS [#9550](https://github.com/chef/chef/pull/9550) ([tas50](https://github.com/tas50)) <!-- 16.0.167 -->
 - Remove SLES 11 support from build_essential [#9551](https://github.com/chef/chef/pull/9551) ([tas50](https://github.com/tas50)) <!-- 16.0.166 -->
