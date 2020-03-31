@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.3 -->
-## [v15.9.3](https://github.com/chef/chef/tree/v15.9.3) (2020-03-30)
+<!-- latest_release 15.9.4 -->
+## [v15.9.4](https://github.com/chef/chef/tree/v15.9.4) (2020-03-31)
 
 #### Merged Pull Requests
-- backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50))
+- Switch to RUBY_PLATFORM for the windows check [#9557](https://github.com/chef/chef/pull/9557) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Switch to RUBY_PLATFORM for the windows check [#9557](https://github.com/chef/chef/pull/9557) ([tas50](https://github.com/tas50)) <!-- 15.9.4 -->
 - backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50)) <!-- 15.9.3 -->
 - Backport rhsm_register resource :https_for_ca_consumer property [#9530](https://github.com/chef/chef/pull/9530) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.9.2 -->
 - Backport more testing improvements from master [#9504](https://github.com/chef/chef/pull/9504) ([tas50](https://github.com/tas50)) <!-- 15.9.1 -->
