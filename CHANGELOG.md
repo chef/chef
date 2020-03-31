@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.6 -->
-## [v15.9.6](https://github.com/chef/chef/tree/v15.9.6) (2020-03-31)
+<!-- latest_release 15.9.7 -->
+## [v15.9.7](https://github.com/chef/chef/tree/v15.9.7) (2020-03-31)
 
 #### Merged Pull Requests
-- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9555](https://github.com/chef/chef/pull/9555) ([tas50](https://github.com/tas50))
+- Fixed windows share cannot modify frozen string bug  [#9556](https://github.com/chef/chef/pull/9556) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Fixed windows share cannot modify frozen string bug  [#9556](https://github.com/chef/chef/pull/9556) ([tas50](https://github.com/tas50)) <!-- 15.9.7 -->
 - Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9555](https://github.com/chef/chef/pull/9555) ([tas50](https://github.com/tas50)) <!-- 15.9.6 -->
 - Update all our links to use the new docs site format / cleanup descriptions [#9554](https://github.com/chef/chef/pull/9554) ([tas50](https://github.com/tas50)) <!-- 15.9.5 -->
 - Switch to RUBY_PLATFORM for the windows check [#9557](https://github.com/chef/chef/pull/9557) ([tas50](https://github.com/tas50)) <!-- 15.9.4 -->
