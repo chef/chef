@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.40 -->
-## [v14.14.40](https://github.com/chef/chef/tree/v14.14.40) (2020-03-31)
+<!-- latest_release 14.14.41 -->
+## [v14.14.41](https://github.com/chef/chef/tree/v14.14.41) (2020-03-31)
 
 #### Merged Pull Requests
-- Update all deps and bring in testing enhancements [#9560](https://github.com/chef/chef/pull/9560) ([tas50](https://github.com/tas50))
+- Fix file descriptor leak in our tests [#9559](https://github.com/chef/chef/pull/9559) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix file descriptor leak in our tests [#9559](https://github.com/chef/chef/pull/9559) ([tas50](https://github.com/tas50)) <!-- 14.14.41 -->
 - Update all deps and bring in testing enhancements [#9560](https://github.com/chef/chef/pull/9560) ([tas50](https://github.com/tas50)) <!-- 14.14.40 -->
 - [Backport]ifconfig: fix regex matching interface name with hyphen [#9405](https://github.com/chef/chef/pull/9405) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.14.39 -->
 - Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.38 -->
