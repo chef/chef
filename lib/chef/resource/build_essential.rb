@@ -37,6 +37,13 @@ class Chef
           compile_time true
         end
         ```
+
+        Upgrade compilation packages on macOS systems
+        ```ruby
+        build_essential 'Install compilation tools' do
+          action :upgrade
+        end
+        ```
       DOC
 
       # this allows us to use build_essential without setting a name
