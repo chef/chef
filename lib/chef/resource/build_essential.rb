@@ -186,7 +186,7 @@ class Chef
           label_match = available_updates.stdout.match(/^\s*\* (?:Label: )?(Command Line Tools.*)/)
 
           # this will return the match or nil
-          label_match&.first
+          label_match[1] unless label_match.nil?
         end
       end
 
