@@ -114,7 +114,6 @@ class Chef
           package "pkg-config"
         when suse?
           package %w{ autoconf bison flex gcc gcc-c++ kernel-default-devel make m4 }
-          package %w{ gcc48 gcc48-c++ } if node["platform_version"].to_i < 12
         else
           msg = <<-EOH
         The build_essential resource does not currently support the '#{node["platform_family"]}'
