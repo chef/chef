@@ -16,8 +16,7 @@ $pkg_deps=@(
 )
 
 function Invoke-Begin {
-    $hab_version = (hab --version).split(" ")
-    [Version]$hab_version = $hab_version[1].split("/")[0]
+    [Version]$hab_version = (hab --version).split(" ")[1].split("/")[0]
     if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
         Write-Warning ":habicat: I'm being built with $hab_version. I need at least Hab 0.85.0, because I use the -IsPath option for setting/pushing paths in SetupEnvironment."
