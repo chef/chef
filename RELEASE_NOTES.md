@@ -1,5 +1,35 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 15.9
+
+## Chef InSpec 4.18.100
+
+Chef InSpec has been updated from 4.18.85 to 4.18.100:
+
+- Resolved several failures in executing resources
+- Fixed auditd resource processing of action and list
+- Fixed platform detection when running in Habitat
+- "inspec schema" has been revised to be in the JSON Schema draft 7 format
+- Improved the functionality of the `oracledb_session` resource
+
+## Ohai 15.8
+
+Ohai has been updated to 15.8.0 which includes a fix for failures that occurred in the OpenStack plugin (thanks [@sawanoboly](https://github.com/sawanoboly/)) and improved parsing of data in the `optional_plugins` config option (thanks [@salzig](https://github.com/salzig/)).
+
+## Resource Improvements
+
+### rhsm_errata / rhsm_errata_level
+
+The `rhsm_errata` and `rhsm_errata_level` resources have been updated to properly function on RHEL 8 systems.
+
+### rhsm_register
+
+The `rhsm_register` resource has a new property `https_for_ca_consumer` that enables using https connections during registration. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/). This resource has also been updated to properly function on RHEL 8.
+
+### windows_share
+
+Resolved failures in the `windows_share` resource when setting the `path` property. Thanks for reporting this issue [@Kundan22](https://github.com/Kundan22/).
+
 # Chef Infra Client 15.8
 
 ## New notify_group functionality
