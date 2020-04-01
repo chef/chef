@@ -171,14 +171,6 @@ class Chef
 
       action :create do
         description "Create a Windows firewall entry."
-
-        unless is_set_properly?(new_resource.icmp_type, new_resource.protocol)
-          error_msg = "Verification for \"#{new_resource.rule_name}\" failed.\n" +
-            "It's mostly a combination of protocol (#{new_resource.protocol}) and icmp_type (#{new_resource.icmp_type}) which are not allowed.\n" +
-            "Please refer to: https://docs.microsoft.com/en-us/powershell/module/netsecurity/new-netfirewallrule"
-          raise Chef::Exceptions::ValidationFailed, error_msg
-        end
-
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
             :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
@@ -237,29 +229,44 @@ class Chef
           cmd
         end
 
-        # return the current firewall rule settings for icmp_type and protocol are correct
-        # @return [Boolean]
-        def is_set_properly?(icmp_type, protocol)
-          if icmp_type.to_s.empty?
-            return false # rubocop:disable Style/RedundantReturn
-
-          elsif icmp_type.is_a?(Integer)
-            return false unless protocol.start_with?("ICMP")
-            return false unless (0..255).include?(icmp_type)
-
-            true
-
-          elsif icmp_type.is_a?(String)
-            return false if !protocol.start_with?("ICMP") && icmp_type !~ /^\D+$/
-            return false if icmp_type.count("a-zA-Z") > 0 && icmp_type.count(":") > 1
-            return false unless (0..255).include?(icmp_type.to_i)
-
-            if protocol.start_with?("ICMP") && icmp_type.include?(":")
-              return icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
+        def define_resource_requirements
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(String)
+                !new_resource.icmp_type.empty?
+              elsif new_resource.icmp_type.is_a?(Integer)
+                !new_resource.icmp_type.nil?
+              end
             end
+            a.failure_message("The :icmp_type property can not be empty in #{new_resource.rule_name}")
+          end
 
-            # the following has to be disabled, as this works like a safeguard
-            true # rubocop:disable Style/RedundantReturn
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(Integer)
+                new_resource.protocol.start_with?("ICMP")
+              elsif new_resource.icmp_type.is_a?(String) && !new_resource.protocol.start_with?("ICMP")
+                new_resource.icmp_type == "Any"
+              else
+                true
+              end
+            end
+            a.failure_message("The :icmp_type property has a value of #{new_resource.icmp_type} set, but is not allowed for :protocol #{new_resource.protocol} in #{new_resource.rule_name}")
+          end
+
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(Integer)
+                (0..255).include?(new_resource.icmp_type)
+              elsif new_resource.icmp_type.is_a?(String) && !new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
+                (0..255).include?(new_resource.icmp_type.to_i)
+              elsif new_resource.icmp_type.is_a?(String) && new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
+                new_resource.icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
+              else
+                true
+              end
+            end
+            a.failure_message("Can not set :icmp_type to #{new_resource.icmp_type} as one value is out of range (0 to 255) in #{new_resource.rule_name}")
           end
         end
       end
