@@ -53,11 +53,11 @@ describe Chef::Resource::GemPackage, "gem_binary" do
   end
 end
 
-describe Chef::Resource::GemPackage, "clear_gem_sources" do
+describe Chef::Resource::GemPackage, "clear_sources" do
   let(:resource) { Chef::Resource::GemPackage.new("foo") }
 
-  it "is false by default" do
-    expect(resource.clear_sources).to be false
+  it "is nil by default" do
+    expect(resource.clear_sources).to be_nil
   end
 
   it "sets the default of clear_sources to the config value" do

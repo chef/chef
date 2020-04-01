@@ -1,15 +1,25 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.160 -->
-## [v16.0.160](https://github.com/chef/chef/tree/v16.0.160) (2020-03-26)
+<!-- latest_release 16.0.171 -->
+## [v16.0.171](https://github.com/chef/chef/tree/v16.0.171) (2020-04-01)
 
 #### Merged Pull Requests
-- Improve chef_client_* resources [#9540](https://github.com/chef/chef/pull/9540) ([tas50](https://github.com/tas50))
+- Add Windows 10 Tester [#9564](https://github.com/chef/chef/pull/9564) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Windows 10 Tester [#9564](https://github.com/chef/chef/pull/9564) ([tas50](https://github.com/tas50)) <!-- 16.0.171 -->
+- Fix functional tests on Windows 10 by matching less [#9563](https://github.com/chef/chef/pull/9563) ([btm](https://github.com/btm)) <!-- 16.0.170 -->
+- Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50)) <!-- 16.0.169 -->
+- Simplify the matching code per code review [#9552](https://github.com/chef/chef/pull/9552) ([tas50](https://github.com/tas50)) <!-- 16.0.168 -->
+- build_essential resource: fix macOS 10.15 and improve installation support with a new :upgrade action for macOS [#9550](https://github.com/chef/chef/pull/9550) ([tas50](https://github.com/tas50)) <!-- 16.0.167 -->
+- Remove SLES 11 support from build_essential [#9551](https://github.com/chef/chef/pull/9551) ([tas50](https://github.com/tas50)) <!-- 16.0.166 -->
+- Add Ubuntu 20.04 (x86_64) Tester [#9523](https://github.com/chef/chef/pull/9523) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.164 -->
+- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9549](https://github.com/chef/chef/pull/9549) ([tas50](https://github.com/tas50)) <!-- 16.0.163 -->
+- Fix unintuitive behavior of sources on gem resources [#9480](https://github.com/chef/chef/pull/9480) ([phiggins](https://github.com/phiggins)) <!-- 16.0.162 -->
+- Fixed windows share cannot modify frozen string bug [#9524](https://github.com/chef/chef/pull/9524) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.161 -->
 - Improve chef_client_* resources [#9540](https://github.com/chef/chef/pull/9540) ([tas50](https://github.com/tas50)) <!-- 16.0.160 -->
 - Add a `knife yaml convert` tool [#9508](https://github.com/chef/chef/pull/9508) ([btm](https://github.com/btm)) <!-- 16.0.159 -->
 - Add missing introduced value to the new property in rhsm_register [#9534](https://github.com/chef/chef/pull/9534) ([tas50](https://github.com/tas50)) <!-- 16.0.158 -->
