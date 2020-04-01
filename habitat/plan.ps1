@@ -16,9 +16,9 @@ $pkg_deps=@(
 )
 
 function Invoke-Begin {
-    $hab_version = (hab --version)
-    $hab_minor_version = $hab_version.split('.')[1]
-    if ( -not $? -Or $hab_minor_version -lt 85 ) {
+    $hab_version = (hab --version).split(" ")
+    [Version]$hab_version = $hab_version[1].split("/")[0]
+    if ($hab_version -lt [Version]"0.85.0" ) {
         Write-Warning "(╯°□°）╯︵ ┻━┻ I CAN'T WORK UNDER THESE CONDITIONS!"
         Write-Warning ":habicat: I'm being built with $hab_version. I need at least Hab 0.85.0, because I use the -IsPath option for setting/pushing paths in SetupEnvironment."
         throw "unable to build: required minimum version of Habitat not installed"
