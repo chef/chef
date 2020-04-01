@@ -28,7 +28,7 @@ The `rhsm_register` resource has a new property `https_for_ca_consumer` that ena
 
 ### windows_share
 
-Resolved failures when setting the `path` property. Thanks for reporting this issue [@Kundan22](https://github.com/Kundan22/).
+Resolved failures in the `windows_share` resource when setting the `path` property. Thanks for reporting this issue [@Kundan22](https://github.com/Kundan22/).
 
 # Chef Infra Client 15.8
 
