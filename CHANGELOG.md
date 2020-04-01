@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.169 -->
-## [v16.0.169](https://github.com/chef/chef/tree/v16.0.169) (2020-03-31)
+<!-- latest_release 16.0.170 -->
+## [v16.0.170](https://github.com/chef/chef/tree/v16.0.170) (2020-04-01)
 
 #### Merged Pull Requests
-- Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50))
+- Fix functional tests on Windows 10 by matching less [#9563](https://github.com/chef/chef/pull/9563) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix functional tests on Windows 10 by matching less [#9563](https://github.com/chef/chef/pull/9563) ([btm](https://github.com/btm)) <!-- 16.0.170 -->
 - Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50)) <!-- 16.0.169 -->
 - Simplify the matching code per code review [#9552](https://github.com/chef/chef/pull/9552) ([tas50](https://github.com/tas50)) <!-- 16.0.168 -->
 - build_essential resource: fix macOS 10.15 and improve installation support with a new :upgrade action for macOS [#9550](https://github.com/chef/chef/pull/9550) ([tas50](https://github.com/tas50)) <!-- 16.0.167 -->
