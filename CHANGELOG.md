@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.9 -->
-## [v15.9.9](https://github.com/chef/chef/tree/v15.9.9) (2020-04-01)
+<!-- latest_release 15.9.10 -->
+## [v15.9.10](https://github.com/chef/chef/tree/v15.9.10) (2020-04-01)
 
 #### Merged Pull Requests
-- Fix Habitat builds [#9567](https://github.com/chef/chef/pull/9567) ([tas50](https://github.com/tas50))
+- Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50)) <!-- 15.9.10 -->
 - Fix Habitat builds [#9567](https://github.com/chef/chef/pull/9567) ([tas50](https://github.com/tas50)) <!-- 15.9.9 -->
 - Fix cloud? helper to only report true on cloud instances [#9558](https://github.com/chef/chef/pull/9558) ([tas50](https://github.com/tas50)) <!-- 15.9.8 -->
 - Fixed windows share cannot modify frozen string bug  [#9556](https://github.com/chef/chef/pull/9556) ([tas50](https://github.com/tas50)) <!-- 15.9.7 -->
