@@ -266,6 +266,9 @@ class Chef
       # Called after #load_current_resource has run.
       def resource_current_state_loaded(resource, action, current_resource); end
 
+      # Called after #load_after_resource has run.
+      def resource_after_state_loaded(resource, action, after_resource); end
+
       # Called when resource current state load is skipped due to the provider
       # not supporting whyrun mode.
       def resource_current_state_load_bypassed(resource, action, current_resource); end

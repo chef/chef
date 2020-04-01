@@ -64,7 +64,38 @@ class Chef
         @current_resource = current_resource
       end
 
-      # @todo: remove in Chef-15
+      def load_after_resource
+        if new_resource.respond_to?(:load_current_value!)
+          # dup the resource and then reset desired-state properties.
+          after_resource = new_resource.dup
+
+          # We clear desired state in the copy, because it is supposed to be actual state.
+          # We keep identity properties and non-desired-state, which are assumed to be
+          # "control" values like `recurse: true`
+          after_resource.class.properties.each_value do |property|
+            if property.desired_state? && !property.identity? && !property.name_property?
+              property.reset(after_resource)
+            end
+          end
+
+          # Call the actual load_current_value! method. If it raises
+          # CurrentValueDoesNotExist, set after_resource to `nil`.
+          begin
+            # If the user specifies load_current_value do |desired_resource|, we
+            # pass in the desired resource as well as the current one.
+            if after_resource.method(:load_current_value!).arity > 0
+              after_resource.load_current_value!(new_resource)
+            else
+              after_resource.load_current_value!
+            end
+          rescue Chef::Exceptions::CurrentValueDoesNotExist
+            after_resource = nil
+          end
+        end
+
+        @after_resource = after_resource
+      end
+
       def self.include_resource_dsl?
         true
       end

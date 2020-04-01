@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018-2019, Chef Software Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,10 +24,6 @@ class Chef
 
     class ActionRecord
 
-      # XXX: this is buggy since we (ab)use this resource for "after" state and it may be
-      # inaccurate and it may be mutated by the user.  A third after_resource should be added
-      # to new_resource + current_resource to properly implement this.
-      #
       # @return [Chef::Resource] The declared resource state.
       #
       attr_accessor :new_resource
@@ -37,6 +33,10 @@ class Chef
       # threw an exception (which should be considered a bug in that load_current_resource
       # implementation, but must be handled), or for unprocessed resources.
       attr_accessor :current_resource
+
+      # @return [Chef::Resource] the after_resource object (after-state).  This can be nil for
+      # non custom-resources or resources that do not implement load_after_resource.
+      attr_accessor :after_resource
 
       # @return [Symbol] # The action that was run (or scheduled to run in the case of "unprocessed" resources).
       attr_accessor :action
@@ -161,7 +161,7 @@ class Chef
       pending_updates << ActionRecord.new(new_resource, action, pending_updates.length)
     end
 
-    # Hook called after a resource is loaded.  If load_current_resource fails, this hook will
+    # Hook called after a current resource is loaded.  If load_current_resource fails, this hook will
     # not be called and current_resource will be nil, and the resource_failed hook will be called.
     #
     # (see EventDispatch::Base#)
@@ -170,6 +170,17 @@ class Chef
       return if consumers.empty?
 
       current_record.current_resource = current_resource
+    end
+
+    # Hook called after an after resource is loaded.  If load_after_resource fails, this hook will
+    # not be called and after_resource will be nil, and the resource_failed hook will be called.
+    #
+    # (see EventDispatch::Base#)
+    #
+    def resource_after_state_loaded(new_resource, action, after_resource)
+      return if consumers.empty?
+
+      current_record.after_resource = after_resource
     end
 
     # Hook called after an action is determined to be up to date.

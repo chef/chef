@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2019-2019, Chef Software Inc.
+# Copyright:: Copyright 2019-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,12 @@ require_relative "../spec_helper"
 require "chef/data_collector"
 require "socket"
 
+#
+# FIXME FIXME FIXME:  What we need to do here is have the ability to construct a real resource collection
+# with some test resources that will correctly be up-to-date/updated/skipped/failed/unprocessed and really
+# converge a client with them (sort of chefspec-like construction of a Chef::Client but with the actions
+# actually running -- another testing requirement similar to the integration testing framework in cheffish as well)
+#
 describe Chef::DataCollector do
   before(:each) do
     Chef::Config[:enable_reporting] = true
@@ -30,9 +36,23 @@ describe Chef::DataCollector do
 
   let(:data_collector) { Chef::DataCollector::Reporter.new(events) }
 
-  let(:new_resource) { Chef::Resource::File.new("/tmp/a-file.txt") }
+  let(:new_resource) do
+    new_resource = Chef::Resource::File.new("/tmp/a-file.txt")
+    new_resource.checksum nil
+    new_resource
+  end
 
-  let(:current_resource) { Chef::Resource::File.new("/tmp/a-file.txt") }
+  let(:current_resource) do
+    current_resource = Chef::Resource::File.new("/tmp/a-file.txt")
+    current_resource.checksum "1234123412341234123412341234123412341234123412341234123412341234"
+    current_resource
+  end
+
+  let(:after_resource) do
+    after_resource = Chef::Resource::File.new("/tmp/a-file.txt")
+    after_resource.checksum "6789678967896789678967896789678967896789678967896789678967896789"
+    after_resource
+  end
 
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 
@@ -130,10 +150,10 @@ describe Chef::DataCollector do
     new_resource.respond_to?(:diff) && %w{updated failed}.include?(status)
   end
 
-  def resource_record_for(current_resource, new_resource, action, status, duration)
+  def resource_record_for(new_resource, before_resource, after_resource, action, status, duration)
     {
-      "after" => new_resource.state_for_resource_reporter,
-      "before" => current_resource&.state_for_resource_reporter,
+      "after" => after_resource&.state_for_resource_reporter || {},
+      "before" => before_resource&.state_for_resource_reporter || {},
       "cookbook_name" => cookbook_name,
       "cookbook_version" => cookbook_version.version,
       "delta" => resource_has_diff(new_resource, status) ? new_resource.diff : "",
@@ -634,13 +654,14 @@ describe Chef::DataCollector do
       context "when the run contains a file resource that is up-to-date" do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 0 }
-        let(:resource_record) { [ resource_record_for(current_resource, new_resource, :create, "up-to-date", "1234") ] }
+        let(:resource_record) { [ resource_record_for(new_resource, current_resource, after_resource, :create, "up-to-date", "1234") ] }
         let(:status) { "success" }
 
         before do
           events.resource_action_start(new_resource, :create)
           events.resource_current_state_loaded(new_resource, :create, current_resource)
           events.resource_up_to_date(new_resource, :create)
+          events.resource_after_state_loaded(new_resource, :create, after_resource)
           new_resource.instance_variable_set(:@elapsed_time, 1.2345)
           events.resource_completed(new_resource)
           events.converge_complete
@@ -653,13 +674,14 @@ describe Chef::DataCollector do
       context "when the run contains a file resource that is updated" do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 1 }
-        let(:resource_record) { [ resource_record_for(current_resource, new_resource, :create, "updated", "1234") ] }
+        let(:resource_record) { [ resource_record_for(new_resource, current_resource, after_resource, :create, "updated", "1234") ] }
         let(:status) { "success" }
 
         before do
           events.resource_action_start(new_resource, :create)
           events.resource_current_state_loaded(new_resource, :create, current_resource)
           events.resource_updated(new_resource, :create)
+          events.resource_after_state_loaded(new_resource, :create, after_resource)
           new_resource.instance_variable_set(:@elapsed_time, 1.2345)
           events.resource_completed(new_resource)
           events.converge_complete
@@ -679,7 +701,7 @@ describe Chef::DataCollector do
           allow(r).to receive(:cookbook_version).and_return(cookbook_version)
           r
         end
-        let(:resource_record) { [ resource_record_for(implementation_resource, implementation_resource, :create, "updated", "2345"), resource_record_for(current_resource, new_resource, :create, "updated", "1234") ] }
+        let(:resource_record) { [ resource_record_for(implementation_resource, implementation_resource, implementation_resource, :create, "updated", "2345"), resource_record_for(new_resource, current_resource, after_resource, :create, "updated", "1234") ] }
         let(:status) { "success" }
 
         before do
@@ -689,10 +711,12 @@ describe Chef::DataCollector do
           events.resource_action_start(implementation_resource , :create)
           events.resource_current_state_loaded(implementation_resource, :create, implementation_resource)
           events.resource_updated(implementation_resource, :create)
+          events.resource_after_state_loaded(implementation_resource, :create, implementation_resource)
           implementation_resource.instance_variable_set(:@elapsed_time, 2.3456)
           events.resource_completed(implementation_resource)
 
           events.resource_updated(new_resource, :create)
+          events.resource_after_state_loaded(new_resource, :create, after_resource)
           new_resource.instance_variable_set(:@elapsed_time, 1.2345)
           events.resource_completed(new_resource)
           events.converge_complete
@@ -706,7 +730,7 @@ describe Chef::DataCollector do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 0 }
         let(:resource_record) do
-          rec = resource_record_for(current_resource, new_resource, :create, "skipped", "1234")
+          rec = resource_record_for(new_resource, nil, nil, :create, "skipped", "1234")
           rec["conditional"] = "not_if { #code block }" # FIXME: "#code block" is poor, is there some way to fix this?
           [ rec ]
         end
@@ -715,7 +739,6 @@ describe Chef::DataCollector do
         before do
           conditional = (new_resource.not_if { true }).first
           events.resource_action_start(new_resource, :create)
-          events.resource_current_state_loaded(new_resource, :create, current_resource)
           events.resource_skipped(new_resource, :create, conditional)
           new_resource.instance_variable_set(:@elapsed_time, 1.2345)
           events.resource_completed(new_resource)
@@ -730,7 +753,7 @@ describe Chef::DataCollector do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 0 }
         let(:resource_record) do
-          rec = resource_record_for(current_resource, new_resource, :create, "skipped", "1234")
+          rec = resource_record_for(new_resource, nil, nil, :create, "skipped", "1234")
           rec["conditional"] = 'not_if "true"'
           [ rec ]
         end
@@ -739,7 +762,6 @@ describe Chef::DataCollector do
         before do
           conditional = (new_resource.not_if "true").first
           events.resource_action_start(new_resource, :create)
-          events.resource_current_state_loaded(new_resource, :create, current_resource)
           events.resource_skipped(new_resource, :create, conditional)
           new_resource.instance_variable_set(:@elapsed_time, 1.2345)
           events.resource_completed(new_resource)
@@ -756,7 +778,7 @@ describe Chef::DataCollector do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 0 }
         let(:resource_record) do
-          rec = resource_record_for(current_resource, new_resource, :create, "failed", "1234")
+          rec = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec["error_message"] = "imperial to metric conversion error"
           [ rec ]
         end
@@ -783,7 +805,7 @@ describe Chef::DataCollector do
         let(:total_resource_count) { 1 }
         let(:updated_resource_count) { 0 }
         let(:resource_record) do
-          rec = resource_record_for(current_resource, new_resource, :create, "failed", "1234")
+          rec = resource_record_for(new_resource, nil, nil, :create, "failed", "1234")
           rec["before"] = {}
           rec["error_message"] = "imperial to metric conversion error"
           [ rec ]
@@ -818,10 +840,9 @@ describe Chef::DataCollector do
           res
         end
         let(:resource_record) do
-          rec1 = resource_record_for(current_resource, new_resource, :create, "failed", "1234")
+          rec1 = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec1["error_message"] = "imperial to metric conversion error"
-          rec2 = resource_record_for(nil, unprocessed_resource, :nothing, "unprocessed", "")
-          rec2["before"] = {}
+          rec2 = resource_record_for(unprocessed_resource, nil, nil, :nothing, "unprocessed", "")
           [ rec1, rec2 ]
         end
         let(:status) { "failure" }

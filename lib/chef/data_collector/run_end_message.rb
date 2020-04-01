@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2012-2019, Chef Software Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -106,12 +106,13 @@ class Chef
         def action_record_for_json(action_record)
           new_resource = action_record.new_resource
           current_resource = action_record.current_resource
+          after_resource = action_record.after_resource
 
           hash = {
             "type" => new_resource.resource_name.to_sym,
             "name" => new_resource.name.to_s,
             "id" => safe_resource_identity(new_resource),
-            "after" => safe_state_for_resource_reporter(new_resource),
+            "after" => safe_state_for_resource_reporter(after_resource || new_resource),
             "before" => safe_state_for_resource_reporter(current_resource),
             "duration" => action_record.elapsed_time.nil? ? "" : (action_record.elapsed_time * 1000).to_i.to_s,
             "delta" => new_resource.respond_to?(:diff) && updated_or_failed?(action_record) ? new_resource.diff : "",
@@ -119,6 +120,11 @@ class Chef
             "result" => action_record.action.to_s,
             "status" => action_record_status_for_json(action_record),
           }
+
+          # don't use the new_resource for the after_resource if it is skipped or failed
+          if action_record.status == :skipped || action_record.status == :failed || action_record.status == :unprocessed
+            hash["after"] = {}
+          end
 
           if new_resource.cookbook_name
             hash["cookbook_name"]    = new_resource.cookbook_name
