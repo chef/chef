@@ -14,7 +14,7 @@ Chef InSpec has been updated from 4.18.85 to 4.18.100:
 
 ## Ohai 15.8
 
-Ohai was been updated to 15.8.0 which includes a fix for failures that occured in the OpenStack plugin (thanks [@sawanoboly](https://github.com/sawanoboly/)) and improved parsing of data in the `optional_plugins` config option (thanks [@salzig](https://github.com/salzig/)).
+Ohai has been updated to 15.8.0 which includes a fix for failures that occurred in the OpenStack plugin (thanks [@sawanoboly](https://github.com/sawanoboly/)) and improved parsing of data in the `optional_plugins` config option (thanks [@salzig](https://github.com/salzig/)).
 
 ## Resource Improvements
 
