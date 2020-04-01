@@ -24,7 +24,7 @@ The `rhsm_errata` and `rhsm_errata_level` resources have been updated to properl
 
 ### rhsm_register
 
-The `rhsm_register` has a new property `https_for_ca_consumer` that enables using https connections during registration. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/). This resource has also been updated to properly function on RHEL 8.
+The `rhsm_register` resource has a new property `https_for_ca_consumer` that enables using https connections during registration. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/). This resource has also been updated to properly function on RHEL 8.
 
 ### windows_share
 
