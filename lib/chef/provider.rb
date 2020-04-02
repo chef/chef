@@ -35,6 +35,7 @@ class Chef
 
     attr_accessor :new_resource
     attr_accessor :current_resource
+    attr_accessor :after_resource
     attr_accessor :run_context
 
     attr_reader :recipe_name
@@ -94,6 +95,7 @@ class Chef
       @new_resource = new_resource
       @action = action
       @current_resource = nil
+      @after_resource = nil
       @run_context = run_context
       @converge_actions = nil
 
@@ -148,6 +150,13 @@ class Chef
 
     def cleanup_after_converge; end
 
+    def load_after_resource
+      # This is a backwards compatible hack, custom resources properly wire up a new after_resource
+      # via load_current_value.  It is acceptible for old style resources that cannot be easily made
+      # into custom resources to override this method and provide a proper after_resource.
+      @after_resource = @new_resource
+    end
+
     # the :nothing action which is available on all resources by default
     def action_nothing
       logger.trace("Doing nothing for #{@new_resource}")
@@ -191,6 +200,9 @@ class Chef
       set_updated_status
 
       cleanup_after_converge
+
+      load_after_resource
+      events.resource_after_state_loaded(@new_resource, @action, @after_resource)
     end
 
     def process_resource_requirements

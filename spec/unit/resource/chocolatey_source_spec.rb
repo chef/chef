@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018, Chef Software, Inc.
+# Copyright:: Copyright 2018-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,9 +49,10 @@ describe Chef::Resource::ChocolateySource do
   before(:each) do
     disable_provider # vivify before mocking
     enable_provider
+    current_resource
     allow(resource).to receive(:provider_for_action).and_return(disable_provider)
     allow(resource).to receive(:provider_for_action).and_return(enable_provider)
-    allow(resource).to receive(:dup).and_return(current_resource)
+    allow(resource.class).to receive(:new).and_return(current_resource)
     @original_env = ENV.to_hash
     ENV["ALLUSERSPROFILE"] = 'C:\ProgramData'
   end

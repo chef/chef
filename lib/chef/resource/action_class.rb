@@ -29,42 +29,44 @@ class Chef
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
       end
 
-      #
-      # If load_current_value! is defined on the resource, use that.
-      #
-      def load_current_resource
+      def return_load_current_value
+        resource = nil
         if new_resource.respond_to?(:load_current_value!)
-          # dup the resource and then reset desired-state properties.
-          current_resource = new_resource.dup
+          resource = new_resource.class.new(new_resource.name, new_resource.run_context)
 
-          # We clear desired state in the copy, because it is supposed to be actual state.
-          # We keep identity properties and non-desired-state, which are assumed to be
-          # "control" values like `recurse: true`
-          current_resource.class.properties.each_value do |property|
-            if property.desired_state? && !property.identity? && !property.name_property?
-              property.reset(current_resource)
+          # copy the non-desired state, the identity properties and name property to the new resource
+          # (the desired state values must be loaded by load_current_value)
+          resource.class.properties.each_value do |property|
+            if !property.desired_state? || property.identity? || property.name_property?
+              property.set(resource, new_resource.send(property.name)) if new_resource.class.properties[property.name].is_set?(new_resource)
             end
           end
 
-          # Call the actual load_current_value! method. If it raises
-          # CurrentValueDoesNotExist, set current_resource to `nil`.
+          # we support optionally passing the new_resource as an arg to load_current_value and
+          # load_current_value can raise in order to clear the current_resource to nil
           begin
-            # If the user specifies load_current_value do |desired_resource|, we
-            # pass in the desired resource as well as the current one.
-            if current_resource.method(:load_current_value!).arity > 0
-              current_resource.load_current_value!(new_resource)
+            if resource.method(:load_current_value!).arity > 0
+              resource.load_current_value!(new_resource)
             else
-              current_resource.load_current_value!
+              resource.load_current_value!
             end
           rescue Chef::Exceptions::CurrentValueDoesNotExist
-            current_resource = nil
+            resource = nil
           end
         end
-
-        @current_resource = current_resource
+        resource
       end
 
-      # @todo: remove in Chef-15
+      # build the before state (current_resource)
+      def load_current_resource
+        @current_resource = return_load_current_value
+      end
+
+      # build the after state (after_resource)
+      def load_after_resource
+        @after_resource = return_load_current_value
+      end
+
       def self.include_resource_dsl?
         true
       end
