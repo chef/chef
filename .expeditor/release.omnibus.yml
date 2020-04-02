@@ -16,8 +16,6 @@ builder-to-testers-map:
     - debian-10-x86_64
   el-6-i686:
     - el-6-i686
-  el-6-s390x:
-    - el-6-s390x
   el-6-x86_64:
     - el-6-x86_64
   el-7-aarch64:
