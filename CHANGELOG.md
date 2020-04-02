@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.14 -->
-## [v15.9.14](https://github.com/chef/chef/tree/v15.9.14) (2020-04-02)
+<!-- latest_release 15.9.15 -->
+## [v15.9.15](https://github.com/chef/chef/tree/v15.9.15) (2020-04-02)
 
 #### Merged Pull Requests
-- build_essential: Support macOS 10.15 and improve idempotency [#9579](https://github.com/chef/chef/pull/9579) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 validation / package creation [#9583](https://github.com/chef/chef/pull/9583) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Add Ubuntu 20.04 validation / package creation [#9583](https://github.com/chef/chef/pull/9583) ([tas50](https://github.com/tas50)) <!-- 15.9.15 -->
 - build_essential: Support macOS 10.15 and improve idempotency [#9579](https://github.com/chef/chef/pull/9579) ([tas50](https://github.com/tas50)) <!-- 15.9.14 -->
 - Update omnibus-software to fix Ruby 2.6.6 on AIX [#9576](https://github.com/chef/chef/pull/9576) ([tas50](https://github.com/tas50)) <!-- 15.9.13 -->
 - Add a Windows 10 tester to the pipeline [#9575](https://github.com/chef/chef/pull/9575) ([tas50](https://github.com/tas50)) <!-- 15.9.12 -->
