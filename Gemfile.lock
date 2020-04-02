@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: ebbcec68f08a048406764ceae8d2ac33a33507af
+  revision: d0e353d4415834d58aa267f8bc6d5c4ce8d95652
   branch: master
   specs:
-    chefstyle (0.15.1)
-      rubocop (= 0.80.1)
+    chefstyle (1.0.0)
+      rubocop (= 0.81.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 10615b80e8abd2a8a3263a3514822a90158c14d1
+  revision: 1f3fc923263abac1cff1f64e22813d1c5e47e53b
   branch: master
   specs:
-    ohai (16.0.12)
+    ohai (16.0.15)
       chef-config (>= 12.8, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -176,7 +176,7 @@ GEM
     equatable (0.6.1)
     erubi (1.9.0)
     erubis (2.7.0)
-    faraday (1.0.0)
+    faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
     fauxhai-ng (8.0.0)
       net-ssh
@@ -285,7 +285,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.1)
-    parser (2.7.0.4)
+    parser (2.7.0.5)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
@@ -331,14 +331,14 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.80.1)
+    rubocop (0.81.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
       rexml
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 1.7)
+      unicode-display_width (>= 1.4.0, < 2.0)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
     ruby-shadow (2.5.0)
@@ -399,8 +399,10 @@ GEM
       tty-screen (~> 0.7)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
-    unicode-display_width (1.6.1)
+    unf_ext (0.0.7.7)
+    unf_ext (0.0.7.7-x64-mingw32)
+    unf_ext (0.0.7.7-x86-mingw32)
+    unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uri_template (0.7.0)
     uuidtools (2.1.5)
