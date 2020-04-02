@@ -31,7 +31,7 @@ class Chef
       default_action :create
 
       property :group_name, String,
-        name_property: true, identity: true,
+        name_property: true,
         description: "The name of the group."
 
       property :gid, [ String, Integer ],

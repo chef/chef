@@ -66,7 +66,7 @@ class Chef
 
       property :modname, String,
         description: "An optional property to set the kernel module name if it differs from the resource block's name.",
-        name_property: true, identity: true
+        name_property: true
 
       property :options, Array,
         description: "An optional property to set options for the kernel module.",

@@ -49,7 +49,7 @@ class Chef
       end
 
       property :command, [ String, Array ],
-        name_property: true, identity: true,
+        name_property: true,
         description: "An optional property to set the command to be executed if it differs from the resource block's name."
 
       property :umask, [ String, Integer ],

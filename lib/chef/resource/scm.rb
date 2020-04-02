@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
 
       property :destination, String,
         description: "The location path to which the source is to be cloned, checked out, or exported. Default value: the name of the resource block.",
-        name_property: true, identity: true
+        name_property: true
 
       property :repository, String
 

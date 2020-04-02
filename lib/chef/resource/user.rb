@@ -30,7 +30,7 @@ class Chef
 
       property :username, String,
         description: "An optional property to set the username value if it differs from the resource block's name.",
-        name_property: true, identity: true
+        name_property: true
 
       property :comment, String,
         description: "The contents of the user comments field."

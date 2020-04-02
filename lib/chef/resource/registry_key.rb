@@ -70,7 +70,7 @@ class Chef
         @values, @unscrubbed_values = [], []
       end
 
-      property :key, String, name_property: true, identity: true
+      property :key, String, name_property: true
 
       def values(arg = nil)
         if not arg.nil?

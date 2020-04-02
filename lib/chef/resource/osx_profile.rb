@@ -34,7 +34,7 @@ class Chef
 
       property :profile_name, String,
         description: "Use to specify the name of the profile, if different from the name of the resource block.",
-        name_property: true, identity: true
+        name_property: true
 
       property :profile, [ String, Hash ],
         description: "Use to specify a profile. This may be the name of a profile contained in a cookbook or a Hash that contains the contents of the profile."
