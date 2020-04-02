@@ -23,6 +23,8 @@ require "iniparse"
 class Chef
   class Resource
     class SystemdUnit < Chef::Resource
+      unified_mode true
+
       provides(:systemd_unit) { true }
 
       description "Use the systemd_unit resource to create, manage, and run systemd units."

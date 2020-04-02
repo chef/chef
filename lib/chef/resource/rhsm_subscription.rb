@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmSubscription < Chef::Resource
+      unified_mode true
+
       provides(:rhsm_subscription) { true }
 
       description "Use the rhsm_subscription resource to add or remove Red Hat Subscription Manager"\
@@ -55,6 +57,7 @@ class Chef
 
       action_class do
         def subscription_attached?(subscription)
+          # FIXME: use shell_out
           cmd = Mixlib::ShellOut.new("subscription-manager list --consumed | grep #{subscription}", env: { LANG: "en_US" })
           cmd.run_command
           !cmd.stdout.match(/Pool ID:\s+#{subscription}$/).nil?
@@ -65,6 +68,7 @@ class Chef
           pool = nil
           serial = nil
 
+          # FIXME: use shell_out
           cmd = Mixlib::ShellOut.new("subscription-manager list --consumed", env: { LANG: "en_US" })
           cmd.run_command
           cmd.stdout.lines.each do |line|

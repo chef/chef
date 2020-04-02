@@ -89,24 +89,41 @@ class Chef
       end
 
       def manage_plist(action)
-        return unless manage_agent?(action)
-
         if source
-          res = cookbook_file_resource
+          cookbook_file @path do
+            cookbook_name = cookbook if cookbook
+            name(@path) if @path
+            backup(backup) if backup
+            group(group) if group
+            mode(mode) if mode
+            owner(owner) if owner
+            source(source) if source
+            action(action)
+            only_if { manage_agent?(action) }
+          end
         else
-          res = file_resource
+          file @path do
+            name(@path) if @path
+            backup(backup) if backup
+            content(content) if content?
+            group(group) if group
+            mode(mode) if mode
+            owner(owner) if owner
+            action(action)
+            only_if { manage_agent?(action) }
+          end
         end
-        res.run_action(action)
-        new_resource.updated_by_last_action(true) if res.updated?
-        res.updated
       end
 
       def manage_service(action)
-        return unless manage_agent?(action)
-
-        res = service_resource
-        res.run_action(action)
-        new_resource.updated_by_last_action(true) if res.updated?
+        macosx_service label do
+          name(label) if label
+          service_name(label) if label
+          plist(@path) if @path
+          session_type(session_type) if session_type
+          action(action)
+          only_if { manage_agent?(action) }
+        end
       end
 
       def manage_agent?(action)
@@ -125,38 +142,6 @@ class Chef
           return false
         end
         true
-      end
-
-      def service_resource
-        res = Chef::Resource::MacosxService.new(label, run_context)
-        res.name(label) if label
-        res.service_name(label) if label
-        res.plist(@path) if @path
-        res.session_type(session_type) if session_type
-        res
-      end
-
-      def file_resource
-        res = Chef::Resource::File.new(@path, run_context)
-        res.name(@path) if @path
-        res.backup(backup) if backup
-        res.content(content) if content?
-        res.group(group) if group
-        res.mode(mode) if mode
-        res.owner(owner) if owner
-        res
-      end
-
-      def cookbook_file_resource
-        res = Chef::Resource::CookbookFile.new(@path, run_context)
-        res.cookbook_name = cookbook if cookbook
-        res.name(@path) if @path
-        res.backup(backup) if backup
-        res.group(group) if group
-        res.mode(mode) if mode
-        res.owner(owner) if owner
-        res.source(source) if source
-        res
       end
 
       def define_resource_requirements

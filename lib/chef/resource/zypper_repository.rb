@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class ZypperRepository < Chef::Resource
+      unified_mode true
+
       provides(:zypper_repository) { true }
       provides(:zypper_repo) { true }
 

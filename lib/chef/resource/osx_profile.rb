@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class OsxProfile < Chef::Resource
+      unified_mode true
+
       provides :osx_profile
       provides :osx_config_profile
 
