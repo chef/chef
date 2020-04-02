@@ -79,6 +79,8 @@ class Chef
           clients item.get_clients
           admins item.get_admins
           search item.search
+        rescue ChefVault::Exceptions::SecretDecryption
+          current_value_does_not_exist!
         rescue ChefVault::Exceptions::KeysNotFound
           current_value_does_not_exist!
         rescue Net::HTTPClientException => e
