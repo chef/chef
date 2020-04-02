@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.175 -->
-## [v16.0.175](https://github.com/chef/chef/tree/v16.0.175) (2020-04-02)
+<!-- latest_release 16.0.176 -->
+## [v16.0.176](https://github.com/chef/chef/tree/v16.0.176) (2020-04-02)
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.11.0.rc2 [#9572](https://github.com/chef/chef/pull/9572) ([tas50](https://github.com/tas50))
+- Convert more resources to unified_mode [#9570](https://github.com/chef/chef/pull/9570) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert more resources to unified_mode [#9570](https://github.com/chef/chef/pull/9570) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.176 -->
 - Update Nokogiri to 1.11.0.rc2 [#9572](https://github.com/chef/chef/pull/9572) ([tas50](https://github.com/tas50)) <!-- 16.0.175 -->
 - Update Ruby to 2.7.1 / bundler to 2.1.4 [#9569](https://github.com/chef/chef/pull/9569) ([tas50](https://github.com/tas50)) <!-- 16.0.174 -->
 - Stop building S390x packages [#9568](https://github.com/chef/chef/pull/9568) ([tas50](https://github.com/tas50)) <!-- 16.0.173 -->
