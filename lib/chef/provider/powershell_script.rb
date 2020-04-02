@@ -22,6 +22,7 @@ require_relative "windows_script"
 class Chef
   class Provider
     class PowershellScript < Chef::Provider::WindowsScript
+      # FIXME: use composition not inheritance
 
       provides :powershell_script
 

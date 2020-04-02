@@ -33,6 +33,7 @@ class Chef
         current_resource.profile_name(new_resource.profile_name)
 
         all_profiles = get_installed_profiles
+        # FIXME: stop mutating the desired state
         new_resource.profile(
           new_resource.profile ||
           new_resource.profile_name
@@ -149,6 +150,7 @@ class Chef
             ::File.dirname(cookbook_file)
           )
         )
+        # FIXME: should use a real cookbook file, or document what this craziness is
         remote_file = Chef::Resource::CookbookFile.new(
           ::File.join(
             get_cache_dir,
@@ -180,6 +182,7 @@ class Chef
       end
 
       def write_profile_to_disk
+        # FIXME: use a real chef file resource and stop hacking up tempfiles directly
         new_resource.path(Chef::FileCache.create_cache_path("profiles"))
         tempfile = Chef::FileContentManagement::Tempfile.new(new_resource).tempfile
         tempfile.write(@new_profile_hash.to_plist)

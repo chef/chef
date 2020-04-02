@@ -232,14 +232,15 @@ class Chef
         end
       end
 
-      def manage_unit_file(action = :nothing)
-        Chef::Resource::File.new(unit_path, run_context).tap do |f|
-          f.owner "root"
-          f.group "root"
-          f.mode "0644"
-          f.content new_resource.to_ini
-          f.verify :systemd_unit if new_resource.verify
-        end.run_action(action)
+      def manage_unit_file(the_action = :nothing)
+        file unit_path do
+          owner "root"
+          group "root"
+          mode "0644"
+          content new_resource.to_ini
+          verify :systemd_unit if new_resource.verify
+          action the_action
+        end
       end
 
       def daemon_reload

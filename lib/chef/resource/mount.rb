@@ -23,6 +23,7 @@ class Chef
   class Resource
     class Mount < Chef::Resource
       description "Use the mount resource to manage a mounted file system."
+      unified_mode true
 
       provides :mount
 

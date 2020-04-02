@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class RhsmRepo < Chef::Resource
+      unified_mode true
+
       provides(:rhsm_repo) { true }
 
       description "Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager"\
@@ -54,6 +56,7 @@ class Chef
 
       action_class do
         def repo_enabled?(repo)
+          # FIXME: use shell_out()
           cmd = Mixlib::ShellOut.new("subscription-manager repos --list-enabled", env: { LANG: "en_US" })
           cmd.run_command
           repo == "*" || !cmd.stdout.match(/Repo ID:\s+#{repo}$/).nil?

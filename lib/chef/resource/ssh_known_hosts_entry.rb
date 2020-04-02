@@ -23,6 +23,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class SshKnownHostsEntry < Chef::Resource
+      unified_mode true
+
       provides :ssh_known_hosts_entry
 
       description "Use the ssh_known_hosts_entry resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."

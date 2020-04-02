@@ -23,6 +23,7 @@ class Chef
   class Resource
     class MsuPackage < Chef::Resource::Package
       include Chef::Mixin::Uris
+      unified_mode true
 
       provides :msu_package
 

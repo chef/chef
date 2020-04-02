@@ -127,12 +127,14 @@ class Chef
         end
 
         def registered_with_rhsm?
+          # FIXME: use shell_out
           cmd = Mixlib::ShellOut.new("subscription-manager status", env: { LANG: "en_US" })
           cmd.run_command
           !cmd.stdout.match(/Overall Status: Unknown/)
         end
 
         def katello_cert_rpm_installed?
+          # FIXME: use shell_out
           cmd = Mixlib::ShellOut.new("rpm -qa | grep katello-ca-consumer")
           cmd.run_command
           !cmd.stdout.match(/katello-ca-consumer/).nil?
