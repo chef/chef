@@ -18,6 +18,10 @@ Ohai has been updated to 15.8.0 which includes a fix for failures that occurred 
 
 ## Resource Improvements
 
+### build_essential
+
+The `build_essential` resource has been updated to better detect if the Xcode CLI Tools package needs to be installed on macOS and now supports macOS 10.15 (Catalina). Thank you [@w0de](https://github.com/w0de/) for kicking this work off, [@jazaval](https://github.com/jazaval/) for advice on macOS package parsing, and Microsoft for their work in the macOS cookbook.
+
 ### rhsm_errata / rhsm_errata_level
 
 The `rhsm_errata` and `rhsm_errata_level` resources have been updated to properly function on RHEL 8 systems.
@@ -29,6 +33,16 @@ The `rhsm_register` resource has a new property `https_for_ca_consumer` that ena
 ### windows_share
 
 Resolved failures in the `windows_share` resource when setting the `path` property. Thanks for reporting this issue [@Kundan22](https://github.com/Kundan22/).
+
+## Platform Support
+
+### Ubuntu 20.04
+
+Chef Infra Client is now tested on Ubuntu 20.04 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
+### Windows 10
+
+Our Windows 10 Chef Infra Client packages now receive an additional layer of testing to ensure they function as expected.
 
 # Chef Infra Client 15.8
 
