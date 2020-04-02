@@ -5,7 +5,7 @@
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
 override :rubygems, version: "3.0.3" # rubygems ships its own bundler which may differ from bundler defined below and then we get double bundler which results in performance issues / CLI warnings. Make sure these versions match before bumping either.
 override :bundler, version: "1.17.2" # currently pinned to what ships in Ruby to prevent double bundler
-override "libarchive", version: "3.4.0"
+override "libarchive", version: "3.4.2"
 override "libffi", version: "3.2.1"
 override "libiconv", version: "1.15"
 override "liblzma", version: "5.2.4"
@@ -18,7 +18,7 @@ override "ncurses", version: "5.9"
 override "nokogiri", version: "1.10.5"
 override "openssl", version: "1.0.2u"
 override "pkg-config-lite", version: "0.28-1"
-override "ruby", version: "2.6.5"
+override "ruby", version: "2.6.6"
 override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"
