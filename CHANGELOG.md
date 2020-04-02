@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.173 -->
-## [v16.0.173](https://github.com/chef/chef/tree/v16.0.173) (2020-04-01)
+<!-- latest_release 16.0.174 -->
+## [v16.0.174](https://github.com/chef/chef/tree/v16.0.174) (2020-04-02)
 
 #### Merged Pull Requests
-- Stop building S390x packages [#9568](https://github.com/chef/chef/pull/9568) ([tas50](https://github.com/tas50))
+- Update Ruby to 2.7.1 / bundler to 2.1.4 [#9569](https://github.com/chef/chef/pull/9569) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ruby to 2.7.1 / bundler to 2.1.4 [#9569](https://github.com/chef/chef/pull/9569) ([tas50](https://github.com/tas50)) <!-- 16.0.174 -->
 - Stop building S390x packages [#9568](https://github.com/chef/chef/pull/9568) ([tas50](https://github.com/tas50)) <!-- 16.0.173 -->
 - Make the hab version check a full version check not just minor release [#9565](https://github.com/chef/chef/pull/9565) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.172 -->
 - Add Windows 10 Tester [#9564](https://github.com/chef/chef/pull/9564) ([tas50](https://github.com/tas50)) <!-- 16.0.171 -->
