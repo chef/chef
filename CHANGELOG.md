@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.10 -->
-## [v15.9.10](https://github.com/chef/chef/tree/v15.9.10) (2020-04-01)
+<!-- latest_release 15.9.11 -->
+## [v15.9.11](https://github.com/chef/chef/tree/v15.9.11) (2020-04-02)
 
 #### Merged Pull Requests
-- Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50))
+- Update Ruby to 2.6.6, Rake to 12.3.3 and libarchive to 3.4.2 [#9571](https://github.com/chef/chef/pull/9571) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.8.23 -->
 ### Changes not yet released to stable channel
 
 #### Merged Pull Requests
+- Update Ruby to 2.6.6, Rake to 12.3.3 and libarchive to 3.4.2 [#9571](https://github.com/chef/chef/pull/9571) ([tas50](https://github.com/tas50)) <!-- 15.9.11 -->
 - Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50)) <!-- 15.9.10 -->
 - Fix Habitat builds [#9567](https://github.com/chef/chef/pull/9567) ([tas50](https://github.com/tas50)) <!-- 15.9.9 -->
 - Fix cloud? helper to only report true on cloud instances [#9558](https://github.com/chef/chef/pull/9558) ([tas50](https://github.com/tas50)) <!-- 15.9.8 -->
