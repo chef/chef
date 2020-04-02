@@ -32,6 +32,11 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     new_resource
   end
 
+  let(:provider) do
+    provider = subject.provider_for_action(subject.action)
+    provider
+  end
+
   context "installing a package" do
     after { remove_package }
 
@@ -86,6 +91,30 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
       subject.options "--force --confirm"
       subject.run_action(:install)
       expect(package_list.call).to eq("#{package_name}|2.0")
+    end
+
+    context "when multiple options passed as string" do
+      before do
+        subject.options "--force --confirm"
+        subject.source nil
+      end
+
+      it "splits a string into an array of options" do
+        expect(provider.send(:cmd_args)).to eq(["--force", "--confirm"])
+      end
+
+      it "calls command_line_to_argv_w_helper method" do
+        expect(provider).to receive(:command_line_to_argv_w_helper).with(subject.options).and_return(["--force", "--confirm"])
+        provider.send(:cmd_args)
+      end
+    end
+
+    context "when multiple options passed as array" do
+      it "Does not call command_line_to_argv_w_helper method" do
+        subject.options [ "--force", "--confirm" ]
+        expect(provider).not_to receive(:command_line_to_argv_w_helper)
+        provider.send(:cmd_args)
+      end
     end
 
     it "installs with multiple options as an array" do
