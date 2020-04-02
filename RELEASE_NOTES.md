@@ -44,6 +44,22 @@ Chef Infra Client is now tested on Ubuntu 20.04 with packages available on the [
 
 Our Windows 10 Chef Infra Client packages now receive an additional layer of testing to ensure they function as expected.
 
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.5 to 2.6.6 to resolve the following CVEs:
+
+  - [CVE-2020-16255](https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/): Unsafe Object Creation Vulnerability in JSON (Additional fix)
+  - [CVE-2020-10933](https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/): Heap exposure vulnerability in the socket library
+
+### libarchive
+
+libarchive has been updated from 3.4.0 to 3.4.2 to resolve multiple security vulnerabilities including the following CVEs:
+
+  - [CVE-2019-19221](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19221): archive_wstring_append_from_mbs in archive_string.c has an out-of-bounds read because of an incorrect mbrtowc or mbtowc call
+  - [CVE-2020-9308](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9308): archive_read_support_format_rar5.c in libarchive before 3.4.2 attempts to unpack a RAR5 file with an invalid or corrupted header
+
 # Chef Infra Client 15.8
 
 ## New notify_group functionality
@@ -1217,14 +1233,13 @@ OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://c
 ### RubyGems
 
 RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
+
   - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
   - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
   - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
   - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
   - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
   - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
-
-
 
 # Chef Client Release Notes 14.10:
 
