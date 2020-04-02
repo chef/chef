@@ -38,6 +38,17 @@ class Chef
       end
       ```
 
+      Allow protocol ICMPv6 with ICMP Type
+      ```ruby
+      windows_firewall_rule 'CoreNet-Rule' do
+        rule_name 'CoreNet-ICMP6-LR2-In'
+        display_name 'Core Networking - Multicast Listener Report v2 (ICMPv6-In)'
+        local_port 'RPC'
+        protocol 'ICMPv6'
+        icmp_type '8'
+      end
+      ```
+
       Blocking WinRM over HTTP on a particular IP
       ```ruby
       windows_firewall_rule 'Disable WinRM over HTTP' do
