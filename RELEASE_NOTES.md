@@ -20,7 +20,7 @@ Ohai has been updated to 15.8.0 which includes a fix for failures that occurred 
 
 ### build_essential
 
-The `build_essential` resource has been updated to better detect if the Xcode CLI Tools package needs to be installed on macOS and now supports macOS 10.15 (Catalina). Thank you [@w0de](https://github.com/w0de/) for kicking this work off, [@jazaval](https://github.com/jazaval/) for advice on macOS package parsing, and Microsoft for their work in the macOS cookbook.
+The `build_essential` resource has been updated to better detect if the Xcode CLI Tools package needs to be installed on macOS. macOS 10.15 (Catalina) is now supported with this update. Thank you [@w0de](https://github.com/w0de/) for kicking this work off, [@jazaval](https://github.com/jazaval/) for advice on macOS package parsing, and Microsoft for their work in the macOS cookbook.
 
 ### rhsm_errata / rhsm_errata_level
 
