@@ -16,12 +16,11 @@
 #
 
 require_relative "package"
-require_relative "../mixin/uris"
 
 class Chef
   class Resource
     class PowershellPackage < Chef::Resource::Package
-      include Chef::Mixin::Uris
+      unified_mode true
 
       provides :powershell_package
 

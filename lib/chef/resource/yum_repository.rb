@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class YumRepository < Chef::Resource
+      unified_mode true
+
       provides(:yum_repository) { true }
 
       description "Use the yum_repository resource to manage a Yum repository configuration"\

@@ -25,8 +25,6 @@ builder-to-testers-map:
     - el-7-ppc64
   el-7-ppc64le:
     - el-7-ppc64le
-  el-7-s390x:
-    - el-7-s390x
   el-7-x86_64:
     - el-7-x86_64
     - el-8-x86_64
@@ -37,8 +35,6 @@ builder-to-testers-map:
     - mac_os_x-10.13-x86_64
     - mac_os_x-10.14-x86_64
     - mac_os_x-10.15-x86_64
-  sles-12-s390x:
-    - sles-12-s390x
   sles-12-x86_64:
     - sles-12-x86_64
     - sles-15-x86_64
@@ -49,7 +45,7 @@ builder-to-testers-map:
   ubuntu-16.04-x86_64:
     - ubuntu-16.04-x86_64
     - ubuntu-18.04-x86_64
-    - ubuntu-20.04-x86_64
+#    - ubuntu-20.04-x86_64 # waiting on AMI update
   windows-2012r2-i386:
     - windows-2012r2-i386
   windows-2012r2-x86_64:

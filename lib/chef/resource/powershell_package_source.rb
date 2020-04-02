@@ -21,6 +21,8 @@ require_relative "../json_compat"
 class Chef
   class Resource
     class PowershellPackageSource < Chef::Resource
+      unified_mode true
+
       provides :powershell_package_source
 
       description "Use the powershell_package_source resource to register a PowerShell package repository."

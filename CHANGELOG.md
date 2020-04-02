@@ -1,15 +1,20 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.171 -->
-## [v16.0.171](https://github.com/chef/chef/tree/v16.0.171) (2020-04-01)
+<!-- latest_release 16.0.176 -->
+## [v16.0.176](https://github.com/chef/chef/tree/v16.0.176) (2020-04-02)
 
 #### Merged Pull Requests
-- Add Windows 10 Tester [#9564](https://github.com/chef/chef/pull/9564) ([tas50](https://github.com/tas50))
+- Convert more resources to unified_mode [#9570](https://github.com/chef/chef/pull/9570) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert more resources to unified_mode [#9570](https://github.com/chef/chef/pull/9570) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.176 -->
+- Update Nokogiri to 1.11.0.rc2 [#9572](https://github.com/chef/chef/pull/9572) ([tas50](https://github.com/tas50)) <!-- 16.0.175 -->
+- Update Ruby to 2.7.1 / bundler to 2.1.4 [#9569](https://github.com/chef/chef/pull/9569) ([tas50](https://github.com/tas50)) <!-- 16.0.174 -->
+- Stop building S390x packages [#9568](https://github.com/chef/chef/pull/9568) ([tas50](https://github.com/tas50)) <!-- 16.0.173 -->
+- Make the hab version check a full version check not just minor release [#9565](https://github.com/chef/chef/pull/9565) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.172 -->
 - Add Windows 10 Tester [#9564](https://github.com/chef/chef/pull/9564) ([tas50](https://github.com/tas50)) <!-- 16.0.171 -->
 - Fix functional tests on Windows 10 by matching less [#9563](https://github.com/chef/chef/pull/9563) ([btm](https://github.com/btm)) <!-- 16.0.170 -->
 - Fix cloud? helper to only report true on cloud instances [#9553](https://github.com/chef/chef/pull/9553) ([tas50](https://github.com/tas50)) <!-- 16.0.169 -->
