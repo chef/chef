@@ -37,13 +37,6 @@ class Chef
           compile_time true
         end
         ```
-
-        Upgrade compilation packages on macOS systems
-        ```ruby
-        build_essential 'Install compilation tools' do
-          action :upgrade
-        end
-        ```
       DOC
 
       # this allows us to use build_essential without setting a name
@@ -132,20 +125,6 @@ class Chef
         end
       end
 
-      action :upgrade do
-        description "Upgrade build essential (Xcode Command Line) tools on macOS"
-
-        if macos?
-          pkg_label = xcode_cli_package_label
-
-          # With upgrade action we should install if it's not installed or if there's an available update.
-          # `xcode_cli_package_label` will be nil if there's no update.
-          install_xcode_cli_tools(pkg_label) if !xcode_cli_installed? || xcode_cli_package_label
-        else
-          Chef::Log.info "The build_essential resource :upgrade action is only supported on macOS systems. Skipping..."
-        end
-      end
-
       action_class do
         #
         # Install Xcode Command Line tools via softwareupdate CLI
@@ -155,16 +134,19 @@ class Chef
         def install_xcode_cli_tools(label)
           # This script was graciously borrowed and modified from Tim Sutton's
           # osx-vm-templates at https://github.com/timsutton/osx-vm-templates/blob/b001475df54a9808d3d56d06e71b8fa3001fff42/scripts/xcode-cli-tools.sh
-          execute "install Xcode Command Line tools" do
-            command <<-EOH
-              # create the placeholder file that's checked by CLI updates' .dist code
-              # in Apple's SUS catalog
-              touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-              # install it
-              softwareupdate -i "#{label}" --verbose
-              # Remove the placeholder to prevent perpetual appearance in the update utility
-              rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
-            EOH
+
+          if label.nil?
+            Chef::Log.warn("Could not determine a Xcode CLI Tools package to install via softwareupdate")
+          else
+            # create the placeholder file that's checked by CLI updates' .dist code
+            # in Apple's SUS catalog and then remove it when we're done
+            execute "install Xcode Command Line tools" do
+              command <<-EOH
+                touch /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+                softwareupdate -i "#{label}" --verbose
+                rm -f /tmp/.com.apple.dt.CommandLineTools.installondemand.in-progress
+              EOH
+            end
           end
         end
 
