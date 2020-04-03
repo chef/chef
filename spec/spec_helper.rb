@@ -200,7 +200,6 @@ RSpec.configure do |config|
 
   # check for particular binaries we need
   config.filter_run_excluding choco_installed: true unless choco_installed?
-  config.filter_run_excluding requires_ifconfig: true unless ifconfig?
 
   running_platform_arch = `uname -m`.strip unless windows?
 
