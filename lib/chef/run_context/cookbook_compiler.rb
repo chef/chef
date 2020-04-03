@@ -102,7 +102,7 @@ class Chef
         cookbook_order.each do |cookbook|
           eager_load_libraries = cookbook_collection[cookbook].metadata.eager_load_libraries
           if eager_load_libraries == true # actully true, not truthy
-            load_libraries_from_cookbook(cookbook, "**/*.rb")
+            load_libraries_from_cookbook(cookbook)
           else
             $LOAD_PATH.unshift File.expand_path("libraries", cookbook_collection[cookbook].root_dir)
             if eager_load_libraries # we have a String or Array<String> and not false
@@ -229,7 +229,7 @@ class Chef
         raise
       end
 
-      def load_libraries_from_cookbook(cookbook_name, globs)
+      def load_libraries_from_cookbook(cookbook_name, globs = "*/*.rb")
         each_file_in_cookbook_by_segment(cookbook_name, :libraries, globs) do |filename|
           begin
             logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
