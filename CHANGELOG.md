@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.43 -->
-## [v14.14.43](https://github.com/chef/chef/tree/v14.14.43) (2020-04-02)
+<!-- latest_release 14.14.44 -->
+## [v14.14.44](https://github.com/chef/chef/tree/v14.14.44) (2020-04-03)
 
 #### Merged Pull Requests
-- Remove S390x EL6 tester [#9582](https://github.com/chef/chef/pull/9582) ([tas50](https://github.com/tas50))
+- 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm)) <!-- 14.14.44 -->
 - Remove S390x EL6 tester [#9582](https://github.com/chef/chef/pull/9582) ([tas50](https://github.com/tas50)) <!-- 14.14.43 -->
 - Pin chef-zero &lt; 15 [#9573](https://github.com/chef/chef/pull/9573) ([btm](https://github.com/btm)) <!-- 14.14.42 -->
 - Fix file descriptor leak in our tests [#9559](https://github.com/chef/chef/pull/9559) ([tas50](https://github.com/tas50)) <!-- 14.14.41 -->
