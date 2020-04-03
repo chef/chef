@@ -31,8 +31,6 @@ class Chef
 
       provides :service, target_mode: true
 
-      identity_attr :service_name
-
       description "Use the service resource to manage a service."
 
       default_action :nothing
@@ -46,7 +44,7 @@ class Chef
 
       property :service_name, String,
         description: "An optional property to set the service name if it differs from the resource block's name.",
-        name_property: true, identity: true
+        name_property: true
 
       # regex for match against ps -ef when !supports[:has_status] && status == nil
       property :pattern, String,

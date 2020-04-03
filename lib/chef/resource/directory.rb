@@ -42,7 +42,7 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      property :path, String, name_property: true, identity: true,
+      property :path, String, name_property: true,
                description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
 
       property :recursive, [ TrueClass, FalseClass ],

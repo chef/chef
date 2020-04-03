@@ -33,7 +33,7 @@ class Chef
 
       property :target, String,
         description: "The IP address of the target route.",
-        identity: true, name_property: true
+        name_property: true
 
       property :comment, [String, nil],
         description: "Add a comment for the route.",

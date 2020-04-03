@@ -63,7 +63,7 @@ class Chef
         description: "Specifies if the unit will be verified before installation. Systemd can be overly strict when verifying units, so in certain cases it is preferable not to verify the unit."
 
       property :unit_name, String, desired_state: false,
-               identity: true, name_property: true,
+               name_property: true,
                description: "The name of the unit file if it differs from the resource block's name.",
                introduced: "13.7"
 

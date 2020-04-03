@@ -1022,6 +1022,9 @@ describe "Chef::Resource.property" do
         it "defaults x to resource.name" do
           expect(resource.x).to eq "blah"
         end
+        it "defaults to being part of the identity if there is no other identity" do
+          expect(resource.identity).to eq "blah"
+        end
         it "does not pick up resource.name if set" do
           expect(resource.x 10).to eq 10
           expect(resource.x).to eq 10

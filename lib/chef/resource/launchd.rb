@@ -31,7 +31,7 @@ class Chef
       allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
       property :label, String,
-        identity: true, name_property: true,
+        name_property: true,
         description: "The unique identifier for the job."
 
       property :backup, [Integer, FalseClass],

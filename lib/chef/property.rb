@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser <jkeiser@chef.io>
 # Copyright:: Copyright 2015-2016, John Keiser
-# Copyright:: Copyright 2015-2020, Chef Software, Inc.
+# Copyright:: Copyright 2015-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -139,6 +139,10 @@ class Chef
 
       if options.key?(:default) && options.key?(:name_property)
         raise ArgumentError, "A property cannot be both a name_property/name_attribute and have a default value. Use one or the other on property #{self}"
+      end
+
+      if options[:name_property]
+        options[:desired_state] = false unless options.key?(:desired_state)
       end
 
       # Recursively freeze the default if it isn't a lazy value.

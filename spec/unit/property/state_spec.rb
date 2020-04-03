@@ -285,8 +285,8 @@ describe "Chef::Resource#identity and #state" do
       it "identity when x is not defined returns the value of x" do
         expect(resource.identity).to eq "blah"
       end
-      it "state when x is not defined returns the value of x" do
-        expect(resource.state_for_resource_reporter).to eq(x: "blah")
+      it "the name property is not included in the desired state" do
+        expect(resource.state_for_resource_reporter).to eq({})
       end
     end
   end
@@ -332,12 +332,17 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, name_property: true" do
-      # it "Unset values with name_property are included in state" do
-      #   expect(resource.state_for_resource_reporter).to eq({ x: 'blah' })
-      # end
-      it "Set values with name_property are included in state" do
+      it "Is by default the identity property if no other identity property is included" do
+        expect(resource.identity).to eq("blah")
+      end
+
+      it "Unset values with name_property are not included in state" do
+        expect(resource.state_for_resource_reporter).to eq({})
+      end
+
+      it "Set values with name_property are not included in state" do
         resource.x 1
-        expect(resource.state_for_resource_reporter).to eq(x: 1)
+        expect(resource.state_for_resource_reporter).to eq({})
       end
     end
 

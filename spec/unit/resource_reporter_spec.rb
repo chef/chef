@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright 2012-2019, Chef Software Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -294,7 +294,7 @@ describe Chef::ResourceReporter do
       resource_reporter.run_started(run_status)
     end
 
-    context "when the new_resource is sensitive" do
+    context "when the new_resource is a sensitive execute resource" do
       before do
         @execute_resource = Chef::Resource::Execute.new("sensitive-resource")
         @execute_resource.name("sensitive-resource")
@@ -311,10 +311,6 @@ describe Chef::ResourceReporter do
 
       it "resource_name in prepared_run_data should be the same" do
         expect(@first_update_report["name"]).to eq("sensitive-resource")
-      end
-
-      it "resource_command in prepared_run_data should be blank" do
-        expect(@first_update_report["after"]).to eq({ command: "sensitive-resource" })
       end
     end
 

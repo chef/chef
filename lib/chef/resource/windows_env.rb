@@ -32,7 +32,7 @@ class Chef
 
       property :key_name, String,
         description: "An optional property to set the name of the key that is to be created, deleted, or modified if it differs from the resource block's name.",
-        identity: true, name_property: true
+        name_property: true
 
       property :value, String,
         description: "The value of the environmental variable to set.",

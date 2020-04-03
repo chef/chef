@@ -59,7 +59,7 @@ class Chef
         description: "The path to a file in which a write-intent bitmap is stored."
 
       property :raid_device, String,
-        identity: true, name_property: true,
+        name_property: true,
         description: "An optional property to specify the name of the RAID device if it differs from the resource block's name."
 
       property :layout, String,
