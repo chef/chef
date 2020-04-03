@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2017, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,6 +109,7 @@ describe Chef::Knife::CookbookShow do
           "metadata" => {
             "name" => nil,
             "description" => "",
+            "eager_load_libraries" => true,
             "long_description" => "",
             "maintainer" => "",
             "maintainer_email" => "",

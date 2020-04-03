@@ -29,7 +29,7 @@ describe Chef::Cookbook::Metadata do
       @fields = %i{name description long_description maintainer
                   maintainer_email license platforms dependencies
                   providing recipes version source_url issues_url
-                  privacy ohai_versions chef_versions gems}
+                  privacy ohai_versions chef_versions gems eager_load_libraries}
     end
 
     it "does not depend on object identity for equality" do
@@ -127,6 +127,10 @@ describe Chef::Cookbook::Metadata do
     it "is not private" do
       expect(metadata.privacy).to eq(false)
     end
+
+    it "has eager_load_libraries set to true" do
+      expect(metadata.eager_load_libraries).to eq(true)
+    end
   end
 
   describe "validation" do
@@ -179,6 +183,7 @@ describe Chef::Cookbook::Metadata do
       source_url: "http://example.com",
       issues_url: "http://example.com/issues",
       privacy: true,
+      eager_load_libraries: false,
     }
     params.sort_by(&:to_s).each do |field, field_value|
       describe field do
@@ -269,8 +274,33 @@ describe Chef::Cookbook::Metadata do
 
     it "errors on self-dependencies" do
       metadata.name("foo")
-      expect { metadata.depends("foo") }.to raise_error
-      # FIXME: add the error type
+      expect { metadata.depends("foo") }.to raise_error(RuntimeError, /Cookbook depends on itself/)
+    end
+  end
+
+  describe "eager_load_libraries" do
+    it "can be set to true" do
+      metadata.send(:eager_load_libraries, true)
+      expect(metadata.send(:eager_load_libraries)).to eql(true)
+    end
+
+    it "can be set to false" do
+      metadata.send(:eager_load_libraries, false)
+      expect(metadata.send(:eager_load_libraries)).to eql(false)
+    end
+
+    it "can be set to a string" do
+      metadata.send(:eager_load_libraries, "default.rb")
+      expect(metadata.send(:eager_load_libraries)).to eql("default.rb")
+    end
+
+    it "can be set to an array" do
+      metadata.send(:eager_load_libraries, [ "default.rb", "foo/*/**.rb" ])
+      expect(metadata.send(:eager_load_libraries)).to eql([ "default.rb", "foo/*/**.rb" ])
+    end
+
+    it "cannot be set to a number" do
+      expect { metadata.send(:eager_load_libraries, 1) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 
@@ -452,6 +482,7 @@ describe Chef::Cookbook::Metadata do
       metadata.chef_version "< 12.5.1", ">= 12.2.1"
       metadata.ohai_version "< 7.5.0", ">= 7.1.0"
       metadata.ohai_version "< 8.6.0", ">= 8.0.1"
+      metadata.eager_load_libraries [ "default.rb", "foo/*/**.rb" ]
     end
 
     it "should produce the same output from to_json and Chef::JSONCompat" do

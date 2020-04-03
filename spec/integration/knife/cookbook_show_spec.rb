@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,25 +43,26 @@ describe "knife cookbook show", :workstation do
         metadata:
           chef_versions:
           dependencies:
-          description:      
+          description:
+          eager_load_libraries: true
           gems:
-          issues_url:       
-          license:          All rights reserved
-          long_description: 
-          maintainer:       
-          maintainer_email: 
-          name:             x
+          issues_url:
+          license:              All rights reserved
+          long_description:
+          maintainer:
+          maintainer_email:
+          name:                 x
           ohai_versions:
           platforms:
-          privacy:          false
+          privacy:              false
           providing:
             x:    >= 0.0.0
             x::x: >= 0.0.0
           recipes:
-            x:    
-            x::x: 
-          source_url:       
-          version:          1.0.0
+            x:
+            x::x:
+          source_url:
+          version:              1.0.0
         name:          x-1.0.0
         recipes:
           checksum:    4631b34cf58de10c5ef1304889941b2e
@@ -69,7 +70,7 @@ describe "knife cookbook show", :workstation do
           path:        recipes/default.rb
           specificity: default
           url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
-          
+
           checksum:    d41d8cd98f00b204e9800998ecf8427e
           name:        recipes/x.rb
           path:        recipes/x.rb
@@ -89,25 +90,26 @@ describe "knife cookbook show", :workstation do
       knife("cookbook show x 1.0.0 metadata").should_succeed <<~EOM
         chef_versions:
         dependencies:
-        description:      
+        description:
+        eager_load_libraries: true
         gems:
-        issues_url:       
-        license:          All rights reserved
-        long_description: 
-        maintainer:       
-        maintainer_email: 
-        name:             x
+        issues_url:
+        license:              All rights reserved
+        long_description:
+        maintainer:
+        maintainer_email:
+        name:                 x
         ohai_versions:
         platforms:
-        privacy:          false
+        privacy:              false
         providing:
           x:    >= 0.0.0
           x::x: >= 0.0.0
         recipes:
-          x:    
-          x::x: 
-        source_url:       
-        version:          1.0.0
+          x:
+          x::x:
+        source_url:
+        version:              1.0.0
       EOM
     end
 
@@ -118,7 +120,7 @@ describe "knife cookbook show", :workstation do
         path:        recipes/default.rb
         specificity: default
         url:         http://127.0.0.1:8900/file_store/checksums/4631b34cf58de10c5ef1304889941b2e
-        
+
         checksum:    d41d8cd98f00b204e9800998ecf8427e
         name:        recipes/x.rb
         path:        recipes/x.rb

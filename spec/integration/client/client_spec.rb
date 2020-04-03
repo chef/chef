@@ -11,8 +11,8 @@ describe "chef-client" do
     File.join(CHEF_SPEC_DATA, "recipes.tgz")
   end
 
-  def start_tiny_server(server_opts = {})
-    @server = TinyServer::Manager.new(server_opts)
+  def start_tiny_server(**server_opts)
+    @server = TinyServer::Manager.new(**server_opts)
     @server.start
     @api = TinyServer::API.instance
     @api.clear
@@ -737,6 +737,127 @@ EOM
       command = shell_out("#{chef_solo} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
       command.error!
       expect(command.stdout).to include("NOFORK")
+    end
+  end
+
+  when_the_repository "has an eager_load_libraries false cookbook" do
+    before do
+      file "cookbooks/x/libraries/require_me.rb", <<~'EOM'
+        class RequireMe
+        end
+      EOM
+      file "cookbooks/x/recipes/default.rb", <<~'EOM'
+        # shouldn't be required by default
+        raise "boom" if defined?(RequireMe)
+        require "require_me"
+        # should be in the LOAD_PATH
+        raise "boom" unless defined?(RequireMe)
+      EOM
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+        eager_load_libraries false
+      EOM
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+      EOM
+    end
+
+    it "should not eagerly load the library" do
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
+      result.error!
+    end
+  end
+
+  when_the_repository "has an eager_load_libraries cookbook with a default hook" do
+    before do
+      file "cookbooks/x/libraries/aa_require_me.rb", <<~'EOM'
+        class RequireMe
+        end
+      EOM
+      file "cookbooks/x/libraries/default.rb", <<~'EOM'
+        raise "boom" if defined?(RequireMe)
+        require "aa_require_me"
+      EOM
+      file "cookbooks/x/libraries/nope/default.rb", <<~'EOM'
+        raise "boom" # this should never be required
+      EOM
+      file "cookbooks/x/recipes/default.rb", <<~'EOM'
+        raise "boom" unless defined?(RequireMe)
+      EOM
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+        eager_load_libraries "default.rb"
+      EOM
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        always_dump_stacktrace true
+      EOM
+    end
+
+    it "should properly load the library via the hook" do
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
+      result.error!
+    end
+  end
+
+  when_the_repository "has an eager_load_libraries false cookbook" do
+    before do
+      # this is loaded by default.rb
+      file "cookbooks/x/libraries/aa_require_me.rb", <<~'EOM'
+        class RequireMe
+        end
+      EOM
+      # this is loaded by eager_load_libraries
+      file "cookbooks/x/libraries/default.rb", <<~'EOM'
+        raise "boom" if defined?(RequireMe)
+        require "aa_require_me"
+      EOM
+      # this is loaded by the recipe using the LOAD_PATH
+      file "cookbooks/x/libraries/require_me.rb", <<~'EOM'
+        class RequireMe4
+        end
+      EOM
+      # these two are loaded by eager_load_libraries glob
+      file "cookbooks/x/libraries/loadme/foo/require_me.rb", <<~'EOM'
+        class RequireMe2
+        end
+      EOM
+      file "cookbooks/x/libraries/loadme/require_me.rb", <<~'EOM'
+        class RequireMe3
+        end
+      EOM
+      # this should nevrer be loaded
+      file "cookbooks/x/libraries/nope/require_me.rb", <<~'EOM'
+        raise "boom" # this should never be required
+      EOM
+      file "cookbooks/x/recipes/default.rb", <<~'EOM'
+        # all these are loaded by the eager_load_libraries
+        raise "boom" unless defined?(RequireMe)
+        raise "boom" unless defined?(RequireMe2)
+        raise "boom" unless defined?(RequireMe3)
+        raise "boom" if defined?(RequireMe4)
+        require "require_me"
+        raise "boom" unless defined?(RequireMe4)
+      EOM
+      file "cookbooks/x/metadata.rb", <<~EOM
+        name 'x'
+        version '0.0.1'
+        eager_load_libraries [ "default.rb", "loadme/**/*.rb" ]
+      EOM
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        always_dump_stacktrace true
+      EOM
+    end
+
+    it "should not eagerly load the library" do
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'x::default'", cwd: chef_dir)
+      result.error!
     end
   end
 end
