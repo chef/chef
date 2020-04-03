@@ -74,6 +74,7 @@ platforms:
     image: dokken/centos-6
     pid_one_command: /sbin/init
     intermediate_instructions:
+      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-7
@@ -97,6 +98,7 @@ platforms:
     image: dokken/oraclelinux-6
     pid_one_command: /sbin/init
     intermediate_instructions:
+      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
