@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.179 -->
-## [v16.0.179](https://github.com/chef/chef/tree/v16.0.179) (2020-04-02)
+<!-- latest_release 16.0.180 -->
+## [v16.0.180](https://github.com/chef/chef/tree/v16.0.180) (2020-04-03)
 
 #### Merged Pull Requests
-- Add Ubuntu 20.04 x86_64 and Ubuntu 18.04 aarch64 testers [#9584](https://github.com/chef/chef/pull/9584) ([tas50](https://github.com/tas50))
+- Change the name_property to be the identity property by default, and to have desired_state: false by default [#9581](https://github.com/chef/chef/pull/9581) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Change the name_property to be the identity property by default, and to have desired_state: false by default [#9581](https://github.com/chef/chef/pull/9581) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.180 -->
 - Add Ubuntu 20.04 x86_64 and Ubuntu 18.04 aarch64 testers [#9584](https://github.com/chef/chef/pull/9584) ([tas50](https://github.com/tas50)) <!-- 16.0.179 -->
 - fix chef_vault_secret after_resource breakage [#9574](https://github.com/chef/chef/pull/9574) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.178 -->
 - Add after_resource to pair with current_resource [#9562](https://github.com/chef/chef/pull/9562) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.177 -->
