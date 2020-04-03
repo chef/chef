@@ -36,9 +36,9 @@ Resolved failures in the `windows_share` resource when setting the `path` proper
 
 ## Platform Support
 
-### Ubuntu 20.04
+### Ubuntu 18.04 aarch64
 
-Chef Infra Client is now tested on Ubuntu 20.04 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+Chef Infra Client is now tested on Ubuntu 18.04 aarch64 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
 
 ### Windows 10
 
