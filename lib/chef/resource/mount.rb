@@ -40,7 +40,7 @@ class Chef
         description: "Windows only:. Use to specify the password for username.",
         sensitive: true
 
-      property :mount_point, String, name_property: true, identity: false,
+      property :mount_point, String, name_property: true,
                description: "The directory (or path) in which the device is to be mounted. Defaults to the name of the resource block if not provided."
 
       property :device, String, identity: true,
