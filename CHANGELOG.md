@@ -1,45 +1,43 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.17 -->
-## [v15.9.17](https://github.com/chef/chef/tree/v15.9.17) (2020-04-03)
-
-#### Merged Pull Requests
-- Add Ubuntu 20.04 back [#9590](https://github.com/chef/chef/pull/9590) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.8.23 -->
-### Changes not yet released to stable channel
-
-#### Merged Pull Requests
-- Add Ubuntu 20.04 back [#9590](https://github.com/chef/chef/pull/9590) ([tas50](https://github.com/tas50)) <!-- 15.9.17 -->
-- Swap Ubuntu 20.04 for 18.04 aarch64 [#9587](https://github.com/chef/chef/pull/9587) ([tas50](https://github.com/tas50)) <!-- 15.9.16 -->
-- Add Ubuntu 20.04 validation / package creation [#9583](https://github.com/chef/chef/pull/9583) ([tas50](https://github.com/tas50)) <!-- 15.9.15 -->
-- build_essential: Support macOS 10.15 and improve idempotency [#9579](https://github.com/chef/chef/pull/9579) ([tas50](https://github.com/tas50)) <!-- 15.9.14 -->
-- Update omnibus-software to fix Ruby 2.6.6 on AIX [#9576](https://github.com/chef/chef/pull/9576) ([tas50](https://github.com/tas50)) <!-- 15.9.13 -->
-- Add a Windows 10 tester to the pipeline [#9575](https://github.com/chef/chef/pull/9575) ([tas50](https://github.com/tas50)) <!-- 15.9.12 -->
-- Update Ruby to 2.6.6, Rake to 12.3.3 and libarchive to 3.4.2 [#9571](https://github.com/chef/chef/pull/9571) ([tas50](https://github.com/tas50)) <!-- 15.9.11 -->
-- Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50)) <!-- 15.9.10 -->
-- Fix Habitat builds [#9567](https://github.com/chef/chef/pull/9567) ([tas50](https://github.com/tas50)) <!-- 15.9.9 -->
-- Fix cloud? helper to only report true on cloud instances [#9558](https://github.com/chef/chef/pull/9558) ([tas50](https://github.com/tas50)) <!-- 15.9.8 -->
-- Fixed windows share cannot modify frozen string bug  [#9556](https://github.com/chef/chef/pull/9556) ([tas50](https://github.com/tas50)) <!-- 15.9.7 -->
-- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9555](https://github.com/chef/chef/pull/9555) ([tas50](https://github.com/tas50)) <!-- 15.9.6 -->
-- Update all our links to use the new docs site format / cleanup descriptions [#9554](https://github.com/chef/chef/pull/9554) ([tas50](https://github.com/tas50)) <!-- 15.9.5 -->
-- Switch to RUBY_PLATFORM for the windows check [#9557](https://github.com/chef/chef/pull/9557) ([tas50](https://github.com/tas50)) <!-- 15.9.4 -->
-- backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50)) <!-- 15.9.3 -->
-- Backport rhsm_register resource :https_for_ca_consumer property [#9530](https://github.com/chef/chef/pull/9530) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.9.2 -->
-- Backport more testing improvements from master [#9504](https://github.com/chef/chef/pull/9504) ([tas50](https://github.com/tas50)) <!-- 15.9.1 -->
-- Update InSpec 4.18.100, Ohai to 15.8, and Fauxhai to 8 [#9503](https://github.com/chef/chef/pull/9503) ([tas50](https://github.com/tas50)) <!-- 15.9.0 -->
-- Chefstyle fixes identified with Rubocop 0.80 [#9502](https://github.com/chef/chef/pull/9502) ([tas50](https://github.com/tas50)) <!-- 15.8.32 -->
-- Multiple testing fixes backported from master [#9499](https://github.com/chef/chef/pull/9499) ([tas50](https://github.com/tas50)) <!-- 15.8.31 -->
-- chef_fs: Fix gsub so only file endings of .rb and .json are removed.  [#9498](https://github.com/chef/chef/pull/9498) ([tas50](https://github.com/tas50)) <!-- 15.8.30 -->
-- Cookstyle fixes for our resources [#9495](https://github.com/chef/chef/pull/9495) ([tas50](https://github.com/tas50)) <!-- 15.8.29 -->
-- Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9497](https://github.com/chef/chef/pull/9497) ([tas50](https://github.com/tas50)) <!-- 15.8.28 -->
-- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9496](https://github.com/chef/chef/pull/9496) ([tas50](https://github.com/tas50)) <!-- 15.8.27 -->
-- Use the chef-utils helpers in our resources [#9494](https://github.com/chef/chef/pull/9494) ([tas50](https://github.com/tas50)) <!-- 15.8.26 -->
-- Backport dist bootstrap [#9403](https://github.com/chef/chef/pull/9403) ([bobchaos](https://github.com/bobchaos)) <!-- 15.8.25 -->
-- Update all deps to latest [#9358](https://github.com/chef/chef/pull/9358) ([tas50](https://github.com/tas50)) <!-- 15.8.24 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.9.17](https://github.com/chef/chef/tree/v15.9.17) (2020-04-03)
+
+#### Merged Pull Requests
+- Update all deps to latest [#9358](https://github.com/chef/chef/pull/9358) ([tas50](https://github.com/tas50))
+- Backport dist bootstrap [#9403](https://github.com/chef/chef/pull/9403) ([bobchaos](https://github.com/bobchaos))
+- Use the chef-utils helpers in our resources [#9494](https://github.com/chef/chef/pull/9494) ([tas50](https://github.com/tas50))
+- Update the rhsm_erata* and rhsm_register resources for RHEL 8 [#9496](https://github.com/chef/chef/pull/9496) ([tas50](https://github.com/tas50))
+- Don&#39;t require/include Mixin Shellout in freebsd_package and openbsd_package [#9497](https://github.com/chef/chef/pull/9497) ([tas50](https://github.com/tas50))
+- Cookstyle fixes for our resources [#9495](https://github.com/chef/chef/pull/9495) ([tas50](https://github.com/tas50))
+- chef_fs: Fix gsub so only file endings of .rb and .json are removed.  [#9498](https://github.com/chef/chef/pull/9498) ([tas50](https://github.com/tas50))
+- Multiple testing fixes backported from master [#9499](https://github.com/chef/chef/pull/9499) ([tas50](https://github.com/tas50))
+- Chefstyle fixes identified with Rubocop 0.80 [#9502](https://github.com/chef/chef/pull/9502) ([tas50](https://github.com/tas50))
+- Update InSpec 4.18.100, Ohai to 15.8, and Fauxhai to 8 [#9503](https://github.com/chef/chef/pull/9503) ([tas50](https://github.com/tas50))
+- Backport more testing improvements from master [#9504](https://github.com/chef/chef/pull/9504) ([tas50](https://github.com/tas50))
+- Backport rhsm_register resource :https_for_ca_consumer property [#9530](https://github.com/chef/chef/pull/9530) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- backport chef-utils comment fixes [#9505](https://github.com/chef/chef/pull/9505) ([tas50](https://github.com/tas50))
+- Switch to RUBY_PLATFORM for the windows check [#9557](https://github.com/chef/chef/pull/9557) ([tas50](https://github.com/tas50))
+- Update all our links to use the new docs site format / cleanup descriptions [#9554](https://github.com/chef/chef/pull/9554) ([tas50](https://github.com/tas50))
+- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9555](https://github.com/chef/chef/pull/9555) ([tas50](https://github.com/tas50))
+- Fixed windows share cannot modify frozen string bug  [#9556](https://github.com/chef/chef/pull/9556) ([tas50](https://github.com/tas50))
+- Fix cloud? helper to only report true on cloud instances [#9558](https://github.com/chef/chef/pull/9558) ([tas50](https://github.com/tas50))
+- Fix Habitat builds [#9567](https://github.com/chef/chef/pull/9567) ([tas50](https://github.com/tas50))
+- Add Chef Infra Client 15.9 release notes [#9561](https://github.com/chef/chef/pull/9561) ([tas50](https://github.com/tas50))
+- Update Ruby to 2.6.6, Rake to 12.3.3 and libarchive to 3.4.2 [#9571](https://github.com/chef/chef/pull/9571) ([tas50](https://github.com/tas50))
+- Add a Windows 10 tester to the pipeline [#9575](https://github.com/chef/chef/pull/9575) ([tas50](https://github.com/tas50))
+- Update omnibus-software to fix Ruby 2.6.6 on AIX [#9576](https://github.com/chef/chef/pull/9576) ([tas50](https://github.com/tas50))
+- build_essential: Support macOS 10.15 and improve idempotency [#9579](https://github.com/chef/chef/pull/9579) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 validation / package creation [#9583](https://github.com/chef/chef/pull/9583) ([tas50](https://github.com/tas50))
+- Swap Ubuntu 20.04 for 18.04 aarch64 [#9587](https://github.com/chef/chef/pull/9587) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 back [#9590](https://github.com/chef/chef/pull/9590) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.8.23](https://github.com/chef/chef/tree/v15.8.23) (2020-02-10)
 
 #### Merged Pull Requests
@@ -68,7 +66,6 @@
 - Expand the path in knife cookbook upload errors [#9352](https://github.com/chef/chef/pull/9352) ([tas50](https://github.com/tas50))
 - Lazy load as many knife deps as possible [#9351](https://github.com/chef/chef/pull/9351) ([tas50](https://github.com/tas50))
 - Add notify_group resource (Chef 15 backport) [#9353](https://github.com/chef/chef/pull/9353) ([lamont-granquist](https://github.com/lamont-granquist))
-<!-- latest_stable_release -->
 
 ## [v15.7.32](https://github.com/chef/chef/tree/v15.7.32) (2020-01-27)
 
