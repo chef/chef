@@ -21,7 +21,8 @@ lifecycle:
     - remote: /opt/chef/embedded/bin/gem uninstall -x chef-bin # appbundle-updater doesn't remove this when downgrading to 14
     - remote: /opt/chef/embedded/bin/rake --version
     - remote: /opt/chef/embedded/bin/bundle -v
-    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: /opt/chef/embedded/bin/gem install appbundle-updater -v "< 1.0" --no-doc # 1.0 has fixed strings related to chef-bin
+    - remote: /opt/chef/embedded/bin/gem install appbundler --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
     - remote: echo "Installed Chef / Ohai release:"
@@ -73,6 +74,7 @@ platforms:
     image: dokken/centos-6
     pid_one_command: /sbin/init
     intermediate_instructions:
+      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: centos-7
@@ -96,6 +98,7 @@ platforms:
     image: dokken/oraclelinux-6
     pid_one_command: /sbin/init
     intermediate_instructions:
+      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
