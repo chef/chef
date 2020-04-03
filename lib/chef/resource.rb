@@ -497,22 +497,11 @@ class Chef
     def state_for_resource_reporter
       state = {}
       state_properties = self.class.state_properties
-#      p = state_properties.find { |p| p.name_property? }
-#      if p
-#        pp p
-#        raise "boom"
-#      end
-
       state_properties.each do |property|
         if property.is_set?(self)
           state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
         end
       end
-#      identity_properties = self.class.identity_properties
-#      pp identity_properties
-#      identity_properties.each do |property|
-#        state[property.name] = property.sensitive? ? "*sensitive value suppressed*" : send(property.name)
-#      end
       state
     end
 
