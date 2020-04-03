@@ -264,8 +264,20 @@ class Chef
           end
 
           result = properties.values.select(&:identity?)
-          result = [ properties[:name] ] if result.empty?
+          # if there are no other identity properites set, then the name_property becomes the identity, or
+          # failing that we use the actual name.
+          if result.empty?
+            result = name_property ? [ properties[name_property] ] : [ properties[:name] ]
+          end
           result
+        end
+
+        # Returns the name of the name property.  Returns nil if there is no name property.
+        #
+        # @return [Symbol] the name property for this resource
+        def name_property
+          p = properties.find { |n, p| p.name_property? }
+          p ? p.first : nil
         end
 
         def included(other)
