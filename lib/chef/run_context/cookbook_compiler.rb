@@ -229,7 +229,7 @@ class Chef
         raise
       end
 
-      def load_libraries_from_cookbook(cookbook_name, globs = "*/*.rb")
+      def load_libraries_from_cookbook(cookbook_name, globs = "**/*.rb")
         each_file_in_cookbook_by_segment(cookbook_name, :libraries, globs) do |filename|
           begin
             logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
