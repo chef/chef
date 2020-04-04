@@ -28,13 +28,51 @@ class Chef
 
       description "Use the windows_firewall_rule resource to create, change or remove windows firewall rules."
       introduced "14.7"
+      examples <<~DOC
+      Allowing port 80 access
+      ```ruby
+      windows_firewall_rule 'IIS' do
+        local_port '80'
+        protocol 'TCP'
+        firewall_action :allow
+      end
+      ```
+
+      Allow protocol ICMPv6 with ICMP Type
+      ```ruby
+      windows_firewall_rule 'CoreNet-Rule' do
+        rule_name 'CoreNet-ICMP6-LR2-In'
+        display_name 'Core Networking - Multicast Listener Report v2 (ICMPv6-In)'
+        local_port 'RPC'
+        protocol 'ICMPv6'
+        icmp_type '8'
+      end
+      ```
+
+      Blocking WinRM over HTTP on a particular IP
+      ```ruby
+      windows_firewall_rule 'Disable WinRM over HTTP' do
+        local_port '5985'
+        protocol 'TCP'
+        firewall_action :block
+        local_address '192.168.1.1'
+      end
+      ```
+
+      Deleting an existing rule
+      ```ruby
+      windows_firewall_rule 'Remove the SSH rule' do
+        rule_name 'ssh'
+        action :delete
+      end
+      ```
+      DOC
 
       property :rule_name, String,
         name_property: true,
         description: "An optional property to set the name of the firewall rule to assign if it differs from the resource block's name."
 
       property :description, String,
-        default: "Firewall rule",
         description: "The description to assign to the firewall rule."
 
       property :displayname, String,
@@ -70,6 +108,11 @@ class Chef
       property :protocol, String,
         default: "TCP",
         description: "The protocol the firewall rule applies to."
+
+      property :icmp_type, [String, Integer],
+        description: "Specifies the ICMP Type parameter for using a protocol starting with ICMP",
+        default: "Any",
+        introduced: "16.0"
 
       property :firewall_action, [Symbol, String],
         default: :allow, equal_to: %i{allow block notconfigured},
@@ -128,6 +171,7 @@ class Chef
         remote_port Array(state["remote_port"]).sort
         direction state["direction"]
         protocol state["protocol"]
+        icmp_type state["icmp_type"]
         firewall_action state["firewall_action"]
         profile current_profiles
         program state["program"]
@@ -138,11 +182,10 @@ class Chef
 
       action :create do
         description "Create a Windows firewall entry."
-
         if current_resource
           converge_if_changed :rule_name, :description, :displayname, :local_address, :local_port, :remote_address,
-            :remote_port, :direction, :protocol, :firewall_action, :profile, :program, :service, :interface_type,
-            :enabled do
+            :remote_port, :direction, :protocol, :icmp_type, :firewall_action, :profile, :program, :service,
+            :interface_type, :enabled do
               cmd = firewall_command("Set")
               powershell_out!(cmd)
             end
@@ -186,6 +229,7 @@ class Chef
           cmd << " -RemotePort '#{new_resource.remote_port.join("', '")}'" if new_resource.remote_port
           cmd << " -Direction '#{new_resource.direction}'" if new_resource.direction
           cmd << " -Protocol '#{new_resource.protocol}'" if new_resource.protocol
+          cmd << " -IcmpType '#{new_resource.icmp_type}'"
           cmd << " -Action '#{new_resource.firewall_action}'" if new_resource.firewall_action
           cmd << " -Profile '#{new_resource.profile.join("', '")}'" if new_resource.profile
           cmd << " -Program '#{new_resource.program}'" if new_resource.program
@@ -195,12 +239,53 @@ class Chef
 
           cmd
         end
+
+        def define_resource_requirements
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(String)
+                !new_resource.icmp_type.empty?
+              elsif new_resource.icmp_type.is_a?(Integer)
+                !new_resource.icmp_type.nil?
+              end
+            end
+            a.failure_message("The :icmp_type property can not be empty in #{new_resource.rule_name}")
+          end
+
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(Integer)
+                new_resource.protocol.start_with?("ICMP")
+              elsif new_resource.icmp_type.is_a?(String) && !new_resource.protocol.start_with?("ICMP")
+                new_resource.icmp_type == "Any"
+              else
+                true
+              end
+            end
+            a.failure_message("The :icmp_type property has a value of #{new_resource.icmp_type} set, but is not allowed for :protocol #{new_resource.protocol} in #{new_resource.rule_name}")
+          end
+
+          requirements.assert(:create) do |a|
+            a.assertion do
+              if new_resource.icmp_type.is_a?(Integer)
+                (0..255).include?(new_resource.icmp_type)
+              elsif new_resource.icmp_type.is_a?(String) && !new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
+                (0..255).include?(new_resource.icmp_type.to_i)
+              elsif new_resource.icmp_type.is_a?(String) && new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
+                new_resource.icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
+              else
+                true
+              end
+            end
+            a.failure_message("Can not set :icmp_type to #{new_resource.icmp_type} as one value is out of range (0 to 255) in #{new_resource.rule_name}")
+          end
+        end
       end
 
       private
 
       # build the command to load the current resource
-      # # @return [String] current firewall state
+      # @return [String] current firewall state
       def load_firewall_state(rule_name)
         <<-EOH
           Remove-TypeData System.Array # workaround for PS bug here: https://bit.ly/2SRMQ8M
@@ -221,6 +306,7 @@ class Chef
             remote_port = $portFilter.RemotePort
             direction = $rule.Direction.ToString()
             protocol = $portFilter.Protocol
+            icmp_type = $portFilter.IcmpType
             firewall_action = $rule.Action.ToString()
             profile = $rule.Profile.ToString()
             program = $applicationFilter.Program
