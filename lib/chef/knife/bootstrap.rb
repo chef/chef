@@ -467,7 +467,7 @@ class Chef
       # @return [String] Default bootstrap template
       def default_bootstrap_template
         if connection.windows?
-          "windows-#{Chef::Dist::CLIENT}-msi"
+          "windows-chef-client-msi"
         else
           "chef-full"
         end
