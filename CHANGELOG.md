@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.46 -->
-## [v14.14.46](https://github.com/chef/chef/tree/v14.14.46) (2020-04-04)
+<!-- latest_release 14.14.47 -->
+## [v14.14.47](https://github.com/chef/chef/tree/v14.14.47) (2020-04-04)
 
 #### Merged Pull Requests
-- Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm))
+- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm)) <!-- 14.14.47 -->
 - Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm)) <!-- 14.14.46 -->
 - Pin omnibus-software before the change that breaks Ruby &lt; 2.6 [#9594](https://github.com/chef/chef/pull/9594) ([btm](https://github.com/btm)) <!-- 14.14.45 -->
 - 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm)) <!-- 14.14.44 -->
