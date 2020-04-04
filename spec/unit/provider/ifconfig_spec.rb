@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (prajakta@chef.io)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -46,19 +46,48 @@ describe Chef::Provider::Ifconfig do
       ifconfig 1.42 (2001-04-13)
     EOS
 
-    before do
-      ifconfig = double(stdout: "", exitstatus: 1)
-      allow(@provider).to receive(:shell_out_compacted).and_return(ifconfig)
-      ifconfig_version = double(stdout: "", stderr: net_tools_version, exitstatus: 4)
-      allow(@provider).to receive(:shell_out_compacted).with("ifconfig", "--version").and_return(ifconfig_version)
-      @provider.load_current_resource
+    let(:net_tools_version2) { StringIO.new <<~EOS }
+      net-tools 2.10-alpha
+    EOS
+
+    context "when ifconfig returns its version on stdout" do
+      before do
+        ifconfig = double(stdout: "", exitstatus: 1)
+        allow(@provider).to receive(:shell_out_compacted).and_return(ifconfig)
+        ifconfig_version = double(stdout: net_tools_version2, stderr: "", exitstatus: 4)
+        allow(@provider).to receive(:shell_out_compacted).with("ifconfig", "--version").and_return(ifconfig_version)
+        @provider.load_current_resource
+      end
+      it "should track state of ifconfig failure" do
+        expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
+      end
+      it "should thrown an exception when ifconfig fails" do
+        @provider.define_resource_requirements
+        expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
+      end
+      it "should grab the correct major.minor version of net-tools" do
+        expect(@provider.ifconfig_version).to eql("2.10")
+      end
     end
-    it "should track state of ifconfig failure" do
-      expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
-    end
-    it "should thrown an exception when ifconfig fails" do
-      @provider.define_resource_requirements
-      expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
+
+    context "when ifconfig returns its version on stderr" do
+      before do
+        ifconfig = double(stdout: "", exitstatus: 1)
+        allow(@provider).to receive(:shell_out_compacted).and_return(ifconfig)
+        ifconfig_version = double(stdout: "", stderr: net_tools_version, exitstatus: 4)
+        allow(@provider).to receive(:shell_out_compacted).with("ifconfig", "--version").and_return(ifconfig_version)
+        @provider.load_current_resource
+      end
+      it "should track state of ifconfig failure" do
+        expect(@provider.instance_variable_get("@status").exitstatus).not_to eq(0)
+      end
+      it "should thrown an exception when ifconfig fails" do
+        @provider.define_resource_requirements
+        expect { @provider.process_resource_requirements }.to raise_error Chef::Exceptions::Ifconfig
+      end
+      it "should grab the correct major.minor version of net-tools" do
+        expect(@provider.ifconfig_version).to eql("1.60")
+      end
     end
   end
   describe Chef::Provider::Ifconfig, "action_add" do
