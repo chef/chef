@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.9.18 -->
+## [v15.9.18](https://github.com/chef/chef/tree/v15.9.18) (2020-04-04)
+
+#### Merged Pull Requests
+- 15: Use $env:temp instead of c:/ for functional tests [#9592](https://github.com/chef/chef/pull/9592) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.9.17 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- 15: Use $env:temp instead of c:/ for functional tests [#9592](https://github.com/chef/chef/pull/9592) ([btm](https://github.com/btm)) <!-- 15.9.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
