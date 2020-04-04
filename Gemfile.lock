@@ -203,7 +203,7 @@ GEM
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     parallel (1.19.1)
-    parser (2.7.0.5)
+    parser (2.7.1.0)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
@@ -354,7 +354,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
-  appbundler
+  appbundler (< 1.0)
   chef!
   chef-config!
   chef-vault
