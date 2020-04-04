@@ -9,13 +9,13 @@ echo "--- install ruby + devkit"
 $ErrorActionPreference = 'Stop'
 
 echo "Downloading Ruby + DevKit"
-aws s3 cp s3://public-cd-buildkite-cache/rubyinstaller-devkit-2.6.5-1-x64.exe c:/rubyinstaller-devkit-2.6.5-1-x64.exe
+aws s3 cp s3://public-cd-buildkite-cache/rubyinstaller-devkit-2.6.5-1-x64.exe $env:temp/rubyinstaller-devkit-2.6.5-1-x64.exe
 
 echo "Installing Ruby + DevKit"
-Start-Process c:\rubyinstaller-devkit-2.6.5-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
+Start-Process $env:temp\rubyinstaller-devkit-2.6.5-1-x64.exe -ArgumentList '/verysilent /dir=C:\\ruby26' -Wait
 
 echo "Cleaning up installation"
-Remove-Item c:\rubyinstaller-devkit-2.6.5-1-x64.exe -Force -ErrorAction SilentlyContinue
+Remove-Item $env:temp\rubyinstaller-devkit-2.6.5-1-x64.exe -Force -ErrorAction SilentlyContinue
 echo "Closing out the layer (this can take awhile)"
 
 # Set-Item -Path Env:Path -Value to include ruby26
