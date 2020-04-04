@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2017, Chef Software Inc.
+# Copyright:: Copyright 2013-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -170,20 +170,23 @@ module KnifeSupport
 
     def should_result_in(expected)
       expected[:stdout] = "" unless expected[:stdout]
+      expected[:stdout] = expected[:stdout].is_a?(String) ? expected[:stdout].gsub(/[ \t\f\v]+$/, "") : expected[:stdout]
       expected[:stderr] = "" unless expected[:stderr]
+      expected[:stderr] = expected[:stderr].is_a?(String) ? expected[:stderr].gsub(/[ \t\f\v]+$/, "") : expected[:stderr]
       expected[:exit_code] = 0 unless expected[:exit_code]
       # TODO make this go away
       stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, "")
-
+      stderr_actual = stderr_actual.gsub(/[ \t\f\v]+$/, "")
+      stdout_actual = @stdout
+      stdout_actual = stdout_actual.gsub(/[ \t\f\v]+$/, "")
+      if ChefUtils.windows?
+        stderr_actual = stderr_actual.gsub("\r\n", "\n")
+        stdout_actual = stdout_actual.gsub("\r\n", "\n")
+      end
       if expected[:stderr].is_a?(Regexp)
         expect(stderr_actual).to match(expected[:stderr])
       else
         expect(stderr_actual).to eq(expected[:stderr])
-      end
-      stdout_actual = @stdout
-      if ChefUtils.windows?
-        stderr_actual = stderr_actual.gsub("\r\n", "\n")
-        stdout_actual = stdout_actual.gsub("\r\n", "\n")
       end
       expect(@exit_code).to eq(expected[:exit_code])
       if expected[:stdout].is_a?(Regexp)

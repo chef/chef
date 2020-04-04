@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2019, Chef Software Inc.
+# Copyright:: Copyright 2012-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,15 @@ class Chef
       def compile_libraries
         @events.library_load_start(count_files_by_segment(:libraries))
         cookbook_order.each do |cookbook|
-          load_libraries_from_cookbook(cookbook)
+          eager_load_libraries = cookbook_collection[cookbook].metadata.eager_load_libraries
+          if eager_load_libraries == true # actully true, not truthy
+            load_libraries_from_cookbook(cookbook)
+          else
+            $LOAD_PATH.unshift File.expand_path("libraries", cookbook_collection[cookbook].root_dir)
+            if eager_load_libraries # we have a String or Array<String> and not false
+              load_libraries_from_cookbook(cookbook, eager_load_libraries)
+            end
+          end
         end
         @events.library_load_complete
       end
@@ -221,10 +229,8 @@ class Chef
         raise
       end
 
-      def load_libraries_from_cookbook(cookbook_name)
-        files_in_cookbook_by_segment(cookbook_name, :libraries).each do |filename|
-          next unless File.extname(filename) == ".rb"
-
+      def load_libraries_from_cookbook(cookbook_name, globs = "**/*.rb")
+        each_file_in_cookbook_by_segment(cookbook_name, :libraries, globs) do |filename|
           begin
             logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
             Kernel.require(filename)
@@ -325,6 +331,22 @@ class Chef
       # (attribute, recipe, etc.), sorted lexically.
       def files_in_cookbook_by_segment(cookbook, segment)
         cookbook_collection[cookbook].files_for(segment).map { |record| record[:full_path] }.sort
+      end
+
+      # Iterates through all files in given cookbook segment, yielding the full path to the file
+      # if it matches one of the given globs.  Returns matching files in lexical sort order.  Supports
+      # extended globbing.  The segment should not be included in the glob.
+      #
+      def each_file_in_cookbook_by_segment(cookbook, segment, globs)
+        cookbook_collection[cookbook].files_for(segment).sort_by { |record| record[:path] }.each do |record|
+          Array(globs).each do |glob|
+            target = record[:path].delete_prefix("#{segment}/")
+            if File.fnmatch(glob, target, File::FNM_PATHNAME | File::FNM_EXTGLOB | File::FNM_DOTMATCH)
+              yield record[:full_path]
+              break
+            end
+          end
+        end
       end
 
       # Yields the name, as a symbol, of each cookbook depended on by

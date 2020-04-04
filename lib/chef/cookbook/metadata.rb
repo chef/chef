@@ -1,7 +1,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2018, Chef Software Inc.
+# Copyright:: Copyright 2008-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,11 +52,13 @@ class Chef
       CHEF_VERSIONS          = "chef_versions".freeze
       OHAI_VERSIONS          = "ohai_versions".freeze
       GEMS                   = "gems".freeze
+      EAGER_LOAD_LIBRARIES   = "eager_load_libraries".freeze
 
       COMPARISON_FIELDS = %i{name description long_description maintainer
                             maintainer_email license platforms dependencies
                             providing recipes version source_url issues_url
-                            privacy chef_versions ohai_versions gems}.freeze
+                            privacy chef_versions ohai_versions gems
+                            eager_load_libraries}.freeze
 
       VERSION_CONSTRAINTS = { depends: DEPENDENCIES,
                               provides: PROVIDING,
@@ -109,6 +111,7 @@ class Chef
         @chef_versions = []
         @ohai_versions = []
         @gems = []
+        @eager_load_libraries = true
 
         @errors = []
       end
@@ -344,6 +347,25 @@ class Chef
         @gems
       end
 
+      # Metadata DSL to control the behavior of library loading.
+      #
+      # Can be set to:
+      #
+      # true   - libraries are eagerly loaded in alphabetical order (backcompat)
+      # false  - libraries are not eagerly loaded, the libraries dir is added to the LOAD_PATH
+      # String - a file or glob pattern to eagerly load, otherwise it is treated like `false`
+      # Array<String> - array of files or globs to eagerly load, otherwise it is treated like `false`
+      #
+      # @params arg [Array,String,TrueClass,FalseClass]
+      # @params [Array,TrueClass,FalseCalss]
+      def eager_load_libraries(arg = nil)
+        set_or_return(
+          :eager_load_libraries,
+          arg,
+          kind_of: [ Array, String, TrueClass, FalseClass ]
+        )
+      end
+
       # Adds a description for a recipe.
       #
       # === Parameters
@@ -435,6 +457,7 @@ class Chef
           CHEF_VERSIONS => gem_requirements_to_array(*chef_versions),
           OHAI_VERSIONS => gem_requirements_to_array(*ohai_versions),
           GEMS => gems,
+          EAGER_LOAD_LIBRARIES => eager_load_libraries,
         }
       end
 
@@ -468,6 +491,7 @@ class Chef
         @chef_versions                = gem_requirements_from_array("chef", o[CHEF_VERSIONS]) if o.key?(CHEF_VERSIONS)
         @ohai_versions                = gem_requirements_from_array("ohai", o[OHAI_VERSIONS]) if o.key?(OHAI_VERSIONS)
         @gems                         = o[GEMS] if o.key?(GEMS)
+        @eager_load_libraries         = o[EAGER_LOAD_LIBRARIES] if o.key?(EAGER_LOAD_LIBRARIES)
         self
       end
 
