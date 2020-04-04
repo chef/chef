@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.183 -->
-## [v16.0.183](https://github.com/chef/chef/tree/v16.0.183) (2020-04-04)
+<!-- latest_release 16.0.184 -->
+## [v16.0.184](https://github.com/chef/chef/tree/v16.0.184) (2020-04-04)
 
 #### Merged Pull Requests
-- Use $env:temp instead of c:/ for functional tests [#9591](https://github.com/chef/chef/pull/9591) ([btm](https://github.com/btm))
+- windows_firewall_rule: Fix idempotency and add icmp_type property [#9544](https://github.com/chef/chef/pull/9544) ([pschaumburg](https://github.com/pschaumburg))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_firewall_rule: Fix idempotency and add icmp_type property [#9544](https://github.com/chef/chef/pull/9544) ([pschaumburg](https://github.com/pschaumburg)) <!-- 16.0.184 -->
 - Use $env:temp instead of c:/ for functional tests [#9591](https://github.com/chef/chef/pull/9591) ([btm](https://github.com/btm)) <!-- 16.0.183 -->
 - Implement eager_load_libraries metadata option [#9593](https://github.com/chef/chef/pull/9593) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.182 -->
 - Dist windows bootstrap template - fix msi_url [#9596](https://github.com/chef/chef/pull/9596) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.181 -->
