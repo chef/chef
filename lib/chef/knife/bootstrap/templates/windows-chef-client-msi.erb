@@ -109,13 +109,13 @@ goto Version10.0
 goto chef_installed
 
 :chef_installed
-@echo Checking for existing chef installation
+@echo Checking for existing <%= Chef::Dist::PRODUCT %> installation
 WHERE <%= Chef::Dist::CLIENT %> >nul 2>nul
 If !ERRORLEVEL!==0 (
-  @echo Existing Chef installation detected, skipping download
+  @echo Existing <%= Chef::Dist::PRODUCT %> installation detected, skipping download
   goto key_create
 ) else (
-  @echo No existing installation of chef detected
+  @echo No existing installation of <%= Chef::Dist::PRODUCT %> detected
   goto install
 )
 
@@ -272,5 +272,5 @@ echo Validation key written.
   <%= client_d %>
 <% end -%>
 
-@echo Starting chef to bootstrap the node...
+@echo Starting <%= Chef::Dist::CLIENT %> to bootstrap the node...
 <%= start_chef %>
