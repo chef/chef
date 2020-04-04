@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.180 -->
-## [v16.0.180](https://github.com/chef/chef/tree/v16.0.180) (2020-04-03)
+<!-- latest_release 16.0.181 -->
+## [v16.0.181](https://github.com/chef/chef/tree/v16.0.181) (2020-04-04)
 
 #### Merged Pull Requests
-- Change the name_property to be the identity property by default, and to have desired_state: false by default [#9581](https://github.com/chef/chef/pull/9581) ([lamont-granquist](https://github.com/lamont-granquist))
+- Dist windows bootstrap template - fix msi_url [#9596](https://github.com/chef/chef/pull/9596) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Dist windows bootstrap template - fix msi_url [#9596](https://github.com/chef/chef/pull/9596) ([bobchaos](https://github.com/bobchaos)) <!-- 16.0.181 -->
 - Change the name_property to be the identity property by default, and to have desired_state: false by default [#9581](https://github.com/chef/chef/pull/9581) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.180 -->
 - Add Ubuntu 20.04 x86_64 and Ubuntu 18.04 aarch64 testers [#9584](https://github.com/chef/chef/pull/9584) ([tas50](https://github.com/tas50)) <!-- 16.0.179 -->
 - fix chef_vault_secret after_resource breakage [#9574](https://github.com/chef/chef/pull/9574) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.178 -->
