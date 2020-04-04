@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.48 -->
-## [v14.14.48](https://github.com/chef/chef/tree/v14.14.48) (2020-04-04)
+<!-- latest_release 14.14.49 -->
+## [v14.14.49](https://github.com/chef/chef/tree/v14.14.49) (2020-04-04)
 
 #### Merged Pull Requests
-- Match platforms to chef-15 [#9598](https://github.com/chef/chef/pull/9598) ([btm](https://github.com/btm))
+- debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm)) <!-- 14.14.49 -->
 - Match platforms to chef-15 [#9598](https://github.com/chef/chef/pull/9598) ([btm](https://github.com/btm)) <!-- 14.14.48 -->
 - Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm)) <!-- 14.14.47 -->
 - Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm)) <!-- 14.14.46 -->
