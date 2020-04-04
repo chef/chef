@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.45 -->
-## [v14.14.45](https://github.com/chef/chef/tree/v14.14.45) (2020-04-04)
+<!-- latest_release 14.14.46 -->
+## [v14.14.46](https://github.com/chef/chef/tree/v14.14.46) (2020-04-04)
 
 #### Merged Pull Requests
-- Pin omnibus-software before the change that breaks Ruby &lt; 2.6 [#9594](https://github.com/chef/chef/pull/9594) ([btm](https://github.com/btm))
+- Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm)) <!-- 14.14.46 -->
 - Pin omnibus-software before the change that breaks Ruby &lt; 2.6 [#9594](https://github.com/chef/chef/pull/9594) ([btm](https://github.com/btm)) <!-- 14.14.45 -->
 - 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm)) <!-- 14.14.44 -->
 - Remove S390x EL6 tester [#9582](https://github.com/chef/chef/pull/9582) ([tas50](https://github.com/tas50)) <!-- 14.14.43 -->
