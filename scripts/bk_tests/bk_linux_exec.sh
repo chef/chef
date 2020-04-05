@@ -39,6 +39,7 @@ echo "--- Installing Ruby 2.6.5"
 /opt/asdf/bin/asdf install ruby 2.6.5
 /opt/asdf/bin/asdf global ruby 2.6.5
 
+echo "--- Updating Gems"
 # Update Gems
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2) --force --no-document

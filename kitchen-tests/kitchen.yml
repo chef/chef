@@ -74,8 +74,14 @@ platforms:
     image: dokken/centos-6
     pid_one_command: /sbin/init
     intermediate_instructions:
-      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  lifecycle:
+    post_create:
+      - remote: echo "BTTTTTMMMM BTM BTM BTM"
+      - remote: yum install -y libffi-devel
+      - remote: export LIBFFI_CFLAGS=-I /usr/lib64/libffi-3.0.5/include
+      - remote: export LIBFFI_LIBS="-L /usr/lib64 -lffi"
+      - remote: ls -l /usr/lib64/libffi-3.0.5/include/ffi.h
 
 - name: centos-7
   driver:
@@ -98,8 +104,10 @@ platforms:
     image: dokken/oraclelinux-6
     pid_one_command: /sbin/init
     intermediate_instructions:
-      - RUN yum install -y libffi-devel
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+  lifecycle:
+    post_create:
+      - remote: yum install -y libffi-devel
 
 - name: oraclelinux-7
   driver:

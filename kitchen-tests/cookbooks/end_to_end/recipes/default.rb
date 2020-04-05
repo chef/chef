@@ -48,7 +48,6 @@ users_manage "sysadmin" do
 end
 
 ssh_known_hosts_entry "github.com"
-ssh_known_hosts_entry "travis.org"
 
 sudo "sysadmins" do
   group ["sysadmin", "%superadmin"]
