@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.14.49 -->
-## [v14.14.49](https://github.com/chef/chef/tree/v14.14.49) (2020-04-04)
+<!-- latest_release 14.15.0 -->
+## [v14.15.0](https://github.com/chef/chef/tree/v14.15.0) (2020-04-05)
 
 #### Merged Pull Requests
-- debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm))
+- Backport windows_task PR #8420 and #9223 [#9601](https://github.com/chef/chef/pull/9601) ([Vasu1105](https://github.com/Vasu1105))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport windows_task PR #8420 and #9223 [#9601](https://github.com/chef/chef/pull/9601) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.15.0 -->
 - debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm)) <!-- 14.14.49 -->
 - Match platforms to chef-15 [#9598](https://github.com/chef/chef/pull/9598) ([btm](https://github.com/btm)) <!-- 14.14.48 -->
 - Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm)) <!-- 14.14.47 -->
