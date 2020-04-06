@@ -321,7 +321,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with nothing intalled, it installs the latest version" do
+      it "with nothing installed, it installs the latest version" do
         flush_cache
         dnf_package.package_name("chef_rpm > 1.2")
         dnf_package.run_action(:install)

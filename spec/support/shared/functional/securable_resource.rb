@@ -474,7 +474,7 @@ shared_examples_for "a securable resource without existing target" do
       end
 
       it "respects mode in string form as an octal number" do
-        # on windows, mode cannot modify owner and/or group permissons
+        # on windows, mode cannot modify owner and/or group permissions
         # unless the owner and/or group as appropriate is specified
         resource.mode "400"
         resource.owner "Guest"

@@ -297,7 +297,7 @@ describe Chef::Node do
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
       end
 
-      it "should let you use tag as a convience method for the tags attribute" do
+      it "should let you use tag as a convince method for the tags attribute" do
         node.normal["tags"] = %w{one two}
         node.tag("three", "four")
         expect(node["tags"]).to eq(%w{one two three four})
@@ -436,7 +436,7 @@ describe Chef::Node do
           node.override["mysql"]["server"]["port"] = 3456
         end
 
-        it "deletes all the values and returns the value with the highest precidence" do
+        it "deletes all the values and returns the value with the highest precedence" do
           expect( node.rm("mysql", "server", "port") ).to eql(3456)
           expect( node["mysql"]["server"]["port"] ).to be_nil
           expect( node["mysql"]["server"] ).to eql({})
@@ -527,7 +527,7 @@ describe Chef::Node do
           expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
         end
 
-        it "returns nil for the combined attribues" do
+        it "returns nil for the combined attributes" do
           expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
           expect( node["mysql"]["server"]["port"] ).to eql(nil)
         end
@@ -633,7 +633,7 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
       end
 
-      it "replaces a value at the cookbook sub-level of the atributes only" do
+      it "replaces a value at the cookbook sub-level of the attributes only" do
         node.default["mysql"]["server"]["port"] = 2345
         node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
         node.role_default["mysql"]["server"]["port"] = 1234
@@ -1764,7 +1764,7 @@ describe Chef::Node do
       a = node.default["foo"]
       # assign that somewhere else in the tree
       node.default["fizz"] = a
-      # now upate the source
+      # now update the source
       a["duptest"] = true
       # the tree should have been updated
       expect(node.default["fizz"]["duptest"]).to be true

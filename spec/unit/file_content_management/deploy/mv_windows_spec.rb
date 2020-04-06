@@ -66,7 +66,7 @@ describe Chef::FileContentManagement::Deploy::MvWindows do
 
     end
 
-    context "when run without adminstrator privileges" do
+    context "when run without administrator privileges" do
       before do
         expect(target_file_security_object).to receive(:security_descriptor).and_raise(Chef::Exceptions::Win32APIError)
       end

@@ -402,7 +402,7 @@ shared_examples_for "a diff util" do
       end
     end
 
-    it "should identify null-teriminated multi-line string files as binary" do
+    it "should identify null-terminated multi-line string files as binary" do
       Tempfile.open("chef-util-diff-spec") do |file|
         file.write("This is a binary file.\nNo Really\nit is\0")
         file.close

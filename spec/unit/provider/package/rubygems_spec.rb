@@ -808,7 +808,7 @@ describe Chef::Provider::Package::Rubygems do
           end
         end
 
-        context "when clear_sources is set true and an explict source is specified" do
+        context "when clear_sources is set true and an explicit source is specified" do
           let(:gem_binary) { "/foo/bar" }
           let(:source) { "http://mirror.ops.rhcloud.com/mirror/ruby" }
 
@@ -821,7 +821,7 @@ describe Chef::Provider::Package::Rubygems do
           end
         end
 
-        context "when clear_sources is set false and an explict source is specified" do
+        context "when clear_sources is set false and an explicit source is specified" do
           let(:gem_binary) { "/foo/bar" }
           let(:source) { "http://mirror.ops.rhcloud.com/mirror/ruby" }
 
@@ -867,7 +867,7 @@ describe Chef::Provider::Package::Rubygems do
         end
 
         describe "at version specified with comparison operator" do
-          context "if current version satisifies requested version" do
+          context "if current version satisfies requested version" do
             let(:target_version) { ">=2.3.0" }
             let(:current_version) { "2.3.3" }
 

@@ -43,7 +43,7 @@ describe Chef::HTTP do
 
   end
 
-  describe "#intialize" do
+  describe "#initialize" do
     it "accepts a keepalive option and passes it to the http_client" do
       http = Chef::HTTP.new(uri, keepalives: true)
       expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: true).and_call_original
@@ -165,7 +165,7 @@ describe Chef::HTTP do
       end
 
       it "raises the error without retrying or sleeping" do
-        # We modify the strings to give addtional context, but the exception class should be the same
+        # We modify the strings to give additional context, but the exception class should be the same
         expect { http.get("/") }.to raise_error(exception.class)
       end
     end

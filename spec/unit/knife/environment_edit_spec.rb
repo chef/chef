@@ -63,7 +63,7 @@ describe Chef::Knife::EnvironmentEdit do
     @knife.run
   end
 
-  it "shoud show usage and exit when no environment name is provided" do
+  it "should show usage and exit when no environment name is provided" do
     @knife.name_args = []
     expect(@knife).to receive(:show_usage)
     expect { @knife.run }.to raise_error(SystemExit)

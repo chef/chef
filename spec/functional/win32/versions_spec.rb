@@ -40,7 +40,7 @@ describe "Chef::ReservedNames::Win32::Version", :windows_only do
       @current_os_version = "Windows Server 2008"
     else
       # The name from WMI is actually what we want in Win2k8R2+.
-      # So this expectation sould continue to hold without modification
+      # So this expectation should continue to hold without modification
       # as new versions of Windows are released.
       @current_os_version = host["caption"]
     end

@@ -526,7 +526,7 @@ describe Chef::Knife do
 
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(/The request that .* sent was using API version 10000000./)
-      expect(stderr.string).to match(/The server you sent the request to supports a min API verson of 0 and a max API version of 1./)
+      expect(stderr.string).to match(/The server you sent the request to supports a min API version of 0 and a max API version of 1./)
       expect(stderr.string).to match(/Please either update your .* or the server to be a compatible set./)
     end
 

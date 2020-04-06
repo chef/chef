@@ -445,7 +445,7 @@ describe "LWRP" do
         end
       end
 
-      context "with a cookbook with a hypen in the name" do
+      context "with a cookbook with a hyphen in the name" do
 
         let(:lwrp_cookbook_name) { "l-w-r-p" }
 
