@@ -3,14 +3,9 @@
 # Enable IPv6 in docker
 echo "--- Enabling ipv6 on docker"
 sudo systemctl stop docker
-echo "Enabling IPv6 in Docker config"
 dockerd_config="/etc/docker/daemon.json"
 sudo echo "$(jq '. + {"ipv6": true, "fixed-cidr-v6": "2001:2019:6002::/80", "ip-forward": false}' $dockerd_config)" > $dockerd_config
 sudo systemctl start docker
-
-# Verify Docker Is Running
-docker version
-sudo service docker status
 
 # Install C and C++
 echo "--- Installing package deps"
@@ -32,10 +27,8 @@ sudo git clone https://github.com/asdf-vm/asdf.git /opt/asdf
 . /opt/asdf/asdf.sh
 . /opt/asdf/completions/asdf.bash
 
-echo "--- Installing Ruby ASDF plugin"
-/opt/asdf/bin/asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-
 echo "--- Installing Ruby 2.6.6"
+/opt/asdf/bin/asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
 /opt/asdf/bin/asdf install ruby 2.6.6
 /opt/asdf/bin/asdf global ruby 2.6.6
 
@@ -44,8 +37,17 @@ echo 'gem: --no-document' >> ~/.gemrc
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2) --force
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-ruby --version
-which bundle
 bundle install --jobs=3 --retry=3 --path=vendor/bundle
+
+echo "--- Config information"
+
+echo "!!!! RUBY VERSION !!!!"
+ruby --version
+echo "!!!! BUNDLE LOCATION !!!!"
+which bundle
+echo "!!!! DOCKER VERSION !!!!"
+docker version
+echo "!!!! DOCKER STATUS !!!!"
+sudo service docker status
 
 echo "+++ Running tests"
