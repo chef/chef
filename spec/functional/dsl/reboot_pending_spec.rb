@@ -17,10 +17,13 @@
 #
 
 require "chef/dsl/reboot_pending"
+require "chef/dsl/registry_helper"
 require "chef/win32/registry"
 require "spec_helper"
 
 describe Chef::DSL::RebootPending, :windows_only do
+  include Chef::DSL::RegistryHelper
+
   def run_ohai
     node.consume_external_attrs(OHAI_SYSTEM.data, {})
   end
@@ -35,10 +38,6 @@ describe Chef::DSL::RebootPending, :windows_only do
   describe "reboot_pending?" do
     let(:reg_key) { nil }
     let(:original_set) { false }
-
-    before(:all) { @any_flag = {} }
-
-    after { @any_flag[reg_key] = original_set }
 
     describe 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations' do
       let(:reg_key) { 'HKLM\SYSTEM\CurrentControlSet\Control\Session Manager' }
@@ -79,7 +78,9 @@ describe Chef::DSL::RebootPending, :windows_only do
 
     describe "when there is nothing to indicate a reboot is pending" do
       it "should return false" do
-        skip "reboot pending" if @any_flag.any? { |_, v| v == true }
+        skip "reboot pending" if registry_value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: "PendingFileRenameOperations" }) ||
+          registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired') ||
+          registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         expect(recipe.reboot_pending?).to be_falsey
       end
     end
