@@ -40,9 +40,12 @@ echo "--- Installing Ruby 2.6.6"
 /opt/asdf/bin/asdf global ruby 2.6.6
 
 # Update Gems
+echo 'gem: --no-document' >> ~/.gemrc
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2) --force --no-document
+gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2) --force
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
 ruby --version
 which bundle
 bundle install --jobs=3 --retry=3 --path=vendor/bundle
+
+echo "+++ Running tests"

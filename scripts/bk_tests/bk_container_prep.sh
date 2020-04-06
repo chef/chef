@@ -20,4 +20,4 @@ gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
 bundle --version
 rm -f .bundle/config
 
-echo +++ testing
+echo "+++ Run tests"
