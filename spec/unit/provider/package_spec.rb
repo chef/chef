@@ -551,7 +551,7 @@ describe "Chef::Provider::Package - Multi" do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it "raises an exception if both are not installed and no caondidates are available" do
+    it "raises an exception if both are not installed and no candidates are available" do
       current_resource.version([nil, nil])
       provider.candidate_version = [nil, nil]
       expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
@@ -631,7 +631,7 @@ describe "Chef::Provider::Package - Multi" do
       expect(new_resource).not_to be_updated_by_last_action
     end
 
-    it "should raise an exception if both are not installed and no caondidates are available" do
+    it "should raise an exception if both are not installed and no candidates are available" do
       current_resource.version([nil, nil])
       provider.candidate_version = [nil, nil]
       expect { provider.run_action(:upgrade) }.to raise_error(Chef::Exceptions::Package)

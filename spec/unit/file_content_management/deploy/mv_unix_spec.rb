@@ -76,7 +76,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     context "when the user does not have permissions to set file ownership" do
 
       # The test code does not care what these values are. These values are
-      # chosen because they're representitive of the case that chef-client is
+      # chosen because they're representative of the case that chef-client is
       # running as non-root and is managing a file that got ownership set to
       # root somehow. In this example, gid==20 is something like "staff" which
       # the user running chef-client is a member of (but it's not that user's

@@ -141,7 +141,7 @@ describe Chef::Provider::Package::Msu, :windows_only do
       new_resource.cookbook_name = "Msu_package"
     end
 
-    it "sets the desired parameters of downloades msu file" do
+    it "sets the desired parameters of downloaded msu file" do
       allow(provider).to receive(:default_download_cache_path).and_return("C:\\chef\\cache\\package")
       source_resource = provider.source_resource
       expect(source_resource.path).to be == "C:\\chef\\cache\\package"
