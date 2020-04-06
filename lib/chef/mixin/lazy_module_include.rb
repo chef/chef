@@ -43,7 +43,7 @@ class Chef
     #
     module LazyModuleInclude
 
-      # Most of the magick is in this hook which creates a closure over the parent class and then builds an
+      # Most of the magic is in this hook which creates a closure over the parent class and then builds an
       # "infector" module which infects all descendants and which is responsible for updating the list of
       # descendants in the parent class.
       def included(klass)

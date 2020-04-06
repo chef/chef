@@ -19,16 +19,16 @@
 class Chef
   module Mixin
     module ApiVersionRequestHandling
-      # @param exeception [Net::HTTPClientException] may or may not contain the x-ops-server-api-version header
+      # @param exception [Net::HTTPClientException] may or may not contain the x-ops-server-api-version header
       # supported_client_versions:
       # @param supported_client_versions [Array<Integer>] The API versions the client supports.
       #
       # Output:
       # nil:
-      #  If the execption was not a 406 or the server does not support versioning
+      #  If the exception was not a 406 or the server does not support versioning
       # Array of length zero:
       #  If there was no intersection between supported client versions and supported server versions
-      # Arrary of Integers:
+      # Array of Integers:
       #  If there was an intersection of supported versions, the array returns will contain that intersection
       def server_client_api_version_intersection(exception, supported_client_versions)
         # return empty array unless 406 Unacceptable with proper header

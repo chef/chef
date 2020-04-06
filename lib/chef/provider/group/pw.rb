@@ -75,7 +75,7 @@ class Chef
         def set_options
           opts = [ new_resource.group_name ]
           if new_resource.gid && (current_resource.gid != new_resource.gid)
-            logger.trace("#{new_resource}: current gid (#{current_resource.gid}) doesnt match target gid (#{new_resource.gid}), changing it")
+            logger.trace("#{new_resource}: current gid (#{current_resource.gid}) doesn't match target gid (#{new_resource.gid}), changing it")
             opts << "-g"
             opts << new_resource.gid
           end

@@ -20,7 +20,7 @@ require_relative "../../package"
 
 #
 # BUGGY AND DEPRECATED:  This ruby code is known to not match the python implementation for version comparisons.
-# The APIs here should probably be converted to talk to the PythonHelper or just abandonded completely.
+# The APIs here should probably be converted to talk to the PythonHelper or just abandoned completely.
 #
 # e.g. this should just use Chef::Provider::Package::Yum::PythonHelper.instance.compare_versions(x,y)
 #

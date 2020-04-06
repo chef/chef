@@ -70,7 +70,7 @@ class Chef
         end
       end
 
-      # Actually run the action for realsies
+      # Actually run the action for releases
       resource.run_action(action, notification_type, notifying_resource)
 
       # Execute any immediate and queue up any delayed notifications

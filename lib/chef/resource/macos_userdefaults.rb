@@ -108,7 +108,7 @@ class Chef
           cmd << value
 
           # FIXME: this should use cmd directly as an array argument, but then the quoting
-          # of indiviual args above needs to be removed as well.
+          # of individual args above needs to be removed as well.
           execute cmd.join(" ") do
             user new_resource.user unless new_resource.user.nil?
           end

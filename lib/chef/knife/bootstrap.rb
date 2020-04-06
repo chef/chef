@@ -796,7 +796,7 @@ class Chef
 
       # Validate any additional options
       #
-      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to validate any additonal options before any other actions are executed
+      # Plugins that subclass bootstrap, e.g. knife-ec2, can use this method to validate any additional options before any other actions are executed
       #
       # @return [TrueClass] If options are valid or exits
       def plugin_validate_options!

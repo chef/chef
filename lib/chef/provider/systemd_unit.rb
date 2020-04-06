@@ -121,9 +121,9 @@ class Chef
       end
 
       action :reenable do
-        converge_by("reenabling unit: #{new_resource.unit_name}") do
+        converge_by("re-enabling unit: #{new_resource.unit_name}") do
           systemctl_execute!(:reenable, new_resource.unit_name)
-          logger.info("#{new_resource} reenabled")
+          logger.info("#{new_resource} re-enabled")
         end
       end
 

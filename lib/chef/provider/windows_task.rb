@@ -214,7 +214,7 @@ class Chef
             logger.info "#{new_resource} task exists"
             if %w{ready running}.include?(current_resource.task.status)
               converge_by("#{new_resource} task disabled") do
-                # TODO: in win32-taskscheduler there is no method whcih disbales the task so currently calling disable with schtasks.exe
+                # TODO: in win32-taskscheduler there is no method which disables the task so currently calling disable with schtasks.exe
                 run_schtasks "CHANGE", "DISABLE" => ""
               end
             else
@@ -322,7 +322,7 @@ class Chef
 
         # TODO : Try to optimize this method
         # known issue : Since start_day and time is not mandatory while updating weekly frequency for which start_day is not mentioned by user idempotency
-        # is not gettting maintained as new_resource.start_day is nil and we fetch the day of week from start_day to set and its currently coming as nil and don't match with current_task
+        # is not getting maintained as new_resource.start_day is nil and we fetch the day of week from start_day to set and its currently coming as nil and don't match with current_task
         def task_needs_update?(task)
           flag = false
           if new_resource.frequency == :none
@@ -549,7 +549,7 @@ class Chef
           end
         end
 
-        # TODO: while creating the configuration settings win32-taskscheduler it accepts execution time limit values in ISO8601 formata
+        # TODO: while creating the configuration settings win32-taskscheduler it accepts execution time limit values in ISO8601 format
         def config_settings
           settings = {
             execution_time_limit: new_resource.execution_time_limit,

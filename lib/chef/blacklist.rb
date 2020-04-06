@@ -5,7 +5,7 @@ class Chef
   class Blacklist
 
     # filter takes two arguments - the data you want to filter, and a blacklisted array
-    # of keys you want discluded. You can capture a subtree of the data to filter by
+    # of keys you want discarded. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
     #

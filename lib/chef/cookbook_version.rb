@@ -108,9 +108,9 @@ class Chef
       metadata.version
     end
 
-    # Indicates if this version is frozen or not. Freezing a coobkook version
+    # Indicates if this version is frozen or not. Freezing a cookbook version
     # indicates that a new cookbook with the same name and version number
-    # shoule
+    # should
     def frozen_version?
       @frozen
     end

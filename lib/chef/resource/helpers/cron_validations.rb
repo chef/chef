@@ -32,7 +32,7 @@ class Chef
           return spec >= min && spec <= max
         end
 
-        # Lists of invidual values, ranges, and step values all share the validity range for type
+        # Lists of individual values, ranges, and step values all share the validity range for type
         spec.split(%r{\/|-|,}).each do |x|
           next if x == "*"
           return false unless x =~ /^\d+$/

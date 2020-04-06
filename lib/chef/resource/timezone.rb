@@ -102,7 +102,7 @@ class Chef
         def current_darwin_tz
           tz_shellout = shell_out!("systemsetup -gettimezone")
           if /You need administrator access/.match?(tz_shellout.stdout)
-            raise "The timezone resource requires adminstrative priveleges to run on macOS hosts!"
+            raise "The timezone resource requires administrative privileges to run on macOS hosts!"
           else
             /Time Zone: (.*)/.match(tz_shellout.stdout)[1]
           end

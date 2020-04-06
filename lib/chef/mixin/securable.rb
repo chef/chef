@@ -97,7 +97,7 @@ class Chef
         #
         # * `:permissions`: Integer of Windows permissions flags, 1..2^32
         # or one of `[:full_control, :modify, :read_execute, :read, :write]`
-        # * `:principals`:  String or Array of Strings represnting usernames on
+        # * `:principals`:  String or Array of Strings representing usernames on
         # the system.
         # * `:applies_to_children` (optional): Boolean
         # * `:applies_to_self` (optional): Boolean

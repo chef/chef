@@ -406,8 +406,8 @@ class Chef
 
       # Convert an Array of Gem::Dependency objects (chef_version/ohai_version) to an Array.
       #
-      # Gem::Dependencey#to_s is not useful, and there is no #to_json defined on it or its component
-      # objets, so we have to write our own rendering method.
+      # Gem::Dependency#to_s is not useful, and there is no #to_json defined on it or its component
+      # objects, so we have to write our own rendering method.
       #
       # [ Gem::Dependency.new(">= 12.5"), Gem::Dependency.new(">= 11.18.0", "< 12.0") ]
       #

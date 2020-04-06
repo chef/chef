@@ -38,7 +38,7 @@ class Chef
       #
       # <lecture>
       # THIS is why updating the new_resource in a provider is so terrible, and is equivalent to methods scribbling over
-      # its own arguments as unintended side-effects (and why functional languages that don't allow modifcations
+      # its own arguments as unintended side-effects (and why functional languages that don't allow modifications
       # of variables eliminate entire classes of bugs).
       # </lecture>
       property :package_name, [ String, Array ],

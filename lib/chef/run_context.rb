@@ -307,7 +307,7 @@ class Chef
       immediate_notification_collection[key]
     end
 
-    # Get the list of immeidate notifications pending to the given resource
+    # Get the list of immediate notifications pending to the given resource
     #
     # @return [Array[Notification]]
     #

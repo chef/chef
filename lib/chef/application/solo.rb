@@ -125,7 +125,7 @@ class Chef::Application::Solo < Chef::Application::Base
       Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
     end
 
-    # json_attribs shuld be fetched after recipe_url tarball is unpacked.
+    # json_attribs should be fetched after recipe_url tarball is unpacked.
     # Otherwise it may fail if points to local file from tarball.
     if Chef::Config[:json_attribs]
       config_fetcher = Chef::ConfigFetcher.new(Chef::Config[:json_attribs])

@@ -101,7 +101,7 @@ class Chef
               # filter is needed in case of things like `foo-*.gemspec` also
               # matching a gem named `foo-bar`.
               stubs.select! { |stub| stub.name == gem_dep.name && gem_dep.requirement.satisfied_by?(stub.version) }
-              # This isn't sorting before returning beacuse the only code that
+              # This isn't sorting before returning because the only code that
               # uses this method calls `max_by` so it doesn't need to be sorted.
               stubs
             elsif rubygems_version >= Gem::Version.new("1.8.0")

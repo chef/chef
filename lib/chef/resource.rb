@@ -165,7 +165,7 @@ class Chef
       end
     end
 
-    # Alias for normal assigment syntax.
+    # Alias for normal assignment syntax.
     alias_method :action=, :action
 
     #
@@ -1004,7 +1004,7 @@ class Chef
     #
     # The action that will be run if no other action is specified.
     #
-    # Setting default_action will automatially add the action to
+    # Setting default_action will automatically add the action to
     # allowed_actions, if it isn't already there.
     #
     # Defaults to [:nothing].
@@ -1111,7 +1111,7 @@ class Chef
     # class evaluation time when the Custom Resource is being constructed.
     #
     # This happens the first time the ruby parser hits an `action` or an
-    # `action_class` method, the presence of either indiates that this is
+    # `action_class` method, the presence of either indicates that this is
     # going to be a Chef-12.5 custom resource.  If we never see one of these
     # directives then we are constructing an old-style Resource+Provider or
     # LWRP or whatevs.
