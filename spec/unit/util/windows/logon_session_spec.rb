@@ -31,7 +31,7 @@ describe ::Chef::Util::Windows::LogonSession do
   let(:authentication) { :remote }
 
   shared_examples_for "it received syntactically invalid credentials" do
-    it "does not raisees an exception when it is initialized" do
+    it "does not raises an exception when it is initialized" do
       expect { session }.to raise_error(ArgumentError)
     end
   end

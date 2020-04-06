@@ -2,7 +2,7 @@
 # platform-specific functionality.
 #
 # If a block is given yields to the block with +RUBY_PLATFORM+ set to
-# 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Usueful for
+# 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Useful for
 # testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
 # or +Chef::FileAccessControl+
 def platform_mock(platform = :unix)

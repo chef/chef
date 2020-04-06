@@ -305,7 +305,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "should disable gzip compression in the client" do
           # Before block in the parent context has set an expectation on
-          # Chef::HTTP::Simple.new() being called with expected arguments. Here we fufil
+          # Chef::HTTP::Simple.new() being called with expected arguments. Here we fulfill
           # that expectation, so that we can explicitly set it for this test.
           # This is intended to provide insurance that refactoring of the parent
           # context does not negate the value of this particular example.

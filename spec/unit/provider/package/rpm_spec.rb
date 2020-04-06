@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Rpm do
 
   describe "when the package source is not valid" do
 
-    context "when source is not defiend" do
+    context "when source is not defined" do
       let(:new_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
 
       it "should raise an exception when attempting any action" do

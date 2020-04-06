@@ -159,7 +159,7 @@ describe Chef::Resource::WindowsEnv, :windows_only do
           expect(ENV[chef_env_test_lower_case]).to eq(env_value2)
         end
 
-        # This examlpe covers Chef Issue #1754
+        # This example covers Chef Issue #1754
         it "should modify an existing variable's value to a new value if the variable name case differs from the existing variable" do
           expect(ENV[chef_env_test_lower_case]).to eq(env_value1)
           test_resource.key_name(chef_env_test_mixed_case)

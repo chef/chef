@@ -21,7 +21,7 @@ require "spec_helper"
 require "chef/key"
 
 describe Chef::Key do
-  # whether user or client irrelevent to these tests
+  # whether user or client irrelevant to these tests
   let(:key) { Chef::Key.new("original_actor", "user") }
   let(:public_key_string) do
     <<~EOS

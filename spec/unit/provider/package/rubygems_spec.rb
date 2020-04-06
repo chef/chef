@@ -832,7 +832,7 @@ describe Chef::Provider::Package::Rubygems do
         end
 
         describe "at version specified with comparison operator" do
-          context "if current version satisifies requested version" do
+          context "if current version satisfies requested version" do
             let(:target_version) { ">=2.3.0" }
             let(:current_version) { "2.3.3" }
 

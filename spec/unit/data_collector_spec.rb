@@ -805,7 +805,7 @@ describe Chef::DataCollector do
         it_behaves_like "sends a converge message"
       end
 
-      context "when the resource collection contains a resource that was unproccesed due to prior errors" do
+      context "when the resource collection contains a resource that was unprocessed due to prior errors" do
         let(:exception) { Exception.new("imperial to metric conversion error") }
         let(:error_description) { Chef::Formatters::ErrorMapper.resource_failed(new_resource, :create, exception).for_json }
         let(:total_resource_count) { 2 }

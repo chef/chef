@@ -105,7 +105,7 @@ describe Chef::Util::FileEdit do
     target_file.close!
   end
 
-  describe "initialiize" do
+  describe "initialize" do
     it "should create a new Chef::Util::FileEdit object" do
       expect(fedit).to be_instance_of(Chef::Util::FileEdit)
     end
