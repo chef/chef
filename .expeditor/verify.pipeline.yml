@@ -1,14 +1,13 @@
 ---
 expeditor:
+  cached_folders:
+    - vendor
   defaults:
     buildkite:
       retry:
         automatic:
           limit: 1
       timeout_in_minutes: 30
-      retry:
-        automatic:
-          limit: 1
 
 steps:
 
