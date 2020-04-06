@@ -36,7 +36,7 @@ class Chef
       # ruby block, which will be called, or a string, which will be
       # executed as a Shell command.
       #
-      # Additonally, Chef or third-party verifications can ship
+      # Additionally, Chef or third-party verifications can ship
       # "registered verifications" that the user can use by specifying
       # a :symbol as the command name.
       #

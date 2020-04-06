@@ -118,7 +118,7 @@ class Chef
           write_shadow_file
         end
 
-        # XXX: this was straight copypasta'd back in 2013 and I don't think we've ever evaluted using
+        # XXX: this was straight copy-paste's back in 2013 and I don't think we've ever evaluated using
         # a pipe to passwd(1) or evaluating modern ruby-shadow.  See https://github.com/chef/chef/pull/721
         def write_shadow_file
           buffer = Tempfile.new("shadow", "/etc")

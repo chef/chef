@@ -193,7 +193,7 @@ class Chef
             # NOTE: Here we're managing the primary group of the user which is
             # a departure from previous behavior. We could just set the
             # PrimaryGroupID for the user and move on if we decide that actual
-            # group magement should be done outside of the core resource.
+            # group management should be done outside of the core resource.
             group_name, group_id, group_action = user_group_info
 
             declare_resource(:group, group_name) do

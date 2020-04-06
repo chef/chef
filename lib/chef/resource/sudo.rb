@@ -34,7 +34,7 @@ class Chef
                   " and RHEL (6+) all support this feature."
       introduced "14.0"
 
-      # acording to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
+      # According to the sudo man pages sudo will ignore files in an include dir that have a `.` or `~`
       # We convert either to `__`
       property :filename, String,
         description: "The name of the sudoers.d file if it differs from the name of the resource block",

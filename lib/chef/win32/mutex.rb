@@ -68,7 +68,7 @@ class Chef
       end
 
       #####################################################
-      # Releaes the mutex
+      # Releases the mutex
       def release
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685066(v=vs.85).aspx
         # Note that release method needs to be called more than once

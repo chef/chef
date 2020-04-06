@@ -19,7 +19,7 @@ class Chef
   class DataCollector
 
     # This module isolates the handling of collecting error descriptions to insert into the data_colletor
-    # report output.  For very early errors it is repsonsible for collecting the node_name for the report
+    # report output.  For very early errors it is responsible for collecting the node_name for the report
     # to use.  For all failure conditions that have an ErrorMapper it collects the output.
     #
     # No external code should call anything in this module directly.

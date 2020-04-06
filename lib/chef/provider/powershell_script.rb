@@ -127,7 +127,7 @@ class Chef
               Import-Module Microsoft.PowerShell.Utility
           }
 
-          # LASTEXITCODE can be uninitialized -- make it explictly 0
+          # LASTEXITCODE can be uninitialized -- make it explicitly 0
           # to avoid incorrect detection of failure (non-zero) codes
           $global:LASTEXITCODE = 0
 

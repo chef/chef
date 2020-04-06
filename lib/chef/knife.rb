@@ -101,7 +101,7 @@ class Chef
         subcommand_files[subclass.snake_case_name] +=
           if subclass.superclass.to_s == "Chef::ChefFS::Knife"
             # ChefFS-based commands have a superclass that defines an
-            # inhereited method which calls super. This means that the
+            # inherited method which calls super. This means that the
             # top of the call stack is not the class definition for
             # our subcommand.  Try the second entry in the call stack.
             [path_from_caller(caller[1])]
@@ -559,7 +559,7 @@ class Chef
         max_server_version = version_header["max_version"]
         ui.error "The API version that Knife is using is not supported by the server you sent this request to."
         ui.info "The request that Knife sent was using API version #{client_api_version}."
-        ui.info "The server you sent the request to supports a min API verson of #{min_server_version} and a max API version of #{max_server_version}."
+        ui.info "The server you sent the request to supports a min API version of #{min_server_version} and a max API version of #{max_server_version}."
         ui.info "Please either update your #{Chef::Dist::PRODUCT} or the server to be a compatible set."
       else
         ui.error response.message

@@ -31,7 +31,7 @@ class Chef
             # and should use defaults in this case
             input
           else
-            # The last occurance of a flag would override its
+            # The last occurrence of a flag would override its
             # previous one at the time of command execution.
             [default_flags, input].join(" ")
           end
@@ -44,7 +44,7 @@ class Chef
                   " executes a temporary file (similar to how the script resource behaves), rather than running"\
                   " the command inline. Commands that are executed with this resource are (by their nature) not"\
                   " idempotent, as they are typically unique to the environment in which they are run. Use not_if"\
-                  " and only_if to guard this resource for idempotence."
+                  " and only_if to guard this resource for idempotent."
 
       def initialize(name, run_context = nil)
         super(name, run_context, :powershell_script, "powershell.exe")

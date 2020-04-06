@@ -52,7 +52,7 @@ class Chef
     end
 
     # This is to support #deprecated_property_alias, by emitting an alias and a
-    # deprecatation warning when called.
+    # deprecation warning when called.
     #
     # @param from [String] Name of the deprecated property
     # @param to [String] Name of the correct property
@@ -236,7 +236,7 @@ class Chef
     end
 
     #
-    # A desciption of the default value of this property.
+    # A description of the default value of this property.
     #
     # @return [String]
     #

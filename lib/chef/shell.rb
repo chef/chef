@@ -105,7 +105,7 @@ module Shell
   end
 
   # Set the irb_conf object to something other than IRB.conf
-  # usful for testing.
+  # useful for testing.
   def self.irb_conf=(conf_hash)
     @irb_conf = conf_hash
   end

@@ -31,7 +31,7 @@ class Chef
       # up to the caller to join(" ") on arrays of strings.
       #
       # the shell_out_compacted/shell_out_compacted! APIs are private but are intended for use
-      # in rspec tests, and should ideally always be used to make code refactorings that do not
+      # in rspec tests, and should ideally always be used to make code refactoring that do not
       # change behavior easier:
       #
       # allow(provider).to receive(:shell_out_compacted!).with("foo", "bar", "baz")

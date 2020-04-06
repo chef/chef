@@ -110,7 +110,7 @@ class Chef
         description: "The passphrase for CA private key's passphrase."
 
       property :renew_before_expiry, Integer,
-        description: "The number of days before the expiry. The certificate will be automaticaly renewed when the value is reached.",
+        description: "The number of days before the expiry. The certificate will be automatically renewed when the value is reached.",
         introduced: "15.7"
 
       action :create do

@@ -49,7 +49,7 @@ class Chef
 
   # We re-open ChefConfig::Config to add additional settings. Generally,
   # everything should go in chef-config so it's shared with whoever uses that.
-  # We make execeptions to that rule when:
+  # We make exceptions to that rule when:
   # * The functionality isn't likely to be useful outside of Chef
   # * The functionality makes use of a dependency we don't want to add to chef-config
   class Config
@@ -64,7 +64,7 @@ class Chef
 
     # Override the default values that were set by Ohai.
     #
-    # REMOVEME once these configurables are removed from the top level of Ohai.
+    # REMOVEME once these configurable are removed from the top level of Ohai.
     default :log_level, LOG_LEVEL
     default :log_location, LOG_LOCATION
 
@@ -74,7 +74,7 @@ class Chef
     # chef-client and other tools (e.g., knife), we will mute the warnings here
     # by redefining the config_attr_writer to not warn for these options.
     #
-    # REMOVEME once the warnings for these configurables are removed from Ohai.
+    # REMOVEME once the warnings for these configurable are removed from Ohai.
     %i{log_level log_location}.each do |option|
       config_attr_writer option do |value|
         value

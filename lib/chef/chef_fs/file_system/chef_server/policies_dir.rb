@@ -85,7 +85,7 @@ class Chef
             if $!.response.code == "404"
               # GET /organizations/ORG/policies returned 404, but that just might be because
               # we are talking to an older version of the server that doesn't support policies.
-              # Do GET /orgqanizations/ORG to find out if the org exists at all.
+              # Do GET /organizations/ORG to find out if the org exists at all.
               # TODO use server API version instead of a second network request.
               begin
                 root.get_json(parent.api_path)
