@@ -862,7 +862,7 @@ describe Chef::Mixin::OpenSSLHelper do
       @certfile = Tempfile.new("certfile")
     end
 
-    context "When the cert file doesn't not exist" do
+    context "When the cert file doesn't exist" do
       it "returns true" do
         expect(instance.cert_need_renewall?("/tmp/bad_filename", 3650)).to be_truthy
       end

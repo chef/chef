@@ -46,14 +46,14 @@ describe Chef::ReservedNames::Win32::File, :windows_only do
         allow(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with(any_args) { "don't //actually// do this" }
       end
 
-      it "will not pass the unpirivileged symlink flag if the node is not Windows 10" do
+      it "will not pass the unprivileged symlink flag if the node is not Windows 10" do
         allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(false)
 
         expect(Chef::ReservedNames::Win32::File).to receive(:CreateSymbolicLinkW).with("b", "a", without_privilege)
         described_class.symlink("a", "b")
       end
 
-      it "will not pass the unpirivileged symlink flag if the node is not at least Windows 10 Creators Update" do
+      it "will not pass the unprivileged symlink flag if the node is not at least Windows 10 Creators Update" do
         allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(true)
         allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:build_number).and_return(1)
 
@@ -61,7 +61,7 @@ describe Chef::ReservedNames::Win32::File, :windows_only do
         described_class.symlink("a", "b")
       end
 
-      it "will pass the unpirivileged symlink flag if the node is Windows 10 Creators Update or higher" do
+      it "will pass the unprivileged symlink flag if the node is Windows 10 Creators Update or higher" do
         allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:windows_10?).and_return(true)
         allow_any_instance_of(Chef::ReservedNames::Win32::Version).to receive(:build_number).and_return(15063)
 

@@ -36,7 +36,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     context "when command is with arguments" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         # Make sure MM/DD/YYYY is accepted
 
         new_resource.start_day "09/20/2017"
@@ -173,7 +173,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     context "when description is passed" do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource.command task_name
         # Make sure MM/DD/YYYY is accepted
         new_resource.start_day "09/20/2017"
@@ -213,7 +213,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       subject do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         # Make sure MM/DD/YYYY is accepted
         new_resource.start_day "09/20/2017"
         new_resource.frequency :hourly
@@ -248,7 +248,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :minute
         new_resource.frequency_modifier 15
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -296,7 +296,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :hourly
         new_resource.frequency_modifier 3
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -341,7 +341,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :daily
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -370,7 +370,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :monthly
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -495,7 +495,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           new_resource.command task_name
           new_resource.run_level :highest
           new_resource.frequency :monthly
-          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
           new_resource
         end
 
@@ -584,7 +584,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           new_resource.command task_name
           new_resource.run_level :highest
           new_resource.frequency :monthly
-          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
           new_resource
         end
 
@@ -691,7 +691,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           new_resource.command task_name
           new_resource.run_level :highest
           new_resource.frequency :monthly
-          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+          new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
           new_resource
         end
 
@@ -793,7 +793,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :once
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -832,7 +832,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :weekly
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -981,7 +981,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :onstart
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1028,7 +1028,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :on_logon
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1075,7 +1075,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :on_idle
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1134,7 +1134,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
         new_resource.run_level :highest
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1178,7 +1178,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
         new_resource.run_level :highest
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1263,7 +1263,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :none
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1290,7 +1290,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
         new_resource.run_level :highest
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1346,7 +1346,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :once
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1372,7 +1372,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :once
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1397,7 +1397,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
       new_resource.command task_name
       new_resource.frequency :once
-      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
       new_resource
     end
 
@@ -1502,7 +1502,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :once
         new_resource.start_time "17:00"
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1526,7 +1526,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
         new_resource.run_level :highest
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource.frequency :none
         new_resource
       end
@@ -1552,7 +1552,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.command task_name
         new_resource.run_level :highest
         new_resource.frequency :weekly
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1579,7 +1579,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :once
         new_resource.start_time "17:00"
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1606,7 +1606,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.frequency :hourly
         new_resource.frequency_modifier 5
         new_resource.random_delay "2400"
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1625,7 +1625,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.frequency :daily
         new_resource.frequency_modifier 2
         new_resource.random_delay "2400"
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1641,7 +1641,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
         new_resource.command task_name
         new_resource.frequency :on_logon
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1666,7 +1666,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
         new_resource.run_level :highest
         new_resource.frequency :onstart
         new_resource.frequency_modifier 20
-        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+        new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
         new_resource
       end
 
@@ -1683,7 +1683,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
       new_resource.command task_name
       new_resource.run_level :highest
-      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
       new_resource
     end
 
@@ -1832,7 +1832,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
     subject do
       new_resource = Chef::Resource::WindowsTask.new(task_name, run_context)
       new_resource.command task_name
-      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accespts this
+      new_resource.execution_time_limit = 259200 / 60 # converting "PT72H" into minutes and passing here since win32-taskscheduler accepts this
       new_resource.frequency :hourly
       new_resource
     end
