@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.186 -->
-## [v16.0.186](https://github.com/chef/chef/tree/v16.0.186) (2020-04-05)
+<!-- latest_release 16.0.188 -->
+## [v16.0.188](https://github.com/chef/chef/tree/v16.0.188) (2020-04-06)
 
 #### Merged Pull Requests
--  Improved Ruby download/install for functional tests [#9603](https://github.com/chef/chef/pull/9603) ([btm](https://github.com/btm))
+- Really skip the reboot pending func test if a reboot is pending [#9611](https://github.com/chef/chef/pull/9611) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Really skip the reboot pending func test if a reboot is pending [#9611](https://github.com/chef/chef/pull/9611) ([btm](https://github.com/btm)) <!-- 16.0.188 -->
 -  Improved Ruby download/install for functional tests [#9603](https://github.com/chef/chef/pull/9603) ([btm](https://github.com/btm)) <!-- 16.0.186 -->
 - Updated introduced version for start_when_available option [#9602](https://github.com/chef/chef/pull/9602) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.0.185 -->
 - windows_firewall_rule: Fix idempotency and add icmp_type property [#9544](https://github.com/chef/chef/pull/9544) ([pschaumburg](https://github.com/pschaumburg)) <!-- 16.0.184 -->
