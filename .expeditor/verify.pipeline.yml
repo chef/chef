@@ -18,7 +18,7 @@ steps:
 - label: "Integration Specs Ubuntu :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -31,7 +31,7 @@ steps:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -42,7 +42,7 @@ steps:
 - label: "Unit Specs Ubuntu :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -53,7 +53,7 @@ steps:
 - label: "Integration Specs CentOS :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -65,7 +65,7 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -76,7 +76,7 @@ steps:
 - label: "Unit Specs CentOS :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -87,7 +87,7 @@ steps:
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -99,7 +99,7 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cronie
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -110,7 +110,7 @@ steps:
 - label: "Unit Specs openSUSE :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -121,7 +121,7 @@ steps:
 - label: "Integration Specs Fedora :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -133,7 +133,7 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
-    - cd /workdir; bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -147,7 +147,7 @@ steps:
 - label: "Unit Specs Fedora :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -200,7 +200,7 @@ steps:
 - label: "Chefstyle :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake style
   expeditor:
     executor:
@@ -214,7 +214,7 @@ steps:
 - label: "Integration Specs :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -227,7 +227,7 @@ steps:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales net-tools # needed for functional tests to pass
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -238,7 +238,7 @@ steps:
 - label: "Unit Specs :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -253,7 +253,7 @@ steps:
 - label: "Test chef-sugar gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
     executor:
@@ -263,7 +263,7 @@ steps:
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
     executor:
@@ -276,7 +276,7 @@ steps:
 - label: "Test cheffish gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
     executor:
@@ -286,7 +286,7 @@ steps:
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
     executor:
@@ -296,7 +296,7 @@ steps:
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
   expeditor:
     executor:
@@ -309,7 +309,7 @@ steps:
     - apt-get update -y
     - apt-get install -y graphviz
     - gem install bundler -v 1.17.3 # necessary for berks Gemfile.lock for now
-    - bundle install --jobs=3 --retry=3 --without omnibus_package docgen
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
   expeditor:
     executor:
