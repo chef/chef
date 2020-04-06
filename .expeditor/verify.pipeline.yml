@@ -1,7 +1,5 @@
 ---
 expeditor:
-  cached_folders:
-    - vendor
   defaults:
     buildkite:
       retry:
@@ -46,6 +44,8 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -80,6 +80,8 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/centos-7
@@ -114,6 +116,8 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/opensuse-15
@@ -151,6 +155,8 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/fedora-latest
@@ -159,6 +165,8 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_win_integration.ps1
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         host_os: windows
@@ -171,6 +179,8 @@ steps:
   commands:
     - scripts/bk_tests/bk_win_functional.ps1
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       windows:
         privileged: true
@@ -180,6 +190,8 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_run_choco.ps1
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         host_os: windows
@@ -189,6 +201,8 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_win_unit.ps1
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         host_os: windows
@@ -203,6 +217,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake style
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -242,6 +258,8 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: ruby:2.7-buster
@@ -256,6 +274,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -266,6 +286,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -279,6 +301,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -289,6 +313,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -299,6 +325,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
@@ -312,6 +340,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
   expeditor:
+    cached_folders:
+      - vendor
     executor:
       docker:
         image: rubydistros/ubuntu-18.04
