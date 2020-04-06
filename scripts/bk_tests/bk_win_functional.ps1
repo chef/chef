@@ -12,16 +12,39 @@ $RubyS3Path = "s3://public-cd-buildkite-cache/$RubyFilename"
 
 Function DownloadRuby
 {
+  $RandDigits = Get-Random
   echo "Downloading Ruby + DevKit"
-  aws s3 cp $RubyS3Path $RubyPath | Out-Null # Out-Null is a hack to wait for the process to complete
 
-  if ($LASTEXITCODE -ne 0)
-  {
+  aws s3 cp "$RubyS3Path" "$RubyPath.$RandDigits" | Out-Null # Out-Null is a hack to wait for the process to complete
+
+  if ($LASTEXITCODE -ne 0) {
     echo "aws s3 download failed: $LASTEXITCODE"
     exit $LASTEXITCODE
   }
-  $DownloadedHash = (Get-FileHash $RubyPath -Algorithm SHA256).Hash
-  echo "Downloaded SHA256: $DownloadedHash"
+
+  $FileHash = (Get-FileHash "$RubyPath.$RandDigits" -Algorithm SHA256).Hash
+  If ($FileHash -eq $RubySHA256) {
+    echo "Downloaded SHA256 matches: $FileHash"
+  } Else {
+    echo "Downloaded file hash $FileHash does not match desired $RubySHA256"
+    exit 1
+  }
+
+  # On a shared filesystem, sometimes a good file appears while we are downloading
+  If (Test-Path $RubyPath) {
+    $FileHash = (Get-FileHash "$RubyPath" -Algorithm SHA256).Hash
+    If ($FileHash -eq $RubySHA256) {
+      echo "A matching file appeared while downloading, using it."
+      Remove-Item "$RubyPath.$RandDigits" -Force
+      Return
+    } Else {
+      echo "Existing file does not match, bad hash: $FileHash"
+      Remove-Item $RubyPath -Force
+    }
+  }
+
+  echo "Moving file installer into place"
+  Rename-Item -Path "$RubyPath.$RandDigits" -NewName $RubyFilename
 }
 
 Function InstallRuby
@@ -29,16 +52,12 @@ Function InstallRuby
   If (Test-Path $RubyPath) {
     echo "$RubyPath already exists"
 
-    $ExistingRubyHash = (Get-FileHash $RubyPath -Algorithm SHA256).Hash
-
-    echo "Verifying file SHA256 hash $ExistingRubyHash to desired hash $RubySHA256"
-
-    If ($ExistingRubyHash -ne $RubySHA256) {
-      echo "SHA256 hash mismatch, attempting to remove and re-download"
-      Remove-Item $RubyPath -Force
-      DownloadRuby
-    } Else {
+    $FileHash = (Get-FileHash "$RubyPath" -Algorithm SHA256).Hash
+    If ($FileHash -eq $RubySHA256) {
       echo "Found matching Ruby + DevKit on disk"
+    } Else {
+      echo "SHA256 hash mismatch, re-downloading"
+      DownloadRuby
     }
   } Else {
     echo "No Ruby found at $RubyPath, downloading"
