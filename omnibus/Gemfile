@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem "omnibus", git: "https://github.com/chef/omnibus", branch: "master"
 
 # omnibus-software 52823134ba902daac1f18b1a75de0386558cc0a5 and later requires Ruby 2.6 with built in bundler
-gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "91c3649a7dc1196fec7d872b731705dcf80b7c23"
+gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "legacy_ruby"
 gem "artifactory"
 
 gem "pedump"
