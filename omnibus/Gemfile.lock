@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 91c3649a7dc1196fec7d872b731705dcf80b7c23
-  branch: 91c3649a7dc1196fec7d872b731705dcf80b7c23
+  revision: 013d8762f22dfe3050ca02f30221f92e4fc2ecbf
+  branch: legacy_ruby
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 5.6.1)
@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.0.3)
-    aws-partitions (1.294.0)
-    aws-sdk-core (3.92.0)
+    aws-partitions (1.295.0)
+    aws-sdk-core (3.93.0)
       aws-eventstream (~> 1.0, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -208,7 +208,7 @@ GEM
     mixlib-archive (1.0.5-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.1.5)
+    mixlib-cli (2.1.6)
     mixlib-config (3.0.6)
       tomlrb
     mixlib-install (3.12.1)
@@ -274,7 +274,7 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (4.0.3)
+    public_suffix (4.0.4)
     rack (2.2.2)
     rainbow (3.0.0)
     retryable (3.0.5)
