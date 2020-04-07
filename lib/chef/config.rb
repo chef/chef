@@ -64,7 +64,7 @@ class Chef
 
     # Override the default values that were set by Ohai.
     #
-    # REMOVEME once these configurable are removed from the top level of Ohai.
+    # REMOVEME once these configurables are removed from the top level of Ohai.
     default :log_level, LOG_LEVEL
     default :log_location, LOG_LOCATION
 
@@ -74,7 +74,7 @@ class Chef
     # chef-client and other tools (e.g., knife), we will mute the warnings here
     # by redefining the config_attr_writer to not warn for these options.
     #
-    # REMOVEME once the warnings for these configurable are removed from Ohai.
+    # REMOVEME once the warnings for these configurables are removed from Ohai.
     %i{log_level log_location}.each do |option|
       config_attr_writer option do |value|
         value
