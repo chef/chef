@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.190 -->
-## [v16.0.190](https://github.com/chef/chef/tree/v16.0.190) (2020-04-07)
+<!-- latest_release 16.0.191 -->
+## [v16.0.191](https://github.com/chef/chef/tree/v16.0.191) (2020-04-07)
 
 #### Merged Pull Requests
-- Spell checking in comments and log messages [#9609](https://github.com/chef/chef/pull/9609) ([vsingh-msys](https://github.com/vsingh-msys))
+- Cache gems in the verify pipeline to speed up tests [#9607](https://github.com/chef/chef/pull/9607) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Cache gems in the verify pipeline to speed up tests [#9607](https://github.com/chef/chef/pull/9607) ([tas50](https://github.com/tas50)) <!-- 16.0.191 -->
 - Spell checking in comments and log messages [#9609](https://github.com/chef/chef/pull/9609) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.190 -->
 - Bump mixlib-cli to 2.1.6 [#9615](https://github.com/chef/chef/pull/9615) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.189 -->
 - Really skip the reboot pending func test if a reboot is pending [#9611](https://github.com/chef/chef/pull/9611) ([btm](https://github.com/btm)) <!-- 16.0.188 -->
