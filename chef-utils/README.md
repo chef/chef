@@ -110,9 +110,6 @@ Architecture Helpers allow you to determine the processor architecture of your n
 
 * `_32_bit?`
 * `_64_bit?`
-* `aarch64?`
-* `arch64?`
-* `arm64?`
 * `arm?`
 * `armhf?`
 * `i386?`
