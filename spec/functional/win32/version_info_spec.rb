@@ -32,12 +32,12 @@ describe "Chef::ReservedNames::Win32::File::VersionInfo", :windows_only do
 
   subject { Chef::ReservedNames::Win32::File::VersionInfo.new(file_path) }
 
-  it "file version has the same version as windows" do
-    expect(subject.FileVersion).to start_with(os_version)
+  it "file version has the same major.minor version as windows" do
+    expect(subject.FileVersion).to start_with(os_version.rpartition(".").first)
   end
 
-  it "product version has the same version as windows" do
-    expect(subject.ProductVersion).to start_with(os_version)
+  it "product version has the same major.minor version as windows" do
+    expect(subject.ProductVersion).to start_with(os_version.rpartition(".").first)
   end
 
   it "company is microsoft" do
