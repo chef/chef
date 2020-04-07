@@ -1,44 +1,42 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.15.6 -->
-## [v14.15.6](https://github.com/chef/chef/tree/v14.15.6) (2020-04-07)
-
-#### Merged Pull Requests
-- Update to the latest commits in omnibus-software legacy_ruby branch [#9621](https://github.com/chef/chef/pull/9621) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=14.14.29 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update to the latest commits in omnibus-software legacy_ruby branch [#9621](https://github.com/chef/chef/pull/9621) ([tas50](https://github.com/tas50)) <!-- 14.15.6 -->
-- Fix functional tests on Windows 10 by matching less [#9620](https://github.com/chef/chef/pull/9620) ([btm](https://github.com/btm)) <!-- 14.15.5 -->
-- Update Ohai to 14.15 [#9619](https://github.com/chef/chef/pull/9619) ([tas50](https://github.com/tas50)) <!-- 14.15.4 -->
-- Update to Ruby 2.5.8 + nokogiri 1.10.9 [#9617](https://github.com/chef/chef/pull/9617) ([tas50](https://github.com/tas50)) <!-- 14.15.3 -->
-- 14: Really skip the reboot pending func test if a reboot is pending [#9612](https://github.com/chef/chef/pull/9612) ([btm](https://github.com/btm)) <!-- 14.15.2 -->
-- Backport windows_task PR #8420 and #9223 [#9601](https://github.com/chef/chef/pull/9601) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.15.0 -->
-- debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm)) <!-- 14.14.49 -->
-- Match platforms to chef-15 [#9598](https://github.com/chef/chef/pull/9598) ([btm](https://github.com/btm)) <!-- 14.14.48 -->
-- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm)) <!-- 14.14.47 -->
-- Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm)) <!-- 14.14.46 -->
-- Pin omnibus-software before the change that breaks Ruby &lt; 2.6 [#9594](https://github.com/chef/chef/pull/9594) ([btm](https://github.com/btm)) <!-- 14.14.45 -->
-- 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm)) <!-- 14.14.44 -->
-- Remove S390x EL6 tester [#9582](https://github.com/chef/chef/pull/9582) ([tas50](https://github.com/tas50)) <!-- 14.14.43 -->
-- Pin chef-zero &lt; 15 [#9573](https://github.com/chef/chef/pull/9573) ([btm](https://github.com/btm)) <!-- 14.14.42 -->
-- Fix file descriptor leak in our tests [#9559](https://github.com/chef/chef/pull/9559) ([tas50](https://github.com/tas50)) <!-- 14.14.41 -->
-- Update all deps and bring in testing enhancements [#9560](https://github.com/chef/chef/pull/9560) ([tas50](https://github.com/tas50)) <!-- 14.14.40 -->
-- [Backport]ifconfig: fix regex matching interface name with hyphen [#9405](https://github.com/chef/chef/pull/9405) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 14.14.39 -->
-- Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.38 -->
-- Update all deps to the latest + openssl 1.0.2u [#9221](https://github.com/chef/chef/pull/9221) ([tas50](https://github.com/tas50)) <!-- 14.14.37 -->
-- Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50)) <!-- 14.14.36 -->
-- Update Chef 14 deps to the latest + trim the install size [#9143](https://github.com/chef/chef/pull/9143) ([tas50](https://github.com/tas50)) <!-- 14.14.35 -->
-- Fix Chef-14 Test Failures [#9142](https://github.com/chef/chef/pull/9142) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 14.14.34 -->
-- kernel_module: Add new options property (backport from chef-15 to chef-14) [#9120](https://github.com/chef/chef/pull/9120) ([ramereth](https://github.com/ramereth)) <!-- 14.14.33 -->
-- Boilerplate and testing backports from master [#9128](https://github.com/chef/chef/pull/9128) ([tas50](https://github.com/tas50)) <!-- 14.14.32 -->
-- Pull in testing updates from master branch [#9127](https://github.com/chef/chef/pull/9127) ([tas50](https://github.com/tas50)) <!-- 14.14.31 -->
-- [chef-14] backport#9028 Fix Exception: NoMethodError: undefined… [#9072](https://github.com/chef/chef/pull/9072) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 14.14.30 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v14.15.6](https://github.com/chef/chef/tree/v14.15.6) (2020-04-07)
+
+#### Merged Pull Requests
+- [chef-14] backport#9028 Fix Exception: NoMethodError: undefined… [#9072](https://github.com/chef/chef/pull/9072) ([vsingh-msys](https://github.com/vsingh-msys))
+- Pull in testing updates from master branch [#9127](https://github.com/chef/chef/pull/9127) ([tas50](https://github.com/tas50))
+- Boilerplate and testing backports from master [#9128](https://github.com/chef/chef/pull/9128) ([tas50](https://github.com/tas50))
+- kernel_module: Add new options property (backport from chef-15 to chef-14) [#9120](https://github.com/chef/chef/pull/9120) ([ramereth](https://github.com/ramereth))
+- Fix Chef-14 Test Failures [#9142](https://github.com/chef/chef/pull/9142) ([christopher-snapp](https://github.com/christopher-snapp))
+- Update Chef 14 deps to the latest + trim the install size [#9143](https://github.com/chef/chef/pull/9143) ([tas50](https://github.com/tas50))
+- Update all deps to the latest [#9193](https://github.com/chef/chef/pull/9193) ([tas50](https://github.com/tas50))
+- Update all deps to the latest + openssl 1.0.2u [#9221](https://github.com/chef/chef/pull/9221) ([tas50](https://github.com/tas50))
+- Add Debian 10 (Buster) Tester [#9340](https://github.com/chef/chef/pull/9340) ([christopher-snapp](https://github.com/christopher-snapp))
+- [Backport]ifconfig: fix regex matching interface name with hyphen [#9405](https://github.com/chef/chef/pull/9405) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update all deps and bring in testing enhancements [#9560](https://github.com/chef/chef/pull/9560) ([tas50](https://github.com/tas50))
+- Fix file descriptor leak in our tests [#9559](https://github.com/chef/chef/pull/9559) ([tas50](https://github.com/tas50))
+- Pin chef-zero &lt; 15 [#9573](https://github.com/chef/chef/pull/9573) ([btm](https://github.com/btm))
+- Remove S390x EL6 tester [#9582](https://github.com/chef/chef/pull/9582) ([tas50](https://github.com/tas50))
+- 14: Conservative bump of omnibus/Gemfile [#9589](https://github.com/chef/chef/pull/9589) ([btm](https://github.com/btm))
+- Pin omnibus-software before the change that breaks Ruby &lt; 2.6 [#9594](https://github.com/chef/chef/pull/9594) ([btm](https://github.com/btm))
+- Fix macos signing key [#9595](https://github.com/chef/chef/pull/9595) ([btm](https://github.com/btm))
+- Skip the ifconfig functional tests if we don&#39;t have ifconfig [#9597](https://github.com/chef/chef/pull/9597) ([btm](https://github.com/btm))
+- Match platforms to chef-15 [#9598](https://github.com/chef/chef/pull/9598) ([btm](https://github.com/btm))
+- debian 10 ifconfig fix [#9599](https://github.com/chef/chef/pull/9599) ([btm](https://github.com/btm))
+- Backport windows_task PR #8420 and #9223 [#9601](https://github.com/chef/chef/pull/9601) ([Vasu1105](https://github.com/Vasu1105))
+- 14: Really skip the reboot pending func test if a reboot is pending [#9612](https://github.com/chef/chef/pull/9612) ([btm](https://github.com/btm))
+- Update to Ruby 2.5.8 + nokogiri 1.10.9 [#9617](https://github.com/chef/chef/pull/9617) ([tas50](https://github.com/tas50))
+- Update Ohai to 14.15 [#9619](https://github.com/chef/chef/pull/9619) ([tas50](https://github.com/tas50))
+- Fix functional tests on Windows 10 by matching less [#9620](https://github.com/chef/chef/pull/9620) ([btm](https://github.com/btm))
+- Update to the latest commits in omnibus-software legacy_ruby branch [#9621](https://github.com/chef/chef/pull/9621) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v14.14.29](https://github.com/chef/chef/tree/v14.14.29) (2019-11-06)
 
 #### Merged Pull Requests
@@ -46,7 +44,6 @@
 - [chef-14] backport #9049 [#9051](https://github.com/chef/chef/pull/9051) ([vsingh-msys](https://github.com/vsingh-msys))
 - service/systemd_unit: Don&#39;t try to reenable services in an indirect status [#9063](https://github.com/chef/chef/pull/9063) ([jaymzh](https://github.com/jaymzh))
 - Update nokogiri, libxml2, and libxslt to latest [#9062](https://github.com/chef/chef/pull/9062) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v14.14.25](https://github.com/chef/chef/tree/v14.14.25) (2019-10-15)
 
