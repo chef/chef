@@ -168,7 +168,7 @@ GEM
     mixlib-archive (1.0.5-universal-mingw32)
       mixlib-log
     mixlib-authentication (2.1.1)
-    mixlib-cli (2.1.5)
+    mixlib-cli (2.1.6)
     mixlib-config (3.0.6)
       tomlrb
     mixlib-log (3.0.8)
@@ -190,7 +190,7 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     net-telnet (0.1.1)
-    ohai (14.14.0)
+    ohai (14.15.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -224,7 +224,7 @@ GEM
     pry-stack_explorer (0.4.9.3)
       binding_of_caller (>= 0.7)
       pry (>= 0.9.11)
-    public_suffix (4.0.3)
+    public_suffix (4.0.4)
     rack (2.2.2)
     rainbow (3.0.0)
     rake (12.3.0)

@@ -240,7 +240,7 @@ GEM
     octokit (4.18.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (14.14.0)
+    ohai (14.15.0)
       chef-config (>= 12.8, < 15)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
