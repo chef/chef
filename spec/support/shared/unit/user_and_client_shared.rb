@@ -63,7 +63,7 @@ shared_examples_for "user or client create" do
         }
       end
 
-      it "puts the public key into the objectr returned by create" do
+      it "puts the public key into the object returned by create" do
         expect(rest_v1).to receive(:post).with(url, payload).and_return(payload.merge(chef_key))
         new_object = object.create
         expect(new_object.public_key).to eq("some_public_key")

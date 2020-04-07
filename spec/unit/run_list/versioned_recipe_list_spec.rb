@@ -69,7 +69,7 @@ describe Chef::RunList::VersionedRecipeList do
       expect(list.with_versions).to include({ name: "rails", version: "1.0.0" })
     end
 
-    it "should allow you to spcify no version, even when a version already exists" do
+    it "should allow you to specify no version, even when a version already exists" do
       list.add_recipe "rails", "1.0.0"
       list.add_recipe "rails"
       expect(list.with_versions).to include({ name: "rails", version: "1.0.0" })

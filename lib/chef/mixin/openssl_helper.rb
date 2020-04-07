@@ -337,13 +337,13 @@ class Chef
       end
 
       # add a serial given in the crl given
-      # @param [Hash] revoke_info serial to revoke & revokation reason
+      # @param [Hash] revoke_info serial to revoke & revocation reason
       # @param [OpenSSL::X509::CRL] crl X509 CRL
       # @param [OpenSSL::PKey::EC, OpenSSL::PKey::RSA] ca_private_key private key from the CA
       # @param [Hash] info issuer & validity
       # @return [OpenSSL::X509::CRL]
       def revoke_x509_crl(revoke_info, crl, ca_private_key, info)
-        raise TypeError, "revoke_info must be a Ruby Hash oject" unless revoke_info.is_a?(Hash)
+        raise TypeError, "revoke_info must be a Ruby Hash object" unless revoke_info.is_a?(Hash)
         raise TypeError, "crl must be a Ruby OpenSSL::X509::CRL object" unless crl.is_a?(::OpenSSL::X509::CRL)
         raise TypeError, "ca_private_key must be a Ruby OpenSSL::PKey::EC object or a Ruby OpenSSL::PKey::RSA object" unless ca_private_key.is_a?(::OpenSSL::PKey::EC) || ca_private_key.is_a?(::OpenSSL::PKey::RSA)
         raise TypeError, "info must be a Ruby Hash" unless info.is_a?(Hash)

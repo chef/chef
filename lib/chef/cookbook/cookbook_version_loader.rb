@@ -21,7 +21,7 @@ require "find"
 
 class Chef
   class Cookbook
-    # This class is only used drectly from the Chef::CookbookLoader and from chef-fs,
+    # This class is only used directly from the Chef::CookbookLoader and from chef-fs,
     # so it only affects legacy-mode chef-client runs and knife.  It is not used by
     # server or zolo/zero modes.
     #
@@ -257,7 +257,7 @@ class Chef
       def apply_json_cookbook_version_metadata(file)
         data = Chef::JSONCompat.parse(IO.read(file))
         @metadata.from_hash(data["metadata"])
-        # the JSON cookbok metadata file is only used by chef-zero.
+        # the JSON cookbook metadata file is only used by chef-zero.
         # The Chef Server API currently does not enforce that the metadata
         # have a `name` field, but that will cause an error when attempting
         # to load the cookbook. To keep compatibility, we fake it by setting

@@ -101,7 +101,7 @@ class Chef
         File.join(path, *suffix.reverse)
       end
 
-      # Compares two path fragments according to the case-sentitivity of the host platform.
+      # Compares two path fragments according to the case-sensitivity of the host platform.
       def self.os_path_eq?(left, right)
         ChefUtils.windows? ? left.casecmp(right) == 0 : left == right
       end

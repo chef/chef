@@ -115,7 +115,7 @@ describe Chef::Cookbook::FileVendor do
       file_vendor_class.fetch_from_disk(cookbook_path)
     end
 
-    it "retrieves the file from the correct location based on path to the cookbook that conatins the correct name metadata" do
+    it "retrieves the file from the correct location based on path to the cookbook that contains the correct name metadata" do
       file_vendor = file_vendor_class.create_from_manifest(manifest)
       file_vendor.get_filename("metadata.rb")
     end

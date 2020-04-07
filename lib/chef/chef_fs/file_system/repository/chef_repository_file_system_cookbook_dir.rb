@@ -31,7 +31,7 @@ class Chef
         # Represents ROOT/cookbooks/:cookbook
         class ChefRepositoryFileSystemCookbookDir < ChefRepositoryFileSystemCookbookEntry
 
-          # API Required by Respository::Directory
+          # API Required by Repository::Directory
           def chefignore
             @chefignore ||= Chef::Cookbook::Chefignore.new(file_path)
           rescue Errno::EISDIR, Errno::EACCES

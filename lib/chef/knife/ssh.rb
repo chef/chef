@@ -561,7 +561,7 @@ class Chef
       # the user, but we have to be conscious that this code gets included in knife bootstrap and knife * server create as
       # well.  We want to change the semantics so that the default is false and 'nil' means -P without an argument on the
       # command line.  But the other utilities expect nil to be the default and we can't prompt in that case. So we effectively
-      # use ssh_password_ng to determine if we're coming from knife ssh or from the other utilities.  The other utilties can
+      # use ssh_password_ng to determine if we're coming from knife ssh or from the other utilities.  The other utilities can
       # also be patched to use ssh_password_ng easily as long they follow the convention that the default is false.
       def configure_password
         if config.key?(:ssh_password_ng) && config[:ssh_password_ng].nil?

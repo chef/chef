@@ -113,7 +113,7 @@ shared_examples_for "a content deploy strategy" do
       path
     end
 
-    def unix_invariant_properies(stat_struct)
+    def unix_invariant_properties(stat_struct)
       unix_invariants.inject({}) do |property_map, property|
         property_map[property] = stat_struct.send(property)
         property_map
@@ -137,7 +137,7 @@ shared_examples_for "a content deploy strategy" do
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = File.stat(target_file_path)
 
-      expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
+      expect(unix_invariant_properties(original_info)).to eq(unix_invariant_properties(updated_info))
     end
 
     it "maintains invariant properties on Windows", :windows_only do
@@ -164,7 +164,7 @@ shared_examples_for "a content deploy strategy" do
         content_deployer.deploy(staging_file_path, target_file_path)
         updated_info = File.stat(target_file_path)
 
-        expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
+        expect(unix_invariant_properties(original_info)).to eq(unix_invariant_properties(updated_info))
       end
 
     end

@@ -92,7 +92,7 @@ class Chef
         end
 
         requirements.assert(:delete_key) do |a|
-          # If key to be deleted has subkeys but recurssive == false
+          # If key to be deleted has subkeys but recursive == false
           a.assertion { !registry.key_exists?(new_resource.key) || !registry.has_subkeys?(new_resource.key) || new_resource.recursive }
           a.failure_message(Chef::Exceptions::Win32RegNoRecursive, "#{new_resource.key} has subkeys but recursive is set to false.")
           a.whyrun("#{current_resource.key} has subkeys, but recursive is set to false. attempt to delete would fails unless subkeys were deleted prior to this action.")

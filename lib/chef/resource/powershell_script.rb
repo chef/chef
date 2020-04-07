@@ -33,7 +33,7 @@ class Chef
             # and should use defaults in this case
             input
           else
-            # The last occurance of a flag would override its
+            # The last occurrence of a flag would override its
             # previous one at the time of command execution.
             [default_flags, input].join(" ")
           end

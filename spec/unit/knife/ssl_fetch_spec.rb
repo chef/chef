@@ -56,7 +56,7 @@ describe Chef::Knife::SslFetch do
   context "when a specific URI is given" do
     let(:name_args) { %w{https://example.test:10443/foo} }
 
-    it "fetchs the SSL configuration against the given host" do
+    it "fetches the SSL configuration against the given host" do
       expect(ssl_fetch.host).to eq("example.test")
       expect(ssl_fetch.port).to eq(10443)
     end

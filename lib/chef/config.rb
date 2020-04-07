@@ -49,7 +49,7 @@ class Chef
 
   # We re-open ChefConfig::Config to add additional settings. Generally,
   # everything should go in chef-config so it's shared with whoever uses that.
-  # We make execeptions to that rule when:
+  # We make exceptions to that rule when:
   # * The functionality isn't likely to be useful outside of Chef
   # * The functionality makes use of a dependency we don't want to add to chef-config
   class Config

@@ -819,7 +819,7 @@ describe "Chef::Resource.property" do
         expect(resource.x).to eq 2
         expect(Namer.current_index).to eq 2
       end
-      it "setting the same lazy value on two different instances runs it on each instancee" do
+      it "setting the same lazy value on two different instances runs it on each instances" do
         resource2 = resource_class.new("blah2")
         l = lazy { Namer.next_index }
         resource.x l
@@ -1319,7 +1319,7 @@ describe "Chef::Resource.property" do
       expect { thing_two_resource.copy_properties_from(thing_three_resource) }.to raise_error(NoMethodError)
     end
 
-    it "does not blow up if blows up if the target resource does not implement a set propery" do
+    it "does not blow up if blows up if the target resource does not implement a set properly" do
       thing_three_resource.foo "foo"
       thing_three_resource.bar "bar"
       thing_two_resource.copy_properties_from(thing_three_resource)

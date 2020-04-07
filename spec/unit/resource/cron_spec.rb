@@ -139,7 +139,7 @@ describe Chef::Resource::Cron do
     end
   end
 
-  describe "when it has a time (minute, hour, day, month, weeekend) and user" do
+  describe "when it has a time (minute, hour, day, month, weekend) and user" do
     before do
       resource.command("tackle")
       resource.minute("1")

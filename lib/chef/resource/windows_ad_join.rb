@@ -167,8 +167,8 @@ class Chef
 
         #
         # @return [String] the correct user and domain to use.
-        #   if the domain_user property contains an @ symbol followed by any number of non white space characheters
-        #   then we assume it is a user from another domain than the one specifed in the resource domain_name property.
+        #   if the domain_user property contains an @ symbol followed by any number of non white space characters
+        #   then we assume it is a user from another domain than the one specified in the resource domain_name property.
         #   if this is the case we do not append the domain_name property to the domain_user property
         #   the domain_user and domain_name form the UPN (userPrincipalName)
         #   The specification for the UPN format is RFC 822

@@ -58,13 +58,13 @@ describe Chef::Resource::WindowsWorkgroup do
 
   describe "#join_command" do
     context "if password property is not specified" do
-      it "contructs a command without credentials" do
+      it "constructs a command without credentials" do
         expect(provider.join_command).to eql("Add-Computer -WorkgroupName example -Force")
       end
     end
 
     context "if password property is specified" do
-      it "contructs a command without credentials" do
+      it "constructs a command without credentials" do
         resource.password("1234")
         resource.user("admin")
         expect(provider.join_command).to eql("$pswd = ConvertTo-SecureString '1234' -AsPlainText -Force;$credential = New-Object System.Management.Automation.PSCredential (\"admin\",$pswd);Add-Computer -WorkgroupName example -Credential $credential -Force")

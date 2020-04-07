@@ -78,7 +78,7 @@ describe Chef::Resource::RemoteFile do
       expect(resource.source).to eql(["file:///C:/foo bar"])
     end
 
-    it "accepts a delayed evalutator (string) for the remote file source" do
+    it "accepts a delayed evaluator (string) for the remote file source" do
       resource.source Chef::DelayedEvaluator.new { "http://opscode.com/" }
       expect(resource.source).to eql([ "http://opscode.com/" ])
     end
@@ -165,7 +165,7 @@ describe Chef::Resource::RemoteFile do
       expect(resource.use_last_modified).to be_truthy
     end
 
-    it "disables etags indivdually" do
+    it "disables etags individually" do
       resource.use_etags(false)
       expect(resource.use_etags).to be_falsey
       expect(resource.use_last_modified).to be_truthy

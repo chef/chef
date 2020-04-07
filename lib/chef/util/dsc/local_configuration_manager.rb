@@ -90,7 +90,7 @@ class Chef::Util::DSC
 
     def log_dsc_exception(dsc_exception_output)
       if whatif_not_supported?(dsc_exception_output)
-        # LCM returns an error if any of the resources do not support the opptional What-If
+        # LCM returns an error if any of the resources do not support the optional What-If
         Chef::Log.warn("Received error while testing configuration due to resource not supporting 'WhatIf'")
       elsif dsc_module_import_failure?(dsc_exception_output)
         Chef::Log.warn("Received error while testing configuration due to a module for an imported resource possibly not being fully installed:\n#{dsc_exception_output.gsub(/\s+/, " ")}")

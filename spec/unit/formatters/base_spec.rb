@@ -41,7 +41,7 @@ describe Chef::Formatters::Base do
     expect(formatter.output.indent).to eql(2)
   end
 
-  it "increments it and then decrements it corectly" do
+  it "increments it and then decrements it correctly" do
     formatter.indent_by(2)
     formatter.indent_by(-2)
     expect(formatter.output.indent).to eql(0)

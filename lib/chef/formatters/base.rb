@@ -215,7 +215,7 @@ class Chef
       #
       # @param deprecation [Chef::Deprecated::Base] Deprecation object to log.
       #   In previous versions, this could be a string. Don't do that anymore.
-      # @param location [Object] Unused, present only for compatbility.
+      # @param location [Object] Unused, present only for compatibility.
       def deprecation(deprecation, _location = nil)
         Chef::Log.deprecation(deprecation.to_s) unless deprecation.silenced?
       end

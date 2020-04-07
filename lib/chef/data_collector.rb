@@ -52,7 +52,7 @@ class Chef
       # @return [Chef::Node] the chef node
       attr_reader :node
 
-      # @return [Set<Hash>] the acculumated list of deprecation warnings
+      # @return [Set<Hash>] the accumulated list of deprecation warnings
       attr_reader :deprecations
 
       # @return [Chef::ActionCollection] the action collection object

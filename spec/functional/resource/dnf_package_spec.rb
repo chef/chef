@@ -321,7 +321,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
       end
 
-      it "with nothing intalled, it installs the latest version" do
+      it "with nothing installed, it installs the latest version" do
         flush_cache
         dnf_package.package_name("chef_rpm > 1.2")
         dnf_package.run_action(:install)
@@ -612,7 +612,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         # this is a bit tricky -- we need this action to be idempotent, so that it doesn't recycle any
         # caches, but need it to hit whatavailable with the repo disabled.  using :upgrade like this
         # accomplishes both those goals (it would be easier if we had other rpms in this repo, but with
-        # one rpm we neeed to do this).
+        # one rpm we need to do this).
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
         dnf_package.options("--disablerepo=chef-dnf-localtesting")
         dnf_package.run_action(:upgrade)

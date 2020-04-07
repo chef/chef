@@ -132,7 +132,7 @@ describe Chef::Provider::Package::Cab do
       new_resource.cookbook_name = "cab_package"
     end
 
-    it "sets the desired parameters of downloades cab file" do
+    it "sets the desired parameters of downloaded cab file" do
       allow(provider).to receive(:default_download_cache_path).and_return("C:\\chef\\cache\\package")
       source_resource = provider.source_resource
       expect(source_resource.path).to be == "C:\\chef\\cache\\package"

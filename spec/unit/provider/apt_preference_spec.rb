@@ -82,7 +82,7 @@ describe "Chef::Provider::AptPreference" do
       FileUtils.touch("#{pref_dir}/libmysqlclient16_1wildcard.pref")
     end
 
-    it "deletes the name santized .pref file" do
+    it "deletes the name sanitized .pref file" do
       provider.run_action(:remove)
       expect(new_resource).to be_updated_by_last_action
       expect(File).not_to exist("#{pref_dir}/libmysqlclient16_1wildcard.pref")

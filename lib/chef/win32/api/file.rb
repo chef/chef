@@ -513,7 +513,7 @@ BOOL WINAPI VerQueryValue(
 
         # takes the given path pre-pends "\\?\" and
         # UTF-16LE encodes it.  Used to prepare paths
-        # to be passed to the *W vesion of WinAPI File
+        # to be passed to the *W version of WinAPI File
         # functions.
         # This function is used by the "Link" resources where we need
         # preserve relative paths because symbolic links can actually
