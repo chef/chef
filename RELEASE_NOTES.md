@@ -1,5 +1,69 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 15.9
+
+## Chef InSpec 4.18.100
+
+Chef InSpec has been updated from 4.18.85 to 4.18.100:
+
+- Resolved several failures in executing resources
+- Fixed auditd resource processing of action and list
+- Fixed platform detection when running in Habitat
+- "inspec schema" has been revised to be in the JSON Schema draft 7 format
+- Improved the functionality of the `oracledb_session` resource
+
+## Ohai 15.8
+
+Ohai has been updated to 15.8.0 which includes a fix for failures that occurred in the OpenStack plugin (thanks [@sawanoboly](https://github.com/sawanoboly/)) and improved parsing of data in the `optional_plugins` config option (thanks [@salzig](https://github.com/salzig/)).
+
+## Resource Improvements
+
+### build_essential
+
+The `build_essential` resource has been updated to better detect if the Xcode CLI Tools package needs to be installed on macOS. macOS 10.15 (Catalina) is now supported with this update. Thank you [@w0de](https://github.com/w0de/) for kicking this work off, [@jazaval](https://github.com/jazaval/) for advice on macOS package parsing, and Microsoft for their work in the macOS cookbook.
+
+### rhsm_errata / rhsm_errata_level
+
+The `rhsm_errata` and `rhsm_errata_level` resources have been updated to properly function on RHEL 8 systems.
+
+### rhsm_register
+
+The `rhsm_register` resource has a new property `https_for_ca_consumer` that enables using https connections during registration. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/). This resource has also been updated to properly function on RHEL 8.
+
+### windows_share
+
+Resolved failures in the `windows_share` resource when setting the `path` property. Thanks for reporting this issue [@Kundan22](https://github.com/Kundan22/).
+
+## Platform Support
+
+### Ubuntu 20.04
+
+Chef Infra Client is now tested on Ubuntu 20.04 (AMD64) with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
+### Ubuntu 18.04 aarch64
+
+Chef Infra Client is now tested on Ubuntu 18.04 aarch64 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
+### Windows 10
+
+Our Windows 10 Chef Infra Client packages now receive an additional layer of testing to ensure they function as expected.
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.6.5 to 2.6.6 to resolve the following CVEs:
+
+  - [CVE-2020-16255](https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/): Unsafe Object Creation Vulnerability in JSON (Additional fix)
+  - [CVE-2020-10933](https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/): Heap exposure vulnerability in the socket library
+
+### libarchive
+
+libarchive has been updated from 3.4.0 to 3.4.2 to resolve multiple security vulnerabilities including the following CVEs:
+
+  - [CVE-2019-19221](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19221): archive_wstring_append_from_mbs in archive_string.c has an out-of-bounds read because of an incorrect mbrtowc or mbtowc call
+  - [CVE-2020-9308](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9308): archive_read_support_format_rar5.c in libarchive before 3.4.2 attempts to unpack a RAR5 file with an invalid or corrupted header
+
 # Chef Infra Client 15.8
 
 ## New notify_group functionality
