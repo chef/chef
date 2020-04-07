@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 14.15.3 -->
-## [v14.15.3](https://github.com/chef/chef/tree/v14.15.3) (2020-04-07)
+<!-- latest_release 14.15.4 -->
+## [v14.15.4](https://github.com/chef/chef/tree/v14.15.4) (2020-04-07)
 
 #### Merged Pull Requests
-- Update to Ruby 2.5.8 + nokogiri 1.10.9 [#9617](https://github.com/chef/chef/pull/9617) ([tas50](https://github.com/tas50))
+- Update Ohai to 14.15 [#9619](https://github.com/chef/chef/pull/9619) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=14.14.29 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 14.15 [#9619](https://github.com/chef/chef/pull/9619) ([tas50](https://github.com/tas50)) <!-- 14.15.4 -->
 - Update to Ruby 2.5.8 + nokogiri 1.10.9 [#9617](https://github.com/chef/chef/pull/9617) ([tas50](https://github.com/tas50)) <!-- 14.15.3 -->
 - 14: Really skip the reboot pending func test if a reboot is pending [#9612](https://github.com/chef/chef/pull/9612) ([btm](https://github.com/btm)) <!-- 14.15.2 -->
 - Backport windows_task PR #8420 and #9223 [#9601](https://github.com/chef/chef/pull/9601) ([Vasu1105](https://github.com/Vasu1105)) <!-- 14.15.0 -->
