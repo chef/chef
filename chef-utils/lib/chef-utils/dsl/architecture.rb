@@ -103,6 +103,17 @@ module ChefUtils
         %w{powerpc}.include?(node["kernel"]["machine"])
       end
 
+      # Determine if the current architecture is arm
+      #
+      # @since 15.10
+      #
+      # @return [Boolean]
+      #
+      def arm?(node = __getnode)
+        %w{armhf aarch64 arm64 arch64}
+        .include?(node["kernel"]["machine"])
+      end
+
       # Determine if the current architecture is 32-bit ARM.
       #
       # @since 15.5
