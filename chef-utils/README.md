@@ -108,17 +108,21 @@ The OS helpers provide an alternative to comparing data from `node['os']`.
 
 Architecture Helpers allow you to determine the processor architecture of your node.
 
-* `_64_bit?`
 * `_32_bit?`
+* `_64_bit?`
+* `aarch64?`
+* `arch64?`
+* `arm64?`
+* `arm?`
+* `armhf?`
 * `i386?`
 * `intel?`
-* `sparc?`
+* `powerpc?`
 * `ppc64?`
 * `ppc64le?`
-* `powerpc?`
-* `armhf?`
-* `s390x?`
 * `s390?`
+* `s390x?`
+* `sparc?`
 
 ### Cloud Helpers
 
