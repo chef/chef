@@ -220,7 +220,7 @@ class Chef
           # Use Find.find because it:
           # (a) returns any children, recursively
           # (b) includes top_path as well
-          # (c) skips symlinks, which is backcompat (no judgment on whether it was *right*)
+          # (c) skips symlinks, which is backcompat (no judgement on whether it was *right*)
           Find.find(top_path) do |path|
             # Only add files, not directories
             next unless File.file?(path)
