@@ -48,43 +48,52 @@ class Chef
       DOC
 
       property :job_name, String,
-        default: Chef::Dist::CLIENT,
-        description: "The name of the system timer to create."
-      property :description, String, default: "Chef Infra Client periodic execution"
+        description: "The name of the system timer to create.",
+        default: Chef::Dist::CLIENT
+
+      property :description, String,
+        description: "The description to add to the systemd timer. This will be displayed when running `systemctl status` for the timer.",
+        default: "Chef Infra Client periodic execution"
 
       property :user, String,
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
         default: "root"
 
-      property :delay_after_boot, String, default: "1min"
-      property :interval, String, default: "30min"
-      property :splay, [Integer, String],
-        default: 300,
-        coerce: proc { |x| Integer(x) },
-        callbacks: { "should be a positive number" => proc { |v| v > 0 } },
-        description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
+      property :delay_after_boot, String,
+        description: "The time to wait after booting before the interval starts. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        default: "1min"
+
+      property :interval, String,
+        description: "The interval to wait between execution. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        default: "30min"
+
+      property :splay, String,
+        description: "A interval between 0 and X to add to the interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        default: "5min"
 
       property :accept_chef_license, [true, false],
         description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
         default: false
 
-      property :run_on_battery, [true, false], default: true
+      property :run_on_battery, [true, false],
+        description: "Run the timer for #{Chef::Dist::PRODUCT} if the system is on battery.",
+        default: true
 
       property :config_directory, String,
-        default: Chef::Dist::CONF_DIR,
-        description: "The path of the config directory."
+        description: "The path of the config directory.",
+        default: Chef::Dist::CONF_DIR
 
       property :chef_binary_path, String,
-        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}",
-        description: "The path to the #{Chef::Dist::CLIENT} binary."
+        description: "The path to the #{Chef::Dist::CLIENT} binary.",
+        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}"
 
       property :daemon_options, Array,
-        default: lazy { [] },
-        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
+        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
+        default: lazy { [] }
 
       property :environment, Hash,
-        default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``."
+        description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
+        default: lazy { {} }
 
       action :add do
         systemd_unit "#{new_resource.job_name}.service" do
