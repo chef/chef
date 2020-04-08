@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.191 -->
-## [v16.0.191](https://github.com/chef/chef/tree/v16.0.191) (2020-04-07)
+<!-- latest_release 16.0.192 -->
+## [v16.0.192](https://github.com/chef/chef/tree/v16.0.192) (2020-04-08)
 
 #### Merged Pull Requests
-- Cache gems in the verify pipeline to speed up tests [#9607](https://github.com/chef/chef/pull/9607) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 4.18.104 [#9625](https://github.com/chef/chef/pull/9625) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core to 4.18.104 [#9625](https://github.com/chef/chef/pull/9625) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.192 -->
 - Cache gems in the verify pipeline to speed up tests [#9607](https://github.com/chef/chef/pull/9607) ([tas50](https://github.com/tas50)) <!-- 16.0.191 -->
 - Spell checking in comments and log messages [#9609](https://github.com/chef/chef/pull/9609) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.190 -->
 - Bump mixlib-cli to 2.1.6 [#9615](https://github.com/chef/chef/pull/9615) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.189 -->
