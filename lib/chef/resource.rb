@@ -1461,6 +1461,20 @@ class Chef
       @default_description
     end
 
+    # Use a partial code fragment.  This can be used for code sharing between multiple resources.
+    #
+    # Do not wrap the code fragment in a class or module.  It also does not support the use of super
+    # to subclass any methods defined in the fragment, the methods will just be overwritten.
+    #
+    # @param partial [String] the code fragment to eval against the class
+    #
+    def self.use(partial)
+      dirname = ::File.dirname(partial)
+      basename = ::File.basename(partial, ".rb")
+      basename = basename[1..-1] if basename[0] == "_"
+      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
+    end
+
     # The cookbook in which this Resource was defined (if any).
     #
     # @return Chef::CookbookVersion The cookbook in which this Resource was defined.

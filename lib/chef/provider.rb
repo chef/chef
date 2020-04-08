@@ -81,6 +81,20 @@ class Chef
       # Chef.deprecated(:use_inline_resources, "The use_inline_resources mode is no longer optional and the line enabling it can be removed")
     end
 
+    # Use a partial code fragment.  This can be used for code sharing between multiple resources.
+    #
+    # Do not wrap the code fragment in a class or module.  It also does not support the use of super
+    # to subclass any methods defined in the fragment, the methods will just be overwritten.
+    #
+    # @param partial [String] the code fragment to eval against the class
+    #
+    def self.use(partial)
+      dirname = ::File.dirname(partial)
+      basename = ::File.basename(partial, ".rb")
+      basename = basename[1..-1] if basename[0] == "_"
+      class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
+    end
+
     # delegate to the resource
     #
     def_delegators :@new_resource, :property_is_set?
