@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2010-2019, Chef Software Inc.
+# Copyright:: Copyright 2010-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -149,8 +149,7 @@ class Chef
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_version,
         long: "--bootstrap-version VERSION",
-        description: "The version of #{Chef::Dist::PRODUCT} to install.",
-        proc: lambda { |v| Chef::Config[:knife][:bootstrap_version] = v }
+        description: "The version of #{Chef::Dist::PRODUCT} to install."
 
       option :channel,
         long: "--channel CHANNEL",
