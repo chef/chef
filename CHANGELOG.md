@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.194 -->
-## [v16.0.194](https://github.com/chef/chef/tree/v16.0.194) (2020-04-08)
+<!-- latest_release 16.0.195 -->
+## [v16.0.195](https://github.com/chef/chef/tree/v16.0.195) (2020-04-08)
 
 #### Merged Pull Requests
-- Bump train-core to 3.2.27 [#9628](https://github.com/chef/chef/pull/9628) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add arm? helper to chef-utils [#9622](https://github.com/chef/chef/pull/9622) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add arm? helper to chef-utils [#9622](https://github.com/chef/chef/pull/9622) ([tas50](https://github.com/tas50)) <!-- 16.0.195 -->
 - Bump train-core to 3.2.27 [#9628](https://github.com/chef/chef/pull/9628) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.194 -->
 - Fixed systemd_unit not respecting sensitive property [#9623](https://github.com/chef/chef/pull/9623) ([sanga1794](https://github.com/sanga1794)) <!-- 16.0.193 -->
 - Bump inspec-core to 4.18.104 [#9625](https://github.com/chef/chef/pull/9625) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.192 -->
