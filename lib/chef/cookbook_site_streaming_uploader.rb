@@ -185,7 +185,7 @@ class Chef
         @str.length
       end
 
-      # read the specified amount from the string startiung at the offset
+      # read the specified amount from the string starting at the offset
       def read(offset, how_much)
         @str[offset, how_much]
       end

@@ -50,7 +50,7 @@ class Chef
         # Handles cases like powershell_script where default
         # attributes are different when used in a guard vs. not. For
         # powershell_script in particular, this will go away when
-        # the one attribue that causes this changes its default to be
+        # the one attribute that causes this changes its default to be
         # the same after some period to prepare for deprecation
         if @resource.class.respond_to?(:get_default_attributes)
           block_attributes = @resource.class.send(:get_default_attributes, @command_opts).merge(block_attributes)

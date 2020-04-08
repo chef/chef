@@ -366,7 +366,7 @@ describe Chef::Resource do
     end
 
     context "when property is sensitive" do
-      it "supresses that properties value" do
+      it "suppresses that properties value" do
         resource_class = Class.new(Chef::Resource) { property :foo, String, sensitive: true }
         resource = resource_class.new("sensitive_property_tests")
         resource.foo = "some value"
@@ -375,7 +375,7 @@ describe Chef::Resource do
     end
 
     context "when property is required" do
-      it "does not propagate vailidation errors" do
+      it "does not propagate validation errors" do
         resource_class = Class.new(Chef::Resource) { property :foo, String, required: true }
         resource = resource_class.new("required_property_tests")
         expect { resource.to_text }.to_not raise_error Chef::Exceptions::ValidationFailed
@@ -1020,7 +1020,7 @@ describe Chef::Resource do
 
       describe "with a syntax error in the resource spec" do
 
-        it "raises an exception immmediately" do
+        it "raises an exception immediately" do
           expect do
             resource.notifies(:run, "typo[missing-closing-bracket")
           end.to raise_error(Chef::Exceptions::InvalidResourceSpecification)
@@ -1062,7 +1062,7 @@ describe Chef::Resource do
       error_inspector = Chef::Formatters::ErrorInspectors::ResourceFailureInspector.new(resource, action, err)
       description = Chef::Formatters::ErrorDescription.new("test")
       error_inspector.add_explanation(description)
-      Chef::Log.info("descrtiption: #{description.inspect},error_inspector: #{error_inspector}")
+      Chef::Log.info("description: #{description.inspect},error_inspector: #{error_inspector}")
       description.sections[1]["Compiled Resource:"]
     end
 

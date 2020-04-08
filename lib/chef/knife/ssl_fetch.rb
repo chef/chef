@@ -98,9 +98,9 @@ class Chef
 
       # Convert the CN of a certificate into something that will work well as a
       # filename. To do so, all `*` characters are converted to the string
-      # "wildcard" and then all characters other than alphanumeric and hypen
+      # "wildcard" and then all characters other than alphanumeric and hyphen
       # characters are converted to underscores.
-      # NOTE: There is some confustion about what the CN will contain when
+      # NOTE: There is some confusion about what the CN will contain when
       # using internationalized domain names. RFC 6125 mandates that the ascii
       # representation be used, but it is not clear whether this is followed in
       # practice.

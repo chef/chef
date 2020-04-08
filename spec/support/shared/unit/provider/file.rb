@@ -197,7 +197,7 @@ shared_examples_for Chef::Provider::File do
         expect(provider.current_resource.name).to eql(resource.name)
       end
 
-      it "the loaded current_resource path should be the same as the resoure path" do
+      it "the loaded current_resource path should be the same as the resource path" do
         provider.load_current_resource
         expect(provider.current_resource.path).to eql(resource.path)
       end

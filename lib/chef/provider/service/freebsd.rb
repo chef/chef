@@ -67,7 +67,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { enabled_state_found }
-            # for consistentcy with original behavior, this will not fail in non-whyrun mode;
+            # for consistency with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end

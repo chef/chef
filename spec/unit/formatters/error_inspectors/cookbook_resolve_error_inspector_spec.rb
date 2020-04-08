@@ -81,7 +81,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
 
     before do
 
-      @response_body = "{\"error\":[{\"non_existent_cookbooks\":[],\"cookbooks_with_no_versions\":[],\"message\":\"unable to solve dependencies in alotted time.\"}]}"
+      @response_body = "{\"error\":[{\"non_existent_cookbooks\":[],\"cookbooks_with_no_versions\":[],\"message\":\"unable to solve dependencies in allotted time.\"}]}"
       @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
       @exception = Net::HTTPClientException.new("(exception) precondition failed", @response)
@@ -93,7 +93,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
     it "prints a pretty message" do
       @description.display(@outputter)
       @outputter_output.rewind
-      expect(@outputter_output.read).to include("unable to solve dependencies in alotted time.")
+      expect(@outputter_output.read).to include("unable to solve dependencies in allotted time.")
     end
 
   end

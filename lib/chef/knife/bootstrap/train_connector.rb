@@ -92,7 +92,7 @@ class Chef
 
         # Answers the question, "Am I connected to a unix host?"
         #
-        # @note this will alwys return true for a linux host
+        # @note this will always return true for a linux host
         # because train classifies linux as a unix
         #
         # @return [Boolean] true if the connected host is unix or linux

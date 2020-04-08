@@ -355,7 +355,7 @@ class Chef
                     @echo Successfully created scheduled task to install #{Chef::Dist::PRODUCT}.
                     @schtasks /run /tn chefclientbootstraptask
                     @if ERRORLEVEL 1 (
-                        @echo ERROR: Failed to execut #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
+                        @echo ERROR: Failed to execute #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
                     ) else (
                         @echo Successfully started #{Chef::Dist::PRODUCT} installation scheduled task.
                         @echo Waiting for installation to complete -- this may take a few minutes...

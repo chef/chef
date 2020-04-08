@@ -55,7 +55,7 @@ describe Chef::Provider::Package::Solaris do
       expect(@provider.current_resource.name).to eq("SUNWbash")
     end
 
-    it "should set the current reource package name to the new resource package name" do
+    it "should set the current resource package name to the new resource package name" do
       allow(@provider).to receive(:shell_out_compacted).and_return(@status)
       @provider.load_current_resource
       expect(@provider.current_resource.package_name).to eq("SUNWbash")

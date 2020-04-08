@@ -178,7 +178,7 @@ describe Chef::Node::Attribute do
       expect(@attributes).to be_a_kind_of(Chef::Node::Attribute)
     end
 
-    it "should take an Automatioc, Normal, Default and Override hash" do
+    it "should take an Automatic, Normal, Default and Override hash" do
       expect { Chef::Node::Attribute.new({}, {}, {}, {}) }.not_to raise_error
     end
 

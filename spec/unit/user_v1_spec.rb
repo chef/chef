@@ -26,7 +26,7 @@ describe Chef::UserV1 do
     @user = Chef::UserV1.new
   end
 
-  shared_examples_for "string fields with no contraints" do
+  shared_examples_for "string fields with no constraints" do
     it "should let you set the public key" do
       expect(@user.send(method, "some_string")).to eq("some_string")
     end
@@ -109,49 +109,49 @@ describe Chef::UserV1 do
 
   describe "string fields" do
     describe "public_key" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :public_key }
       end
     end
 
     describe "private_key" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :private_key }
       end
     end
 
     describe "display_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :display_name }
       end
     end
 
     describe "first_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :first_name }
       end
     end
 
     describe "middle_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :middle_name }
       end
     end
 
     describe "last_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :last_name }
       end
     end
 
     describe "email" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :email }
       end
     end
 
     describe "password" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :password }
       end
     end

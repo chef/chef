@@ -259,7 +259,7 @@ class Chef
     class ChildConvergeError < RuntimeError; end
 
     class DeprecatedFeatureError < RuntimeError
-      def initalize(message)
+      def initialize(message)
         super("#{message} (raising error due to treat_deprecation_warnings_as_errors being set)")
       end
     end
@@ -413,7 +413,7 @@ class Chef
     end
 
     # Raised when Chef::Config[:run_lock_timeout] is set and some other client run fails
-    # to release the run lock becure Chef::Config[:run_lock_timeout] seconds pass.
+    # to release the run lock before Chef::Config[:run_lock_timeout] seconds pass.
     class RunLockTimeout < RuntimeError
       def initialize(duration, blocking_pid)
         super "Unable to acquire lock. Waited #{duration} seconds for #{blocking_pid} to release."

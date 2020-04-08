@@ -50,7 +50,7 @@ describe Chef::Provider::Package::Rpm do
 
   describe "when the package source is not valid" do
 
-    context "when source is not defiend" do
+    context "when source is not defined" do
       let(:new_resource) { Chef::Resource::RpmPackage.new("ImageMagick-c++") }
 
       it "should raise an exception when attempting any action" do
@@ -428,7 +428,7 @@ describe Chef::Provider::Package::Rpm do
       provider.install_package("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm", "6.5.4.7-7.el6_5")
     end
 
-    it "should uprgrade from a path when the package is a path and the source is nil" do
+    it "should upgrade from a path when the package is a path and the source is nil" do
       expect(new_resource.source).to eq("/tmp/ImageMagick-c++-6.5.4.7-7.el6_5.x86_64.rpm")
       current_resource.version("21.4-19.el5")
       provider.current_resource = current_resource

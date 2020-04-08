@@ -230,7 +230,7 @@ class Chef
     # Chef::Deprecated.
     #
     # This should generally not be used, as the user will not be given a link
-    # to get more infomration on fixing the deprecation warning.
+    # to get more information on fixing the deprecation warning.
     #
     # @see #deprecated
     def log_deprecation(message, location = nil)

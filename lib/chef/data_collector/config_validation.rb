@@ -111,7 +111,7 @@ class Chef
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
         rescue Errno::EACCES
           raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannnot be written to by Chef."
+            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannot be written to by Chef."
         rescue Exception => e
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is invalid: #{e.message}."

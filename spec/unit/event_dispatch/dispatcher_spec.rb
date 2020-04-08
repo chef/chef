@@ -123,7 +123,7 @@ describe Chef::EventDispatch::Dispatcher do
   context "events that queue events" do
     class Accumulator
       def self.sequence
-        @secuence ||= []
+        @sequence ||= []
       end
     end
 

@@ -48,7 +48,7 @@ class Chef
 
     # @param resource [Chef::Resource] The resource to insert
     # @param resource_type [String,Symbol] If known, the resource type used in the recipe, Eg `package`, `execute`
-    # @param instance_name [String] If known, the recource name as used in the recipe, IE `vim` in `package 'vim'`
+    # @param instance_name [String] If known, the resource name as used in the recipe, IE `vim` in `package 'vim'`
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
     def insert(resource, opts = {})

@@ -431,7 +431,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
         expect(provider.resource_updated?).to be false
       end
 
-      it "does not convigure service" do
+      it "does not configure service" do
         expect(Win32::Service).to_not receive(:configure)
         provider.action_configure
       end

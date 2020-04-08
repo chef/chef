@@ -798,7 +798,7 @@ describe Chef::ResourceReporter do
 
       end
 
-      it "should raise if an unkwown error happens" do
+      it "should raise if an unknown error happens" do
         allow(rest_client).to receive(:raw_request).and_raise(Exception.new)
 
         expect do

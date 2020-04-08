@@ -63,7 +63,7 @@ class Chef
         # Extension of the certificate
         ext = ::File.extname(new_resource.source)
 
-        # PFX certificates contains private keys and we import them with some other aproach
+        # PFX certificates contains private keys and we import them with some other approach
         import_certificates(fetch_cert_object(ext), (ext == ".pfx"))
       end
 

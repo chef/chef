@@ -105,7 +105,7 @@ class Chef
             r.notifies :reload, "ohai[reload hostname]"
           end
 
-          # setup the hostname to perist on a reboot
+          # setup the hostname to persist on a reboot
           case
           when ::File.exist?("/usr/sbin/scutil")
             # darwin
