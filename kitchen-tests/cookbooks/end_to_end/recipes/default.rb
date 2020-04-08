@@ -149,7 +149,7 @@ chef_client_cron "Run chef-client with base recipe" do
 end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
-  interval "1hr"
+  interval "1nope"
   only_if { systemd? }
 end
 
