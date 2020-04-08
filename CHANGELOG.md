@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.9.22 -->
-## [v15.9.22](https://github.com/chef/chef/tree/v15.9.22) (2020-04-08)
+<!-- latest_release 15.9.23 -->
+## [v15.9.23](https://github.com/chef/chef/tree/v15.9.23) (2020-04-08)
 
 #### Merged Pull Requests
-- Fixed systemd_unit not respecting sensitive property [#9631](https://github.com/chef/chef/pull/9631) ([tas50](https://github.com/tas50))
+- Spell checking in comments and log messages [#9630](https://github.com/chef/chef/pull/9630) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.9.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Spell checking in comments and log messages [#9630](https://github.com/chef/chef/pull/9630) ([tas50](https://github.com/tas50)) <!-- 15.9.23 -->
 - Fixed systemd_unit not respecting sensitive property [#9631](https://github.com/chef/chef/pull/9631) ([tas50](https://github.com/tas50)) <!-- 15.9.22 -->
 - Update InSpec to 4.18.104 [#9629](https://github.com/chef/chef/pull/9629) ([tas50](https://github.com/tas50)) <!-- 15.9.21 -->
 - 15: Really skip the reboot pending func test if a reboot is pending [#9613](https://github.com/chef/chef/pull/9613) ([btm](https://github.com/btm)) <!-- 15.9.20 -->
