@@ -110,8 +110,7 @@ module ChefUtils
       # @return [Boolean]
       #
       def arm?(node = __getnode)
-        %w{armhf aarch64 arm64 arch64}
-        .include?(node["kernel"]["machine"])
+        %w{armhf aarch64 arm64 arch64}.include?(node["kernel"]["machine"])
       end
 
       # Determine if the current architecture is 32-bit ARM.
