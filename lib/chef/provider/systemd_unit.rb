@@ -237,6 +237,7 @@ class Chef
           owner "root"
           group "root"
           mode "0644"
+          sensitive new_resource.sensitive
           content new_resource.to_ini
           verify :systemd_unit if new_resource.verify
           action the_action
