@@ -65,9 +65,6 @@ class Chef
                description: "The name of the unit file if it differs from the resource block's name.",
                introduced: "13.7"
 
-      property :sensitive, [ TrueClass, FalseClass ],
-        default: false, desired_state: false
-
       def to_ini
         case content
         when Hash
