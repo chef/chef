@@ -67,7 +67,6 @@ end
 
 include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
-include_recipe "chef-client"
 
 include_recipe "openssh"
 
@@ -147,6 +146,11 @@ chef_client_cron "Run chef-client with base recipe" do
   log_directory "/var/log/custom_chef_client_dir/"
   log_file_name "chef-client-base.log"
   daemon_options ["--override-runlist mycorp_base::default"]
+end
+
+chef_client_systemd_timer "Run chef-client as a systemd timer" do
+  interval "1hr"
+  only_if { systemd? }
 end
 
 include_recipe "::chef-vault" unless includes_recipe?("end_to_end::chef-vault")
