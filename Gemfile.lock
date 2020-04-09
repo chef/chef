@@ -41,7 +41,7 @@ PATH
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 2)
+      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       license-acceptance (~> 1.0, >= 1.0.5)
       mixlib-archive (>= 0.4, < 2.0)
@@ -75,7 +75,7 @@ PATH
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 2)
+      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       iso8601 (~> 0.12.1)
       license-acceptance (~> 1.0, >= 1.0.5)
@@ -197,7 +197,7 @@ GEM
     hana (1.3.5)
     hashdiff (1.0.1)
     hashie (3.6.0)
-    highline (1.7.10)
+    highline (2.0.3)
     htmlentities (4.3.4)
     http (2.2.2)
       addressable (~> 2.3)
