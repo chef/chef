@@ -53,7 +53,7 @@ class Chef
 
       property :description, String,
         description: "The description to add to the systemd timer. This will be displayed when running `systemctl status` for the timer.",
-        default: "Chef Infra Client periodic execution"
+        default: "#{Chef::Dist::PRODUCT} periodic execution"
 
       property :user, String,
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
