@@ -60,15 +60,15 @@ class Chef
         default: "root"
 
       property :delay_after_boot, String,
-        description: "The time to wait after booting before the interval starts. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        description: "The time to wait after booting before the interval starts. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
         default: "1min"
 
       property :interval, String,
-        description: "The interval to wait between execution. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        description: "The interval to wait between execution. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
         default: "30min"
 
       property :splay, String,
-        description: "A interval between 0 and X to add to the interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See the `systemd.time` man page for a complete list of allowed time span values.",
+        description: "A interval between 0 and X to add to the interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
         default: "5min"
 
       property :accept_chef_license, [true, false],
