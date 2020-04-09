@@ -114,6 +114,12 @@ resource_priority_map ||= nil
 provider_handler_map ||= nil
 resource_handler_map ||= nil
 
+class UnexpectedSystemExit < RuntimeError
+  def self.from(system_exit)
+    new(system_exit.message).tap { |e| e.set_backtrace(system_exit.backtrace) }
+  end
+end
+
 RSpec.configure do |config|
   config.include(Matchers)
   config.include(MockShellout::RSpec)
@@ -290,6 +296,15 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     ARGV.clear
+  end
+
+  # Protect Rspec from accidental exit(0) causing rspec to terminate without error
+  config.around(:example) do |ex|
+    begin
+      ex.run
+    rescue SystemExit => e
+      raise UnexpectedSystemExit.from(e)
+    end
   end
 end
 

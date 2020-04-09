@@ -85,7 +85,7 @@ class Chef
         end
 
         output(all_nodes.sort do |n1, n2|
-          if config[:sort_reverse] || Chef::Config[:knife][:sort_status_reverse]
+          if config[:sort_reverse] || config[:sort_status_reverse]
             (n2["ohai_time"] || 0) <=> (n1["ohai_time"] || 0)
           else
             (n1["ohai_time"] || 0) <=> (n2["ohai_time"] || 0)

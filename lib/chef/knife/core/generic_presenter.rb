@@ -37,9 +37,10 @@ class Chef
               short: "-a ATTR1 [-a ATTR2]",
               long: "--attribute ATTR1 [--attribute ATTR2] ",
               description: "Show one or more attributes",
-              proc: Proc.new { |a|
-                Chef::Config[:knife][:attribute] ||= []
-                Chef::Config[:knife][:attribute].push(a)
+              proc: Proc.new { |arg, accumulator|
+                accumulator ||= []
+                accumulator << arg
+                accumulator
               }
           end
         end

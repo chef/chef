@@ -30,6 +30,8 @@ class Chef
       # * @run_list - the run list for the node to boostrap
       #
       class WindowsBootstrapContext < BootstrapContext
+        attr_accessor :config
+        attr_accessor :chef_config
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
@@ -40,15 +42,15 @@ class Chef
         end
 
         def validation_key
-          if File.exist?(File.expand_path(@chef_config[:validation_key]))
-            IO.read(File.expand_path(@chef_config[:validation_key]))
+          if File.exist?(File.expand_path(chef_config[:validation_key]))
+            IO.read(File.expand_path(chef_config[:validation_key]))
           else
             false
           end
         end
 
         def secret
-          escape_and_echo(@config[:secret])
+          escape_and_echo(config[:secret])
         end
 
         def trusted_certs_script
@@ -57,25 +59,25 @@ class Chef
 
         def config_content
           client_rb = <<~CONFIG
-            chef_server_url  "#{@chef_config[:chef_server_url]}"
-            validation_client_name "#{@chef_config[:validation_client_name]}"
+            chef_server_url  "#{chef_config[:chef_server_url]}"
+            validation_client_name "#{chef_config[:validation_client_name]}"
             file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
             file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
             cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
           CONFIG
 
-          unless @chef_config[:chef_license].nil?
-            client_rb << "chef_license \"#{@chef_config[:chef_license]}\"\n"
+          unless chef_config[:chef_license].nil?
+            client_rb << "chef_license \"#{chef_config[:chef_license]}\"\n"
           end
 
-          if @config[:chef_node_name]
-            client_rb << %Q{node_name "#{@config[:chef_node_name]}"\n}
+          if config[:chef_node_name]
+            client_rb << %Q{node_name "#{config[:chef_node_name]}"\n}
           else
             client_rb << "# Using default node name (fqdn)\n"
           end
 
-          if @chef_config[:config_log_level]
-            client_rb << %Q{log_level :#{@chef_config[:config_log_level]}\n}
+          if chef_config[:config_log_level]
+            client_rb << %Q{log_level :#{chef_config[:config_log_level]}\n}
           else
             client_rb << "log_level        :auto\n"
           end
@@ -84,21 +86,21 @@ class Chef
 
           # We configure :verify_api_cert only when it's overridden on the CLI
           # or when specified in the knife config.
-          if !@config[:node_verify_api_cert].nil? || knife_config.key?(:verify_api_cert)
-            value = @config[:node_verify_api_cert].nil? ? knife_config[:verify_api_cert] : @config[:node_verify_api_cert]
+          if !config[:node_verify_api_cert].nil? || config.key?(:verify_api_cert)
+            value = config[:node_verify_api_cert].nil? ? config[:verify_api_cert] : config[:node_verify_api_cert]
             client_rb << %Q{verify_api_cert #{value}\n}
           end
 
           # We configure :ssl_verify_mode only when it's overridden on the CLI
           # or when specified in the knife config.
-          if @config[:node_ssl_verify_mode] || knife_config.key?(:ssl_verify_mode)
-            value = case @config[:node_ssl_verify_mode]
+          if config[:node_ssl_verify_mode] || config.key?(:ssl_verify_mode)
+            value = case config[:node_ssl_verify_mode]
                     when "peer"
                       :verify_peer
                     when "none"
                       :verify_none
                     when nil
-                      knife_config[:ssl_verify_mode]
+                      config[:ssl_verify_mode]
                     else
                       nil
                     end
@@ -108,22 +110,22 @@ class Chef
             end
           end
 
-          if @config[:ssl_verify_mode]
-            client_rb << %Q{ssl_verify_mode :#{knife_config[:ssl_verify_mode]}\n}
+          if config[:ssl_verify_mode]
+            client_rb << %Q{ssl_verify_mode :#{config[:ssl_verify_mode]}\n}
           end
 
-          if knife_config[:bootstrap_proxy]
+          if config[:bootstrap_proxy]
             client_rb << "\n"
-            client_rb << %Q{http_proxy        "#{knife_config[:bootstrap_proxy]}"\n}
-            client_rb << %Q{https_proxy       "#{knife_config[:bootstrap_proxy]}"\n}
-            client_rb << %Q{no_proxy          "#{knife_config[:bootstrap_no_proxy]}"\n} if knife_config[:bootstrap_no_proxy]
+            client_rb << %Q{http_proxy        "#{config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{https_proxy       "#{config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{no_proxy          "#{config[:bootstrap_no_proxy]}"\n} if config[:bootstrap_no_proxy]
           end
 
-          if knife_config[:bootstrap_no_proxy]
-            client_rb << %Q{no_proxy       "#{knife_config[:bootstrap_no_proxy]}"\n}
+          if config[:bootstrap_no_proxy]
+            client_rb << %Q{no_proxy       "#{config[:bootstrap_no_proxy]}"\n}
           end
 
-          if @config[:secret]
+          if config[:secret]
             client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(true)}/encrypted_data_bag_secret"\n}
           end
 
@@ -131,7 +133,7 @@ class Chef
             client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(true)}/trusted_certs"\n}
           end
 
-          if Chef::Config[:fips]
+          if chef_config[:fips]
             client_rb << "fips true\n"
           end
 
@@ -139,18 +141,18 @@ class Chef
         end
 
         def get_log_location
-          if @chef_config[:config_log_location].equal?(:win_evt)
-            %Q{:#{@chef_config[:config_log_location]}\n}
-          elsif @chef_config[:config_log_location].equal?(:syslog)
+          if chef_config[:config_log_location].equal?(:win_evt)
+            %Q{:#{chef_config[:config_log_location]}\n}
+          elsif chef_config[:config_log_location].equal?(:syslog)
             raise "syslog is not supported for log_location on Windows OS\n"
-          elsif @chef_config[:config_log_location].equal?(STDOUT)
+          elsif chef_config[:config_log_location].equal?(STDOUT)
             "STDOUT\n"
-          elsif @chef_config[:config_log_location].equal?(STDERR)
+          elsif chef_config[:config_log_location].equal?(STDERR)
             "STDERR\n"
-          elsif @chef_config[:config_log_location].nil? || @chef_config[:config_log_location].empty?
+          elsif chef_config[:config_log_location].nil? || chef_config[:config_log_location].empty?
             "STDOUT\n"
-          elsif @chef_config[:config_log_location]
-            %Q{"#{@chef_config[:config_log_location]}"\n}
+          elsif chef_config[:config_log_location]
+            %Q{"#{chef_config[:config_log_location]}"\n}
           else
             "STDOUT\n"
           end
@@ -270,15 +272,15 @@ class Chef
         # Build a URL to query www.chef.io that will redirect to the correct
         # Chef Infra msi download.
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
-          if @config[:msi_url].nil? || @config[:msi_url].empty?
+          if config[:msi_url].nil? || config[:msi_url].empty?
             url = "https://www.chef.io/chef/download?p=windows"
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
             url += "&DownloadContext=#{download_context}" unless download_context.nil?
-            url += "&channel=#{@config[:channel]}"
+            url += "&channel=#{config[:channel]}"
             url += "&v=#{version_to_install}"
           else
-            @config[:msi_url]
+            config[:msi_url]
           end
         end
 
@@ -303,8 +305,8 @@ class Chef
         # This string should contain both the commands necessary to both create the files, as well as their content
         def trusted_certs_content
           content = ""
-          if @chef_config[:trusted_certs_dir]
-            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(@chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
+          if chef_config[:trusted_certs_dir]
+            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "> #{bootstrap_directory}/trusted_certs/#{File.basename(cert)} (\n" +
                 escape_and_echo(IO.read(File.expand_path(cert))) + "\n)\n"
             end
@@ -314,8 +316,8 @@ class Chef
 
         def client_d_content
           content = ""
-          if @chef_config[:client_d_dir] && File.exist?(@chef_config[:client_d_dir])
-            root = Pathname(@chef_config[:client_d_dir])
+          if chef_config[:client_d_dir] && File.exist?(chef_config[:client_d_dir])
+            root = Pathname(chef_config[:client_d_dir])
             root.find do |f|
               relative = f.relative_path_from(root)
               if f != root

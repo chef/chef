@@ -86,7 +86,6 @@ class Chef
         short: "-w AUTH-METHOD",
         long: "--winrm-auth-method AUTH-METHOD",
         description: "The WinRM authentication method to use.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:winrm_auth_method] = protocol },
         in: WINRM_AUTH_PROTOCOL_LIST
 
       option :winrm_basic_auth_only,
@@ -99,32 +98,27 @@ class Chef
         # option :kerberos_keytab_file,
         #   :short => "-T KEYTAB_FILE",
         #   :long => "--keytab-file KEYTAB_FILE",
-        #   :description => "The Kerberos keytab file used for authentication",
-        #   :proc => Proc.new { |keytab| Chef::Config[:knife][:kerberos_keytab_file] = keytab }
+        #   :description => "The Kerberos keytab file used for authentication"
 
       option :kerberos_realm,
         short: "-R KERBEROS_REALM",
         long: "--kerberos-realm KERBEROS_REALM",
-        description: "The Kerberos realm used for authentication.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_realm] = protocol }
+        description: "The Kerberos realm used for authentication."
 
       option :kerberos_service,
         short: "-S KERBEROS_SERVICE",
         long: "--kerberos-service KERBEROS_SERVICE",
-        description: "The Kerberos service used for authentication.",
-        proc: Proc.new { |protocol| Chef::Config[:knife][:kerberos_service] = protocol }
+        description: "The Kerberos service used for authentication."
 
       ## SSH Authentication
       option :ssh_gateway,
         short: "-G GATEWAY",
         long: "--ssh-gateway GATEWAY",
-        description: "The SSH gateway.",
-        proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway] = key }
+        description: "The SSH gateway."
 
       option :ssh_gateway_identity,
         long: "--ssh-gateway-identity SSH_GATEWAY_IDENTITY",
-        description: "The SSH identity file used for gateway authentication.",
-        proc: Proc.new { |key| Chef::Config[:knife][:ssh_gateway_identity] = key }
+        description: "The SSH identity file used for gateway authentication."
 
       option :ssh_forward_agent,
         short: "-A",
@@ -140,7 +134,8 @@ class Chef
       option :ssh_verify_host_key,
         long: "--ssh-verify-host-key VALUE",
         description: "Verify host key. Default is 'always'.",
-        in: %w{always accept_new accept_new_or_local_tunnel never}
+        in: %w{always accept_new accept_new_or_local_tunnel never},
+        default: "always"
 
       #
       # bootstrap options
@@ -160,8 +155,7 @@ class Chef
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_proxy,
         long: "--bootstrap-proxy PROXY_URL",
-        description: "The proxy server for the node being bootstrapped.",
-        proc: Proc.new { |p| Chef::Config[:knife][:bootstrap_proxy] = p }
+        description: "The proxy server for the node being bootstrapped."
 
       # client.rb content via bootstrap_context
       option :bootstrap_proxy_user,
@@ -176,8 +170,7 @@ class Chef
       # client.rb content via bootstrap_context
       option :bootstrap_no_proxy,
         long: "--bootstrap-no-proxy [NO_PROXY_URL|NO_PROXY_IP]",
-        description: "Do not proxy locations for the node being bootstrapped",
-        proc: Proc.new { |np| Chef::Config[:knife][:bootstrap_no_proxy] = np }
+        description: "Do not proxy locations for the node being bootstrapped"
 
       # client.rb content via bootstrap_context
       option :bootstrap_template,
@@ -270,21 +263,16 @@ class Chef
         proc: lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
         default: nil
 
-      # Note that several of the below options are used by bootstrap template,
-      # but only from the passed-in knife config; it does not use the
-      # config from the CLI for those values.  We cannot always used the merged
-      # config, because in some cases the knife keys thIn those cases, the option
-      # will have a proc that assigns the value into Chef::Config[:knife]
-
       # bootstrap template
       # Create ohai hints in /etc/chef/ohai/hints, fname=hintname, content=value
-      option :hint,
+      option :hints,
         long: "--hint HINT_NAME[=HINT_FILE]",
         description: "Specify an Ohai hint to be set on the bootstrap target. Use multiple --hint options to specify multiple hints.",
-        proc: Proc.new { |h|
-          Chef::Config[:knife][:hints] ||= {}
-          name, path = h.split("=")
-          Chef::Config[:knife][:hints][name] = path ? Chef::JSONCompat.parse(::File.read(path)) : {}
+        proc: Proc.new { |hint, accumulator|
+          accumulator ||= {}
+          name, path = hint.split("=", 2)
+          accumulator[name] = path ? Chef::JSONCompat.parse(::File.read(path)) : {}
+          accumulator
         }
 
       # bootstrap override: url of a an installer shell script touse in place of omnitruck
@@ -292,8 +280,7 @@ class Chef
       # the provided options to knife bootstrap, so we set the Chef::Config option here.
       option :bootstrap_url,
         long: "--bootstrap-url URL",
-        description: "URL to a custom installation script.",
-        proc: Proc.new { |u| Chef::Config[:knife][:bootstrap_url] = u }
+        description: "URL to a custom installation script."
 
       option :bootstrap_product,
         long: "--bootstrap-product PRODUCT",
@@ -309,26 +296,22 @@ class Chef
       # bootstrap override: Do this instead of our own setup.sh from omnitruck. Causes bootstrap_url to be ignored.
       option :bootstrap_install_command,
         long: "--bootstrap-install-command COMMANDS",
-        description: "Custom command to install #{Chef::Dist::PRODUCT}.",
-        proc: Proc.new { |ic| Chef::Config[:knife][:bootstrap_install_command] = ic }
+        description: "Custom command to install #{Chef::Dist::PRODUCT}."
 
       # bootstrap template: Run this command first in the bootstrap script
       option :bootstrap_preinstall_command,
         long: "--bootstrap-preinstall-command COMMANDS",
-        description: "Custom commands to run before installing #{Chef::Dist::PRODUCT}.",
-        proc: Proc.new { |preic| Chef::Config[:knife][:bootstrap_preinstall_command] = preic }
+        description: "Custom commands to run before installing #{Chef::Dist::PRODUCT}."
 
       # bootstrap template
       option :bootstrap_wget_options,
         long: "--bootstrap-wget-options OPTIONS",
-        description: "Add options to wget when installing #{Chef::Dist::PRODUCT}.",
-        proc: Proc.new { |wo| Chef::Config[:knife][:bootstrap_wget_options] = wo }
+        description: "Add options to wget when installing #{Chef::Dist::PRODUCT}."
 
       # bootstrap template
       option :bootstrap_curl_options,
         long: "--bootstrap-curl-options OPTIONS",
-        description: "Add options to curl when install #{Chef::Dist::PRODUCT}.",
-        proc: Proc.new { |co| Chef::Config[:knife][:bootstrap_curl_options] = co }
+        description: "Add options to curl when install #{Chef::Dist::PRODUCT}."
 
       # chef_vault_handler
       option :bootstrap_vault_file,
@@ -344,12 +327,12 @@ class Chef
       option :bootstrap_vault_item,
         long: "--bootstrap-vault-item VAULT_ITEM",
         description: 'A single vault and item to update as "vault:item".',
-        proc: Proc.new { |i|
+        proc: Proc.new { |i, accumulator|
           (vault, item) = i.split(/:/)
-          Chef::Config[:knife][:bootstrap_vault_item] ||= {}
-          Chef::Config[:knife][:bootstrap_vault_item][vault] ||= []
-          Chef::Config[:knife][:bootstrap_vault_item][vault].push(item)
-          Chef::Config[:knife][:bootstrap_vault_item]
+          accumulator ||= {}
+          accumulator[vault] ||= []
+          accumulator[vault].push(item)
+          accumulator
         }
 
       # Deprecated options. These must be declared after
@@ -434,14 +417,14 @@ class Chef
       def client_builder
         @client_builder ||= Chef::Knife::Bootstrap::ClientBuilder.new(
           chef_config: Chef::Config,
-          knife_config: config,
+          config: config,
           ui: ui
         )
       end
 
       def chef_vault_handler
         @chef_vault_handler ||= Chef::Knife::Bootstrap::ChefVaultHandler.new(
-          knife_config: config,
+          config: config,
           ui: ui
         )
       end
@@ -686,9 +669,8 @@ class Chef
         return @connection_protocol if @connection_protocol
 
         from_url = host_descriptor =~ %r{^(.*)://} ? $1 : nil
-        from_cli = config[:connection_protocol]
-        from_knife = Chef::Config[:knife][:connection_protocol]
-        @connection_protocol = from_url || from_cli || from_knife || "ssh"
+        from_knife = config[:connection_protocol]
+        @connection_protocol = from_url || from_knife || "ssh"
       end
 
       def do_connect(conn_options)
@@ -724,6 +706,10 @@ class Chef
         true
       end
 
+      def winrm_auth_method
+        config_value(:winrm_auth_method, :winrm_authentication_protocol, "negotiate")
+      end
+
       # Fail if using plaintext auth without ssl because
       # this can expose keys in plaintext on the wire.
       # TODO test for this method
@@ -732,8 +718,8 @@ class Chef
         return true unless winrm?
 
         if Chef::Config[:validation_key] && !File.exist?(File.expand_path(Chef::Config[:validation_key]))
-          if config_value(:winrm_auth_method) == "plaintext" &&
-              config_value(:winrm_ssl) != true
+          if winrm_auth_method == "plaintext" &&
+              config[:winrm_ssl] != true
             ui.error <<~EOM
               Validatorless bootstrap over unsecure winrm channels could expose your
               key to network sniffing.
@@ -857,9 +843,9 @@ class Chef
         # Reference:
         # https://github.com/chef/knife-windows/blob/92d151298142be4a4750c5b54bb264f8d5b81b8a/lib/chef/knife/winrm_knife_base.rb#L271-L273
         # TODO Seems like we should also do a similar warning if ssh_verify_host == false
-        if config_value(:ca_trust_file).nil? &&
-            config_value(:winrm_no_verify_cert) &&
-            config_value(:winrm_ssl_peer_fingerprint).nil?
+        if config[:ca_trust_file].nil? &&
+            config[:winrm_no_verify_cert] &&
+            config[:winrm_ssl_peer_fingerprint].nil?
           ui.warn <<~WARN
             * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
             SSL validation of HTTPS requests for the WinRM transport is disabled.
@@ -905,16 +891,13 @@ class Chef
 
       # Common configuration for all protocols
       def base_opts
-        port = config_value(:connection_port,
-          knife_key_for_protocol(connection_protocol, :port))
-        user = config_value(:connection_user,
-          knife_key_for_protocol(connection_protocol, :user))
+        port = config_for_protocol(:port)
+        user = config_for_protocol(:user)
         {}.tap do |opts|
           opts[:logger] = Chef::Log
-          # We do not store password in Chef::Config, so only use CLI `config` here
           opts[:password] = config[:connection_password] if config.key?(:connection_password)
           opts[:user] = user if user
-          opts[:max_wait_until_ready] = config_value(:max_wait).to_f unless config_value(:max_wait).nil?
+          opts[:max_wait_until_ready] = config[:max_wait].to_f unless config[:max_wait].nil?
           # TODO - when would we need to provide rdp_port vs port?  Or are they not mutually exclusive?
           opts[:port] = port if port
         end
@@ -922,7 +905,7 @@ class Chef
 
       def host_verify_opts
         if winrm?
-          { self_signed: config_value(:winrm_no_verify_cert) === true }
+          { self_signed: config[:winrm_no_verify_cert] === true }
         elsif ssh?
           # Fall back to the old knife config key name for back compat.
           { verify_host_key: config_value(:ssh_verify_host_key, :host_key_verify, "always") }
@@ -936,7 +919,7 @@ class Chef
         return opts if winrm?
 
         opts[:non_interactive] = true # Prevent password prompts from underlying net/ssh
-        opts[:forward_agent] = (config_value(:ssh_forward_agent) === true)
+        opts[:forward_agent] = (config[:ssh_forward_agent] === true)
         opts[:connection_timeout] = session_timeout
         opts
       end
@@ -945,7 +928,7 @@ class Chef
         opts = {}
         return opts if winrm?
 
-        identity_file = config_value(:ssh_identity_file)
+        identity_file = config[:ssh_identity_file]
         if identity_file
           opts[:key_files] = [identity_file]
           # We only set keys_only based on the explicit ssh_identity_file;
@@ -965,7 +948,7 @@ class Chef
           opts[:keys_only] = false
         end
 
-        gateway_identity_file = config_value(:ssh_gateway) ? config_value(:ssh_gateway_identity) : nil
+        gateway_identity_file = config[:ssh_gateway] ? config[:ssh_gateway_identity] : nil
         unless gateway_identity_file.nil?
           opts[:key_files] << gateway_identity_file
         end
@@ -975,8 +958,8 @@ class Chef
 
       def gateway_opts
         opts = {}
-        if config_value(:ssh_gateway)
-          split = config_value(:ssh_gateway).split("@", 2)
+        if config[:ssh_gateway]
+          split = config[:ssh_gateway].split("@", 2)
           if split.length == 1
             gw_host = split[0]
           else
@@ -1022,21 +1005,20 @@ class Chef
       def winrm_opts
         return {} unless winrm?
 
-        auth_method = config_value(:winrm_auth_method, :winrm_auth_method, "negotiate")
         opts = {
-          winrm_transport: auth_method, # winrm gem and train calls auth method 'transport'
-          winrm_basic_auth_only: config_value(:winrm_basic_auth_only) || false,
-          ssl: config_value(:winrm_ssl) === true,
-          ssl_peer_fingerprint: config_value(:winrm_ssl_peer_fingerprint),
+          winrm_transport: winrm_auth_method, # winrm gem and train calls auth method 'transport'
+          winrm_basic_auth_only: config[:winrm_basic_auth_only] || false,
+          ssl: config[:winrm_ssl] === true,
+          ssl_peer_fingerprint: config[:winrm_ssl_peer_fingerprint],
         }
 
-        if auth_method == "kerberos"
-          opts[:kerberos_service] = config_value(:kerberos_service) if config_value(:kerberos_service)
-          opts[:kerberos_realm] = config_value(:kerberos_realm) if config_value(:kerberos_service)
+        if winrm_auth_method == "kerberos"
+          opts[:kerberos_service] = config[:kerberos_service] if config[:kerberos_service]
+          opts[:kerberos_realm] = config[:kerberos_realm] if config[:kerberos_service]
         end
 
-        if config_value(:ca_trust_file)
-          opts[:ca_trust_path] = config_value(:ca_trust_file)
+        if config[:ca_trust_file]
+          opts[:ca_trust_path] = config[:ca_trust_file]
         end
 
         opts[:operation_timeout] = session_timeout
@@ -1061,24 +1043,26 @@ class Chef
         }
       end
 
-      # Looks up configuration entries, first in the class member
-      # `config` which contains options populated from CLI flags.
-      # If the entry is not found there, Chef::Config[:knife][KEY]
-      # is checked.
+      # This is for deprecating config options. The fallback_key can be used
+      # to pull an old knife config option out of the config file when the
+      # cli value has been renamed.  This is different from the deprecated
+      # cli values, since these are for config options that have no corresponding
+      # cli value.
       #
-      # knife_config_key should be specified if the knife config lookup
-      # key is different from the CLI flag lookup key.
+      # DO NOT USE - this whole API is considered deprecated
       #
-      def config_value(key, knife_config_key = nil, default = nil)
-        if config.key? key
+      # @api deprecated
+      #
+      def config_value(key, fallback_key = nil, default = nil)
+        Chef.deprecated(:knife_bootstrap_apis, "Use of config_value without a fallback_key is deprecated.  Knife plugin authors should access the config hash directly, which does correct merging of cli and config options.") if fallback_key.nil?
+        if config.key?(key)
+          # the first key is the primary key so we check the merged hash first
           config[key]
+        elsif config.key?(fallback_key)
+          # we get the old config option here (the deprecated cli option shouldn't exist)
+          config[fallback_key]
         else
-          lookup_key = knife_config_key || key
-          if Chef::Config[:knife].key?(lookup_key) || config.key?(lookup_key)
-            Chef::Config[:knife][lookup_key] || config[lookup_key]
-          else
-            default
-          end
+          default
         end
       end
 
@@ -1099,6 +1083,8 @@ class Chef
         end
       end
 
+      private
+
       # To avoid cluttering the CLI options, some flags (such as port and user)
       # are shared between protocols.  However, there is still a need to allow the operator
       # to specify defaults separately, since they may not be the same values for different
@@ -1107,11 +1093,20 @@ class Chef
       # These keys are available in Chef::Config, and are prefixed with the protocol name.
       # For example, :user CLI option will map to :winrm_user and :ssh_user Chef::Config keys,
       # based on the connection protocol in use.
-      def knife_key_for_protocol(protocol, option)
-        "#{connection_protocol}_#{option}".to_sym
+
+      # @api private
+      def config_for_protocol(option)
+        if option == :port
+          config[:connection_port] || config[knife_key_for_protocol(option)]
+        else
+          config[:connection_user] || config[knife_key_for_protocol(option)]
+        end
       end
 
-      private
+      # @api private
+      def knife_key_for_protocol(option)
+        "#{connection_protocol}_#{option}".to_sym
+      end
 
       # True if policy_name and run_list are both given
       def policyfile_and_run_list_given?
@@ -1134,7 +1129,7 @@ class Chef
       # session_timeout option has a default that may not arrive, particularly if
       # we're being invoked from a plugin that doesn't merge_config.
       def session_timeout
-        timeout = config_value(:session_timeout)
+        timeout = config[:session_timeout]
         return options[:session_timeout][:default] if timeout.nil?
 
         timeout.to_i

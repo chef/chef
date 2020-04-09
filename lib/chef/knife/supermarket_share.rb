@@ -51,8 +51,7 @@ class Chef
         short: "-m SUPERMARKET_SITE",
         long: "--supermarket-site SUPERMARKET_SITE",
         description: "The URL of the Supermarket site.",
-        default: "https://supermarket.chef.io",
-        proc: Proc.new { |supermarket| Chef::Config[:knife][:supermarket_site] = supermarket }
+        default: "https://supermarket.chef.io"
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]

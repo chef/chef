@@ -253,15 +253,19 @@ describe Chef::Knife::Ssh do
       expect(@knife.session.servers[0].options[:timeout]).to eq(120)
     end
 
-    it "uses the timeout from Chef Config" do
-      Chef::Config[:knife][:ssh_timeout] = 5
-      @knife.config[:ssh_timeout] = nil
+    it "uses the timeout from the CLI" do
+      @knife.config = {}
+      Chef::Config[:knife][:ssh_timeout] = nil
+      @knife.config[:ssh_timeout] = 5
       @knife.session_from_list([["the.b.org", nil, nil]])
+      @knife.merge_configs
       expect(@knife.session.servers[0].options[:timeout]).to eq(5)
     end
 
     it "uses the timeout from knife config" do
-      @knife.config[:ssh_timeout] = 6
+      @knife.config = {}
+      Chef::Config[:knife][:ssh_timeout] = 6
+      @knife.merge_configs
       @knife.session_from_list([["the.b.org", nil, nil]])
       expect(@knife.session.servers[0].options[:timeout]).to eq(6)
     end
@@ -392,113 +396,6 @@ describe Chef::Knife::Ssh do
         it "should not exit" do
           expect(@knife).not_to receive(:exit)
           @knife.run
-        end
-      end
-    end
-  end
-
-  describe "#configure_password" do
-    before do
-      @knife.config.delete(:ssh_password_ng)
-      @knife.config.delete(:ssh_password)
-    end
-
-    context "when setting ssh_password_ng from knife ssh" do
-      # in this case ssh_password_ng exists, but ssh_password does not
-      it "should prompt for a password when ssh_passsword_ng is nil" do
-        @knife.config[:ssh_password_ng] = nil
-        expect(@knife).to receive(:get_password).and_return("mysekretpassw0rd")
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
-      end
-
-      it "should set ssh_password to false if ssh_password_ng is false" do
-        @knife.config[:ssh_password_ng] = false
-        expect(@knife).not_to receive(:get_password)
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to be_falsey
-      end
-
-      it "should set ssh_password to ssh_password_ng if we set a password" do
-        @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
-        expect(@knife).not_to receive(:get_password)
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
-      end
-    end
-
-    context "when setting ssh_password from knife bootstrap / knife * server create" do
-      # in this case ssh_password exists, but ssh_password_ng does not
-      it "should set ssh_password to nil when ssh_password is nil" do
-        @knife.config[:ssh_password] = nil
-        expect(@knife).not_to receive(:get_password)
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to be_nil
-      end
-
-      it "should set ssh_password to false when ssh_password is false" do
-        @knife.config[:ssh_password] = false
-        expect(@knife).not_to receive(:get_password)
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to be_falsey
-      end
-
-      it "should set ssh_password to ssh_password if we set a password" do
-        @knife.config[:ssh_password] = "mysekretpassw0rd"
-        expect(@knife).not_to receive(:get_password)
-        @knife.configure_password
-        expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
-      end
-    end
-    context "when setting ssh_password in the config variable" do
-      before(:each) do
-        Chef::Config[:knife][:ssh_password] = "my_knife_passw0rd"
-      end
-      context "when setting ssh_password_ng from knife ssh" do
-        # in this case ssh_password_ng exists, but ssh_password does not
-        it "should prompt for a password when ssh_passsword_ng is nil" do
-          @knife.config[:ssh_password_ng] = nil
-          expect(@knife).to receive(:get_password).and_return("mysekretpassw0rd")
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
-        end
-
-        it "should set ssh_password to the configured knife.rb value if ssh_password_ng is false" do
-          @knife.config[:ssh_password_ng] = false
-          expect(@knife).not_to receive(:get_password)
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("my_knife_passw0rd")
-        end
-
-        it "should set ssh_password to ssh_password_ng if we set a password" do
-          @knife.config[:ssh_password_ng] = "mysekretpassw0rd"
-          expect(@knife).not_to receive(:get_password)
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
-        end
-      end
-
-      context "when setting ssh_password from knife bootstrap / knife * server create" do
-        # in this case ssh_password exists, but ssh_password_ng does not
-        it "should set ssh_password to the configured knife.rb value when ssh_password is nil" do
-          @knife.config[:ssh_password] = nil
-          expect(@knife).not_to receive(:get_password)
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("my_knife_passw0rd")
-        end
-
-        it "should set ssh_password to the configured knife.rb value when ssh_password is false" do
-          @knife.config[:ssh_password] = false
-          expect(@knife).not_to receive(:get_password)
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("my_knife_passw0rd")
-        end
-
-        it "should set ssh_password to ssh_password if we set a password" do
-          @knife.config[:ssh_password] = "mysekretpassw0rd"
-          expect(@knife).not_to receive(:get_password)
-          @knife.configure_password
-          expect(@knife.config[:ssh_password]).to eq("mysekretpassw0rd")
         end
       end
     end

@@ -233,6 +233,10 @@ class Chef
       target 28
     end
 
+    class KnifeBootstrapApis < Base
+      target 29
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"
