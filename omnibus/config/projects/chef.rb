@@ -47,6 +47,10 @@ instance_eval(IO.read(overrides_path), overrides_path)
 
 dependency "preparation"
 
+dependency "bcrypt_pbkdf-ruby" # In order for the correct windows extension to build, this gem must be
+                               # built directly, before we build the chef gem.
+                               # see https://github.com/chef/chef/issues/9639 for details.
+
 dependency "chef"
 
 #
