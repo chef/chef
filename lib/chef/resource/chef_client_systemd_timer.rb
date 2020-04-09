@@ -64,7 +64,7 @@ class Chef
         default: "1min"
 
       property :interval, String,
-        description: "The interval to wait between execution. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
+        description: "The interval to wait between executions. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
         default: "30min"
 
       property :splay, String,
