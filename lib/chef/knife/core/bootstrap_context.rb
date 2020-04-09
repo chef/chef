@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -194,6 +194,8 @@ class Chef
           s
         end
 
+        # XXX: this reads values only out of the config file and is NOT merged with the CLI options, and it is most likely
+        # a bug to be using this accessor and we should be using config and not knife_config.
         def knife_config
           @chef_config.key?(:knife) ? @chef_config[:knife] : {}
         end
@@ -203,7 +205,7 @@ class Chef
         #
         # @return [String] download version string
         def version_to_install
-          return knife_config[:bootstrap_version] if knife_config[:bootstrap_version]
+          return @config[:bootstrap_version] if @config[:bootstrap_version]
 
           if @config[:channel] == "stable"
             Chef::VERSION.split(".").first

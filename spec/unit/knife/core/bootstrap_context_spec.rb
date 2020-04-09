@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright 2011-2020, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -297,7 +297,7 @@ describe Chef::Knife::Core::BootstrapContext do
 
   describe "#version_to_install" do
     context "when bootstrap_version is provided" do
-      let(:chef_config) { { knife: { bootstrap_version: "awesome" } } }
+      let(:config) { { bootstrap_version: "awesome" } }
 
       it "returns bootstrap_version" do
         expect(bootstrap_context.version_to_install).to eq "awesome"
