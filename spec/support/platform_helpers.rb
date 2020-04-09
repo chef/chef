@@ -174,6 +174,10 @@ def rhel6?
   rhel? && !!(ohai[:platform_version].to_i == 6)
 end
 
+def opensuse15?
+  suse? && !!(ohai[:platform_version].to_i == 15)
+end
+
 def rhel7?
   rhel? && !!(ohai[:platform_version].to_i == 7)
 end
@@ -227,8 +231,7 @@ def selinux_enabled?
 end
 
 def suse?
-  ::File.exists?("/etc/SuSE-release") ||
-    ( ::File.exists?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release")) )
+  ::File.exists?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release"))
 end
 
 def root?
