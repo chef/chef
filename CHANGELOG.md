@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.196 -->
-## [v16.0.196](https://github.com/chef/chef/tree/v16.0.196) (2020-04-09)
+<!-- latest_release 16.0.197 -->
+## [v16.0.197](https://github.com/chef/chef/tree/v16.0.197) (2020-04-09)
 
 #### Merged Pull Requests
-- Bump highline to 2.x [#9633](https://github.com/chef/chef/pull/9633) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix knife bootstrap_version CLI option overriding config option [#9634](https://github.com/chef/chef/pull/9634) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix knife bootstrap_version CLI option overriding config option [#9634](https://github.com/chef/chef/pull/9634) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.197 -->
 - Bump highline to 2.x [#9633](https://github.com/chef/chef/pull/9633) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.196 -->
 - Add arm? helper to chef-utils [#9622](https://github.com/chef/chef/pull/9622) ([tas50](https://github.com/tas50)) <!-- 16.0.195 -->
 - Bump train-core to 3.2.27 [#9628](https://github.com/chef/chef/pull/9628) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.194 -->
