@@ -33,15 +33,6 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect(resource.user).to eql("root")
   end
 
-  it "coerces splay to an Integer" do
-    resource.splay "10"
-    expect(resource.splay).to eql(10)
-  end
-
-  it "raises an error if splay is not a positive number" do
-    expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
-  end
-
   it "builds a default value for chef_binary_path dist values" do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
