@@ -89,6 +89,8 @@ steps:
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - zypper install -y cron
+    - zypper install -y insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -101,6 +103,8 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cronie
+    - zypper install -y cron
+    - zypper install -y insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -112,6 +116,8 @@ steps:
 - label: "Unit Specs openSUSE :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - zypper install -y cron
+    - zypper install -y insserv-compat
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs

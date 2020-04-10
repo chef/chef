@@ -22,7 +22,7 @@ require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "fileutils"
 
-describe Chef::Resource::Service, :requires_root, :opensuse15 do
+describe Chef::Resource::Service, :requires_root, :opensuse do
 
   include Chef::Mixin::ShellOut
 

@@ -169,7 +169,7 @@ RSpec.configure do |config|
   config.filter_run_excluding linux_only: true unless linux?
   config.filter_run_excluding aix_only: true unless aix?
   config.filter_run_excluding suse_only: true unless suse?
-  config.filter_run_excluding opensuse15: true unless opensuse15?
+  config.filter_run_excluding opensuse: true unless opensuse?
   config.filter_run_excluding debian_family_only: true unless debian_family?
   config.filter_run_excluding supports_cloexec: true unless supports_cloexec?
   config.filter_run_excluding selinux_only: true unless selinux_enabled?
