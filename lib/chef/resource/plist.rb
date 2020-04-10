@@ -177,7 +177,7 @@ class Chef
               when "add"
                 type_to_commandline_string(value)
               when "set"
-                if value.class == Hash
+                if value.is_a?(Hash)
                   sep = ":"
                   value.map { |k, v| "#{k} #{v}" }
                 else
