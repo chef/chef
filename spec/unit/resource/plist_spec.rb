@@ -125,30 +125,28 @@ describe Chef::Resource::Plist do
   end
 
   describe "#type_to_commandline_string" do
-    context "When given a certain data type" do
-      it "returns the required boolean entry type as a string" do
-        expect(resource.type_to_commandline_string(true)).to eq "bool"
-      end
+    it "returns the required boolean entry type as a string" do
+      expect(resource.type_to_commandline_string(true)).to eq "bool"
+    end
 
-      it "returns the required array entry type as a string" do
-        expect(resource.type_to_commandline_string(%w{foo bar})).to eq "array"
-      end
+    it "returns the required array entry type as a string" do
+      expect(resource.type_to_commandline_string(%w{foo bar})).to eq "array"
+    end
 
-      it "returns the required dictionary entry type as a string" do
-        expect(resource.type_to_commandline_string("baz" => "qux")).to eq "dict"
-      end
+    it "returns the required dictionary entry type as a string" do
+      expect(resource.type_to_commandline_string("baz" => "qux")).to eq "dict"
+    end
 
-      it "returns the required string entry type as a string" do
-        expect(resource.type_to_commandline_string("quux")).to eq "string"
-      end
+    it "returns the required string entry type as a string" do
+      expect(resource.type_to_commandline_string("quux")).to eq "string"
+    end
 
-      it "returns the required integer entry type as a string" do
-        expect(resource.type_to_commandline_string(1)).to eq "integer"
-      end
+    it "returns the required integer entry type as a string" do
+      expect(resource.type_to_commandline_string(1)).to eq "integer"
+    end
 
-      it "returns the required float entry type as a string" do
-        expect(resource.type_to_commandline_string(1.0)).to eq "float"
-      end
+    it "returns the required float entry type as a string" do
+      expect(resource.type_to_commandline_string(1.0)).to eq "float"
     end
   end
 end
