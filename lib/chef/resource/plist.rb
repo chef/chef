@@ -37,6 +37,14 @@ class Chef
       property :group, String, default: "wheel"
       property :mode, [String, Integer]
 
+      PLISTBUDDY_EXECUTABLE = "/usr/libexec/PlistBuddy".freeze
+      DEFAULTS_EXECUTABLE = "/usr/bin/defaults".freeze
+      PLUTIL_EXECUTABLE = "/usr/bin/plutil".freeze
+      PLUTIL_FORMAT_MAP = { "us-ascii" => "xml1",
+                             "text/xml" => "xml1",
+                             "utf-8" => "xml1",
+                             "binary" => "binary1" }.freeze
+
       load_current_value do |desired|
         current_value_does_not_exist! unless ::File.exist? desired.path
         entry desired.entry if entry_in_plist? desired.entry, desired.path
@@ -83,12 +91,12 @@ class Chef
 
         converge_if_changed :encoding do
           converge_by "change format" do
-            unless plutil_format_map.key?(new_resource.encoding)
+            unless PLUTIL_FORMAT_MAP.key?(new_resource.encoding)
               Chef::Application.fatal!(
-                "Option encoding must be equal to one of: #{plutil_format_map.keys}!  You passed \"#{new_resource.encoding}\"."
+                "Option encoding must be equal to one of: #{PLUTIL_FORMAT_MAP.keys}!  You passed \"#{new_resource.encoding}\"."
               )
             end
-            shell_out!(plutil_executable, "-convert", plutil_format_map[new_resource.encoding], new_resource.path)
+            shell_out!(PLUTIL_EXECUTABLE, "-convert", PLUTIL_FORMAT_MAP[new_resource.encoding], new_resource.path)
           end
         end
 
@@ -180,39 +188,20 @@ class Chef
               end
         entry_with_arg = ["\"#{entry}\"", arg].join(sep).strip
         subcommand = "#{subcommand.capitalize} :#{entry_with_arg}"
-        [plistbuddy_executable, "-c", "\'#{subcommand}\'", "\"#{path}\""].join(" ")
+        [PLISTBUDDY_EXECUTABLE, "-c", "\'#{subcommand}\'", "\"#{path}\""].join(" ")
       end
 
       def setting_from_plist(entry, path)
-        defaults_read_type_output = shell_out(defaults_executable, "read-type", path, entry).stdout
+        defaults_read_type_output = shell_out(DEFAULTS_EXECUTABLE, "read-type", path, entry).stdout
         data_type = defaults_read_type_output.split.last
 
         if value.class == Hash
-          plutil_output = shell_out(plutil_executable, "-extract", entry, "xml1", "-o", "-", path).stdout.chomp
+          plutil_output = shell_out(PLUTIL_EXECUTABLE, "-extract", entry, "xml1", "-o", "-", path).stdout.chomp
           { key_type: data_type, key_value: ::Plist.parse_xml(plutil_output) }
         else
-          defaults_read_output = shell_out(defaults_executable, "read", path, entry).stdout
+          defaults_read_output = shell_out(DEFAULTS_EXECUTABLE, "read", path, entry).stdout
           { key_type: data_type, key_value: defaults_read_output.strip }
         end
-      end
-
-      def plutil_format_map
-        { "us-ascii" => "xml1",
-          "text/xml" => "xml1",
-          "utf-8" => "xml1",
-          "binary" => "binary1" }
-      end
-
-      def plutil_executable
-        "/usr/bin/plutil"
-      end
-
-      def defaults_executable
-        "/usr/bin/defaults"
-      end
-
-      def plistbuddy_executable
-        "/usr/libexec/PlistBuddy"
       end
     end
   end
