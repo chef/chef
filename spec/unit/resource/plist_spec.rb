@@ -71,7 +71,6 @@ describe Chef::Resource::Plist do
   end
 
   describe "#convert_to_data_type_from_string" do
-
     it "returns true if entry is 1 and the type is boolean" do
       expect(resource.convert_to_data_type_from_string("boolean", "1")).to eq true
     end
