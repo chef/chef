@@ -74,7 +74,7 @@ class Chef
           end
         end
 
-        plist_file_name = new_resource.path.split("/").last
+        plist_file_name = ::File.basename(new_resource.path)
 
         converge_if_changed :entry do
           converge_by "add entry \"#{new_resource.entry}\" to #{plist_file_name}" do
