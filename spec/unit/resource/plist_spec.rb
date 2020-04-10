@@ -19,8 +19,8 @@
 
 require "spec_helper"
 
-describe Chef::Resource::Plist do
-  let(:resource) { Chef::Resource::Plist.new("fakey_fakerton") }
+describe Chef::Resource::PlistResource do
+  let(:resource) { Chef::Resource::PlistResource.new("fakey_fakerton") }
 
   it "sets the default action as :set" do
     expect(resource.action).to eql([:set])
