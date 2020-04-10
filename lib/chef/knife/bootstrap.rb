@@ -701,9 +701,9 @@ class Chef
           ui.warn("#{e.message} - trying with pty request")
           conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
           retry
-        elsif config[:use_sudo_password] && (e.reason == :sudo_password_required || e.reason == :sudo_root_password_required) && limit < 3
+        elsif config[:use_sudo_password] && (e.reason == :sudo_password_required || e.reason == :bad_sudo_password) && limit < 3
           ui.warn("Failed to authenticate #{conn_options[:user]} to #{server_name} - #{e.message} \n sudo: #{limit} incorrect password attempt")
-          sudo_password = ui.ask("Enter sudo root password for #{conn_options[:user]}@#{server_name}:") do |q|
+          sudo_password = ui.ask("Enter sudo password for #{conn_options[:user]}@#{server_name}:") do |q|
             q.echo = false
           end
           limit += 1
