@@ -245,11 +245,13 @@ class Chef
       def load_lwrps_from_cookbook(cookbook_name)
         files_in_cookbook_by_segment(cookbook_name, :providers).each do |filename|
           next unless File.extname(filename) == ".rb"
+          next if File.basename(filename).match?(/^_/)
 
           load_lwrp_provider(cookbook_name, filename)
         end
         files_in_cookbook_by_segment(cookbook_name, :resources).each do |filename|
           next unless File.extname(filename) == ".rb"
+          next if File.basename(filename).match?(/^_/)
 
           load_lwrp_resource(cookbook_name, filename)
         end
