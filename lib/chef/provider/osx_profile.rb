@@ -233,7 +233,7 @@ class Chef
       end
 
       def read_plist(xml_file)
-        Plist.parse_xml(xml_file)
+        ::Plist.parse_xml(xml_file)
       end
 
       def profile_installed?

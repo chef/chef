@@ -161,7 +161,7 @@ class Chef
 
       def content
         plist_hash = new_resource.plist_hash || gen_hash
-        Plist::Emit.dump(plist_hash) unless plist_hash.nil?
+        ::Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
 
       def gen_hash

@@ -118,7 +118,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
 
               # Calling shell_out directly since we want to give an input stream
               shadow_hash_xml = convert_binary_plist_to_xml(shadow_hash_binary.string)
-              shadow_hash = Plist.parse_xml(shadow_hash_xml)
+              shadow_hash = ::Plist.parse_xml(shadow_hash_xml)
 
               if shadow_hash["SALTED-SHA512-PBKDF2"] # 10.7+ contains this, but we retain the check in case it goes away in the future
                 @password_shadow_conversion_algorithm = "SALTED-SHA512-PBKDF2"
@@ -541,7 +541,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
             user_plist_info = run_plutil("convert", "xml1", "-o", "-", user_plist_file)
-            user_info = Plist.parse_xml(user_plist_info)
+            user_info = ::Plist.parse_xml(user_plist_info)
           rescue Chef::Exceptions::PlistUtilCommandFailed
           end
 
@@ -554,7 +554,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
         def save_user_info(user_info)
           user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
-          Plist::Emit.save_plist(user_info, user_plist_file)
+          ::Plist::Emit.save_plist(user_info, user_plist_file)
           run_plutil("convert", "binary1", user_plist_file)
         end
 
