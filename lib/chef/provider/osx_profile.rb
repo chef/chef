@@ -21,6 +21,7 @@ require_relative "../provider"
 require_relative "../resource"
 require_relative "../resource/file"
 require "uuidtools"
+require "plist"
 
 class Chef
   class Provider
@@ -232,7 +233,7 @@ class Chef
       end
 
       def read_plist(xml_file)
-        Plist.parse_xml(xml_file)
+        ::Plist.parse_xml(xml_file)
       end
 
       def profile_installed?

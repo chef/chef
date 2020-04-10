@@ -22,6 +22,7 @@ require_relative "../../mixin/shell_out"
 require_relative "../../mixin/which"
 require_relative "../user"
 require_relative "../../resource/user/mac_user"
+require "plist"
 
 class Chef
   class Provider
@@ -79,7 +80,7 @@ class Chef
           admin_group_xml = run_dscl("read", "/Groups/admin")
           return nil unless admin_group_xml && admin_group_xml != ""
 
-          @admin_group_plist = Plist.new(::Plist.parse_xml(admin_group_xml))
+          @admin_group_plist = ::Plist.new(::Plist.parse_xml(admin_group_xml))
         end
 
         def reload_user_plist
@@ -94,7 +95,7 @@ class Chef
 
           return nil if user_xml.nil? || user_xml == ""
 
-          @user_plist = Plist.new(::Plist.parse_xml(user_xml))
+          @user_plist = ::Plist.new(::Plist.parse_xml(user_xml))
 
           return unless user_plist[:shadow_hash]
 
