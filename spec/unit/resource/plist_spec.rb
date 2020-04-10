@@ -57,70 +57,51 @@ describe Chef::Resource::Plist do
       end
     end
 
-    context "The value provided contains spaces" do
-      it "returns the value properly formatted with double quotes" do
-        expect(resource.plistbuddy_command(:print, "Foo Bar Baz", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"Foo Bar Baz\"' \"path/to/file.plist\""
-      end
+    it "returns the value properly formatted with double quotes when the value has spaces" do
+      expect(resource.plistbuddy_command(:print, "Foo Bar Baz", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"Foo Bar Baz\"' \"path/to/file.plist\""
     end
 
-    context "The value to be added contains spaces" do
-      it "returns the value properly formatted with double quotes" do
-        expect(resource.plistbuddy_command(:add, "Foo Bar Baz", "path/to/file.plist", true)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"Foo Bar Baz\" bool' \"path/to/file.plist\""
-      end
+    it "returns the value properly formatted with double quotes when The value to be added contains spaces" do
+      expect(resource.plistbuddy_command(:add, "Foo Bar Baz", "path/to/file.plist", true)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"Foo Bar Baz\" bool' \"path/to/file.plist\""
     end
 
-    context "The plist itself contains spaces" do
-      it "returns the value properly formatted with double quotes" do
-        expect(resource.plistbuddy_command(:print, "Foo Bar Baz", "Library/Preferences/com.parallels.Parallels Desktop.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"Foo Bar Baz\"' \"Library/Preferences/com.parallels.Parallels Desktop.plist\""
-      end
+    it "returns the value properly formatted with double quotes when the plist itself contains spaces" do
+      expect(resource.plistbuddy_command(:print, "Foo Bar Baz", "Library/Preferences/com.parallels.Parallels Desktop.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"Foo Bar Baz\"' \"Library/Preferences/com.parallels.Parallels Desktop.plist\""
     end
   end
 
   describe "#convert_to_data_type_from_string" do
-    context "When the type is boolean and given a 1 or 0" do
-      it "returns true if entry is 1" do
-        expect(resource.convert_to_data_type_from_string("boolean", "1")).to eq true
-      end
 
-      it "returns false if entry is 0" do
-        expect(resource.convert_to_data_type_from_string("boolean", "0")).to eq false
-      end
+    it "returns true if entry is 1 and the type is boolean" do
+      expect(resource.convert_to_data_type_from_string("boolean", "1")).to eq true
     end
 
-    context "When the type is integer and the value is 1" do
-      it "returns the value as an integer" do
-        expect(resource.convert_to_data_type_from_string("integer", "1")).to eq 1
-      end
+    it "returns false if entry is 0 and the type is boolean" do
+      expect(resource.convert_to_data_type_from_string("boolean", "0")).to eq false
     end
 
-    context "When the type is integer and the value is 0" do
-      it "returns the value as an integer" do
-        expect(resource.convert_to_data_type_from_string("integer", "0")).to eq 0
-      end
+    it "returns the value as an integer when the type is integer and the value is 1" do
+      expect(resource.convert_to_data_type_from_string("integer", "1")).to eq 1
     end
 
-    context "When the type is integer and the value is 950224" do
-      it "returns the correct value as an integer" do
-        expect(resource.convert_to_data_type_from_string("integer", "950224")).to eq 950224
-      end
+    it "returns the value as an integer when the type is integer and the value is 0" do
+      expect(resource.convert_to_data_type_from_string("integer", "0")).to eq 0
     end
 
-    context "When the type is string and the value is also a string" do
-      it "returns the correct value still as a string" do
-        expect(resource.convert_to_data_type_from_string("string", "corge")).to eq "corge"
-      end
+    it "returns the correct value as an integer when the type is integer and the value is 950224" do
+      expect(resource.convert_to_data_type_from_string("integer", "950224")).to eq 950224
     end
 
-    context "When the type is float and the value is 3.14159265359" do
-      it "returns the correct value as a float" do
-        expect(resource.convert_to_data_type_from_string("float", "3.14159265359")).to eq 3.14159265359
-      end
+    it "returns the correct value still as a string when the type is string and the value is also a string" do
+      expect(resource.convert_to_data_type_from_string("string", "corge")).to eq "corge"
     end
 
-    context "When the type nor the value is given" do
-      it "returns an empty string" do
-        expect(resource.convert_to_data_type_from_string(nil, "")).to eq ""
-      end
+    it "returns the correct value as a float when the type is float and the value is 3.14159265359" do
+      expect(resource.convert_to_data_type_from_string("float", "3.14159265359")).to eq 3.14159265359
+    end
+
+    it "returns an empty string when the type nor the value is given" do
+      expect(resource.convert_to_data_type_from_string(nil, "")).to eq ""
     end
   end
 
