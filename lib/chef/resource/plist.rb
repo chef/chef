@@ -16,6 +16,7 @@
 # limitations under the License.
 #
 require_relative "../resource"
+require "plist"
 
 class Chef
   class Resource
@@ -24,6 +25,9 @@ class Chef
       unified_mode true
 
       provides :plist
+
+      description "Use the plist resource to set config values in plist files on macOS systems."
+      introduced "16.0"
 
       property :path, String, name_property: true
       property :entry, String
@@ -185,7 +189,7 @@ class Chef
 
         if value.class == Hash
           plutil_output = shell_out(plutil_executable, "-extract", entry, "xml1", "-o", "-", path).stdout.chomp
-          { key_type: data_type, key_value: Plist.parse_xml(plutil_output) }
+          { key_type: data_type, key_value: ::Plist.parse_xml(plutil_output) }
         else
           defaults_read_output = shell_out(defaults_executable, "read", path, entry).stdout
           { key_type: data_type, key_value: defaults_read_output.strip }
