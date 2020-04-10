@@ -84,17 +84,17 @@ RSpec.describe ChefUtils::DSL::Architecture do
   context "on aarch64" do
     let(:arch) { "aarch64" }
 
-    arch_reports_true_for(:_64_bit?)
+    arch_reports_true_for(:_64_bit?, :arm?)
   end
   context "on arch64" do
     let(:arch) { "arch64" }
 
-    arch_reports_true_for(:_64_bit?)
+    arch_reports_true_for(:_64_bit?, :arm?)
   end
   context "on arm64" do
     let(:arch) { "arm64" }
 
-    arch_reports_true_for(:_64_bit?)
+    arch_reports_true_for(:_64_bit?, :arm?)
   end
   context "on sun4v" do
     let(:arch) { "sun4v" }
@@ -129,7 +129,7 @@ RSpec.describe ChefUtils::DSL::Architecture do
   context "on armhf" do
     let(:arch) { "armhf" }
 
-    arch_reports_true_for(:armhf?, :_32_bit?)
+    arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
   end
   context "on s390" do
     let(:arch) { "s390" }
