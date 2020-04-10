@@ -31,30 +31,28 @@ describe Chef::Resource::Plist do
   end
 
   describe "#plistbuddy_command" do
-    context "Adding a value to a plist" do
-      it "the bool arguments contain the data type" do
-        expect(resource.plistbuddy_command(:add, "FooEntry", "path/to/file.plist", true)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"FooEntry\" bool' \"path/to/file.plist\""
-      end
+    it "the bool arguments contain the data type" do
+      expect(resource.plistbuddy_command(:add, "FooEntry", "path/to/file.plist", true)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"FooEntry\" bool' \"path/to/file.plist\""
+    end
 
-      it "the add command only adds the data type" do
-        expect(resource.plistbuddy_command(:add, "QuuxEntry", "path/to/file.plist", 50)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"QuuxEntry\" integer' \"path/to/file.plist\""
-      end
+    it "the add command only adds the data type" do
+      expect(resource.plistbuddy_command(:add, "QuuxEntry", "path/to/file.plist", 50)).to eq "/usr/libexec/PlistBuddy -c 'Add :\"QuuxEntry\" integer' \"path/to/file.plist\""
+    end
 
-      it "the delete command is formatted properly" do
-        expect(resource.plistbuddy_command(:delete, "BarEntry", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Delete :\"BarEntry\"' \"path/to/file.plist\""
-      end
+    it "the delete command is formatted properly" do
+      expect(resource.plistbuddy_command(:delete, "BarEntry", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Delete :\"BarEntry\"' \"path/to/file.plist\""
+    end
 
-      it "the set command is formatted properly" do
-        expect(resource.plistbuddy_command(:set, "BazEntry", "path/to/file.plist", false)).to eq "/usr/libexec/PlistBuddy -c 'Set :\"BazEntry\" false' \"path/to/file.plist\""
-      end
+    it "the set command is formatted properly" do
+      expect(resource.plistbuddy_command(:set, "BazEntry", "path/to/file.plist", false)).to eq "/usr/libexec/PlistBuddy -c 'Set :\"BazEntry\" false' \"path/to/file.plist\""
+    end
 
-      it "the print command is formatted properly" do
-        expect(resource.plistbuddy_command(:print, "QuxEntry", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"QuxEntry\"' \"path/to/file.plist\""
-      end
+    it "the print command is formatted properly" do
+      expect(resource.plistbuddy_command(:print, "QuxEntry", "path/to/file.plist")).to eq "/usr/libexec/PlistBuddy -c 'Print :\"QuxEntry\"' \"path/to/file.plist\""
+    end
 
-      it "the command to set a dictionary data type is formatted properly" do
-        expect(resource.plistbuddy_command(:set, "AppleFirstWeekday", "path/to/file.plist", gregorian: 4)).to eq "/usr/libexec/PlistBuddy -c 'Set :\"AppleFirstWeekday\":gregorian 4' \"path/to/file.plist\""
-      end
+    it "the command to set a dictionary data type is formatted properly" do
+      expect(resource.plistbuddy_command(:set, "AppleFirstWeekday", "path/to/file.plist", gregorian: 4)).to eq "/usr/libexec/PlistBuddy -c 'Set :\"AppleFirstWeekday\":gregorian 4' \"path/to/file.plist\""
     end
 
     it "returns the value properly formatted with double quotes when the value has spaces" do
