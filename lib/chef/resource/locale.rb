@@ -30,7 +30,7 @@ class Chef
       LC_VARIABLES = %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze
       LOCALE_CONF = "/etc/locale.conf".freeze
       LOCALE_REGEX = /\A\S+/.freeze
-      LOCALE_PLATFORM_FAMILIES = %w{debian}.freeze
+      LOCALE_PLATFORM_FAMILIES = %w{debian windows}.freeze
 
       property :lang, String,
         description: "Sets the default system language.",
@@ -65,13 +65,32 @@ class Chef
         end
       end
 
+      load_current_value do
+        if windows?
+          lang get_system_locale_windows
+        else
+          begin
+            old_content = ::File.read(LOCALE_CONF)
+            locale_values = Hash[old_content.split("\n").map { |v| v.split("=") }]
+            lang locale_values["LANG"]
+          rescue Errno::ENOENT => e
+            false
+          end
+        end
+      end
+
+      # Gets the System-locale setting for the current computer.
+      # @see https://docs.microsoft.com/en-us/powershell/module/international/get-winsystemlocale
+      # @return [String] the current value of the System-locale setting.
+      #
+      def get_system_locale_windows
+        powershell_exec("Get-WinSystemLocale").result["Name"]
+      end
+
       action :update do
         description "Update the system's locale."
-        unless up_to_date?
-          converge_by "Updating System Locale" do
-            generate_locales unless unavailable_locales.empty?
-            update_locale
-          end
+        converge_if_changed do
+          set_system_locale
         end
       end
 
@@ -97,6 +116,21 @@ class Chef
         #
         def generate_locales
           shell_out!("locale-gen #{unavailable_locales.join(" ")}")
+        end
+
+        # Sets the system locale for the current computer.
+        #
+        def set_system_locale
+          if windows?
+            # Sets the system locale for the current computer.
+            # @see https://docs.microsoft.com/en-us/powershell/module/internationalcmdlets/set-winsystemlocale
+            #
+            response = powershell_exec("Set-WinSystemLocale -SystemLocale #{new_resource.lang}")
+            raise response.errors.join(" ") if response.error?
+          else
+            generate_locales unless unavailable_locales.empty?
+            update_locale
+          end
         end
 
         # Updates system locale by appropriately writing them in /etc/locale.conf
@@ -133,15 +167,6 @@ class Chef
             content["LANG"] = new_resource.lang if new_resource.lang
             content.sort.map { |t| t.join("=") }.join("\n") + "\n"
           end
-        end
-
-        # @return [Boolean] Whether any modification is required in /etc/locale.conf
-        #
-        def up_to_date?
-          old_content = ::File.read(LOCALE_CONF)
-          new_content == old_content
-        rescue
-          false # We need to create the file if it is not present
         end
       end
     end
