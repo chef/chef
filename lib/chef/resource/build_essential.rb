@@ -161,7 +161,7 @@ class Chef
         #
         # @return [true, false]
         def xcode_cli_installed?
-          packages = Plist.parse_xml(::File.open("/Library/Receipts/InstallHistory.plist", "r"))
+          packages = ::Plist.parse_xml(::File.open("/Library/Receipts/InstallHistory.plist", "r"))
           packages.select! { |package| package["displayName"].match? "Command Line Tools" }
           !packages.empty?
         end
