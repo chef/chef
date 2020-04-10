@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.200 -->
-## [v16.0.200](https://github.com/chef/chef/tree/v16.0.200) (2020-04-10)
+<!-- latest_release 16.0.201 -->
+## [v16.0.201](https://github.com/chef/chef/tree/v16.0.201) (2020-04-10)
 
 #### Merged Pull Requests
-- Add resource partials [#9632](https://github.com/chef/chef/pull/9632) ([lamont-granquist](https://github.com/lamont-granquist))
+- Support non-Linux hosts in chef_client_cron [#9647](https://github.com/chef/chef/pull/9647) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support non-Linux hosts in chef_client_cron [#9647](https://github.com/chef/chef/pull/9647) ([tas50](https://github.com/tas50)) <!-- 16.0.201 -->
 - Add resource partials [#9632](https://github.com/chef/chef/pull/9632) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.200 -->
 - Add Amazon Linux 2 Testers [#9641](https://github.com/chef/chef/pull/9641) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.199 -->
 - Add chef_client_systemd_timer resource [#9624](https://github.com/chef/chef/pull/9624) ([tas50](https://github.com/tas50)) <!-- 16.0.198 -->
