@@ -52,6 +52,13 @@ class Chef
 
       extend Chef::ResourceHelpers::CronValidations
 
+      property :job_name, String,
+        default: Chef::Dist::CLIENT,
+        description: "The name of the cron job to create."
+
+      property :comment, String,
+        description: "A comment to place in the cron.d file."
+
       property :user, String,
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
         default: "root"
@@ -86,29 +93,18 @@ class Chef
           "should be a valid weekday spec" => method(:validate_dow),
         }
 
-      property :mailto, String,
-        description: "The e-mail address to e-mail any cron task failures to."
-
-      property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
-        default: false
-
-      property :job_name, String,
-        default: Chef::Dist::CLIENT,
-        description: "The name of the cron job to create."
-
       property :splay, [Integer, String],
         default: 300,
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
 
-      property :environment, Hash,
-        default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``."
+      property :mailto, String,
+        description: "The e-mail address to e-mail any cron task failures to."
 
-      property :comment, String,
-        description: "A comment to place in the cron.d file."
+      property :accept_chef_license, [true, false],
+        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
+        default: false
 
       property :config_directory, String,
         default: Chef::Dist::CONF_DIR,
@@ -134,6 +130,10 @@ class Chef
         default: lazy { [] },
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
 
+      property :environment, Hash,
+        default: lazy { {} },
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``."
+
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless ::Dir.exist?(new_resource.log_directory)
@@ -144,8 +144,8 @@ class Chef
           end
         end
 
-        cron_d new_resource.job_name do
-          minute      new_resource.minute
+        declare_resource(cron_resource_type, new_resource.job_name) do
+          minute new_resource.minute
           hour        new_resource.hour
           day         new_resource.day
           weekday     new_resource.weekday
@@ -206,6 +206,17 @@ class Chef
           else
             "> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           end
+        end
+
+        #
+        # The type of cron resource to run. Linux systems all support the /etc/cron.d directory
+        # and can use the cron_d resource, but Solaris / AIX / FreeBSD need to use the crontab
+        # via the legacy cron resource.
+        #
+        # @return [Symbol]
+        #
+        def cron_resource_type
+          linux? ? :cron_d : :cron
         end
       end
     end

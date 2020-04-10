@@ -49,6 +49,10 @@ class Chef
 
       resource_name :chef_client_scheduled_task
 
+      property :task_name, String,
+        description: "The name of the scheduled task to create.",
+        default: Chef::Dist::CLIENT
+
       property :user, String,
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
         default: "System", sensitive: true
@@ -108,10 +112,6 @@ class Chef
       property :daemon_options, Array,
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
         default: lazy { [] }
-
-      property :task_name, String,
-        description: "The name of the scheduled task to create.",
-        default: Chef::Dist::CLIENT
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
