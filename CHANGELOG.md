@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.203 -->
-## [v16.0.203](https://github.com/chef/chef/tree/v16.0.203) (2020-04-13)
+<!-- latest_release 16.0.204 -->
+## [v16.0.204](https://github.com/chef/chef/tree/v16.0.204) (2020-04-13)
 
 #### Merged Pull Requests
-- Remove support for SLES11 and update tests to just on openSUSE [#9299](https://github.com/chef/chef/pull/9299) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Fixes for sudo password prompt [#9635](https://github.com/chef/chef/pull/9635) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixes for sudo password prompt [#9635](https://github.com/chef/chef/pull/9635) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.204 -->
 - Remove support for SLES11 and update tests to just on openSUSE [#9299](https://github.com/chef/chef/pull/9299) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.0.203 -->
 - Add the plist resource from the macos cookbook [#9642](https://github.com/chef/chef/pull/9642) ([tas50](https://github.com/tas50)) <!-- 16.0.202 -->
 - Support non-Linux hosts in chef_client_cron [#9647](https://github.com/chef/chef/pull/9647) ([tas50](https://github.com/tas50)) <!-- 16.0.201 -->
