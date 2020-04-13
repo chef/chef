@@ -131,7 +131,7 @@ FORCE_FFI_YAJL=ext
 export FORCE_FFI_YAJL
 
 # chef-shell smoke tests require "rb-readline" which requires "infocmp"
-# most platforms provide "infocmp" by default via an "ncurses" package but SLES 11 and 12 provide it via "ncurses-devel" which
+# most platforms provide "infocmp" by default via an "ncurses" package but SLES 12 provide it via "ncurses-devel" which
 # isn't typically installed. omnibus-toolchain has "infocmp" built-in so we add omnibus-toolchain to the PATH to ensure
 # tests will function properly.
 PATH="/opt/$TOOLCHAIN/bin:/usr/local/bin:/opt/$TOOLCHAIN/embedded/bin:$PATH"

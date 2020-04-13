@@ -2,16 +2,17 @@
 
 TMPDIR="${TMPDIR:-/tmp}"
 
-function create_chef_txt {
-        touch $TMPDIR/inittest.txt
+create_chef_txt() {
+        touch "$TMPDIR"/inittest.txt
 }
 
-function delete_chef_txt {
-        rm $TMPDIR/inittest.txt
+
+delete_chef_txt() {
+        rm "$TMPDIR"/inittest.txt
 }
 
-function rename_chef_txt {
-        mv $TMPDIR/inittest.txt $TMPDIR/$1
+rename_chef_txt() {
+        mv "$TMPDIR"/inittest.txt "$TMPDIR"/"$1"
 }
 
 case "$1" in
@@ -22,7 +23,7 @@ stop )
         delete_chef_txt
         ;;
 status )
-        [ -f $TMPDIR/inittest.txt ] || [ -f $TMPDIR/inittest_reload.txt ] || [ -f $TMPDIR/inittest_restart.txt ]
+        [ -f "$TMPDIR"/inittest.txt ] || [ -f "$TMPDIR"/inittest_reload.txt ] || [ -f "$TMPDIR"/inittest_restart.txt ]
         ;;
 reload )
         rename_chef_txt "inittest_reload.txt"

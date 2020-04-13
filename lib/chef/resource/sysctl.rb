@@ -57,7 +57,6 @@ class Chef
 
       def after_created
         raise "The sysctl resource requires Linux as it needs sysctl and the sysctl.d directory functionality." unless node["os"] == "linux"
-        raise "The sysctl resource does not support SLES releases less than 12 as it requires a sysctl.d directory" if platform_family?("suse") && node["platform_version"].to_i < 12
       end
 
       def coerce_value(v)
