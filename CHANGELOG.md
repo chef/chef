@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.202 -->
-## [v16.0.202](https://github.com/chef/chef/tree/v16.0.202) (2020-04-10)
+<!-- latest_release 16.0.203 -->
+## [v16.0.203](https://github.com/chef/chef/tree/v16.0.203) (2020-04-13)
 
 #### Merged Pull Requests
-- Add the plist resource from the macos cookbook [#9642](https://github.com/chef/chef/pull/9642) ([tas50](https://github.com/tas50))
+- Remove support for SLES11 and update tests to just on openSUSE [#9299](https://github.com/chef/chef/pull/9299) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove support for SLES11 and update tests to just on openSUSE [#9299](https://github.com/chef/chef/pull/9299) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.0.203 -->
 - Add the plist resource from the macos cookbook [#9642](https://github.com/chef/chef/pull/9642) ([tas50](https://github.com/tas50)) <!-- 16.0.202 -->
 - Support non-Linux hosts in chef_client_cron [#9647](https://github.com/chef/chef/pull/9647) ([tas50](https://github.com/tas50)) <!-- 16.0.201 -->
 - Add resource partials [#9632](https://github.com/chef/chef/pull/9632) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.200 -->
