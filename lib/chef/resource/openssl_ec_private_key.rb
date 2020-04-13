@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2018-2020, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Author:: Julien Huon
 # License:: Apache License, Version 2.0
 #

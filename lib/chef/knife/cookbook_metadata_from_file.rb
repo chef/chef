@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #

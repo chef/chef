@@ -2,8 +2,8 @@
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Chef Software Inc.
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.

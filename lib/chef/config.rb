@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: chef-vault
 #
-# Copyright:: 2020, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 
 chef_data_bag "creds"

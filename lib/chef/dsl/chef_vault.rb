@@ -1,7 +1,7 @@
 #
 # Author: Joshua Timberman <joshua@chef.io>
 #
-# Copyright:: 2013-2020, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: 2014-2015 Bloomberg Finance L.P.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

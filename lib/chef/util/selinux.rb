@@ -3,7 +3,7 @@
 # Author:: Kevin Keane
 # Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright 2011-2019, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2013-2016, North County Tech Center, LLC
 #
 # License:: Apache License, Version 2.0

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #

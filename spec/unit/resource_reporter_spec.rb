@@ -3,7 +3,7 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 #
-# Copyright:: Copyright 2012-2020, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
