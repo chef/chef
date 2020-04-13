@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.206 -->
-## [v16.0.206](https://github.com/chef/chef/tree/v16.0.206) (2020-04-13)
+<!-- latest_release 16.0.207 -->
+## [v16.0.207](https://github.com/chef/chef/tree/v16.0.207) (2020-04-13)
 
 #### Merged Pull Requests
-- Use the correct plist class in the mac user provider [#9655](https://github.com/chef/chef/pull/9655) ([tas50](https://github.com/tas50))
+- Remove copyright dates [#9656](https://github.com/chef/chef/pull/9656) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove copyright dates [#9656](https://github.com/chef/chef/pull/9656) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.207 -->
 - Use the correct plist class in the mac user provider [#9655](https://github.com/chef/chef/pull/9655) ([tas50](https://github.com/tas50)) <!-- 16.0.206 -->
 - Require at least trainc-core 3.2.28 to resolve our sudo bootstrap issues [#9654](https://github.com/chef/chef/pull/9654) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.205 -->
 - Fixes for sudo password prompt [#9635](https://github.com/chef/chef/pull/9635) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.0.204 -->
