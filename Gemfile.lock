@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 5a3919041d6818647628aeb637b028dd19e0196e
+  revision: 471ac97407eaf5570da0a25fcec227f727ea5439
   branch: master
   specs:
-    ohai (16.0.16)
+    ohai (16.0.17)
       chef-config (>= 12.8, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -57,7 +57,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
-      train-core (~> 3.1)
+      train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
@@ -92,7 +92,7 @@ PATH
       plist (~> 3.2)
       proxifier (~> 1.0)
       syslog-logger (~> 1.6)
-      train-core (~> 3.1)
+      train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
@@ -367,7 +367,7 @@ GEM
     tins (1.24.1)
       sync
     tomlrb (1.3.0)
-    train-core (3.2.27)
+    train-core (3.2.28)
       addressable (~> 2.5)
       json (>= 1.8, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
