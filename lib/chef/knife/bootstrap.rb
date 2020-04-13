@@ -650,7 +650,7 @@ class Chef
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") do |q|
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:") do |q|
               q.echo = false
             end
           end
@@ -666,7 +666,7 @@ class Chef
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}.") do |q|
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:") do |q|
               q.echo = false
             end
           end
@@ -695,9 +695,19 @@ class Chef
         @connection = TrainConnector.new(host_descriptor, connection_protocol, conn_options)
         connection.connect!
       rescue Train::UserError => e
+        limit ||= 1
         if !conn_options.key?(:pty) && e.reason == :sudo_no_tty
           ui.warn("#{e.message} - trying with pty request")
           conn_options[:pty] = true # ensure we can talk to systems with requiretty set true in sshd config
+          retry
+        elsif config[:use_sudo_password] && (e.reason == :sudo_password_required || e.reason == :bad_sudo_password) && limit < 3
+          ui.warn("Failed to authenticate #{conn_options[:user]} to #{server_name} - #{e.message} \n sudo: #{limit} incorrect password attempt")
+          sudo_password = ui.ask("Enter sudo password for #{conn_options[:user]}@#{server_name}:") do |q|
+            q.echo = false
+          end
+          limit += 1
+          conn_options[:sudo_password] = sudo_password
+
           retry
         else
           raise
