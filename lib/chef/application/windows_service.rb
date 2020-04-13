@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Maier (<maier@lambda.local>)
-# Copyright:: Copyright 2011-2017, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

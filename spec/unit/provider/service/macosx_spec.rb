@@ -1,7 +1,7 @@
 #
 # Author:: Igor Afonov <afonov@gmail.com>
 # Copyright:: Copyright 2011-2016, Igor Afonov
-# Copyright:: Copyright 2020, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

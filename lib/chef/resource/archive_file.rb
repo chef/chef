@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2017-2020, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Author:: Jamie Winsor (<jamie@vialstudios.com>)
 # Author:: Tim Smith (<tsmith@chef.io>)
 #

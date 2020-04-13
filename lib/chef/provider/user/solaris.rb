@@ -2,7 +2,7 @@
 # Author:: Stephen Nelson-Smith (<sns@chef.io>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright 2012-2018, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2015-2016, Dave Eddy
 # License:: Apache License, Version 2.0
 #
