@@ -40,7 +40,8 @@ class Chef
 
       property :timeout, Integer,
         description: "Timeout for 'dd' / 'fallocate' commands.",
-        default: 600
+        default: 600,
+        desired_state: false
 
       property :swappiness, Integer,
         description: "The swappiness value to set on the system."

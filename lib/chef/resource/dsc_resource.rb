@@ -101,12 +101,13 @@ class Chef
       # is necessary, reboot_action provides the mechanism for a reboot to
       # be requested.
       property :reboot_action, Symbol, default: :nothing, equal_to: %i{nothing reboot_now request_reboot},
-                introduced: "12.6",
-                description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
+        introduced: "12.6",
+        description: "Use to request an immediate reboot or to queue a reboot using the :reboot_now (immediate reboot) or :request_reboot (queued reboot) actions built into the reboot resource."
 
       property :timeout, Integer,
         introduced: "12.6",
-        description: "The amount of time (in seconds) a command is to wait before timing out."
+        description: "The amount of time (in seconds) a command is to wait before timing out.",
+        desired_state: false
 
       private
 

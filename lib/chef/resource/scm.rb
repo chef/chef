@@ -61,6 +61,7 @@ class Chef
         desired_state: false
 
       property :timeout, Integer,
+        description: "The amount of time (in seconds) to wait before timing out.",
         desired_state: false
 
       property :checkout_branch, String,

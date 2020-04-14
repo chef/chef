@@ -41,7 +41,8 @@ class Chef
 
       property :timeout, Integer,
         description: "Specifies a timeout (in seconds) for the feature installation.",
-        default: 600
+        default: 600,
+        desired_state: false
 
       # @return [Array] lowercase the array
       def to_formatted_array(x)

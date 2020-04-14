@@ -124,7 +124,8 @@ class Chef
         description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully)."
 
       property :timeout, Integer,
-        description: "The amount of time (in seconds) a command is to wait before timing out."
+        description: "The amount of time (in seconds) a command is to wait before timing out.",
+        desired_state: false
     end
   end
 end

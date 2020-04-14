@@ -51,7 +51,8 @@ class Chef
 
       property :timeout, [ String, Integer ], default: 600,
         default_description: "600 (seconds)",
-        description: "The amount of time (in seconds) to wait before timing out."
+        description: "The amount of time (in seconds) to wait before timing out.",
+        desired_state: false
 
       # In the past we accepted return code 127 for an unknown reason and 42 because of a bug
       # we accept 3010 which means success, but a reboot is necessary

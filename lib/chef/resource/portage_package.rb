@@ -27,8 +27,10 @@ class Chef
 
       description "Use the portage_package resource to manage packages for the Gentoo platform."
 
-      property :timeout, default: 3600,
-               description: "The amount of time (in seconds) to wait before timing out."
+      property :timeout, [String, Integer],
+        default: 3600,
+        description: "The amount of time (in seconds) to wait before timing out.",
+        desired_state: false
     end
   end
 end

@@ -68,18 +68,19 @@ class Chef
         description: "The group name or group ID that must be changed before running a command."
 
       property :live_stream, [ TrueClass, FalseClass ], default: false,
-               description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::CLIENT} event stream."
+        description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::CLIENT} event stream."
 
       # default_env defaults to `false` so that the command execution more exactly matches what the user gets on the command line without magic
       property :default_env, [ TrueClass, FalseClass ], desired_state: false, default: false,
-               introduced: "14.2",
-               description: "When true this enables ENV magic to add path_sanity to the PATH and force the locale to English+UTF-8 for parsing output"
+        introduced: "14.2",
+        description: "When true this enables ENV magic to add path_sanity to the PATH and force the locale to English+UTF-8 for parsing output"
 
       property :returns, [ Integer, Array ], default: 0,
-               description: "The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match."
+        description: "The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match."
 
       property :timeout, [ Integer, Float ],
-        description: "The amount of time (in seconds) a command is to wait before timing out."
+        description: "The amount of time (in seconds) a command is to wait before timing out.",
+        desired_state: false
 
       property :user, [ String, Integer ],
         description: "The user name of the user identity with which to launch the new process. The user name may optionally be specifed with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
@@ -89,8 +90,8 @@ class Chef
         description: "Windows only: The domain of the user user specified by the user property. If not specified, the user name and password specified by the user and password properties will be used to resolve that user against the domain in which the system running #{Chef::Dist::PRODUCT} is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the user property."
 
       property :password, String, sensitive: true,
-               introduced: "12.21",
-               description: "Windows only: The password of the user specified by the user property. This property is mandatory if user is specified on Windows and may only be specified if user is specified. The sensitive property for this resource will automatically be set to true if password is specified."
+        introduced: "12.21",
+        description: "Windows only: The password of the user specified by the user property. This property is mandatory if user is specified on Windows and may only be specified if user is specified. The sensitive property for this resource will automatically be set to true if password is specified."
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [ TrueClass, FalseClass ],
@@ -98,8 +99,8 @@ class Chef
         default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
-               description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",
-               introduced: "13.3"
+        description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",
+        introduced: "13.3"
 
       alias :env :environment
 
