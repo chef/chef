@@ -44,6 +44,11 @@ class Chef
 
       property :checksum, String, desired_state: false,
                description: "SHA-256 digest used to verify the checksum of the downloaded MSU package."
+
+      property :timeout, [String, Integer],
+        default: 3600,
+        description: "The amount of time (in seconds) to wait before timing out.",
+        desired_state: false
     end
   end
 end
