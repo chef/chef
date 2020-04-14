@@ -2,7 +2,7 @@
 # Author:: Seth Vargo (<sethvargo@gmail.com>)
 #
 # Copyright:: 2013-2018, Seth Vargo
-# Copyright:: 2017-2018, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

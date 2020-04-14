@@ -3,7 +3,7 @@
 # Author:: Tor Magnus Rakvåg (tor.magnus@outlook.com)
 # Author:: Tim Smith (tsmith@chef.io)
 # Copyright:: 2013-2015 Matt Clifton
-# Copyright:: 2018, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: 2018, Intility AS
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

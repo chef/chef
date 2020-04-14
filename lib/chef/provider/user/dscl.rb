@@ -1,6 +1,6 @@
 #
 # Author:: Dreamcat4 (<dreamcat4@gmail.com>)
-# Copyright:: Copyright 2009-2019, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

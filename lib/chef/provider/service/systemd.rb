@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2011-2019, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

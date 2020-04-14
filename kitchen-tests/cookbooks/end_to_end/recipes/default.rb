@@ -2,7 +2,7 @@
 # Cookbook:: end_to_end
 # Recipe:: default
 #
-# Copyright:: 2014-2019, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 
 hostname "chef-bk-ci.chef.io"
