@@ -78,7 +78,8 @@ class Chef
       property :returns, [ Integer, Array ], default: 0,
         description: "The return value for a command. This may be an array of accepted values. An exception is raised when the return value(s) do not match."
 
-      property :timeout, [ Integer, Float ],
+      property :timeout, [ Integer, String, Float ],
+        default: 3600,
         description: "The amount of time (in seconds) a command is to wait before timing out.",
         desired_state: false
 
