@@ -2,7 +2,7 @@
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #

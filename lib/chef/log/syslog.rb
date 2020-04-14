@@ -1,7 +1,7 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");

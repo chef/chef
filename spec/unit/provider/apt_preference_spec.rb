@@ -1,7 +1,7 @@
 #
 # Author:: Thom May (<thom@chef.io>)
 # Author:: Tim Smith (<tim@chef.io>)
-# Copyright:: 2016-2017, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
