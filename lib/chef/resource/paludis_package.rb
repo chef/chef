@@ -31,9 +31,10 @@ class Chef
 
       allowed_actions :install, :remove, :upgrade
 
-      property :timeout, Integer,
+      property :timeout, [String, Integer],
         description: "The amount of time (in seconds) to wait before timing out.",
-        default: 3600
+        default: 3600,
+        desired_state: false
     end
   end
 end

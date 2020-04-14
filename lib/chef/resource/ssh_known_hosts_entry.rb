@@ -47,7 +47,8 @@ class Chef
 
       property :timeout, Integer,
         description: "The timeout in seconds for ssh-keyscan.",
-        default: 30
+        default: 30,
+        desired_state: false
 
       property :mode, String,
         description: "The file mode for the ssh_known_hosts file.",

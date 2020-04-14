@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
@@ -39,12 +39,6 @@ class Chef
           # FIXME? move this onto the resource?
           raise Chef::Exceptions::Execute, "Please either specify a full path for the creates property, or specify a cwd property to the #{new_resource} resource"
         end
-      end
-
-      def timeout
-        # original implementation did not specify a timeout, but ShellOut
-        # *always* times out. So, set a very long default timeout
-        new_resource.timeout || 3600
       end
 
       action :run do
