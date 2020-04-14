@@ -74,7 +74,7 @@ class Chef
 
         def dism_command(command)
           with_os_architecture(nil) do
-            result = shell_out("dism.exe /Online /English #{command} /NoRestart", { timeout: new_resource.timeout || 3600 })
+            result = shell_out("dism.exe /Online /English #{command} /NoRestart", { timeout: new_resource.timeout })
             if result.exitstatus == -2146498530
               raise Chef::Exceptions::Package, "The specified package is not applicable to this image." if result.stdout.include?("0x800f081e")
 

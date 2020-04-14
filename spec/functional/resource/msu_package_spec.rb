@@ -24,6 +24,7 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   let(:package_name) { "Package_for_KB2959977" }
   let(:package_source) { "https://download.microsoft.com/download/3/B/3/3B320C07-B7B1-41E5-81F4-79EBC02DF7D3/Windows8.1-KB2959977-x64.msu" }
   let(:package_identity) { "Package_for_KB2959977~31bf3856ad364e35~amd64~~6.3.1.1" }
+  let(:timeout) { 3600 }
 
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
   let(:cab_provider) do
@@ -37,6 +38,7 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
     new_resource = Chef::Resource::MsuPackage.new("test msu package", run_context)
     new_resource.package_name package_name
     new_resource.source package_source
+    new_resource.timeout timeout
     new_resource
   end
 
