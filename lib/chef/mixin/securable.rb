@@ -129,22 +129,22 @@ class Chef
                     raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
                   end
                 elsif !(%i{full_control modify read_execute read write}.include?(permission.to_sym))
-                  raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
+                  raise ArgumentError, "permissions property must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
                 end
               end
 
               [ principals ].flatten.each do |principal|
                 unless principal.is_a?(String)
-                  raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
+                  raise ArgumentError, "principals property must be a string or array of strings representing usernames"
                 end
               end
 
               if input[:applies_to_children] == false
                 if input[:applies_to_self] == false
-                  raise ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
+                  raise ArgumentError, "'rights' property must specify either :applies_to_children or :applies_to_self."
                 end
                 if input[:one_level_deep] == true
-                  raise ArgumentError, "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
+                  raise ArgumentError, "'rights' property specified :one_level_deep without specifying :applies_to_children."
                 end
               end
               rights ||= []
