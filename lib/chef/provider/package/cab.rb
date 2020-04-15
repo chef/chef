@@ -93,7 +93,7 @@ class Chef
             split_package_identity(p["package_identity"])
           end
           found_packages = existing_package_identities.select do |existing_package_ident|
-            existing_package_ident["name"] == package["name"]
+            existing_package_ident["version"] == package["version"].chomp && existing_package_ident["name"] == package["name"]
           end
           if found_packages.empty?
             nil

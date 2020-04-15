@@ -110,6 +110,7 @@ class Chef
           @cab_files.each do |cab_file|
             declare_resource(:cab_package, new_resource.name) do
               source cab_file
+              timeout new_resource.timeout
               action :install
             end
           end
