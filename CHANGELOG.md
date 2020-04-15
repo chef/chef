@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.210 -->
-## [v16.0.210](https://github.com/chef/chef/tree/v16.0.210) (2020-04-15)
+<!-- latest_release 16.0.211 -->
+## [v16.0.211](https://github.com/chef/chef/tree/v16.0.211) (2020-04-15)
 
 #### Merged Pull Requests
-- Replace a few uses of attributes / parameters in messaging with properties [#9664](https://github.com/chef/chef/pull/9664) ([tas50](https://github.com/tas50))
+- Fix to use correct Amazon Linux 2 queues [#9662](https://github.com/chef/chef/pull/9662) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix to use correct Amazon Linux 2 queues [#9662](https://github.com/chef/chef/pull/9662) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.211 -->
 - Replace a few uses of attributes / parameters in messaging with properties [#9664](https://github.com/chef/chef/pull/9664) ([tas50](https://github.com/tas50)) <!-- 16.0.210 -->
 - Updates to timeout properties in various resources [#9659](https://github.com/chef/chef/pull/9659) ([tas50](https://github.com/tas50)) <!-- 16.0.209 -->
 - Update license scout to fix broken windows builds [#9657](https://github.com/chef/chef/pull/9657) ([tas50](https://github.com/tas50)) <!-- 16.0.208 -->
