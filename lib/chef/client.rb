@@ -295,6 +295,8 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
+        warn_if_eol
+
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
@@ -322,6 +324,22 @@ class Chef
     # Private API
     # @todo make this stuff protected or private
     #
+
+    # @api private
+    def warn_if_eol
+      require_relative "version"
+
+      # we have a yearly release and we know 15 goes EOL in 2021 so calculate off that
+      # this way we don't have to update anything or maintain a hash of EOL dates
+      base_eol_year = 2022
+      base_release = Gem::Version.new(15)
+
+      diff_from_base_release = Gem::Version.new(Chef::VERSION).segments.first - base_release.segments.first
+
+      if Time.now > Time.new(base_eol_year + diff_from_base_release, 5, 1)
+        logger.warn("This release of #{Chef::Dist::PRODUCT} became end of life (EOL) on May 1st #{base_eol_year + diff_from_base_release}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      end
+    end
 
     # @api private
     def configure_formatters
