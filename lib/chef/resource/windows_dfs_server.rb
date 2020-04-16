@@ -28,7 +28,7 @@ class Chef
       introduced "15.0"
 
       property :use_fqdn, [TrueClass, FalseClass],
-        description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this parameter has a value of true, the server uses FQDNs in referrals. If this parameter has a value of false, the server uses NetBIOS names.",
+        description: "Indicates whether a DFS namespace server uses FQDNs in referrals. If this property is set to true, the server uses FQDNs in referrals. If this property is set to false then the server uses NetBIOS names.",
         default: false
 
       property :ldap_timeout_secs, Integer,
