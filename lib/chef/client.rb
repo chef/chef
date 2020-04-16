@@ -295,6 +295,8 @@ class Chef
         # keep this inside the main loop to get exception backtraces
         end_profiling
 
+        warn_if_eol
+
         # rebooting has to be the last thing we do, no exceptions.
         Chef::Platform::Rebooter.reboot_if_needed!(node)
       rescue Exception => run_error
@@ -322,6 +324,13 @@ class Chef
     # Private API
     # @todo make this stuff protected or private
     #
+
+    # @api private
+    def warn_if_eol
+      if Time.now > Time.new(2021, 5, 01)
+        logger.warn("This release of #{Chef::Dist::PRODUCT} became end of life (EOL) on May 1st 2021. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      end
+    end
 
     # @api private
     def configure_formatters
