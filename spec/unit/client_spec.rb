@@ -308,15 +308,13 @@ describe Chef::Client do
   end
 
   describe "eol release warning" do
-    it "warns when running an EOL release" do
-      stub_const("Chef::VERSION", 15)
+    it "warns when the date is after April 30, 2021" do
       allow(Time).to receive(:now).and_return(Time.new(2021, 5, 1, 5))
       expect(logger).to receive(:warn).with(/This release of.*became end of life \(EOL\) on May 1st 2021/)
       client.warn_if_eol
     end
 
-    it "does not warn when running an non-EOL release" do
-      stub_const("Chef::VERSION", 15)
+    it "does not warn when date is before May 1st 2021" do
       allow(Time).to receive(:now).and_return(Time.new(2021, 4, 31))
       expect(logger).to_not receive(:warn).with(/became end of life/)
       client.warn_if_eol
