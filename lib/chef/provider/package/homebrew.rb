@@ -36,7 +36,7 @@ class Chef
           @current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(get_current_versions)
-          logger.trace("#{new_resource} current version is #{current_resource.version}") if current_resource.version
+          logger.trace("#{new_resource} current package version(s): #{current_resource.version}") if current_resource.version
 
           current_resource
         end
