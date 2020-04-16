@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.7 -->
-## [v15.10.7](https://github.com/chef/chef/tree/v15.10.7) (2020-04-16)
+<!-- latest_release 15.10.8 -->
+## [v15.10.8](https://github.com/chef/chef/tree/v15.10.8) (2020-04-16)
 
 #### Merged Pull Requests
-- Cache gems in Buildkite testing [#9671](https://github.com/chef/chef/pull/9671) ([tas50](https://github.com/tas50))
+- Add deprecation warnings at the end of the run after the end of April 2021 [#9667](https://github.com/chef/chef/pull/9667) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.9.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add deprecation warnings at the end of the run after the end of April 2021 [#9667](https://github.com/chef/chef/pull/9667) ([tas50](https://github.com/tas50)) <!-- 15.10.8 -->
 - Cache gems in Buildkite testing [#9671](https://github.com/chef/chef/pull/9671) ([tas50](https://github.com/tas50)) <!-- 15.10.7 -->
 - Update license_scout to 1.1.8 [#9673](https://github.com/chef/chef/pull/9673) ([tas50](https://github.com/tas50)) <!-- 15.10.6 -->
 - Add build verification on Amazon Linux 2 [#9670](https://github.com/chef/chef/pull/9670) ([tas50](https://github.com/tas50)) <!-- 15.10.5 -->
