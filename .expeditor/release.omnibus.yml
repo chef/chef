@@ -29,6 +29,7 @@ builder-to-testers-map:
   el-7-x86_64:
     - el-7-x86_64
     - el-8-x86_64
+    - amazon-2-x86_64
   freebsd-11-amd64:
     - freebsd-11-amd64
     - freebsd-12-amd64
