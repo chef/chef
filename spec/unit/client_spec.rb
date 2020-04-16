@@ -307,6 +307,22 @@ describe Chef::Client do
     end
   end
 
+  describe "eol release warning" do
+    it "warns when running an EOL release" do
+      stub_const("Chef::VERSION", 15)
+      allow(Time).to receive(:now).and_return(Time.new("2030-01-01"))
+      expect(logger).to receive(:warn).with(/This release of.*became end of life \(EOL\) on May 1st 2022/)
+      client.warn_if_eol
+    end
+
+    it "does not warn when running an non-EOL release" do
+      stub_const("Chef::VERSION", 15)
+      allow(Time).to receive(:now).and_return(Time.new("2020-01-01"))
+      expect(logger).to_not receive(:warn).with(/became end of life/)
+      client.warn_if_eol
+    end
+  end
+
   describe "authentication protocol selection" do
     context "when FIPS is disabled" do
       before do
