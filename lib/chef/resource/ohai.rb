@@ -2,6 +2,7 @@
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2010-2016, Michael Leinartas
+# Copyright:: Copyright (c) Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,8 +33,23 @@ class Chef
       property :plugin, String,
         description: "The name of an Ohai plugin to be reloaded. If this property is not specified, #{Chef::Dist::PRODUCT} will reload all plugins."
 
-      default_action :reload
-      allowed_actions :reload
+      def load_current_resource
+        true
+      end
+
+      action :reload do
+        converge_by("re-run ohai and merge results into node attributes") do
+          ohai = ::Ohai::System.new
+
+          # If new_resource.plugin is nil, ohai will reload all the plugins
+          # Otherwise it will only reload the specified plugin
+          # Note that any changes to plugins, or new plugins placed on
+          # the path are picked up by ohai.
+          ohai.all_plugins new_resource.plugin
+          node.automatic_attrs.merge! ohai.data
+          logger.info("#{new_resource} reloaded")
+        end
+      end
     end
   end
 end

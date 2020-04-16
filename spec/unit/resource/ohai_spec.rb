@@ -19,8 +19,11 @@
 require "spec_helper"
 
 describe Chef::Resource::Ohai do
-
-  let(:resource) { Chef::Resource::Ohai.new("fakey_fakerton") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::Ohai.new("fakey_fakerton", run_context) }
+  let(:provider) { resource.provider_for_action(:reload) }
 
   it "has a resource name of :ohai" do
     expect(resource.resource_name).to eql(:ohai)
@@ -55,4 +58,58 @@ describe Chef::Resource::Ohai do
     end
   end
 
+  describe "reload action" do
+    before(:each) do
+      # Copied from client_spec
+      @fqdn = "hostname.domainname"
+      @hostname = "hostname"
+      @platform = "example-platform"
+      @platform_version = "example-platform"
+      Chef::Config[:node_name] = @fqdn
+      mock_ohai = {
+        fqdn: @fqdn,
+        hostname: @hostname,
+        platform: @platform,
+        platform_version: @platform_version,
+        data: {
+          origdata: "somevalue",
+        },
+        data2: {
+          origdata: "somevalue",
+          newdata: "somevalue",
+        },
+      }
+      allow(mock_ohai).to receive(:all_plugins).and_return(true)
+      allow(mock_ohai).to receive(:data).and_return(mock_ohai[:data],
+        mock_ohai[:data2])
+      allow(Ohai::System).to receive(:new).and_return(mock_ohai)
+      allow(Chef::Platform).to receive(:find_platform_and_version).and_return({ "platform" => @platform,
+                                                                                "platform_version" => @platform_version })
+      # Fake node with a dummy save
+      node.name(@fqdn)
+      allow(node).to receive(:save).and_return(node)
+      @events = Chef::EventDispatch::Dispatcher.new
+      @run_context = Chef::RunContext.new(node, {}, @events)
+      @new_resource = Chef::Resource::Ohai.new("ohai_reload")
+      ohai = Ohai::System.new
+      ohai.all_plugins
+      node.consume_external_attrs(ohai.data, {})
+      node.automatic_attrs[:origdata] = "somevalue"
+    end
+
+    it "applies updated ohai data to the node" do
+      expect(node[:origdata]).to eq("somevalue")
+      expect(node[:newdata]).to be_nil
+      provider.run_action(:reload)
+      expect(node[:origdata]).to eq("somevalue")
+      expect(node[:newdata]).to eq("somevalue")
+    end
+
+    it "supports reloading a specific plugin and causes node to pick up new values" do
+      resource.plugin "someplugin"
+      provider.run_action(:reload)
+      expect(node[:origdata]).to eq("somevalue")
+      expect(node[:newdata]).to eq("somevalue")
+    end
+  end
 end
