@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.2 -->
-## [v15.10.2](https://github.com/chef/chef/tree/v15.10.2) (2020-04-14)
+<!-- latest_release 15.10.3 -->
+## [v15.10.3](https://github.com/chef/chef/tree/v15.10.3) (2020-04-16)
 
 #### Merged Pull Requests
-- Chef-15: Remove copyright dates [#9658](https://github.com/chef/chef/pull/9658) ([lamont-granquist](https://github.com/lamont-granquist))
+- Replace a few uses of attributes / parameters in messaging with properties [#9668](https://github.com/chef/chef/pull/9668) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.9.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace a few uses of attributes / parameters in messaging with properties [#9668](https://github.com/chef/chef/pull/9668) ([tas50](https://github.com/tas50)) <!-- 15.10.3 -->
 - Chef-15: Remove copyright dates [#9658](https://github.com/chef/chef/pull/9658) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.2 -->
 - Fix knife bootstrap_version CLI option overriding config option [#9650](https://github.com/chef/chef/pull/9650) ([tas50](https://github.com/tas50)) <!-- 15.10.1 -->
 - Add arm? helper to chef-utils [#9651](https://github.com/chef/chef/pull/9651) ([tas50](https://github.com/tas50)) <!-- 15.10.0 -->
