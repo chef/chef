@@ -242,7 +242,7 @@ Those methods are marked API private for the purposes of end-users, but are publ
 
 ## Getting Involved
 
-We'd love to have your help developing Chef Infra. See our [Contributing Document](./CONTRIBUTING.md) for more information on getting started.
+We'd love to have your help developing Chef Infra. See our [Contributing Document](../CONTRIBUTING.md) for more information on getting started.
 
 ## License and Copyright
 
