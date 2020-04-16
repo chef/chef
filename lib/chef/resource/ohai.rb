@@ -20,6 +20,7 @@
 
 require_relative "../resource"
 require_relative "../dist"
+require "ohai" unless defined?(Ohai::System)
 
 class Chef
   class Resource
