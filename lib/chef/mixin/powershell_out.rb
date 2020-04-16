@@ -66,7 +66,7 @@ class Chef
         with_os_architecture(nil, architecture: arch) do
           shell_out(
             build_powershell_command(script),
-            options
+            **options
           )
         end
       end
