@@ -161,7 +161,7 @@ module ChefUtils
         node.dig("virtualization", "system") == "openvz" && node.dig("virtualization", "role") == "host"
       end
 
-      # Determine if the current node is running under any virutalization environment
+      # Determine if the current node is running under any virtualization environment
       #
       # @param [Chef::Node] node
       # @since 15.8
