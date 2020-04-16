@@ -1,6 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
+# License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,13 +20,12 @@ require "spec_helper"
 
 describe Chef::Provider::Package::Homebrew do
   let(:node) { Chef::Node.new }
-  let(:events) { double("Chef::Events").as_null_object }
-  let(:logger) { double("Mixlib::Log::Child").as_null_object }
-  let(:run_context) { double("Chef::RunContext", node: node, events: events, logger: logger) }
-  let(:new_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
-  let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs") }
-
+  let(:new_resource) { Chef::Resource::HomebrewPackage.new(["emacs", "vim"]) }
+  let(:current_resource) { Chef::Resource::HomebrewPackage.new("emacs, vim") }
   let(:provider) do
+    node = Chef::Node.new
+    events = Chef::EventDispatch::Dispatcher.new
+    run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::Package::Homebrew.new(new_resource, run_context)
   end
 
@@ -115,36 +115,32 @@ describe Chef::Provider::Package::Homebrew do
     }
   end
 
-  before(:each) do
-
-  end
-
   describe "load_current_resource" do
     before(:each) do
-      allow(provider).to receive(:current_installed_version).and_return(nil)
-      allow(provider).to receive(:candidate_version).and_return("24.3")
+      allow(provider).to receive(:installed_version).and_return(nil)
+      allow(provider).to receive(:available_version).and_return("1.0")
     end
 
     it "creates a current resource with the name of the new resource" do
       provider.load_current_resource
       expect(provider.current_resource).to be_a(Chef::Resource::Package)
-      expect(provider.current_resource.name).to eql("emacs")
+      expect(provider.current_resource.name).to eql("emacs, vim")
     end
 
     it "creates a current resource with the version if the package is installed" do
-      expect(provider).to receive(:current_installed_version).and_return("24.3")
+      expect(provider).to receive(:get_current_versions).and_return(["1.0", "2.0"])
       provider.load_current_resource
-      expect(provider.current_resource.version).to eql("24.3")
+      expect(provider.current_resource.version).to eql(["1.0", "2.0"])
     end
 
     it "creates a current resource with a nil version if the package is not installed" do
       provider.load_current_resource
-      expect(provider.current_resource.version).to be_nil
+      expect(provider.current_resource.version).to eq([nil, nil])
     end
 
     it "sets a candidate version if one exists" do
       provider.load_current_resource
-      expect(provider.candidate_version).to eql("24.3")
+      expect(provider.candidate_version).to eql(["1.0", "1.0"])
     end
   end
 
