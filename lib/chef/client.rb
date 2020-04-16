@@ -329,15 +329,12 @@ class Chef
     def warn_if_eol
       require_relative "version"
 
-      # we have a yearly release and we know 15 goes EOL in 2021 so calculate off that
-      # this way we don't have to update anything or maintain a hash of EOL dates
-      base_eol_year = 2022
-      base_release = Gem::Version.new(15)
+      # We make a release every year so take the version you're on + 2006 and you get
+      # the year it goes EOL
+      eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
 
-      diff_from_base_release = Gem::Version.new(Chef::VERSION).segments.first - base_release.segments.first
-
-      if Time.now > Time.new(base_eol_year + diff_from_base_release, 5, 1)
-        logger.warn("This release of #{Chef::Dist::PRODUCT} became end of life (EOL) on May 1st #{base_eol_year + diff_from_base_release}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+      if Time.now > Time.new(eol_year, 5, 01)
+        logger.warn("This release of #{Chef::Dist::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
       end
     end
 
