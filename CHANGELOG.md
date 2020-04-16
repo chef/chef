@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.214 -->
-## [v16.0.214](https://github.com/chef/chef/tree/v16.0.214) (2020-04-16)
+<!-- latest_release 16.0.215 -->
+## [v16.0.215](https://github.com/chef/chef/tree/v16.0.215) (2020-04-16)
 
 #### Merged Pull Requests
-- msu_package: Removal also requires passing timeout property [#9676](https://github.com/chef/chef/pull/9676) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Ruby 2.7 fix for powershell_out [#9679](https://github.com/chef/chef/pull/9679) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 2.7 fix for powershell_out [#9679](https://github.com/chef/chef/pull/9679) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.215 -->
 - msu_package: Removal also requires passing timeout property [#9676](https://github.com/chef/chef/pull/9676) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.0.214 -->
 - Add a warning to the end of the chef run for EOL releses [#9666](https://github.com/chef/chef/pull/9666) ([tas50](https://github.com/tas50)) <!-- 16.0.213 -->
 - msu_package: Fix cumulative updates installation and provide a 3600s default timeout [#9649](https://github.com/chef/chef/pull/9649) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.0.212 -->
