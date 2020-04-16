@@ -54,7 +54,7 @@ class Chef
         end
 
         def install_package(names, versions)
-          brew("install", options, names.compact)
+          brew_cmd_output("install", options, names.compact)
         end
 
         def upgrade_package(name, version)
@@ -63,21 +63,17 @@ class Chef
           if current_version.nil? || current_version.empty?
             install_package(name, version)
           elsif current_version != version
-            brew("upgrade", options, name)
+            brew_cmd_output("upgrade", options, name)
           end
         end
 
         def remove_package(names, versions)
-          brew("uninstall", options, names.compact)
+          brew_cmd_output("uninstall", options, names.compact)
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
         def purge_package(names, versions)
-          brew("uninstall", "--force", options, names.compact)
-        end
-
-        def brew(*args)
-          get_response_from_command("brew", *args)
+          brew_cmd_output("uninstall", "--force", options, names.compact)
         end
 
         # We implement a querying method that returns the JSON-as-Hash
@@ -94,7 +90,7 @@ class Chef
           @brew_info ||= begin
             command_array = ["info", "--json=v1"].concat Array(new_resource.package_name)
             # convert the array of hashes into a hash where the key is the package name
-            Hash[Chef::JSONCompat.from_json(brew(command_array)).collect { |pkg| [pkg["name"], pkg] }]
+            Hash[Chef::JSONCompat.from_json(brew_cmd_output(command_array)).collect { |pkg| [pkg["name"], pkg] }]
           end
         end
 
@@ -161,13 +157,13 @@ class Chef
 
         private
 
-        def get_response_from_command(*command)
+        def brew_cmd_output(*command)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          logger.trace "Executing '#{command.join(" ")}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing 'brew #{command.join(" ")}' as user '#{homebrew_user.name}'"
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out!(*command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = shell_out!('brew', *command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 
