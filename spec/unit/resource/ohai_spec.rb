@@ -88,9 +88,6 @@ describe Chef::Resource::Ohai do
       # Fake node with a dummy save
       node.name(@fqdn)
       allow(node).to receive(:save).and_return(node)
-      @events = Chef::EventDispatch::Dispatcher.new
-      @run_context = Chef::RunContext.new(node, {}, @events)
-      @new_resource = Chef::Resource::Ohai.new("ohai_reload")
       ohai = Ohai::System.new
       ohai.all_plugins
       node.consume_external_attrs(ohai.data, {})
