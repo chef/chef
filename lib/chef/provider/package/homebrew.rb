@@ -155,8 +155,6 @@ class Chef
           p_data["versions"]["stable"]
         end
 
-        private
-
         def brew_cmd_output(*command)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)

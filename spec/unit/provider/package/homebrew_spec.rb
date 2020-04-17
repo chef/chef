@@ -278,7 +278,7 @@ describe Chef::Provider::Package::Homebrew do
     end
   end
 
-  describe "brew" do
+  describe "#brew_cmd_output" do
     before do
       expect(provider).to receive(:find_homebrew_uid).and_return(homebrew_uid)
       expect(Etc).to receive(:getpwuid).with(homebrew_uid).and_return(OpenStruct.new(name: "name", dir: "/"))
@@ -286,12 +286,12 @@ describe Chef::Provider::Package::Homebrew do
 
     it "passes a single to the brew command and return stdout" do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
-      expect(provider.brew).to eql("zombo")
+      expect(provider.brew_cmd_output).to eql("zombo")
     end
 
     it "takes multiple arguments as an array" do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "homestarrunner"))
-      expect(provider.brew("info", "opts", "bananas")).to eql("homestarrunner")
+      expect(provider.brew_cmd_output("info", "opts", "bananas")).to eql("homestarrunner")
     end
 
     context "when new_resource is Package" do
@@ -299,7 +299,7 @@ describe Chef::Provider::Package::Homebrew do
 
       it "does not try to read homebrew_user from Package, which does not have it" do
         allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
-        expect(provider.brew).to eql("zombo")
+        expect(provider.brew_cmd_output).to eql("zombo")
       end
     end
   end
