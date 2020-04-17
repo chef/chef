@@ -303,8 +303,12 @@ describe Chef::Application::Client, "reconfigure" do
         context "when there is no new config" do
           let(:config_exists) { false }
 
-          it "does not updates the config" do
+          it "does not update the config" do
             expect(Chef::Config).not_to receive(:from_string)
+              .with(
+                "new_config",
+                File.join("the_path_to_the_repo", ".chef/config.rb")
+              )
 
             app.reconfigure
           end

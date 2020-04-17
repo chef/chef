@@ -518,6 +518,7 @@ describe Chef::Knife::Bootstrap do
 
     before do
       Chef::Config[:knife][:bootstrap_template] = template_file
+      knife.merge_configs
     end
 
     let(:rendered_template) do
@@ -530,7 +531,6 @@ describe Chef::Knife::Bootstrap do
       end
 
       it "renders 'fips true'" do
-        Chef::Config[:fips] = true
         expect(rendered_template).to match("fips")
       end
     end
@@ -617,6 +617,7 @@ describe Chef::Knife::Bootstrap do
       allow(knife).to receive(:host_descriptor).and_return host_descriptor
       if knife_connection_protocol
         Chef::Config[:knife][:connection_protocol] = knife_connection_protocol
+        knife.merge_configs
       end
     end
 
@@ -827,6 +828,7 @@ describe Chef::Knife::Bootstrap do
           before do
             # Set everything to easily identifiable and obviously fake values
             # to verify that Chef::Config is being sourced instead of knife.config
+            knife.config = {}
             Chef::Config[:knife][:max_wait] = 9999
             Chef::Config[:knife][:winrm_user] = "winbob"
             Chef::Config[:knife][:winrm_port] = 9999
@@ -841,20 +843,7 @@ describe Chef::Knife::Bootstrap do
             Chef::Config[:knife][:winrm_ssl_peer_fingerprint] = "ABCDEF"
           end
 
-          context "and unsupported Chef::Config options are given in Chef::Config, not in CLI" do
-            before do
-              Chef::Config[:knife][:connection_password] = "blah"
-              Chef::Config[:knife][:winrm_password] = "blah"
-            end
-            it "does not include the corresponding option in the connection options" do
-              expect(knife.connection_opts.key?(:password)).to eq false
-            end
-          end
-
           context "and no CLI options have been given" do
-            before do
-              knife.config = {}
-            end
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
@@ -874,6 +863,7 @@ describe Chef::Knife::Bootstrap do
             end
 
             it "generates a config hash using the Chef::Config values" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
 
@@ -885,7 +875,7 @@ describe Chef::Knife::Bootstrap do
                 logger: Chef::Log, # not configurable
                 ca_trust_path: "no trust",
                 max_wait_until_ready: 9999,
-                operation_timeout: 60,
+                operation_timeout: 9999,
                 ssl_peer_fingerprint: "ABCDEF",
                 winrm_transport: "kerberos",
                 winrm_basic_auth_only: true,
@@ -908,6 +898,7 @@ describe Chef::Knife::Bootstrap do
             end
 
             it "generates a config hash using the CLI options when available and falling back to Chef::Config values" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
           end
@@ -954,6 +945,7 @@ describe Chef::Knife::Bootstrap do
               }
             end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
           end
@@ -963,7 +955,6 @@ describe Chef::Knife::Bootstrap do
           before do
             # We will use knife's actual config since these tests
             # have assumptions based on CLI default values
-            knife.merge_configs
           end
           let(:expected_result) do
             {
@@ -977,6 +968,7 @@ describe Chef::Knife::Bootstrap do
             }
           end
           it "populates appropriate defaults" do
+            knife.merge_configs
             expect(knife.connection_opts).to match expected_result
           end
         end
@@ -990,6 +982,7 @@ describe Chef::Knife::Bootstrap do
           before do
             # Set everything to easily identifiable and obviously fake values
             # to verify that Chef::Config is being sourced instead of knife.config
+            knife.config = {}
             Chef::Config[:knife][:max_wait] = 9999
             Chef::Config[:knife][:session_timeout] = 9999
             Chef::Config[:knife][:ssh_user] = "sshbob"
@@ -1002,9 +995,6 @@ describe Chef::Knife::Bootstrap do
           end
 
           context "and no CLI options have been given" do
-            before do
-              knife.config = {}
-            end
             let(:expected_result) do
               {
                 logger: Chef::Log, # not configurable
@@ -1018,13 +1008,14 @@ describe Chef::Knife::Bootstrap do
                 keys_only: true,
                 key_files: ["/identity.pem", "/gateway.pem"],
                 sudo: false,
-                verify_host_key: nil,
+                verify_host_key: "always",
                 port: 9999,
                 non_interactive: true,
               }
             end
 
             it "generates a correct config hash using the Chef::Config values" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
           end
@@ -1038,6 +1029,7 @@ describe Chef::Knife::Bootstrap do
               Chef::Config[:knife][:ssh_forward_agent] = "blah"
             end
             it "does not include the corresponding option in the connection options" do
+              knife.merge_configs
               expect(knife.connection_opts.key?(:password)).to eq false
               expect(knife.connection_opts.key?(:ssh_forward_agent)).to eq false
               expect(knife.connection_opts.key?(:use_sudo)).to eq false
@@ -1047,6 +1039,7 @@ describe Chef::Knife::Bootstrap do
 
           context "and some CLI options have been given" do
             before do
+              knife.config = {}
               knife.config[:connection_user] = "sshalice"
               knife.config[:connection_port] = 12
               knife.config[:ssh_port] = "13" # canary to indirectly verify we're not looking for the wrong CLI flag
@@ -1072,19 +1065,21 @@ describe Chef::Knife::Bootstrap do
                 keys_only: false, # implied false from config password present
                 key_files: ["/identity.pem", "/gateway.pem"], # Config
                 sudo: true, # ccli
-                verify_host_key: nil, # Config
+                verify_host_key: "always", # Config
                 port: 12, # cli
                 non_interactive: true,
               }
             end
 
             it "generates a config hash using the CLI options when available and falling back to Chef::Config values" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
           end
 
           context "and all CLI options have been given" do
             before do
+              knife.config = {}
               knife.config[:max_wait] = 150
               knife.config[:session_timeout] = 120
               knife.config[:connection_user] = "sshroot"
@@ -1129,6 +1124,7 @@ describe Chef::Knife::Bootstrap do
               }
             end
             it "generates a config hash using the CLI options and pulling nothing from Chef::Config" do
+              knife.merge_configs
               expect(knife.connection_opts).to match expected_result
             end
           end
@@ -1137,7 +1133,7 @@ describe Chef::Knife::Bootstrap do
           before do
             # We will use knife's actual config since these tests
             # have assumptions based on CLI default values
-            knife.merge_configs
+            config = {}
           end
 
           let(:expected_result) do
@@ -1153,6 +1149,7 @@ describe Chef::Knife::Bootstrap do
             }
           end
           it "populates appropriate defaults" do
+            knife.merge_configs
             expect(knife.connection_opts).to match expected_result
           end
         end
@@ -1167,17 +1164,6 @@ describe Chef::Knife::Bootstrap do
 
     before do
       allow(knife).to receive(:connection_protocol).and_return connection_protocol
-    end
-
-    context "when determining knife config keys for user and port" do
-      let(:connection_protocol) { "fake" }
-      it "uses the protocol name to resolve the knife config keys" do
-        allow(knife).to receive(:config_value).with(:max_wait)
-
-        expect(knife).to receive(:config_value).with(:connection_port, :fake_port)
-        expect(knife).to receive(:config_value).with(:connection_user, :fake_user)
-        knife.base_opts
-      end
     end
 
     context "for all protocols" do
@@ -1940,22 +1926,15 @@ describe Chef::Knife::Bootstrap do
       Chef::Config[:knife][:test_key_a] = "a from Chef::Config"
       Chef::Config[:knife][:test_key_c] = "c from Chef::Config"
       Chef::Config[:knife][:alt_test_key_c] = "alt c from Chef::Config"
+      knife.merge_configs
     end
 
-    it "returns CLI value when key is only provided by the CLI" do
-      expect(knife.config_value(:test_key_b)).to eq "b from cli"
-    end
-
-    it "returns CLI value when key is provided by CLI and Chef::Config" do
-      expect(knife.config_value(:test_key_a)).to eq "a from cli"
-    end
-
-    it "returns Chef::Config value whent he key is only provided by Chef::Config" do
-      expect(knife.config_value(:test_key_c)).to eq "c from Chef::Config"
+    it "returns the Chef::Config value from the cli when the CLI key is set" do
+      expect(knife.config_value(:test_key_a, :alt_test_key_c)).to eq "a from cli"
     end
 
     it "returns the Chef::Config value from the alternative key when the CLI key is not set" do
-      expect(knife.config_value(:test_key_c, :alt_test_key_c)).to eq "alt c from Chef::Config"
+      expect(knife.config_value(:test_key_d, :alt_test_key_c)).to eq "alt c from Chef::Config"
     end
 
     it "returns the default value when the key is not provided by CLI or Chef::Config" do

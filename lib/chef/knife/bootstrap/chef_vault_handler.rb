@@ -21,7 +21,7 @@ class Chef
       class ChefVaultHandler
 
         # @return [Hash] knife merged config, typically @config
-        attr_accessor :knife_config
+        attr_accessor :config
 
         # @return [Chef::Knife::UI] ui object for output
         attr_accessor :ui
@@ -29,11 +29,15 @@ class Chef
         # @return [Chef::ApiClient] vault client
         attr_reader :client
 
-        # @param knife_config [Hash] knife merged config, typically @config
+        # @param config [Hash] knife merged config, typically @config
         # @param ui [Chef::Knife::UI] ui object for output
-        def initialize(knife_config: {}, ui: nil)
-          @knife_config = knife_config
-          @ui           = ui
+        def initialize(config: {}, knife_config: nil, ui: nil)
+          @config = config
+          unless knife_config.nil?
+            @config = knife_config
+            Chef.deprecated(:knife_bootstrap_apis, "The knife_config option to the Bootstrap::ClientBuilder object is deprecated and has been renamed to just 'config'")
+          end
+          @ui = ui
         end
 
         # Updates the chef vault items for the newly created client.
@@ -85,17 +89,17 @@ class Chef
 
         # @return [String] string with serialized JSON representing the chef vault items
         def bootstrap_vault_json
-          knife_config[:bootstrap_vault_json]
+          config[:bootstrap_vault_json]
         end
 
         # @return [String] JSON text in a file representing the chef vault items
         def bootstrap_vault_file
-          knife_config[:bootstrap_vault_file]
+          config[:bootstrap_vault_file]
         end
 
         # @return [Hash] Ruby object representing the chef vault items to create
         def bootstrap_vault_item
-          knife_config[:bootstrap_vault_item]
+          config[:bootstrap_vault_item]
         end
 
         # Helper to return a ruby object represeting all the data bags and items

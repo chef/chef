@@ -20,12 +20,6 @@ require "spec_helper"
 require "chef/knife/core/bootstrap_context"
 
 describe Chef::Knife::Core::BootstrapContext do
-  before do
-    # This is required because the chef-fips pipeline does
-    # has a default value of true for fips
-    Chef::Config[:fips] = false
-  end
-
   let(:config) { { foo: :bar, color: true } }
   let(:run_list) { Chef::RunList.new("recipe[tmux]", "role[base]") }
   let(:chef_config) do
@@ -182,34 +176,18 @@ describe Chef::Knife::Core::BootstrapContext do
       expect(bootstrap_context.config_content).not_to include("ssl_verify_mode")
     end
 
-    describe "when configured in config" do
-      let(:chef_config) do
-        {
-          knife: { ssl_verify_mode: :verify_peer },
-        }
-      end
+    describe "when configured via the config hash" do
+      let(:config) { { node_ssl_verify_mode: "none" } }
 
       it "uses the config value" do
-        expect(bootstrap_context.config_content).to include("ssl_verify_mode :verify_peer")
-      end
-
-      describe "when configured via CLI" do
-        let(:config) { { node_ssl_verify_mode: "none" } }
-
-        it "uses CLI value" do
-          expect(bootstrap_context.config_content).to include("ssl_verify_mode :verify_none")
-        end
+        expect(bootstrap_context.config_content).to include("ssl_verify_mode :verify_none")
       end
     end
   end
 
   describe "fips mode" do
     before do
-      Chef::Config[:fips] = true
-    end
-
-    after do
-      Chef::Config.reset!
+      chef_config[:fips] = true
     end
 
     it "sets fips mode in the client.rb" do
@@ -222,23 +200,11 @@ describe Chef::Knife::Core::BootstrapContext do
       expect(bootstrap_context.config_content).not_to include("verify_api_cert")
     end
 
-    describe "when configured in config" do
-      let(:chef_config) do
-        {
-          knife: { verify_api_cert: :false },
-        }
-      end
+    describe "when configured via the config hash" do
+      let(:config) { { node_verify_api_cert: true } }
 
-      it "uses the config value" do
-        expect(bootstrap_context.config_content).to include("verify_api_cert false")
-      end
-
-      describe "when configured via CLI" do
-        let(:config) { { node_verify_api_cert: true } }
-
-        it "uses CLI value" do
-          expect(bootstrap_context.config_content).to include("verify_api_cert true")
-        end
+      it "uses config value" do
+        expect(bootstrap_context.config_content).to include("verify_api_cert true")
       end
     end
   end
