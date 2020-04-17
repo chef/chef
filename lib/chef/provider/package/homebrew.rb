@@ -92,7 +92,7 @@ class Chef
         # @returns [Hash] a hash of package information where the key is the package name
         def brew_info
           @brew_info ||= begin
-            command_array = ["info", "--json=v1"].concat Array(new_resource.package_name)
+            command_array = ["info", "--json=v1"].concat package_name_array
             # convert the array of hashes into a hash where the key is the package name
 
             cmd_output = brew_cmd_output(command_array, allow_failure: true)
