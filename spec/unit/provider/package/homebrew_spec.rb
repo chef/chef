@@ -284,7 +284,7 @@ describe Chef::Provider::Package::Homebrew do
       expect(Etc).to receive(:getpwuid).with(homebrew_uid).and_return(OpenStruct.new(name: "name", dir: "/"))
     end
 
-    it "passes a single to the brew command and return stdout" do
+    it "passes a single pkg to the brew command and return stdout" do
       allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
       expect(provider.brew_cmd_output).to eql("zombo")
     end
@@ -301,43 +301,6 @@ describe Chef::Provider::Package::Homebrew do
         allow(provider).to receive(:shell_out!).and_return(OpenStruct.new(stdout: "zombo"))
         expect(provider.brew_cmd_output).to eql("zombo")
       end
-    end
-  end
-
-  describe "#install_package" do
-    it "calls #brew_cmd_output to install the packages" do
-      expect(provider).to receive(:brew_cmd_output).with("install", nil, %w{vim git})
-      provider.install_package(%w{vim git}, ["8.2.0550", "2.26.1"])
-    end
-
-    it "passes options if set on the resource" do
-    end
-  end
-
-  describe "#upgrade_package" do
-    it "calls #brew_cmd_output to upgrade the packages" do
-    end
-
-    it "calls #brew_cmd_output to install packages that aren't yet installed" do
-    end
-
-    it "passes options if set on the resource" do
-    end
-  end
-
-  describe "#remove_package" do
-    it "calls #brew_cmd_output to remove the packages" do
-    end
-
-    it "passes options if set on the resource" do
-    end
-  end
-
-  describe "#purge_package" do
-    it "calls #brew_cmd_output to remove the packages with the --force option" do
-    end
-
-    it "passes options if set on the resource" do
     end
   end
 
