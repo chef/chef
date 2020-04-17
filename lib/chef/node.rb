@@ -351,14 +351,30 @@ class Chef
       run_list.detect { |r| r == item } ? true : false
     end
 
-    # Consume data from ohai and Attributes provided as JSON on the command line.
+    # Handles both the consumption of ohai data and possibly JSON attributes from the CLI
+    #
+    # @api private
     def consume_external_attrs(ohai_data, json_cli_attrs)
       # FIXME(log): should be trace
       logger.debug("Extracting run list from JSON attributes provided on command line")
       consume_attributes(json_cli_attrs)
 
       self.automatic_attrs = ohai_data
+      fix_automatic_attributes
+    end
 
+    # This is for ohai plugins to consume ohai data and have it merged, it should probably be renamed
+    #
+    # @api private
+    def consume_ohai_data(ohai_data)
+      self.automatic_attrs = Chef::Mixin::DeepMerge.merge(automatic_attrs, ohai_data)
+      fix_automatic_attributes
+    end
+
+    # Always ensure that certain automatic attributes are populated and constructed correctly
+    #
+    # @api private
+    def fix_automatic_attributes
       platform, version = Chef::Platform.find_platform_and_version(self)
       # FIXME(log): should be trace
       logger.debug("Platform is #{platform} version #{version}")
@@ -367,10 +383,6 @@ class Chef
       automatic[:chef_guid] = Chef::Config[:chef_guid] || ( Chef::Config[:chef_guid] = node_uuid )
       automatic[:name] = name
       automatic[:chef_environment] = chef_environment
-    end
-
-    def consume_ohai_data(ohai_data)
-      self.automatic_attrs = Chef::Mixin::DeepMerge.merge(automatic_attrs, ohai_data)
     end
 
     # Consumes the combined run_list and other attributes in +attrs+
