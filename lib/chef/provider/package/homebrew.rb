@@ -94,7 +94,11 @@ class Chef
           @brew_info ||= begin
             command_array = ["info", "--json=v1"].concat Array(new_resource.package_name)
             # convert the array of hashes into a hash where the key is the package name
-            Hash[Chef::JSONCompat.from_json(brew_cmd_output(command_array)).collect { |pkg| [pkg["name"], pkg] }]
+
+            cmd_output = brew_cmd_output(command_array, allow_failure: true)
+            return nil if cmd_output.empty? # empty std_out == bad package queried
+
+            Hash[Chef::JSONCompat.from_json(cmd_output).collect { |pkg| [pkg["name"], pkg] }]
           end
         end
 
@@ -106,6 +110,8 @@ class Chef
         # @return [Hash] Package information
         #
         def package_info(package_name)
+          return nil if brew_info.nil? # continue to raise the nil up the chain
+
           # return the package hash if it's in the brew info hash
           return brew_info[package_name] if brew_info[package_name]
 
@@ -128,6 +134,9 @@ class Chef
         # @returns [String] package version
         def installed_version(i)
           p_data = package_info(i)
+
+          # nil means we couldn't find anything
+          return nil if p_data.nil?
 
           if p_data["keg_only"]
             if p_data["installed"].empty?
@@ -156,16 +165,26 @@ class Chef
         def available_version(i)
           p_data = package_info(i)
 
+          # nil means we couldn't find anything
+          return nil if p_data.nil?
+
           p_data["versions"]["stable"]
         end
 
-        def brew_cmd_output(*command)
+        def brew_cmd_output(*command, **options)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
           logger.trace "Executing 'brew #{command.join(" ")}' as user '#{homebrew_user.name}'"
+
+          # allow the calling method to decide if the cmd should raise or not
+          # brew_info uses this when querying out available package info since a bad
+          # package name will raise and we want to surface a nil available package so that
+          # the package provider can magically handle that
+          shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
+
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out!("brew", *command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = send(shell_out_cmd, "brew", *command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 

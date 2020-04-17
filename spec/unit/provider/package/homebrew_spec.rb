@@ -237,6 +237,11 @@ describe Chef::Provider::Package::Homebrew do
       allow(provider).to receive(:brew_cmd_output).and_return(brew_cmd_output_data)
       expect(provider.brew_info).to have_key("vim")
     end
+
+    it "returns nil if brew_cmd_output_data returned empty stdout" do
+      allow(provider).to receive(:brew_cmd_output).and_return("")
+      expect(provider.brew_info).to be_nil
+    end
   end
 
   describe "#installed_version" do
@@ -275,6 +280,11 @@ describe Chef::Provider::Package::Homebrew do
     it "returns version of package when alias is given" do
       allow(provider).to receive(:brew_info).and_return(brew_info_data)
       expect(provider.available_version("openssl")).to eql("1.1.1f")
+    end
+
+    it "returns nil if brew_info returns nil" do
+      allow(provider).to receive(:brew_info).and_return(nil)
+      expect(provider.available_version("foo")).to be_nil
     end
   end
 
