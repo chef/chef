@@ -68,7 +68,7 @@ describe Chef::Provider::Package::Homebrew do
        "conflicts_with" => [],
        "caveats" =>
         "A CA file has been bootstrapped using certificates from the system\nkeychain. To add additional certificates, place .pem files in\n  $(brew --prefix)/etc/openssl@1.1/certs\n\nand run\n  $(brew --prefix)/opt/openssl@1.1/bin/c_rehash\n",
-       "installed" => [{ "version" => "1.1.1f", "used_options" => [], "built_as_bottle" => true, "poured_from_bottle" => true, "runtime_dependencies" => [], "installed_as_dependency" => true, "installed_on_request" => false }],
+       "installed" => [{ "version" => "1.1.1a", "used_options" => [], "built_as_bottle" => true, "poured_from_bottle" => true, "runtime_dependencies" => [], "installed_as_dependency" => true, "installed_on_request" => false }],
        "linked_keg" => nil,
        "pinned" => false,
        "outdated" => false },
@@ -242,7 +242,7 @@ describe Chef::Provider::Package::Homebrew do
   describe "#installed_version" do
     it "returns the latest version from brew info if the package is keg only" do
       allow(provider).to receive(:brew_info).and_return(brew_info_data)
-      expect(provider.installed_version("openssl@1.1")).to eql("1.1.1f")
+      expect(provider.installed_version("openssl@1.1")).to eql("1.1.1a")
     end
 
     it "returns the linked keg version if the package is not keg only" do
@@ -262,7 +262,7 @@ describe Chef::Provider::Package::Homebrew do
 
     it "returns the version if a package alias is given" do
       allow(provider).to receive(:brew_info).and_return(brew_info_data)
-      expect(provider.installed_version("openssl")).to eql("1.1.1f")
+      expect(provider.installed_version("openssl")).to eql("1.1.1a")
     end
   end
 
@@ -306,7 +306,7 @@ describe Chef::Provider::Package::Homebrew do
 
   describe "#install_package" do
     it "calls #brew_cmd_output to install the packages" do
-      expect(provider).to receive(:brew_cmd_output).with(["install", nil, %w{vim git}])
+      expect(provider).to receive(:brew_cmd_output).with("install", nil, %w{vim git})
       provider.install_package(%w{vim git}, ["8.2.0550", "2.26.1"])
     end
 
@@ -369,33 +369,28 @@ describe Chef::Provider::Package::Homebrew do
     end
 
     describe "upgrade" do
-      it "uses brew upgrade to upgrade the package if it is installed" do
-        allow(provider.current_resource).to receive(:version).and_return("24")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew", "upgrade", nil, "emacs")
-        provider.upgrade_package("emacs", "24.3")
+      it "calls #brew_cmd_output to upgrade the packages" do
+        new_resource.package_name %w{openssl}
+        allow(provider.current_resource).to receive(:version).and_return(["1.0.1a"])
+        expect(provider).to receive(:brew_cmd_output).with("upgrade", nil, ["openssl"])
+        provider.run_action(:upgrade)
       end
 
-      it "does not do anything if the package version is already installed" do
-        allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).not_to receive(:get_response_from_command)
-        provider.install_package("emacs", "24.3")
-      end
-
-      it "uses brew install to install the package if it is not installed" do
-        allow(provider.current_resource).to receive(:version).and_return(nil)
-        allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew", "install", nil, "emacs")
-        provider.upgrade_package("emacs", "24.3")
+      it "calls #brew_cmd_output to both upgrade and install the packages as necessary" do
+        new_resource.package_name %w{openssl kubernetes-cli}
+        allow(provider.current_resource).to receive(:version).and_return(["1.0.1a", nil])
+        expect(provider).to receive(:brew_cmd_output).with("upgrade", nil, ["openssl"])
+        expect(provider).to receive(:brew_cmd_output).with("install", nil, ["kubernetes-cli"])
+        provider.run_action(:upgrade)
       end
 
       it "uses options to the brew command if specified" do
-        allow(provider.current_resource).to receive(:version).and_return("24")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
+        new_resource.package_name %w{openssl}
+        allow(provider.current_resource).to receive(:version).and_return(["1.0.1a"])
+        allow(provider).to receive(:brew_info).and_return(brew_info_data)
         new_resource.options "--cocoa"
-        expect(provider).to receive(:get_response_from_command).with("brew", "upgrade", [ "--cocoa" ], "emacs")
-        provider.upgrade_package("emacs", "24.3")
+        expect(provider).to receive(:brew_cmd_output).with("upgrade", [ "--cocoa" ], ["openssl"])
+        provider.run_action(:upgrade)
       end
     end
 
