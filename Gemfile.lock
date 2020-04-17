@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d0e353d4415834d58aa267f8bc6d5c4ce8d95652
+  revision: a2df4abd292052dfc822da3d34ff737c0c3d87b0
   branch: master
   specs:
-    chefstyle (1.0.0)
-      rubocop (= 0.81.0)
+    chefstyle (1.0.1)
+      rubocop (= 0.82.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 471ac97407eaf5570da0a25fcec227f727ea5439
+  revision: cd6090f256fcadf23c10235ece5e976cdd7c6084
   branch: master
   specs:
-    ohai (16.0.17)
+    ohai (16.0.18)
       chef-config (>= 12.8, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -145,7 +145,7 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
-    byebug (11.1.1)
+    byebug (11.1.2)
     chef-telemetry (1.0.3)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -247,7 +247,7 @@ GEM
       regexp_parser (~> 1.5)
       uri_template (~> 0.7)
     libyajl2 (1.2.0)
-    license-acceptance (1.0.18)
+    license-acceptance (1.0.19)
       pastel (~> 0.7)
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
@@ -285,7 +285,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.1)
-    parser (2.7.1.0)
+    parser (2.7.1.1)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.3)
@@ -331,7 +331,7 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.81.0)
+    rubocop (0.82.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
