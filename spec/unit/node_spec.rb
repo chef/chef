@@ -940,6 +940,23 @@ describe Chef::Node do
       expect(node["one"].to_hash).to eq({ "two" => { "three" => "forty-two" } })
     end
 
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node["platform_version"]).to be_kind_of(Chef::VersionString)
+    end
+  end
+
+  describe "merging ohai data" do
+    before do
+      @ohai_data = { platform: "foo", platform_version: "bar" }
+    end
+
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      node.consume_ohai_data({ "platform_version" => "6.3" })
+      expect(node["platform_version"]).to be_kind_of(Chef::VersionString)
+      expect(node["platform_version"] =~ "~> 6.1").to be true
+    end
   end
 
   describe "preparing for a chef client run" do
