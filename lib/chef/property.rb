@@ -303,8 +303,12 @@ class Chef
     #
     # @return [Boolean]
     #
-    def required?
-      options[:required]
+    def required?(action = nil)
+      if !action.nil? && options[:required].is_a?(Array)
+        options[:required].include?(action)
+      else
+        !!options[:required]
+      end
     end
 
     #

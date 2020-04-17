@@ -45,11 +45,22 @@ describe "Chef::Resource.property validation" do
       def self.blah
         "class#{Namer.next_index}"
       end
+
+      action :doit do
+        # this needs to not reference any properties
+      end
+
+      action :doit2 do
+        # this needs to not reference any properties
+      end
     end
   end
 
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) do
-    resource_class.new("blah")
+    resource_class.new("blah", run_context)
   end
 
   def self.english_join(values)
@@ -575,6 +586,19 @@ describe "Chef::Resource.property validation" do
       end
       it "value nil emits a validation failed error because it must have a value" do
         expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+      it "fails if it is not specified, on running the action, even if it is not referenced" do
+        expect { resource.run_action(:doit) }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+    end
+
+    with_property ":x, required: %i{doit}" do
+      it "fails if it is not specified, on running the doit action, even if it is not referenced" do
+        expect { resource.run_action(:doit) }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+
+      it "does not fail if it is not specified, on running the doit2 action" do
+        expect { resource.run_action(:doit2) }.not_to raise_error
       end
     end
 

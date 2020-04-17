@@ -152,6 +152,7 @@ class Chef
       new_resource.cookbook_name
     end
 
+    # hook that subclasses can use to do lazy validation for where properties aren't flexibile enough
     def check_resource_semantics!; end
 
     # a simple placeholder method that will be called / raise if a resource tries to
@@ -181,11 +182,19 @@ class Chef
       run_context.events
     end
 
+    def validate_required_properties!
+      # all we do is run through all the required properties for this action and vivify them
+      new_resource.class.properties.each { |name, property| property.required?(action) && property.get(new_resource) }
+    end
+
     def run_action(action = nil)
       @action = action unless action.nil?
 
-      # @todo it would be preferable to get the action to be executed in the constructor...
+      # hook that subclasses can use to do lazy validation for where properties aren't flexibile enough
       check_resource_semantics!
+
+      # force the validation of required properties
+      validate_required_properties!
 
       # user-defined LWRPs may include unsafe load_current_resource methods that cannot be run in whyrun mode
       if whyrun_mode? && !whyrun_supported?
