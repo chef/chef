@@ -238,9 +238,9 @@ describe Chef::Provider::Package::Homebrew do
       expect(provider.brew_info).to have_key("vim")
     end
 
-    it "returns nil if brew_cmd_output_data returned empty stdout" do
+    it "returns empty hash if brew_cmd_output_data returned empty stdout" do
       allow(provider).to receive(:brew_cmd_output).and_return("")
-      expect(provider.brew_info).to be_nil
+      expect(provider.brew_info).to eq({})
     end
   end
 
@@ -282,9 +282,9 @@ describe Chef::Provider::Package::Homebrew do
       expect(provider.available_version("openssl")).to eql("1.1.1f")
     end
 
-    it "returns nil if brew_info returns nil" do
-      allow(provider).to receive(:brew_info).and_return(nil)
-      expect(provider.available_version("foo")).to be_nil
+    it "returns nil if the package is not installed" do
+      allow(provider).to receive(:brew_info).and_return(brew_info_data)
+      expect(provider.available_version("bogus")).to be_nil
     end
   end
 

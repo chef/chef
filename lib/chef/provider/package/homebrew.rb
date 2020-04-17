@@ -96,7 +96,7 @@ class Chef
             # convert the array of hashes into a hash where the key is the package name
 
             cmd_output = brew_cmd_output(command_array, allow_failure: true)
-            return nil if cmd_output.empty? # empty std_out == bad package queried
+            return {} if cmd_output.empty? # empty std_out == bad package queried
 
             Hash[Chef::JSONCompat.from_json(cmd_output).collect { |pkg| [pkg["name"], pkg] }]
           end
@@ -110,8 +110,6 @@ class Chef
         # @return [Hash] Package information
         #
         def package_info(package_name)
-          return nil if brew_info.nil? # continue to raise the nil up the chain
-
           # return the package hash if it's in the brew info hash
           return brew_info[package_name] if brew_info[package_name]
 
@@ -134,9 +132,6 @@ class Chef
         # @returns [String] package version
         def installed_version(i)
           p_data = package_info(i)
-
-          # nil means we couldn't find anything
-          return nil if p_data.nil?
 
           if p_data["keg_only"]
             if p_data["installed"].empty?
@@ -165,8 +160,8 @@ class Chef
         def available_version(i)
           p_data = package_info(i)
 
-          # nil means we couldn't find anything
-          return nil if p_data.nil?
+          # nothing is available
+          return nil if p_data.empty?
 
           p_data["versions"]["stable"]
         end
