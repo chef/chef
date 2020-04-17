@@ -304,40 +304,71 @@ describe Chef::Provider::Package::Homebrew do
     end
   end
 
-  context "when testing actions" do
-    before(:each) do
-      provider.current_resource = current_resource
+  describe "#install_package" do
+    it "calls #brew_cmd_output to install the packages" do
+      expect(provider).to receive(:brew_cmd_output).with(["install", nil, %w{vim git}])
+      provider.install_package(%w{vim git}, ["8.2.0550", "2.26.1"])
     end
 
-    describe "install_package" do
-      before(:each) do
-        allow(provider).to receive(:candidate_version).and_return("24.3")
+    it "passes options if set on the resource" do
+    end
+  end
+
+  describe "#upgrade_package" do
+    it "calls #brew_cmd_output to upgrade the packages" do
+    end
+
+    it "calls #brew_cmd_output to install packages that aren't yet installed" do
+    end
+
+    it "passes options if set on the resource" do
+    end
+  end
+
+  describe "#remove_package" do
+    it "calls #brew_cmd_output to remove the packages" do
+    end
+
+    it "passes options if set on the resource" do
+    end
+  end
+
+  describe "#purge_package" do
+    it "calls #brew_cmd_output to remove the packages with the --force option" do
+    end
+
+    it "passes options if set on the resource" do
+    end
+  end
+
+  describe "resource actions" do
+    before(:each) do
+      provider.current_resource = current_resource
+      allow(provider).to receive(:brew_info).and_return(brew_info_data)
+    end
+
+    describe "install" do
+      it "calls brew_cmd_output to install only the necessary packages" do
+        new_resource.package_name %w{curl openssl}
+        expect(provider).to receive(:brew_cmd_output).with("install", nil, ["curl"])
+        provider.run_action(:install)
       end
 
-      it "installs the named package with brew install" do
-        allow(provider.new_resource).to receive(:version).and_return("24.3")
-        allow(provider.current_resource).to receive(:version).and_return(nil)
-        allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew", "install", nil, "emacs")
-        provider.install_package("emacs", "24.3")
-      end
-
-      it "does not do anything if the package is installed" do
-        allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).not_to receive(:get_response_from_command)
-        provider.install_package("emacs", "24.3")
+      it "does not do anything if all the packages are already installed" do
+        new_resource.package_name %w{vim openssl}
+        expect(provider).not_to receive(:brew_cmd_output)
+        provider.run_action(:install)
       end
 
       it "uses options to the brew command if specified" do
+        new_resource.package_name "curl"
         new_resource.options "--cocoa"
-        allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:get_response_from_command).with("brew", "install", "--cocoa", "emacs")
-        provider.install_package("emacs", "24.3")
+        expect(provider).to receive(:brew_cmd_output).with("install", ["--cocoa"], ["curl"])
+        provider.run_action(:install)
       end
     end
 
-    describe "upgrade_package" do
+    describe "upgrade" do
       it "uses brew upgrade to upgrade the package if it is installed" do
         allow(provider.current_resource).to receive(:version).and_return("24")
         allow(provider).to receive(:brew_info).and_return(installed_brew_info)
@@ -368,33 +399,31 @@ describe Chef::Provider::Package::Homebrew do
       end
     end
 
-    describe "remove_package" do
-      it "uninstalls the package with brew uninstall" do
-        allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew", "uninstall", nil, "emacs")
-        provider.remove_package("emacs", "24.3")
+    describe "remove" do
+      it "calls #brew_cmd_output to uninstall the packages" do
+        new_resource.package_name %w{curl openssl}
+        expect(provider).to receive(:brew_cmd_output).with("uninstall", nil, %w{curl openssl})
+        provider.run_action(:remove)
       end
 
       it "does not do anything if the package is not installed" do
-        allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).not_to receive(:get_response_from_command)
-        provider.remove_package("emacs", "24.3")
+        new_resource.package_name %w{kubernetes-cli}
+        expect(provider).not_to receive(:brew_cmd_output)
+        provider.run_action(:remove)
       end
     end
 
-    describe "purge_package" do
-      it "uninstalls the package with brew uninstall --force" do
-        allow(provider.current_resource).to receive(:version).and_return("24.3")
-        allow(provider).to receive(:brew_info).and_return(installed_brew_info)
-        expect(provider).to receive(:get_response_from_command).with("brew", "uninstall", "--force", nil, "emacs")
-        provider.purge_package("emacs", "24.3")
+    describe "purge" do
+      it "call #brew_cmd_output to uninstall --force the packages" do
+        new_resource.package_name %w{curl openssl}
+        expect(provider).to receive(:brew_cmd_output).with("uninstall", "--force", nil, %w{curl openssl})
+        provider.run_action(:purge)
       end
 
       it "does not do anything if the package is not installed" do
-        allow(provider).to receive(:brew_info).and_return(uninstalled_brew_info)
-        expect(provider).not_to receive(:get_response_from_command)
-        provider.purge_package("emacs", "24.3")
+        new_resource.package_name %w{kubernetes-cli}
+        expect(provider).not_to receive(:brew_cmd_output)
+        provider.run_action(:purge)
       end
     end
   end
