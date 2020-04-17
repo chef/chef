@@ -64,8 +64,8 @@ class Chef
         # via the installed_version helper.
         def upgrade_package(names, versions)
           # @todo when we no longer support Ruby 2.6 this can be simplified to be a .filter_map
-          upgrade_pkgs = names.map { |x| x if installed_version(x) }.compact
-          install_pkgs = names.map { |x| x unless installed_version(x) }.compact
+          upgrade_pkgs = names.select { |x| x if installed_version(x) }.compact
+          install_pkgs = names.select { |x| x unless installed_version(x) }.compact
 
           brew_cmd_output("upgrade", options, upgrade_pkgs) unless upgrade_pkgs.empty?
           brew_cmd_output("install", options, install_pkgs) unless install_pkgs.empty?
