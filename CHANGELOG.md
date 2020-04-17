@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.217 -->
-## [v16.0.217](https://github.com/chef/chef/tree/v16.0.217) (2020-04-17)
+<!-- latest_release 16.0.219 -->
+## [v16.0.219](https://github.com/chef/chef/tree/v16.0.219) (2020-04-17)
 
 #### Merged Pull Requests
-- Fix platform_version Chef::VersionString API [#9682](https://github.com/chef/chef/pull/9682) ([lamont-granquist](https://github.com/lamont-granquist))
+- Knife bootstrap options cleanup [#9646](https://github.com/chef/chef/pull/9646) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Knife bootstrap options cleanup [#9646](https://github.com/chef/chef/pull/9646) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.219 -->
 - Fix platform_version Chef::VersionString API [#9682](https://github.com/chef/chef/pull/9682) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.217 -->
 - Merge ohai resource / provider into a single resource [#9681](https://github.com/chef/chef/pull/9681) ([tas50](https://github.com/tas50)) <!-- 16.0.216 -->
 - Ruby 2.7 fix for powershell_out [#9679](https://github.com/chef/chef/pull/9679) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.215 -->
