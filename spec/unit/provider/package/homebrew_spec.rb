@@ -266,6 +266,18 @@ describe Chef::Provider::Package::Homebrew do
     end
   end
 
+  describe "#available_version" do
+    it "returns version of package when exact name given" do
+      allow(provider).to receive(:brew_info).and_return(brew_info_data)
+      expect(provider.available_version("openssl@1.1")).to eql("1.1.1f")
+    end
+
+    it "returns version of package when alias is given" do
+      allow(provider).to receive(:brew_info).and_return(brew_info_data)
+      expect(provider.available_version("openssl")).to eql("1.1.1f")
+    end
+  end
+
   describe "brew" do
     before do
       expect(provider).to receive(:find_homebrew_uid).and_return(homebrew_uid)
