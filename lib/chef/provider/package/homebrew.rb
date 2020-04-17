@@ -57,14 +57,17 @@ class Chef
           brew_cmd_output("install", options, names.compact)
         end
 
-        def upgrade_package(name, version)
-          current_version = current_resource.version
+        # upgrades are a bit harder in homebrew than other package formats. If you try to
+        # brew upgrade a package that isn't installed it will fail so if a user specifies
+        # the action of upgrade we need to figure out which packages need to be installed
+        # and which packages can be upgrades. We do this by checking if brew_info has an entry
+        # via the installed_version helper.
+        def upgrade_package(names, versions)
+          upgrade_pkgs = names.filter_map { |x| x if installed_version(x) }
+          install_pkgs = names.filter_map { |x| x unless installed_version(x) }
 
-          if current_version.nil? || current_version.empty?
-            install_package(name, version)
-          elsif current_version != version
-            brew_cmd_output("upgrade", options, name)
-          end
+          brew_cmd_output("upgrade", options, upgrade_pkgs) unless upgrade_pkgs.empty?
+          brew_cmd_output("install", options, install_pkgs) unless install_pkgs.empty?
         end
 
         def remove_package(names, versions)
