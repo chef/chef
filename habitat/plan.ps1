@@ -12,7 +12,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "chef/ruby-plus-devkit"
+  "chef/ruby27-plus-devkit"
 )
 
 function Invoke-Begin {
