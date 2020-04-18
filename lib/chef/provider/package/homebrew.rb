@@ -96,9 +96,21 @@ class Chef
             # convert the array of hashes into a hash where the key is the package name
 
             cmd_output = brew_cmd_output(command_array, allow_failure: true)
-            return {} if cmd_output.empty? # empty std_out == bad package queried
 
-            Hash[Chef::JSONCompat.from_json(cmd_output).collect { |pkg| [pkg["name"], pkg] }]
+            if cmd_output.empty?
+              # we had some kind of failure so we need to iterate through each package to find them
+              package_name_array.each_with_object({}) do |package_name, hsh|
+                cmd_output = brew_cmd_output("info", "--json=v1", package_name, allow_failure: true)
+                if cmd_output.empty?
+                  hsh[package_name] = {}
+                else
+                  json = Chef::JSONCompat.from_json(cmd_output).first
+                  hsh[json["name"]] = json
+                end
+              end
+            else
+              Hash[Chef::JSONCompat.from_json(cmd_output).collect { |pkg| [pkg["name"], pkg] }]
+            end
           end
         end
 

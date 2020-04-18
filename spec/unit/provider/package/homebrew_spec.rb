@@ -238,9 +238,10 @@ describe Chef::Provider::Package::Homebrew do
       expect(provider.brew_info).to have_key("vim")
     end
 
-    it "returns empty hash if brew_cmd_output_data returned empty stdout" do
+    it "returns empty hash for packages if they lack data" do
+      new_resource.package_name %w{bogus}
       allow(provider).to receive(:brew_cmd_output).and_return("")
-      expect(provider.brew_info).to eq({})
+      expect(provider.brew_info).to eq("bogus" => {})
     end
   end
 
