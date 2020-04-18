@@ -568,18 +568,6 @@ describe Chef::Cookbook::Metadata do
         @hash = metadata.to_hash
       end
 
-      it "should transform deprecated greater than syntax for :dependencies" do
-        @hash[:dependencies.to_s]["foo::bar"] = ">> 0.2"
-        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-        expect(deserial.send(:dependencies)["foo::bar"]).to eq("> 0.2")
-      end
-
-      it "should transform deprecated less than syntax for :dependencies" do
-        @hash[:dependencies.to_s]["foo::bar"] = "<< 0.2"
-        deserial = Chef::Cookbook::Metadata.from_hash(@hash)
-        expect(deserial.send(:dependencies)["foo::bar"]).to eq("< 0.2")
-      end
-
       it "should ignore multiple dependency constraints for :dependencies" do
         @hash[:dependencies.to_s]["foo::bar"] = [ ">= 1.0", "<= 5.2" ]
         deserial = Chef::Cookbook::Metadata.from_hash(@hash)
