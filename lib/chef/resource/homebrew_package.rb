@@ -33,7 +33,7 @@ class Chef
       introduced "12.0"
 
       property :homebrew_user, [ String, Integer ],
-        description: "The name of the Homebrew owner to be used by #{Chef::Dist::PRODUCT} when executing a command."
+        description: "The name or uid of the Homebrew owner to be used by #{Chef::Dist::PRODUCT} when executing a command."
 
     end
   end
