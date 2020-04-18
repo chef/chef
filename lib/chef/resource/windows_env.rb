@@ -36,7 +36,7 @@ class Chef
 
       property :value, String,
         description: "The value of the environmental variable to set.",
-        required: true
+        required: %i{create modify}
 
       property :delim, [ String, nil, false ],
         description: "The delimiter that is used to separate multiple values for a single key.",
