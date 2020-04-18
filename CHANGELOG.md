@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.220 -->
-## [v16.0.220](https://github.com/chef/chef/tree/v16.0.220) (2020-04-17)
+<!-- latest_release 16.0.221 -->
+## [v16.0.221](https://github.com/chef/chef/tree/v16.0.221) (2020-04-18)
 
 #### Merged Pull Requests
-- Update Ohai to 16.0.18 for Windows DMI plugin [#9687](https://github.com/chef/chef/pull/9687) ([tas50](https://github.com/tas50))
+- Force requiring properties [#9688](https://github.com/chef/chef/pull/9688) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Force requiring properties [#9688](https://github.com/chef/chef/pull/9688) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.221 -->
 - Update Ohai to 16.0.18 for Windows DMI plugin [#9687](https://github.com/chef/chef/pull/9687) ([tas50](https://github.com/tas50)) <!-- 16.0.220 -->
 - Knife bootstrap options cleanup [#9646](https://github.com/chef/chef/pull/9646) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.219 -->
 - Fix platform_version Chef::VersionString API [#9682](https://github.com/chef/chef/pull/9682) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.217 -->
