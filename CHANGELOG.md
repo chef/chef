@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.224 -->
-## [v16.0.224](https://github.com/chef/chef/tree/v16.0.224) (2020-04-18)
+<!-- latest_release 16.0.225 -->
+## [v16.0.225](https://github.com/chef/chef/tree/v16.0.225) (2020-04-18)
 
 #### Merged Pull Requests
-- [CHORE] with_clean_env is deprecated [#9692](https://github.com/chef/chef/pull/9692) ([damacus](https://github.com/damacus))
+- Bump ruby for windows to 2.7 [#9693](https://github.com/chef/chef/pull/9693) ([TheLunaticScripter](https://github.com/TheLunaticScripter))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ruby for windows to 2.7 [#9693](https://github.com/chef/chef/pull/9693) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.225 -->
 - [CHORE] with_clean_env is deprecated [#9692](https://github.com/chef/chef/pull/9692) ([damacus](https://github.com/damacus)) <!-- 16.0.224 -->
 - Remove &quot;Code Can&quot; from dmg background [#9690](https://github.com/chef/chef/pull/9690) ([tas50](https://github.com/tas50)) <!-- 16.0.223 -->
 - Add multipackage support to homebrew [#7982](https://github.com/chef/chef/pull/7982) ([tas50](https://github.com/tas50)) <!-- 16.0.222 -->
