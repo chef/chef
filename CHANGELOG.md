@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.222 -->
-## [v16.0.222](https://github.com/chef/chef/tree/v16.0.222) (2020-04-18)
+<!-- latest_release 16.0.223 -->
+## [v16.0.223](https://github.com/chef/chef/tree/v16.0.223) (2020-04-18)
 
 #### Merged Pull Requests
-- Add multipackage support to homebrew [#7982](https://github.com/chef/chef/pull/7982) ([tas50](https://github.com/tas50))
+- Remove &quot;Code Can&quot; from dmg background [#9690](https://github.com/chef/chef/pull/9690) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove &quot;Code Can&quot; from dmg background [#9690](https://github.com/chef/chef/pull/9690) ([tas50](https://github.com/tas50)) <!-- 16.0.223 -->
 - Add multipackage support to homebrew [#7982](https://github.com/chef/chef/pull/7982) ([tas50](https://github.com/tas50)) <!-- 16.0.222 -->
 - Force requiring properties [#9688](https://github.com/chef/chef/pull/9688) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.221 -->
 - Update Ohai to 16.0.18 for Windows DMI plugin [#9687](https://github.com/chef/chef/pull/9687) ([tas50](https://github.com/tas50)) <!-- 16.0.220 -->
