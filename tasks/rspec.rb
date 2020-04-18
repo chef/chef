@@ -29,7 +29,7 @@ begin
   task :component_specs do
     %w{chef-utils chef-config}.each do |gem|
       Dir.chdir(gem) do
-        Bundler.with_clean_env do
+        Bundler.with_unbundled_env do
           sh("bundle install")
           sh("bundle exec rake spec")
         end

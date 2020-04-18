@@ -28,7 +28,7 @@ $Env:TMP = "C:\cheftest"
 Remove-Item -Recurse -Force $Env:TEMP -ErrorAction SilentlyContinue
 New-Item -ItemType directory -Path $Env:TEMP
 
-# FIXME: we should really use Bundler.with_clean_env in the caller instead of re-inventing it here
+# FIXME: we should really use Bundler.with_unbundled_env in the caller instead of re-inventing it here
 Remove-Item Env:_ORIGINAL_GEM_PATH -ErrorAction SilentlyContinue
 Remove-Item Env:BUNDLE_BIN_PATH -ErrorAction SilentlyContinue
 Remove-Item Env:BUNDLE_GEMFILE -ErrorAction SilentlyContinue
