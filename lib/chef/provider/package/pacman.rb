@@ -42,7 +42,7 @@ class Chef
             repos = pacman.scan(/\[(.+)\]/).flatten
           end
 
-          repos = repos.map { |r| Regexp.escape(r) }.join("|")
+          repos = Regexp.union(repos)
           status = shell_out("pacman", "-Sl")
 
           unless status.exitstatus == 0 || status.exitstatus == 1
