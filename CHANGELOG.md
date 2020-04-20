@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.226 -->
-## [v16.0.226](https://github.com/chef/chef/tree/v16.0.226) (2020-04-18)
+<!-- latest_release 16.0.227 -->
+## [v16.0.227](https://github.com/chef/chef/tree/v16.0.227) (2020-04-20)
 
 #### Merged Pull Requests
-- Remove a few additional files from our builds [#9689](https://github.com/chef/chef/pull/9689) ([tas50](https://github.com/tas50))
+- git resource: Fix for exceptions raised in why-run mode [#9627](https://github.com/chef/chef/pull/9627) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- git resource: Fix for exceptions raised in why-run mode [#9627](https://github.com/chef/chef/pull/9627) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.227 -->
 - Remove a few additional files from our builds [#9689](https://github.com/chef/chef/pull/9689) ([tas50](https://github.com/tas50)) <!-- 16.0.226 -->
 - Bump ruby for windows to 2.7 [#9693](https://github.com/chef/chef/pull/9693) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.225 -->
 - [CHORE] with_clean_env is deprecated [#9692](https://github.com/chef/chef/pull/9692) ([damacus](https://github.com/damacus)) <!-- 16.0.224 -->
