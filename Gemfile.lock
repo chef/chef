@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: a2df4abd292052dfc822da3d34ff737c0c3d87b0
+  revision: b37087b3d0d1f27b9429de401c51e1f7ea41b8f0
   branch: master
   specs:
-    chefstyle (1.0.1)
+    chefstyle (1.0.2)
       rubocop (= 0.82.0)
 
 GIT

@@ -31,26 +31,15 @@ build do
     files = %w{
       *.blurb
       *Upgrade.md
-      .appveyor.yml
-      .autotest
-      .circleci
-      .github
-      .kokoro
-      .simplecov
-      .tool-versions
-      Appraisals
       autotest
       autotest/*
       bench
       benchmark
       benchmarks
-      bundle_install_all_ruby_versions.sh
-      concourse
       design_rationale.rb
       doc
       doc-api
       docs
-      donate.png
       ed25519.png
       example
       examples
@@ -59,28 +48,18 @@ build do
       frozen_old_spec
       Gemfile.devtools
       Gemfile.lock
-      Gemfile.travis
       INSTALL.txt
-      logo.png
       man
       minitest
-      NEWS.md
       on_what.rb
       rakelib
-      README.euc
-      release-script.txt
-      run_specs_all_ruby_versions.sh
       sample
       samples
-      SECURITY.md
       site
-      SPEC.rdoc
       test
       tests
-      travis_build_script.sh
       vendor
       VERSION
-      warning.txt
       website
       yard-template
     }
