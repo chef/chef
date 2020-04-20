@@ -41,6 +41,20 @@ class Chef
       end
 
       def define_resource_requirements
+        unless new_resource.user.nil?
+          requirements.assert(:all_actions) do |a|
+            a.assertion do
+              begin
+                get_homedir(new_resource.user)
+              rescue ArgumentError
+                false
+              end
+            end
+            a.whyrun("User #{new_resource.user} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
+            a.failure_message(Chef::Exceptions::User, "#{new_resource.user} required by resource #{new_resource.name} does not exist")
+          end
+        end
+
         # Parent directory of the target must exist.
         requirements.assert(:checkout, :sync) do |a|
           dirname = ::File.dirname(cwd)
@@ -313,18 +327,7 @@ class Chef
           # Certain versions of `git` misbehave if git configuration is
           # inaccessible in $HOME. We need to ensure $HOME matches the
           # user who is executing `git` not the user running Chef.
-          env["HOME"] =
-            begin
-              require "etc" unless defined?(Etc)
-              case new_resource.user
-              when Integer
-                Etc.getpwuid(new_resource.user).dir
-              else
-                Etc.getpwnam(new_resource.user.to_s).dir
-              end
-            rescue ArgumentError # user not found
-              raise Chef::Exceptions::User, "Could not determine HOME for specified user '#{new_resource.user}' for resource '#{new_resource.name}'"
-            end
+          env["HOME"] = get_homedir(new_resource.user)
         end
         run_opts[:group] = new_resource.group if new_resource.group
         env["GIT_SSH"] = new_resource.ssh_wrapper if new_resource.ssh_wrapper
@@ -353,6 +356,20 @@ class Chef
           "**Suppressed Sensitive URL**"
         else
           new_resource.repository
+        end
+      end
+
+      # Returns the home directory of the user
+      # @param [String] user must be a string.
+      # @return [String] the home directory of the user.
+      #
+      def get_homedir(user)
+        require "etc" unless defined?(Etc)
+        case user
+        when Integer
+          Etc.getpwuid(user).dir
+        else
+          Etc.getpwnam(user.to_s).dir
         end
       end
     end
