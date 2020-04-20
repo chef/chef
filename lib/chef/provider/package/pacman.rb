@@ -56,6 +56,7 @@ class Chef
             unless pkg_data
               raise Chef::Exceptions::Package, "pacman does not have a version of package #{pkg}"
             end
+
             @candidate_version << pkg_data[:candidate]
             if pkg_data[:installed]
               current_resource.version << (pkg_data[:current] || pkg_data[:candidate])
