@@ -120,6 +120,13 @@ end
     path File.join(Chef::Config[:file_cache_path], archive)
     extract_to File.join(Chef::Config[:file_cache_path], archive.tr(".", "_"))
   end
+
+  archive_file "distant_tourism.tar.gz" do
+    url "https://github.com/chef/cookstyle/archive/v6.3.5.tar.gz"
+    checksum "4692955a785990423c856ce809063d230cc96672d2092871bf1e66735bd6edd5"
+    path File.join(Chef::Config[:file_cache_path], "distant_tourism.tar.gz")
+    extract_to File.join(Chef::Config[:file_cache_path], "distant_tourism")
+  end
 end
 
 user_ulimit "tomcat" do

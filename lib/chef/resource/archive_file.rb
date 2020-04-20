@@ -67,6 +67,15 @@ class Chef
         description: "Should the resource overwrite the destination file contents if they already exist? If set to :auto the date stamp of files within the archive will be compared to those on disk and disk contents will be overwritten if they differ. This may cause unintended consequences if disk date stamps are changed between runs, which will result in the files being overwritten during each client run. Make sure to properly test any change to this property.",
         default: false
 
+      property :url, String,
+        description: "An optional property to download the file from"
+
+      property :headers, Hash,
+        description: "A Hash of custom headers."
+
+      property :checksum, String,
+        description: "Optional, see use_conditional_get. The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, Chef Infra Client does not download it."
+
       # backwards compatibility for the legacy cookbook names
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
@@ -74,7 +83,15 @@ class Chef
       require "fileutils" unless defined?(FileUtils)
 
       action :extract do
-        description "Extract and archive file."
+        description "Download, extract and archive file."
+
+        unless new_resource.url.nil?
+          remote_file new_resource.path do
+            source new_resource.url
+            headers new_resource.headers if new_resource.headers
+            checksum new_resource.checksum if new_resource.checksum
+          end
+        end
 
         unless ::File.exist?(new_resource.path)
           raise Errno::ENOENT, "No archive found at #{new_resource.path}! Cannot continue."
