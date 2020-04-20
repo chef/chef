@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.228 -->
-## [v16.0.228](https://github.com/chef/chef/tree/v16.0.228) (2020-04-20)
+<!-- latest_release 16.0.229 -->
+## [v16.0.229](https://github.com/chef/chef/tree/v16.0.229) (2020-04-20)
 
 #### Merged Pull Requests
-- Add multipackage support to pacman package resource [#9694](https://github.com/chef/chef/pull/9694) ([tas50](https://github.com/tas50))
+- Remove deprecated Chef-10 constraint handling [#9663](https://github.com/chef/chef/pull/9663) ([damacus](https://github.com/damacus))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove deprecated Chef-10 constraint handling [#9663](https://github.com/chef/chef/pull/9663) ([damacus](https://github.com/damacus)) <!-- 16.0.229 -->
 - Add multipackage support to pacman package resource [#9694](https://github.com/chef/chef/pull/9694) ([tas50](https://github.com/tas50)) <!-- 16.0.228 -->
 - git resource: Fix for exceptions raised in why-run mode [#9627](https://github.com/chef/chef/pull/9627) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.227 -->
 - Remove a few additional files from our builds [#9689](https://github.com/chef/chef/pull/9689) ([tas50](https://github.com/tas50)) <!-- 16.0.226 -->
