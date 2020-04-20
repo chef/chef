@@ -481,7 +481,7 @@ class Chef
         @maintainer_email             = o[MAINTAINER_EMAIL] if o.key?(MAINTAINER_EMAIL)
         @license                      = o[LICENSE] if o.key?(LICENSE)
         @platforms                    = o[PLATFORMS] if o.key?(PLATFORMS)
-        @dependencies                 = handle_deprecated_constraints(o[DEPENDENCIES]) if o.key?(DEPENDENCIES)
+        @dependencies                 = handle_incorrect_constraints(o[DEPENDENCIES]) if o.key?(DEPENDENCIES)
         @providing                    = o[PROVIDING] if o.key?(PROVIDING)
         @recipes                      = o[RECIPES] if o.key?(RECIPES)
         @version                      = o[VERSION] if o.key?(VERSION)
@@ -533,6 +533,25 @@ class Chef
           arg,
           kind_of: [ String ]
         )
+      end
+
+      # This method translates version constraint strings from
+      # cookbooks with the old format.
+      #
+      # Before we began respecting version constraints, we allowed
+      # multiple constraints to be placed on cookbooks, as well as the
+      # << and >> operators, which are now just < and >. For
+      # specifications with more than one constraint, we return an
+      # empty array (otherwise, we're silently abiding only part of
+      # the contract they have specified to us). If there is only one
+      # constraint, we are replacing the old << and >> with the new <
+      # and >.
+      def handle_incorrect_constraints(specification)
+        specification.inject(Mash.new) do |acc, (cb, constraints)|
+          constraints = Array(constraints)
+          acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first
+          acc
+        end
       end
 
       # Sets the cookbook's issues URL, or returns it.
@@ -738,26 +757,6 @@ class Chef
           end
         end
       end
-
-      # This method translates version constraint strings from
-      # cookbooks with the old format.
-      #
-      # Before we began respecting version constraints, we allowed
-      # multiple constraints to be placed on cookbooks, as well as the
-      # << and >> operators, which are now just < and >. For
-      # specifications with more than one constraint, we return an
-      # empty array (otherwise, we're silently abiding only part of
-      # the contract they have specified to us). If there is only one
-      # constraint, we are replacing the old << and >> with the new <
-      # and >.
-      def handle_deprecated_constraints(specification)
-        specification.inject(Mash.new) do |acc, (cb, constraints)|
-          constraints = Array(constraints)
-          acc[cb] = (constraints.empty? || constraints.size > 1) ? [] : constraints.first.gsub(/>>/, ">").gsub(/<</, "<")
-          acc
-        end
-      end
-
     end
 
     #== Chef::Cookbook::MinimalMetadata
