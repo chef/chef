@@ -262,7 +262,7 @@ Greater than or equal comparison:
 node['platform_version'] >= '10.15'
 ```
 
-Comparison Using Ruby's Pessimistic Operator
+Comparison using Ruby's pessimistic operator:
 
 ```ruby
 node['platform_version'] =~ '~> 10.15'
