@@ -88,7 +88,7 @@ end
 
 ### Removal of Legacy metadata.rb depends Version Constraints
 
-Support for the `<<` and `>>` version constraints in metadata.rb has been removed. This was an undocumented feature from the Chef 0.10 era, which which is not used in any cookbooks on the Supermarket. We are mentioning it since it is technically a breaking change, but it unlikely that this change will be impacting.
+Support for the `<<` and `>>` version constraints in metadata.rb has been removed. This was an undocumented feature from the Chef 0.10 era, which is not used in any cookbooks on the Supermarket. We are mentioning it since it is technically a breaking change, but it unlikely that this change will be impacting.
 
 Examples:
 
