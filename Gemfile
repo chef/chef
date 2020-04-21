@@ -33,8 +33,8 @@ group(:omnibus_package) do
 end
 
 group(:omnibus_package, :pry) do
-  gem "pry"
-  gem "pry-byebug"
+  gem "pry", "=0.12.2" # we ended up with double pry before. Confirm that doesn't come back when bumping ruby & adjust
+  gem "pry-byebug", "=3.8.0" # we ended up with double pry-byebug before. Confirm that doesn't come back when bumping ruby & adjust
   gem "pry-remote"
   gem "pry-stack_explorer"
 end

@@ -472,8 +472,8 @@ DEPENDENCIES
   inspec-core (~> 4.18)
   inspec-core-bin (~> 4.18)
   ohai!
-  pry
-  pry-byebug
+  pry (= 0.12.2)
+  pry-byebug (= 3.8.0)
   pry-remote
   pry-stack_explorer
   rake (<= 13.0.1)
