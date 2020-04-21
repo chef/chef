@@ -125,7 +125,7 @@ The deprecated `knife data bag create -s` option that was not properly honored h
 
 The legacy `sites-cookbooks` directory is no longer added to the default `cookbook_path` value. With this change, any users with a legacy `sites-cookbooks` directory will need to use the `-O` flag to override the cookbook directory when running commands such as `knife cookbook upload`.
 
-If you have a repository that contains a `site-cookbooks` directory we highly recommend using Policyfiles or Berkshelf to properly resolve these external cookbook dependencies without the need to copy them locally. Alternatively you can move the contents of this folder into your main cookbook directory and they will continue to be seen by knife commands.
+If you have a repository that contains a `site-cookbooks` directory, we highly recommend using Policyfiles or Berkshelf to properly resolve these external cookbook dependencies without the need to copy them locally. Alternatively, you can move the contents of this folder into your main cookbook directory and they will continue to be seen by knife commands.
 
 ## New Resources
 
