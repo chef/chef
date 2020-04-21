@@ -153,7 +153,7 @@ Thank Microsoft and @americanhanko
 
 ### compile_time on all resources
 
-The `compile_time` property is now available for all resource so that they can be set to run at compile time without the need forcing the action.
+The `compile_time` property is now available for all resources so that they can be set to run at compile time without the need forcing the action.
 
 ### build_essential
 
