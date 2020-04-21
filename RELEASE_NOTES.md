@@ -254,7 +254,7 @@ TODO: This needs some wordsmithing
 
 ### Simpler Version Comparisons with node[:platform_version]
 
-The `node['platform_version']` attribute returned from Ohai can now be intelligently compared as a version instead of a String or Integer. Previously to compare the platform_version many users would first convert the version String to a Float with `node['platform_version']`. This introduced problems on many platforms such as macOS where macOS 10.9 would appear to be a greater version number than 10.15. You can now directly compare the version without converting it first.
+The `node['platform_version']` attribute returned from Ohai can now be intelligently compared as a version instead of a String or Integer. Previously, to compare the platform_version, many users would first convert the version String to a Float with `node['platform_version']`. This introduced problems on many platforms such as macOS where macOS 10.9 would appear to be a greater version number than 10.15. You can now directly compare the version without converting it first.
 
 Greater than or equal comparison:
 
