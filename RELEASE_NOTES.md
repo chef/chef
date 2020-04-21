@@ -228,7 +228,7 @@ https://github.com/chef/chef/pull/9632
 
 ### after_resource
 
-A new `after_resource` state has been added to resources that allows you to better control the state information reporting to Chef Automate when a resource converges.
+A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges.
 
 TODO: Expand this from https://github.com/chef/chef/pull/9562
 
