@@ -244,7 +244,7 @@ The compile_time property is now defined for all custom resources so there's no 
 
 ### Up to 25% smaller on disk
 
-We've optimized the files that ship with Chef Infra Client and eliminated many unecessary files from the installation reducing the on disk size of Chef Infra Client by up to 25%.
+We've optimized the files that ship with Chef Infra Client and eliminated many unnecessary files from the installation reducing the on-disk size of Chef Infra Client by up to 25%.
 
 ### Windows Performance Improvements
 
