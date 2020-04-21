@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.232 -->
-## [v16.0.232](https://github.com/chef/chef/tree/v16.0.232) (2020-04-21)
+<!-- latest_release 16.0.233 -->
+## [v16.0.233](https://github.com/chef/chef/tree/v16.0.233) (2020-04-21)
 
 #### Merged Pull Requests
-- Bump omnibus-software to avoid double pry [#9700](https://github.com/chef/chef/pull/9700) ([tas50](https://github.com/tas50))
+- Remove the unused simplecov depedency [#9699](https://github.com/chef/chef/pull/9699) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the unused simplecov depedency [#9699](https://github.com/chef/chef/pull/9699) ([tas50](https://github.com/tas50)) <!-- 16.0.233 -->
 - Bump omnibus-software to avoid double pry [#9700](https://github.com/chef/chef/pull/9700) ([tas50](https://github.com/tas50)) <!-- 16.0.232 -->
 - Bump Chefstyle to 1.0.3 and Ohai to 16.0.19 [#9697](https://github.com/chef/chef/pull/9697) ([tas50](https://github.com/tas50)) <!-- 16.0.231 -->
 - Move some of the ruby-cleanup logic into omnibus-software [#9696](https://github.com/chef/chef/pull/9696) ([tas50](https://github.com/tas50)) <!-- 16.0.230 -->
