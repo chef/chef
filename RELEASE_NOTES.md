@@ -1,5 +1,35 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 15.10
+
+## Improvements
+
+- The `systemd_unit` resource now respects the `sensitive` property and will no longer output the contents of the unit file to logs if this is set.
+- A new `arm?` helper has been added which can be used in recipes and resources to determine if a system is on the ARM architecture.
+
+## Bug Fixes
+
+- Resolved a bug that prevented users from bootstrapping nodes using knife when specifying the `--use_sudo_password`.
+- Resolved a bug that prevented the `--bootstrap-version` flag from being honored when bootstrapping in knife.
+
+## Chef InSpec 4.18.104
+
+- Resolved a regression that prevented the `service` resource from working correctly on Windows. Thanks [@Axuba](https://github.com/Axuba)
+- Implemented VMware and Hyper-V detection on Linux systems
+- Implemented VMware, Hyper-V, Virtualbox, KVM and Xen detection on Windows systems
+- Added helpers `virtual_system?` and `physical_system?`. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen)
+
+## Ohai 15.9
+
+- Improve the resilency of the `Shard` plugin when `dmidecode` cannot be found on a system. Thanks [@jaymzh](https://github.com/jaymzh)
+- Fixed detection of Openstack guests via DMI data. Thanks [@ramereth](https://github.com/ramereth)
+
+## Platform Support
+
+### Amazon Linux 2
+
+Chef Infra Client is now tested on Amazon Linux 2 running on x86_64 and aarch64 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
 # Chef Infra Client 15.9
 
 ## Chef InSpec 4.18.100
