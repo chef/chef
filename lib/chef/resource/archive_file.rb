@@ -19,6 +19,8 @@
 #
 
 require_relative "../resource"
+require "fileutils" unless defined?(FileUtils)
+require "ffi-libarchive" unless defined?(Archive)
 
 class Chef
   class Resource
@@ -70,8 +72,6 @@ class Chef
       # backwards compatibility for the legacy cookbook names
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
-
-      require "fileutils" unless defined?(FileUtils)
 
       action :extract do
         description "Extract and archive file."
@@ -135,8 +135,6 @@ class Chef
         #
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
-          require "ffi-libarchive"
-
           modified = false
           Dir.chdir(dest) do
             archive = Archive::Reader.open_filename(src)
@@ -163,8 +161,6 @@ class Chef
         #
         # @return [void]
         def extract(src, dest, options = [])
-          require "ffi-libarchive"
-
           converge_by("extract #{src} to #{dest}") do
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
