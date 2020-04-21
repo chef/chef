@@ -208,7 +208,7 @@ The `windows_firewall_rule` resource has been greatly improved thanks to work by
 
 ### windows_package
 
-The `windows_package` resource now considers `3010` to be a valid exit code by default. The `3010` exit code means that a package has successfully installed, but requires a reboot.
+The `windows_package` resource now considers `3010` to be a valid exit code by default. The `3010` exit code means that a package has been successfully installed, but requires a reboot.
 
 ## YAML Recipes
 
