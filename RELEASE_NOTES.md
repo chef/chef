@@ -279,7 +279,7 @@ TODO document why this new helpers matter
 
 ### eager_load_libraries metadata.rb setting
 
-By default Chef Infra Client eagerly loads all ruby files in each cookbook's libraries directory at runtime. A new metadata.rb option `eager_load_libraries` has been introduced to allow you to control that behavior so that you can control if and when a cookbook library is loaded. Depending on how your libraries are constructed this may greatly improve the runtime performance of your cookbook. With eager loading disabled you may manually load libraries included in your cookbook using Ruby's standard `require` method. Metadata.rb configuration options:
+By default Chef Infra Client eagerly loads all ruby files in each cookbook's libraries directory at runtime. A new metadata.rb option `eager_load_libraries` has been introduced to allow you to control that behavior so that you can control if and when a cookbook library is loaded. Depending on how your libraries are constructed, this may greatly improve the runtime performance of your cookbook. With eager loading disabled, you may manually load libraries included in your cookbook using Ruby's standard `require` method. Metadata.rb configuration options:
 
 ```ruby
 eager_load_libraries false # disable eager loading all libraries
