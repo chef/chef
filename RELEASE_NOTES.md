@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### Log Resource Notification Behavior
 
-The log resource in a recipe or resource will no longer trigger notifications by default. This allows authors to more liberally use log resources without impacting the updated resources count or impacting reporting to Automate. This change will impact users that used the log resource to aggregate notifications from other resources, in order to limit the number of times a notification would fire. If you used the log resource to aggregate multiple notifications you should convert to using the notify group resource, which was introduced in Chef Infra Client 15.8.
+The log resource in a recipe or resource will no longer trigger notifications by default. This allows authors to more liberally use log resources without impacting the updated resources count or impacting reporting to Automate. This change will impact users that used the log resource to aggregate notifications from other resources so they could limit the number of times a notification would fire. If you used the log resource to aggregate multiple notifications, you should convert to using the notify group resource which was introduced in Chef Infra Client 15.8.
 
 Example of notification aggregation with log resource:
 
