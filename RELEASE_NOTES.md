@@ -287,7 +287,7 @@ eager_load_libraries 'helper_library.rb' # eager load just the the file helper_l
 eager_load_libraries %w(helper_library_1.rb helper_library_2.rb) # eager load both helper_library_1.rb and helper_library_2.rb files
 ```
 
-Note: Unless you're experiencing performance issues in your libraries we advise against changing the loading behavior.
+Note: Unless you're experiencing performance issues in your libraries, we advise against changing the loading behavior.
 
 ### Improved Gem Source behavior
 
