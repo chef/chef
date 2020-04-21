@@ -305,7 +305,7 @@ always_dump_stacktrace true
 
 ### Chef Vault Functionality Out of the Box
 
-Chef Infra Client now ships with Chef Vault functionality built-in so there's no need to depend on the `chef-vault` cookbook or gem. Chef Vault helpers `chef_vault_item`, `chef_vault`, and `chef_vault_item_for_environment` are included as well as the `chef_vault_secret` resource. Additionally the Chef Vault knife commands are also available out of the box. We don't recommend new users adopt the Chef Vault workflow due to limitations with autoscaling new systems, so these resources should only be consumed by existing Chef Vault users.
+Chef Infra Client now ships with Chef Vault functionality built-in so there's no need to depend on the `chef-vault` cookbook or gem. Chef Vault helpers `chef_vault_item`, `chef_vault`, and `chef_vault_item_for_environment` are included as well as the `chef_vault_secret` resource. Additionally, the Chef Vault knife commands are also available out of the box. We don't recommend new users adopt the Chef Vault workflow due to limitations with autoscaling new systems, so these resources should only be consumed by existing Chef Vault users.
 
 ## Ohai 16
 
