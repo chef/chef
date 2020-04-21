@@ -64,7 +64,7 @@ As outlined in our blog post at <https://blog.chef.io/chef-infra-end-of-life-ann
 
 ### filesystem2 Node Data Replaces filesystem on FreeBSD / AIX / Solaris
 
-In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai data on FreeBSD, AIX, and Solaris at `node['fileystem2']`. With the release of 16.0 we're now replacing the existing data at `node['filesystem']` with this updated filesystem data. This data has a standardized format that matches Linux, macOS, and Windows data to make it eaier to write cross platform cookbooks. In a future release of Chef Infra Client we'll remove the `node['filesystem2']` as we complete this migration.
+In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai data on FreeBSD, AIX, and Solaris at `node['fileystem2']`. With the release of 16.0, we are now replacing the existing data at `node['filesystem']` with this updated filesystem data. This data has a standardized format that matches Linux, macOS, and Windows data to make it easier to write cross platform cookbooks. In a future release of Chef Infra Client we'll remove the `node['filesystem2']` as we complete this migration.
 
 ### required: true on Properties Now Behaves As Expected
 
