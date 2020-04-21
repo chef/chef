@@ -297,7 +297,7 @@ TODO: Add details from https://github.com/chef/chef/pull/9480
 
 ### always_dump_stacktrace client.rb option
 
-A new `always_dump_stacktrace` client.rb configuration option and command line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
+A new `always_dump_stacktrace` client.rb configuration option and command line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
 
 ```ruby
 always_dump_stacktrace true
