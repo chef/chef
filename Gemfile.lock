@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d0e353d4415834d58aa267f8bc6d5c4ce8d95652
+  revision: 274a01b0e3fc9a350962c3ea73005e2a0d3215f2
   branch: master
   specs:
-    chefstyle (1.0.0)
-      rubocop (= 0.81.0)
+    chefstyle (1.0.3)
+      rubocop (= 0.82.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1516a849f22c4248c8bccbf7b979e966d401d294
+  revision: 2bd01b7869ee04accb358350e1e3563eff9100b3
   branch: 15-stable
   specs:
-    ohai (15.8.0)
+    ohai (15.9.1)
       chef-config (>= 12.8, < 16)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -141,7 +141,7 @@ GEM
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
-    byebug (11.1.1)
+    byebug (11.1.2)
     chef-telemetry (1.0.3)
       chef-config
       concurrent-ruby (~> 1.0)
@@ -327,7 +327,7 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.81.0)
+    rubocop (0.82.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
