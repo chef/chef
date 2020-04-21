@@ -165,7 +165,7 @@ The `cron` resource has been updated to use the same property validation for cro
 
 ### dnf_package
 
-The `dnf_package` resource which provides `package` under the hood on any system shipping with DNF has been greatly refactored to resolve multiple issues.
+The `dnf_package` resource, which provides `package` under the hood on any system shipping with DNF, has been greatly refactored to resolve multiple issues.
 
 - The `:lock` action now works on RHEL 8
 - Fixes to prevent attempting to install the same package during each Chef Infra Client run
