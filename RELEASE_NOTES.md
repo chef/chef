@@ -46,7 +46,7 @@ end
 
 The `ChefDeprecations/LogResourceNotifications` cop in Cookstyle 6.0 and later detects using the log resource for notifications in cookbooks.
 
-To restore the previous behavior set `count_log_resource_updates true` in your `client.rb`.
+To restore the previous behavior, set `count_log_resource_updates true` in your `client.rb`.
 
 ### HWRP Style Resources Now Require resource_name / provides
 
