@@ -64,7 +64,6 @@ group(:development, :test) do
   gem "rspec-mocks", "~> 3.5"
   gem "rspec-expectations", "~> 3.5"
   gem "rspec_junit_formatter", "~> 0.2.0"
-  gem "simplecov"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
