@@ -176,7 +176,7 @@ The `git` resource now fully supports why-run mode.
 
 ### msu_package resource improvements
 
-The `msu_package` resource has been improved to better work with Microsoft's cumulative update packages. Newer releases of these packages will not correctly install over previous versions, and we've extended the default timeout for install MSU packages to 60 minutes. Thanks for reporting the timeout issue [@danielfloyd](https://github.com/danielfloyd)
+The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these packages will not correctly install over previous versions. We've also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue [@danielfloyd](https://github.com/danielfloyd)
 
 ### package
 
