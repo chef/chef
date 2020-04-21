@@ -50,7 +50,7 @@ To restore the previous behavior, set `count_log_resource_updates true` in your 
 
 ### HWRP Style Resources Now Require resource_name / provides
 
-Legacy HWRP style resources, those written as Ruby classes in the libraries directory of a cookbook, will now require either the `resource_name` or `provides` methods to be used to define the resource names. Previously Chef Infra Client would infer the desired resource name from the class, but this magic was problematic and has been removed.
+Legacy HWRP style resources, those written as Ruby classes in the libraries directory of a cookbook, will now require either the `resource_name` or `provides` methods to be used to define the resource names. Previously, Chef Infra Client would infer the desired resource name from the class, but this magic was problematic and has been removed.
 
 The `ChefDeprecations/ResourceWithoutNameOrProvides` cop in Cookstyle 6.0 and later detects this deprecation.
 
