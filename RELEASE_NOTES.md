@@ -234,7 +234,7 @@ TODO: Expand this from https://github.com/chef/chef/pull/9562
 
 ### identity Improvements
 
-A resource's name property is now set to be the identity property by default, and to have desired_state: false by default. This eliminates the need to set `identity: true, desired_state: false` on these properties and better exposes identity data to handler and reporting.
+A resource's name property is now set to be the identity property by default and to have `desired_state: false` set by default. This eliminates the need to set `identity: true, desired_state: false` on these properties and better exposes identity data to handler and reporting.
 
 ### compile_time property
 
