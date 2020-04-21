@@ -19,6 +19,7 @@
 #
 
 require_relative "../resource"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Resource
@@ -26,7 +27,7 @@ class Chef
       unified_mode true
 
       provides :archive_file
-      provides :libarchive_file # legacy cookbook name
+      provides :libarchive_file # legacy libarchive cookbook resource name
 
       introduced "15.0"
       description "Use the archive_file resource to extract archive files to disk. This resource uses the libarchive library to extract multiple archive formats including tar, gzip, bzip, and zip formats."
@@ -71,8 +72,6 @@ class Chef
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
 
-      require "fileutils" unless defined?(FileUtils)
-
       action :extract do
         description "Extract and archive file."
 
@@ -103,7 +102,7 @@ class Chef
 
         if new_resource.owner || new_resource.group
           converge_by("set owner of files extracted in #{new_resource.destination} to #{new_resource.owner}:#{new_resource.group}") do
-            archive = Archive::Reader.open_filename(new_resource.path)
+            archive = read_archive(new_resource.path)
             archive.each_entry do |e|
               FileUtils.chown(new_resource.owner, new_resource.group, "#{new_resource.destination}/#{e.pathname}")
             end
@@ -112,8 +111,16 @@ class Chef
       end
 
       action_class do
+        def read_archive(file)
+          require "ffi-libarchive" unless defined?(Archive)
+
+          Archive::Reader.open_filename(file)
+        end
+
         # This can't be a constant since we might not have required 'ffi-libarchive' yet.
         def extract_option_map
+          require "ffi-libarchive" unless defined?(Archive)
+
           {
             owner: Archive::EXTRACT_OWNER,
             permissions: Archive::EXTRACT_PERM,
@@ -135,11 +142,9 @@ class Chef
         #
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
-          require "ffi-libarchive"
-
           modified = false
           Dir.chdir(dest) do
-            archive = Archive::Reader.open_filename(src)
+            archive = read_archive(src)
             Chef::Log.trace("Beginning the comparison of file mtime between contents of #{src} and #{dest}")
             archive.each_entry do |e|
               pathname = ::File.expand_path(e.pathname)
@@ -163,13 +168,11 @@ class Chef
         #
         # @return [void]
         def extract(src, dest, options = [])
-          require "ffi-libarchive"
-
           converge_by("extract #{src} to #{dest}") do
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
             Dir.chdir(dest) do
-              archive = Archive::Reader.open_filename(src)
+              archive = read_archive(src)
 
               archive.each_entry do |e|
                 archive.extract(e, flags.to_i)
