@@ -1,5 +1,36 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+
+# Chef Infra Client 15.10
+
+## Improvements
+
+- The `systemd_unit` resource now respects the `sensitive` property and will no longer output the contents of the unit file to logs if this is set.
+- A new `arm?` helper has been added which can be used in recipes and resources to determine if a system is on the ARM architecture.
+
+## Bug Fixes
+
+- Resolved a bug that prevented users from bootstrapping nodes using knife when specifying the `--use_sudo_password`.
+- Resolved a bug that prevented the `--bootstrap-version` flag from being honored when bootstrapping in knife.
+
+## Chef InSpec 4.18.104
+
+- Resolved a regression that prevented the `service` resource from working correctly on Windows. Thanks [@Axuba](https://github.com/Axuba)
+- Implemented VMware and Hyper-V detection on Linux systems
+- Implemented VMware, Hyper-V, Virtualbox, KVM and Xen detection on Windows systems
+- Added helpers `virtual_system?` and `physical_system?`. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen)
+
+## Ohai 15.9
+
+- Improve the resilency of the `Shard` plugin when `dmidecode` cannot be found on a system. Thanks [@jaymzh](https://github.com/jaymzh)
+- Fixed detection of Openstack guests via DMI data. Thanks [@ramereth](https://github.com/ramereth)
+
+## Platform Support
+
+### Amazon Linux 2
+
+Chef Infra Client is now tested on Amazon Linux 2 running on x86_64 and aarch64 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
 # Chef Infra Client 15.9
 
 ## Chef InSpec 4.18.100
@@ -7,7 +38,7 @@ This file holds "in progress" release notes for the current release under develo
 Chef InSpec has been updated from 4.18.85 to 4.18.100:
 
 - Resolved several failures in executing resources
-- Fixed auditd resource processing of action and list
+- Fixed `auditd` resource processing of action and list
 - Fixed platform detection when running in Habitat
 - "inspec schema" has been revised to be in the JSON Schema draft 7 format
 - Improved the functionality of the `oracledb_session` resource
@@ -1130,6 +1161,177 @@ The `refresh_plugins` method in the `Ohai::System` class has been removed as it 
 
 The `Virtualization` plugin will no longer detect systems running on the circa ~2005 VirtualPC or VirtualServer hypervisors. These hypervisors were long ago deprecated by Microsoft and support can no longer be tested.
 
+# Chef Client Release Notes 14.15
+
+## Updated Resources
+
+### ifconfig
+
+The `ifconfig` resource has been updated to properly support interfaces with a hyphen in their name. This is most commonly encountered with bridge interfaces that are named `br-1234`. Additionally, the `ifconfig` resource now supports the latest ifconfig binaries found in OS releases such as Debian 10.
+
+### windows_task
+
+The `windows_task` resource now supports the Start When Available option with a new `start_when_available` property. Issues that prevented the resource from being idempotent on Windows 2016 and 2019 hosts have also been resolved.
+
+## Platform Support
+
+### New Platforms
+
+Chef Infra Client is now tested against the following platforms with packages available on [downloads.chef.io](https://downloads.chef.io):
+
+- Ubuntu 20.04
+- Ubuntu 18.04 aarch64
+- Debian 10
+
+### Retired Platforms
+
+  - Chef Infra Clients packages are no longer produced for Windows 2008 R2 as this release reached its end of life on Jan 14th, 2020.
+  - Chef Infra Client packages are no longer produced for RHEL 6 on the s390x platform.
+
+## Security Updates
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2u to resolve [CVE-2019-1551](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551)
+
+### Ruby
+
+Ruby has been updated from 2.5.7 to 2.5.8 to resolve the following CVEs:
+
+  - [CVE-2020-16255](https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/): Unsafe Object Creation Vulnerability in JSON (Additional fix)
+  - [CVE-2020-10933](https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/): Heap exposure vulnerability in the socket library
+
+
+# Chef Client Release Notes 14.14.29
+
+## Bug Fixes
+
+ - Fixed an error with the `service` and `systemd_unit` resources which would try to re-enable services with an indirect status.
+ - The `systemd_unit` resource now logs at the info level.
+ - Fixed knife config when it returned a `TypeError: no implicit conversion of nil into String` error.
+
+## Security Updates
+
+### libxslt
+
+libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
+
+# Chef Client Release Notes 14.14.25
+
+## Bug Fixes
+
+- Resolved a regression introduced in Chef Infra Client 14.14.14 that broke installation of gems in some scenarios
+- Fixed Habitat packaging of `chef-client` artifacts
+- Fixed crash in knife when displaying a missing profile error message
+- Fixed knife subcommand --help not working as intended for some commands
+- Fixed knife ssh interactive mode exit error
+- Fixed for `:day`` option not accepting integer value in the `windows_task` resource
+- Fixed for `user` resource not handling a GID if it is specified as a string
+- Fixed the `ifconfig` resource to support interfaces with a `-` in the name
+
+# Chef Client Release Notes 14.14
+
+## Platform Updates
+
+### Newly Supported Platforms
+
+The following platforms are now packaged and tested for Chef Infra Client:
+
+- Red Hat 8
+- FreeBSD 12
+- macOS 10.15
+- Windows 2019
+- AIX 7.2
+
+### Deprecated Platforms
+
+The following platforms have reached EOL status and are no longer packaged or tested for Chef Infra Client:
+
+- FreeBSD 10
+- macOS 10.12
+- SUSE Linux Enterprise Server (SLES) 11
+- Ubuntu 14.04
+
+See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+
+## Updated Resources
+
+### dnf_package
+
+The `dnf_package` resource has been updated to fully support RHEL 8.
+
+### zypper_package
+
+The `zypper_package` resource has been updated to properly update packages when using the `:upgrade` action.
+
+### remote_file
+
+The `remote_file` resource now properly shows download progress when the `show_progress` property is set to true.
+
+## Improvements
+
+## Custom Resource Unified Mode
+
+Chef Infra Client 14.14 introduces an exciting new way to easily write custom resources that mix built-in Chef Infra resources with Ruby code. Previously, custom resources would use Chef Infra's standard compile and converge phases, which meant that Ruby would be evaluated first and then the resources would be converged. This often results in confusing and undesirable behavior when you are trying to mix resources with Ruby logic. Many custom resource authors would attempt to get around this by forcing resources to run at compile time so that all the code in their resource would execute during the compile phase.
+
+An example of forcing a resource to run at compile time:
+
+```ruby
+resource_name 'foo' do
+  action :nothing
+end.run_action(:some_action)
+```
+
+With unified mode, you opt in to a single phase per resource where all Ruby and Chef Infra resources are executed at once. This makes it far easier to determine how your code will be evaluated and run. Additionally, you no longer need to force any resources to run at compile time, as all code is run in the compile phase. To enable this new mode just add `unified_mode true` to your resources like this:
+
+```ruby
+property :Some_property, String
+
+unified_mode true
+
+action :create do
+  # some code
+end
+```
+
+### New Options for installing Ruby Gems From metadata.rb
+
+Chef Infra Client allows gems to be specified in the cookbook metadata.rb, which can be problematic in some environments. When a cookbook is running in an airgapped environment, Chef Infra Client attempts to connect to rubygems.org even if the gem is already on the system. There are now two additional configuration options that can be set in your `client.rb` config:
+    - `gem_installer_bundler_options`: This allows setting additional bundler options for the install such as  --local to install from local cache. Example: ["--local", "--clean"].
+    - `skip_gem_metadata_installation`: If set to true skip gem metadata installation if all gems are already installed.
+
+### SLES / openSUSE 15 detection
+
+Ohai now properly detects SLES and openSUSE 15.x. Thanks for this fix [@balasankarc](https://gitlab.com/balasankarc).
+
+### Performance Improvements
+
+We have improved the performance of Chef Infra Client by resolving bundler errors in our packaging.
+
+### Bootstrapping Chef Infra Client 15 will no fail
+
+Knife now fails with a descriptive error message when attempting to bootstrap nodes with Chef Infra Client 15. You will need to bootstrap these nodes using Knife from Chef Infra Client 15.x. We recommend performing this bootstrap from Chef Workstation, which includes the Knife CLI in addition to other useful tools for managing your infrastructure with Chef Infra.
+
+## Security Updates
+
+### Ruby
+
+Ruby has been updated from 2.5.5 to 2.5.7 in order to resolve the following CVEs:
+  - [CVE-2012-6708](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2012-6708)
+  - [CVE-2015-9251](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-9251).
+  - [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15845).
+  - [CVE-2019-15845](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2015-9251).
+  - [CVE-2019-16254](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16254).
+  - [CVE-2019-16255](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16255).
+
+### openssl
+
+openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-1563](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1563) and [CVE-2019-1547](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1547).
+
+### nokogiri
+
+nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477).
+
 # Chef Infra Client Release Notes 14.13:
 
 ## Updated Resources
@@ -1171,7 +1373,19 @@ The `CHEF-25` deprecation for resource collisions between cookbooks and resource
 - openssl 1.0.2r -> 1.0.2s (bugfix only release)
 - cacerts 2019-01-23 -> 2019-05-15
 
-# Chef Infra Client Release Notes 14.12:
+# Chef Client Release Notes 14.12.9:
+
+## License Acceptance Placeholder Flag
+
+In preparation for Chef Infra Client 15.0 we've added a placeholder `--chef-license` flag to the chef-client command. This allows you to use the new `--chef-license` flag on both Chef Infra Client 14.12.9+ and 15+ notes without producing errors on Chef Infra Client 14.
+
+## Important Bug Fixes
+
+- Blacklisting and whiteliting default and override level attributes is once again possible.
+- You may now encrypt a previously unencrypted data bag.
+- Resolved a regression introduced in Chef Infra Client 14.12.3 that resulted in errors when managing Windows services
+    
+# Chef Infra Client Release Notes 14.12.3:
 
 ## Updated Resources
 
@@ -1243,8 +1457,6 @@ RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
   - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
   - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
   - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
-
-
 
 # Chef Client Release Notes 14.10:
 
@@ -1971,7 +2183,7 @@ Ohai now detects the virtualization hypervisor `amazonec2` when running on Amazo
 
 # Chef Client Release Notes 14.1.12:
 
-This release resolves a number of regressions in 14.1:
+This release resolves a number of regressions in 14.1.1:
 
 - `git` resource: don't use `--prune-tags` as it's really new.
 - `rhsm_repo` resource: now works
