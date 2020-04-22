@@ -58,6 +58,10 @@ The `ChefDeprecations/ResourceWithoutNameOrProvides` cop in Cookstyle 6.0 and la
 
 On Solaris systems we no longer constrain the version of gcc to 4.8.2 in the build_essential resource to allow for gcc 5 installations.
 
+### git Resource Branch Checkout Changes
+
+The `git` resource no longer checks out to a new branch named `deploy` by default. Many users found this branching behavior confusing and unexpected so we've decided to implement a more predictable default. The resource will now default to either checking out the branch specified with the `checkout_branch` property or a detached HEAD state. If you'd like to revert to the previous behavior you can set the `checkout_branch` to `deploy`.
+
 ### s390x Packaging
 
 As outlined in our blog post at <https://blog.chef.io/chef-infra-end-of-life-announcement-for-linux-client-on-ibm-s390x-architecture/>, we will no longer be producing s390x platform packages for Chef Infra Client.
@@ -102,10 +106,6 @@ depends 'windows', '>> 1.0'
 #### knife status --long uses cloud attribute
 
 The `knife status --long` resource now uses Ohai's cloud data instead of ec2 specific data. This improves, but changes, the data output for users on non-AWS clouds.
-
-#### knife-acl is now built-in
-
-The knife-acl gem is now part of Chef Infra Client, but many of the commands have been moved into the existing knife user and group namespaces.
 
 TODO: add details on the command changes from https://github.com/chef/chef/pull/9292
 
@@ -192,10 +192,6 @@ package %w(git curl packer)
 
 The `service` resource has been updated to support newer releases of `update-rc.d` so that it properly disables sys-v init services on Debian Linux distributions. Thanks [@robuye](https://github.com/robuye)
 
-### systemd_unit
-
-The `systemd_unit` resource now respects the `sensitive` property and does not output the content of unit files to the logs if set.
-
 ### windows_firewall_rule
 
 The `windows_firewall_rule` resource has been greatly improved thanks to work by [@pschaumburg](https://github.com/pschaumburg) and [@tecracer-theinen](https://github.com/tecracer-theinen).
@@ -209,6 +205,10 @@ The `windows_firewall_rule` resource has been greatly improved thanks to work by
 ### windows_package
 
 The `windows_package` resource now considers `3010` to be a valid exit code by default. The `3010` exit code means that a package has been successfully installed, but requires a reboot.
+
+#### knife-acl is now built-in
+
+The knife-acl gem is now part of Chef Infra Client. This gives you the ability to manage Chef organizations and ACLs directly.
 
 ## YAML Recipes
 
@@ -323,9 +323,11 @@ See <https://medium.com/rubyinside/whats-new-in-ruby-2-7-79c98b265502> for detai
 
 ## New Platforms
 
-- RHEL 8 arm64
-- Amazon Linux 2 amd64
+Over the last quarter we've worked to greatly expand the platforms we support and produce packages for with the addition of Chef Infra Client packages for Ubuntu 20.04 amd64, Amazon Linux 2 x86_64/aarch64, and Debian 10 amd64. With the release of Chef Infra Client 16 we've expanded our platform support again with the following new platforms:
+
+- RHEL 8 aarch64
 - Ubuntu 20.04 aarch64
+- SLES 16 aarch64
 
 ## Newly Introduced Deprecations
 
