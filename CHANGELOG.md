@@ -6,34 +6,39 @@
 - Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup since=15.9.17 -->
+<!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50)) <!-- 15.10.14 -->
 - Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50)) <!-- 15.10.13 -->
-- Update Ohai to 15.9 [#9707](https://github.com/chef/chef/pull/9707) ([tas50](https://github.com/tas50)) <!-- 15.10.12 -->
-- Update omnibus-software to resolve shipping 2 copies of pry [#9701](https://github.com/chef/chef/pull/9701) ([tas50](https://github.com/tas50)) <!-- 15.10.11 -->
-- Remove &quot;Code Can&quot; from dmg background [#9702](https://github.com/chef/chef/pull/9702) ([tas50](https://github.com/tas50)) <!-- 15.10.10 -->
-- Produce aarch64 Amazon Linux 2 packages [#9680](https://github.com/chef/chef/pull/9680) ([tas50](https://github.com/tas50)) <!-- 15.10.9 -->
-- Add deprecation warnings at the end of the run after the end of April 2021 [#9667](https://github.com/chef/chef/pull/9667) ([tas50](https://github.com/tas50)) <!-- 15.10.8 -->
-- Cache gems in Buildkite testing [#9671](https://github.com/chef/chef/pull/9671) ([tas50](https://github.com/tas50)) <!-- 15.10.7 -->
-- Update license_scout to 1.1.8 [#9673](https://github.com/chef/chef/pull/9673) ([tas50](https://github.com/tas50)) <!-- 15.10.6 -->
-- Add build verification on Amazon Linux 2 [#9670](https://github.com/chef/chef/pull/9670) ([tas50](https://github.com/tas50)) <!-- 15.10.5 -->
-- Fix specifying sudo password in knife bootstrap [#9669](https://github.com/chef/chef/pull/9669) ([tas50](https://github.com/tas50)) <!-- 15.10.4 -->
-- Replace a few uses of attributes / parameters in messaging with properties [#9668](https://github.com/chef/chef/pull/9668) ([tas50](https://github.com/tas50)) <!-- 15.10.3 -->
-- Chef-15: Remove copyright dates [#9658](https://github.com/chef/chef/pull/9658) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.2 -->
-- Fix knife bootstrap_version CLI option overriding config option [#9650](https://github.com/chef/chef/pull/9650) ([tas50](https://github.com/tas50)) <!-- 15.10.1 -->
-- Add arm? helper to chef-utils [#9651](https://github.com/chef/chef/pull/9651) ([tas50](https://github.com/tas50)) <!-- 15.10.0 -->
-- Spell checking in comments and log messages [#9630](https://github.com/chef/chef/pull/9630) ([tas50](https://github.com/tas50)) <!-- 15.9.23 -->
-- Fixed systemd_unit not respecting sensitive property [#9631](https://github.com/chef/chef/pull/9631) ([tas50](https://github.com/tas50)) <!-- 15.9.22 -->
-- Update InSpec to 4.18.104 [#9629](https://github.com/chef/chef/pull/9629) ([tas50](https://github.com/tas50)) <!-- 15.9.21 -->
-- 15: Really skip the reboot pending func test if a reboot is pending [#9613](https://github.com/chef/chef/pull/9613) ([btm](https://github.com/btm)) <!-- 15.9.20 -->
-- 15 backport: Improved Ruby download/install for functional tests [#9604](https://github.com/chef/chef/pull/9604) ([btm](https://github.com/btm)) <!-- 15.9.19 -->
-- 15: Use $env:temp instead of c:/ for functional tests [#9592](https://github.com/chef/chef/pull/9592) ([btm](https://github.com/btm)) <!-- 15.9.18 -->
+- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50)) <!-- 15.10.14 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.10.12](https://github.com/chef/chef/tree/v15.10.12) (2020-04-22)
+
+#### Merged Pull Requests
+- 15: Use $env:temp instead of c:/ for functional tests [#9592](https://github.com/chef/chef/pull/9592) ([btm](https://github.com/btm))
+- 15 backport: Improved Ruby download/install for functional tests [#9604](https://github.com/chef/chef/pull/9604) ([btm](https://github.com/btm))
+- 15: Really skip the reboot pending func test if a reboot is pending [#9613](https://github.com/chef/chef/pull/9613) ([btm](https://github.com/btm))
+- Update InSpec to 4.18.104 [#9629](https://github.com/chef/chef/pull/9629) ([tas50](https://github.com/tas50))
+- Fixed systemd_unit not respecting sensitive property [#9631](https://github.com/chef/chef/pull/9631) ([tas50](https://github.com/tas50))
+- Spell checking in comments and log messages [#9630](https://github.com/chef/chef/pull/9630) ([tas50](https://github.com/tas50))
+- Add arm? helper to chef-utils [#9651](https://github.com/chef/chef/pull/9651) ([tas50](https://github.com/tas50))
+- Fix knife bootstrap_version CLI option overriding config option [#9650](https://github.com/chef/chef/pull/9650) ([tas50](https://github.com/tas50))
+- Chef-15: Remove copyright dates [#9658](https://github.com/chef/chef/pull/9658) ([lamont-granquist](https://github.com/lamont-granquist))
+- Replace a few uses of attributes / parameters in messaging with properties [#9668](https://github.com/chef/chef/pull/9668) ([tas50](https://github.com/tas50))
+- Fix specifying sudo password in knife bootstrap [#9669](https://github.com/chef/chef/pull/9669) ([tas50](https://github.com/tas50))
+- Add build verification on Amazon Linux 2 [#9670](https://github.com/chef/chef/pull/9670) ([tas50](https://github.com/tas50))
+- Update license_scout to 1.1.8 [#9673](https://github.com/chef/chef/pull/9673) ([tas50](https://github.com/tas50))
+- Cache gems in Buildkite testing [#9671](https://github.com/chef/chef/pull/9671) ([tas50](https://github.com/tas50))
+- Add deprecation warnings at the end of the run after the end of April 2021 [#9667](https://github.com/chef/chef/pull/9667) ([tas50](https://github.com/tas50))
+- Produce aarch64 Amazon Linux 2 packages [#9680](https://github.com/chef/chef/pull/9680) ([tas50](https://github.com/tas50))
+- Remove &quot;Code Can&quot; from dmg background [#9702](https://github.com/chef/chef/pull/9702) ([tas50](https://github.com/tas50))
+- Update omnibus-software to resolve shipping 2 copies of pry [#9701](https://github.com/chef/chef/pull/9701) ([tas50](https://github.com/tas50))
+- Update Ohai to 15.9 [#9707](https://github.com/chef/chef/pull/9707) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.9.17](https://github.com/chef/chef/tree/v15.9.17) (2020-04-03)
 
 #### Merged Pull Requests
@@ -64,7 +69,6 @@
 - Add Ubuntu 20.04 validation / package creation [#9583](https://github.com/chef/chef/pull/9583) ([tas50](https://github.com/tas50))
 - Swap Ubuntu 20.04 for 18.04 aarch64 [#9587](https://github.com/chef/chef/pull/9587) ([tas50](https://github.com/tas50))
 - Add Ubuntu 20.04 back [#9590](https://github.com/chef/chef/pull/9590) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.8.23](https://github.com/chef/chef/tree/v15.8.23) (2020-02-10)
 
