@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.14 -->
-## [v15.10.14](https://github.com/chef/chef/tree/v15.10.14) (2020-04-22)
+<!-- latest_release 15.10.15 -->
+## [v15.10.15](https://github.com/chef/chef/tree/v15.10.15) (2020-04-22)
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50))
+- Update our omnibus software def to fix bundler on windows [#9713](https://github.com/chef/chef/pull/9713) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update our omnibus software def to fix bundler on windows [#9713](https://github.com/chef/chef/pull/9713) ([tas50](https://github.com/tas50)) <!-- 15.10.15 -->
 - Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50)) <!-- 15.10.13 -->
 - Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50)) <!-- 15.10.14 -->
 <!-- release_rollup -->
