@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.13 -->
-## [v15.10.13](https://github.com/chef/chef/tree/v15.10.13) (2020-04-22)
+<!-- latest_release 15.10.14 -->
+## [v15.10.14](https://github.com/chef/chef/tree/v15.10.14) (2020-04-22)
 
 #### Merged Pull Requests
-- Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50))
+- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.9.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50)) <!-- 15.10.14 -->
 - Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50)) <!-- 15.10.13 -->
 - Update Ohai to 15.9 [#9707](https://github.com/chef/chef/pull/9707) ([tas50](https://github.com/tas50)) <!-- 15.10.12 -->
 - Update omnibus-software to resolve shipping 2 copies of pry [#9701](https://github.com/chef/chef/pull/9701) ([tas50](https://github.com/tas50)) <!-- 15.10.11 -->
