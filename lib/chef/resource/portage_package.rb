@@ -27,6 +27,13 @@ class Chef
 
       description "Use the portage_package resource to manage packages for the Gentoo platform."
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       property :timeout, [String, Integer],
         default: 3600,
         description: "The amount of time (in seconds) to wait before timing out.",

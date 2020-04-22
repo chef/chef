@@ -40,6 +40,13 @@ class Chef
         @source ||= source(@package_name) if @package_name.downcase.end_with?(".msi")
       end
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       # windows can't take array options yet
       property :options, String,
         description: "One (or more) additional options that are passed to the command."
