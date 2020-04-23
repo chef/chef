@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.237 -->
-## [v16.0.237](https://github.com/chef/chef/tree/v16.0.237) (2020-04-23)
+<!-- latest_release 16.0.238 -->
+## [v16.0.238](https://github.com/chef/chef/tree/v16.0.238) (2020-04-23)
 
 #### Merged Pull Requests
-- Fix for Chocolate_resource options causing extra quotes [#9509](https://github.com/chef/chef/pull/9509) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Make sure all the non-multipackage packge resources can&#39;t take arrays [#9721](https://github.com/chef/chef/pull/9721) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure all the non-multipackage packge resources can&#39;t take arrays [#9721](https://github.com/chef/chef/pull/9721) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
 - Fix for Chocolate_resource options causing extra quotes [#9509](https://github.com/chef/chef/pull/9509) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.237 -->
 - Use the new Chef definition w/o appbundler [#9710](https://github.com/chef/chef/pull/9710) ([tas50](https://github.com/tas50)) <!-- 16.0.236 -->
 - Add Ubuntu 20.04 + SLES 15 aarch64 Testers [#9712](https://github.com/chef/chef/pull/9712) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.235 -->
