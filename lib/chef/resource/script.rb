@@ -47,7 +47,9 @@ class Chef
         end
       end
 
-      property :code, String, required: true
+      property :code, String, required: true,
+        description: "A quoted string of code to be executed."
+
       property :interpreter, String
 
       property :flags, String,
