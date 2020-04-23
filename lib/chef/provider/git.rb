@@ -61,7 +61,7 @@ class Chef
           a.assertion { ::File.directory?(dirname) }
           a.whyrun("Directory #{dirname} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
-            "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
+                            "Cannot clone #{new_resource} to #{cwd}, the enclosing directory #{dirname} does not exist")
         end
 
         requirements.assert(:all_actions) do |a|
@@ -182,13 +182,24 @@ class Chef
       end
 
       def checkout
-        sha_ref = target_revision
-
-        converge_by("checkout ref #{sha_ref} branch #{new_resource.revision}") do
+        converge_by("checkout ref #{target_revision} branch #{new_resource.revision}") do
           # checkout into a local branch rather than a detached HEAD
-          git("branch", "-f", new_resource.checkout_branch, sha_ref, cwd: cwd)
-          git("checkout", new_resource.checkout_branch, cwd: cwd)
-          logger.info "#{new_resource} checked out branch: #{new_resource.revision} onto: #{new_resource.checkout_branch} reference: #{sha_ref}"
+          if new_resource.checkout_branch
+            # check out to a local branch
+            git("branch", "-f", new_resource.checkout_branch, target_revision, cwd: cwd)
+            git("checkout", new_resource.checkout_branch, cwd: cwd)
+            logger.info "#{new_resource} checked out branch: #{new_resource.revision} onto: #{new_resource.checkout_branch} reference: #{target_revision}"
+          elsif sha_hash?(new_resource.revision) || !is_branch?
+            # detached head
+            git("checkout", target_revision, cwd: cwd)
+            logger.info "#{new_resource} checked out reference: #{target_revision}"
+          else
+            # need a branch with a tracking branch
+            git("branch", "-f", new_resource.revision, target_revision, cwd: cwd)
+            git("checkout", new_resource.revision, cwd: cwd)
+            git("branch", "-u", "#{new_resource.remote}/#{new_resource.revision}", cwd: cwd)
+            logger.info "#{new_resource} checked out branch: #{new_resource.revision} reference: #{target_revision}"
+          end
         end
       end
 
@@ -211,7 +222,19 @@ class Chef
           logger.trace "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
           git("fetch", "--prune", new_resource.remote, cwd: cwd)
           git("fetch", new_resource.remote, "--tags", cwd: cwd)
-          git("reset", "--hard", target_revision, cwd: cwd)
+          if new_resource.checkout_branch
+            # check out to a local branch
+            git("branch", "-f", new_resource.checkout_branch, target_revision, cwd: cwd)
+            git("checkout", new_resource.checkout_branch, cwd: cwd)
+          elsif sha_hash?(new_resource.revision) || is_tag?
+            # detached head
+            git("reset", "--hard", target_revision, cwd: cwd)
+          else
+            # need a branch with a tracking branch
+            git("branch", "-f", new_resource.revision, target_revision, cwd: cwd)
+            git("checkout", new_resource.revision, cwd: cwd)
+            git("branch", "-u", "#{new_resource.remote}/#{new_resource.revision}", cwd: cwd)
+          end
         end
       end
 
@@ -287,9 +310,18 @@ class Chef
 
       def find_revision(refs, revision, suffix = "")
         found = refs_search(refs, rev_match_pattern("refs/tags/", revision) + suffix)
-        found = refs_search(refs, rev_match_pattern("refs/heads/", revision) + suffix) if found.empty?
-        found = refs_search(refs, revision + suffix) if found.empty?
-        found
+        if !found.empty?
+          @is_tag = true
+          found
+        else
+          found = refs_search(refs, rev_match_pattern("refs/heads/", revision) + suffix)
+          if !found.empty?
+            @is_branch = true
+            found
+          else
+            refs_search(refs, revision + suffix)
+          end
+        end
       end
 
       def rev_match_pattern(prefix, revision)
@@ -320,6 +352,14 @@ class Chef
 
       private
 
+      def is_branch?
+        !!@is_branch
+      end
+
+      def is_tag?
+        !!@is_tag
+      end
+
       def run_options(run_opts = {})
         env = {}
         if new_resource.user
@@ -341,7 +381,7 @@ class Chef
       def git(*args, **run_opts)
         git_command = ["git", args].compact.join(" ")
         logger.trace "running #{git_command}"
-        shell_out!(git_command, run_options(run_opts))
+        shell_out!(git_command, **run_options(run_opts))
       end
 
       def sha_hash?(string)

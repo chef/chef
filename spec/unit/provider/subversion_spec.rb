@@ -46,7 +46,8 @@ describe Chef::Provider::Subversion do
   it "converts resource properties to options for shell_out" do
     expect(@provider.run_options).to eq({})
     @resource.user "deployninja"
-    expect(@provider.run_options).to eq({ user: "deployninja" })
+    expect(@provider).to receive(:get_homedir).and_return("/home/deployninja")
+    expect(@provider.run_options).to eq({ user: "deployninja", environment: { "HOME" => "/home/deployninja" } })
   end
 
   context "determining the revision of the currently deployed code" do
@@ -221,7 +222,8 @@ describe Chef::Provider::Subversion do
     @resource.user "whois"
     @resource.group "thisis"
     expected_cmd = "svn checkout -q   -r12345 http://svn.example.org/trunk/ /my/deploy/dir"
-    expect(@provider).to receive(:shell_out!).with(expected_cmd, { user: "whois", group: "thisis" })
+    expect(@provider).to receive(:get_homedir).and_return("/home/whois")
+    expect(@provider).to receive(:shell_out!).with(expected_cmd, { user: "whois", group: "thisis", environment: { "HOME" => "/home/whois" } })
     @provider.run_action(:checkout)
     expect(@resource).to be_updated
   end

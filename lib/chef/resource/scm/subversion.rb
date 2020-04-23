@@ -17,12 +17,13 @@
 # limitations under the License.
 #
 
-require_relative "scm"
-require_relative "../dist"
+require_relative "../../dist"
 
 class Chef
   class Resource
-    class Subversion < Chef::Resource::Scm
+    class Subversion < Chef::Resource
+      use "scm"
+
       unified_mode true
 
       provides :subversion
