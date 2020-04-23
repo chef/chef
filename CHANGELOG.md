@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.235 -->
-## [v16.0.235](https://github.com/chef/chef/tree/v16.0.235) (2020-04-22)
+<!-- latest_release 16.0.236 -->
+## [v16.0.236](https://github.com/chef/chef/tree/v16.0.236) (2020-04-23)
 
 #### Merged Pull Requests
-- Add Ubuntu 20.04 + SLES 15 aarch64 Testers [#9712](https://github.com/chef/chef/pull/9712) ([christopher-snapp](https://github.com/christopher-snapp))
+- Use the new Chef definition w/o appbundler [#9710](https://github.com/chef/chef/pull/9710) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use the new Chef definition w/o appbundler [#9710](https://github.com/chef/chef/pull/9710) ([tas50](https://github.com/tas50)) <!-- 16.0.236 -->
 - Add Ubuntu 20.04 + SLES 15 aarch64 Testers [#9712](https://github.com/chef/chef/pull/9712) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.235 -->
 - Update omnibus-software again to bring in double pry fixes [#9704](https://github.com/chef/chef/pull/9704) ([tas50](https://github.com/tas50)) <!-- 16.0.234 -->
 - Remove the unused simplecov depedency [#9699](https://github.com/chef/chef/pull/9699) ([tas50](https://github.com/tas50)) <!-- 16.0.233 -->
