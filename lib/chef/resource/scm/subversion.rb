@@ -46,10 +46,10 @@ class Chef
         description: "The location of the svn binary."
 
       property :svn_username, String,
-        description: "The username to use for interacting with subversion."
+        description: "The user name for a user that has access to the Subversion repository."
 
       property :svn_password, String,
-        description: "The password to use for interacting with subversion.",
+        description: "The password for a user that has access to the Subversion repository.",
         sensitive: true, desired_state: false
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications

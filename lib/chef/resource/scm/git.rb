@@ -45,10 +45,12 @@ class Chef
         default: true
 
       property :remote, String,
+        description: "The remote repository to use when synchronizing an existing clone.",
         default: "origin"
 
       property :ssh_wrapper, String,
-        desired_state: false
+        desired_state: false,
+        description: "The path to the wrapper script used when running SSH with git. The `GIT_SSH` environment variable is set to this."
 
       property :checkout_branch, String,
         description: "Set this to use a local branch to avoid checking SHAs or tags to a detatched head state."

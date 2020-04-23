@@ -32,10 +32,10 @@ property :revision, String,
   default: "HEAD"
 
 property :user, [String, Integer],
-  description: "The system user that is responsible for the checked-out code."
+  description: "The system user that should own the checked-out code."
 
 property :group, [String, Integer],
-  description: "The system group that is responsible for the checked-out code."
+  description: "The system group that should own the checked-out code."
 
 property :timeout, Integer,
   description: "The amount of time (in seconds) to wait before timing out.",
