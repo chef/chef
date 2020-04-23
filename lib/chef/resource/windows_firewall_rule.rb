@@ -72,7 +72,7 @@ class Chef
         description: "The profile the firewall rule applies to.",
         coerce: proc { |p| Array(p).map(&:downcase).map(&:to_sym).sort },
         callbacks: {
-          "contains values not in :public, :private :domain, :any or :notapplicable" => lambda { |p|
+          "contains values not in :public, :private, :domain, :any or :notapplicable" => lambda { |p|
             p.all? { |e| %i{public private domain any notapplicable}.include?(e) }
           },
         }
@@ -106,6 +106,10 @@ class Chef
         else
           state = Chef::JSONCompat.from_json(output.stdout)
         end
+
+        # Need to reverse `$rule.Profile.ToString()` in powershell command
+        current_profiles = state["profile"].split(", ").map(&:to_sym)
+
         local_address state["local_address"]
         local_port Array(state["local_port"]).sort
         remote_address state["remote_address"]
@@ -113,7 +117,7 @@ class Chef
         direction state["direction"]
         protocol state["protocol"]
         firewall_action state["firewall_action"]
-        profile state["profile"]
+        profile current_profiles
         program state["program"]
         service state["service"]
         interface_type state["interface_type"]
