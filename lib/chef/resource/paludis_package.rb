@@ -31,6 +31,13 @@ class Chef
 
       allowed_actions :install, :remove, :upgrade
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       property :timeout, [String, Integer],
         description: "The amount of time (in seconds) to wait before timing out.",
         default: 3600,

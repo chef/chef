@@ -27,6 +27,13 @@ class Chef
 
       description "Use the gem_package resource to manage gem packages that are only included in recipes. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       # the source can either be a path to a package source like:
       #   source /var/tmp/mygem-1.2.3.4.gem
       # or it can be a url rubygems source like:

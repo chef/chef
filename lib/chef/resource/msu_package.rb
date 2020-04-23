@@ -33,6 +33,13 @@ class Chef
       allowed_actions :install, :remove
       default_action :install
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       property :source, String,
         description: "The local file path or URL for the MSU package.",
         coerce: (proc do |s|

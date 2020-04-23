@@ -38,6 +38,13 @@ class Chef
       unified_mode true
       provides :chef_gem
 
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
       property :gem_binary, default: "#{RbConfig::CONFIG["bindir"]}/gem", default_description: "Chef's built-in gem binary.",
                             description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed.",
                             callbacks: {

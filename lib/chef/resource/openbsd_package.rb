@@ -31,6 +31,13 @@ class Chef
 
       description "Use the openbsd_package resource to manage packages for the OpenBSD platform."
       introduced "12.1"
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

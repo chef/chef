@@ -27,6 +27,13 @@ class Chef
       provides :package, platform_family: "smartos"
 
       description "Use the smartos_package resource to manage packages for the SmartOS platform."
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end
