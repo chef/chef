@@ -30,7 +30,7 @@ namespace :docs_site do
       padding_size = largest_property_name(properties) + 6
 
       # build the resource string with property spacing between property names and comments
-      text = "The #{resource_name} resource has the following syntax:\n\n"
+      text = ""
       text << "```ruby\n"
       text << "#{resource_name} 'name' do\n"
       properties.each do |p|
@@ -55,11 +55,20 @@ namespace :docs_site do
       end
     end
 
+    def friendly_full_property_list(name, properties)
+      [
+        "`#{name}` is the resource.",
+        "`name` is the name given to the resource block.",
+        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state.",
+        friendly_property_list(properties),
+      ]
+    end
+
     # given an array of properties print out a single comma separated string
-    # handling commas / and properly and plural vs. singular wording depending
+    # handling commas and plural vs. singular wording depending
     # on the number of properties
     # @return String
-    def friendly_properly_list(arr)
+    def friendly_property_list(arr)
       return nil if arr.empty? # resources w/o properties
 
       props = arr.map { |x| "``#{x["name"]}``" }
@@ -78,6 +87,8 @@ namespace :docs_site do
     # handling a nil value that needs to be printed as "nil" and TrueClass/FalseClass
     # which needs to be "true" and "false"
     # @return String
+    # TODO:
+    # - still does not include nil (?)
     def friendly_types_list(arr)
       fixed_arr = Array(arr).map do |x|
         case x
@@ -85,6 +96,8 @@ namespace :docs_site do
           "true"
         when "FalseClass"
           "false"
+        when "NilClass"
+          "nil"
         else
           x
         end
@@ -122,16 +135,29 @@ namespace :docs_site do
 
     # build the menu entry for this resource
     def build_menu_item(name)
-      menu = { 'docs' => {} }
-      menu['docs']['title'] = name
-      menu['docs']['identifier'] = "chef_infra/cookbook_reference/resources/#{name} #{name}"
-      menu['docs']['parent'] = 'chef_infra/cookbook_reference/resources'
-      menu['docs']['weight'] = @weight
+      {
+        "infra" => {
+          "title" => name,
+          "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
+          "parent" => 'chef_infra/cookbook_reference/resources',
+          "weight" => @weight,
+        }
+      }
+    end
 
-      # increment weight by 10 for the next menu item
-      @weight += 10
-
-      menu
+    # TODO:
+    # - what to do about "lazy default" for default?
+    def properties_list(properties)
+      properties.map do |property|
+        {
+          property: property["name"],
+          ruby_type: friendly_types_list(property["is"]),
+          required: property["required"],
+          default_value: property["default"],
+          new_in: property["introduced"],
+          description_list: [{ markdown: property["description"] }],
+        }
+      end
     end
 
     # the main method that builds what will become the yaml file
@@ -149,11 +175,12 @@ namespace :docs_site do
       r['resource_description_list'] = {}
       r['resource_description_list']['markdown'] = data['description']
       r['resource_new_in'] = data["introduced"]
-      r['handler_types'] = false
-      r['syntax_description'] = generate_resource_block(name, properties, data["default_action"])
-      r['handler_types'] = false
+      r['handler_types'] = name == "chef_handler"
+      r['syntax_full_code_block'] = generate_resource_block(name, properties, data["default_action"])
       r['syntax_code_block'] = nil
-      r['syntax_properties_list'] = friendly_properly_list(properties)
+      r['syntax_properties_list'] = nil
+      r['syntax_full_properties_list'] = friendly_full_property_list(name, properties)
+      r['properties_list'] = properties_list(properties)
 
       #require 'pry'; binding.pry
       r
@@ -172,10 +199,24 @@ namespace :docs_site do
       # skip some resources we don't directly document
       next if ["scm", "whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", ""].include?(resource)
 
-      puts "Writing out #{resource}."
-      FileUtils.mkdir_p "docs_site/#{resource}"
-      File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(build_resource_data(resource, data).to_yaml) }
+      next unless resource == ENV["DEBUG"] if ENV["DEBUG"]
 
+      resource_data = build_resource_data(resource, data)
+
+      if ENV["DEBUG"]
+        require 'pp'
+        pp resource
+        puts "=========="
+        pp data
+        puts "=========="
+        pp resource_data
+      else
+        puts "Writing out #{resource}."
+        FileUtils.mkdir_p "docs_site/#{resource}"
+        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml) }
+      end
+
+      @weight += 10
     end
   end
 end
