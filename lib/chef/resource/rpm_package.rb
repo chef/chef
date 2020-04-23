@@ -25,7 +25,7 @@ class Chef
 
       provides :rpm_package
 
-      description "Use the rpm_package resource to manage packages for the RPM Package Manager platform."
+      description "Use the rpm_package resource to manage packages using the RPM Package Manager."
 
       property :allow_downgrade, [ true, false ], default: true, desired_state: false
 

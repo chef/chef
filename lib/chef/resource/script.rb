@@ -49,8 +49,9 @@ class Chef
 
       property :code, String, required: true
       property :interpreter, String
-      property :flags, String
 
+      property :flags, String,
+        description: "One or more command line flags that are passed to the interpreter when a command is invoked."
     end
   end
 end

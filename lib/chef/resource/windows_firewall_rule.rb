@@ -78,6 +78,7 @@ class Chef
       property :displayname, String,
         description: "The displayname to assign to the firewall rule.",
         default: lazy { rule_name },
+        default_description: "The rule_name property value.",
         introduced: "16.0"
 
       property :group, String,
