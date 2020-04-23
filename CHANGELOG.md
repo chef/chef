@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.238 -->
-## [v16.0.238](https://github.com/chef/chef/tree/v16.0.238) (2020-04-23)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Make sure all the non-multipackage packge resources can&#39;t take arrays [#9721](https://github.com/chef/chef/pull/9721) ([tas50](https://github.com/tas50))
+- Enable caching of all our buildkite jobs again [#9672](https://github.com/chef/chef/pull/9672) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Enable caching of all our buildkite jobs again [#9672](https://github.com/chef/chef/pull/9672) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
 - Make sure all the non-multipackage packge resources can&#39;t take arrays [#9721](https://github.com/chef/chef/pull/9721) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
 - Fix for Chocolate_resource options causing extra quotes [#9509](https://github.com/chef/chef/pull/9509) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.237 -->
 - Use the new Chef definition w/o appbundler [#9710](https://github.com/chef/chef/pull/9710) ([tas50](https://github.com/tas50)) <!-- 16.0.236 -->
