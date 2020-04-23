@@ -47,10 +47,13 @@ class Chef
         end
       end
 
-      property :code, String, required: true
-      property :interpreter, String
-      property :flags, String
+      property :code, String, required: true,
+        description: "A quoted string of code to be executed."
 
+      property :interpreter, String
+
+      property :flags, String,
+        description: "One or more command line flags that are passed to the interpreter when a command is invoked."
     end
   end
 end

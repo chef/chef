@@ -82,7 +82,7 @@ class Chef
       # specify overrides for the start_command, stop_command and
       # restart_command properties.
       property :init_command, String,
-        description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the #{Chef::Dist::CLIENT} will use the default init command for the service provider being used.",
+        description: "The path to the init script that is associated with the service. Use init_command to prevent the need to specify overrides for the start_command, stop_command, and restart_command properties. When this property is not specified, the #{Chef::Dist::PRODUCT} will use the default init command for the service provider being used.",
         desired_state: false
 
       # if the service is enabled or not
