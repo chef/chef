@@ -160,24 +160,116 @@ namespace :docs_site do
       end
     end
 
+    def special_properties(name, data)
+      properties = {}
+
+      properties["common_resource_functionality_multiple_packages"] =
+        case name
+        when "yum_package", "apt_package"
+          true
+        when "package"
+          nil
+        else
+          false
+        end
+
+      properties["common_resource_functionality_resources_common_windows_security"] = name == "remote_directory"
+
+      properties["cookbook_file_specificity"] = name == "cookbook_file"
+
+      properties["debug_recipes_chef_shell"] = name == "breakpoint"
+
+      properties["handler_custom"] = name == "chef_handler"
+
+      properties["handler_types"] = name == "chef_handler"
+
+      properties["nameless_apt_update"] = name == "apt_update"
+
+      properties["nameless_build_essential"] = name == "build_essential"
+
+      properties["properties_multiple_packages"] = ["dnf_package", "package", "zypper_package"].include?(name)
+
+      properties["properties_resources_common_windows_security"] = ["cookbook_file", "file", "template", "remote_file", "directory"].include?(name)
+
+
+      properties["properties_shortcode"] =
+        case name
+        when "breakpoint"
+          "resource_breakpoint_properties.md"
+        when "ohai"
+          "resource_ohai_properties.md"
+        when "log"
+          "resource_log_properties.md"
+        else
+          nil
+        end
+
+      properties["ps_credential_helper"] = name == "dsc_script"
+
+      properties["registry_key"] = name == "registry_key"
+
+      properties["remote_directory_recursive_directories"] = name == "remote_directory"
+
+      properties["remote_file_prevent_re_downloads"] = name == "remote_file"
+
+      properties["remote_file_unc_path"] = name == "remote_file"
+
+      properties["resource_directory_recursive_directories"] = ["directory", "remote_directory"].include?(name)
+
+      properties["resource_package_options"] = name == "package"
+
+      properties["resources_common_atomic_update"] = ["cookbook_file", "file", "template", "remote_file"].include?(name)
+
+      properties["resources_common_guard_interpreter"] = name == "script"
+
+      properties["resources_common_guards"] = !["ruby_block", "chef_acl", "chef_environment", "chef_data_bag", "chef_mirror", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "package"].include?(name)
+
+      properties["resources_common_notification"] = !["ruby_block", "chef_acl", "python", "chef_environment", "chef_data_bag", "chef_mirror", "perl", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "ruby", "package"].include?(name)
+
+      properties["resources_common_properties"] = !["ruby_block", "chef_acl", "python", "chef_environment", "chef_data_bag", "chef_mirror", "perl", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "ruby", "package"].include?(name)
+
+      properties["ruby_style_basics_chef_log"] = name == "log"
+
+      properties["syntax_shortcode"] =
+        case name
+        when "breakpoint"
+          "resource_breakpoint_syntax.md"
+        when "log"
+          "resource_log_syntax.md"
+        else
+          nil
+        end
+
+      properties["template_requirements"] = name == "template"
+
+      properties["unit_file_verification"] = name == "systemd_unit"
+
+      properties
+    end
+
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
       properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
 
       r = {}
-      r['title'] = "#{name} resource"
-      r['resource'] = name
+
+      # These properties are always set to these values.
       r['draft'] = false
-      r['aliases'] = ["/resource_#{name}.html"]
-      r['menu'] = build_menu_item(name)
       r['resource_reference'] = true
       r['robots'] = nil
+      r['syntax_code_block'] = nil
+
+      # These properties are set to special values for only a few resources.
+      r.merge!(special_properties(name, data))
+
+      r['title'] = "#{name} resource"
+      r['resource'] = name
+      r['aliases'] = ["/resource_#{name}.html"]
+      r['menu'] = build_menu_item(name)
       r['resource_description_list'] = {}
       r['resource_description_list']['markdown'] = data['description']
       r['resource_new_in'] = data["introduced"]
-      r['handler_types'] = name == "chef_handler"
       r['syntax_full_code_block'] = generate_resource_block(name, properties, data["default_action"])
-      r['syntax_code_block'] = nil
       r['syntax_properties_list'] = nil
       r['syntax_full_properties_list'] = friendly_full_property_list(name, properties)
       r['properties_list'] = properties_list(properties)
