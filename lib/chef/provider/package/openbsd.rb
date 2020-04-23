@@ -33,7 +33,6 @@ class Chef
         provides :package, os: "openbsd"
         provides :openbsd_package
 
-        include Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
 
         def initialize(*args)

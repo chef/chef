@@ -18,7 +18,6 @@
 
 require_relative "../package"
 require_relative "../../resource/cab_package"
-require_relative "../../mixin/shell_out"
 require_relative "../../mixin/uris"
 require_relative "../../mixin/checksum"
 require "cgi" unless defined?(CGI)
@@ -27,7 +26,6 @@ class Chef
   class Provider
     class Package
       class Cab < Chef::Provider::Package
-        include Chef::Mixin::ShellOut
         include Chef::Mixin::Uris
         include Chef::Mixin::Checksum
 

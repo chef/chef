@@ -17,8 +17,6 @@
 
 require_relative "../package"
 require_relative "../../resource/dnf_package"
-require_relative "../../mixin/which"
-require_relative "../../mixin/shell_out"
 require_relative "../../mixin/get_source_from_package"
 require_relative "dnf/python_helper"
 require_relative "dnf/version"
@@ -27,8 +25,6 @@ class Chef
   class Provider
     class Package
       class Dnf < Chef::Provider::Package
-        extend Chef::Mixin::Which
-        extend Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
 
         allow_nils

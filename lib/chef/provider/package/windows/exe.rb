@@ -17,15 +17,11 @@
 # limitations under the License.
 #
 
-require_relative "../../../mixin/shell_out"
-
 class Chef
   class Provider
     class Package
       class Windows
         class Exe
-          include Chef::Mixin::ShellOut
-
           def initialize(resource, installer_type, uninstall_entries)
             @new_resource = resource
             @logger = new_resource.logger

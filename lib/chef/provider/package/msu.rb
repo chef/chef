@@ -22,7 +22,6 @@
 # Reference: https://support.microsoft.com/en-in/kb/934307
 require_relative "../package"
 require_relative "../../resource/msu_package"
-require_relative "../../mixin/shell_out"
 require_relative "cab"
 require_relative "../../util/path_helper"
 require_relative "../../mixin/uris"
@@ -33,7 +32,6 @@ class Chef
   class Provider
     class Package
       class Msu < Chef::Provider::Package
-        include Chef::Mixin::ShellOut
         include Chef::Mixin::Uris
         include Chef::Mixin::Checksum
 
