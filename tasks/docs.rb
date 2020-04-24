@@ -266,7 +266,7 @@ namespace :docs_site do
       r['aliases'] = ["/resource_#{name}.html"]
       r['menu'] = build_menu_item(name)
       r['resource_description_list'] = {}
-      r['resource_description_list']['markdown'] = data['description']
+      r['resource_description_list'] = [{ "markdown" => data['description'] }]
       r['resource_new_in'] = data["introduced"]
       r['syntax_full_code_block'] = generate_resource_block(name, properties, data["default_action"])
       r['syntax_properties_list'] = nil
