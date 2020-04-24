@@ -76,11 +76,7 @@ describe Chef::Resource::Git, requires_git: true do
 
   def expect_branch_upstream_to_be(branch, upstream)
     branch_upstream = shell_out("git", "rev-parse", "--abbrev-ref", "#{branch}@{upstream}", cwd: deploy_directory).stdout.strip
-    if upstream.nil?
-      expect(branch_upstream).to eq("")
-    else
-      expect(branch_upstream).to eq(upstream)
-    end
+    expect(branch_upstream).to eq(upstream)
   end
 
   def expect_branch_to_be(branch)
@@ -244,7 +240,6 @@ describe Chef::Resource::Git, requires_git: true do
         repository origin_repo
         checkout_branch "deploy"
       end.should_be_updated
-      expect_branch_upstream_to_be("deploy", nil)
       expect_revision_to_be("HEAD", rev_head)
       expect_branch_to_be("deploy")
     end
