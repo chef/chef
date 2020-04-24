@@ -133,7 +133,7 @@ Use the `alternatives` resource to manage symbolic links to specify default comm
 
 ### chef_client resources
 
-We've added new resources to Chef Infra Client for setting up the client to run on a interval without the need to run Chef Infra Client as a service. We believe that these native schedulers provide a more flexible and reliable method for running the client on a schedule, which reduces hung clients and eases upgrades. This is the first of many steps towards removing the need for the `chef-client` cookbook and allowing Chef Infra Client to configure itself out of the box.
+We've added new resources to Chef Infra Client for setting the client to run on an interval using native system schedulers. We believe that these native schedulers provide a more flexible and reliable method for running the client than the traditional method of running as a full service. Using the native schedulers reduces hung clients and eases upgrades. This is the first of many steps towards removing the need for the `chef-client` cookbook and allowing Chef Infra Client to configure itself out of the box.
 
 #### chef_client_cron
 
