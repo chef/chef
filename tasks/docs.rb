@@ -96,7 +96,7 @@ namespace :docs_site do
           "true"
         when "FalseClass"
           "false"
-        when "NilClass"
+        when "NilClass", nil
           "nil"
         else
           x
