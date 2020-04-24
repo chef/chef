@@ -148,14 +148,19 @@ namespace :docs_site do
     # - what to do about "lazy default" for default?
     def properties_list(properties)
       properties.map do |property|
-        {
-          property: property["name"],
-          ruby_type: friendly_types_list(property["is"]),
-          required: property["required"],
-          default_value: property["default"],
-          new_in: property["introduced"],
-          description_list: [{ markdown: property["description"] }],
-        }
+        if property["deprecated"] # we don't want to document deprecated properties
+         nil
+        else
+          {
+            "property" => property["name"],
+            "ruby_type" => friendly_types_list(property["is"]),
+            "required" => property["required"],
+            "default_value" =>  friendly_default_value(property),
+            #"allowed_values" => property["equal_to"].join(', '),
+            "new_in" => property["introduced"],
+            "description_list" => [{ "markdown" => property["description"] }],
+          }
+        end
       end
     end
 
