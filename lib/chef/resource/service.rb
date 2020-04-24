@@ -114,11 +114,6 @@ class Chef
       property :priority, [ Integer, String, Hash ],
         description: "Debian platform only. The relative priority of the program for start and shutdown ordering. May be an integer or a Hash. An integer is used to define the start run levels; stop run levels are then 100-integer. A Hash is used to define values for specific run levels. For example, { 2 => [:start, 20], 3 => [:stop, 55] } will set a priority of twenty for run level two and a priority of fifty-five for run level three."
 
-      # timeout only applies to the windows service manager
-      property :timeout, Integer,
-        description: "Microsoft Windows platform only. The amount of time (in seconds) to wait before timing out.",
-        desired_state: false
-
       property :parameters, Hash,
         description: "Upstart only: A hash of parameters to pass to the service command for use in the service definition."
 

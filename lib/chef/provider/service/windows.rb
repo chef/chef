@@ -47,8 +47,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   START_PENDING = "start pending".freeze
   STOP_PENDING  = "stop pending".freeze
 
-  TIMEOUT = 60
-
   SERVICE_RIGHT = "SeServiceLogonRight".freeze
 
   def load_current_resource
@@ -336,7 +334,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   end
 
   def resource_timeout
-    @resource_timeout ||= @new_resource.timeout || TIMEOUT
+    @resource_timeout ||= @new_resource.timeout
   end
 
   def spawn_command_thread
