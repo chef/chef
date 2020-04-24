@@ -144,6 +144,16 @@ namespace :docs_site do
       }
     end
 
+    # print out the human readable form of the default
+    def friendly_default_value(property)
+      return "The resource block's name" if property["name_property"]
+
+      return nil if property["default"].nil?
+
+      # this way we properly print out a string of a hash or an array instead of just the values
+      property["default"].to_s
+    end
+
     # TODO:
     # - what to do about "lazy default" for default?
     def properties_list(properties)
