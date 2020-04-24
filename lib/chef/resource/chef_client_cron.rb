@@ -103,7 +103,7 @@ class Chef
         description: "The e-mail address to e-mail any cron task failures to."
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
         default: false
 
       property :config_directory, String,
@@ -112,6 +112,7 @@ class Chef
 
       property :log_directory, String,
         default: lazy { platform?("mac_os_x") ? "/Library/Logs/#{Chef::Dist::DIR_SUFFIX.capitalize}" : "/var/log/#{Chef::Dist::DIR_SUFFIX}" },
+        default_description: "/Library/Logs/#{Chef::Dist::DIR_SUFFIX.capitalize} on macOS and /var/log/#{Chef::Dist::DIR_SUFFIX} otherwise",
         description: "The path of the directory to create the log file in."
 
       property :log_file_name, String,
