@@ -145,6 +145,10 @@ describe Chef::Resource::Service do
     expect(resource.timeout).to eql(1)
   end
 
+  it "defaults the timeout property to 900 (seconds)" do
+    expect(resource.timeout).to eql(900)
+  end
+
   %w{enabled running}.each do |prop|
     it "accepts true for #{prop} property" do
       resource.send(prop, true)

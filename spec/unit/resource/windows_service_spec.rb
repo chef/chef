@@ -48,6 +48,15 @@ describe Chef::Resource::WindowsService, "initialize" do
     expect { resource.action :unmask }.not_to raise_error
   end
 
+  it "accepts an Integer for timeout property" do
+    resource.timeout 1
+    expect(resource.timeout).to eql(1)
+  end
+
+  it "defaults the timeout property to 60 (seconds)" do
+    expect(resource.timeout).to eql(60)
+  end
+
   %i{automatic manual disabled}.each do |type|
     it "supports setting startup_type property to #{type.inspect}" do
       resource.startup_type type
