@@ -31,7 +31,6 @@ namespace :docs_site do
 
       # build the resource string with property spacing between property names and comments
       text = ""
-      text << "```ruby\n"
       text << "#{resource_name} 'name' do\n"
       properties.each do |p|
         text << "  #{p["name"].ljust(padding_size)}"
