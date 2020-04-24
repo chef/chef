@@ -138,9 +138,9 @@ namespace :docs_site do
         "infra" => {
           "title" => name,
           "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
-          "parent" => 'chef_infra/cookbook_reference/resources',
+          "parent" => "chef_infra/cookbook_reference/resources",
           "weight" => @weight,
-        }
+        },
       }
     end
 
@@ -159,14 +159,14 @@ namespace :docs_site do
     def properties_list(properties)
       properties.map do |property|
         if property["deprecated"] # we don't want to document deprecated properties
-         nil
+          nil
         else
           {
             "property" => property["name"],
             "ruby_type" => friendly_types_list(property["is"]),
             "required" => property["required"],
             "default_value" =>  friendly_default_value(property),
-            #"allowed_values" => property["equal_to"].join(', '),
+            # "allowed_values" => property["equal_to"].join(', '),
             "new_in" => property["introduced"],
             "description_list" => [{ "markdown" => property["description"] }],
           }
@@ -201,10 +201,9 @@ namespace :docs_site do
 
       properties["nameless_build_essential"] = name == "build_essential"
 
-      properties["properties_multiple_packages"] = ["dnf_package", "package", "zypper_package"].include?(name)
+      properties["properties_multiple_packages"] = %w{dnf_package package zypper_package}.include?(name)
 
-      properties["properties_resources_common_windows_security"] = ["cookbook_file", "file", "template", "remote_file", "directory"].include?(name)
-
+      properties["properties_resources_common_windows_security"] = %w{cookbook_file file template remote_file directory}.include?(name)
 
       properties["properties_shortcode"] =
         case name
@@ -228,19 +227,19 @@ namespace :docs_site do
 
       properties["remote_file_unc_path"] = name == "remote_file"
 
-      properties["resource_directory_recursive_directories"] = ["directory", "remote_directory"].include?(name)
+      properties["resource_directory_recursive_directories"] = %w{directory remote_directory}.include?(name)
 
       properties["resource_package_options"] = name == "package"
 
-      properties["resources_common_atomic_update"] = ["cookbook_file", "file", "template", "remote_file"].include?(name)
+      properties["resources_common_atomic_update"] = %w{cookbook_file file template remote_file}.include?(name)
 
       properties["resources_common_guard_interpreter"] = name == "script"
 
-      properties["resources_common_guards"] = !["ruby_block", "chef_acl", "chef_environment", "chef_data_bag", "chef_mirror", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "package"].include?(name)
+      properties["resources_common_guards"] = !%w{ruby_block chef_acl chef_environment chef_data_bag chef_mirror chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user package}.include?(name)
 
-      properties["resources_common_notification"] = !["ruby_block", "chef_acl", "python", "chef_environment", "chef_data_bag", "chef_mirror", "perl", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "ruby", "package"].include?(name)
+      properties["resources_common_notification"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
 
-      properties["resources_common_properties"] = !["ruby_block", "chef_acl", "python", "chef_environment", "chef_data_bag", "chef_mirror", "perl", "chef_container", "chef_client", "chef_organization", "remote_file", "chef_node", "chef_group", "breakpoint", "chef_role", "registry_key", "chef_data_bag_item", "chef_user", "ruby", "package"].include?(name)
+      properties["resources_common_properties"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
 
       properties["ruby_style_basics_chef_log"] = name == "log"
 
@@ -268,27 +267,26 @@ namespace :docs_site do
       r = {}
 
       # These properties are always set to these values.
-      r['draft'] = false
-      r['resource_reference'] = true
-      r['robots'] = nil
-      r['syntax_code_block'] = nil
+      r["draft"] = false
+      r["resource_reference"] = true
+      r["robots"] = nil
+      r["syntax_code_block"] = nil
 
       # These properties are set to special values for only a few resources.
       r.merge!(special_properties(name, data))
 
-      r['title'] = "#{name} resource"
-      r['resource'] = name
-      r['aliases'] = ["/resource_#{name}.html"]
-      r['menu'] = build_menu_item(name)
-      r['resource_description_list'] = {}
-      r['resource_description_list'] = [{ "markdown" => data['description'] }]
-      r['resource_new_in'] = data["introduced"]
-      r['syntax_full_code_block'] = generate_resource_block(name, properties, data["default_action"])
-      r['syntax_properties_list'] = nil
-      r['syntax_full_properties_list'] = friendly_full_property_list(name, properties)
-      r['properties_list'] = properties_list(properties)
+      r["title"] = "#{name} resource"
+      r["resource"] = name
+      r["aliases"] = ["/resource_#{name}.html"]
+      r["menu"] = build_menu_item(name)
+      r["resource_description_list"] = {}
+      r["resource_description_list"] = [{ "markdown" => data["description"] }]
+      r["resource_new_in"] = data["introduced"]
+      r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
+      r["syntax_properties_list"] = nil
+      r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
+      r["properties_list"] = properties_list(properties)
 
-      #require 'pry'; binding.pry
       r
     end
 
@@ -305,12 +303,12 @@ namespace :docs_site do
       # skip some resources we don't directly document
       next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
 
-      next unless resource == ENV["DEBUG"] if ENV["DEBUG"]
+      next if ENV["DEBUG"] && !(resource == ENV["DEBUG"])
 
       resource_data = build_resource_data(resource, data)
 
       if ENV["DEBUG"]
-        require 'pp'
+        require "pp"
         pp resource
         puts "=========="
         pp data
