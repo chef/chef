@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.239 -->
-## [v16.0.239](https://github.com/chef/chef/tree/v16.0.239) (2020-04-23)
+<!-- latest_release 16.0.240 -->
+## [v16.0.240](https://github.com/chef/chef/tree/v16.0.240) (2020-04-24)
 
 #### Merged Pull Requests
-- Minor improvements to the resource descriptions [#9725](https://github.com/chef/chef/pull/9725) ([tas50](https://github.com/tas50))
-- Enable caching of all our buildkite jobs again [#9672](https://github.com/chef/chef/pull/9672) ([tas50](https://github.com/tas50))
+- Refactor scm, git and subversion resources &amp; fix longstanding git issues [#9726](https://github.com/chef/chef/pull/9726) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refactor scm, git and subversion resources &amp; fix longstanding git issues [#9726](https://github.com/chef/chef/pull/9726) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.240 -->
 - Minor improvements to the resource descriptions [#9725](https://github.com/chef/chef/pull/9725) ([tas50](https://github.com/tas50)) <!-- 16.0.239 -->
 - Enable caching of all our buildkite jobs again [#9672](https://github.com/chef/chef/pull/9672) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
 - Make sure all the non-multipackage packge resources can&#39;t take arrays [#9721](https://github.com/chef/chef/pull/9721) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
