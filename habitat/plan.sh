@@ -4,6 +4,7 @@ pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Infra Client"
 pkg_license=('Apache-2.0')
 pkg_bin_dirs=(bin)
+_chef_client_ruby="core/ruby27"
 pkg_build_deps=(
   core/make
   core/gcc
@@ -11,13 +12,12 @@ pkg_build_deps=(
 )
 pkg_deps=(
   core/glibc
-  core/ruby26
+  $_chef_client_ruby
   core/libxml2
   core/libxslt
   core/libiconv
   core/xz
   core/zlib
-  core/bundler
   core/openssl
   core/cacerts
   core/libffi
@@ -64,7 +64,6 @@ do_prepare() {
 }
 
 do_build() {
-  local _bundler_dir
   local _libxml2_dir
   local _libxslt_dir
   local _zlib_dir
@@ -73,20 +72,18 @@ do_build() {
   export GEM_PATH
   export NOKOGIRI_CONFIG
 
-  _bundler_dir=$(pkg_path_for bundler)
   _libxml2_dir=$(pkg_path_for libxml2)
   _libxslt_dir=$(pkg_path_for libxslt)
   _zlib_dir=$(pkg_path_for zlib)
 
   CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
   GEM_HOME=${pkg_prefix}/bundle
-  GEM_PATH=${_bundler_dir}:${GEM_HOME}
+  GEM_PATH=${GEM_HOME}
   NOKOGIRI_CONFIG="--use-system-libraries \
     --with-zlib-dir=${_zlib_dir} \
     --with-xslt-dir=${_libxslt_dir} \
     --with-xml2-include=${_libxml2_dir}/include/libxml2 \
     --with-xml2-lib=${_libxml2_dir}/lib"
-
 
   build_line "Executing bundle install inside hab-cache path. ($CACHE_PATH/chef-config)"
   ( cd "$CACHE_PATH/chef-config" || exit_with "unable to enter hab-cache directory" 1
@@ -118,7 +115,7 @@ do_install() {
 
   build_line "Fixing bin/ruby and bin/env interpreters"
   fix_interpreter "${pkg_prefix}/bin/*" core/coreutils bin/env
-  fix_interpreter "${pkg_prefix}/bin/*" core/ruby26 bin/ruby
+  fix_interpreter "${pkg_prefix}/bin/*" "$_chef_client_ruby" bin/ruby
 }
 
 do_end() {
@@ -140,9 +137,9 @@ _bundle_install() {
 
   bundle install ${*:-} \
     --jobs "$(nproc)" \
-    --without development:test \
+    --without development:test:docgen \
     --path "$path" \
-    --shebang="$(pkg_path_for "core/ruby26")/bin/ruby" \
+    --shebang="$(pkg_path_for "$_chef_client_ruby")/bin/ruby" \
     --no-clean \
     --retry 5 \
     --standalone
