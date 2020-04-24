@@ -107,8 +107,6 @@ depends 'windows', '>> 1.0'
 
 The `knife status --long` resource now uses Ohai's cloud data instead of ec2 specific data. This improves, but changes, the data output for users on non-AWS clouds.
 
-TODO: add details on the command changes from https://github.com/chef/chef/pull/9292
-
 #### knife download role/environment format update
 
 The `knife download role` and `knife download environment` commands now include all possible data fields including those without any data set. This new output behavior matches the behavior of other commands such as `knife role show` or `knife environment show`
