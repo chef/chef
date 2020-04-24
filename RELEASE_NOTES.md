@@ -133,15 +133,19 @@ If you have a repository that contains a `site-cookbooks` directory, we highly r
 
 Use the `alternatives` resource to manage symbolic links to specify default command versions on Linux hosts. See the [alternatives documentation](https://docs.chef.io/resources/alternatives/) for full usage information. Thanks [@vkhatri](https://github.com/vkhatri) for the original cookbook alternatives resource.
 
-### chef_client_cron
+### chef_client resources
+
+We've added new resources to Chef Infra Client for setting up the client to run on a interval without the need to run Chef Infra Client as a service. We believe that these native schedulers provide a more flexible and reliable method for running the client on a schedule, which reduces hung clients and eases upgrades. This is the first of many steps towards removing the need for the `chef-client` cookbook and allowing Chef Infra Client to configure itself out of the box.
+
+#### chef_client_cron
 
 Use the `chef_client_cron` resource to setup the Chef Infra Client to run on a schedule using cron on Linux, Solaris, and AIX systems. See the [chef_client_cron documentation](https://docs.chef.io/resources/chef_client_cron/) for full usage information.
 
-### chef_client_systemd_timer
+#### chef_client_systemd_timer
 
 Use the `chef_client_systemd_timer` resource to setup the Chef Infra Client to run on a schedule using a systemd timer on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
 
-### chef_client_windows_task
+#### chef_client_windows_task
 
 Use the `chef_client_windows_task` resource to setup the Chef Infra Client to run on a schedule using cron on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
 
