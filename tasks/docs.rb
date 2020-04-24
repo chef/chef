@@ -283,8 +283,8 @@ namespace :docs_site do
     # sort the hash so we can generate the menu weights later
     resources = Hash[resources.sort]
 
-    # weight is used to build the menu order. We start at 10 and increment by 10 each time
-    @weight = 10
+    # weight is used to build the menu order. We start at 70 and increment by 10 each time
+    @weight = 70
 
     resources.each do |resource, data|
       # skip some resources we don't directly document
