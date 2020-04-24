@@ -139,7 +139,6 @@ namespace :docs_site do
           "title" => name,
           "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
           "parent" => "chef_infra/cookbook_reference/resources",
-          "weight" => @weight,
         },
       }
     end
@@ -293,12 +292,6 @@ namespace :docs_site do
     FileUtils.mkdir_p "docs_site"
     resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
 
-    # sort the hash so we can generate the menu weights later
-    resources = Hash[resources.sort]
-
-    # weight is used to build the menu order. We start at 70 and increment by 10 each time
-    @weight = 70
-
     resources.each do |resource, data|
       # skip some resources we don't directly document
       next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
@@ -319,8 +312,6 @@ namespace :docs_site do
         FileUtils.mkdir_p "docs_site/#{resource}"
         File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml) }
       end
-
-      @weight += 10
     end
   end
 end
