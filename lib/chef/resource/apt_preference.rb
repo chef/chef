@@ -43,7 +43,7 @@ class Chef
         required: true
 
       property :pin_priority, [String, Integer],
-        description: "Sets the Pin-Priority for a package.",
+        description: "Sets the Pin-Priority for a package. See <https://wiki.debian.org/AptPreferences> for more details.",
         required: true
 
       default_action :add
