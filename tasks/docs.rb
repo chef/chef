@@ -288,7 +288,7 @@ namespace :docs_site do
 
     resources.each do |resource, data|
       # skip some resources we don't directly document
-      next if ["scm", "whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", ""].include?(resource)
+      next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
 
       next unless resource == ENV["DEBUG"] if ENV["DEBUG"]
 
