@@ -101,7 +101,7 @@ depends 'windows', '<< 1.0'
 depends 'windows', '>> 1.0'
 ```
 
-### Changes to Knife
+### Behavior Changes in Knife
 
 #### knife status --long uses cloud attribute
 
@@ -131,19 +131,27 @@ If you have a repository that contains a `site-cookbooks` directory, we highly r
 
 ### alternatives
 
-Thank @vkhatri
+Use the `alternatives` resource to manage symbolic links to specify default command versions on Linux hosts. See the [alternatives documentation](https://docs.chef.io/resources/alternatives/) for full usage information. Thanks [@vkhatri](https://github.com/vkhatri) for the original cookbook alternatives resource.
 
 ### chef_client_cron
 
+Use the `chef_client_cron` resource to setup the Chef Infra Client to run on a schedule using cron on Linux, Solaris, and AIX systems. See the [chef_client_cron documentation](https://docs.chef.io/resources/chef_client_cron/) for full usage information.
+
 ### chef_client_systemd_timer
+
+Use the `chef_client_systemd_timer` resource to setup the Chef Infra Client to run on a schedule using a systemd timer on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
 
 ### chef_client_windows_task
 
+Use the `chef_client_windows_task` resource to setup the Chef Infra Client to run on a schedule using cron on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
+
 ### plist
 
-Thank Microsoft and @americanhanko
+Use the `plist` resource to generate plist files on macOS hosts. See the [plist documentation](https://docs.chef.io/resources/plist/) for full usage information. Thanks Microsoft and [@americanhanko](https://github.com/americanhanko) for the original work on this resource in the [macos cookbook](https://supermarket.chef.io/cookbooks/macos).
 
 ### user_ulimit
+
+Use the `user_ulimit` resource to set per user ulimit values on Linux systems. See the [user_ulimit documentation](https://docs.chef.io/resources/user_ulimit/) for full usage information. Thanks [@bmhatfield](https://github.com/bmhatfield) for the original work on this resource in the [ulimit cookbook](https://supermarket.chef.io/cookbooks/ulimit).
 
 ### windows_security_policy
 
@@ -155,9 +163,25 @@ Thank Microsoft and @americanhanko
 
 The `compile_time` property is now available for all resources so that they can be set to run at compile time without the need forcing the action.
 
+This allows you replace forcing resources to run at compile time:
+
+```ruby
+  my_resource "foo" do
+    action :nothing
+  end.run_action(:run)
+```
+
+With the simpler compile_time property:
+
+```ruby
+  my_resource "foo" do
+    compile_time true
+  end
+```
+
 ### build_essential
 
-The `build_essential` resource includes a new :upgrade action for macOS systems that allows you to install updates to the Xcode Command Line Tools available via Software Update.
+The `build_essential` resource includes a new `:upgrade` action for macOS systems that allows you to install updates to the Xcode Command Line Tools available via Software Update.``
 
 ### cron
 
