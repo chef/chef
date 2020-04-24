@@ -400,7 +400,8 @@ describe Chef::Provider::Git do
     @provider.clone
   end
 
-  it "runs a checkout command with default options" do
+  it "runs a checkout command when the local branch is set" do
+    @resource.checkout_branch "deploy"
     expect(@provider).to receive(:shell_out!).with("git branch -f deploy d35af14d41ae22b19da05d7d03a0bafc321b244c", cwd: "/my/deploy/dir",
                                                                                                                     log_tag: "git[web2.0 app]").ordered
     expect(@provider).to receive(:shell_out!).with("git checkout deploy", cwd: "/my/deploy/dir",
@@ -607,7 +608,7 @@ describe Chef::Provider::Git do
 
     it "does not raise an error if user exists" do
       allow(@provider).to receive(:get_homedir).with(@resource.user).and_return("/home/test")
-      expect { @provider.run_action(:sync) }.not_to raise_error(ArgumentError)
+      expect { @provider.run_action(:sync) }.not_to raise_error
     end
   end
 
@@ -622,8 +623,10 @@ describe Chef::Provider::Git do
     end
 
     it "does not raise an error if user exists" do
+      allow(@provider).to receive(:action_sync) # stub the entire action
+      allow(::File).to receive(:directory?).with("/my/deploy").and_return(true)
       allow(@provider).to receive(:get_homedir).with(@resource.user).and_return("/home/test")
-      expect { @provider.run_action(:sync) }.not_to raise_error(Chef::Exceptions::User)
+      expect { @provider.run_action(:sync) }.not_to raise_error
     end
   end
 

@@ -149,9 +149,15 @@ class Chef
       end
 
       def run_options(run_opts = {})
-        run_opts[:user] = new_resource.user if new_resource.user
+        env = {}
+        if new_resource.user
+          run_opts[:user] = new_resource.user
+          env["HOME"] = get_homedir(new_resource.user)
+        end
         run_opts[:group] = new_resource.group if new_resource.group
         run_opts[:timeout] = new_resource.timeout if new_resource.timeout
+        env.merge!(new_resource.environment) if new_resource.environment
+        run_opts[:environment] = env unless env.empty?
         run_opts
       end
 
@@ -223,6 +229,20 @@ class Chef
         unless ::File.directory?(target_parent_directory)
           msg = "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
           raise Chef::Exceptions::MissingParentDirectory, msg
+        end
+      end
+
+      # Returns the home directory of the user
+      # @param [String] user must be a string.
+      # @return [String] the home directory of the user.
+      #
+      def get_homedir(user)
+        require "etc" unless defined?(Etc)
+        case user
+        when Integer
+          Etc.getpwuid(user).dir
+        else
+          Etc.getpwnam(user.to_s).dir
         end
       end
     end

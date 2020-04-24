@@ -74,6 +74,8 @@ require "spec/support/local_gems.rb" if File.exists?(File.join(File.dirname(__FI
 require "spec/support/platform_helpers"
 require "spec/support/shared/unit/mock_shellout"
 
+require "spec/support/recipe_dsl_helper"
+
 # Autoloads support files
 # Excludes support/platforms by default
 # Do not change the gsub.

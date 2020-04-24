@@ -17,6 +17,7 @@
 #
 
 require "spec_helper"
+require_relative "scm"
 
 describe Chef::Resource::Subversion do
   static_provider_resolution(
@@ -28,9 +29,7 @@ describe Chef::Resource::Subversion do
 
   let(:resource) { Chef::Resource::Subversion.new("fakey_fakerton") }
 
-  it "is a subclass of Resource::Scm" do
-    expect(resource).to be_a_kind_of(Chef::Resource::Scm)
-  end
+  it_behaves_like "an SCM resource"
 
   it "the destination property is the name_property" do
     expect(resource.destination).to eql("fakey_fakerton")

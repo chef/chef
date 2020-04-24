@@ -16,11 +16,13 @@
 # limitations under the License.
 #
 
-require_relative "scm"
+require_relative "../../resource"
 
 class Chef
   class Resource
-    class Git < Chef::Resource::Scm
+    class Git < Chef::Resource
+      use "scm"
+
       unified_mode true
 
       provides :git
@@ -30,6 +32,28 @@ class Chef
       property :additional_remotes, Hash,
         description: "A Hash of additional remotes that are added to the git repository configuration.",
         default: lazy { {} }
+
+      property :depth, Integer,
+        description: "The number of past revisions to be included in the git shallow clone. Unless specified the default behavior will do a full clone."
+
+      property :enable_submodules, [TrueClass, FalseClass],
+        description: "Perform a sub-module initialization and update.",
+        default: false
+
+      property :enable_checkout, [TrueClass, FalseClass],
+        description: "Check out a repo from master. Set to false when using the checkout_branch attribute to prevent the git resource from attempting to check out master from master.",
+        default: true
+
+      property :remote, String,
+        description: "The remote repository to use when synchronizing an existing clone.",
+        default: "origin"
+
+      property :ssh_wrapper, String,
+        desired_state: false,
+        description: "The path to the wrapper script used when running SSH with git. The `GIT_SSH` environment variable is set to this."
+
+      property :checkout_branch, String,
+        description: "Set this to use a local branch to avoid checking SHAs or tags to a detatched head state."
 
       alias :branch :revision
       alias :reference :revision

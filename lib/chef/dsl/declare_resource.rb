@@ -267,10 +267,10 @@ class Chef
       #     action :delete
       #   end
       #
-      def declare_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
+      def declare_resource(type, name, created_at: nil, run_context: self.run_context, enclosing_provider: nil, &resource_attrs_block)
         created_at ||= caller[0]
 
-        resource = build_resource(type, name, created_at: created_at, &resource_attrs_block)
+        resource = build_resource(type, name, created_at: created_at, enclosing_provider: enclosing_provider, &resource_attrs_block)
 
         run_context.resource_collection.insert(resource, resource_type: resource.declared_type, instance_name: resource.name)
         resource
@@ -297,12 +297,14 @@ class Chef
       #     action :delete
       #   end
       #
-      def build_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
+      def build_resource(type, name, created_at: nil, run_context: self.run_context, enclosing_provider: nil, &resource_attrs_block)
         created_at ||= caller[0]
 
         # this needs to be lazy in order to avoid circular dependencies since ResourceBuilder
         # will requires the entire provider+resolver universe
         require_relative "../resource_builder" unless defined?(Chef::ResourceBuilder)
+
+        enclosing_provider ||= self if is_a?(Chef::Provider)
 
         Chef::ResourceBuilder.new(
           type:                type,
@@ -312,7 +314,7 @@ class Chef
           run_context:         run_context,
           cookbook_name:       cookbook_name,
           recipe_name:         recipe_name,
-          enclosing_provider:  is_a?(Chef::Provider) ? self : nil
+          enclosing_provider:  enclosing_provider
         ).build(&resource_attrs_block)
       end
 

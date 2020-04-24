@@ -17,12 +17,13 @@
 # limitations under the License.
 #
 
-require_relative "scm"
-require_relative "../dist"
+require_relative "../../dist"
 
 class Chef
   class Resource
-    class Subversion < Chef::Resource::Scm
+    class Subversion < Chef::Resource
+      use "scm"
+
       unified_mode true
 
       provides :subversion
@@ -45,10 +46,10 @@ class Chef
         description: "The location of the svn binary."
 
       property :svn_username, String,
-        description: "The username to use for interacting with subversion."
+        description: "The user name for a user that has access to the Subversion repository."
 
       property :svn_password, String,
-        description: "The password to use for interacting with subversion.",
+        description: "The password for a user that has access to the Subversion repository.",
         sensitive: true, desired_state: false
 
       # Override exception to strip password if any, so it won't appear in logs and different Chef notifications
