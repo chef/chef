@@ -164,7 +164,7 @@ namespace :docs_site do
 
       properties["common_resource_functionality_multiple_packages"] =
         case name
-        when "yum_package", "apt_package"
+        when "yum_package", "apt_package", "zypper_package", "homebrew_package", "dnf_package", "pacman_package"
           true
         when "package"
           nil
