@@ -183,7 +183,7 @@ With the simpler compile_time property:
 
 ### build_essential
 
-The `build_essential` resource includes a new `:upgrade` action for macOS systems that allows you to install updates to the Xcode Command Line Tools available via Software Update.``
+The `build_essential` resource includes a new `:upgrade` action for macOS systems that allows you to install updates to the Xcode Command Line Tools available via Software Update.
 
 ### cron
 
@@ -191,14 +191,14 @@ The `cron` resource has been updated to use the same property validation for cro
 
 ### dnf_package
 
-The `dnf_package` resource, which provides `package` under the hood on any system shipping with DNF, has been greatly refactored to resolve multiple issues.
+The `dnf_package` resource, which provides `package` under the hood on any system shipping with DNF, has been greatly refactored to resolve multiple issues. The version behavior and overall resource capabilities now match that of the `yum_package` resource.
 
 - The `:lock` action now works on RHEL 8
 - Fixes to prevent attempting to install the same package during each Chef Infra Client run
 
 ### git
 
-The `git` resource now fully supports why-run mode.
+The `git` resource now fully supports why-run mode and no longer checks out the `deploy` branch by default as mentioned in the breaking changes section.
 
 ### msu_package resource improvements
 
@@ -208,7 +208,23 @@ The `msu_package` resource has been improved to work better with Microsoft's cum
 
 The package resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler coobook authoring and it's also significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support [@ingobecker](https://github.com/ingobecker)
 
-Example:
+Using multiple resources to install a package:
+
+```ruby
+package 'git'
+package 'curl'
+package 'packer'
+```
+
+or
+
+```ruby
+%w(git curl packer).each do |pkg|
+  package pkg
+end
+```
+
+can now be simplified to:
 
 ```ruby
 package %w(git curl packer)
