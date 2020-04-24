@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.240 -->
-## [v16.0.240](https://github.com/chef/chef/tree/v16.0.240) (2020-04-24)
+<!-- latest_release 16.0.241 -->
+## [v16.0.241](https://github.com/chef/chef/tree/v16.0.241) (2020-04-24)
 
 #### Merged Pull Requests
-- Refactor scm, git and subversion resources &amp; fix longstanding git issues [#9726](https://github.com/chef/chef/pull/9726) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix linux plan to use ruby 2.7 [#9728](https://github.com/chef/chef/pull/9728) ([TheLunaticScripter](https://github.com/TheLunaticScripter))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix linux plan to use ruby 2.7 [#9728](https://github.com/chef/chef/pull/9728) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.241 -->
 - Refactor scm, git and subversion resources &amp; fix longstanding git issues [#9726](https://github.com/chef/chef/pull/9726) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.240 -->
 - Minor improvements to the resource descriptions [#9725](https://github.com/chef/chef/pull/9725) ([tas50](https://github.com/tas50)) <!-- 16.0.239 -->
 - Enable caching of all our buildkite jobs again [#9672](https://github.com/chef/chef/pull/9672) ([tas50](https://github.com/tas50)) <!-- 16.0.238 -->
