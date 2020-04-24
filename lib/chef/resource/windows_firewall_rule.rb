@@ -26,7 +26,7 @@ class Chef
     class WindowsFirewallRule < Chef::Resource
       provides :windows_firewall_rule
 
-      description "Use the windows_firewall_rule resource to create, change or remove windows firewall rules."
+      description "Use the windows_firewall_rule resource to create, change or remove Windows firewall rules."
       introduced "14.7"
       examples <<~DOC
       Allowing port 80 access
