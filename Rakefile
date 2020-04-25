@@ -29,24 +29,32 @@ end
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 
-# hack the chef-config install to run before the traditional install task
-task :super_install do
-  %w{chef-utils chef-config}.each do |gem|
-    path = ::File.join(::File.dirname(__FILE__), gem)
-    Dir.chdir(path)
-    sh("rake install")
+namespace :pre_install do
+  desc "Runs 'rake install' for the gems that live in subdirectories in this repo"
+  task :install_gems_from_dirs do
+    %w{chef-utils chef-config}.each do |gem|
+      path = ::File.join(::File.dirname(__FILE__), gem)
+      Dir.chdir(path) do
+        sh("rake install")
+      end
+    end
   end
 
-# Templating the powershell extensions so we can inject distro constants
-  template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
-  psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
-  FileUtils.mkdir_p psm1_path
-  template = ERB.new(IO.read(template_file))
-  chef_psm1 = template.result
-  File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
+  desc "Renders the powershell extensions with distro flavoring"
+  task :render_poweshell_extention do
+    template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
+    psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
+    FileUtils.mkdir_p psm1_path
+    template = ERB.new(IO.read(template_file))
+    chef_psm1 = template.result
+    File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
+  end
+
+  task :all => ['pre_install:install_gems_from_dirs', 'pre_install:render_powershell_extension']
 end
 
-task install: :super_install
+# hack in all the preinstall tasks to occur before the tradtional install task
+task install: 'pre_install:all'
 
 # make sure we build the correct gemspec on windows
 gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
@@ -55,8 +63,9 @@ Bundler::GemHelper.install_tasks name: gemspec
 # this gets appended to the normal bundler install helper
 task :install do
   chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
-  Dir.chdir(chef_bin_path)
-  sh("rake install:force")
+  Dir.chdir(chef_bin_path) do
+    sh("rake install:force")
+  end
 end
 
 task :pedant, :chef_zero_spec
