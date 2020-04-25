@@ -79,19 +79,23 @@ function Invoke-Build {
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install
         if (-not $?) { throw "unable to install gem dependencies" }
-        Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
-        Write-BuildLine " ** Also 'rake install' any gem sourced as a git reference."
+        Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
                 Push-Location $git_gem
-                Write-BuildLine " -- and $git_gem too"
+                Write-BuildLine " -- installing $git_gem"
                 rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
                 if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
             }
+        }
+        Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
+        bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        if (-not $?) {
+            Write-Warning " -- That didn't work. Let's try again."
+            bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
         Pop-Location
