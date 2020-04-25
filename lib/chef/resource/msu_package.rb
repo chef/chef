@@ -37,7 +37,12 @@ class Chef
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true
 
-      property :version, String,
+      # This is the same property as the main package resource except it has the skip docs set to true
+      # This resource abuses the package resource by storing the versions of all the cabs in the MSU file
+      # in the version attribute from load current value even though those aren't technically the versio of the
+      # msu. Since the user wouldn't actually set this we don't want it on the docs site.
+      property :version, [String, Array],
+        skip_docs: true,
         description: "The version of a package to be installed or upgraded."
 
       property :source, String,
