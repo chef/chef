@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.0.247 -->
+## [v16.0.247](https://github.com/chef/chef/tree/v16.0.247) (2020-04-25)
 
 #### Merged Pull Requests
+- Test and better document the locale resource [#9736](https://github.com/chef/chef/pull/9736) ([tas50](https://github.com/tas50))
 - Run Test Kitchen tests on Ruby 2.7 [#9737](https://github.com/chef/chef/pull/9737) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test and better document the locale resource [#9736](https://github.com/chef/chef/pull/9736) ([tas50](https://github.com/tas50)) <!-- 16.0.247 -->
 - Run Test Kitchen tests on Ruby 2.7 [#9737](https://github.com/chef/chef/pull/9737) ([tas50](https://github.com/tas50)) <!-- 16.0.246 -->
 - Update Ohai to 16.0.20 [#9734](https://github.com/chef/chef/pull/9734) ([tas50](https://github.com/tas50)) <!-- 16.0.246 -->
 - Use our fork of docker-api in the kitchen tests [#9733](https://github.com/chef/chef/pull/9733) ([tas50](https://github.com/tas50)) <!-- 16.0.245 -->
