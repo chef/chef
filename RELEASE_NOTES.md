@@ -200,6 +200,10 @@ The `dnf_package` resource, which provides `package` under the hood on any syste
 
 The `git` resource now fully supports why-run mode and no longer checks out the `deploy` branch by default as mentioned in the breaking changes section.
 
+### locale
+
+The locale resource now supports setting the system locale on Windows hosts.
+
 ### msu_package resource improvements
 
 The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these packages will not correctly install over previous versions. We've also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue [@danielfloyd](https://github.com/danielfloyd)
