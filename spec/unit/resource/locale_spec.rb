@@ -186,38 +186,4 @@ describe Chef::Resource::Locale do
       end
     end
   end
-
-  describe "#up_to_date?" do
-    context "when file does not exists" do
-      it "returns false" do
-        allow(File).to receive(:read).and_raise(Errno::ENOENT, "No such file or directory")
-        expect(provider.up_to_date?).to be_falsy
-      end
-    end
-
-    context "when file exists" do
-      let(:content) { "LANG=en_US\nLC_MESSAGES=en_AG.utf8\nLC_TIME=en_AG.utf8\n" }
-      before do
-        allow(provider).to receive(:new_content).and_return(content)
-      end
-      context "but is empty" do
-        it "returns false" do
-          allow(File).to receive(:read).and_return("")
-          expect(provider.up_to_date?).to be_falsy
-        end
-      end
-      context "and contains old key-vals" do
-        it "returns false" do
-          allow(File).to receive(:read).and_return("LC_MESSAGES=en_AG.utf8\n")
-          expect(provider.up_to_date?).to be_falsy
-        end
-      end
-      context "and contains new key-vals" do
-        it "returns true" do
-          allow(File).to receive(:read).and_return(content)
-          expect(provider.up_to_date?).to be_truthy
-        end
-      end
-    end
-  end
 end

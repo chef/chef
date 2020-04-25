@@ -74,8 +74,7 @@ describe Chef::Resource::Locale, :requires_root do
           resource.lang
           resource.lc_env
           resource.run_action(:update)
-          unsets_system_locale("LANG=en_US", "LC_TIME=en_IN")
-          sets_system_locale("")
+          expect(resource).not_to be_updated_by_last_action
         end
       end
     end
@@ -92,6 +91,17 @@ describe Chef::Resource::Locale, :requires_root do
     it "raises an exception due to being an unsupported platform" do
       resource.lang("en_US")
       expect { resource.run_action(:update) }.to raise_error(Chef::Exceptions::ProviderNotFound)
+    end
+  end
+
+  context "on windows", :windows_only, requires_root: false do
+    describe "action: update" do
+      context "Sets system locale" do
+        it "when lang is given" do
+          resource.lang("en-US")
+          resource.run_action(:update)
+        end
+      end
     end
   end
 end
