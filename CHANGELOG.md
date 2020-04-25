@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.245 -->
-## [v16.0.245](https://github.com/chef/chef/tree/v16.0.245) (2020-04-25)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- locale: Support setting locale on Windows [#9648](https://github.com/chef/chef/pull/9648) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Use our fork of docker-api in the kitchen tests [#9733](https://github.com/chef/chef/pull/9733) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use our fork of docker-api in the kitchen tests [#9733](https://github.com/chef/chef/pull/9733) ([tas50](https://github.com/tas50)) <!-- 16.0.245 -->
 - locale: Support setting locale on Windows [#9648](https://github.com/chef/chef/pull/9648) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.245 -->
 - Resolve deprecations in chef-utils specs [#9731](https://github.com/chef/chef/pull/9731) ([tas50](https://github.com/tas50)) <!-- 16.0.244 -->
 - Allow Arrays in msu_package version again [#9730](https://github.com/chef/chef/pull/9730) ([tas50](https://github.com/tas50)) <!-- 16.0.243 -->
