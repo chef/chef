@@ -167,7 +167,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on redhat6" do
-    let(:options) { { platform: "redhat", version: "6.9" } }
+    let(:options) { { platform: "redhat", version: "6.10" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
