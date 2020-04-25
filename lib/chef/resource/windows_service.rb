@@ -41,6 +41,11 @@ class Chef
 
       allowed_actions :configure_startup, :create, :delete, :configure
 
+      property :timeout, Integer,
+        description: "The amount of time (in seconds) to wait before timing out.",
+        default: 60,
+        desired_state: false
+
       # The display name to be used by user interface programs to identify the
       # service. This string has a maximum length of 256 characters.
       property :display_name, String, regex: /^.{1,256}$/,

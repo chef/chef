@@ -47,8 +47,6 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
   START_PENDING = "start pending".freeze
   STOP_PENDING  = "stop pending".freeze
 
-  TIMEOUT = 60
-
   SERVICE_RIGHT = "SeServiceLogonRight".freeze
 
   def load_current_resource
@@ -329,14 +327,10 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     retries = 0
     loop do
       break if current_state == desired_state
-      raise Timeout::Error if ( retries += 1 ) > resource_timeout
+      raise Timeout::Error if ( retries += 1 ) > @new_resource.timeout
 
       sleep 1
     end
-  end
-
-  def resource_timeout
-    @resource_timeout ||= @new_resource.timeout || TIMEOUT
   end
 
   def spawn_command_thread
@@ -344,7 +338,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       yield
     end
 
-    Timeout.timeout(resource_timeout) do
+    Timeout.timeout(@new_resource.timeout) do
       worker.join
     end
   end
