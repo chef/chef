@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.242 -->
-## [v16.0.242](https://github.com/chef/chef/tree/v16.0.242) (2020-04-25)
+<!-- latest_release 16.0.243 -->
+## [v16.0.243](https://github.com/chef/chef/tree/v16.0.243) (2020-04-25)
 
 #### Merged Pull Requests
-- Set timeouts in service and windows_service correctly [#9729](https://github.com/chef/chef/pull/9729) ([tas50](https://github.com/tas50))
+- Allow Arrays in msu_package version again [#9730](https://github.com/chef/chef/pull/9730) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow Arrays in msu_package version again [#9730](https://github.com/chef/chef/pull/9730) ([tas50](https://github.com/tas50)) <!-- 16.0.243 -->
 - Set timeouts in service and windows_service correctly [#9729](https://github.com/chef/chef/pull/9729) ([tas50](https://github.com/tas50)) <!-- 16.0.242 -->
 - Fix linux plan to use ruby 2.7 [#9728](https://github.com/chef/chef/pull/9728) ([TheLunaticScripter](https://github.com/TheLunaticScripter)) <!-- 16.0.241 -->
 - Refactor scm, git and subversion resources &amp; fix longstanding git issues [#9726](https://github.com/chef/chef/pull/9726) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.240 -->
