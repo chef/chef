@@ -23,8 +23,8 @@ require_relative "../knife"
 class Chef
   class Knife
     class CookbookUpload < Knife
-      CHECKSUM = "checksum".freeze
-      MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
+      CHECKSUM ||= "checksum".freeze
+      MATCH_CHECKSUM ||= /[0-9a-f]{32,}/.freeze
 
       deps do
         require_relative "../mixin/file_class"
