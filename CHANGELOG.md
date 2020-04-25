@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.0.246 -->
+## [v16.0.246](https://github.com/chef/chef/tree/v16.0.246) (2020-04-25)
 
 #### Merged Pull Requests
+- Update Ohai to 16.0.20 [#9734](https://github.com/chef/chef/pull/9734) ([tas50](https://github.com/tas50))
 - Use our fork of docker-api in the kitchen tests [#9733](https://github.com/chef/chef/pull/9733) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.0.20 [#9734](https://github.com/chef/chef/pull/9734) ([tas50](https://github.com/tas50)) <!-- 16.0.246 -->
 - Use our fork of docker-api in the kitchen tests [#9733](https://github.com/chef/chef/pull/9733) ([tas50](https://github.com/tas50)) <!-- 16.0.245 -->
 - locale: Support setting locale on Windows [#9648](https://github.com/chef/chef/pull/9648) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.245 -->
 - Resolve deprecations in chef-utils specs [#9731](https://github.com/chef/chef/pull/9731) ([tas50](https://github.com/tas50)) <!-- 16.0.244 -->
