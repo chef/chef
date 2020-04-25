@@ -16,7 +16,6 @@ We do not recommend for end users to install Chef from gems or build from source
 - git
 - C compiler, header files, etc.
 - Ruby 2.6 or later
-- Bundler gem
 
 **NOTE:** Chef supports a large number of platforms, and there are many different ways to manage Ruby installs on each of those platforms. We assume you will install Ruby in a way appropriate for your development platform, but do not provide instructions for setting up Ruby.
 

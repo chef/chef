@@ -27,10 +27,10 @@ sudo git clone https://github.com/asdf-vm/asdf.git /opt/asdf
 . /opt/asdf/asdf.sh
 . /opt/asdf/completions/asdf.bash
 
-echo "--- Installing Ruby 2.6.6"
+echo "--- Installing Ruby 2.7.1"
 /opt/asdf/bin/asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-/opt/asdf/bin/asdf install ruby 2.6.6
-/opt/asdf/bin/asdf global ruby 2.6.6
+/opt/asdf/bin/asdf install ruby 2.7.1
+/opt/asdf/bin/asdf global ruby 2.7.1
 
 # Update Gems
 echo 'gem: --no-document' >> ~/.gemrc
