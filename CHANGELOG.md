@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.244 -->
-## [v16.0.244](https://github.com/chef/chef/tree/v16.0.244) (2020-04-25)
+<!-- latest_release 16.0.245 -->
+## [v16.0.245](https://github.com/chef/chef/tree/v16.0.245) (2020-04-25)
 
 #### Merged Pull Requests
-- Resolve deprecations in chef-utils specs [#9731](https://github.com/chef/chef/pull/9731) ([tas50](https://github.com/tas50))
+- locale: Support setting locale on Windows [#9648](https://github.com/chef/chef/pull/9648) ([kapilchouhan99](https://github.com/kapilchouhan99))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- locale: Support setting locale on Windows [#9648](https://github.com/chef/chef/pull/9648) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.0.245 -->
 - Resolve deprecations in chef-utils specs [#9731](https://github.com/chef/chef/pull/9731) ([tas50](https://github.com/tas50)) <!-- 16.0.244 -->
 - Allow Arrays in msu_package version again [#9730](https://github.com/chef/chef/pull/9730) ([tas50](https://github.com/tas50)) <!-- 16.0.243 -->
 - Set timeouts in service and windows_service correctly [#9729](https://github.com/chef/chef/pull/9729) ([tas50](https://github.com/tas50)) <!-- 16.0.242 -->
