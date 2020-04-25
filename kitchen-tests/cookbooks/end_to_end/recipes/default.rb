@@ -153,6 +153,11 @@ chef_client_systemd_timer "Run chef-client as a systemd timer" do
   only_if { systemd? }
 end
 
+locale "set system locale" do
+  lang "en_US.UTF-8"
+  only_if { debian? }
+end
+
 include_recipe "::chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::alternatives"
 include_recipe "::tests"

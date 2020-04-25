@@ -24,13 +24,23 @@ class Chef
       unified_mode true
       provides :locale
 
-      description "Use the locale resource to set the system's locale."
+      description "Use the locale resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
       introduced "14.5"
 
-      LC_VARIABLES = %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze
-      LOCALE_CONF = "/etc/locale.conf".freeze
-      LOCALE_REGEX = /\A\S+/.freeze
-      LOCALE_PLATFORM_FAMILIES = %w{debian windows}.freeze
+      examples <<~DOC
+      Set the lang to 'en_US.UTF-8'
+
+      ```ruby
+        locale 'set system locale' do
+          lang 'en_US.UTF-8'
+        end
+      ```
+      DOC
+
+      LC_VARIABLES ||= %w{LC_ADDRESS LC_COLLATE LC_CTYPE LC_IDENTIFICATION LC_MEASUREMENT LC_MESSAGES LC_MONETARY LC_NAME LC_NUMERIC LC_PAPER LC_TELEPHONE LC_TIME}.freeze
+      LOCALE_CONF ||= "/etc/locale.conf".freeze
+      LOCALE_REGEX ||= /\A\S+/.freeze
+      LOCALE_PLATFORM_FAMILIES ||= %w{debian windows}.freeze
 
       property :lang, String,
         description: "Sets the default system language.",
@@ -38,7 +48,7 @@ class Chef
         validation_message: "The provided lang is not valid. It should be a non-empty string without any leading whitespaces."
 
       property :lc_env, Hash,
-        description: "A Hash of LC_* env variables in the form of ({ 'LC_ENV_VARIABLE' => 'VALUE' }).",
+        description: "A Hash of LC_* env variables in the form of `({ 'LC_ENV_VARIABLE' => 'VALUE' })`.",
         default: lazy { {} },
         coerce: proc { |h|
           if h.respond_to?(:keys)
