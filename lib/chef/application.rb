@@ -168,28 +168,11 @@ class Chef
       end
     end
 
-    # Initialize and configure the logger.
-    # === Loggers and Formatters
-    # In Chef 10.x and previous, the Logger was the primary/only way that Chef
-    # communicated information to the user. In Chef 10.14, a new system, "output
-    # formatters" was added, and in Chef 11.0+ it is the default when running
-    # chef in a console (detected by `STDOUT.tty?`). Because output formatters
-    # are more complex than the logger system and users have less experience with
-    # them, the config option `force_logger` is provided to restore the Chef 10.x
-    # behavior.
-    #
-    # Conversely, for users who want formatter output even when chef is running
-    # unattended, the `force_formatter` option is provided.
-    #
-    # === Auto Log Level
-    # The `log_level` of `:auto` means `:warn` in the formatter and `:info` in
-    # the logger.
-    #
     def configure_logging
       configure_log_location
-      logger.init(MonoLogger.new(chef_config[:log_location]))
-      if want_additional_logger?
-        configure_stdout_logger
+      logger.init(MonoLogger.new(chef_config[:log_location][0]))
+      chef_config[:log_location][1..-1].each do |log_location|
+        logger.loggers << MonoLogger.new(log_location)
       end
       logger.level = resolve_log_level
     rescue StandardError => error
@@ -197,30 +180,28 @@ class Chef
       Chef::Application.fatal!("Aborting due to invalid 'log_location' configuration", error)
     end
 
-    # Turn `log_location :syslog` and `log_location :win_evt` into the
-    # appropriate loggers.
+    # merge Chef::Config[:log_location] and config[:log_location_cli]
+    #   - the nil default value of log_location_cli means STDOUT
+    #   - the nil default value of log_location is removed
+    #   - Arrays are supported
+    #   - syslog + winevt are converted to those specific logger objects
+    #
     def configure_log_location
-      log_location = chef_config[:log_location]
-      return unless log_location.respond_to?(:to_sym)
+      log_location_cli = [ config[:log_location_cli] ].flatten.map { |log_location| log_location.nil? ? STDOUT : log_location }
 
-      chef_config[:log_location] =
-        case log_location.to_sym
-          when :syslog then logger::Syslog.new
-          when :win_evt then logger::WinEvt.new
-          else log_location # Probably a path; let MonoLogger sort it out
+      chef_config[:log_location] = [ chef_config[:log_location], log_location_cli ].flatten.compact.uniq
+
+      chef_config[:log_location].map! do |log_location|
+        case log_location
+        when :syslog, "syslog"
+          logger::Syslog.new
+        when :win_evt, "win_evt"
+          logger::WinEvt.new
+        else
+          # should be a path or STDOUT
+          log_location
         end
-    end
-
-    # Based on config and whether or not STDOUT is a tty, should we setup a
-    # secondary logger for stdout?
-    def want_additional_logger?
-      ( Chef::Config[:log_location].class != IO ) && STDOUT.tty? && !Chef::Config[:daemonize]
-    end
-
-    def configure_stdout_logger
-      stdout_logger = MonoLogger.new(STDOUT)
-      stdout_logger.formatter = logger.logger.formatter
-      logger.loggers << stdout_logger
+      end
     end
 
     # Use of output formatters is assumed if `force_formatter` is set or if `force_logger` is not set
@@ -228,19 +209,10 @@ class Chef
       chef_config[:force_formatter] || !chef_config[:force_logger]
     end
 
-    def auto_log_level?
-      chef_config[:log_level] == :auto
-    end
-
-    # if log_level is `:auto`, convert it to :warn (when using output formatter)
-    # or :info (no output formatter). See also +using_output_formatter?+
+    # The :auto formatter defaults to :warn with the formatter and :info with the logger
     def resolve_log_level
-      if auto_log_level?
-        if using_output_formatter?
-          :warn
-        else
-          :info
-        end
+      if chef_config[:log_level] == :auto
+        using_output_formatter? ? :warn : :info
       else
         chef_config[:log_level]
       end
@@ -406,6 +378,9 @@ class Chef
 
       # Log a fatal error message to both STDERR and the Logger, exit the application
       def fatal!(msg, err = nil)
+        if Chef::Config[:always_dump_stacktrace]
+          msg << "\n#{err.backtrace.join("\n")}"
+        end
         logger.fatal(msg)
         Process.exit(normalize_exit_code(err))
       end

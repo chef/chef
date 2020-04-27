@@ -94,11 +94,10 @@ class Chef::Application::Base < Chef::Application
     description: "Set the log level (auto, trace, debug, info, warn, error, fatal).",
     proc: lambda { |l| l.to_sym }
 
-  option :log_location,
+  option :log_location_cli,
     short: "-L LOGLOCATION",
     long: "--logfile LOGLOCATION",
-    description: "Set the log file location, defaults to STDOUT - recommended for daemonizing.",
-    proc: nil
+    description: "Set the log file location, defaults to STDOUT - recommended for daemonizing."
 
   option :always_dump_stacktrace,
     long: "--[no-]always-dump-stacktrace",

@@ -392,7 +392,7 @@ module ChefConfig
     default :log_level, :auto
 
     # Logging location as either an IO stream or string representing log file path
-    default :log_location, STDOUT
+    default :log_location, nil
 
     # Using `force_formatter` causes chef to default to formatter output when STDOUT is not a tty
     default :force_formatter, false
