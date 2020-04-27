@@ -145,12 +145,8 @@ class Chef
         read_users r_users
       end
 
-      def after_created
-        raise "The windows_share resource relies on PowerShell cmdlets not present in Windows releases prior to 8/2012. Cannot continue!" if node["platform_version"].to_f < 6.3
-      end
-
-# given the string output of Get-SmbShareAccess parse out
-# arrays of full access users, change users, and read only users
+      # given the string output of Get-SmbShareAccess parse out
+      # arrays of full access users, change users, and read only users
       def parse_permissions(results_string)
         json_results = Chef::JSONCompat.from_json(results_string)
         json_results = [json_results] unless json_results.is_a?(Array) # single result is not an array
