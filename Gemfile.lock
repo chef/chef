@@ -471,7 +471,7 @@ DEPENDENCIES
   pry-byebug
   pry-remote
   pry-stack_explorer
-  rake (<= 13.0.1)
+  rake
   rb-readline
   rspec-core (~> 3.5)
   rspec-expectations (~> 3.5)
