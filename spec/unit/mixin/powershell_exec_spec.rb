@@ -40,4 +40,14 @@ describe Chef::Mixin::PowershellExec, :windows_only do
       expect(execution.errors[0]).to include("Runtime exception: this-should-error")
     end
   end
+
+  describe "#powershell_exec!" do
+    it "runs a basic command and returns a Chef::PowerShell object" do
+      expect(object.powershell_exec("$PSVersionTable")).to be_kind_of(Chef::PowerShell::CommandFailed
+    end
+
+    it "raises an error if the command fails" do
+      expect { object.powershell_exec("$PSVersionTable") }.to raise_error(Chef::Exceptions::Script)
+    end
+  end
 end
