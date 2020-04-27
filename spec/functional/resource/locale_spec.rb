@@ -94,7 +94,8 @@ describe Chef::Resource::Locale, :requires_root do
     end
   end
 
-  context "on windows", :windows_only, requires_root: false do
+  # this is 64bit only until we add support for 32bit Windows in our Powershell DLL shim
+  context "on windows", :windows_only, requires_root: false, :ruby64_only do
     describe "action: update" do
       context "Sets system locale" do
         it "when lang is given" do
