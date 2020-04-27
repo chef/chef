@@ -139,9 +139,9 @@ GEM
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.0)
-    bcrypt_pbkdf (1.0.1)
-    bcrypt_pbkdf (1.0.1-x64-mingw32)
-    bcrypt_pbkdf (1.0.1-x86-mingw32)
+    bcrypt_pbkdf (1.1.0.rc1)
+    bcrypt_pbkdf (1.1.0.rc1-x64-mingw32)
+    bcrypt_pbkdf (1.1.0.rc1-x86-mingw32)
     binding_of_caller (0.8.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
@@ -454,7 +454,7 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bcrypt_pbkdf
+  bcrypt_pbkdf (>= 1.1.0.rc1)
   chef!
   chef-bin!
   chef-config!
