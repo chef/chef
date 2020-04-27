@@ -94,14 +94,15 @@ describe Chef::Resource::Locale, :requires_root do
     end
   end
 
-  context "on windows", :windows_only, requires_root: false do
-    describe "action: update" do
-      context "Sets system locale" do
-        it "when lang is given" do
-          resource.lang("en-US")
-          resource.run_action(:update)
-        end
-      end
-    end
-  end
+  # @TODO we need to enable these again
+  # context "on windows", :windows_only, requires_root: false do
+  #   describe "action: update" do
+  #     context "Sets system locale" do
+  #       it "when lang is given" do
+  #         resource.lang("en-US")
+  #         resource.run_action(:update)
+  #       end
+  #     end
+  #   end
+  # end
 end
