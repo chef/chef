@@ -20,7 +20,7 @@ require_relative "../powershell"
 # The powershell_exec mixin provides in-process access to PowerShell engine via
 # a COM interop (installed by the Chef Client installer).
 #
-# powershell_exec returns a Chef::PowerShell object that provides 3 methods:
+# powershell_exec returns a Chef::PowerShell object that provides 4 methods:
 #
 # .result - returns a hash representing the results returned by executing the
 #           PowerShell script block
@@ -28,6 +28,7 @@ require_relative "../powershell"
 #           PowerShell error stream during execution
 # .error? - returns true if there were error messages written to the PowerShell
 #           error stream during execution
+# .error! - raise Chef::PowerShell::CommandFailed if there was an error
 #
 # Some examples of usage:
 #
@@ -99,6 +100,14 @@ class Chef
       # @return [Chef::PowerShell] output
       def powershell_exec(script)
         Chef::PowerShell.new(script)
+      end
+
+      # The same as the #powershell_exec method except this will raise
+      # Chef::PowerShell::CommandFailed if the command fails
+      def powershell_exec!(script)
+        cmd = Chef::PowerShell.new(script)
+        cmd.error!
+        cmd
       end
     end
   end
