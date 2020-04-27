@@ -268,7 +268,7 @@ The knife-acl gem is now part of Chef Infra Client. This gives you the ability t
 
 We've added support for writing recipes in YAML to provide a low-code syntax for simple use cases. To write recipes in YAML, Chef resources and any user-defined parameters can be added as elements in a `resources` hash, as in the example below:
 ​
-```
+```yaml
 ---
 resources:
   - type: "package"
