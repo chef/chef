@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.249 -->
-## [v16.0.249](https://github.com/chef/chef/tree/v16.0.249) (2020-04-27)
+<!-- latest_release 16.0.250 -->
+## [v16.0.250](https://github.com/chef/chef/tree/v16.0.250) (2020-04-27)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.18.108 [#9743](https://github.com/chef/chef/pull/9743) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add powershell_exec! helper to make conversion from powershell_out! easier [#9742](https://github.com/chef/chef/pull/9742) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add powershell_exec! helper to make conversion from powershell_out! easier [#9742](https://github.com/chef/chef/pull/9742) ([tas50](https://github.com/tas50)) <!-- 16.0.250 -->
 - Bump inspec-core-bin to 4.18.108 [#9743](https://github.com/chef/chef/pull/9743) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.249 -->
 - Remove the Windows version check in windows_share [#9741](https://github.com/chef/chef/pull/9741) ([tas50](https://github.com/tas50)) <!-- 16.0.248 -->
 - Test and better document the locale resource [#9736](https://github.com/chef/chef/pull/9736) ([tas50](https://github.com/tas50)) <!-- 16.0.247 -->
