@@ -72,7 +72,7 @@ class Chef
         default: 30
 
       property :accept_chef_license, [true, false],
-        description: "Accept the Chef Online Master License and Services Agreement. See https://www.chef.io/online-master-agreement/",
+        description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
         default: false
 
       property :start_date, String,
@@ -99,7 +99,8 @@ class Chef
 
       property :log_directory, String,
         description: "The path of the directory to create the log file in.",
-        default: lazy { |r| "#{r.config_directory}/log" }
+        default: lazy { |r| "#{r.config_directory}/log" },
+        default_description: "CONFIG_DIRECTORY/log"
 
       property :log_file_name, String,
         description: "The name of the log file to use.",

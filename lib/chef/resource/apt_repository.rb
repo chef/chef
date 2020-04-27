@@ -115,8 +115,8 @@ class Chef
         description: "The base of the Debian distribution."
 
       property :distribution, [ String, nil, FalseClass ],
-        description: "Usually a distribution's codename, such as trusty, xenial or bionic. Default value: the codename of the node's distro.",
-        default: lazy { node["lsb"]["codename"] }, default_description: "The LSB codename of the host such as 'bionic'."
+        description: "Usually a distribution's codename, such as xenial, bionic, or focal.",
+        default: lazy { node["lsb"]["codename"] }, default_description: "The LSB codename of the node such as 'focal'."
 
       property :components, Array,
         description: "Package groupings, such as 'main' and 'stable'.",
@@ -142,7 +142,7 @@ class Chef
         default: lazy { [] }, coerce: proc { |x| x ? Array(x) : x }
 
       property :key_proxy, [String, nil, FalseClass],
-        description: "If set, a specified proxy is passed to GPG via http-proxy=."
+        description: "If set, a specified proxy is passed to GPG via `http-proxy=`."
 
       property :cookbook, [String, nil, FalseClass],
         description: "If key should be a cookbook_file, specify a cookbook where the key is located for files/default. Default value is nil, so it will use the cookbook where the resource is used.",

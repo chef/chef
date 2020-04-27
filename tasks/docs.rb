@@ -1,6 +1,6 @@
 namespace :docs_site do
 
-  desc "Generate resource documentation .rst pages in a docs_site directory"
+  desc "Generate resource documentation pages in a docs_site directory"
 
   task :resources do
     Encoding.default_external = Encoding::UTF_8
@@ -8,16 +8,8 @@ namespace :docs_site do
     $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "lib")))
 
     require "chef/resource_inspector"
-    require "erb"
     require "fileutils"
-
-    # @param version String
-    # @return String Chef Infra Client or Chef Client depending on version
-    def branded_chef_client_name(version)
-      return "Chef Infra Client" if Gem::Version.new(version) >= Gem::Version.new("15")
-
-      "Chef Client"
-    end
+    require "yaml"
 
     # @return [String, nil] a pretty defaul value string or nil if we want to skip it
     def pretty_default(default)
@@ -34,20 +26,21 @@ namespace :docs_site do
     # generate the top example resource block example text
     # @param properties Array<Hash>
     # @return String
-    def generate_resource_block(resource_name, properties)
+    def generate_resource_block(resource_name, properties, default_action)
       padding_size = largest_property_name(properties) + 6
 
       # build the resource string with property spacing between property names and comments
-      text = "  #{resource_name} 'name' do\n"
+      text = ""
+      text << "#{resource_name} 'name' do\n"
       properties.each do |p|
-        text << "    #{p["name"].ljust(padding_size)}"
+        text << "  #{p["name"].ljust(padding_size)}"
         text << friendly_types_list(p["is"])
         text << " # default value: 'name' unless specified" if p["name_property"]
         text << " # default value: #{pretty_default(p["default"])}" unless pretty_default(p["default"]).nil?
         text << "\n"
       end
-      text << "    #{"action".ljust(padding_size)}Symbol # defaults to :#{@default_action.first} if not specified\n"
-      text << "  end"
+      text << "  #{"action".ljust(padding_size)}Symbol # defaults to :#{default_action.first} if not specified\n"
+      text << "end"
       text
     end
 
@@ -61,11 +54,20 @@ namespace :docs_site do
       end
     end
 
+    def friendly_full_property_list(name, properties)
+      [
+        "`#{name}` is the resource.",
+        "`name` is the name given to the resource block.",
+        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state.",
+        friendly_property_list(properties),
+      ]
+    end
+
     # given an array of properties print out a single comma separated string
-    # handling commas / and properly and plural vs. singular wording depending
+    # handling commas and plural vs. singular wording depending
     # on the number of properties
     # @return String
-    def friendly_properly_list(arr)
+    def friendly_property_list(arr)
       return nil if arr.empty? # resources w/o properties
 
       props = arr.map { |x| "``#{x["name"]}``" }
@@ -84,6 +86,8 @@ namespace :docs_site do
     # handling a nil value that needs to be printed as "nil" and TrueClass/FalseClass
     # which needs to be "true" and "false"
     # @return String
+    # TODO:
+    # - still does not include nil (?)
     def friendly_types_list(arr)
       fixed_arr = Array(arr).map do |x|
         case x
@@ -91,6 +95,8 @@ namespace :docs_site do
           "true"
         when "FalseClass"
           "false"
+        when "NilClass", nil
+          "nil"
         else
           x
         end
@@ -126,243 +132,185 @@ namespace :docs_site do
       end
     end
 
-    def boilerplate_content
-      <<~HEREDOC
-        Common Resource Functionality
-        =====================================================
-
-        Chef resources include common properties, notifications, and resource guards.
-
-        Common Properties
-        -----------------------------------------------------
-
-        .. tag resources_common_properties
-
-        The following properties are common to every resource:
-
-        ``ignore_failure``
-          **Ruby Type:** true, false | **Default Value:** ``false``
-
-          Continue running a recipe if a resource fails for any reason.
-
-        ``retries``
-          **Ruby Type:** Integer | **Default Value:** ``0``
-
-          The number of attempts to catch exceptions and retry the resource.
-
-        ``retry_delay``
-          **Ruby Type:** Integer | **Default Value:** ``2``
-
-          The retry delay (in seconds).
-
-        ``sensitive``
-          **Ruby Type:** true, false | **Default Value:** ``false``
-
-          Ensure that sensitive resource data is not logged by Chef Infra Client.
-
-        .. end_tag
-
-        Notifications
-        -----------------------------------------------------
-
-        ``notifies``
-          **Ruby Type:** Symbol, 'Chef::Resource[String]'
-
-          .. tag resources_common_notification_notifies
-
-          A resource may notify another resource to take action when its state changes. Specify a ``'resource[name]'``, the ``:action`` that resource should take, and then the ``:timer`` for that action. A resource may notify more than one resource; use a ``notifies`` statement for each resource to be notified.
-
-          .. end_tag
-
-        .. tag resources_common_notification_timers
-
-        A timer specifies the point during a Chef Infra Client run at which a notification is run. The following timers are available:
-
-        ``:before``
-           Specifies that the action on a notified resource should be run before processing the resource block in which the notification is located.
-
-        ``:delayed``
-           Default. Specifies that a notification should be queued up, and then executed at the end of a Chef Infra Client run.
-
-        ``:immediate``, ``:immediately``
-           Specifies that a notification should be run immediately, per resource notified.
-
-        .. end_tag
-
-        .. tag resources_common_notification_notifies_syntax
-
-        The syntax for ``notifies`` is:
-
-        .. code-block:: ruby
-
-          notifies :action, 'resource[name]', :timer
-
-        .. end_tag
-
-        ``subscribes``
-          **Ruby Type:** Symbol, 'Chef::Resource[String]'
-
-        .. tag resources_common_notification_subscribes
-
-        A resource may listen to another resource, and then take action if the state of the resource being listened to changes. Specify a ``'resource[name]'``, the ``:action`` to be taken, and then the ``:timer`` for that action.
-
-        Note that ``subscribes`` does not apply the specified action to the resource that it listens to - for example:
-
-        .. code-block:: ruby
-
-         file '/etc/nginx/ssl/example.crt' do
-           mode '0600'
-           owner 'root'
-         end
-
-         service 'nginx' do
-           subscribes :reload, 'file[/etc/nginx/ssl/example.crt]', :immediately
-         end
-
-        In this case the ``subscribes`` property reloads the ``nginx`` service whenever its certificate file, located under ``/etc/nginx/ssl/example.crt``, is updated. ``subscribes`` does not make any changes to the certificate file itself, it merely listens for a change to the file, and executes the ``:reload`` action for its resource (in this example ``nginx``) when a change is detected.
-
-        .. end_tag
-
-        .. tag resources_common_notification_timers
-
-        A timer specifies the point during a Chef Infra Client run at which a notification is run. The following timers are available:
-
-        ``:before``
-           Specifies that the action on a notified resource should be run before processing the resource block in which the notification is located.
-
-        ``:delayed``
-           Default. Specifies that a notification should be queued up, and then executed at the end of a Chef Infra Client run.
-
-        ``:immediate``, ``:immediately``
-           Specifies that a notification should be run immediately, per resource notified.
-
-        .. end_tag
-
-        .. tag resources_common_notification_subscribes_syntax
-
-        The syntax for ``subscribes`` is:
-
-        .. code-block:: ruby
-
-           subscribes :action, 'resource[name]', :timer
-
-        .. end_tag
-
-        Guards
-        -----------------------------------------------------
-
-        .. tag resources_common_guards
-
-        A guard property can be used to evaluate the state of a node during the execution phase of a Chef Infra Client run. Based on the results of this evaluation, a guard property is then used to tell Chef Infra Client if it should continue executing a resource. A guard property accepts either a string value or a Ruby block value:
-
-        * A string is executed as a shell command. If the command returns ``0``, the guard is applied. If the command returns any other value, then the guard property is not applied. String guards in a **powershell_script** run Windows PowerShell commands and may return ``true`` in addition to ``0``.
-        * A block is executed as Ruby code that must return either ``true`` or ``false``. If the block returns ``true``, the guard property is applied. If the block returns ``false``, the guard property is not applied.
-
-        A guard property is useful for ensuring that a resource is idempotent by allowing that resource to test for the desired state as it is being executed, and then if the desired state is present, for Chef Infra Client to do nothing.
-
-        .. end_tag
-
-        **Properties**
-
-        .. tag resources_common_guards_properties
-
-        The following properties can be used to define a guard that is evaluated during the execution phase of a Chef Infra Client run:
-
-        ``not_if``
-          Prevent a resource from executing when the condition returns ``true``.
-
-        ``only_if``
-          Allow a resource to execute only if the condition returns ``true``.
-
-        .. end_tag
-      HEREDOC
+    # build the menu entry for this resource
+    def build_menu_item(name)
+      {
+        "infra" => {
+          "title" => name,
+          "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
+          "parent" => "chef_infra/cookbook_reference/resources",
+        },
+      }
     end
 
-    template = %{=====================================================
-<%= @name %> resource
-=====================================================
-`[edit on GitHub] <https://github.com/chef/chef-web-docs/blob/master/chef_master/source/resource_<%= @name %>.rst>`__
+    # print out the human readable form of the default
+    def friendly_default_value(property)
+      return "The resource block's name" if property["name_property"]
 
-<%= bolded_description(@name, @description) %>
-<%= note_text(@description) -%>
-<% unless @introduced.nil? -%>
+      return nil if property["default"].nil?
 
-**New in <%= branded_chef_client_name(@introduced) %> <%= @introduced %>.**
-<% end -%>
+      # this way we properly print out a string of a hash or an array instead of just the values
+      property["default"].to_s
+    end
 
-Syntax
-=====================================================
+    # TODO:
+    # - what to do about "lazy default" for default?
+    def properties_list(properties)
+      properties.map do |property|
+        if property["deprecated"] # we don't want to document deprecated properties
+          nil
+        else
+          {
+            "property" => property["name"],
+            "ruby_type" => friendly_types_list(property["is"]),
+            "required" => property["required"],
+            "default_value" =>  friendly_default_value(property),
+            # "allowed_values" => property["equal_to"].join(', '),
+            "new_in" => property["introduced"],
+            "description_list" => [{ "markdown" => property["description"] }],
+          }
+        end
+      end
+    end
 
-The <%= @name %> resource has the following syntax:
+    def special_properties(name, data)
+      properties = {}
 
-.. code-block:: ruby
+      properties["common_resource_functionality_multiple_packages"] =
+        case name
+        when "yum_package", "apt_package", "zypper_package", "homebrew_package", "dnf_package", "pacman_package"
+          true
+        when "package"
+          nil
+        else
+          false
+        end
 
-<%= @resource_block %>
+      properties["common_resource_functionality_resources_common_windows_security"] = name == "remote_directory"
 
-where:
+      properties["cookbook_file_specificity"] = name == "cookbook_file"
 
-* ``<%= @name %>`` is the resource.
-* ``name`` is the name given to the resource block.
-* ``action`` identifies which steps Chef Infra Client will take to bring the node into the desired state.
-<% unless @property_list.nil? %>* <%= @property_list %><% end %>
+      properties["debug_recipes_chef_shell"] = name == "breakpoint"
 
-Actions
-=====================================================
+      properties["handler_custom"] = name == "chef_handler"
 
-The <%= @name %> resource has the following actions:
-<% @actions.each do |a| %>
-``:<%= a %>``
-   <% if a == @default_action %>Default. <% end %>Description here.
-<% end %>
-``:nothing``
-   .. tag resources_common_actions_nothing
+      properties["handler_types"] = name == "chef_handler"
 
-   This resource block does not act unless notified by another resource to take action. Once notified, this resource block either runs immediately or is queued up to run at the end of a Chef Infra Client run.
+      properties["nameless_apt_update"] = name == "apt_update"
 
-   .. end_tag
+      properties["nameless_build_essential"] = name == "build_essential"
 
-Properties
-=====================================================
+      properties["properties_multiple_packages"] = %w{dnf_package package zypper_package}.include?(name)
 
-The <%= @name %> resource has the following properties:
-<% @properties.each do |p| %>
-``<%= p['name'] %>``
-   **Ruby Type:** <%= friendly_types_list(p['is']) %><% unless pretty_default(p['default']).nil? %> | **Default Value:** ``<%= pretty_default(p['default']) %>``<% end %><% if p['required'] %> | ``REQUIRED``<% end %><% if p['deprecated'] %> | ``DEPRECATED``<% end %><% if p['name_property'] %> | **Default Value:** ``The resource block's name``<% end %>
+      properties["properties_resources_common_windows_security"] = %w{cookbook_file file template remote_file directory}.include?(name)
 
-<% unless p['description'].nil? %>   <%= p['description'].strip %><% end %>
-<% unless p['introduced'].nil? -%>\n\n   *New in <%= branded_chef_client_name(p['introduced']) %> <%= p['introduced'] -%>.*\n<% end -%>
-<% end %>
-<% if @properties.empty? %>This resource does not have any properties.\n<% end -%>
-<%= boilerplate_content %>
-Examples
-=====================================================
+      properties["properties_shortcode"] =
+        case name
+        when "breakpoint"
+          "resource_breakpoint_properties.md"
+        when "ohai"
+          "resource_ohai_properties.md"
+        when "log"
+          "resource_log_properties.md"
+        else
+          nil
+        end
 
-The following examples demonstrate various approaches for using resources in recipes:
+      properties["ps_credential_helper"] = name == "dsc_script"
 
-<%= @examples -%>
-}
+      properties["registry_key"] = name == "registry_key"
+
+      properties["remote_directory_recursive_directories"] = name == "remote_directory"
+
+      properties["remote_file_prevent_re_downloads"] = name == "remote_file"
+
+      properties["remote_file_unc_path"] = name == "remote_file"
+
+      properties["resource_directory_recursive_directories"] = %w{directory remote_directory}.include?(name)
+
+      properties["resource_package_options"] = name == "package"
+
+      properties["resources_common_atomic_update"] = %w{cookbook_file file template remote_file}.include?(name)
+
+      properties["resources_common_guard_interpreter"] = name == "script"
+
+      properties["resources_common_guards"] = !%w{ruby_block chef_acl chef_environment chef_data_bag chef_mirror chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user package}.include?(name)
+
+      properties["resources_common_notification"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
+
+      properties["resources_common_properties"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
+
+      properties["ruby_style_basics_chef_log"] = name == "log"
+
+      properties["syntax_shortcode"] =
+        case name
+        when "breakpoint"
+          "resource_breakpoint_syntax.md"
+        when "log"
+          "resource_log_syntax.md"
+        else
+          nil
+        end
+
+      properties["template_requirements"] = name == "template"
+
+      properties["unit_file_verification"] = name == "systemd_unit"
+
+      properties
+    end
+
+    # the main method that builds what will become the yaml file
+    def build_resource_data(name, data)
+      properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
+
+      r = {}
+
+      # These properties are always set to these values.
+      r["draft"] = false
+      r["resource_reference"] = true
+      r["robots"] = nil
+      r["syntax_code_block"] = nil
+
+      # These properties are set to special values for only a few resources.
+      r.merge!(special_properties(name, data))
+
+      r["title"] = "#{name} resource"
+      r["resource"] = name
+      r["aliases"] = ["/resource_#{name}.html"]
+      r["menu"] = build_menu_item(name)
+      r["resource_description_list"] = {}
+      r["resource_description_list"] = [{ "markdown" => data["description"] }]
+      r["resource_new_in"] = data["introduced"]
+      r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
+      r["syntax_properties_list"] = nil
+      r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
+      r["properties_list"] = properties_list(properties)
+
+      r
+    end
 
     FileUtils.mkdir_p "docs_site"
     resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
+
     resources.each do |resource, data|
-      next if ["scm", "whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", ""].include?(resource)
+      # skip some resources we don't directly document
+      next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
 
-      puts "Writing out #{resource}."
-      @name = resource
-      @description = data["description"]
-      @default_action = data["default_action"]
-      @actions = (data["actions"] - ["nothing"]).sort
-      @examples = data["examples"]
-      @introduced = data["introduced"]
-      @preview = data["preview"]
-      @properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
-      @resource_block = generate_resource_block(resource, @properties)
-      @property_list = friendly_properly_list(@properties)
-      @examples = data["examples"]
+      next if ENV["DEBUG"] && !(resource == ENV["DEBUG"])
 
-      t = ERB.new(template, nil, "-")
-      File.open("docs_site/resource_#{@name}.rst", "w") do |f|
-        f.write t.result(binding)
+      resource_data = build_resource_data(resource, data)
+
+      if ENV["DEBUG"]
+        require "pp"
+        pp resource
+        puts "=========="
+        pp data
+        puts "=========="
+        pp resource_data
+      else
+        puts "Writing out #{resource}."
+        FileUtils.mkdir_p "docs_site/#{resource}"
+        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml) }
       end
     end
   end
