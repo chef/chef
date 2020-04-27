@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.256 -->
-## [v16.0.256](https://github.com/chef/chef/tree/v16.0.256) (2020-04-27)
+<!-- latest_release 16.0.257 -->
+## [v16.0.257](https://github.com/chef/chef/tree/v16.0.257) (2020-04-27)
 
 #### Merged Pull Requests
-- Rework logging to resolve STDOUT / log_location issues [#9751](https://github.com/chef/chef/pull/9751) ([lamont-granquist](https://github.com/lamont-granquist))
+- Stop pinning rake [#9744](https://github.com/chef/chef/pull/9744) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop pinning rake [#9744](https://github.com/chef/chef/pull/9744) ([tas50](https://github.com/tas50)) <!-- 16.0.257 -->
 - Rework logging to resolve STDOUT / log_location issues [#9751](https://github.com/chef/chef/pull/9751) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.256 -->
 - Fix the powershell spec to use the right method [#9756](https://github.com/chef/chef/pull/9756) ([tas50](https://github.com/tas50)) <!-- 16.0.255 -->
 - Remove git func test for upstream [#9757](https://github.com/chef/chef/pull/9757) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.254 -->
