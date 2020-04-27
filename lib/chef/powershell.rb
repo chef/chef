@@ -39,10 +39,24 @@ class Chef
       exec(script)
     end
 
+    #
+    # Was there an error running the command
+    #
+    # @return [Boolean]
+    #
     def error?
       return true if errors.count > 0
 
       false
+    end
+
+    class CommandFailed < RuntimeError; end
+
+    #
+    # @raise [Chef::PowerShell::CommandFailed] raise if the command failed
+    #
+    def error!
+      raise Chef::PowerShell::CommandFailed, "Unexpected exit in PowerShell command: #{@errors}" if error?
     end
 
     private
