@@ -165,7 +165,7 @@ describe Chef::Dist::SOLOEXEC do
         ruby_block "sleeping" do
           block do
             retries = 200
-            while IO.read(Chef::Config[:log_location]) !~ /.* is running, will wait for it to finish and then run./
+            while IO.read(Chef::Config[:log_location][0]) !~ /.* is running, will wait for it to finish and then run./
               sleep 0.1
               raise "we ran out of retries" if ( retries -= 1 ) <= 0
             end
@@ -189,13 +189,13 @@ describe Chef::Dist::SOLOEXEC do
 
           # Instantiate the first chef-solo run
           threads << Thread.new do
-            s1 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default'  -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
+            s1 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
             Process.waitpid(s1)
           end
 
           # Instantiate the second chef-solo run
           threads << Thread.new do
-            s2 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default'  -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
+            s2 = Process.spawn("#{chef_solo} -c \"#{path_to("config/solo.rb")}\" -o 'x::default' -l debug -L #{path_to("logs/runs.log")}", chdir: chef_dir)
             Process.waitpid(s2)
           end
 

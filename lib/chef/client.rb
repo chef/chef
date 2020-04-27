@@ -353,19 +353,15 @@ class Chef
 
     # @api private
     def formatters_for_run
-      if Chef::Config.formatters.empty?
-        [default_formatter]
-      else
-        Chef::Config.formatters
-      end
-    end
+      return Chef::Config.formatters unless Chef::Config.formatters.empty?
 
-    # @api private
-    def default_formatter
-      if !Chef::Config[:force_logger] || Chef::Config[:force_formatter]
-        [:doc]
-      else
-        [:null]
+      [ Chef::Config[:log_location] ].flatten.map do |log_location|
+        log_location = nil if log_location == STDOUT
+        if !Chef::Config[:force_logger] || Chef::Config[:force_formatter]
+          [:doc, log_location]
+        else
+          [:null]
+        end
       end
     end
 

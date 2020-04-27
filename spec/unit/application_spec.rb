@@ -194,7 +194,6 @@ describe Chef::Application do
       it "should initialise the chef logger" do
         allow(Chef::Log).to receive(:level=)
         @monologger = double("Monologger")
-        expect(MonoLogger).to receive(:new).with(Chef::Config[:log_location]).and_return(@monologger)
         allow(MonoLogger).to receive(:new).with(STDOUT).and_return(@monologger)
         allow(@monologger).to receive(:formatter=).with(Chef::Log.logger.formatter)
         expect(Chef::Log).to receive(:init).with(@monologger)
@@ -272,7 +271,7 @@ describe Chef::Application do
             it "it sets log_location to an instance of #{expected_class}" do
               expect(expected_class).to receive(:new).with no_args
               @app.configure_logging
-              expect(Chef::Config[:log_location]).to be logger_instance
+              expect(Chef::Config[:log_location]).to eq([ logger_instance, STDOUT ])
             end
           end
         end

@@ -351,7 +351,7 @@ describe Chef::Client do
   describe "configuring output formatters" do
     context "when no formatter has been configured" do
       it "configures the :doc formatter" do
-        expect(client.formatters_for_run).to eq([[:doc]])
+        expect(client.formatters_for_run).to eq([[:doc, nil]])
       end
 
       context "and force_logger is set" do
@@ -370,7 +370,7 @@ describe Chef::Client do
         end
 
         it "configures the :doc formatter" do
-          expect(client.formatters_for_run).to eq([[:doc]])
+          expect(client.formatters_for_run).to eq([[:doc, nil]])
         end
       end
 
@@ -381,7 +381,7 @@ describe Chef::Client do
         end
 
         it "configures the :doc formatter" do
-          expect(client.formatters_for_run).to eq([[:doc]])
+          expect(client.formatters_for_run).to eq([[:doc, nil]])
         end
       end
     end

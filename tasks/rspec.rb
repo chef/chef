@@ -41,39 +41,31 @@ begin
 
   task spec: :component_specs
 
-  desc "Run standard specs (minus long running specs)"
+  desc "Run all specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
+    t.verbose = false
     t.rspec_opts = %w{--profile}
-    # right now this just limits to functional + unit, but could also remove
-    # individual tests marked long-running
     t.pattern = FileList["spec/**/*_spec.rb"]
   end
 
   namespace :spec do
-    desc "Run all specs in spec directory with RCov"
-    RSpec::Core::RakeTask.new(:rcov) do |t|
-      t.rspec_opts = %w{--profile}
-      t.pattern = FileList["spec/**/*_spec.rb"]
-      t.rcov = true
-      t.rcov_opts = lambda do
-        IO.readlines("#{CHEF_ROOT}/spec/rcov.opts").map { |l| l.chomp.split " " }.flatten
-      end
-    end
-
     desc "Run all specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
+      t.verbose = false
       t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Print Specdoc for all specs"
     RSpec::Core::RakeTask.new(:doc) do |t|
+      t.verbose = false
       t.rspec_opts = %w{--format specdoc --dry-run --profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Run the specs under spec/unit with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
+      t.verbose = false
       t.rspec_opts = %w{--require active_support/core_ext --profile}
       # Only node_spec and role_spec specifically have issues, target those tests
       t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]

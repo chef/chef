@@ -140,11 +140,11 @@ class Chef
           # Used to print out a human-readable file system description
           def fs_description
             repo_paths = root_paths || [ File.dirname(child_paths["cookbooks"][0]) ]
-            result = "repository at #{repo_paths.join(", ")}\n"
+            result = "repository at #{repo_paths.join(", ")}"
             if versioned_cookbooks
-              result << "  Multiple versions per cookbook\n"
+              result << " (Multiple versions per cookbook)"
             else
-              result << "  One version per cookbook\n"
+              result << " (One version per cookbook)"
             end
             child_paths.each_pair do |name, paths|
               if paths.any? { |path| !repo_paths.include?(File.dirname(path)) }
