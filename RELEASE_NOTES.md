@@ -161,7 +161,11 @@ Use the `user_ulimit` resource to set per user ulimit values on Linux systems. S
 
 ### windows_security_policy
 
+Use the `windows_security_policy` resource to modify location security policies on Windows hosts. See the [windows_security_policy documentation](https://docs.chef.io/resources/windows_security_policy/) for full usage information.
+
 ### windows_user_privilege
+
+Use the `windows_user_privilege` resource to add users and groups to the specified privileges on Windows hosts. See the [windows_user_privilege documentation](https://docs.chef.io/resources/windows_user_privilege/) for full usage information.
 
 ## Improved Resources
 
