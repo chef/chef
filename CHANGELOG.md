@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.252 -->
-## [v16.0.252](https://github.com/chef/chef/tree/v16.0.252) (2020-04-27)
+<!-- latest_release 16.0.253 -->
+## [v16.0.253](https://github.com/chef/chef/tree/v16.0.253) (2020-04-27)
 
 #### Merged Pull Requests
-- Disable the windows_exec test for now [#9753](https://github.com/chef/chef/pull/9753) ([tas50](https://github.com/tas50))
+- Updates for auto generated docs [#9750](https://github.com/chef/chef/pull/9750) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Updates for auto generated docs [#9750](https://github.com/chef/chef/pull/9750) ([phiggins](https://github.com/phiggins)) <!-- 16.0.253 -->
 - Disable the windows_exec test for now [#9753](https://github.com/chef/chef/pull/9753) ([tas50](https://github.com/tas50)) <!-- 16.0.252 -->
 - Update bcrypt_pbkdf to 1.1.0.rc1 [#9749](https://github.com/chef/chef/pull/9749) ([marcparadise](https://github.com/marcparadise)) <!-- 16.0.251 -->
 - Add powershell_exec! helper to make conversion from powershell_out! easier [#9742](https://github.com/chef/chef/pull/9742) ([tas50](https://github.com/tas50)) <!-- 16.0.250 -->
