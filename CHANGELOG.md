@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.250 -->
-## [v16.0.250](https://github.com/chef/chef/tree/v16.0.250) (2020-04-27)
+<!-- latest_release 16.0.251 -->
+## [v16.0.251](https://github.com/chef/chef/tree/v16.0.251) (2020-04-27)
 
 #### Merged Pull Requests
-- Add powershell_exec! helper to make conversion from powershell_out! easier [#9742](https://github.com/chef/chef/pull/9742) ([tas50](https://github.com/tas50))
+- Update bcrypt_pbkdf to 1.1.0.rc1 [#9749](https://github.com/chef/chef/pull/9749) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.6.10 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update bcrypt_pbkdf to 1.1.0.rc1 [#9749](https://github.com/chef/chef/pull/9749) ([marcparadise](https://github.com/marcparadise)) <!-- 16.0.251 -->
 - Add powershell_exec! helper to make conversion from powershell_out! easier [#9742](https://github.com/chef/chef/pull/9742) ([tas50](https://github.com/tas50)) <!-- 16.0.250 -->
 - Bump inspec-core-bin to 4.18.108 [#9743](https://github.com/chef/chef/pull/9743) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.249 -->
 - Remove the Windows version check in windows_share [#9741](https://github.com/chef/chef/pull/9741) ([tas50](https://github.com/tas50)) <!-- 16.0.248 -->
