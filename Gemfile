@@ -55,11 +55,7 @@ group(:ruby_shadow) do
 end
 
 group(:development, :test) do
-  # we pin rake as a copy of rake is installed from the ruby source
-  # if you bump the ruby version you should confirm we don't end up with
-  # two rake gems installed again
-  gem "rake", "<= 13.0.1"
-
+  gem "rake"
   gem "rspec-core", "~> 3.5"
   gem "rspec-mocks", "~> 3.5"
   gem "rspec-expectations", "~> 3.5"
