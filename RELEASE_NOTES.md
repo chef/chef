@@ -1,6 +1,6 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-# WIP_WIP_WIP_WIP Chef Infra Client 16 WIP_WIP_WIP_WIP
+# Chef Infra Client 16
 
 ## Breaking Changes
 
@@ -270,7 +270,7 @@ resources:
     source: "index.html.erb"
   - type: "service"
     name: "httpd"
-    action: 
+    action:
       - enable
       - start
 ```
