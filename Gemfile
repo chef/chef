@@ -82,6 +82,7 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # These lines added for Windows development only.
 # For FFI to call into PowerShell we need the binaries and assemblies located
 # in the Ruby bindir.
+# The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
 #
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.
