@@ -498,7 +498,7 @@ The Linux Network plugin has been improved to gather additional information from
 
 #### Windows DMI plugin
 
-Windows systems now include a new DMI plugin which presents data in a similar format to the DMI plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number or asset tag number in a cross platform way.
+Windows systems now include a new `DMI` plugin which presents data in a similar format to the `DMI` plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number, or asset tag number in a cross platform way.
 
 ## New Platforms
 
