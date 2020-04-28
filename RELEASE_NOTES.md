@@ -465,13 +465,33 @@ always_dump_stacktrace true
 
 Chef Infra Client now ships with Chef Vault functionality built-in so there's no need to depend on the `chef-vault` cookbook or gem. Chef Vault helpers `chef_vault_item`, `chef_vault`, and `chef_vault_item_for_environment` are included as well as the `chef_vault_secret` resource. Additionally, the Chef Vault knife commands are also available out of the box. We don't recommend new users adopt the Chef Vault workflow due to limitations with autoscaling new systems, so these resources should only be consumed by existing Chef Vault users.
 
-## Ohai 16
+## Ohai 16 Improvements
 
-- Support for new Azure metadata endpoints and increased azure data - https://github.com/chef/ohai/pull/1427
-- New optinoal ipc plugin on Linux - https://github.com/chef/ohai/pull/1441
-- New optional interupts plugin on Linux - https://github.com/chef/ohai/pull/1440
-- Expand network information we collect - https://github.com/chef/ohai/pull/1439
-- New DMI plugin for Windows that mimics data on Linux - https://github.com/chef/ohai/pull/1445
+### Extended Azure Metadata
+
+The Azure Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information availabe on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
+
+### New Ohai Plugins
+
+New `ipc` and `interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interutps plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default you you'll need to add :Ipc or :Interupts Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
+
+Note: Both of these plugins are optional plugins which are disabled by default. They can be enabled via your `client.rb`:
+
+```ruby
+ohai.optional_plugins = [
+  :IPC,
+  :Interups
+]
+```
+
+### Improved Linux Network Plugin Data
+
+The Linux Network plugin has been improved to gather additional information from the `ethtool` utility. This includes the number of queues (`ethtool -l`), the coalesce parameters (`ethtool -c`), and information about the NIC driver (`ethtool -i)`. Thanks [@matt-c-clark](https://github.com/matt-c-clark) for these improvements.
+
+
+### Windows DMI plugin
+
+Windows systems now include a new DMI plugin which presents data in a similar format to the DMI plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number or asset tag number in a cross platform way.
 
 ### Ruby 2.7
 
@@ -488,6 +508,8 @@ Over the last quarter we've worked to greatly expand the platforms we support an
 - SLES 16 aarch64
 
 ## Newly Introduced Deprecations
+
+Several legacy Windows helpers have been deprecated as they will always return true when running on Chef Infra Client's currently supported platforms. The helpers previously detected systems before Windows 2012 and systems running Windows Nano, which has been discontinued by Microsoft. These helpers were never documented externally so their usage is most likely minimal, but a new Cookstyle rule has been introduced to detect the usage of `older_than_win_2012_or_8?`: [ChefDeprecations/DeprecatedWindowsVersionCheck](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationsdeprecatedwindowsversioncheck)
 
 - Chef::Platform.supports_msi?
 - Chef::Platform.older_than_win_2012_or_8?
