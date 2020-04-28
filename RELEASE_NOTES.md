@@ -295,7 +295,55 @@ This should be linked to from the breaking change above
 
 ### Resource Partials
 
-https://github.com/chef/chef/pull/9632
+Resource partials allow you to define reusable portions of code that can be included in multiple custom resources. This feature is particularly useful when there are common properties, such as authentication properties, that you want to define in a single location, but use for multiple resources. Internally in the Chef Infra Client codebase we've already used this feature to remove duplicate properties from our `subversion` and `git` resources in order to make them easier to maintain.
+
+Resource partials are stored in a cookbook's `/resources` directory just like existing custom resources, but they start with the `_` prefix. They're then called using a new `use` helper within the resource where they're needed:
+
+`resources/_api_auth_properties.rb:`
+
+```ruby
+property :api_endpoint, String
+property :api_key, String
+property :api_retries, Integer
+```
+
+`resources/mything.rb`:
+
+```ruby
+property :another_property, String
+property :yet_another_property, String
+
+use 'api_auth_properties'
+
+action :create do
+  # some create logic
+end
+```
+
+The example above shows a resource partial that contains properties for use in multiple resources. You can also use resource partials to define helper methods that you want to use in your actions instead of defining the same helper methods in each action_class.
+
+`resources/_api_auth_helpers.rb:`
+
+```ruby
+def make_api_call(endpoint, value)
+  # API call code here
+end
+```
+
+`resources/mything.rb`:
+
+```ruby
+property :another_property, String
+property :yet_another_property, String
+
+action :create do
+  # some create logic
+end
+
+action_class do
+  use 'api_auth_helpers'
+end
+```
 
 ### after_resource
 
