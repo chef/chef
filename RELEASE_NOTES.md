@@ -467,7 +467,7 @@ Chef Infra Client now ships with Chef Vault functionality built-in so there's no
 
 ### Ruby 2.7
 
-Chef Infra Client's ruby installation has been updated to from Ruby 2.6 to Ruby 2.7 which includes many features available for use in resources and libraries.
+Chef Infra Client's ruby installation has been updated to from Ruby 2.6 to Ruby 2.7, which includes many features available for use in resources and libraries.
 
 See <https://medium.com/rubyinside/whats-new-in-ruby-2-7-79c98b265502> for details on many of the new features.
 
