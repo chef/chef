@@ -49,7 +49,7 @@ class Chef
 
         converge_by("execute #{description}") do
           begin
-            shell_out!(command, opts)
+            shell_out!(command, **opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
               ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")

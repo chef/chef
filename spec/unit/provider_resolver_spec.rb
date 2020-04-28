@@ -874,8 +874,8 @@ describe Chef::ProviderResolver do
       end
       # If there is no filter, we're as deep as we need to go
       unless filter
-        on_platform test.delete(:platform), test do
-          expect_providers(expected)
+        on_platform test.delete(:platform), **test do
+          expect_providers(**expected)
         end
       end
     end
