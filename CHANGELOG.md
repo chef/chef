@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release unreleased -->
+## Unreleased
+
+#### Merged Pull Requests
+- Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.0.257 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50)) <!-- 16.0.257 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
