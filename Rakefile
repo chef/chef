@@ -17,6 +17,9 @@
 # limitations under the License.
 #
 
+# we need this to resolve files required by lib/chef/dist
+$LOAD_PATH.unshift(File.expand_path("../chef-config/lib", __FILE__))
+
 begin
   require_relative "tasks/rspec"
   require_relative "tasks/dependencies"
@@ -26,6 +29,8 @@ begin
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
 end
+
+require "bundler/gem_helper"
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 
