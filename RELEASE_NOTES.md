@@ -288,7 +288,7 @@ The `windows_package` resource now considers `3010` to be a valid exit code by d
 
 #### knife-acl is now built-in
 
-The knife-acl gem is now part of Chef Infra Client. This gives you the ability to manage Chef organizations and ACLs directly.
+The `knife-acl` gem is now part of Chef Infra Client. This gives you the ability to manage Chef organizations and ACLs directly.
 
 ## YAML Recipes
 
