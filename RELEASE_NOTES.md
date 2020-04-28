@@ -333,7 +333,7 @@ end
 
 ### Resource Partials
 
-Resource partials allow you to define reusable portions of code that can be included in multiple custom resources. This feature is particularly useful when there are common properties, such as authentication properties, that you want to define in a single location, but use for multiple resources. Internally in the Chef Infra Client codebase we've already used this feature to remove duplicate properties from our `subversion` and `git` resources in order to make them easier to maintain.
+Resource partials allow you to define reusable portions of code that can be included in multiple custom resources. This feature is particularly useful when there are common properties, such as authentication properties, that you want to define in a single location, but use for multiple resources. Internally in the Chef Infra Client codebase, we have already used this feature to remove duplicate properties from our `subversion` and `git` resources and make them easier to maintain.
 
 Resource partials are stored in a cookbook's `/resources` directory just like existing custom resources, but they start with the `_` prefix. They're then called using a new `use` helper within the resource where they're needed:
 
