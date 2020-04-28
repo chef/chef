@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.16 -->
-## [v15.10.16](https://github.com/chef/chef/tree/v15.10.16) (2020-04-23)
+<!-- latest_release 15.10.17 -->
+## [v15.10.17](https://github.com/chef/chef/tree/v15.10.17) (2020-04-28)
 
 #### Merged Pull Requests
-- Backport #9511 to Chef 15 [#9723](https://github.com/chef/chef/pull/9723) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Add SLES 15 / Ubuntu 20.04 aarch64 builds [#9761](https://github.com/chef/chef/pull/9761) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add SLES 15 / Ubuntu 20.04 aarch64 builds [#9761](https://github.com/chef/chef/pull/9761) ([tas50](https://github.com/tas50)) <!-- 15.10.17 -->
 - Backport #9511 to Chef 15 [#9723](https://github.com/chef/chef/pull/9723) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.10.16 -->
 - Update our omnibus software def to fix bundler on windows [#9713](https://github.com/chef/chef/pull/9713) ([tas50](https://github.com/tas50)) <!-- 15.10.15 -->
 - Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50)) <!-- 15.10.13 -->
