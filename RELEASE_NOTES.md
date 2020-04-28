@@ -427,7 +427,7 @@ Several helpers introduced in Chef Infra Client 15.5 are now available for use i
 
 `sanitized_path`
 
-sanitize_path is a cross platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as /sbin and /usr/local/bin.
+`sanitize_path` is a cross platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as `/sbin` and `/usr/local/bin`.
 
 `which(foo)`
 
