@@ -56,7 +56,7 @@ The `ChefDeprecations/ResourceWithoutNameOrProvides` cop in Cookstyle 6.0 and la
 
 ### build_essential GCC Updated on Solaris
 
-On Solaris systems we no longer constrain the version of GCC to 4.8.2 in the build_essential resource to allow for gcc 5 installations.
+On Solaris systems, we no longer constrain the version of GCC to 4.8.2 in the `build_essential` resource to allow for GCC 5 installations.
 
 ### git Resource Branch Checkout Changes
 
