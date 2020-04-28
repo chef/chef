@@ -502,7 +502,7 @@ Windows systems now include a new `DMI` plugin which presents data in a similar 
 
 ## New Platforms
 
-Over the last quarter we've worked to greatly expand the platforms we support and produce packages for with the addition of Chef Infra Client packages for Ubuntu 20.04 amd64, Amazon Linux 2 x86_64/aarch64, and Debian 10 amd64. With the release of Chef Infra Client 16 we've expanded our platform support again with the following new platforms:
+Over the last quarter we've worked to greatly expand the platforms we support with the addition of Chef Infra Client packages for Ubuntu 20.04 amd64, Amazon Linux 2 x86_64/aarch64, and Debian 10 amd64. With the release of Chef Infra Client 16 we've expanded our platform support again with the following new platforms:
 
 - RHEL 8 aarch64
 - Ubuntu 20.04 aarch64
