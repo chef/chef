@@ -91,6 +91,26 @@ depends 'windows', '>> 1.0'
 
 We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
+### Redhat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
+
+The included release of Ruby in Chef Infra Client 16 now requires a [C99](https://en.wikipedia.org/wiki/C99) compliant compiler when using the `chef_gem` resource with gems that require compilation. Some systems, such as RHEL 6, do not ship with a C99 compiler and will fail if the gems they're attempting to install require compilation. If it is necessary to install compiled gems into the Chef Infra Client installation on one of these sytems you can upgrade to a modern GCC release.
+
+CentOS:
+
+```bash
+yum install centos-release-scl
+yum install devtoolset-7
+scl enable devtoolset-7 bash
+```
+
+Red Hat:
+
+```bash
+yum-config-manager --enable rhel-server-rhscl-7-rpms
+yum install devtoolset-7
+scl enable devtoolset-7 bash
+```
+
 ### Behavior Changes in Knife
 
 #### knife status --long uses cloud attribute
