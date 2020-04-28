@@ -91,9 +91,9 @@ depends 'windows', '>> 1.0'
 
 We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
-### Redhat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
+### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
-The included release of Ruby in Chef Infra Client 16 now requires a [C99](https://en.wikipedia.org/wiki/C99) compliant compiler when using the `chef_gem` resource with gems that require compilation. Some systems, such as RHEL 6, do not ship with a C99 compiler and will fail if the gems they're attempting to install require compilation. If it is necessary to install compiled gems into the Chef Infra Client installation on one of these sytems you can upgrade to a modern GCC release.
+The included release of Ruby in Chef Infra Client 16 now requires a [C99](https://en.wikipedia.org/wiki/C99) compliant compiler when using the `chef_gem` resource with gems that require compilation. Some systems, such as RHEL 6, do not ship with a C99 compiler and will fail if the gems they're attempting to install require compilation. If it is necessary to install compiled gems into the Chef Infra Client installation on one of these systems you can upgrade to a modern GCC release.
 
 CentOS:
 
@@ -244,7 +244,7 @@ The `msu_package` resource has been improved to work better with Microsoft's cum
 
 ### package
 
-The package resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler coobook authoring and it's also significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support [@ingobecker](https://github.com/ingobecker)
+The package resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler cookbook authoring and it's also significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support [@ingobecker](https://github.com/ingobecker)
 
 Using multiple resources to install a package:
 
@@ -431,7 +431,7 @@ sanitize_path is a cross platform method that returns the system's path along wi
 
 `which(foo)`
 
-The which helper searches the system's path and returns the first occurance of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search in.
+The which helper searches the system's path and returns the first occurrence of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search in.
 
 ```ruby
 which('systemctl')
@@ -469,7 +469,7 @@ Chef Infra Client now ships with Chef Vault functionality built-in so there's no
 
 ### Extended Azure Metadata
 
-The Azure Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information availabe on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
+The Azure Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information available on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
 
 ### New Ohai Plugins
 
