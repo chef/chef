@@ -111,6 +111,24 @@ yum install devtoolset-7
 scl enable devtoolset-7 bash
 ```
 
+### Changes to Improve Gem Source behavior
+
+We've improved the behavior for those that use custom rubygem sources, particularly those operating in air-gapped installations. These improvements involved changes to many of the default `client.rb` values and `gem_package`/`chef_gem` properties that require updating your usage of `chef_gem` and `gem_package` resources
+
+The default value of the `clear_sources` property of `gem_package` and `chef_gem` resources has been changed to `nil`. The possible behaviors for clear_sources are now:
+
+- `true`: Always clear sources.
+- `false`: Never clear sources.
+- `nil`: Clear sources if `source` property is set, but don't clear sources otherwise.
+
+The default value of the `include_default_source` property of `gem_package` and `chef_gem` resources has been changed to `nil`. The possible behaviors for include_default_source are now:
+
+- `true`: Always include the default source.
+- `false`: Never include the default source.
+- `nil`: Include the default source if `rubygems_url` `client.rb` value is set or if `source` and `clear_sources` are not set on the resource.
+
+The default values of the `rubygems_url` `client.rb` config option has been changed to `nil`. Setting to nil previously had similar behavior to setting `clear_sources` to true, but with some differences. The new behavior is to always use `https://rubygems.org` as the default rubygems repo unless explicitly changed, and whether to use this value is determined by `clear_sources` and `include_default_source`.
+
 ### Behavior Changes in Knife
 
 #### knife status --long uses cloud attribute
@@ -291,7 +309,7 @@ resources:
       - start
 ```
 ​
-This implementation is restrictive and does not support arbitrary ruby code, helper functions, or attributes. However, if the need for additional customization arises, YAML recipes can be automatically converted into the DSL via the `knife yaml convert` command.
+This implementation is restrictive and does not support arbitrary Ruby code, helper functions, or attributes. However, if the need for additional customization arises, YAML recipes can be automatically converted into the DSL via the `knife yaml convert` command.
 
 ## Custom Resource Improvements
 
@@ -405,11 +423,23 @@ node['platform_version'] =~ '~> 10.15'
 
 ### New helpers for recipes and resources
 
-TODO document why this new helpers matter
+Several helpers introduced in Chef Infra Client 15.5 are now available for use in any resource or recipe. These includes:
 
-- ChefUtils::DSL::PathSanity
-- ChefUtils::DSL::TrainHelpers
-- ChefUtils::DSL::Which
+`sanitized_path`
+
+sanitize_path is a cross platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as /sbin and /usr/local/bin.
+
+`which(foo)`
+
+The which helper searches the system's path and returns the first occurance of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search in.
+
+```ruby
+which('systemctl')
+```
+
+```ruby
+which('my_app', extra_path: '/opt/my_app/bin')
+```
 
 ### eager_load_libraries metadata.rb setting
 
@@ -422,12 +452,6 @@ eager_load_libraries %w(helper_library_1.rb helper_library_2.rb) # eager load bo
 ```
 
 Note: Unless you're experiencing performance issues in your libraries, we advise against changing the loading behavior.
-
-### Improved Gem Source behavior
-
-We've improved the behavior for those that use custom rubygem sources, particularly those operating in air-gapped installations.
-
-TODO: Add details from https://github.com/chef/chef/pull/9480
 
 ### always_dump_stacktrace client.rb option
 
