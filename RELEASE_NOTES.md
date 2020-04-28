@@ -465,13 +465,21 @@ always_dump_stacktrace true
 
 Chef Infra Client now ships with Chef Vault functionality built-in so there's no need to depend on the `chef-vault` cookbook or gem. Chef Vault helpers `chef_vault_item`, `chef_vault`, and `chef_vault_item_for_environment` are included as well as the `chef_vault_secret` resource. Additionally, the Chef Vault knife commands are also available out of the box. We don't recommend new users adopt the Chef Vault workflow due to limitations with autoscaling new systems, so these resources should only be consumed by existing Chef Vault users.
 
-## Ohai 16 Improvements
+### Ruby 2.7
 
-### Extended Azure Metadata
+Chef Infra Client's ruby installation has been updated to from Ruby 2.6 to Ruby 2.7 which includes many features available for use in resources and libraries.
+
+See <https://medium.com/rubyinside/whats-new-in-ruby-2-7-79c98b265502> for details on many of the new features.
+
+### Ohai 16 Improvements
+
+Ohai has been improved to gather additional system configuration information for use when authoring recipes and resources.
+
+#### Extended Azure Metadata
 
 The Azure Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information available on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
 
-### New Ohai Plugins
+#### New Ohai Plugins
 
 New `ipc` and `interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interutps plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default you you'll need to add :Ipc or :Interupts Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
 
@@ -484,20 +492,13 @@ ohai.optional_plugins = [
 ]
 ```
 
-### Improved Linux Network Plugin Data
+#### Improved Linux Network Plugin Data
 
 The Linux Network plugin has been improved to gather additional information from the `ethtool` utility. This includes the number of queues (`ethtool -l`), the coalesce parameters (`ethtool -c`), and information about the NIC driver (`ethtool -i)`. Thanks [@matt-c-clark](https://github.com/matt-c-clark) for these improvements.
 
-
-### Windows DMI plugin
+#### Windows DMI plugin
 
 Windows systems now include a new DMI plugin which presents data in a similar format to the DMI plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number or asset tag number in a cross platform way.
-
-### Ruby 2.7
-
-Chef Infra Client's ruby installation has been updated to from Ruby 2.6 to Ruby 2.7 which includes many features available for use in resources and libraries.
-
-See <https://medium.com/rubyinside/whats-new-in-ruby-2-7-79c98b265502> for details on many of the new features.
 
 ## New Platforms
 
