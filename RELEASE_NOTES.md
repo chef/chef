@@ -26,7 +26,7 @@ log 'Aggregate notifications using a single log resource' do
 end
 ```
 
-Example of notification aggregation with notify_group resource:
+Example of notification aggregation with `notify_group` resource:
 
 ```ruby
 template '/etc/foo' do
