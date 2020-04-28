@@ -244,7 +244,7 @@ The `msu_package` resource has been improved to work better with Microsoft's cum
 
 ### package
 
-The package resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler cookbook authoring and it's also significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support [@ingobecker](https://github.com/ingobecker)
+The `package` resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler cookbook authoring, which is significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support, [@ingobecker](https://github.com/ingobecker)!
 
 Using multiple resources to install a package:
 
