@@ -510,7 +510,7 @@ Over the last quarter we've worked to greatly expand the platforms we support an
 
 ## Newly Introduced Deprecations
 
-Several legacy Windows helpers have been deprecated as they will always return true when running on Chef Infra Client's currently supported platforms. The helpers previously detected systems before Windows 2012 and systems running Windows Nano, which has been discontinued by Microsoft. These helpers were never documented externally so their usage is most likely minimal, but a new Cookstyle rule has been introduced to detect the usage of `older_than_win_2012_or_8?`: [ChefDeprecations/DeprecatedWindowsVersionCheck](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationsdeprecatedwindowsversioncheck)
+Several legacy Windows helpers have been deprecated as they will always return true when running on Chef Infra Client's currently supported platforms. The helpers previously detected systems prior to Windows 2012 and systems running Windows Nano, which has been discontinued by Microsoft. These helpers were never documented externally so their usage is most likely minimal, but a new Cookstyle rule has been introduced to detect the usage of `older_than_win_2012_or_8?`: [ChefDeprecations/DeprecatedWindowsVersionCheck](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationsdeprecatedwindowsversioncheck)
 
 - Chef::Platform.supports_msi?
 - Chef::Platform.older_than_win_2012_or_8?
