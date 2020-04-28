@@ -367,9 +367,7 @@ end
 
 ### after_resource
 
-A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges.
-
-TODO: Expand this from https://github.com/chef/chef/pull/9562
+A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine grained control over the state information sent to Automate you can use a new `load_after_resource` helper to load the state of each property for reporting.
 
 ### identity Improvements
 
@@ -381,15 +379,13 @@ The compile_time property is now defined for all custom resources so there's no 
 
 ## Other Improvements
 
-### Up to 25% smaller on disk
+### Up to 33% smaller on disk
 
-We've optimized the files that ship with Chef Infra Client and eliminated many unnecessary files from the installation reducing the on-disk size of Chef Infra Client by up to 25%.
+We've optimized the files that ship with Chef Infra Client and eliminated many unnecessary files from the installation reducing the on-disk size of Chef Infra Client by up to 33%.
 
 ### Windows Performance Improvements
 
 We've optimized the Chef Infra Client for modern Windows releases and improved the performance on these systems.
-
-TODO: This needs some wordsmithing
 
 ### Simpler Version Comparisons with node[:platform_version]
 
@@ -411,7 +407,6 @@ node['platform_version'] =~ '~> 10.15'
 
 TODO document why this new helpers matter
 
-- arm?
 - ChefUtils::DSL::PathSanity
 - ChefUtils::DSL::TrainHelpers
 - ChefUtils::DSL::Which
