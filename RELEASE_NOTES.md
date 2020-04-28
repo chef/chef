@@ -205,7 +205,7 @@ This allows you replace forcing resources to run at compile time:
   end.run_action(:run)
 ```
 
-With the simpler compile_time property:
+With the simpler `compile_time` property:
 
 ```ruby
   my_resource "foo" do
