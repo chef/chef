@@ -44,7 +44,7 @@ notify_group 'Aggregate notifications using a single notify_group resource' do
 end
 ```
 
-The `ChefDeprecations/LogResourceNotifications` cop in Cookstyle 6.0 and later detects using the log resource for notifications in cookbooks.
+The `ChefDeprecations/LogResourceNotifications` cop in Cookstyle 6.0 and later detects using the `log` resource for notifications in cookbooks.
 
 To restore the previous behavior, set `count_log_resource_updates true` in your `client.rb`.
 
