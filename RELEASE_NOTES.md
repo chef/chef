@@ -483,7 +483,7 @@ The `Azure` Ohai plugin now gathers the latest version of the metadata provided 
 
 New `IPC` and `Interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interupts plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default you you'll need to add :Ipc or :Interupts Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
 
-Note: Both of these plugins are optional plugins which are disabled by default. They can be enabled via your `client.rb`:
+Note: Both `ipc` and `interupts` plugins are optional plugins, which are disabled by default. They can be enabled via your `client.rb`:
 
 ```ruby
 ohai.optional_plugins = [
