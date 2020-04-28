@@ -74,21 +74,7 @@ In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai dat
 
 The behavior of `required: true` has been changed to better align with the expected behavior. Previously, if you set a property `required: true` on a custom resource property and did not explicitly reference the property in an action, then Chef Infra Client would not raise an exception. This meant many users would add their own validation to raise for resources they wanted to ensure they were always set. `required: true` will now properly raise if a property has not been set.
 
-We have also expanded the `required` field to allow you to specify actions where individual properties are required. This is especially useful when `:create` actions require certain properties that may not be required for a `:remove` type property.
-
-Example required field defining specific actions:
-
-```ruby
-property :password, String, required: [:create]
-
-action :create do
-  # code to create something
-end
-
-action :remove do
-  # code to remove it that doesn't need a password
-end
-```
+We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#Improved-property-require-behavior) below for more details.
 
 ### Removal of Legacy metadata.rb depends Version Constraints
 
@@ -202,7 +188,8 @@ The `cron` resource has been updated to use the same property validation for cro
 The `dnf_package` resource, which provides `package` under the hood on any system shipping with DNF, has been greatly refactored to resolve multiple issues. The version behavior and overall resource capabilities now match that of the `yum_package` resource.
 
 - The `:lock` action now works on RHEL 8
-- Fixes to prevent attempting to install the same package during each Chef Infra Client run
+- Fixes to prevent attempting to install the same package during each Chef Infra Client run.
+- Resolved an issue where installing a package with `options '--enablerepo=foo'` may fail.
 
 ### git
 
@@ -289,9 +276,21 @@ This implementation is restrictive and does not support arbitrary ruby code, hel
 
 ### Improved property require behavior
 
-https://github.com/chef/chef/pull/9688
+As noted in the breaking changes above we've improved how the required value is set on custom resource properties in order to give you a more predictable behavior. This new behavior now allows you to specify actions where individual properties are required. This is especially useful when `:create` actions require certain properties that may not be required for a `:remove` type property.
 
-This should be linked to from the breaking change above
+Example required field defining specific actions:
+
+```ruby
+property :password, String, required: [:create]
+
+action :create do
+  # code to create something
+end
+
+action :remove do
+  # code to remove it that doesn't need a password
+end
+```
 
 ### Resource Partials
 
