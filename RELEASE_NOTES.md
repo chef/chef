@@ -431,7 +431,7 @@ Several helpers introduced in Chef Infra Client 15.5 are now available for use i
 
 `which(foo)`
 
-The which helper searches the system's path and returns the first occurrence of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search in.
+The `which` helper searches the system's path and returns the first occurrence of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search.
 
 ```ruby
 which('systemctl')
