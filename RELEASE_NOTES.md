@@ -270,7 +270,7 @@ package %w(git curl packer)
 
 ### service
 
-The `service` resource has been updated to support newer releases of `update-rc.d` so that it properly disables sys-v init services on Debian Linux distributions. Thanks [@robuye](https://github.com/robuye)
+The `service` resource has been updated to support newer releases of `update-rc.d` so that it properly disables sys-v init services on Debian Linux distributions. Thanks [@robuye](https://github.com/robuye)!
 
 ### windows_firewall_rule
 
