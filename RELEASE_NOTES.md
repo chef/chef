@@ -315,7 +315,7 @@ This implementation is restrictive and does not support arbitrary Ruby code, hel
 
 ### Improved property require behavior
 
-As noted in the breaking changes above we've improved how the required value is set on custom resource properties in order to give you a more predictable behavior. This new behavior now allows you to specify actions where individual properties are required. This is especially useful when `:create` actions require certain properties that may not be required for a `:remove` type property.
+As noted in the breaking changes above, we improved how the required value is set on custom resource properties, in order to give a more predictable behavior. This new behavior now allows you to specify actions where individual properties are required. This is especially useful when `:create` actions require certain properties that may not be required for a `:remove` type property.
 
 Example required field defining specific actions:
 
