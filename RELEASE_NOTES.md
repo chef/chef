@@ -236,7 +236,7 @@ The `git` resource now fully supports why-run mode and no longer checks out the 
 
 ### locale
 
-The locale resource now supports setting the system locale on Windows hosts.
+The `locale` resource now supports setting the system locale on Windows hosts.
 
 ### msu_package resource improvements
 
