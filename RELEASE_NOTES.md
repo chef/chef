@@ -423,7 +423,7 @@ node['platform_version'] =~ '~> 10.15'
 
 ### New helpers for recipes and resources
 
-Several helpers introduced in Chef Infra Client 15.5 are now available for use in any resource or recipe. These includes:
+Several helpers introduced in Chef Infra Client 15.5 are now available for use in any resource or recipe. These helpers include:
 
 `sanitized_path`
 
