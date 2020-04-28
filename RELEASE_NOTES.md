@@ -189,7 +189,8 @@ The `dnf_package` resource, which provides `package` under the hood on any syste
 
 - The `:lock` action now works on RHEL 8
 - Fixes to prevent attempting to install the same package during each Chef Infra Client run.
-- Resolved an issue where installing a package with `options '--enablerepo=foo'` may fail.
+- Resolved several idempotency issues.
+- Resolved an issue where installing a package with `options '--enablerepo=foo'` would fail.
 
 ### git
 
