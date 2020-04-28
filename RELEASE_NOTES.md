@@ -477,11 +477,11 @@ Ohai has been improved to gather additional system configuration information for
 
 #### Extended Azure Metadata
 
-The Azure Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information available on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
+The `Azure` Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information available on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
 
 #### New Ohai Plugins
 
-New `ipc` and `interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interutps plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default you you'll need to add :Ipc or :Interupts Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
+New `IPC` and `Interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interutps plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default you you'll need to add :Ipc or :Interupts Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
 
 Note: Both of these plugins are optional plugins which are disabled by default. They can be enabled via your `client.rb`:
 
