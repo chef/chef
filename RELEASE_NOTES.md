@@ -240,7 +240,7 @@ The locale resource now supports setting the system locale on Windows hosts.
 
 ### msu_package resource improvements
 
-The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these packages will not correctly install over previous versions. We've also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue [@danielfloyd](https://github.com/danielfloyd)
+The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these packages will not correctly install over previous versions. We also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue, [@danielfloyd](https://github.com/danielfloyd).
 
 ### package
 
