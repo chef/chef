@@ -393,7 +393,7 @@ A resource's name property is now set to be the identity property by default and
 
 ### compile_time property
 
-The compile_time property is now defined for all custom resources so there's no need to add your own compile-time logic to your resource.
+The `compile_time` property is now defined for all custom resources,  so there is no need to add your own compile-time logic to your resource.
 
 ## Other Improvements
 
