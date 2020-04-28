@@ -1,5 +1,521 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 16
+
+## Breaking Changes
+
+### Log Resource Notification Behavior
+
+The `log` resource in a recipe or resource will no longer trigger notifications by default. This allows authors to more liberally use `log` resources without impacting the updated resources count or impacting reporting to Chef Automate. This change will impact users that used the `log` resource to aggregate notifications from other resources, so they could limit the number of times a notification would fire. If you used the `log` resource to aggregate multiple notifications, you should convert to using the `notify group` resource, which was introduced in Chef Infra Client 15.8.
+
+Example of notification aggregation with `log` resource:
+
+```ruby
+template '/etc/foo' do
+  source 'foo.erb'
+  notifies :write, 'log[Aggregate notifications using a single log resource]', :immediately
+end
+
+template '/etc/bar' do
+  source 'bar.erb'
+  notifies :write, 'log[Aggregate notifications using a single log resource]', :immediately
+end
+
+log 'Aggregate notifications using a single log resource' do
+  notifies :restart, 'service[foo]', :delayed
+end
+```
+
+Example of notification aggregation with `notify_group` resource:
+
+```ruby
+template '/etc/foo' do
+  source 'foo.erb'
+  notifies :run, 'notify_group[Aggregate notifications using a single notify_group resource]', :immediately
+end
+
+template '/etc/bar' do
+  source 'bar.erb'
+  notifies :run, 'notify_group[Aggregate notifications using a single notify_group resource]', :immediately
+end
+
+notify_group 'Aggregate notifications using a single notify_group resource' do
+  notifies :restart, 'service[foo]', :delayed
+end
+```
+
+The `ChefDeprecations/LogResourceNotifications` cop in Cookstyle 6.0 and later detects using the `log` resource for notifications in cookbooks.
+
+To restore the previous behavior, set `count_log_resource_updates true` in your `client.rb`.
+
+### HWRP Style Resources Now Require resource_name / provides
+
+Legacy HWRP-style resources, written as Ruby classes in the libraries directory of a cookbook, will now require either the use of `resource_name` or `provides` methods to define the resource names. Previously, Chef Infra Client would infer the desired resource name from the class, but this magic was problematic and has been removed.
+
+The `ChefDeprecations/ResourceWithoutNameOrProvides` cop in Cookstyle 6.0 and later detects this deprecation.
+
+### build_essential GCC Updated on Solaris
+
+On Solaris systems, we no longer constrain the version of GCC to 4.8.2 in the `build_essential` resource to allow for GCC 5 installations.
+
+### git Resource Branch Checkout Changes
+
+The `git` resource no longer checks out to a new branch named `deploy` by default. Many users found this branching behavior confusing and unexpected so we've decided to implement a more predictable default. The resource will now default to either checking out the branch specified with the `checkout_branch` property or a detached HEAD state. If you'd like to revert to the previous behavior you can set the `checkout_branch` to `deploy`.
+
+### s390x Packaging
+
+As outlined in our blog post at <https://blog.chef.io/chef-infra-end-of-life-announcement-for-linux-client-on-ibm-s390x-architecture/>, we will no longer be producing s390x platform packages for Chef Infra Client.
+
+### filesystem2 Node Data Replaces filesystem on FreeBSD / AIX / Solaris
+
+In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai data on FreeBSD, AIX, and Solaris at `node['fileystem2']`. With the release of 16.0, we are now replacing the existing data at `node['filesystem']` with this updated filesystem data. This data has a standardized format that matches Linux, macOS, and Windows data to make it easier to write cross platform cookbooks. In a future release of Chef Infra Client we'll remove the `node['filesystem2']` as we complete this migration.
+
+### required: true on Properties Now Behaves As Expected
+
+The behavior of `required: true` has been changed to better align with the expected behavior. Previously, if you set a property `required: true` on a custom resource property and did not explicitly reference the property in an action, then Chef Infra Client would not raise an exception. This meant many users would add their own validation to raise for resources they wanted to ensure they were always set. `required: true` will now properly raise if a property has not been set.
+
+We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#Improved-property-require-behavior) below for more details.
+
+### Removal of Legacy metadata.rb depends Version Constraints
+
+Support for the `<<` and `>>` version constraints in metadata.rb has been removed. This was an undocumented feature from the Chef 0.10 era, which is not used in any cookbooks on the Supermarket. We are mentioning it since it is technically a breaking change, but it unlikely that this change will be impacting.
+
+Examples:
+
+```ruby
+depends 'windows', '<< 1.0'
+depends 'windows', '>> 1.0'
+```
+
+### Logging Improvements May Cause Behavior Changes
+
+We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+
+### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
+
+The included release of Ruby in Chef Infra Client 16 now requires a [C99](https://en.wikipedia.org/wiki/C99) compliant compiler when using the `chef_gem` resource with gems that require compilation. Some systems, such as RHEL 6, do not ship with a C99 compiler and will fail if the gems they're attempting to install require compilation. If it is necessary to install compiled gems into the Chef Infra Client installation on one of these systems you can upgrade to a modern GCC release.
+
+CentOS:
+
+```bash
+yum install centos-release-scl
+yum install devtoolset-7
+scl enable devtoolset-7 bash
+```
+
+Red Hat:
+
+```bash
+yum-config-manager --enable rhel-server-rhscl-7-rpms
+yum install devtoolset-7
+scl enable devtoolset-7 bash
+```
+
+### Changes to Improve Gem Source behavior
+
+We've improved the behavior for those that use custom rubygem sources, particularly those operating in air-gapped installations. These improvements involved changes to many of the default `client.rb` values and `gem_package`/`chef_gem` properties that require updating your usage of `chef_gem` and `gem_package` resources
+
+The default value of the `clear_sources` property of `gem_package` and `chef_gem` resources has been changed to `nil`. The possible behaviors for clear_sources are now:
+
+- `true`: Always clear sources.
+- `false`: Never clear sources.
+- `nil`: Clear sources if `source` property is set, but don't clear sources otherwise.
+
+The default value of the `include_default_source` property of `gem_package` and `chef_gem` resources has been changed to `nil`. The possible behaviors for include_default_source are now:
+
+- `true`: Always include the default source.
+- `false`: Never include the default source.
+- `nil`: Include the default source if `rubygems_url` `client.rb` value is set or if `source` and `clear_sources` are not set on the resource.
+
+The default values of the `rubygems_url` `client.rb` config option has been changed to `nil`. Setting to nil previously had similar behavior to setting `clear_sources` to true, but with some differences. The new behavior is to always use `https://rubygems.org` as the default rubygems repo unless explicitly changed, and whether to use this value is determined by `clear_sources` and `include_default_source`.
+
+### Behavior Changes in Knife
+
+#### knife status --long uses cloud attribute
+
+The `knife status --long` resource now uses Ohai's cloud data instead of ec2 specific data. This improves, but changes, the data output for users on non-AWS clouds.
+
+#### knife download role/environment format update
+
+The `knife download role` and `knife download environment` commands now include all possible data fields including those without any data set. This new output behavior matches the behavior of other commands such as `knife role show` or `knife environment show`
+
+#### Deprecated knife cookbook site command removed
+
+The previously deprecated `knife cookbook site` commands have been removed. Use the `knife supermarket` commands instead.
+
+#### Deprecated knife data bag create -s short option removed
+
+The deprecated `knife data bag create -s` option that was not properly honored has been removed. Use the `--secret` option instead to set a data bag secret file during data bag creation.
+
+#### sites-cookbooks directory no longer in cookbook_path
+
+The legacy `sites-cookbooks` directory is no longer added to the default `cookbook_path` value. With this change, any users with a legacy `sites-cookbooks` directory will need to use the `-O` flag to override the cookbook directory when running commands such as `knife cookbook upload`.
+
+If you have a repository that contains a `site-cookbooks` directory, we highly recommend using Policyfiles or Berkshelf to properly resolve these external cookbook dependencies without the need to copy them locally. Alternatively, you can move the contents of this folder into your main cookbook directory and they will continue to be seen by knife commands.
+
+## New Resources
+
+### alternatives
+
+Use the `alternatives` resource to manage symbolic links to specify default command versions on Linux hosts. See the [alternatives documentation](https://docs.chef.io/resources/alternatives/) for full usage information. Thanks [@vkhatri](https://github.com/vkhatri) for the original cookbook alternatives resource.
+
+### chef_client resources
+
+We've added new resources to Chef Infra Client for setting the client to run on an interval using native system schedulers. We believe that these native schedulers provide a more flexible and reliable method for running the client than the traditional method of running as a full service. Using the native schedulers reduces hung clients and eases upgrades. This is the first of many steps towards removing the need for the `chef-client` cookbook and allowing Chef Infra Client to configure itself out of the box.
+
+#### chef_client_cron
+
+Use the `chef_client_cron` resource to setup the Chef Infra Client to run on a schedule using cron on Linux, Solaris, and AIX systems. See the [chef_client_cron documentation](https://docs.chef.io/resources/chef_client_cron/) for full usage information.
+
+#### chef_client_systemd_timer
+
+Use the `chef_client_systemd_timer` resource to setup the Chef Infra Client to run on a schedule using a systemd timer on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
+
+#### chef_client_windows_task
+
+Use the `chef_client_windows_task` resource to setup the Chef Infra Client to run on a schedule using Windows Scheduled Tasks. See the [chef_client_windows_task documentation](https://docs.chef.io/resources/chef_client_windows_task/) for full usage information.
+
+### plist
+
+Use the `plist` resource to generate plist files on macOS hosts. See the [plist documentation](https://docs.chef.io/resources/plist/) for full usage information. Thanks Microsoft and [@americanhanko](https://github.com/americanhanko) for the original work on this resource in the [macos cookbook](https://supermarket.chef.io/cookbooks/macos).
+
+### user_ulimit
+
+Use the `user_ulimit` resource to set per user ulimit values on Linux systems. See the [user_ulimit documentation](https://docs.chef.io/resources/user_ulimit/) for full usage information. Thanks [@bmhatfield](https://github.com/bmhatfield) for the original work on this resource in the [ulimit cookbook](https://supermarket.chef.io/cookbooks/ulimit).
+
+### windows_security_policy
+
+Use the `windows_security_policy` resource to modify location security policies on Windows hosts. See the [windows_security_policy documentation](https://docs.chef.io/resources/windows_security_policy/) for full usage information.
+
+### windows_user_privilege
+
+Use the `windows_user_privilege` resource to add users and groups to the specified privileges on Windows hosts. See the [windows_user_privilege documentation](https://docs.chef.io/resources/windows_user_privilege/) for full usage information.
+
+## Improved Resources
+
+### compile_time on all resources
+
+The `compile_time` property is now available for all resources so that they can be set to run at compile time without the need forcing the action.
+
+This allows you replace forcing resources to run at compile time:
+
+```ruby
+  my_resource "foo" do
+    action :nothing
+  end.run_action(:run)
+```
+
+With the simpler `compile_time` property:
+
+```ruby
+  my_resource "foo" do
+    compile_time true
+  end
+```
+
+### build_essential
+
+The `build_essential` resource includes a new `:upgrade` action for macOS systems that allows you to install updates to the Xcode Command Line Tools available via Software Update.
+
+### cron
+
+The `cron` resource has been updated to use the same property validation for cron times that the `cron_d` resource uses. This improves failure messages when invalid inputs are set and also allows for `jan`-`dec` values to be used in the `month` property.
+
+### dnf_package
+
+The `dnf_package` resource, which provides `package` under the hood on any system shipping with DNF, has been greatly refactored to resolve multiple issues. The version behavior and overall resource capabilities now match that of the `yum_package` resource.
+
+- The `:lock` action now works on RHEL 8.
+- Fixes to prevent attempting to install the same package during each Chef Infra Client run.
+- Resolved several idempotency issues.
+- Resolved an issue where installing a package with `options '--enablerepo=foo'` would fail.
+
+### git
+
+The `git` resource now fully supports why-run mode and no longer checks out the `deploy` branch by default as mentioned in the breaking changes section.
+
+### locale
+
+The `locale` resource now supports setting the system locale on Windows hosts.
+
+### msu_package resource improvements
+
+The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these cumulative update packages will not correctly install over the previous versions. We also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue, [@danielfloyd](https://github.com/danielfloyd).
+
+### package
+
+The `package` resource on macOS and Arch Linux systems now supports passing multiple packages into a single package resource via an array. This allows you to collapse multiple resources into a single resource for simpler cookbook authoring, which is significantly faster as it requires fewer calls to the packaging systems. Thanks for the Arch Linux support, [@ingobecker](https://github.com/ingobecker)!
+
+Using multiple resources to install a package:
+
+```ruby
+package 'git'
+package 'curl'
+package 'packer'
+```
+
+or
+
+```ruby
+%w(git curl packer).each do |pkg|
+  package pkg
+end
+```
+
+can now be simplified to:
+
+```ruby
+package %w(git curl packer)
+```
+
+### service
+
+The `service` resource has been updated to support newer releases of `update-rc.d` so that it properly disables sys-v init services on Debian Linux distributions. Thanks [@robuye](https://github.com/robuye)!
+
+### windows_firewall_rule
+
+The `windows_firewall_rule` resource has been greatly improved thanks to work by [@pschaumburg](https://github.com/pschaumburg) and [@tecracer-theinen](https://github.com/tecracer-theinen).
+
+- New `icmp_type` property, which allows setting the ICMP type when setting up ICMP protocol rules.
+- New `displayname` property, which allows defining the display name of the firewall rule.
+- New `group` property, which allows you to specify that only matching firewall rules of the indicated group association are copied.
+- The `description` property will now update if changed.
+- Fixed setting rules with multiple profiles.
+
+### windows_package
+
+The `windows_package` resource now considers `3010` to be a valid exit code by default. The `3010` exit code means that a package has been successfully installed, but requires a reboot.
+
+#### knife-acl is now built-in
+
+The `knife-acl` gem is now part of Chef Infra Client. This gives you the ability to manage Chef organizations and ACLs directly.
+
+## YAML Recipes
+
+We added support for writing recipes in YAML to provide a low-code syntax for simple use cases. To write recipes in YAML, Chef resources and any user-defined parameters can be added as elements in a `resources` hash, such as the example below:
+​
+```yaml
+---
+resources:
+  - type: "package"
+    name: "httpd"
+  - type: "template"
+    name: "/var/www/html/index.html"
+    source: "index.html.erb"
+  - type: "service"
+    name: "httpd"
+    action:
+      - enable
+      - start
+```
+​
+This implementation is restrictive and does not support arbitrary Ruby code, helper functions, or attributes. However, if the need for additional customization arises, YAML recipes can be automatically converted into the DSL via the `knife yaml convert` command.
+
+## Custom Resource Improvements
+
+### Improved property require behavior
+
+As noted in the breaking changes above, we improved how the required value is set on custom resource properties, in order to give a more predictable behavior. This new behavior now allows you to specify actions where individual properties are required. This is especially useful when `:create` actions require certain properties that may not be required for a `:remove` type property.
+
+Example required field defining specific actions:
+
+```ruby
+property :password, String, required: [:create]
+
+action :create do
+  # code to create something
+end
+
+action :remove do
+  # code to remove it that doesn't need a password
+end
+```
+
+### Resource Partials
+
+Resource partials allow you to define reusable portions of code that can be included in multiple custom resources. This feature is particularly useful when there are common properties, such as authentication properties, that you want to define in a single location, but use for multiple resources. Internally in the Chef Infra Client codebase, we have already used this feature to remove duplicate properties from our `subversion` and `git` resources and make them easier to maintain.
+
+Resource partials are stored in a cookbook's `/resources` directory just like existing custom resources, but they start with the `_` prefix. They're then called using a new `use` helper within the resource where they're needed:
+
+`resources/_api_auth_properties.rb:`
+
+```ruby
+property :api_endpoint, String
+property :api_key, String
+property :api_retries, Integer
+```
+
+`resources/mything.rb`:
+
+```ruby
+property :another_property, String
+property :yet_another_property, String
+
+use 'api_auth_properties'
+
+action :create do
+  # some create logic
+end
+```
+
+The example above shows a resource partial that contains properties for use in multiple resources. You can also use resource partials to define helper methods that you want to use in your actions instead of defining the same helper methods in each action_class.
+
+`resources/_api_auth_helpers.rb:`
+
+```ruby
+def make_api_call(endpoint, value)
+  # API call code here
+end
+```
+
+`resources/mything.rb`:
+
+```ruby
+property :another_property, String
+property :yet_another_property, String
+
+action :create do
+  # some create logic
+end
+
+action_class do
+  use 'api_auth_helpers'
+end
+```
+
+### after_resource
+
+A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper, then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine grained control over the state information sent to Chef Automate, you can use a new `load_after_resource` helper to load the state of each property for reporting.
+
+### identity Improvements
+
+A resource's name property is now set to be the identity property by default and to have `desired_state: false` set by default. This eliminates the need to set `identity: true, desired_state: false` on these properties and better exposes identity data to handler and reporting.
+
+### compile_time property
+
+The `compile_time` property is now defined for all custom resources,  so there is no need to add your own compile-time logic to your resource.
+
+## Other Improvements
+
+### Up to 33% smaller on disk
+
+We optimized the files that ship with Chef Infra Client and eliminated many unnecessary files from the installation, reducing the on-disk size of Chef Infra Client by up to 33%.
+
+### Windows Performance Improvements
+
+We've optimized the Chef Infra Client for modern Windows releases and improved the performance on these systems.
+
+### Simpler Version Comparisons with node[:platform_version]
+
+The `node['platform_version']` attribute returned from Ohai can now be intelligently compared as a version instead of as a String or Integer. Previously, to compare the platform_version, many users would first convert the version String to a Float with `node['platform_version']`. This introduced problems on many platforms, such as macOS, where macOS 10.9 would appear to be a greater version number than 10.15. You can now directly compare the version without converting it first.
+
+Greater than or equal comparison:
+
+```ruby
+node['platform_version'] >= '10.15'
+```
+
+Comparison using Ruby's pessimistic operator:
+
+```ruby
+node['platform_version'] =~ '~> 10.15'
+```
+
+### New helpers for recipes and resources
+
+Several helpers introduced in Chef Infra Client 15.5 are now available for use in any resource or recipe. These helpers include:
+
+`sanitized_path`
+
+`sanitize_path` is a cross platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as `/sbin` and `/usr/local/bin`.
+
+`which(foo)`
+
+The `which` helper searches the system's path and returns the first occurrence of a binary, similar to the `which` command on *nix systems. It also allows you to pass an `extra_path` value for additional directories to search.
+
+```ruby
+which('systemctl')
+```
+
+```ruby
+which('my_app', extra_path: '/opt/my_app/bin')
+```
+
+### eager_load_libraries metadata.rb setting
+
+By default, Chef Infra Client eagerly loads all ruby files in each cookbook's libraries directory at runtime. A new metadata.rb option `eager_load_libraries` has been introduced and allows you to control if and when a cookbook library is loaded. Depending on the construction of your libraries, this new option may greatly improve the runtime performance of your cookbook. With eager loading disabled, you may manually load libraries included in your cookbook using Ruby's standard `require` method. Metadata.rb configuration options:
+
+```ruby
+eager_load_libraries false # disable eager loading all libraries
+eager_load_libraries 'helper_library.rb' # eager load just the the file helper_library.rb
+eager_load_libraries %w(helper_library_1.rb helper_library_2.rb) # eager load both helper_library_1.rb and helper_library_2.rb files
+```
+
+Note: Unless you are experiencing performance issues in your libraries, we advise against changing the loading behavior.
+
+### always_dump_stacktrace client.rb option
+
+A new `always_dump_stacktrace` client.rb configuration option and command line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
+
+```ruby
+always_dump_stacktrace true
+```
+
+### Chef Vault Functionality Out of the Box
+
+Chef Infra Client now ships with built-in Chef Vault functionality, so there's no need to depend on the `chef-vault` cookbook or gem. Chef Vault helpers `chef_vault_item`, `chef_vault`, and `chef_vault_item_for_environment` are included, as well as the `chef_vault_secret` resource. Additionally, the Chef Vault knife commands are also available out of the box. We do not recommend new users adopt the Chef Vault workflow due to limitations with autoscaling new systems, so these resources should only be consumed by existing Chef Vault users.
+
+### Ruby 2.7
+
+Chef Infra Client's ruby installation has been updated to from Ruby 2.6 to Ruby 2.7, which includes many features available for use in resources and libraries.
+
+See <https://medium.com/rubyinside/whats-new-in-ruby-2-7-79c98b265502> for details on many of the new features.
+
+### Ohai 16 Improvements
+
+Ohai has been improved to gather additional system configuration information for use when authoring recipes and resources.
+
+#### Extended Azure Metadata
+
+The `Azure` Ohai plugin now gathers the latest version of the metadata provided by the Azure metadata endpoint. This greatly expands the information available on Azure instances. See [Ohai PR 1427](https://github.com/chef/ohai/pull/1427) for an example of the new data gathered.
+
+#### New Ohai Plugins
+
+New `IPC` and `Interupts` plugins have been added to Ohai. The IPC plugin exposes SysV IPC shmem information and interupts plugin exposes data from `/proc/interrupts` and `/proc/irq`. Both of these plugins are disabled by default and you will need to add :Ipc or :Interupts. Thanks [@jsvana](https://github.com/jsvana) and [@davide125](https://github.com/davide125) for these new plugins.
+
+Note: Both `IPC` and `Interupts` plugins are optional plugins, which are disabled by default. They can be enabled via your `client.rb`:
+
+```ruby
+ohai.optional_plugins = [
+  :IPC,
+  :Interups
+]
+```
+
+#### Improved Linux Network Plugin Data
+
+The Linux Network plugin has been improved to gather additional information from the `ethtool` utility. This includes the number of queues (`ethtool -l`), the coalesce parameters (`ethtool -c`), and information about the NIC driver (`ethtool -i`). Thanks [@matt-c-clark](https://github.com/matt-c-clark) for these improvements.
+
+#### Windows DMI plugin
+
+Windows systems now include a new `DMI` plugin which presents data in a similar format to the `DMI` plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number, or asset tag number in a cross platform way.
+
+## New Platforms
+
+Over the last quarter, we worked to greatly expand the platforms that we support with the addition of Chef Infra Client packages for Ubuntu 20.04 amd64, Amazon Linux 2 x86_64/aarch64, and Debian 10 amd64. With the release of Chef Infra Client 16, we expanded our platform support again with the following new platforms:
+
+- RHEL 8 aarch64
+- Ubuntu 20.04 aarch64
+- SLES 16 aarch64
+
+## Newly Introduced Deprecations
+
+Several legacy Windows helpers have been deprecated as they will always return true when running on Chef Infra Client's currently supported platforms. The helpers previously detected systems prior to Windows 2012 and systems running Windows Nano, which has been discontinued by Microsoft. These helpers were never documented externally so their usage is most likely minimal. A new Cookstyle rule has been introduced to detect the usage of `older_than_win_2012_or_8?`: [ChefDeprecations/DeprecatedWindowsVersionCheck](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationsdeprecatedwindowsversioncheck).
+
+- Chef::Platform.supports_msi?
+- Chef::Platform.older_than_win_2012_or_8?
+- Chef::Platform.supports_powershell_execution_bypass?
+- Chef::Platform.windows_nano_server?
 
 # Chef Infra Client 15.10
 
@@ -85,15 +601,15 @@ Our Windows 10 Chef Infra Client packages now receive an additional layer of tes
 
 Ruby has been updated from 2.6.5 to 2.6.6 to resolve the following CVEs:
 
-  - [CVE-2020-16255](https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/): Unsafe Object Creation Vulnerability in JSON (Additional fix)
-  - [CVE-2020-10933](https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/): Heap exposure vulnerability in the socket library
+- [CVE-2020-16255](https://www.ruby-lang.org/en/news/2020/03/19/json-dos-cve-2020-10663/): Unsafe Object Creation Vulnerability in JSON (Additional fix)
+- [CVE-2020-10933](https://www.ruby-lang.org/en/news/2020/03/31/heap-exposure-in-socket-cve-2020-10933/): Heap exposure vulnerability in the socket library
 
 ### libarchive
 
 libarchive has been updated from 3.4.0 to 3.4.2 to resolve multiple security vulnerabilities including the following CVEs:
 
-  - [CVE-2019-19221](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19221): archive_wstring_append_from_mbs in archive_string.c has an out-of-bounds read because of an incorrect mbrtowc or mbtowc call
-  - [CVE-2020-9308](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9308): archive_read_support_format_rar5.c in libarchive before 3.4.2 attempts to unpack a RAR5 file with an invalid or corrupted header
+- [CVE-2019-19221](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19221): archive_wstring_append_from_mbs in archive_string.c has an out-of-bounds read because of an incorrect mbrtowc or mbtowc call
+- [CVE-2020-9308](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9308): archive_read_support_format_rar5.c in libarchive before 3.4.2 attempts to unpack a RAR5 file with an invalid or corrupted header
 
 # Chef Infra Client 15.8
 
@@ -1384,7 +1900,7 @@ In preparation for Chef Infra Client 15.0 we've added a placeholder `--chef-lice
 - Blacklisting and whiteliting default and override level attributes is once again possible.
 - You may now encrypt a previously unencrypted data bag.
 - Resolved a regression introduced in Chef Infra Client 14.12.3 that resulted in errors when managing Windows services
-    
+
 # Chef Infra Client Release Notes 14.12.3:
 
 ## Updated Resources
