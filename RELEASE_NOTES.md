@@ -494,7 +494,7 @@ ohai.optional_plugins = [
 
 #### Improved Linux Network Plugin Data
 
-The Linux Network plugin has been improved to gather additional information from the `ethtool` utility. This includes the number of queues (`ethtool -l`), the coalesce parameters (`ethtool -c`), and information about the NIC driver (`ethtool -i)`. Thanks [@matt-c-clark](https://github.com/matt-c-clark) for these improvements.
+The Linux Network plugin has been improved to gather additional information from the `ethtool` utility. This includes the number of queues (`ethtool -l`), the coalesce parameters (`ethtool -c`), and information about the NIC driver (`ethtool -i`). Thanks [@matt-c-clark](https://github.com/matt-c-clark) for these improvements.
 
 #### Windows DMI plugin
 
