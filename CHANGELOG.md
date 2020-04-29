@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.260 -->
-## [v16.0.260](https://github.com/chef/chef/tree/v16.0.260) (2020-04-29)
+<!-- latest_release 16.0.261 -->
+## [v16.0.261](https://github.com/chef/chef/tree/v16.0.261) (2020-04-29)
 
 #### Merged Pull Requests
-- Improve resource docs [#9764](https://github.com/chef/chef/pull/9764) ([tas50](https://github.com/tas50))
+- More resource documentation improvements [#9765](https://github.com/chef/chef/pull/9765) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More resource documentation improvements [#9765](https://github.com/chef/chef/pull/9765) ([tas50](https://github.com/tas50)) <!-- 16.0.261 -->
 - Improve resource docs [#9764](https://github.com/chef/chef/pull/9764) ([tas50](https://github.com/tas50)) <!-- 16.0.260 -->
 - Fix more ruby 2.7 warning logspam [#9762](https://github.com/chef/chef/pull/9762) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.259 -->
 - Fixes to support unbundled rake use [#9759](https://github.com/chef/chef/pull/9759) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.258 -->
