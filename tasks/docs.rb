@@ -153,6 +153,26 @@ namespace :docs_site do
       property["default"].to_s
     end
 
+    #
+    # Build the actions section of the resource yaml
+    #
+    # @return [Hash]
+    #
+    def action_list(actions)
+      list = {}
+      actions.each do |action|
+        # skip it so we can make it the last value later
+        next if action == "nothing"
+
+        list[action.to_sym] = { "markdown" => nil }
+      end
+
+      # add the special case for nothing
+      list[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
+
+      list
+    end
+
     # TODO:
     # - what to do about "lazy default" for default?
     def properties_list(properties)
@@ -279,7 +299,9 @@ namespace :docs_site do
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
+      r["actions_list"] = action_list(data["actions"])
       r["properties_list"] = properties_list(properties)
+      r["examples_list"] = nil
 
       r
     end
