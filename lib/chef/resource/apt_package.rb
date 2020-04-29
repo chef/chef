@@ -29,7 +29,7 @@ class Chef
       description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
 
       property :default_release, String,
-        description: "The default release. For example: stable.",
+        description: "The default release. For example: `stable`.",
         desired_state: false
 
       property :overwrite_config_files, [TrueClass, FalseClass],

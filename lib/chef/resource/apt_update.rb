@@ -46,7 +46,7 @@ class Chef
       property :name, String, default: ""
 
       property :frequency, Integer,
-        description: "Determines how frequently (in seconds) APT repository updates are made. Use this property when the :periodic action is specified.",
+        description: "Determines how frequently (in seconds) APT repository updates are made. Use this property when the `:periodic` action is specified.",
         default: 86_400
 
       default_action :periodic
