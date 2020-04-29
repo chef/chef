@@ -261,7 +261,7 @@ namespace :docs_site do
 
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
-      properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
+      properties = data["properties"].reject { |v| v["name"] == "name" || v['deprecated'] }.sort_by! { |v| v["name"] }
 
       r = {}
 
