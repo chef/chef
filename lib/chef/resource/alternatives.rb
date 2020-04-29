@@ -28,11 +28,72 @@ class Chef
 
       description "The alternatives resource allows for configuration of command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"
+      examples <<~DOC
+      Install an alternative
 
-      property :link_name, String, name_property: true
-      property :link, String, default: lazy { |n| "/usr/bin/#{n.link_name}" }
-      property :path, String
-      property :priority, [String, Integer], coerce: proc { |n| n.to_i }
+      ```ruby
+      alternatives 'python install 2' do
+        link_name 'python'
+        path '/usr/bin/python2.7'
+        priority 100
+        action :install
+      end
+      ```
+
+      Set an alternative
+
+      ```ruby
+      alternatives 'python set version 3' do
+        link_name 'python'
+        path '/usr/bin/python3'
+        action :set
+      end
+      ```
+
+      Set the automatic alternative state
+
+      ```ruby
+      alternatives 'python auto' do
+        link_name 'python'
+        action :auto
+      end
+      ```
+
+      Refresh an alternative
+
+      ```ruby
+      alternatives 'python refresh' do
+        link_name 'python'
+        action :refresh
+      end
+      ```
+
+      Remove an alternative
+
+      ```ruby
+      alternatives 'python remove' do
+        link_name 'python'
+        path '/usr/bin/python3'
+        action :remove
+      end
+      ```
+      DOC
+
+      property :link_name, String,
+        name_property: true,
+        description: "The name of the link to create. This will be the command you type on the command line such as `ruby` or `gcc`."
+
+      property :link, String,
+        default: lazy { |n| "/usr/bin/#{n.link_name}" },
+        default_description: "/usr/bin/LINK_NAME",
+        description: "The path to the alternatives link."
+
+      property :path, String,
+        description: "The full path to the original application binary such as `/usr/bin/ruby27`."
+
+      property :priority, [String, Integer],
+        coerce: proc { |n| n.to_i },
+        description: "The priority of the alternative."
 
       def define_resource_requirements
         requirements.assert(:install) do |a|

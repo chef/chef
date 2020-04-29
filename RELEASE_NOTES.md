@@ -74,7 +74,7 @@ In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai dat
 
 The behavior of `required: true` has been changed to better align with the expected behavior. Previously, if you set a property `required: true` on a custom resource property and did not explicitly reference the property in an action, then Chef Infra Client would not raise an exception. This meant many users would add their own validation to raise for resources they wanted to ensure they were always set. `required: true` will now properly raise if a property has not been set.
 
-We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#Improved-property-require-behavior) below for more details.
+We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#improved-property-require-behavior) below for more details.
 
 ### Removal of Legacy metadata.rb depends Version Constraints
 

@@ -266,7 +266,6 @@ namespace :docs_site do
       r = {}
 
       # These properties are always set to these values.
-      r["draft"] = false
       r["resource_reference"] = true
       r["robots"] = nil
       r["syntax_code_block"] = nil

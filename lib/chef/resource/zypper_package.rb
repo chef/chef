@@ -29,7 +29,7 @@ class Chef
       description "Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
 
       property :gpg_check, [ TrueClass, FalseClass ],
-        description: "Verify the package's GPG signature. Can also be controlled site-wide using the ``zypper_check_gpg`` config option.",
+        description: "Verify the package's GPG signature. Can also be controlled site-wide using the `zypper_check_gpg` config option.",
         default: lazy { Chef::Config[:zypper_check_gpg] }, default_description: "true"
 
       property :allow_downgrade, [ TrueClass, FalseClass ],
@@ -39,7 +39,7 @@ class Chef
         introduced: "13.6"
 
       property :global_options, [ String, Array ],
-        description: "One (or more) additional command options that are passed to the command. For example, common zypper directives, such as '--no-recommends'. See the zypper man page at https://en.opensuse.org/SDB:Zypper_manual_(plain) for the full list.",
+        description: "One (or more) additional command options that are passed to the command. For example, common zypper directives, such as `--no-recommends`. See the [zypper man page](https://en.opensuse.org/SDB:Zypper_manual_(plain)) for the full list.",
         coerce: proc { |x| x.is_a?(String) ? x.shellsplit : x },
         introduced: "14.6"
     end

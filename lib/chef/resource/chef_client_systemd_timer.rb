@@ -29,12 +29,12 @@ class Chef
       examples <<~DOC
       Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
       ```ruby
-      chef_client_systemd_timer "Run chef-client as a systemd timer"
+      chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} as a systemd timer"
       ```
 
       Run #{Chef::Dist::PRODUCT} every 1 hour
       ```ruby
-      chef_client_systemd_timer "Run chef-client every 1 hour" do
+      chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} every 1 hour" do
         interval "1hr"
       end
       ```
