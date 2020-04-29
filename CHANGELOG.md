@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.258 -->
-## [v16.0.258](https://github.com/chef/chef/tree/v16.0.258) (2020-04-28)
+<!-- latest_release 16.0.259 -->
+## [v16.0.259](https://github.com/chef/chef/tree/v16.0.259) (2020-04-29)
 
 #### Merged Pull Requests
-- Fixes to support unbundled rake use [#9759](https://github.com/chef/chef/pull/9759) ([lamont-granquist](https://github.com/lamont-granquist))
-- Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50))
+- Fix more ruby 2.7 warning logspam [#9762](https://github.com/chef/chef/pull/9762) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix more ruby 2.7 warning logspam [#9762](https://github.com/chef/chef/pull/9762) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.259 -->
 - Fixes to support unbundled rake use [#9759](https://github.com/chef/chef/pull/9759) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.258 -->
 - Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50)) <!-- 16.0.257 -->
 <!-- release_rollup -->
