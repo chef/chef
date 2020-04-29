@@ -70,7 +70,7 @@ namespace :docs_site do
     def friendly_property_list(arr)
       return nil if arr.empty? # resources w/o properties
 
-      props = arr.map { |x| "``#{x["name"]}``" }
+      props = arr.map { |x| "`#{x["name"]}`" }
 
       # build the text string containing all properties bolded w/ punctuation
       if props.size > 1

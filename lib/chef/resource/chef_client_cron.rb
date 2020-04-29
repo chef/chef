@@ -133,7 +133,7 @@ class Chef
 
       property :environment, Hash,
         default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``."
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

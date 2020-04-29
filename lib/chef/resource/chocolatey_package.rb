@@ -35,7 +35,7 @@ class Chef
         end
         ```
 
-        Install a package with options with Chocolatey's ``--checksum`` option
+        Install a package with options with Chocolatey's `--checksum` option
         ```ruby
         chocolatey_package 'name of package' do
           options '--checksum 1234567890'
