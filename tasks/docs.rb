@@ -157,19 +157,15 @@ namespace :docs_site do
     # - what to do about "lazy default" for default?
     def properties_list(properties)
       properties.map do |property|
-        if property["deprecated"] # we don't want to document deprecated properties
-          nil
-        else
-          {
-            "property" => property["name"],
-            "ruby_type" => friendly_types_list(property["is"]),
-            "required" => property["required"],
-            "default_value" =>  friendly_default_value(property),
-            # "allowed_values" => property["equal_to"].join(', '),
-            "new_in" => property["introduced"],
-            "description_list" => [{ "markdown" => property["description"] }],
-          }
-        end
+        {
+          "property" => property["name"],
+          "ruby_type" => friendly_types_list(property["is"]),
+          "required" => property["required"],
+          "default_value" =>  friendly_default_value(property),
+          # "allowed_values" => property["equal_to"].join(', '),
+          "new_in" => property["introduced"],
+          "description_list" => [{ "markdown" => property["description"] }],
+        }
       end
     end
 
@@ -261,7 +257,7 @@ namespace :docs_site do
 
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
-      properties = data["properties"].reject { |v| v["name"] == "name" }.sort_by! { |v| v["name"] }
+      properties = data["properties"].reject { |v| v["name"] == "name" || v['deprecated'] }.sort_by! { |v| v["name"] }
 
       r = {}
 

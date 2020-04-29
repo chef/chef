@@ -49,7 +49,7 @@ class Chef
         description: "The user’s password. The user property must be set if using this property."
 
       property :run_level, Symbol, equal_to: %i{highest limited},
-               description: "Run with ':limited' or ':highest' privileges.",
+               description: "Run with `:limited` or `:highest` privileges.",
                default: :limited
 
       property :force, [TrueClass, FalseClass],
@@ -86,17 +86,18 @@ class Chef
         description: "The day(s) on which the task runs."
 
       property :months, String,
-        description: "The Months of the year on which the task runs, such as: 'JAN, FEB' or '\*'. Multiple months should be comma delimited. e.g. 'Jan, Feb, Mar, Dec'."
+        description: "The Months of the year on which the task runs, such as: `JAN, FEB` or `*`. Multiple months should be comma delimited. e.g. `Jan, Feb, Mar, Dec`."
 
       property :idle_time, Integer,
-        description: "For :on_idle frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
+        description: "For `:on_idle` frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
 
       property :random_delay, [String, Integer],
         description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
-        description: "The maximum time (in seconds) the task will run.",
-        default: "PT72H" # 72 hours in ISO8601 duration format
+        description: "The maximum time the task will run. This field can accept either seconds or an ISO8601 duration value",
+        default: "PT72H",
+        default_description: "PT72H (72 hours in ISO8601 duration format)"
 
       property :minutes_duration, [String, Integer],
         description: ""
