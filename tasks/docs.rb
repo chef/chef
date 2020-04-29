@@ -305,7 +305,7 @@ namespace :docs_site do
       else
         puts "Writing out #{resource}."
         FileUtils.mkdir_p "docs_site/#{resource}"
-        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml) }
+        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml + "---") }
       end
     end
   end
