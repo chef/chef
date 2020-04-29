@@ -305,6 +305,8 @@ namespace :docs_site do
       else
         puts "Writing out #{resource}."
         FileUtils.mkdir_p "docs_site/#{resource}"
+        # write out the yaml contents of the hash and append a --- since this is actually a yaml
+        # block in the middle of a markdown page and the block needs an ending
         File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml + "---") }
       end
     end
