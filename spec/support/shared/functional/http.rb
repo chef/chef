@@ -35,11 +35,11 @@ module ChefHTTPShared
     content
   end
 
-  def start_tiny_server(server_opts = {})
+  def start_tiny_server(**server_opts)
     nyan_uncompressed_size = File::Stat.new(nyan_uncompressed_filename).size
     nyan_compressed_size   = File::Stat.new(nyan_compressed_filename).size
 
-    @server = TinyServer::Manager.new(server_opts)
+    @server = TinyServer::Manager.new(**server_opts)
     @server.start
     @api = TinyServer::API.instance
     @api.clear

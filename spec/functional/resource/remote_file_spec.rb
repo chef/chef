@@ -112,7 +112,7 @@ describe Chef::Resource::RemoteFile do
                       SSLPrivateKey: key,
                       RequestTimeout: 1 }
 
-      start_tiny_server(server_opts)
+      start_tiny_server(**server_opts)
     end
 
     after(:all) do

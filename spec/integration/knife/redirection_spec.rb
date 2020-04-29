@@ -25,8 +25,8 @@ describe "redirection", :workstation do
   include IntegrationSupport
   include KnifeSupport
 
-  def start_tiny_server(real_chef_server_url, server_opts = {})
-    @server = TinyServer::Manager.new(server_opts)
+  def start_tiny_server(real_chef_server_url, **server_opts)
+    @server = TinyServer::Manager.new(**server_opts)
     @server.start
     @api = TinyServer::API.instance
     @api.clear

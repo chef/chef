@@ -58,7 +58,8 @@ class Chef
 
           def makefile_variable_value(variable, dir = nil)
             options = dir ? { cwd: dir } : {}
-            make_v = shell_out!("make", "-V", variable, options.merge!(env: nil, returns: [0, 1]))
+            options.merge!(env: nil, returns: [0, 1])
+            make_v = shell_out!("make", "-V", variable, **options)
             make_v.exitstatus == 0 ? make_v.stdout.strip.split($OUTPUT_RECORD_SEPARATOR).first : nil # $\ is the line separator, i.e. newline.
           end
         end

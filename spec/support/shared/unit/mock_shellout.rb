@@ -23,7 +23,7 @@
 class MockShellout
   module RSpec
     def mock_shellout_command(command, **result)
-      allow(::Mixlib::ShellOut).to receive(:new).with(command, anything).and_return MockShellout.new(result)
+      allow(::Mixlib::ShellOut).to receive(:new).with(command, anything).and_return MockShellout.new(**result)
     end
   end
 

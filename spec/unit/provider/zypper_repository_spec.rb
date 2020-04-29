@@ -18,22 +18,22 @@
 
 require "spec_helper"
 
-# Output of the command:
-# => rpm -qa gpg-pubkey*
-RPM_KEYS = <<~EOF.freeze
-  gpg-pubkey-307e3d54-4be01a65
-  gpg-pubkey-3dbdc284-53674dd4
-EOF
-
-# Output of the command:
-# => gpg --with-fingerprint [FILE]
-GPG_FINGER = <<~EOF.freeze
-  pub  2048R/3DBDC284 2011-08-19 [expires: 2024-06-14]
-        Key fingerprint = 573B FD6B 3D8F BC64 1079  A6AB ABF5 BD82 7BD9 BF62
-  uid                            nginx signing key <signing-key@nginx.com>
-EOF
-
 describe Chef::Provider::ZypperRepository do
+  # Output of the command:
+  # => rpm -qa gpg-pubkey*
+  ZYPPER_RPM_KEYS = <<~EOF.freeze
+    gpg-pubkey-307e3d54-4be01a65
+    gpg-pubkey-3dbdc284-53674dd4
+  EOF
+
+  # Output of the command:
+  # => gpg --with-fingerprint [FILE]
+  ZYPPER_GPG_FINGER = <<~EOF.freeze
+    pub  2048R/3DBDC284 2011-08-19 [expires: 2024-06-14]
+          Key fingerprint = 573B FD6B 3D8F BC64 1079  A6AB ABF5 BD82 7BD9 BF62
+    uid                            nginx signing key <signing-key@nginx.com>
+  EOF
+
   let(:new_resource) { Chef::Resource::ZypperRepository.new("Nginx Repository") }
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
   let(:provider) do
@@ -45,11 +45,11 @@ describe Chef::Provider::ZypperRepository do
   end
 
   let(:rpm_key_finger) do
-    double("shell_out", stdout: RPM_KEYS, exitstatus: 0, error?: false)
+    double("shell_out", stdout: ZYPPER_RPM_KEYS, exitstatus: 0, error?: false)
   end
 
   let(:gpg_finger) do
-    double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
+    double("shell_out", stdout: ZYPPER_GPG_FINGER, exitstatus: 0, error?: false)
   end
 
   it "responds to load_current_resource" do

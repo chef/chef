@@ -214,8 +214,8 @@ describe "knife raw", :workstation do
     end
 
     context "When a server returns raw json" do
-      def start_tiny_server(server_opts = {})
-        @server = TinyServer::Manager.new(server_opts)
+      def start_tiny_server(**server_opts)
+        @server = TinyServer::Manager.new(**server_opts)
         @server.start
         @api = TinyServer::API.instance
         @api.clear
@@ -256,8 +256,8 @@ describe "knife raw", :workstation do
     end
 
     context "When a server returns text" do
-      def start_tiny_server(server_opts = {})
-        @server = TinyServer::Manager.new(server_opts)
+      def start_tiny_server(**server_opts)
+        @server = TinyServer::Manager.new(**server_opts)
         @server.start
         @api = TinyServer::API.instance
         @api.clear
