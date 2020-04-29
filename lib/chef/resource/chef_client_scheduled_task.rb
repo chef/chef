@@ -24,17 +24,17 @@ class Chef
 
       provides :chef_client_scheduled_task
 
-      description "Use the chef_client_cron resource to setup the #{Chef::Dist::PRODUCT} to run as a Windows scheduled task. This resource will also create the specified log directory if it doesn't already exist."
+      description "Use the chef_client_scheduled_task resource to setup the #{Chef::Dist::PRODUCT} to run as a Windows scheduled task. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
       Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
       ```ruby
-        chef_client_scheduled_task "Run chef-client as a scheduled task"
+        chef_client_scheduled_task "Run #{Chef::Dist::PRODUCT} as a scheduled task"
       ```
 
       Run #{Chef::Dist::PRODUCT} on system start
       ```ruby
-        chef_client_scheduled_task 'Chef Client on start' do
+        chef_client_scheduled_task '#{Chef::Dist::PRODUCT} on start' do
           frequency 'onstart'
         end
       ```

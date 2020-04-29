@@ -31,12 +31,12 @@ class Chef
       examples <<~DOC
       Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
       ```ruby
-      chef_client_cron "Run chef-client as a cron job"
+      chef_client_cron "Run #{Chef::Dist::PRODUCT} as a cron job"
       ```
 
       Run #{Chef::Dist::PRODUCT} twice a day
       ```ruby
-      chef_client_cron "Run chef-client every 12 hours" do
+      chef_client_cron "Run #{Chef::Dist::PRODUCT} every 12 hours" do
         minute 0
         hour "0,12"
       end
