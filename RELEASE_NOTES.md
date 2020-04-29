@@ -171,9 +171,9 @@ Use the `chef_client_cron` resource to setup the Chef Infra Client to run on a s
 
 Use the `chef_client_systemd_timer` resource to setup the Chef Infra Client to run on a schedule using a systemd timer on systemd based Linux systems (RHEL 7+, Debian 8+, Ubuntu 16.04+ SLES 12+). See the [chef_client_systemd_timer documentation](https://docs.chef.io/resources/chef_client_systemd_timer/) for full usage information.
 
-#### chef_client_windows_task
+#### chef_client_scheduled_task
 
-Use the `chef_client_windows_task` resource to setup the Chef Infra Client to run on a schedule using Windows Scheduled Tasks. See the [chef_client_windows_task documentation](https://docs.chef.io/resources/chef_client_windows_task/) for full usage information.
+Use the `chef_client_scheduled_task` resource to setup the Chef Infra Client to run on a schedule using Windows Scheduled Tasks. See the [chef_client_scheduled_task documentation](https://docs.chef.io/resources/chef_client_scheduled_task/) for full usage information.
 
 ### plist
 
