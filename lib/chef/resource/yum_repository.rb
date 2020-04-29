@@ -34,12 +34,12 @@ class Chef
       # http://linux.die.net/man/5/yum.conf as well as
       # http://dnf.readthedocs.io/en/latest/conf_ref.html
       property :baseurl, [String, Array],
-        description: "URL to the directory where the Yum repository's 'repodata' directory lives. Can be an http://, https:// or a ftp:// URL. You can specify multiple URLs in one baseurl statement."
+        description: "URL to the directory where the Yum repository's 'repodata' directory lives. Can be an `http://`, `https://` or a `ftp://` URLs. You can specify multiple URLs in one baseurl statement."
 
       property :clean_headers, [TrueClass, FalseClass],
         description: "Specifies whether you want to purge the package data files that are downloaded from a Yum repository and held in a cache directory.",
         deprecated: true,
-        default: false # deprecated
+        default: false
 
       property :clean_metadata, [TrueClass, FalseClass],
         description: "Specifies whether you want to purge all of the packages downloaded from a Yum repository and held in a cache directory.",
