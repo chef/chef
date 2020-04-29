@@ -157,15 +157,17 @@ namespace :docs_site do
     # - what to do about "lazy default" for default?
     def properties_list(properties)
       properties.map do |property|
-        {
-          "property" => property["name"],
-          "ruby_type" => friendly_types_list(property["is"]),
-          "required" => property["required"],
-          "default_value" =>  friendly_default_value(property),
-          # "allowed_values" => property["equal_to"].join(', '),
-          "new_in" => property["introduced"],
-          "description_list" => [{ "markdown" => property["description"] }],
-        }
+        default_val = friendly_default_value(property)
+
+        values = {}
+        values["property"] = property["name"]
+        values["ruby_type"] = friendly_types_list(property["is"])
+        values["required"] = property["required"]
+        values["default_value"] = default_val unless default_val.nil?
+        values["new_in"] = property["introduced"] unless property["introduced"].nil?
+        # values["allowed_values"] = property["equal_to"].join(', ')
+        values["description_list"] = [{ "markdown" => property["description"] }]
+        values
       end
     end
 
@@ -257,14 +259,12 @@ namespace :docs_site do
 
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
-      properties = data["properties"].reject { |v| v["name"] == "name" || v['deprecated'] }.sort_by! { |v| v["name"] }
+      properties = data["properties"].reject { |v| v["name"] == "name" || v["deprecated"] }.sort_by! { |v| v["name"] }
 
       r = {}
 
-      # These properties are always set to these values.
+      # We want all our resources to show up in the main resource reference page
       r["resource_reference"] = true
-      r["robots"] = nil
-      r["syntax_code_block"] = nil
 
       # These properties are set to special values for only a few resources.
       r.merge!(special_properties(name, data))
