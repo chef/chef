@@ -46,7 +46,7 @@ class Chef
         default_description: "The localized SYSTEM user for the node."
 
       property :password, String,
-        description: "The user’s password. The user property must be set if using this property."
+        description: "The user's password. The user property must be set if using this property."
 
       property :run_level, Symbol, equal_to: %i{highest limited},
                description: "Run with `:limited` or `:highest` privileges.",
@@ -89,13 +89,13 @@ class Chef
         description: "The Months of the year on which the task runs, such as: `JAN, FEB` or `*`. Multiple months should be comma delimited. e.g. `Jan, Feb, Mar, Dec`."
 
       property :idle_time, Integer,
-        description: "For `:on_idle` frequency, the time (in minutes) without user activity that must pass to trigger the task, from 1 - 999."
+        description: "For `:on_idle` frequency, the time (in minutes) without user activity that must pass to trigger the task, from `1` - `999`."
 
       property :random_delay, [String, Integer],
         description: "Delays the task up to a given time (in seconds)."
 
       property :execution_time_limit, [String, Integer],
-        description: "The maximum time the task will run. This field can accept either seconds or an ISO8601 duration value",
+        description: "The maximum time the task will run. This field accepts either seconds or an ISO8601 duration value.",
         default: "PT72H",
         default_description: "PT72H (72 hours in ISO8601 duration format)"
 
