@@ -75,7 +75,8 @@ class Chef
         default: true,
         desired_state: false
 
-      property :yum_binary, String
+      property :yum_binary, String,
+        description: "The path to the yum binary."
     end
   end
 end
