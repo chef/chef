@@ -93,16 +93,16 @@ class Chef
         equal_to: Chef::Provider::Cron::SPECIAL_TIME_VALUES
 
       property :mailto, String,
-        description: "Set the MAILTO environment variable."
+        description: "Set the `MAILTO` environment variable."
 
       property :path, String,
-        description: "Set the PATH environment variable."
+        description: "Set the `PATH` environment variable."
 
       property :home, String,
-        description: "Set the HOME environment variable."
+        description: "Set the `HOME` environment variable."
 
       property :shell, String,
-        description: "Set the SHELL environment variable."
+        description: "Set the `SHELL` environment variable."
 
       property :command, String,
         description: "The command to be run, or the path to a file that contains the command to be run.",
@@ -113,14 +113,14 @@ class Chef
         default: "root"
 
       property :environment, Hash,
-        description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}).",
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
         default: lazy { {} }
 
       TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
       TIMEOUT_REGEX = /\A\S+/.freeze
 
       property :time_out, Hash,
-        description: "A Hash of timeouts in the form of ({'OPTION' => 'VALUE'}).
+        description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
         Accepted valid options are:
         preserve-status (BOOL, default: 'false'),
         foreground (BOOL, default: 'false'),
