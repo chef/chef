@@ -46,7 +46,7 @@ class Chef
         identity: true, coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
       property :version, [ String, Array ],
-        description: "The version of a package to be installed or upgraded. This property is ignored when using the ':upgrade' action.",
+        description: "The version of a package to be installed or upgraded. This property is ignored when using the `:upgrade` action.",
         coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
       property :arch, [ String, Array ],

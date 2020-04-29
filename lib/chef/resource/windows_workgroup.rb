@@ -36,11 +36,11 @@ class Chef
         name_property: true
 
       property :user, String,
-        description: "The local administrator user to use to change the workgroup. Required if using the password property.",
+        description: "The local administrator user to use to change the workgroup. Required if using the `password` property.",
         desired_state: false
 
       property :password, String,
-        description: "The password for the local administrator user. Required if using the user property.",
+        description: "The password for the local administrator user. Required if using the `user` property.",
         desired_state: false
 
       property :reboot, Symbol,
