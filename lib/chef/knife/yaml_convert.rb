@@ -81,13 +81,7 @@ class Chef::Knife::YamlConvert < Chef::Knife
 
       ruby_contents << "#{type} \"#{name}\" do"
       r.each do |k, v|
-        ruby_contents <<
-          case v
-          when Array
-            "  #{k} #{v}"
-          else
-            "  #{k} \"#{v}\""
-          end
+        ruby_contents << "  #{k} #{v.inspect}"
       end
       ruby_contents << "end\n"
     end
