@@ -24,6 +24,34 @@ class Chef
 
       description "Use the **windows_pagefile** resource to configure pagefile settings on Windows."
       introduced "14.0"
+      examples <<~DOC
+      **Set the system to manage pagefiles**:
+
+      ```ruby
+      windows_pagefile 'Enable automatic management of pagefiles' do
+        automatic_managed true
+      end
+      ```
+
+      **Delete a pagefile**:
+
+      ```ruby
+      windows_pagefile 'Delete the pagefile' do
+        path 'C:\pagefile.sys'
+        action :delete
+      end
+      ```
+
+      **Create a pagefile with an initial and maximum size**:
+
+      ```ruby
+      windows_pagefile 'create the pagefile' do
+        path 'C:\pagefile.sys'
+        initial_size 100
+        maximum_size 200
+      end
+      ```
+      DOC
 
       property :path, String,
         coerce: proc { |x| x.tr("/", '\\') },

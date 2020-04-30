@@ -26,6 +26,15 @@ class Chef
       provides :env # backwards compat with the pre-Chef 14 resource name
 
       description "Use the **windows_env** resource to manage environment keys in Microsoft Windows. After an environment key is set, Microsoft Windows must be restarted before the environment key will be available to the Task Scheduler."
+      examples <<~DOC
+      **Set an environment variable**:
+
+      ```ruby
+      windows_env 'ComSpec' do
+        value 'C:\\Windows\\system32\\cmd.exe'
+      end
+      ```
+      DOC
 
       default_action :create
       allowed_actions :create, :delete, :modify

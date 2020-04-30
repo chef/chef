@@ -25,6 +25,23 @@ class Chef
 
       description "Use the **windows_path** resource to manage the path environment variable on Microsoft Windows."
       introduced "13.4"
+      examples <<~DOC
+      **Add Sysinternals to the system path**:
+
+      ```ruby
+      windows_path 'C:\\Sysinternals' do
+        action :add
+      end
+      ```
+
+      **Remove 7-Zip from the system path**:
+
+      ```ruby
+      windows_path 'C:\\7-Zip' do
+        action :remove
+      end
+      ```
+      DOC
 
       allowed_actions :add, :remove
       default_action :add

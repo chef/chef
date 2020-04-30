@@ -32,6 +32,66 @@ class Chef
 
       description "Use the **windows_package** resource to manage packages on the Microsoft Windows platform. The windows_package resource supports these installer formats:\n\n Microsoft Installer Package (MSI)\n Nullsoft Scriptable Install System (NSIS)\n Inno Setup (inno)\n Wise\n InstallShield\n Custom installers such as installing a non-.msi file that embeds an .msi-based installer\n"
       introduced "11.12"
+      examples <<~DOC
+      **Install a package**:
+
+      ```ruby
+      windows_package '7zip' do
+        action :install
+        source 'C:\\7z920.msi'
+      end
+      ```
+
+      **Specify a URL for the source attribute**:
+
+      ```ruby
+      windows_package '7zip' do
+        source 'http://www.7-zip.org/a/7z938-x64.msi'
+      end
+      ```
+
+      **Specify path and checksum**:
+
+      ```ruby
+      windows_package '7zip' do
+        source 'http://www.7-zip.org/a/7z938-x64.msi'
+        checksum '7c8e873991c82ad9cfc123415254ea6101e9a645e12977dcd518979e50fdedf3'
+      end
+      ```
+
+      **Modify remote_file resource attributes**:
+
+      The windows_package resource may specify a package at a remote location using the remote_file_attributes property. This uses the remote_file resource to download the contents at the specified URL and passes in a Hash that modifies the properties of the remote_file resource.
+
+      ```ruby
+      windows_package '7zip' do
+        source 'http://www.7-zip.org/a/7z938-x64.msi'
+        remote_file_attributes ({
+          :path => 'C:\\7zip.msi',
+          :checksum => '7c8e873991c82ad9cfc123415254ea6101e9a645e12977dcd518979e50fdedf3'
+        })
+      end
+      ```
+
+      **Download a nsis (Nullsoft) package resource**:
+
+      ```ruby
+      windows_package 'Mercurial 3.6.1 (64-bit)' do
+        source 'http://mercurial.selenic.com/release/windows/Mercurial-3.6.1-x64.exe'
+        checksum 'febd29578cb6736163d232708b834a2ddd119aa40abc536b2c313fc5e1b5831d'
+      end
+      ```
+
+      **Download a custom package**:
+
+      ```ruby
+      windows_package 'Microsoft Visual C++ 2005 Redistributable' do
+        source 'https://download.microsoft.com/download/6/B/B/6BB661D6-A8AE-4819-B79F-236472F6070C/vcredist_x86.exe'
+        installer_type :custom
+        options '/Q'
+      end
+      ```
+      DOC
 
       allowed_actions :install, :remove
 
@@ -75,7 +135,7 @@ class Chef
           end
         end),
         default_description: "The resource block's name", # this property is basically a name_property but not really so we need to spell it out
-        description: "The path to a package in the local file system. The location of the package may be at a URL. \n"
+        description: "The path to a package in the local file system. The location of the package may be at a URL."
 
       property :checksum, String,
         desired_state: false, coerce: (proc { |c| c.downcase }),
