@@ -31,7 +31,7 @@ class Chef
         @interpreter = "perl"
       end
 
-      description "Use the perl resource to execute scripts using the Perl interpreter."\
+      description "Use the **perl** resource to execute scripts using the Perl interpreter."\
                   " This resource may also use any of the actions and properties that are"\
                   " available to the execute resource. Commands that are executed with this"\
                   " resource are (by their nature) not idempotent, as they are typically"\

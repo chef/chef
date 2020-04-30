@@ -24,7 +24,7 @@ class Chef
 
       provides :powershell_package
 
-      description "Use the powershell_package resource to install and manage packages via the PowerShell Package Manager for the Microsoft Windows platform. The powershell_package resource requires administrative access, and a source must be configured in the PowerShell Package Manager via the powershell_package_source resource."
+      description "Use the **powershell_package** resource to install and manage packages via the PowerShell Package Manager for the Microsoft Windows platform. The powershell_package resource requires administrative access, and a source must be configured in the PowerShell Package Manager via the powershell_package_source resource."
       introduced "12.16"
 
       allowed_actions :install, :remove

@@ -24,7 +24,7 @@ class Chef
 
       provides(:swap_file) { true }
 
-      description "Use the swap_file resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host."
+      description "Use the **swap_file** resource to create or delete swap files on Linux systems, and optionally to manage the swappiness configuration for a host."
       introduced "14.0"
 
       property :path, String,

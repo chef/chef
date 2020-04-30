@@ -23,9 +23,7 @@ class Chef
       unified_mode true
       provides(:rhsm_errata) { true }
 
-      description "Use the rhsm_errata resource to install packages associated with a given Red"\
-                  " Hat Subscription Manager Errata ID. This is helpful if packages"\
-                  " to mitigate a single vulnerability must be installed on your hosts."
+      description "Use the **rhsm_errata** resource to install packages associated with a given Red Hat Subscription Manager Errata ID. This is helpful if packages to mitigate a single vulnerability must be installed on your hosts."
       introduced "14.0"
 
       property :errata_id, String,

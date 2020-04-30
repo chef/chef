@@ -26,7 +26,7 @@ class Chef
 
       provides :openssl_ec_public_key
 
-      description "Use the openssl_ec_public_key resource to generate elliptic curve (EC) public key files from a given EC private key."
+      description "Use the **openssl_ec_public_key** resource to generate elliptic curve (EC) public key files from a given EC private key."
       introduced "14.4"
       examples <<~DOC
         Generate new ec public key from a private key on disk

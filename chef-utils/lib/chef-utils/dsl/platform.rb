@@ -349,7 +349,7 @@ module ChefUtils
         node["platform"] == "suse"
       end
 
-      # Determine if the current node is OpenSUSE.
+      # Determine if the current node is openSUSE.
       #
       # @param [Chef::Node] node the node to check
       # @since 15.5

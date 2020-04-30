@@ -15,7 +15,7 @@ class Chef
 
       provides :kernel_module
 
-      description "Use the kernel_module resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
+      description "Use the **kernel_module** resource to manage kernel modules on Linux systems. This resource can load, unload, blacklist, disable, install, and uninstall modules."
       introduced "14.3"
       examples <<~DOC
         Install and load a kernel module, and ensure it loads on reboot.

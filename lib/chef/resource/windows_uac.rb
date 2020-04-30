@@ -22,8 +22,27 @@ class Chef
     class WindowsUac < Chef::Resource
       provides :windows_uac
 
-      description 'The windows_uac resource configures UAC on Windows hosts by setting registry keys at \'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\''
+      description 'The *windows_uac* resource configures UAC on Windows hosts by setting registry keys at `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`'
       introduced "15.0"
+      examples <<~DOC
+      **Disable UAC prompts for the admin**:
+
+      ``` ruby
+      windows_uac 'Disable UAC prompts for the admin' do
+        enable_uac true
+        prompt_on_secure_desktop false
+        consent_behavior_admins :no_prompt
+      end
+      ```
+
+      **Disable UAC entirely**:
+
+      ``` ruby
+      windows_uac 'Disable UAC entirely' do
+        enable_uac false
+      end
+      ```
+      DOC
 
       # https://docs.microsoft.com/en-us/windows/security/identity-protection/user-account-control/user-account-control-group-policy-and-registry-key-settings#user-account-control-virtualize-file-and-registry-write-failures-to-per-user-locations
       property :enable_uac, [TrueClass, FalseClass],

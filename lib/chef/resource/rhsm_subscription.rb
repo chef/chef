@@ -24,9 +24,7 @@ class Chef
 
       provides(:rhsm_subscription) { true }
 
-      description "Use the rhsm_subscription resource to add or remove Red Hat Subscription Manager"\
-                  " subscriptions from your host. This can be used when a host's activation_key"\
-                  " does not attach all necessary subscriptions to your host."
+      description "Use the **rhsm_subscription** resource to add or remove Red Hat Subscription Manager subscriptions from your host. This can be used when a host's activation_key does not attach all necessary subscriptions to your host."
       introduced "14.0"
 
       property :pool_id, String,

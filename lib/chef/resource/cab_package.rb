@@ -27,7 +27,7 @@ class Chef
 
       provides :cab_package
 
-      description "Use the cab_package resource to install or remove Microsoft Windows cabinet (.cab) packages."
+      description "Use the **cab_package** resource to install or remove Microsoft Windows cabinet (.cab) packages."
       introduced "12.15"
 
       allowed_actions :install, :remove

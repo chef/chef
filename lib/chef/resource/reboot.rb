@@ -26,7 +26,7 @@ class Chef
 
       provides :reboot
 
-      description "Use the reboot resource to reboot a node, a necessary step with some"\
+      description "Use the **reboot** resource to reboot a node, a necessary step with some"\
                   " installations on certain platforms. This resource is supported for use on"\
                   " the Microsoft Windows, macOS, and Linux platforms.\n"\
                   "In using this resource via notifications, it's important to *only* use"\

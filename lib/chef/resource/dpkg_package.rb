@@ -25,7 +25,7 @@ class Chef
 
       provides :dpkg_package
 
-      description "Use the dpkg_package resource to manage packages for the dpkg platform. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
+      description "Use the **dpkg_package** resource to manage packages for the dpkg platform. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
 
       property :source, [ String, Array, nil ],
         description: "The path to a package in the local file system."

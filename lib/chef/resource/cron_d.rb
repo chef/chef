@@ -27,9 +27,10 @@ class Chef
       provides :cron_d
 
       introduced "14.4"
-      description "Use the cron_d resource to manage cron job files in the /etc/cron.d directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
+      description "Use the **cron_d** resource to manage cron job files in the /etc/cron.d directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
       examples <<~DOC
-        To run a program on the fifth hour of the day
+        **Run a program on the fifth hour of the day**
+
         ```ruby
         cron_d 'noop' do
           hour '5'
@@ -38,7 +39,8 @@ class Chef
         end
         ```
 
-        To run an entry if a folder exists
+        **Run an entry if a folder exists**
+
         ```ruby
         cron_d 'ganglia_tomcat_thread_max' do
           command "/usr/bin/gmetric
@@ -50,7 +52,8 @@ class Chef
         end
         ```
 
-        To run an entry every Saturday, 8:00 AM
+        **Run an entry every Saturday, 8:00 AM**
+
         ```ruby
         cron_d 'name_of_cron_entry' do
           minute '0'
@@ -61,7 +64,8 @@ class Chef
         end
         ```
 
-        To run an entry at 8:00 PM, every weekday (Monday through Friday), but only in November
+        **Run an entry at 8:00 PM, every weekday (Monday through Friday), but only in November**
+
         ```ruby
         cron_d 'name_of_cron_entry' do
           minute '0'

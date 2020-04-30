@@ -25,7 +25,7 @@ class Chef
       unified_mode true
       provides :gem_package
 
-      description "Use the gem_package resource to manage gem packages that are only included in recipes. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
+      description "Use the **gem_package** resource to manage gem packages that are only included in recipes. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

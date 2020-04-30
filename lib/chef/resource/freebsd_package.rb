@@ -29,7 +29,7 @@ class Chef
       provides :freebsd_package
       provides :package, platform: "freebsd"
 
-      description "Use the freebsd_package resource to manage packages for the FreeBSD platform."
+      description "Use the **freebsd_package** resource to manage packages for the FreeBSD platform."
 
       # make sure we assign the appropriate underlying providers based on what
       # package managers exist on this FreeBSD system or the source of the package

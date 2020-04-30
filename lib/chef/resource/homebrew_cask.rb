@@ -27,7 +27,7 @@ class Chef
 
       provides(:homebrew_cask) { true }
 
-      description "Use the homebrew_cask resource to install binaries distributed via the Homebrew package manager."
+      description "Use the **homebrew_cask** resource to install binaries distributed via the Homebrew package manager."
       introduced "14.0"
 
       include Chef::Mixin::HomebrewUser

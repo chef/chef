@@ -161,14 +161,9 @@ namespace :docs_site do
     def action_list(actions)
       list = {}
       actions.sort.each do |action|
-        # skip it so we can make it the last value later
-        next if action == "nothing"
-
-        list[action.to_sym] = { "markdown" => nil }
+        # nothing is a special case that sources the content from the docs site
+        list[action.to_sym] = (action == "nothing" ? { "shortcode" => "resources_common_actions_nothing.md" } : { "markdown" => nil })
       end
-
-      # add the special case for nothing
-      list[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
 
       list
     end
@@ -301,7 +296,7 @@ namespace :docs_site do
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
       r["actions_list"] = action_list(data["actions"])
       r["properties_list"] = properties_list(properties)
-      r["examples_list"] = nil
+      r["examples"] = data["examples"]
 
       r
     end

@@ -25,7 +25,7 @@ class Chef
 
       provides(:chef_handler) { true }
 
-      description "Use the chef_handler resource to install or uninstall reporting/exception handlers."
+      description "Use the **chef_handler** resource to install or uninstall reporting/exception handlers."
       introduced "14.0"
 
       property :class_name, String,

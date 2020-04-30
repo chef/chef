@@ -22,7 +22,7 @@ class Chef
     class WindowsPagefile < Chef::Resource
       provides(:windows_pagefile) { true }
 
-      description "Use the windows_pagefile resource to configure pagefile settings on Windows."
+      description "Use the **windows_pagefile** resource to configure pagefile settings on Windows."
       introduced "14.0"
 
       property :path, String,

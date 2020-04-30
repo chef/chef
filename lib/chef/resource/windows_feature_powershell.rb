@@ -25,7 +25,7 @@ class Chef
     class WindowsFeaturePowershell < Chef::Resource
       provides(:windows_feature_powershell) { true }
 
-      description "Use the windows_feature_powershell resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installation of the Remote Server Administration Tools on non-server releases of Windows."
+      description "Use the **windows_feature_powershell** resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installation of the Remote Server Administration Tools on non-server releases of Windows."
       introduced "14.0"
 
       property :feature_name, [Array, String],

@@ -26,7 +26,7 @@ class Chef
 
       provides :ruby
 
-      description "Use the ruby resource to execute scripts using the Ruby interpreter. This"\
+      description "Use the **ruby** resource to execute scripts using the Ruby interpreter. This"\
                   " resource may also use any of the actions and properties that are available"\
                   " to the execute resource. Commands that are executed with this resource are (by"\
                   " their nature) not idempotent, as they are typically unique to the environment"\

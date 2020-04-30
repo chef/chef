@@ -28,8 +28,28 @@ class Chef
     class WindowsShare < Chef::Resource
       provides :windows_share
 
-      description "Use the windows_share resource to create, modify and remove Windows shares."
+      description "Use the **windows_share** resource to create, modify and remove Windows shares."
       introduced "14.7"
+      examples <<~DOC
+      **Create a share**:
+
+      ```ruby
+      windows_share 'foo' do
+        action :create
+        path 'C:\\foo'
+        full_users ['DOMAIN_A\\some_user', 'DOMAIN_B\\some_other_user']
+        read_users ['DOMAIN_C\\Domain users']
+      end
+      ```
+
+      **Delete a share**:
+
+      ```ruby
+      windows_share 'foo' do
+        action :delete
+      end
+      ```
+      DOC
 
       # Specifies a name for the SMB share. The name may be composed of any valid file name characters, but must be less than 80 characters long. The names pipe and mailslot are reserved for use by the computer.
       property :share_name, String,

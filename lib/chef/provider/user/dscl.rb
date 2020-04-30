@@ -28,7 +28,7 @@ class Chef
     class User
       #
       # The most tricky bit of this provider is the way it deals with user passwords.
-      # Mac OS X has different password shadow calculations based on the version.
+      # macOS has different password shadow calculations based on the version.
       # < 10.7  => password shadow calculation format SALTED-SHA1
       #         => stored in: /var/db/shadow/hash/#{guid}
       #         => shadow binary length 68 bytes

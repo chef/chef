@@ -26,9 +26,9 @@ class Chef
       provides :chef_vault_secret
 
       introduced "16.0"
-      description "Use the chef_vault_secret resource to store secrets in Chef Vault items. Where possible and relevant, this resource attempts to map behavior and functionality to the knife vault sub-commands."
+      description "Use the **chef_vault_secret** resource to store secrets in Chef Vault items. Where possible and relevant, this resource attempts to map behavior and functionality to the knife vault sub-commands."
       examples <<~DOC
-        To create a 'foo' item in an existing 'bar' data bag:
+        **To create a 'foo' item in an existing 'bar' data bag**:
 
         ```ruby
         chef_vault_secret 'foo' do
@@ -39,7 +39,7 @@ class Chef
         end
         ```
 
-        To allow multiple admins access to an item:
+        **To allow multiple admins access to an item**:
 
         ```ruby
         chef_vault_secret 'root-password' do

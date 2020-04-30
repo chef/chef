@@ -25,7 +25,7 @@ class Chef
 
       provides :portage_package
 
-      description "Use the portage_package resource to manage packages for the Gentoo platform."
+      description "Use the **portage_package** resource to manage packages for the Gentoo platform."
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

@@ -26,7 +26,7 @@ class Chef
 
       provides :openssl_ec_private_key
 
-      description "Use the openssl_ec_private_key resource to generate an elliptic curve (EC) private key file. If a valid EC key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, then it will be overwritten."
+      description "Use the **openssl_ec_private_key** resource to generate an elliptic curve (EC) private key file. If a valid EC key file can be opened at the specified location, no new file will be created. If the EC key file cannot be opened, either because it does not exist or because the password to the EC key file does not match the password in the recipe, then it will be overwritten."
       introduced "14.4"
       examples <<~DOC
         Generate a new ec privatekey with prime256v1 key curve and default des3 cipher

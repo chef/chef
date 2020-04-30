@@ -47,7 +47,7 @@ class Chef
         ```
       DOC
 
-      description "Use the openssl_rsa_public_key resource to generate RSA public key files for a given RSA private key."
+      description "Use the **openssl_rsa_public_key** resource to generate RSA public key files for a given RSA private key."
       introduced "14.0"
 
       property :path, String,

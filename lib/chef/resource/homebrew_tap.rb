@@ -27,7 +27,7 @@ class Chef
 
       provides(:homebrew_tap) { true }
 
-      description "Use the homebrew_tap resource to add additional formula repositories to the Homebrew package manager."
+      description "Use the **homebrew_tap** resource to add additional formula repositories to the Homebrew package manager."
       introduced "14.0"
 
       include Chef::Mixin::HomebrewUser

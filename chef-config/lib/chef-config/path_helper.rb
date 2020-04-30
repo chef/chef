@@ -282,7 +282,7 @@ module ChefConfig
       end
     end
 
-    # Determine if the given path is on the exception list for OS X System Integrity Protection.
+    # Determine if the given path is on the exception list for macOS System Integrity Protection.
     def self.writable_sip_path?(path)
       # todo: parse rootless.conf for this?
       sip_exceptions = [

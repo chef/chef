@@ -28,7 +28,7 @@ class Chef
     class WindowsCertificate < Chef::Resource
       provides :windows_certificate
 
-      description "Use the windows_certificate resource to install a certificate into the Windows certificate store from a file. The resource grants read-only access to the private key for designated accounts. Due to current limitations in WinRM, installing certificates remotely may not work if the operation requires a user profile. Operations on the local machine store should still work."
+      description "Use the **windows_certificate** resource to install a certificate into the Windows certificate store from a file. The resource grants read-only access to the private key for designated accounts. Due to current limitations in WinRM, installing certificates remotely may not work if the operation requires a user profile. Operations on the local machine store should still work."
       introduced "14.7"
 
       property :source, String,

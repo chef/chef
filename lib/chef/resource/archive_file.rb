@@ -29,9 +29,10 @@ class Chef
       provides :libarchive_file # legacy cookbook name
 
       introduced "15.0"
-      description "Use the archive_file resource to extract archive files to disk. This resource uses the libarchive library to extract multiple archive formats including tar, gzip, bzip, and zip formats."
+      description "Use the **archive_file** resource to extract archive files to disk. This resource uses the libarchive library to extract multiple archive formats including tar, gzip, bzip, and zip formats."
       examples <<~DOC
-        Extract a zip file to a specified directory
+        **Extract a zip file to a specified directory**:
+
         ```ruby
         archive_file 'Precompiled.zip' do
           path '/tmp/Precompiled.zip'

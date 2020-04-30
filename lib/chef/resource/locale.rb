@@ -24,7 +24,7 @@ class Chef
       unified_mode true
       provides :locale
 
-      description "Use the locale resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
+      description "Use the **locale** resource to set the system's locale on Debian and Windows systems. Windows support was added in Chef Infra Client 16.0"
       introduced "14.5"
 
       examples <<~DOC

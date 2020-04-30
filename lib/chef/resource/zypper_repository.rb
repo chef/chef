@@ -26,8 +26,20 @@ class Chef
       provides(:zypper_repository) { true }
       provides(:zypper_repo) { true }
 
-      description "Use the zypper_repository resource to create Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the zypper_repository resource in the existing zypper cookbook."
+      description "Use the **zypper_repository** resource to create Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the **zypper_repository** resource in the existing **zypper** cookbook."
       introduced "13.3"
+      examples <<~DOC
+        **Add the Apache repo on openSUSE Leap 15**
+
+        ``` ruby
+        zypper_repository 'apache' do
+          baseurl 'http://download.opensuse.org/repositories/Apache'
+          path '/openSUSE_Leap_15.0'
+            type 'rpm-md'
+          priority '100'
+        end
+        ```
+      DOC
 
       property :repo_name, String,
         regex: [%r{^[^/]+$}],

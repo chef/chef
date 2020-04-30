@@ -26,7 +26,7 @@ class Chef
 
       provides :paludis_package
 
-      description "Use the paludis_package resource to manage packages for the Paludis platform."
+      description "Use the **paludis_package** resource to manage packages for the Paludis platform."
       introduced "12.1"
 
       allowed_actions :install, :remove, :upgrade

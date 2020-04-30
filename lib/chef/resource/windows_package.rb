@@ -30,7 +30,7 @@ class Chef
       provides(:windows_package) { true }
       provides :package, os: "windows"
 
-      description "Use the windows_package resource to manage packages on the Microsoft Windows platform. The windows_package resource supports these installer formats:\n\n Microsoft Installer Package (MSI)\n Nullsoft Scriptable Install System (NSIS)\n Inno Setup (inno)\n Wise\n InstallShield\n Custom installers such as installing a non-.msi file that embeds an .msi-based installer\n"
+      description "Use the **windows_package** resource to manage packages on the Microsoft Windows platform. The windows_package resource supports these installer formats:\n\n Microsoft Installer Package (MSI)\n Nullsoft Scriptable Install System (NSIS)\n Inno Setup (inno)\n Wise\n InstallShield\n Custom installers such as installing a non-.msi file that embeds an .msi-based installer\n"
       introduced "11.12"
 
       allowed_actions :install, :remove

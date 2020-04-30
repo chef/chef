@@ -40,7 +40,7 @@ class Chef
                 EnableAdminAccount
                 EnableGuestAccount
                 }
-      description "Use the windows_security_policy resource to set a security policy on the Microsoft Windows platform."
+      description "Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform."
       introduced "16.0"
 
       property :secoption, String, name_property: true, required: true, equal_to: policy_names,

@@ -32,7 +32,7 @@ class Chef
 
       provides :file
 
-      description "Use the file resource to manage files directly on a node."
+      description "Use the **file** resource to manage files directly on a node."
 
       if ChefUtils.windows?
         # Use Windows rights instead of standard *nix permissions
