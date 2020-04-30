@@ -56,7 +56,7 @@ class Chef::Knife::YamlConvert < Chef::Knife
     end
 
     # Unfortunately, per the YAML spec, comments are stripped when we load, so we lose them on conversion
-    yaml_hash = ::YAML.safe_load(yaml_contents)
+    yaml_hash = ::YAML.safe_load(yaml_contents, permitted_classes: [Symbol])
     unless yaml_hash.is_a?(Hash) && yaml_hash.key?("resources")
       ui.fatal!("YAML recipe '#{source_file}' must contain a top-level 'resources' hash (YAML sequence), i.e. 'resources:'")
     end
