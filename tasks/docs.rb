@@ -160,7 +160,7 @@ namespace :docs_site do
     #
     def action_list(actions)
       list = {}
-      actions.each do |action|
+      actions.sort.each do |action|
         # skip it so we can make it the last value later
         next if action == "nothing"
 
