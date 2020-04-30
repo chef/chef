@@ -24,7 +24,7 @@ You create a platform-specific package using the `build project` command:
 $ bundle exec omnibus build <PROJECT>
 ```
 
-The platform/architecture type of the package created will match the platform where the `build project` command is invoked. For example, running this command on a MacBook Pro will generate a Mac OS X package. After the build completes packages will be available in the `pkg/` folder.
+The platform/architecture type of the package created will match the platform where the `build project` command is invoked. For example, running this command on a MacBook Pro will generate a macOS package. After the build completes packages will be available in the `pkg/` folder.
 
 ### Clean
 

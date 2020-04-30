@@ -96,7 +96,7 @@ class Chef
         extract_cookbook(upstream_file, downloader.version)
 
         # TODO: it'd be better to store these outside the cookbook repo and
-        # keep them around, e.g., in ~/Library/Caches on OS X.
+        # keep them around, e.g., in ~/Library/Caches on macOS.
         ui.info("Removing downloaded tarball")
         File.unlink(upstream_file)
 
