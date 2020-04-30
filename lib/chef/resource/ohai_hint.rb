@@ -24,7 +24,7 @@ class Chef
 
       provides(:ohai_hint) { true }
 
-      description "Use the ohai_hint resource to aid in configuration detection by passing hint data to Ohai."
+      description "Use the **ohai_hint** resource to aid in configuration detection by passing hint data to Ohai."
       introduced "14.0"
 
       property :hint_name, String,

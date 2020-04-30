@@ -26,7 +26,7 @@ class Chef
       provides :macosx_service
       provides :service, os: "darwin"
 
-      description "Use the macosx_service resource to manage services on the macOS platform."
+      description "Use the **macosx_service** resource to manage services on the macOS platform."
 
       property :plist, String,
         description: "A plist to use in the case where the filename and label for the service do not match."

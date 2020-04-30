@@ -25,17 +25,19 @@ class Chef
 
       provides :chocolatey_package
 
-      description "Use the chocolatey_package resource to manage packages using Chocolatey on the Microsoft Windows platform."
+      description "Use the **chocolatey_package** resource to manage packages using Chocolatey on the Microsoft Windows platform."
       introduced "12.7"
       examples <<~DOC
-        Install a Chocolatey package
+        **Install a Chocolatey package**:
+
         ```ruby
         chocolatey_package 'name of package' do
           action :install
         end
         ```
 
-        Install a package with options with Chocolatey's `--checksum` option
+        **Install a package with options with Chocolatey's `--checksum` option**:
+
         ```ruby
         chocolatey_package 'name of package' do
           options '--checksum 1234567890'

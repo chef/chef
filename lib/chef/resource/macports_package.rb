@@ -24,7 +24,7 @@ class Chef
       unified_mode true
       provides :macports_package
 
-      description "Use the macports_package resource to manage packages for the macOS platform using the MacPorts package management system."
+      description "Use the **macports_package** resource to manage packages for the macOS platform using the MacPorts package management system."
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

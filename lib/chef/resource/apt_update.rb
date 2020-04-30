@@ -25,10 +25,11 @@ class Chef
 
       provides(:apt_update) { true }
 
-      description "Use the apt_update resource to manage APT repository updates on Debian and Ubuntu platforms."
+      description "Use the **apt_update** resource to manage APT repository updates on Debian and Ubuntu platforms."
       introduced "12.7"
       examples <<~DOC
-        Update the Apt repository at a specified interval
+        **Update the Apt repository at a specified interval**:
+
         ```ruby
         apt_update 'all platforms' do
         frequency 86400
@@ -36,7 +37,8 @@ class Chef
         end
         ```
 
-        Update the Apt repository at the start of a Chef Infra Client run
+        **Update the Apt repository at the start of a Chef Infra Client run**:
+
         ```ruby
         apt_update 'update'
         ```

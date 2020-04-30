@@ -25,10 +25,7 @@ class Chef
 
       provides(:yum_repository) { true }
 
-      description "Use the yum_repository resource to manage a Yum repository configuration"\
-                  " file located at /etc/yum.repos.d/repositoryid.repo on the local machine."\
-                  " This configuration file specifies which repositories to reference, how to"\
-                  " handle cached data, etc."
+      description "Use the **yum_repository** resource to manage a Yum repository configuration file located at `/etc/yum.repos.d/repositoryid.repo` on the local machine. This configuration file specifies which repositories to reference, how to handle cached data, etc."
       introduced "12.14"
 
       # http://linux.die.net/man/5/yum.conf as well as

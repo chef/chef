@@ -39,7 +39,7 @@ class Chef
           end
         }
 
-      description "Use the powershell_script resource to execute a script using the Windows PowerShell"\
+      description "Use the **powershell_script** resource to execute a script using the Windows PowerShell"\
                   " interpreter, much like how the script and script-based resources—bash, csh, perl, python,"\
                   " and ruby—are used. The powershell_script is specific to the Microsoft Windows platform"\
                   " and the Windows PowerShell interpreter.\n\n The powershell_script resource creates and"\

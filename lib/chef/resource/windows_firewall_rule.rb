@@ -26,10 +26,11 @@ class Chef
     class WindowsFirewallRule < Chef::Resource
       provides :windows_firewall_rule
 
-      description "Use the windows_firewall_rule resource to create, change or remove Windows firewall rules."
+      description "Use the **windows_firewall_rule** resource to create, change or remove Windows firewall rules."
       introduced "14.7"
       examples <<~DOC
-      Allowing port 80 access
+      **Allowing port 80 access**:
+
       ```ruby
       windows_firewall_rule 'IIS' do
         local_port '80'
@@ -38,7 +39,8 @@ class Chef
       end
       ```
 
-      Allow protocol ICMPv6 with ICMP Type
+      **Allow protocol ICMPv6 with ICMP Type**:
+
       ```ruby
       windows_firewall_rule 'CoreNet-Rule' do
         rule_name 'CoreNet-ICMP6-LR2-In'
@@ -49,7 +51,8 @@ class Chef
       end
       ```
 
-      Blocking WinRM over HTTP on a particular IP
+      **Blocking WinRM over HTTP on a particular IP**:
+
       ```ruby
       windows_firewall_rule 'Disable WinRM over HTTP' do
         local_port '5985'
@@ -59,7 +62,8 @@ class Chef
       end
       ```
 
-      Deleting an existing rule
+      **Deleting an existing rule**
+
       ```ruby
       windows_firewall_rule 'Remove the SSH rule' do
         rule_name 'ssh'

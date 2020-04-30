@@ -28,21 +28,24 @@ class Chef
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"
-      description "Use the cron_access resource to manage the /etc/cron.allow and /etc/cron.deny files."
+      description "Use the **cron_access** resource to manage the /etc/cron.allow and /etc/cron.deny files."
       examples <<~DOC
-        Add the mike user to cron.allow
+        **Add the mike user to cron.allow**
+
         ```ruby
         cron_access 'mike'
         ```
 
-        Add the mike user to cron.deny
+        **Add the mike user to cron.deny**
+
         ```ruby
         cron_access 'mike' do
           action :deny
         end
         ```
 
-        Specify the username with the user property
+        **Specify the username with the user property**
+
         ```ruby
         cron_access 'Deny the jenkins user access to cron for security purposes' do
           user 'jenkins'

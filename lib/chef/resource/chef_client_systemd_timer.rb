@@ -24,22 +24,25 @@ class Chef
 
       provides :chef_client_systemd_timer
 
-      description "Use the chef_client_systemd_timer resource to setup the #{Chef::Dist::PRODUCT} to run as a systemd timer."
+      description "Use the **chef_client_systemd_timer** resource to setup the #{Chef::Dist::PRODUCT} to run as a systemd timer."
       introduced "16.0"
       examples <<~DOC
-      Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
+      **Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence**:
+
       ```ruby
       chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} as a systemd timer"
       ```
 
-      Run #{Chef::Dist::PRODUCT} every 1 hour
+      **Run #{Chef::Dist::PRODUCT} every 1 hour**:
+
       ```ruby
       chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} every 1 hour" do
         interval "1hr"
       end
       ```
 
-      Run #{Chef::Dist::PRODUCT} with extra options passed to the client
+      **Run #{Chef::Dist::PRODUCT} with extra options passed to the client**:
+
       ```ruby
       chef_client_systemd_timer "Run an override recipe" do
         daemon_options ["--override-runlist mycorp_base::default"]

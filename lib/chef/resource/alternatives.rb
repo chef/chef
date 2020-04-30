@@ -29,7 +29,7 @@ class Chef
       description "The alternatives resource allows for configuration of command alternatives in Linux using the alternatives or update-alternatives packages."
       introduced "16.0"
       examples <<~DOC
-      Install an alternative
+      **Install an alternative**:
 
       ```ruby
       alternatives 'python install 2' do
@@ -40,7 +40,7 @@ class Chef
       end
       ```
 
-      Set an alternative
+      **Set an alternative**:
 
       ```ruby
       alternatives 'python set version 3' do
@@ -50,7 +50,7 @@ class Chef
       end
       ```
 
-      Set the automatic alternative state
+      **Set the automatic alternative state**:
 
       ```ruby
       alternatives 'python auto' do
@@ -59,7 +59,7 @@ class Chef
       end
       ```
 
-      Refresh an alternative
+      **Refresh an alternative**:
 
       ```ruby
       alternatives 'python refresh' do
@@ -68,7 +68,7 @@ class Chef
       end
       ```
 
-      Remove an alternative
+      **Remove an alternative**:
 
       ```ruby
       alternatives 'python remove' do

@@ -23,7 +23,7 @@ class Chef
     class User < Chef::Resource
       unified_mode true
 
-      description "Use the user resource to add users, update existing users, remove users, and to lock/unlock user passwords."
+      description "Use the **user** resource to add users, update existing users, remove users, and to lock/unlock user passwords."
 
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock

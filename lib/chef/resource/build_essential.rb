@@ -24,22 +24,25 @@ class Chef
 
       provides(:build_essential) { true }
 
-      description "Use the build_essential resource to install the packages required for compiling C software from source."
+      description "Use the **build_essential** resource to install the packages required for compiling C software from source."
       introduced "14.0"
       examples <<~DOC
-        Install compilation packages
+        **Install compilation packages**:
+
         ```ruby
         build_essential
         ```
 
-        Install compilation packages during the compilation phase
+        **Install compilation packages during the compilation phase**:
+
         ```ruby
         build_essential 'Install compilation tools' do
           compile_time true
         end
         ```
 
-        Upgrade compilation packages on macOS systems
+        **Upgrade compilation packages on macOS systems**:
+
         ```ruby
         build_essential 'Install compilation tools' do
           action :upgrade
@@ -52,6 +55,7 @@ class Chef
 
       property :raise_if_unsupported, [TrueClass, FalseClass],
         description: "Raise a hard error on platforms where this resource is unsupported.",
+        introduced: "15.5",
         default: false, desired_state: false # FIXME: make this default to true
 
       action :install do

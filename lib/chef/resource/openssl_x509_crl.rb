@@ -26,7 +26,7 @@ class Chef
 
       provides :openssl_x509_crl
 
-      description "Use the openssl_x509_crl resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
+      description "Use the **openssl_x509_crl** resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
       introduced "14.4"
       examples <<~DOC
         Generate a CRL file given a cert file and key file

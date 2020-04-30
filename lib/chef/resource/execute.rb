@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      description "Use the execute resource to execute a single command. Commands that"\
+      description "Use the **execute** resource to execute a single command. Commands that"\
                   " are executed with this resource are (by their nature) not idempotent,"\
                   " as they are typically unique to the environment in which they are run."\
                   " Use not_if and only_if to guard this resource for idempotence."
@@ -100,7 +100,7 @@ class Chef
         default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
-        description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the “Replace a process level token” and “Adjust Memory Quotas for a process” permissions. The user that is running the command needs the “Log on as a batch job” permission.\nBecause this requires a login, the user and password properties are required.",
+        description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the 'Replace a process level token' and 'Adjust Memory Quotas for a process' permissions. The user that is running the command needs the 'Log on as a batch job' permission.\nBecause this requires a login, the user and password properties are required.",
         introduced: "13.3"
 
       alias :env :environment

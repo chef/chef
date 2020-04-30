@@ -26,15 +26,17 @@ class Chef
 
       provides :chef_client_cron
 
-      description "Use the chef_client_cron resource to setup the #{Chef::Dist::PRODUCT} to run as a cron job. This resource will also create the specified log directory if it doesn't already exist."
+      description "Use the **chef_client_cron** resource to setup the #{Chef::Dist::PRODUCT} to run as a cron job. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
-      Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence
+      **Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence**:
+
       ```ruby
       chef_client_cron "Run #{Chef::Dist::PRODUCT} as a cron job"
       ```
 
-      Run #{Chef::Dist::PRODUCT} twice a day
+      **Run #{Chef::Dist::PRODUCT} twice a day**:
+
       ```ruby
       chef_client_cron "Run #{Chef::Dist::PRODUCT} every 12 hours" do
         minute 0
@@ -42,7 +44,8 @@ class Chef
       end
       ```
 
-      Run #{Chef::Dist::PRODUCT} with extra options passed to the client
+      **Run #{Chef::Dist::PRODUCT} with extra options passed to the client**:
+
       ```ruby
       chef_client_cron "Run an override recipe" do
         daemon_options ["--override-runlist mycorp_base::default"]

@@ -26,7 +26,7 @@ class Chef
 
       provides :plist
 
-      description "Use the plist resource to set config values in plist files on macOS systems."
+      description "Use the **plist** resource to set config values in plist files on macOS systems."
       introduced "16.0"
 
       property :path, String, name_property: true

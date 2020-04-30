@@ -23,8 +23,19 @@ class Chef
     class WindowsShortcut < Chef::Resource
       provides(:windows_shortcut) { true }
 
-      description "Use the windows_shortcut resource to create shortcut files on Windows."
+      description "Use the **windows_shortcut** resource to create shortcut files on Windows."
       introduced "14.0"
+      examples <<~DOC
+      **Create a shortcut with a description**:
+
+      ```ruby
+      windows_shortcut 'C:\\shortcut_dir.lnk' do
+        target 'C:\\original_dir'
+        description 'Make a shortcut to C:\\original_dir'
+      end
+      ```
+
+      DOC
 
       property :shortcut_name, String,
         description: "An optional property to set the shortcut name if it differs from the resource block's name.",
@@ -43,7 +54,7 @@ class Chef
         description: "Working directory to use when the target is executed."
 
       property :iconlocation, String,
-        description: "Icon to use for the shortcut. Accepts the format of 'path, index', where index is the icon file to use. See https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx for details"
+        description: "Icon to use for the shortcut. Accepts the format of `path, index`, where index is the icon file to use. See Microsoft's [documentation](https://msdn.microsoft.com/en-us/library/3s9bx7at.aspx) for details"
 
       load_current_value do |desired|
         require "win32ole" if RUBY_PLATFORM =~ /mswin|mingw32|windows/

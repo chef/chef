@@ -29,7 +29,7 @@ class Chef
 
       provides :ohai
 
-      description "Use the ohai resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{Chef::Dist::CLIENT} run."
+      description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{Chef::Dist::CLIENT} run."
 
       property :plugin, String,
         description: "The name of an Ohai plugin to be reloaded. If this property is not specified, #{Chef::Dist::PRODUCT} will reload all plugins."

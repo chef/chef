@@ -27,11 +27,92 @@ class Chef
       provides :yum_package
       provides :package, platform_family: "fedora_derived"
 
-      description "Use the yum_package resource to install, upgrade, and remove packages with Yum"\
+      description "Use the **yum_package** resource to install, upgrade, and remove packages with Yum"\
                   " for the Red Hat and CentOS platforms. The yum_package resource is able to resolve"\
-                  " provides data for packages much like Yum can do when it is run from the command line."\
+                  " `provides` data for packages much like Yum can do when it is run from the command line."\
                   " This allows a variety of options for installing packages, like minimum versions,"\
                   " virtual provides, and library names."
+      examples <<~DOC
+        **Install an exact version**:
+
+        ``` ruby
+        yum_package 'netpbm = 10.35.58-8.el8'
+        ```
+
+        **Install a minimum version**:
+
+        ``` ruby
+        yum_package 'netpbm >= 10.35.58-8.el8'
+        ```
+
+        **Install a minimum version using the default action**:
+
+        ``` ruby
+        yum_package 'netpbm'
+        ```
+
+        **Install a version without worrying about the exact release**:
+
+        ``` ruby
+        yum_package 'netpbm-10.35*'
+        ```
+
+
+        **To install a package**:
+
+        ``` ruby
+        yum_package 'netpbm' do
+          action :install
+        end
+        ```
+
+        **To install a partial minimum version**:
+
+        ``` ruby
+        yum_package 'netpbm >= 10'
+        ```
+
+        **To install a specific architecture**:
+
+        ``` ruby
+        yum_package 'netpbm' do
+          arch 'i386'
+        end
+        ```
+
+        or:
+
+        ``` ruby
+        yum_package 'netpbm.x86_64'
+        ```
+
+        **To install a specific version-release**
+
+        ``` ruby
+        yum_package 'netpbm' do
+          version '10.35.58-8.el8'
+        end
+        ```
+
+        **Handle cookbook_file and yum_package resources in the same recipe**:
+
+        When a **cookbook_file** resource and a **yum_package** resource are
+        both called from within the same recipe, use the `flush_cache` attribute
+        to dump the in-memory Yum cache, and then use the repository immediately
+        to ensure that the correct package is installed:
+
+        ``` ruby
+        cookbook_file '/etc/yum.repos.d/custom.repo' do
+          source 'custom'
+          mode '0755'
+        end
+
+        yum_package 'pkg-that-is-only-in-custom-repo' do
+          action :install
+          flush_cache [ :before ]
+        end
+        ```
+      DOC
 
       # XXX: the coercions here are due to the provider promiscuously updating the properties on the
       # new_resource which causes immutable modification exceptions when passed an immutable node array.

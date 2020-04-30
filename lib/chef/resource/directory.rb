@@ -28,7 +28,7 @@ class Chef
 
       provides :directory
 
-      description "Use the directory resource to manage a directory, which is a hierarchy"\
+      description "Use the **directory** resource to manage a directory, which is a hierarchy"\
                   " of folders that comprises all of the information stored on a computer."\
                   " The root directory is the top-level, under which the rest of the directory"\
                   " is organized. The directory resource uses the name property to specify the"\

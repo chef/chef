@@ -36,7 +36,7 @@ class Chef
       provides(:windows_service) { true }
       provides :service, os: "windows"
 
-      description "Use the windows_service resource to create, delete, or manage a service on the Microsoft Windows platform."
+      description "Use the **windows_service** resource to create, delete, or manage a service on the Microsoft Windows platform."
       introduced "12.0"
 
       allowed_actions :configure_startup, :create, :delete, :configure

@@ -23,7 +23,7 @@ class Chef
     class WindowsAdJoin < Chef::Resource
       provides :windows_ad_join
 
-      description "Use the windows_ad_join resource to join a Windows Active Directory domain."
+      description "Use the **windows_ad_join** resource to join a Windows Active Directory domain."
       introduced "14.0"
 
       property :domain_name, String,

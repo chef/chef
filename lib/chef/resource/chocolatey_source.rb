@@ -20,10 +20,11 @@ class Chef
       unified_mode true
       provides :chocolatey_source
 
-      description "Use the chocolatey_source resource to add, remove, enable, or disable Chocolatey sources."
+      description "Use the **chocolatey_source** resource to add, remove, enable, or disable Chocolatey sources."
       introduced "14.3"
       examples <<~DOC
-        Add a Chocolatey source
+        **Add a Chocolatey source**
+
         ```ruby
         chocolatey_source 'MySource' do
           source 'http://example.com/something'
@@ -31,7 +32,8 @@ class Chef
         end
         ```
 
-        Remove a Chocolatey source
+        **Remove a Chocolatey source**
+
         ```ruby
         chocolatey_source 'MySource' do
           action :remove

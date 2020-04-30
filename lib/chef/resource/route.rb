@@ -29,7 +29,7 @@ class Chef
       default_action :add
       allowed_actions :add, :delete
 
-      description "Use the route resource to manage the system routing table in a Linux environment."
+      description "Use the **route** resource to manage the system routing table in a Linux environment."
 
       property :target, String,
         description: "The IP address of the target route.",

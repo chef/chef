@@ -30,7 +30,7 @@ class Chef
 
       provides :ifconfig
 
-      description "Use the ifconfig resource to manage interfaces on Unix and Linux systems."
+      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems."
 
       state_attrs :inet_addr, :mask
 

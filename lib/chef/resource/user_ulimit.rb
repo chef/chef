@@ -26,32 +26,34 @@ class Chef
 
       provides :user_ulimit
 
+      description "Use the **user_ulimit** resource to create individual ulimit files that are installed into the `/etc/security/limits.d/` directory."
       introduced "16.0"
-      description "Use the user_ulimit resource to create individual ulimit files that are installed into the `/etc/security/limits.d/` directory."
       examples <<~DOC
-        set filehandle limit for the tomcat user
-        ```ruby
-        user_ulimit 'tomcat' do
-          filehandle_limit 8192
-        end
-        ```
+      **Set filehandle limit for the tomcat user**:
 
-        specify a username that differs from the name given to the resource block
-        ```ruby
-        user_ulimit 'Bump filehandle limits for tomcat user' do
-          username 'tomcat'
-          filehandle_limit 8192
-        end
-        ```
+      ```ruby
+      user_ulimit 'tomcat' do
+        filehandle_limit 8192
+      end
+      ```
 
-        specify a non-default filename
-        set filehandle limit for the tomcat user
-        ```ruby
-        user_ulimit 'tomcat' do
-          filehandle_limit 8192
-          filename 'tomcat_filehandle_limits.conf'
-        end
-        ```
+      **Specify a username that differs from the name given to the resource block**:
+
+      ```ruby
+      user_ulimit 'Bump filehandle limits for tomcat user' do
+        username 'tomcat'
+        filehandle_limit 8192
+      end
+      ```
+
+      **Set filehandle limit for the tomcat user with a non-default filename**:
+
+      ```ruby
+      user_ulimit 'tomcat' do
+        filehandle_limit 8192
+        filename 'tomcat_filehandle_limits.conf'
+      end
+      ```
       DOC
 
       property :username, String, name_property: true

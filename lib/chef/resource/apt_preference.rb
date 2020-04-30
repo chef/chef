@@ -26,7 +26,7 @@ class Chef
 
       provides(:apt_preference) { true }
 
-      description "The apt_preference resource allows for the creation of APT preference files. Preference files are used to control which package versions and sources are prioritized during installation."
+      description "Use the **apt_preference** resource to create APT [preference files](https://wiki.debian.org/AptPreferences). Preference files are used to control which package versions and sources are prioritized during installation."
       introduced "13.3"
 
       property :package_name, String,

@@ -23,7 +23,7 @@ class Chef
       unified_mode true
       state_attrs :members
 
-      description "Use the group resource to manage a local group."
+      description "Use the **group** resource to manage a local group."
 
       provides :group
 

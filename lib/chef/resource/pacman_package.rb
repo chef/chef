@@ -25,7 +25,7 @@ class Chef
 
       provides :pacman_package
 
-      description "Use the pacman_package resource to manage packages (using pacman) on the Arch Linux platform."
+      description "Use the **pacman_package** resource to manage packages (using pacman) on the Arch Linux platform."
     end
   end
 end

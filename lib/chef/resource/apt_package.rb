@@ -26,7 +26,7 @@ class Chef
       provides :apt_package, target_mode: true
       provides :package, platform_family: "debian", target_mode: true
 
-      description "Use the apt_package resource to manage packages on Debian and Ubuntu platforms."
+      description "Use the **apt_package** resource to manage packages on Debian and Ubuntu platforms."
 
       property :default_release, String,
         description: "The default release. For example: `stable`.",

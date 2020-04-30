@@ -24,8 +24,7 @@ class Chef
 
       provides(:rhsm_repo) { true }
 
-      description "Use the rhsm_repo resource to enable or disable Red Hat Subscription Manager"\
-                  " repositories that are made available via attached subscriptions."
+      description "Use the **rhsm_repo** resource to enable or disable Red Hat Subscription Manager repositories that are made available via attached subscriptions."
       introduced "14.0"
 
       property :repo_name, String,

@@ -20,17 +20,19 @@ class Chef
       unified_mode true
       provides :chocolatey_feature
 
-      description "Use the chocolatey_feature resource to enable and disable Chocolatey features."
+      description "Use the **chocolatey_feature** resource to enable and disable Chocolatey features."
       introduced "15.1"
       examples <<~DOC
-        Enable the checksumFiles Chocolatey feature
+        **Enable the checksumFiles Chocolatey feature**
+
         ```ruby
         chocolatey_feature 'checksumFiles' do
           action :enable
         end
         ```
 
-        Disable the checksumFiles Chocolatey feature
+        **Disable the checksumFiles Chocolatey feature**
+
         ```ruby
         chocolatey_feature 'checksumFiles' do
           action :disable

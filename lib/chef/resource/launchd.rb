@@ -24,7 +24,7 @@ class Chef
       unified_mode true
       provides :launchd
 
-      description "Use the launchd resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
+      description "Use the **launchd** resource to manage system-wide services (daemons) and per-user services (agents) on the macOS platform."
       introduced "12.8"
 
       default_action :create

@@ -28,11 +28,12 @@ class Chef
 
       provides(:apt_repository) { true }
 
-      description "Use the apt_repository resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
+      description "Use the **apt_repository** resource to specify additional APT repositories. Adding a new repository will update the APT package cache immediately."
       introduced "12.9"
 
       examples <<~DOC
-        Add repository with basic settings
+        **Add repository with basic settings**:
+
          ```ruby
         apt_repository 'nginx' do
           uri        'http://nginx.org/packages/ubuntu/'
@@ -40,29 +41,32 @@ class Chef
         end
         ```
 
-        Enable Ubuntu multiverse repositories
+        **Enable Ubuntu multiverse repositories**:
+
         ```ruby
         apt_repository 'security-ubuntu-multiverse' do
           uri          'http://security.ubuntu.com/ubuntu'
-          distribution 'trusty-security'
+          distribution 'xenial-security'
           components   ['multiverse']
           deb_src      true
         end
         ```
 
-        Add the Nginx PPA, autodetect the key and repository url
+        **Add the Nginx PPA, autodetect the key and repository url**:
+
         ```ruby
         apt_repository 'nginx-php' do
           uri          'ppa:nginx/stable'
         end
         ```
 
-        Add the JuJu PPA, grab the key from the keyserver, and add source repo
+        **Add the JuJu PPA, grab the key from the keyserver, and add source repo**:
+
         ```ruby
         apt_repository 'juju' do
           uri 'http://ppa.launchpad.net/juju/stable/ubuntu'
           components ['main']
-          distribution 'trusty'
+          distribution 'xenial'
           key 'C8068B11'
           keyserver 'keyserver.ubuntu.com'
           action :add
@@ -70,7 +74,8 @@ class Chef
         end
         ```
 
-        Add repository that requires multiple keys to authenticate packages
+        **Add repository that requires multiple keys to authenticate packages**:
+
         ```ruby
         apt_repository 'rundeck' do
           uri 'https://dl.bintray.com/rundeck/rundeck-deb'
@@ -81,18 +86,20 @@ class Chef
         end
         ```
 
-        Add the Cloudera Repo of CDH4 packages for Ubuntu 12.04 on AMD64
+        **Add the Cloudera Repo of CDH4 packages for Ubuntu 16.04 on AMD64**:
+
         ```ruby
         apt_repository 'cloudera' do
-          uri          'http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh'
+          uri          'http://archive.cloudera.com/cdh4/ubuntu/xenial/amd64/cdh'
           arch         'amd64'
-          distribution 'precise-cdh4'
+          distribution 'xenial-cdh4'
           components   ['contrib']
           key          'http://archive.cloudera.com/debian/archive.key'
         end
         ```
 
-        Remove a repository from the list
+        **Remove a repository from the list**:
+
         ```ruby
         apt_repository 'zenoss' do
           action :remove

@@ -25,7 +25,7 @@ class Chef
 
       provides :snap_package
 
-      description "Use the snap_package resource to manage snap packages on Debian and Ubuntu platforms."
+      description "Use the **snap_package** resource to manage snap packages on Debian and Ubuntu platforms."
       introduced "15.0"
 
       property :channel, String,

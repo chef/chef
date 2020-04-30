@@ -29,7 +29,7 @@ class Chef
       provides :openbsd_package
       provides :package, os: "openbsd"
 
-      description "Use the openbsd_package resource to manage packages for the OpenBSD platform."
+      description "Use the **openbsd_package** resource to manage packages for the OpenBSD platform."
       introduced "12.1"
 
       property :package_name, String,

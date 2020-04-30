@@ -23,16 +23,16 @@ class Chef
 
       provides :hostname
 
-      description "Use the hostname resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
+      description "Use the **hostname** resource to set the system's hostname, configure hostname and hosts config file, and re-run the Ohai hostname plugin so the hostname will be available in subsequent cookbooks."
       introduced "14.0"
       examples <<~DOC
-        Set the hostname using the IP address, as detected by Ohai
+        **Set the hostname using the IP address, as detected by Ohai**:
 
         ```ruby
         hostname 'example'
         ```
 
-        Manually specify the hostname and IP address
+        **Manually specify the hostname and IP address**:
 
         ```ruby
         hostname 'statically_configured_host' do
@@ -168,7 +168,7 @@ class Chef
               # older non-systemd RHEL/Fedora derived
               append_replacing_matching_lines("/etc/sysconfig/network", /^HOSTNAME\s*=/, "HOSTNAME=#{new_resource.hostname}")
             when ::File.exist?("/etc/HOSTNAME")
-              # SuSE/OpenSUSE uses /etc/HOSTNAME
+              # SuSE/openSUSE uses /etc/HOSTNAME
               declare_resource(:file, "/etc/HOSTNAME") do
                 content "#{new_resource.hostname}\n"
                 owner "root"

@@ -26,7 +26,33 @@ class Chef
       provides :zypper_package
       provides :package, platform_family: "suse"
 
-      description "Use the zypper_package resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and OpenSUSE platforms."
+      description "Use the **zypper_package** resource to install, upgrade, and remove packages with Zypper for the SUSE Enterprise and openSUSE platforms."
+      examples <<~DOC
+        **Install a package using package manager:**
+
+        ``` ruby
+        zypper_package 'name of package' do
+          action :install
+        end
+        ```
+
+        **Install a package using local file:**
+
+        ``` ruby
+        zypper_package 'jwhois' do
+          action :install
+          source '/path/to/jwhois.rpm'
+        end
+        ```
+
+        **Install without using recommend packages as a dependency:**
+
+        ``` ruby
+        package 'apache2' do
+          options '--no-recommends'
+          end
+        ```
+      DOC
 
       property :gpg_check, [ TrueClass, FalseClass ],
         description: "Verify the package's GPG signature. Can also be controlled site-wide using the `zypper_check_gpg` config option.",

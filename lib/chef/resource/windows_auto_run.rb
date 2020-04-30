@@ -23,7 +23,7 @@ class Chef
     class WindowsAutorun < Chef::Resource
       provides(:windows_auto_run) { true }
 
-      description "Use the windows_auto_run resource to set applications to run at login."
+      description "Use the **windows_auto_run** resource to set applications to run at login."
       introduced "14.0"
 
       property :program_name, String,

@@ -26,11 +26,11 @@ class Chef
 
       provides(:windows_printer) { true }
 
-      description "Use the windows_printer resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
+      description "Use the **windows_printer** resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
       introduced "14.0"
 
       property :device_id, String,
-        description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: 'HP LJ 5200 in fifth floor copy room'.",
+        description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: `HP LJ 5200 in fifth floor copy room`.",
         name_property: true
 
       property :comment, String,
@@ -45,7 +45,7 @@ class Chef
         required: true
 
       property :location, String,
-        description: "Printer location, such as 'Fifth floor copy room'."
+        description: "Printer location, such as `Fifth floor copy room`."
 
       property :shared, [TrueClass, FalseClass],
         description: "Determines whether or not the printer is shared.",
@@ -55,8 +55,8 @@ class Chef
         description: "The name used to identify the shared printer."
 
       property :ipv4_address, String,
-        description: "The IPv4 address of the printer, such as '10.4.64.23'",
-        validation_message: "The ipv4_address property must be in the IPv4 format of WWW.XXX.YYY.ZZZ",
+        description: "The IPv4 address of the printer, such as `10.4.64.23`",
+        validation_message: "The ipv4_address property must be in the IPv4 format of `WWW.XXX.YYY.ZZZ`",
         regex: Resolv::IPv4::Regex
 
       property :exists, [TrueClass, FalseClass],

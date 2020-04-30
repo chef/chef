@@ -31,7 +31,7 @@ class Chef
 
       provides :service, target_mode: true
 
-      description "Use the service resource to manage a service."
+      description "Use the **service** resource to manage a service."
 
       default_action :nothing
       allowed_actions :enable, :disable, :start, :stop, :restart, :reload,

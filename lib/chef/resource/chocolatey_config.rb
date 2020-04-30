@@ -21,10 +21,11 @@ class Chef
 
       provides :chocolatey_config
 
-      description "Use the chocolatey_config resource to add or remove Chocolatey configuration keys."
+      description "Use the **chocolatey_config** resource to add or remove Chocolatey configuration keys."
       introduced "14.3"
       examples <<~DOC
-        Set the Chocolatey cacheLocation config
+        **Set the Chocolatey cacheLocation config**:
+
         ```ruby
         chocolatey_config 'Set cacheLocation config' do
           config_key 'cacheLocation'
@@ -32,7 +33,8 @@ class Chef
         end
         ```
 
-        Unset a Chocolatey config
+        **Unset a Chocolatey config**:
+
         ```ruby
         chocolatey_config 'BogusConfig' do
           action :unset
