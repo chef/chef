@@ -74,7 +74,7 @@ In Chef Infra Client 14 we introduced a modernized filesystem layout of Ohai dat
 
 The behavior of `required: true` has been changed to better align with the expected behavior. Previously, if you set a property `required: true` on a custom resource property and did not explicitly reference the property in an action, then Chef Infra Client would not raise an exception. This meant many users would add their own validation to raise for resources they wanted to ensure they were always set. `required: true` will now properly raise if a property has not been set.
 
-We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#improved-property-require-behavior) below for more details.
+We have also expanded the `required` field for added flexibility in defining exactly which actions a property is required for. See [Improved property require behavior](#Improved-property-require-behavior) below for more details.
 
 ### Removal of Legacy metadata.rb depends Version Constraints
 
@@ -89,7 +89,7 @@ depends 'windows', '>> 1.0'
 
 ### Logging Improvements May Cause Behavior Changes
 
-We've made low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 ### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
@@ -181,7 +181,7 @@ Use the `plist` resource to generate plist files on macOS hosts. See the [plist 
 
 ### user_ulimit
 
-Use the `user_ulimit` resource to set per user ulimit values on Linux systems. See the [user_ulimit documentation](https://docs.chef.io/resources/user_ulimit/) for full usage information. Thanks [@bmhatfield](https://github.com/bmhatfield) for the original work on this resource in the [ulimit cookbook](https://supermarket.chef.io/cookbooks/ulimit).
+Use the `user_ulimit` resource to set per-user ulimit values on Linux systems. See the [user_ulimit documentation](https://docs.chef.io/resources/user_ulimit/) for full usage information. Thanks [@bmhatfield](https://github.com/bmhatfield) for the original work on this resource in the [ulimit cookbook](https://supermarket.chef.io/cookbooks/ulimit).
 
 ### windows_security_policy
 
@@ -197,7 +197,7 @@ Use the `windows_user_privilege` resource to add users and groups to the specifi
 
 The `compile_time` property is now available for all resources so that they can be set to run at compile time without the need forcing the action.
 
-This allows you replace forcing resources to run at compile time:
+This allows you to replace forcing resources to run at compile time:
 
 ```ruby
   my_resource "foo" do
@@ -385,7 +385,7 @@ end
 
 ### after_resource
 
-A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper, then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine grained control over the state information sent to Chef Automate, you can use a new `load_after_resource` helper to load the state of each property for reporting.
+A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper, then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine-grained control over the state information sent to Chef Automate, you can use a new `load_after_resource` helper to load the state of each property for reporting.
 
 ### identity Improvements
 
@@ -427,7 +427,7 @@ Several helpers introduced in Chef Infra Client 15.5 are now available for use i
 
 `sanitized_path`
 
-`sanitize_path` is a cross platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as `/sbin` and `/usr/local/bin`.
+`sanitize_path` is a cross-platform method that returns the system's path along with the Chef Infra Client Ruby bin dir / gem bin dir and common system paths such as `/sbin` and `/usr/local/bin`.
 
 `which(foo)`
 
@@ -447,7 +447,7 @@ By default, Chef Infra Client eagerly loads all ruby files in each cookbook's li
 
 ```ruby
 eager_load_libraries false # disable eager loading all libraries
-eager_load_libraries 'helper_library.rb' # eager load just the the file helper_library.rb
+eager_load_libraries 'helper_library.rb' # eager load just the file helper_library.rb
 eager_load_libraries %w(helper_library_1.rb helper_library_2.rb) # eager load both helper_library_1.rb and helper_library_2.rb files
 ```
 
@@ -455,7 +455,7 @@ Note: Unless you are experiencing performance issues in your libraries, we advis
 
 ### always_dump_stacktrace client.rb option
 
-A new `always_dump_stacktrace` client.rb configuration option and command line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
+A new `always_dump_stacktrace` client.rb configuration option and command-line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
 
 ```ruby
 always_dump_stacktrace true
@@ -498,7 +498,7 @@ The Linux Network plugin has been improved to gather additional information from
 
 #### Windows DMI plugin
 
-Windows systems now include a new `DMI` plugin which presents data in a similar format to the `DMI` plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number, or asset tag number in a cross platform way.
+Windows systems now include a new `DMI` plugin which presents data in a similar format to the `DMI` plugin on *nix systems. This makes it easier to detect system information like manufacturer, serial number, or asset tag number in a cross-platform way.
 
 ## New Platforms
 
