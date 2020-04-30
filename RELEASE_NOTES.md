@@ -477,7 +477,7 @@ Ohai has been improved to gather additional system configuration information for
 
 #### filesystem2 Node Data available on Windows
 
-In previous Chef Infra Clients we've introduced a modernized filesystem layout of Ohai data for many platforms. In Chef 16.0, Windows now has this layout available in `node['filesystem2']`. In Chef 17, it will replace `node['filesystem']` to match all other platforms.
+In previous Chef Infra Clients we've introduced a modernized filesystem layout of Ohai data for many platforms. In Chef Infra Client 16.0, Windows now has this layout available in `node['filesystem2']`. In Chef Infra Client 17, it will replace `node['filesystem']` to match all other platforms.
 
 #### Extended Azure Metadata
 
