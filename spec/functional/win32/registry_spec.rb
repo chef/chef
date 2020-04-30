@@ -96,10 +96,10 @@ describe "Chef::Win32::Registry", :windows_only do
 
   describe "value_exists?" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.value_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.value_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals" }) }.to eq(false)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.value_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.value_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals" }) }.to eq(false)
     end
     it "returns true if the value exists" do
       expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals" })).to eq(true)
@@ -132,10 +132,10 @@ describe "Chef::Win32::Registry", :windows_only do
 
   describe "data_exists?" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to eq(false)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to eq(false)
     end
     it "returns true if all the data matches" do
       expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} })).to eq(true)

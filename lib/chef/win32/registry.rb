@@ -201,7 +201,7 @@ class Chef
       end
 
       def value_exists?(key_path, value)
-        key_exists!(key_path)
+        return false unless key_exists?(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           return true if reg.any? { |val| safely_downcase(val) == safely_downcase(value[:name]) }
@@ -210,7 +210,7 @@ class Chef
       end
 
       def data_exists?(key_path, value)
-        key_exists!(key_path)
+        return false unless key_exists?(key_path)
         hive, key = get_hive_and_key(key_path)
         hive.open(key, ::Win32::Registry::KEY_READ | registry_system_architecture) do |reg|
           reg.each do |val_name, val_type, val_data|
