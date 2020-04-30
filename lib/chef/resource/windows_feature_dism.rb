@@ -36,7 +36,7 @@ class Chef
         description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-        description: "Install all sub-features. When set to 'true', this is the equivalent of specifying the /All switch to dism.exe",
+        description: "Install all sub-features. When set to `true`, this is the equivalent of specifying the `/All` switch to `dism.exe`",
         default: false
 
       property :timeout, Integer,

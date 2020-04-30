@@ -45,11 +45,11 @@ class Chef
         description: "The hardware address for the network interface."
 
       property :mask, String,
-        description: "The decimal representation of the network mask. For example: 255.255.255.0."
+        description: "The decimal representation of the network mask. For example: `255.255.255.0`."
 
       property :family, String, default: "inet",
-               introduced: "14.0",
-               description: "Networking family option for Debian-based systems; for example: inet or inet6."
+        introduced: "14.0",
+        description: "Networking family option for Debian-based systems; for example: `inet` or `inet6`."
 
       property :inet_addr, String,
         description: "The Internet host address for the network interface."
@@ -81,11 +81,11 @@ class Chef
 
       property :ethtool_opts, String,
         introduced: "13.4",
-        description: "Options to be passed to ethtool(8). For example: -A eth0 autoneg off rx off tx off."
+        description: "Options to be passed to ethtool(8). For example: `-A eth0 autoneg off rx off tx off`."
 
       property :bonding_opts, String,
         introduced: "13.4",
-        description: "Bonding options to pass via BONDING_OPTS on RHEL and CentOS. For example: mode=active-backup miimon=100."
+        description: "Bonding options to pass via `BONDING_OPTS` on RHEL and CentOS. For example: `mode=active-backup miimon=100`."
 
       property :master, String,
         introduced: "13.4",
@@ -93,7 +93,7 @@ class Chef
 
       property :slave, String,
         introduced: "13.4",
-        description: "When set to yes, this device is controlled by the channel bonding interface that is specified via the master property."
+        description: "When set to `yes`, this device is controlled by the channel bonding interface that is specified via the `master` property."
 
       property :vlan, String,
         introduced: "14.4",

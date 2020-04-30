@@ -37,7 +37,7 @@ class Chef
         description: "Specify a local repository for the feature install."
 
       property :all, [TrueClass, FalseClass],
-        description: "Install all subfeatures. When set to 'true', this is the equivalent of specifying the '-InstallAllSubFeatures' switch with 'Add-WindowsFeature'.",
+        description: "Install all subfeatures. When set to `true`, this is the equivalent of specifying the `-InstallAllSubFeatures` switch with `Add-WindowsFeature`.",
         default: false
 
       property :timeout, Integer,

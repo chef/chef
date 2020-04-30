@@ -34,7 +34,7 @@ class Chef
         description: "Configures whether the system manages the pagefile size."
 
       property :automatic_managed, [TrueClass, FalseClass],
-        description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores 'initial_size' and 'maximum_size' properties.",
+        description: "Enable automatic management of pagefile initial and maximum size. Setting this to true ignores `initial_size` and `maximum_size` properties.",
         default: false
 
       property :initial_size, Integer,

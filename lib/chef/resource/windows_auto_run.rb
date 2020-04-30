@@ -32,7 +32,7 @@ class Chef
 
       property :path, String,
         coerce: proc { |x| x.tr("/", "\\") }, # make sure we have windows paths for the registry
-        description: "The path to the program that will run at login. "
+        description: "The path to the program that will run at login."
 
       property :args, String,
         description: "Any arguments to be used with the program."
