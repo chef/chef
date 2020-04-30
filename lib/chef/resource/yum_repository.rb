@@ -64,7 +64,7 @@ class Chef
         description: "List of packages to exclude from updates or installs. This should be a space separated list. Shell globs using wildcards (eg. * and ?) are allowed."
 
       property :failovermethod, String,
-        description: "Method to determine how to switch to a new server if the current one fails, which can either be ``roundrobin`` or ``priority``. ``roundrobin`` randomly selects a URL out of the list of URLs to start with and proceeds through each of them as it encounters a failure contacting the host. ``priority`` starts from the first ``baseurl`` listed and reads through them sequentially.",
+        description: "Method to determine how to switch to a new server if the current one fails, which can either be `roundrobin` or `priority`. `roundrobin` randomly selects a URL out of the list of URLs to start with and proceeds through each of them as it encounters a failure contacting the host. `priority` starts from the first `baseurl` listed and reads through them sequentially.",
         equal_to: %w{priority roundrobin}
 
       property :fastestmirror_enabled, [TrueClass, FalseClass],
@@ -81,23 +81,23 @@ class Chef
                description: "Determines how upstream HTTP caches are instructed to handle any HTTP downloads that Yum does. This option can take the following values: all (all HTTP downloads should be cached), packages (only RPM package downloads should be cached, but not repository metadata downloads), or none (no HTTP downloads should be cached)"
 
       property :include_config, String,
-        description: "An external configuration file using the format 'url://to/some/location'."
+        description: "An external configuration file using the format `url://to/some/location`."
 
       property :includepkgs, String,
         description: "Inverse of exclude property. This is a list of packages you want to use from a repository. If this option lists only one package then that is all Yum will ever see from the repository."
 
       property :keepalive, [TrueClass, FalseClass],
-        description: "Determines whether or not HTTP/1.1 ``keep-alive`` should be used with this repository."
+        description: "Determines whether or not HTTP/1.1 `keep-alive` should be used with this repository."
 
       property :make_cache, [TrueClass, FalseClass],
         description: "Determines whether package files downloaded by Yum stay in cache directories. By using cached data, you can carry out certain operations without a network connection.",
         default: true
 
       property :max_retries, [String, Integer],
-        description: "Number of times any attempt to retrieve a file should retry before returning an error. Setting this to '0' makes Yum try forever."
+        description: "Number of times any attempt to retrieve a file should retry before returning an error. Setting this to `0` makes Yum try forever."
 
       property :metadata_expire, String, regex: [/^\d+$/, /^\d+[mhd]$/, /never/],
-               description: "Time (in seconds) after which the metadata will expire. If the current metadata downloaded is less than the value specified, then Yum will not update the metadata against the repository. If you find that Yum is not downloading information on updates as often as you would like lower the value of this option. You can also change from the default of using seconds to using days, hours or minutes by appending a 'd', 'h' or 'm' respectively. The default is six hours to compliment yum-updates running once per hour. It is also possible to use the word ``never``, meaning that the metadata will never expire. Note: When using a metalink file, the metalink must always be newer than the metadata for the repository due to the validation, so this timeout also applies to the metalink file.",
+               description: "Time (in seconds) after which the metadata will expire. If the current metadata downloaded is less than the value specified, then Yum will not update the metadata against the repository. If you find that Yum is not downloading information on updates as often as you would like lower the value of this option. You can also change from the default of using seconds to using days, hours or minutes by appending a 'd', 'h' or 'm' respectively. The default is six hours to compliment yum-updates running once per hour. It is also possible to use the word `never`, meaning that the metadata will never expire. Note: When using a metalink file, the metalink must always be newer than the metadata for the repository due to the validation, so this timeout also applies to the metalink file.",
                validation_message: "The metadata_expire property must be a numeric value for time in seconds, the string 'never', or a numeric value appended with with 'd', 'h', or 'm'!"
 
       property :metalink, String,

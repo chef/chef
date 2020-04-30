@@ -55,7 +55,7 @@ class Chef
         default: false, desired_state: false
 
       property :manage_home, [ TrueClass, FalseClass ],
-        description: "Manage a user’s home directory.\nWhen used with the :create action, a user’s home directory is created based on HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. When created, a skeleton set of files and subdirectories are included within the home directory.\nWhen used with the :modify action, a user’s home directory is moved to HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. The contents of the user’s home directory are moved to the new location.",
+        description: "Manage a user's home directory.\nWhen used with the :create action, a user's home directory is created based on HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. When created, a skeleton set of files and subdirectories are included within the home directory.\nWhen used with the :modify action, a user's home directory is moved to HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. The contents of the user's home directory are moved to the new location.",
         default: false, desired_state: false
 
       property :force, [ TrueClass, FalseClass ],

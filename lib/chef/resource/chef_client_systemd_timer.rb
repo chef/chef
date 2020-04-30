@@ -92,7 +92,7 @@ class Chef
         default: lazy { [] }
 
       property :environment, Hash,
-        description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
+        description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
         default: lazy { {} }
 
       action :add do

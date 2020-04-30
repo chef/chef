@@ -36,7 +36,7 @@ class Chef
         validation_message: "The provided package name is not valid. Package names can only contain alphanumeric characters as well as _, -, +, or *!"
 
       property :glob, String,
-        description: "Pin by glob() expression or with regular expressions surrounded by /."
+        description: "Pin by a `glob()` expression or with a regular expression surrounded by `/`."
 
       property :pin, String,
         description: "The package version or repository to pin.",

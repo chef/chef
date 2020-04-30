@@ -115,15 +115,15 @@ class Chef
         description: "The base of the Debian distribution."
 
       property :distribution, [ String, nil, FalseClass ],
-        description: "Usually a distribution's codename, such as xenial, bionic, or focal.",
+        description: "Usually a distribution's codename, such as `xenial`, `bionic`, or `focal`.",
         default: lazy { node["lsb"]["codename"] }, default_description: "The LSB codename of the node such as 'focal'."
 
       property :components, Array,
         description: "Package groupings, such as 'main' and 'stable'.",
-        default: lazy { [] }, default_description: "'main' if using a PPA repository."
+        default: lazy { [] }, default_description: "`main` if using a PPA repository."
 
       property :arch, [String, nil, FalseClass],
-        description: "Constrain packages to a particular CPU architecture such as 'i386' or 'amd64'."
+        description: "Constrain packages to a particular CPU architecture such as `i386` or `amd64`."
 
       property :trusted, [TrueClass, FalseClass],
         description: "Determines whether you should treat all packages from this repository as authenticated regardless of signature.",

@@ -70,7 +70,7 @@ namespace :docs_site do
     def friendly_property_list(arr)
       return nil if arr.empty? # resources w/o properties
 
-      props = arr.map { |x| "``#{x["name"]}``" }
+      props = arr.map { |x| "`#{x["name"]}`" }
 
       # build the text string containing all properties bolded w/ punctuation
       if props.size > 1
@@ -153,19 +153,41 @@ namespace :docs_site do
       property["default"].to_s
     end
 
+    #
+    # Build the actions section of the resource yaml
+    #
+    # @return [Hash]
+    #
+    def action_list(actions)
+      list = {}
+      actions.sort.each do |action|
+        # skip it so we can make it the last value later
+        next if action == "nothing"
+
+        list[action.to_sym] = { "markdown" => nil }
+      end
+
+      # add the special case for nothing
+      list[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
+
+      list
+    end
+
     # TODO:
     # - what to do about "lazy default" for default?
     def properties_list(properties)
       properties.map do |property|
-        {
-          "property" => property["name"],
-          "ruby_type" => friendly_types_list(property["is"]),
-          "required" => property["required"],
-          "default_value" =>  friendly_default_value(property),
-          # "allowed_values" => property["equal_to"].join(', '),
-          "new_in" => property["introduced"],
-          "description_list" => [{ "markdown" => property["description"] }],
-        }
+        default_val = friendly_default_value(property)
+
+        values = {}
+        values["property"] = property["name"]
+        values["ruby_type"] = friendly_types_list(property["is"])
+        values["required"] = property["required"]
+        values["default_value"] = default_val unless default_val.nil?
+        values["new_in"] = property["introduced"] unless property["introduced"].nil?
+        # values["allowed_values"] = property["equal_to"].join(', ')
+        values["description_list"] = [{ "markdown" => property["description"] }]
+        values
       end
     end
 
@@ -257,14 +279,12 @@ namespace :docs_site do
 
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
-      properties = data["properties"].reject { |v| v["name"] == "name" || v['deprecated'] }.sort_by! { |v| v["name"] }
+      properties = data["properties"].reject { |v| v["name"] == "name" || v["deprecated"] }.sort_by! { |v| v["name"] }
 
       r = {}
 
-      # These properties are always set to these values.
+      # We want all our resources to show up in the main resource reference page
       r["resource_reference"] = true
-      r["robots"] = nil
-      r["syntax_code_block"] = nil
 
       # These properties are set to special values for only a few resources.
       r.merge!(special_properties(name, data))
@@ -279,7 +299,9 @@ namespace :docs_site do
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
+      r["actions_list"] = action_list(data["actions"])
       r["properties_list"] = properties_list(properties)
+      r["examples_list"] = nil
 
       r
     end
@@ -305,7 +327,9 @@ namespace :docs_site do
       else
         puts "Writing out #{resource}."
         FileUtils.mkdir_p "docs_site/#{resource}"
-        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml) }
+        # write out the yaml contents of the hash and append a --- since this is actually a yaml
+        # block in the middle of a markdown page and the block needs an ending
+        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml + "---") }
       end
     end
   end

@@ -27,7 +27,7 @@ class Chef
       provides :cron_d
 
       introduced "14.4"
-      description "Use the cron_d resource to manage cron definitions in /etc/cron.d. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
+      description "Use the cron_d resource to manage cron job files in the /etc/cron.d directory. This is similar to the 'cron' resource, but it does not use the monolithic /etc/crontab file."
       examples <<~DOC
         To run a program on the fifth hour of the day
         ```ruby
@@ -78,7 +78,7 @@ class Chef
         description: "An optional property to set the cron name if it differs from the resource block's name.",
         name_property: true
 
-      property :cookbook, String, desired_state: false
+      property :cookbook, String, desired_state: false, skip_docs: true
 
       property :predefined_value, String,
         description: "Schedule your cron job with one of the special predefined value instead of ** * pattern.",
@@ -123,29 +123,29 @@ class Chef
         default: "root"
 
       property :mailto, String,
-        description: "Set the MAILTO environment variable in the cron.d file."
+        description: "Set the `MAILTO` environment variable in the cron.d file."
 
       property :path, String,
-        description: "Set the PATH environment variable in the cron.d file."
+        description: "Set the `PATH` environment variable in the cron.d file."
 
       property :home, String,
-        description: "Set the HOME environment variable in the cron.d file."
+        description: "Set the `HOME` environment variable in the cron.d file."
 
       property :shell, String,
-        description: "Set the SHELL environment variable in the cron.d file."
+        description: "Set the `SHELL` environment variable in the cron.d file."
 
       property :comment, String,
         description: "A comment to place in the cron.d file."
 
       property :environment, Hash,
-        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of ``({'ENV_VARIABLE' => 'VALUE'})``.",
+        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
         default: lazy { {} }
 
       TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
       TIMEOUT_REGEX = /\A\S+/.freeze
 
       property :time_out, Hash,
-        description: "A Hash of timeouts in the form of ({'OPTION' => 'VALUE'}).
+        description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
         Accepted valid options are:
         preserve-status (BOOL, default: 'false'),
         foreground (BOOL, default: 'false'),
@@ -175,7 +175,7 @@ class Chef
         default: "0600"
 
       property :random_delay, Integer,
-        description: "Set the RANDOM_DELAY environment variable in the cron.d file."
+        description: "Set the `RANDOM_DELAY` environment variable in the cron.d file."
 
       # warn if someone passes the deprecated cookbook property
       def after_created
