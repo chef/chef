@@ -50,7 +50,7 @@ class Chef
         description: "The version of a package to be installed or upgraded."
 
       property :gem_binary, default: "#{RbConfig::CONFIG["bindir"]}/gem", default_description: "The `gem` binary included with #{Chef::Dist::PRODUCT}.",
-                            description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed.",
+                            description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{Chef::Dist::PRODUCT} will be installed.",
                             callbacks: {
                  "The chef_gem resource is restricted to the current gem environment, use gem_package to install to other environments." => proc { |v| v == "#{RbConfig::CONFIG["bindir"]}/gem" },
                }

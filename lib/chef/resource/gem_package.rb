@@ -53,7 +53,7 @@ class Chef
         default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
 
       property :gem_binary, String, desired_state: false,
-        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by the #{Chef::Dist::CLIENT} will be installed."
+        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{Chef::Dist::PRODUCT} will be installed."
 
       property :include_default_source, [ TrueClass, FalseClass, nil ],
         description: "Set to `false` to not include `Chef::Config[:rubygems_url]` in the sources.",
