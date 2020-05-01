@@ -40,7 +40,7 @@ class Chef
 
       **Delete a printer**:
 
-      Note: this doesn’t delete the associated printer port. See windows_printer_port above for how to delete the port.
+      Note: this doesn't delete the associated printer port. See windows_printer_port above for how to delete the port.
 
       ```ruby
       windows_printer 'HP LaserJet 5th Floor' do
