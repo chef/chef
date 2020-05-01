@@ -58,7 +58,7 @@ namespace :docs_site do
       prop_list = [
         "`#{name}` is the resource.",
         "`name` is the name given to the resource block.",
-        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state."
+        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state.",
       ]
 
       # handle the case where we have no properties
@@ -184,7 +184,7 @@ namespace :docs_site do
         values["required"] = property["required"]
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
-        values["allowed_values"] = property["equal_to"].join(', ') unless property["equal_to"].empty?
+        values["allowed_values"] = property["equal_to"].join(", ") unless property["equal_to"].empty?
         values["description_list"] = [{ "markdown" => property["description"] }]
         values
       end
