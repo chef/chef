@@ -180,7 +180,7 @@ namespace :docs_site do
         values["required"] = property["required"]
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
-        # values["allowed_values"] = property["equal_to"].join(', ')
+        values["allowed_values"] = property["equal_to"].join(', ') unless property["equal_to"].empty?
         values["description_list"] = [{ "markdown" => property["description"] }]
         values
       end
