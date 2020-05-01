@@ -23,7 +23,7 @@ class Chef
     class WindowsDfsServer < Chef::Resource
       provides :windows_dfs_server
 
-      description "The windows_dfs_server resource sets system-wide DFS settings."
+      description "Use the **windows_dfs_server** resource to set system-wide DFS settings."
       introduced "15.0"
 
       property :use_fqdn, [TrueClass, FalseClass],

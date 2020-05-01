@@ -25,17 +25,18 @@ property :destination, String,
   description: "The location path to which the source is to be cloned, checked out, or exported. Default value: the name of the resource block.",
   name_property: true
 
-property :repository, String
+property :repository, String,
+  description: "The URI of the code repository."
 
 property :revision, String,
   description: "The revision to checkout.",
   default: "HEAD"
 
 property :user, [String, Integer],
-  description: "The system user that should own the checked-out code."
+  description: "The system user that will own the checked-out code."
 
 property :group, [String, Integer],
-  description: "The system group that should own the checked-out code."
+  description: "The system group that will own the checked-out code."
 
 property :timeout, Integer,
   description: "The amount of time (in seconds) to wait before timing out.",
