@@ -26,6 +26,15 @@ class Chef
 
       description "Use the **windows_font** resource to install font files on Windows. By default, the font is sourced from the cookbook using the resource, but a URI source can be specified as well."
       introduced "14.0"
+      examples <<~DOC
+      **Install a font from a https source**:
+
+      ```ruby
+      windows_font 'Custom.otf' do
+        source "https://example.com/Custom.otf"
+      end
+      ```
+      DOC
 
       property :font_name, String,
         description: "An optional property to set the name of the font to install if it differs from the resource block's name.",

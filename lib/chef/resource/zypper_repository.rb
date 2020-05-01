@@ -29,7 +29,7 @@ class Chef
       description "Use the **zypper_repository** resource to create Zypper package repositories on SUSE Enterprise Linux and openSUSE systems. This resource maintains full compatibility with the **zypper_repository** resource in the existing **zypper** cookbook."
       introduced "13.3"
       examples <<~DOC
-        **Add the Apache repo on openSUSE Leap 15**
+        **Add the Apache repo on openSUSE Leap 15**:
 
         ``` ruby
         zypper_repository 'apache' do

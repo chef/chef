@@ -24,7 +24,7 @@ class Chef
     class WindowsTask < Chef::Resource
       provides(:windows_task) { true }
 
-      description "Use the **windows_task** resource to create, delete or run a Windows scheduled task. Requires Windows Server 2008 or later due to API usage."
+      description "Use the **windows_task** resource to create, delete or run a Windows scheduled task."
       introduced "13.0"
       examples <<~DOC
       **Create a scheduled task to run every 15 minutes as the Administrator user**:

@@ -27,6 +27,26 @@ class Chef
 
       description "Use the **yum_repository** resource to manage a Yum repository configuration file located at `/etc/yum.repos.d/repositoryid.repo` on the local machine. This configuration file specifies which repositories to reference, how to handle cached data, etc."
       introduced "12.14"
+      examples <<~DOC
+      **Add an internal company repository**:
+
+      ```ruby
+      yum_repository 'OurCo' do
+        description 'OurCo yum repository'
+        mirrorlist 'http://artifacts.ourco.org/mirrorlist?repo=ourco-8&arch=$basearch'
+        gpgkey 'http://artifacts.ourco.org/pub/yum/RPM-GPG-KEY-OURCO-8'
+        action :create
+      end
+      ```ruby
+
+      **Delete a repository**:
+
+      ```ruby
+      yum_repository 'CentOS-Media' do
+        action :delete
+      end
+      ```
+      DOC
 
       # http://linux.die.net/man/5/yum.conf as well as
       # http://dnf.readthedocs.io/en/latest/conf_ref.html

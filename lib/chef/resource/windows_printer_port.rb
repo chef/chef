@@ -28,6 +28,34 @@ class Chef
 
       description "Use the **windows_printer_port** resource to create and delete TCP/IPv4 printer ports on Windows."
       introduced "14.0"
+      examples <<~DOC
+      **Delete a printer port**
+
+      ```ruby
+      windows_printer_port '10.4.64.37' do
+        action :delete
+      end
+      ```
+
+      **Delete a port with a custom port_name**
+
+      ```ruby
+      windows_printer_port '10.4.64.38' do
+        port_name 'My awesome port'
+        action :delete
+      end
+      ```
+
+      **Create a port with more options**
+
+      ```ruby
+      windows_printer_port '10.4.64.39' do
+        port_name 'My awesome port'
+        snmp_enabled true
+        port_protocol 2
+      end
+      ```
+      DOC
 
       property :ipv4_address, String,
         name_property: true,

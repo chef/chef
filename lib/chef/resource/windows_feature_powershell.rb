@@ -27,6 +27,33 @@ class Chef
 
       description "Use the **windows_feature_powershell** resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installation of the Remote Server Administration Tools on non-server releases of Windows."
       introduced "14.0"
+      examples <<~DOC
+      **Add the SMTP Server feature**:
+
+      ```ruby
+      windows_feature_powershell "smtp-server" do
+        action :install
+        all true
+      end
+      ```
+
+      **Install multiple features using one resource**:
+
+      ```ruby
+      windows_feature_powershell ['Web-Asp-Net45', 'Web-Net-Ext45'] do
+        action :install
+      end
+      ```
+
+      **Install the Network Policy and Access Service feature**:
+
+      ```ruby
+      windows_feature_powershell 'NPAS' do
+        action :install
+        management_tools true
+      end
+      ```
+      DOC
 
       property :feature_name, [Array, String],
         description: "The name of the feature(s) or role(s) to install if they differ from the resource block's name.",

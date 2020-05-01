@@ -26,6 +26,19 @@ class Chef
 
       description "Use the **windows_feature_dism** resource to add, remove, or entirely delete Windows features and roles using DISM."
       introduced "14.0"
+      examples <<~DOC
+      **Installing the TelnetClient service**:
+
+      ```ruby
+      windows_feature_dism "TelnetClient"
+      ```
+
+      **Installing two features by using an array**:
+
+      ```ruby
+      windows_feature_dism %w(TelnetClient TFTP)
+      ```
+      DOC
 
       property :feature_name, [Array, String],
         description: "The name of the feature(s) or role(s) to install if they differ from the resource name.",

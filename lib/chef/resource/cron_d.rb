@@ -89,31 +89,31 @@ class Chef
         equal_to: %w{ @reboot @yearly @annually @monthly @weekly @daily @midnight @hourly }
 
       property :minute, [Integer, String],
-        description: "The minute at which the cron entry should run (0 - 59).",
+        description: "The minute at which the cron entry should run (`0 - 59`).",
         default: "*", callbacks: {
           "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
         }
 
       property :hour, [Integer, String],
-        description: "The hour at which the cron entry is to run (0 - 23).",
+        description: "The hour at which the cron entry is to run (`0 - 23`).",
         default: "*", callbacks: {
           "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
         }
 
       property :day, [Integer, String],
-        description: "The day of month at which the cron entry should run (1 - 31).",
+        description: "The day of month at which the cron entry should run (`1 - 31`).",
         default: "*", callbacks: {
           "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
         }
 
       property :month, [Integer, String],
-        description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
+        description: "The month in the year on which a cron entry is to run (`1 - 12`, `jan-dec`, or `*`).",
         default: "*", callbacks: {
           "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
         }
 
       property :weekday, [Integer, String],
-        description: "The day of the week on which this entry is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
+        description: "The day of the week on which this entry is to run (`0-7`, `mon-sun`, or `*`), where Sunday is both `0` and `7`.",
         default: "*", callbacks: {
           "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
         }
@@ -151,10 +151,10 @@ class Chef
       property :time_out, Hash,
         description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
         Accepted valid options are:
-        preserve-status (BOOL, default: 'false'),
-        foreground (BOOL, default: 'false'),
-        kill-after (in seconds),
-        signal (a name like 'HUP' or a number)",
+        `preserve-status` (BOOL, default: 'false'),
+        `foreground` (BOOL, default: 'false'),
+        `kill-after` (in seconds),
+        `signal` (a name like 'HUP' or a number)",
         default: lazy { {} },
         introduced: "15.7",
         coerce: proc { |h|

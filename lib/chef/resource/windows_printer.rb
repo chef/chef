@@ -28,6 +28,26 @@ class Chef
 
       description "Use the **windows_printer** resource to setup Windows printers. Note that this doesn't currently install a printer driver. You must already have the driver installed on the system."
       introduced "14.0"
+      examples <<~DOC
+      **Create a printer**:
+
+      ```ruby
+      windows_printer 'HP LaserJet 5th Floor' do
+        driver_name 'HP LaserJet 4100 Series PCL6'
+        ipv4_address '10.4.64.38'
+      end
+      ```
+
+      **Delete a printer**:
+
+      Note: this doesn't delete the associated printer port. See windows_printer_port above for how to delete the port.
+
+      ```ruby
+      windows_printer 'HP LaserJet 5th Floor' do
+        action :delete
+      end
+      ```
+      DOC
 
       property :device_id, String,
         description: "An optional property to set the printer queue name if it differs from the resource block's name. Example: `HP LJ 5200 in fifth floor copy room`.",
