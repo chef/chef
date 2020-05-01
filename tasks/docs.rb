@@ -55,12 +55,16 @@ namespace :docs_site do
     end
 
     def friendly_full_property_list(name, properties)
-      [
+      prop_list = [
         "`#{name}` is the resource.",
         "`name` is the name given to the resource block.",
-        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state.",
-        friendly_property_list(properties),
+        "`action` identifies which steps Chef Infra Client will take to bring the node into the desired state."
       ]
+
+      # handle the case where we have no properties
+      prop_list << friendly_property_list(properties) unless properties.empty?
+
+      prop_list
     end
 
     # given an array of properties print out a single comma separated string
