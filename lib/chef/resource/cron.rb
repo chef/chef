@@ -41,25 +41,25 @@ class Chef
       end
 
       property :minute, [Integer, String],
-        description: "The minute at which the cron entry should run (0 - 59).",
+        description: "The minute at which the cron entry should run (`0 - 59`).",
         default: "*", callbacks: {
           "should be a valid minute spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 59) },
         }
 
       property :hour, [Integer, String],
-        description: "The hour at which the cron entry is to run (0 - 23).",
+        description: "The hour at which the cron entry is to run (`0 - 23`).",
         default: "*", callbacks: {
           "should be a valid hour spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 0, 23) },
         }
 
       property :day, [Integer, String],
-        description: "The day of month at which the cron entry should run (1 - 31).",
+        description: "The day of month at which the cron entry should run (`1 - 31`).",
         default: "*", callbacks: {
           "should be a valid day spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_numeric(spec, 1, 31) },
         }
 
       property :month, [Integer, String],
-        description: "The month in the year on which a cron entry is to run (1 - 12, jan-dec, or *).",
+        description: "The month in the year on which a cron entry is to run (`1 - 12`, `jan-dec`, or `*`).",
         default: "*", callbacks: {
           "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
         }
