@@ -59,7 +59,7 @@ module ResourceInspector
                required: opts[:required] || false,
                default: opts[:default_description] || get_default(opts[:default]),
                name_property: opts[:name_property] || false,
-               equal_to: Array(opts[:equal_to]).map(&:inspect) }
+               equal_to: Array(opts[:equal_to]).sort.map(&:inspect) }
     end
     data
   end
