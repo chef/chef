@@ -151,10 +151,10 @@ class Chef
       property :time_out, Hash,
         description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
         Accepted valid options are:
-        preserve-status (BOOL, default: 'false'),
-        foreground (BOOL, default: 'false'),
-        kill-after (in seconds),
-        signal (a name like 'HUP' or a number)",
+        `preserve-status` (BOOL, default: 'false'),
+        `foreground` (BOOL, default: 'false'),
+        `kill-after` (in seconds),
+        `signal` (a name like 'HUP' or a number)",
         default: lazy { {} },
         introduced: "15.7",
         coerce: proc { |h|
