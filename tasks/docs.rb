@@ -255,10 +255,7 @@ namespace :docs_site do
 
       properties["ruby_style_basics_chef_log"] = name == "log"
 
-      properties["syntax_shortcode"] =
-        if name == "log"
-          "resource_log_syntax.md"
-        end
+      properties["syntax_shortcode"] = "resource_log_syntax.md" if name == "log"
 
       properties["template_requirements"] = name == "template"
 
