@@ -219,8 +219,6 @@ namespace :docs_site do
 
       properties["properties_shortcode"] =
         case name
-        when "breakpoint"
-          "resource_breakpoint_properties.md"
         when "ohai"
           "resource_ohai_properties.md"
         when "log"
@@ -256,10 +254,7 @@ namespace :docs_site do
       properties["ruby_style_basics_chef_log"] = name == "log"
 
       properties["syntax_shortcode"] =
-        case name
-        when "breakpoint"
-          "resource_breakpoint_syntax.md"
-        when "log"
+        if name == "log"
           "resource_log_syntax.md"
         else
           nil
