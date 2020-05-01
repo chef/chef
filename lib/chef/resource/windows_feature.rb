@@ -39,14 +39,14 @@ class Chef
       ```ruby
       windows_feature "NetFx3" do
         action :install
-        source "d:\sources\sxs"
+        source 'd:\\sources\\sxs'
       end
       ```
 
       **Remove Telnet Server and Client features**:
 
       ```ruby
-      windows_feature ['TelnetServer', 'TelnetClient'] do
+      windows_feature %w(TelnetServer TelnetClient) do
         action :remove
       end
       ```
@@ -54,7 +54,7 @@ class Chef
       **Add the SMTP Server feature using the PowerShell provider**:
 
       ```ruby
-      windows_feature "smtp-server" do
+      windows_feature 'smtp-server' do
         action :install
         all true
         install_method :windows_feature_powershell
@@ -64,7 +64,7 @@ class Chef
       **Install multiple features using one resource with the PowerShell provider**:
 
       ```ruby
-      windows_feature ['Web-Asp-Net45', 'Web-Net-Ext45'] do
+      windows_feature %w(Web-Asp-Net45 Web-Net-Ext45) do
         action :install
         install_method :windows_feature_powershell
       end
