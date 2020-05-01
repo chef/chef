@@ -227,8 +227,6 @@ namespace :docs_site do
           "resource_ohai_properties.md"
         when "log"
           "resource_log_properties.md"
-        else
-          nil
         end
 
       properties["ps_credential_helper"] = name == "dsc_script"
@@ -260,8 +258,6 @@ namespace :docs_site do
       properties["syntax_shortcode"] =
         if name == "log"
           "resource_log_syntax.md"
-        else
-          nil
         end
 
       properties["template_requirements"] = name == "template"
