@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.264 -->
-## [v16.0.264](https://github.com/chef/chef/tree/v16.0.264) (2020-04-30)
+<!-- latest_release 16.0.265 -->
+## [v16.0.265](https://github.com/chef/chef/tree/v16.0.265) (2020-05-01)
 
 #### Merged Pull Requests
-- Remove an unused spec helper [#9774](https://github.com/chef/chef/pull/9774) ([tas50](https://github.com/tas50))
+- Add more examples to resources [#9775](https://github.com/chef/chef/pull/9775) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add more examples to resources [#9775](https://github.com/chef/chef/pull/9775) ([tas50](https://github.com/tas50)) <!-- 16.0.265 -->
 - Remove an unused spec helper [#9774](https://github.com/chef/chef/pull/9774) ([tas50](https://github.com/tas50)) <!-- 16.0.264 -->
 - Improve resource self documentation [#9773](https://github.com/chef/chef/pull/9773) ([tas50](https://github.com/tas50)) <!-- 16.0.263 -->
 - More improvements to the docs generation [#9767](https://github.com/chef/chef/pull/9767) ([tas50](https://github.com/tas50)) <!-- 16.0.262 -->
