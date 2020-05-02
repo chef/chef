@@ -112,18 +112,18 @@ namespace :docs_site do
       fixed_arr.compact.join(", ")
     end
 
+    # split out notes from the description field. We didn't design a note syntax so we stick them in there
     def note_text(description)
       return nil if description.nil?
 
-      note = description.split("Note: ")[1]
-      if note
-        <<-HEREDOC
+      description.split("Note: ")[1]
+    end
 
-      .. note::
+    # Returns description without embedded notes that may be present
+    def description_text(description)
+      return nil if description.nil?
 
-      #{note}
-        HEREDOC
-      end
+      description.split(" Note:")[0]
     end
 
     # build the menu entry for this resource
@@ -267,7 +267,11 @@ namespace :docs_site do
       r["aliases"] = ["/resource_#{name}.html"]
       r["menu"] = build_menu_item(name)
       r["resource_description_list"] = {}
-      r["resource_description_list"] = [{ "markdown" => data["description"] }]
+      r["resource_description_list"] = [{ "markdown" => description_text(data["description"]) }]
+
+      # if the description contained a note then add it
+      r["resource_description_list"] << { "note" => { "markdown" => note_text(data["description"]) } } unless note_text(data["description"]).nil?
+
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
