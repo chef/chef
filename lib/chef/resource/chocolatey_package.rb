@@ -25,7 +25,7 @@ class Chef
 
       provides :chocolatey_package
 
-      description "Use the **chocolatey_package** resource to manage packages using Chocolatey on the Microsoft Windows platform."
+      description "Use the **chocolatey_package** resource to manage packages using Chocolatey on the Microsoft Windows platform. Note: The Chocolatey package manager is not installed on Windows by default. You will need to install it prior to using this resource by adding the [Chocolatey cookbook](https://supermarket.chef.io/cookbooks/chocolatey/) to your node's run list."
       introduced "12.7"
       examples <<~DOC
         **Install a Chocolatey package**:
