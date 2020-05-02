@@ -89,8 +89,9 @@ namespace :docs_site do
     end
 
     # given an array of types print out a single comma separated string
-    # handling a nil value that needs to be printed as "nil" and TrueClass/FalseClass
-    # which needs to be "true" and "false"
+    # handling TrueClass/FalseClass which needs to be "true" and "false"
+    # and removing any nil values since those are less types in properties
+    # and more side effects of legacy design
     # @return String
     # TODO:
     # - still does not include nil (?)
@@ -101,12 +102,13 @@ namespace :docs_site do
           "true"
         when "FalseClass"
           "false"
-        when "NilClass", nil
-          "nil"
+        when "NilClass"
+          nil
         else
           x
         end
       end
+      # compact to remove the nil values
       fixed_arr.compact.join(", ")
     end
 
