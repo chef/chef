@@ -27,7 +27,10 @@ class Chef
 
       description "Use the **rpm_package** resource to manage packages using the RPM Package Manager."
 
-      property :allow_downgrade, [ true, false ], default: true, desired_state: false
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+        description: "Allow downgrading a package to satisfy requested version requirements.",
+        default: true,
+        desired_state: false
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

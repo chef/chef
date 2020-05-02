@@ -28,7 +28,7 @@ class Chef
       provides :package, os: "solaris2", platform_family: "nexentacore"
       provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
 
-      description "The solaris_package resource is used to manage packages for the Solaris platform."
+      description "Use the **solaris_package** resource to manage packages on the Solaris platform."
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
