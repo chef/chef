@@ -28,7 +28,7 @@ class Chef
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"
-      description "Use the **cron_access** resource to manage the /etc/cron.allow and /etc/cron.deny files."
+      description "Use the **cron_access** resource to manage the /etc/cron.allow and /etc/cron.deny files. Note: This resource previously shipped in the `cron` cookbook as `cron_manage`, which it can still be used as for backwards compatibility with existing Chef Infra Client releases."
       examples <<~DOC
         **Add the mike user to cron.allow**
 
