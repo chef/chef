@@ -38,7 +38,7 @@ namespace :docs_site do
         text << "  #{p["name"].ljust(padding_size)}"
         text << friendly_types_list(p["is"])
         text << " # default value: 'name' unless specified" if p["name_property"]
-        text << " # default value: #{pretty_default}" unless pretty_default.nil? || (pretty_default.is_a?(String) && pretty_default.length > 40) # 40 chars is too long for these example blocks
+        text << " # default value: #{pretty_default}" unless pretty_default.nil? || (pretty_default.is_a?(String) && pretty_default.length > 45) # 45 chars is too long for these example blocks
         text << "\n"
       end
       text << "  #{"action".ljust(padding_size)}Symbol # defaults to :#{default_action.first} if not specified\n"
