@@ -193,33 +193,26 @@ namespace :docs_site do
     def special_properties(name, data)
       properties = {}
 
-      properties["common_resource_functionality_multiple_packages"] =
-        case name
-        when "yum_package", "apt_package", "zypper_package", "homebrew_package", "dnf_package", "pacman_package"
-          true
-        when "package"
-          nil
-        else
-          false
-        end
+      # these package properties support passing arrays for the package name
+      properties["common_resource_functionality_multiple_packages"] = true if %w{yum_package apt_package zypper_package homebrew_package dnf_package pacman_package}.include?(name)
 
-      properties["common_resource_functionality_resources_common_windows_security"] = name == "remote_directory"
+      properties["common_resource_functionality_resources_common_windows_security"] = true if name == "remote_directory"
 
-      properties["cookbook_file_specificity"] = name == "cookbook_file"
+      properties["cookbook_file_specificity"] = true if name == "cookbook_file"
 
-      properties["debug_recipes_chef_shell"] = name == "breakpoint"
+      properties["debug_recipes_chef_shell"] = true if name == "breakpoint"
 
-      properties["handler_custom"] = name == "chef_handler"
+      properties["handler_custom"] = true if name == "chef_handler"
 
-      properties["handler_types"] = name == "chef_handler"
+      properties["handler_types"] = true if name == "chef_handler"
 
-      properties["nameless_apt_update"] = name == "apt_update"
+      properties["nameless_apt_update"] = true if name == "apt_update"
 
-      properties["nameless_build_essential"] = name == "build_essential"
+      properties["nameless_build_essential"] = true if name == "build_essential"
 
-      properties["properties_multiple_packages"] = %w{dnf_package package zypper_package}.include?(name)
+      properties["properties_multiple_packages"] = true if %w{dnf_package package zypper_package}.include?(name)
 
-      properties["properties_resources_common_windows_security"] = %w{cookbook_file file template remote_file directory}.include?(name)
+      properties["properties_resources_common_windows_security"] = true if %w{cookbook_file file template remote_file directory}.include?(name)
 
       properties["properties_shortcode"] =
         case name
@@ -229,37 +222,40 @@ namespace :docs_site do
           "resource_log_properties.md"
         end
 
-      properties["ps_credential_helper"] = name == "dsc_script"
+      properties["ps_credential_helper"] = true if name == "dsc_script"
 
-      properties["registry_key"] = name == "registry_key"
+      properties["registry_key"] = true if name == "registry_key"
 
-      properties["remote_directory_recursive_directories"] = name == "remote_directory"
+      properties["remote_directory_recursive_directories"] = true if name == "remote_directory"
 
-      properties["remote_file_prevent_re_downloads"] = name == "remote_file"
+      properties["remote_file_prevent_re_downloads"] =  true if name == "remote_file"
 
-      properties["remote_file_unc_path"] = name == "remote_file"
+      properties["remote_file_unc_path"] = true if name == "remote_file"
 
-      properties["resource_directory_recursive_directories"] = %w{directory remote_directory}.include?(name)
+      properties["resource_directory_recursive_directories"] = true if %w{directory remote_directory}.include?(name)
 
-      properties["resource_package_options"] = name == "package"
+      properties["resource_package_options"] = true if name == "package"
 
-      properties["resources_common_atomic_update"] = %w{cookbook_file file template remote_file}.include?(name)
+      properties["resources_common_atomic_update"] = true if %w{cookbook_file file template remote_file}.include?(name)
 
-      properties["resources_common_guard_interpreter"] = name == "script"
+      properties["resources_common_guard_interpreter"] = true if name == "script"
 
-      properties["resources_common_guards"] = !%w{ruby_block chef_acl chef_environment chef_data_bag chef_mirror chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user package}.include?(name)
+      properties["resources_common_guards"] = true unless %w{ruby_block chef_acl chef_environment chef_data_bag chef_mirror chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user package}.include?(name)
 
-      properties["resources_common_notification"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
+      properties["resources_common_notification"] = true unless %w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
 
-      properties["resources_common_properties"] = !%w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
+      properties["resources_common_properties"] = true unless %w{ruby_block chef_acl python chef_environment chef_data_bag chef_mirror perl chef_container chef_client chef_organization remote_file chef_node chef_group breakpoint chef_role registry_key chef_data_bag_item chef_user ruby package}.include?(name)
 
-      properties["ruby_style_basics_chef_log"] = name == "log"
+      properties["ruby_style_basics_chef_log"] = true if name == "log"
 
       properties["syntax_shortcode"] = "resource_log_syntax.md" if name == "log"
 
-      properties["template_requirements"] = name == "template"
+      properties["template_requirements"] = true if name == "template"
 
-      properties["unit_file_verification"] = name == "systemd_unit"
+      properties["unit_file_verification"] = true if name == "systemd_unit"
+
+      # these packages all provide 'package' depending on OS and we want to inject a warning / note that you can just use 'package' instead
+      properties["notes_resource_based_on_package" ] = true if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package solaris_package windows_package yum_package zypper_package}.include?(name)
 
       properties
     end
@@ -282,7 +278,7 @@ namespace :docs_site do
       r["menu"] = build_menu_item(name)
       r["resource_description_list"] = {}
       r["resource_description_list"] = [{ "markdown" => data["description"] }]
-      r["resource_new_in"] = data["introduced"]
+      r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
