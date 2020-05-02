@@ -112,20 +112,6 @@ namespace :docs_site do
       fixed_arr.compact.join(", ")
     end
 
-    # Makes sure the resource name is bolded within the description
-    # @return String
-    def bolded_description(name, description)
-      return nil if description.nil? # handle resources missing descriptions
-
-      # we only want to bold occurences of the resource name in the first 5 words so treat it as an array
-      desc_array = description.split(" ")
-
-      desc_array = desc_array[0..4].map! { |x| name == x ? "**#{x}**" : x } + desc_array[5..-1]
-
-      # strip out notes and return just the description
-      desc_array.join(" ").split("Note: ").first.strip
-    end
-
     def note_text(description)
       return nil if description.nil?
 
