@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.266 -->
-## [v16.0.266](https://github.com/chef/chef/tree/v16.0.266) (2020-05-01)
+<!-- latest_release 16.0.267 -->
+## [v16.0.267](https://github.com/chef/chef/tree/v16.0.267) (2020-05-03)
 
 #### Merged Pull Requests
-- Fix symbols and arrays in yaml conversion tool [#9769](https://github.com/chef/chef/pull/9769) ([phiggins](https://github.com/phiggins))
+- Modified client cron directory permission [#9782](https://github.com/chef/chef/pull/9782) ([DhaneshRaghavan](https://github.com/DhaneshRaghavan))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Modified client cron directory permission [#9782](https://github.com/chef/chef/pull/9782) ([DhaneshRaghavan](https://github.com/DhaneshRaghavan)) <!-- 16.0.267 -->
 - Fix symbols and arrays in yaml conversion tool [#9769](https://github.com/chef/chef/pull/9769) ([phiggins](https://github.com/phiggins)) <!-- 16.0.266 -->
 - Add more examples to resources [#9775](https://github.com/chef/chef/pull/9775) ([tas50](https://github.com/tas50)) <!-- 16.0.265 -->
 - Remove an unused spec helper [#9774](https://github.com/chef/chef/pull/9774) ([tas50](https://github.com/tas50)) <!-- 16.0.264 -->
