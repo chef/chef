@@ -27,7 +27,7 @@ class Chef
         allow_nils
         use_multipackage_api
 
-        provides :package, os: "darwin", override: true
+        provides :package, os: "darwin"
         provides :homebrew_package
 
         include Chef::Mixin::HomebrewUser

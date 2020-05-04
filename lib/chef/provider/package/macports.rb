@@ -2,8 +2,6 @@ class Chef
   class Provider
     class Package
       class Macports < Chef::Provider::Package
-
-        provides :package, os: "darwin"
         provides :macports_package
 
         def load_current_resource
