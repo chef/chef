@@ -39,7 +39,8 @@ class Chef
 
       property :cookbook, String,
         description: "The cookbook in which a file is located (if it is not located in the current cookbook).",
-        desired_state: false
+        desired_state: false,
+        default_description: "The current cookbook name"
 
       default_action :create
     end

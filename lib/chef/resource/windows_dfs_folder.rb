@@ -23,7 +23,7 @@ class Chef
     class WindowsDfsFolder < Chef::Resource
       provides :windows_dfs_folder
 
-      description "The windows_dfs_folder resources creates a folder within dfs as many levels deep as required."
+      description "Use the **windows_dfs_folder** resource to creates a folder within DFS as many levels deep as required."
       introduced "15.0"
 
       property :folder_path, String,

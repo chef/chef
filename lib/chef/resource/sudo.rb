@@ -88,15 +88,15 @@ class Chef
         default: lazy { [] }
 
       property :setenv, [TrueClass, FalseClass],
-        description: "Determines whether or not to permit preservation of the environment with 'sudo -E'.",
+        description: "Determines whether or not to permit preservation of the environment with `sudo -E`.",
         default: false
 
       property :env_keep_add, Array,
-        description: "An array of strings to add to env_keep.",
+        description: "An array of strings to add to `env_keep`.",
         default: lazy { [] }
 
       property :env_keep_subtract, Array,
-        description: "An array of strings to remove from env_keep.",
+        description: "An array of strings to remove from `env_keep`.",
         default: lazy { [] }
 
       property :visudo_path, String,

@@ -151,8 +151,8 @@ class Chef
           end
         }
 
-      property :allow_downgrade, [ true, false ],
-        description: "Downgrade a package to satisfy requested version requirements.",
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+        description: "Allow downgrading a package to satisfy requested version requirements.",
         default: true,
         desired_state: false
 

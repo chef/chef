@@ -39,7 +39,7 @@ class Chef
         default: false
 
       property :timeout, Integer,
-        description: "Timeout for 'dd' / 'fallocate' commands.",
+        description: "Timeout for `dd` / `fallocate` commands.",
         default: 600,
         desired_state: false
 

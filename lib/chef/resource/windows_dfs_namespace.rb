@@ -23,7 +23,7 @@ class Chef
     class WindowsDfsNamespace < Chef::Resource
       provides :windows_dfs_namespace
 
-      description "Creates a share and DFS namespace on the local server."
+      description "Use the **windows_dfs_namespace** resource to creates a share and DFS namespace on a Windows server."
       introduced "15.0"
 
       property :namespace_name, String,
