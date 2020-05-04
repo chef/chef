@@ -28,6 +28,7 @@ function Invoke-Begin {
 
 function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
+    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$pkg_prefix/lib"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
@@ -44,6 +45,7 @@ function Invoke-Download() {
     try {
         Push-Location (Resolve-Path "$PLAN_CONTEXT/../").Path
         git archive --format=zip --output="${HAB_CACHE_SRC_PATH}/${pkg_filename}" HEAD
+        if (-not $?) { throw "unable to create archive of source" }
     } finally {
         Pop-Location
     }
@@ -62,6 +64,7 @@ function Invoke-Prepare {
 
         Write-BuildLine " ** Configuring bundler for this build environment"
         bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+        if (-not $?) { throw "unable to configure bundler to restrict gems to be installed" }
         bundle config --local jobs 4
         bundle config --local retry 5
         bundle config --local silence_root_warning 1
@@ -74,19 +77,31 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
+        Write-BuildLine " ** Copying Chef DLLs"
+        New-Item -ItemType Directory -Force -Path "$pkg_prefix/lib"
+        Get-ChildItem ./distro/ruby_bin_folder -Filter "*.dll" | Copy-Item -Destination "$pkg_prefix/lib"
+        $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
+
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
         bundle install
-        Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
-        bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
-        Write-BuildLine " ** Also 'rake install' any gem sourced as a git reference."
+        if (-not $?) { throw "unable to install gem dependencies" }
+        Write-BuildLine " ** 'rake install' any gem sourced as a git reference so they'll look like regular gems."
         foreach($git_gem in (Get-ChildItem "$env:GEM_HOME/bundler/gems")) {
             try {
                 Push-Location $git_gem
-                Write-BuildLine " -- and $git_gem too"
+                Write-BuildLine " -- installing $git_gem"
                 rake install # this needs to NOT be 'bundle exec'd else bundler complains about dev deps not being installed
+                if (-not $?) { throw "unable to install $git_gem as a plain old gem" }
             } finally {
                 Pop-Location
             }
+        }
+        Write-BuildLine " ** Running the chef project's 'rake install' to install the path-based gems so they look like any other installed gem."
+        bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+        if (-not $?) {
+            Write-Warning " -- That didn't work. Let's try again."
+            bundle exec rake install # this needs to be 'bundle exec'd because a Rakefile makes reference to Bundler
+            if (-not $?) { throw "unable to install the gems that live in directories within this repo" }
         }
     } finally {
         Pop-Location
