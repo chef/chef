@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.273 -->
-## [v16.0.273](https://github.com/chef/chef/tree/v16.0.273) (2020-05-04)
+<!-- latest_release 16.0.274 -->
+## [v16.0.274](https://github.com/chef/chef/tree/v16.0.274) (2020-05-04)
 
 #### Merged Pull Requests
-- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
+- fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd)) <!-- 16.0.274 -->
 - Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50)) <!-- 16.0.273 -->
 - Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.272 -->
 - Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50)) <!-- 16.0.271 -->
