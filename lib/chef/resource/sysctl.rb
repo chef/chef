@@ -39,7 +39,7 @@ class Chef
       end
       ```
 
-      **Remove kernel.msgmax**
+      **Remove kernel.msgmax**:
 
       **Note**: This only removes the sysctl.d config for kernel.msgmax. The value will be set back to the kernel default value.
 
@@ -49,7 +49,7 @@ class Chef
       end
       ```
 
-      **Adding Comments to sysctl configuration files**
+      **Adding Comments to sysctl configuration files**:
 
       ```ruby
       sysctl 'vm.swappiness' do
@@ -89,7 +89,6 @@ class Chef
       end
       ```
       DOC
-
 
       introduced "14.0"
 
