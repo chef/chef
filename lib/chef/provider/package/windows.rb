@@ -257,7 +257,7 @@ class Chef
               end
             end
           end.run_action(:create)
-          logger.trace("#{new_resource} fetched source file to #{source_resource.path}")
+          logger.trace("#{new_resource} fetched source file to #{default_download_cache_path}")
         end
 
         def default_download_cache_path
