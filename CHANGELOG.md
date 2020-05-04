@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.268 -->
-## [v16.0.268](https://github.com/chef/chef/tree/v16.0.268) (2020-05-04)
+<!-- latest_release 16.0.269 -->
+## [v16.0.269](https://github.com/chef/chef/tree/v16.0.269) (2020-05-04)
 
 #### Merged Pull Requests
-- chef_client_cron: cleanup the appropriate cron job [#9784](https://github.com/chef/chef/pull/9784) ([tas50](https://github.com/tas50))
+- Avoid setting package to macports and then overriding to homebrew [#9783](https://github.com/chef/chef/pull/9783) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid setting package to macports and then overriding to homebrew [#9783](https://github.com/chef/chef/pull/9783) ([tas50](https://github.com/tas50)) <!-- 16.0.269 -->
 - chef_client_cron: cleanup the appropriate cron job [#9784](https://github.com/chef/chef/pull/9784) ([tas50](https://github.com/tas50)) <!-- 16.0.268 -->
 - Modified client cron directory permission [#9782](https://github.com/chef/chef/pull/9782) ([DhaneshRaghavan](https://github.com/DhaneshRaghavan)) <!-- 16.0.267 -->
 - Fix symbols and arrays in yaml conversion tool [#9769](https://github.com/chef/chef/pull/9769) ([phiggins](https://github.com/phiggins)) <!-- 16.0.266 -->
