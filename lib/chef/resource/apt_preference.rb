@@ -69,11 +69,11 @@ class Chef
 
       property :pin, String,
         description: "The package version or repository to pin.",
-        required: true
+        required: [:add]
 
       property :pin_priority, [String, Integer],
         description: "Sets the Pin-Priority for a package. See <https://wiki.debian.org/AptPreferences> for more details.",
-        required: true
+        required: [:add]
 
       default_action :add
       allowed_actions :add, :remove
