@@ -160,5 +160,6 @@ end
 
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sysctl"
+include_recipe "::_apt_preference"
 include_recipe "::_alternatives"
 include_recipe "::_tests"

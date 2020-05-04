@@ -104,7 +104,7 @@ class Chef
       property :value, [Array, String, Integer, Float],
         description: "The value to set.",
         coerce: proc { |v| coerce_value(v) },
-        required: %i(:apply)
+        required: [:apply]
 
       property :comment, [Array, String],
         description: "Comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
