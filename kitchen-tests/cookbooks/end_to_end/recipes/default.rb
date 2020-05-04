@@ -13,8 +13,6 @@ chef_sleep "2"
 
 timezone "UTC"
 
-include_recipe "ubuntu" if platform?("ubuntu")
-
 if platform_family?("rhel", "fedora", "amazon")
   include_recipe "selinux::disabled"
 end
