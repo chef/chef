@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.272 -->
-## [v16.0.272](https://github.com/chef/chef/tree/v16.0.272) (2020-05-04)
+<!-- latest_release 16.0.273 -->
+## [v16.0.273](https://github.com/chef/chef/tree/v16.0.273) (2020-05-04)
 
 #### Merged Pull Requests
-- Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.257 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50)) <!-- 16.0.273 -->
 - Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.272 -->
 - Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50)) <!-- 16.0.271 -->
 - Another round of description updates &amp;&amp; Docs generator tweaks [#9778](https://github.com/chef/chef/pull/9778) ([tas50](https://github.com/tas50)) <!-- 16.0.270 -->
