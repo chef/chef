@@ -13,8 +13,6 @@ chef_sleep "2"
 
 timezone "UTC"
 
-include_recipe "ubuntu" if platform?("ubuntu")
-
 if platform_family?("rhel", "fedora", "amazon")
   include_recipe "selinux::disabled"
 end
@@ -40,7 +38,7 @@ build_essential do
   raise_if_unsupported true
 end
 
-include_recipe "::packages"
+include_recipe "::_packages"
 
 include_recipe "ntp"
 
@@ -158,6 +156,8 @@ locale "set system locale" do
   only_if { debian? }
 end
 
-include_recipe "::chef-vault" unless includes_recipe?("end_to_end::chef-vault")
-include_recipe "::alternatives"
-include_recipe "::tests"
+include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
+include_recipe "::_sysctl"
+include_recipe "::_apt_preference"
+include_recipe "::_alternatives"
+include_recipe "::_tests"

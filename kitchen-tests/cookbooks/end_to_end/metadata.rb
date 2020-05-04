@@ -13,7 +13,6 @@ depends          "ntp"
 depends          "openssh"
 depends          "resolver"
 depends          "selinux"
-depends          "ubuntu"
 depends          "users"
 depends          "git"
 

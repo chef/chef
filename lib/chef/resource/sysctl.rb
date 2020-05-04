@@ -30,6 +30,65 @@ class Chef
                   "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
                   " an existing value was already set for the value it will be backed up to the node"\
                   " and restored if the :remove action is used later."
+      examples <<~DOC
+      **Set vm.swappiness**:
+
+      ```ruby
+      sysctl 'vm.swappiness' do
+        value 19
+      end
+      ```
+
+      **Remove kernel.msgmax**:
+
+      **Note**: This only removes the sysctl.d config for kernel.msgmax. The value will be set back to the kernel default value.
+
+      ```ruby
+      sysctl 'kernel.msgmax' do
+        action :remove
+      end
+      ```
+
+      **Adding Comments to sysctl configuration files**:
+
+      ```ruby
+      sysctl 'vm.swappiness' do
+        value 19
+        comment "define how aggressively the kernel will swap memory pages."
+      end
+      ```
+
+      This produces /etc/sysctl.d/99-chef-vm.swappiness.conf as follows:
+
+      ```
+      # define how aggressively the kernel will swap memory pages.
+      vm.swappiness = 1
+      ```
+
+      **Converting sysctl settings from shell scripts**:
+
+      Example of existing settings:
+
+      ```bash
+      fs.aio-max-nr = 1048576 net.ipv4.ip_local_port_range = 9000 65500 kernel.sem = 250 32000 100 128
+      ```
+
+      Converted to sysctl resources:
+
+      ```ruby
+      sysctl 'fs.aio-max-nr' do
+        value '1048576'
+      end
+
+      sysctl 'net.ipv4.ip_local_port_range' do
+        value '9000 65500'
+      end
+
+      sysctl 'kernel.sem' do
+        value '250 32000 100 128'
+      end
+      ```
+      DOC
 
       introduced "14.0"
 
@@ -44,7 +103,7 @@ class Chef
       property :value, [Array, String, Integer, Float],
         description: "The value to set.",
         coerce: proc { |v| coerce_value(v) },
-        required: true
+        required: [:apply]
 
       property :comment, [Array, String],
         description: "Comments, placed above the resource setting in the generated file. For multi-line comments, use an array of strings, one per line.",
