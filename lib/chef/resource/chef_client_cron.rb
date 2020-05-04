@@ -163,7 +163,7 @@ class Chef
       end
 
       action :remove do
-        cron_d new_resource.job_name do
+        declare_resource(cron_resource_type, new_resource.job_name) do
           action :delete
         end
       end
