@@ -147,7 +147,7 @@ class Chef
             validate_content!
           end
 
-          super
+          super()
         end
 
         # Chef::Provider::Package action_install + action_remove call install_package + remove_package
