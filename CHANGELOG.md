@@ -1,37 +1,35 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.275 -->
-## [v16.0.275](https://github.com/chef/chef/tree/v16.0.275) (2020-05-05)
-
-#### Merged Pull Requests
-- Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.0.257 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50)) <!-- 16.0.275 -->
-- fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd)) <!-- 16.0.274 -->
-- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50)) <!-- 16.0.273 -->
-- Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.272 -->
-- Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50)) <!-- 16.0.271 -->
-- Another round of description updates &amp;&amp; Docs generator tweaks [#9778](https://github.com/chef/chef/pull/9778) ([tas50](https://github.com/tas50)) <!-- 16.0.270 -->
-- Avoid setting package to macports and then overriding to homebrew [#9783](https://github.com/chef/chef/pull/9783) ([tas50](https://github.com/tas50)) <!-- 16.0.269 -->
-- chef_client_cron: cleanup the appropriate cron job [#9784](https://github.com/chef/chef/pull/9784) ([tas50](https://github.com/tas50)) <!-- 16.0.268 -->
-- Modified client cron directory permission [#9782](https://github.com/chef/chef/pull/9782) ([DhaneshRaghavan](https://github.com/DhaneshRaghavan)) <!-- 16.0.267 -->
-- Fix symbols and arrays in yaml conversion tool [#9769](https://github.com/chef/chef/pull/9769) ([phiggins](https://github.com/phiggins)) <!-- 16.0.266 -->
-- Add more examples to resources [#9775](https://github.com/chef/chef/pull/9775) ([tas50](https://github.com/tas50)) <!-- 16.0.265 -->
-- Remove an unused spec helper [#9774](https://github.com/chef/chef/pull/9774) ([tas50](https://github.com/tas50)) <!-- 16.0.264 -->
-- Improve resource self documentation [#9773](https://github.com/chef/chef/pull/9773) ([tas50](https://github.com/tas50)) <!-- 16.0.263 -->
-- More improvements to the docs generation [#9767](https://github.com/chef/chef/pull/9767) ([tas50](https://github.com/tas50)) <!-- 16.0.262 -->
-- More resource documentation improvements [#9765](https://github.com/chef/chef/pull/9765) ([tas50](https://github.com/tas50)) <!-- 16.0.261 -->
-- Improve resource docs [#9764](https://github.com/chef/chef/pull/9764) ([tas50](https://github.com/tas50)) <!-- 16.0.260 -->
-- Fix more ruby 2.7 warning logspam [#9762](https://github.com/chef/chef/pull/9762) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.259 -->
-- Fixes to support unbundled rake use [#9759](https://github.com/chef/chef/pull/9759) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.258 -->
-- Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50)) <!-- 16.0.257 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.0.275](https://github.com/chef/chef/tree/v16.0.275) (2020-05-05)
+
+#### Merged Pull Requests
+- Add Chef Infra Client 16 release notes [#9614](https://github.com/chef/chef/pull/9614) ([tas50](https://github.com/tas50))
+- Fixes to support unbundled rake use [#9759](https://github.com/chef/chef/pull/9759) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix more ruby 2.7 warning logspam [#9762](https://github.com/chef/chef/pull/9762) ([lamont-granquist](https://github.com/lamont-granquist))
+- Improve resource docs [#9764](https://github.com/chef/chef/pull/9764) ([tas50](https://github.com/tas50))
+- More resource documentation improvements [#9765](https://github.com/chef/chef/pull/9765) ([tas50](https://github.com/tas50))
+- More improvements to the docs generation [#9767](https://github.com/chef/chef/pull/9767) ([tas50](https://github.com/tas50))
+- Improve resource self documentation [#9773](https://github.com/chef/chef/pull/9773) ([tas50](https://github.com/tas50))
+- Remove an unused spec helper [#9774](https://github.com/chef/chef/pull/9774) ([tas50](https://github.com/tas50))
+- Add more examples to resources [#9775](https://github.com/chef/chef/pull/9775) ([tas50](https://github.com/tas50))
+- Fix symbols and arrays in yaml conversion tool [#9769](https://github.com/chef/chef/pull/9769) ([phiggins](https://github.com/phiggins))
+- Modified client cron directory permission [#9782](https://github.com/chef/chef/pull/9782) ([DhaneshRaghavan](https://github.com/DhaneshRaghavan))
+- chef_client_cron: cleanup the appropriate cron job [#9784](https://github.com/chef/chef/pull/9784) ([tas50](https://github.com/tas50))
+- Avoid setting package to macports and then overriding to homebrew [#9783](https://github.com/chef/chef/pull/9783) ([tas50](https://github.com/tas50))
+- Another round of description updates &amp;&amp; Docs generator tweaks [#9778](https://github.com/chef/chef/pull/9778) ([tas50](https://github.com/tas50))
+- Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50))
+- Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
+- fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd))
+- Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.0.257](https://github.com/chef/chef/tree/v16.0.257) (2020-04-28)
 
 #### Merged Pull Requests
@@ -321,7 +319,6 @@
 - Fix the powershell spec to use the right method [#9756](https://github.com/chef/chef/pull/9756) ([tas50](https://github.com/tas50))
 - Rework logging to resolve STDOUT / log_location issues [#9751](https://github.com/chef/chef/pull/9751) ([lamont-granquist](https://github.com/lamont-granquist))
 - Stop pinning rake [#9744](https://github.com/chef/chef/pull/9744) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.6.10](https://github.com/chef/chef/tree/v15.6.10) (2019-12-12)
 
