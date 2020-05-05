@@ -60,6 +60,7 @@ class Chef
           hour '8'
           weekday '6'
           mailto 'admin@example.com'
+          command "/bin/true"
           action :create
         end
         ```
@@ -73,7 +74,16 @@ class Chef
           day '*'
           month '11'
           weekday '1-5'
+          command "/bin/true"
           action :create
+        end
+        ```
+
+        **Remove a cron job by name**:
+
+        ```ruby
+        cron_d 'job_to_remove' do
+          action :delete
         end
         ```
       DOC
@@ -120,7 +130,7 @@ class Chef
 
       property :command, String,
         description: "The command to run.",
-        required: true
+        required: [:create]
 
       property :user, String,
         description: "The name of the user that runs the command.",
