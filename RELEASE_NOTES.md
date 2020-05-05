@@ -1,6 +1,17 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-# Chef Infra Client 16
+# Chef Infra Client 16.0.275
+
+The Chef Infra Client 16.0.275 includes important regression fixes for the Chef Infra Client 16 release:
+
+- Resolved failures when using the `windows_package` resource. Thanks for reporting this issue [@cookiecurse](https://github.com/cookiecurse).
+- Resolved log warnings when running `execute` resources.
+- The appropriate `cron` or `cron_d` resource call is now called when using the `:delete` action in chef_client_cron. Thanks for reporting this issue [jimwise](https://github.com/jimwise).
+- The `chef_client_cron` resource now creates the log directory with `750` permissions not `640`. Thanks for this fix [DhaneshRaghavan](https://github.com/DhaneshRaghavan).
+- The `knife yaml convert` command now correctly converts symbol values.
+- The `sysctl`, `apt_preference`, and `cron_d` remove actions no longer fail with missing property warnings.
+
+# Chef Infra Client 16.0
 
 ## Breaking Changes
 
