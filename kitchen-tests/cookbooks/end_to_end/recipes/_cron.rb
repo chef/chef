@@ -18,6 +18,7 @@ cron_d "name_of_cron_entry" do
   hour "8"
   weekday "6"
   mailto "admin@example.com"
+  command "/bin/true"
   action :create
 end
 
@@ -27,6 +28,7 @@ cron_d "name_of_cron_entry" do
   day "*"
   month "11"
   weekday "1-5"
+  command "/bin/true"
   action :create
 end
 
