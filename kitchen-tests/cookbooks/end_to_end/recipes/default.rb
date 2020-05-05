@@ -76,20 +76,6 @@ include_recipe "git"
 
 directory "/etc/ssl"
 
-cron_access "bob"
-
-cron "some random cron job" do
-  minute  0
-  hour    23
-  command "/usr/bin/true"
-end
-
-cron_d "another random cron job" do
-  minute  0
-  hour    23
-  command "/usr/bin/true"
-end
-
 # Generate new key and certificate
 openssl_dhparam "/etc/ssl/dhparam.pem" do
   key_length 1024
@@ -160,4 +146,5 @@ include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sysctl"
 include_recipe "::_apt_preference"
 include_recipe "::_alternatives"
+include_recipe "::_cron"
 include_recipe "::_tests"

@@ -76,6 +76,14 @@ class Chef
           action :create
         end
         ```
+
+        **Remove a cron job by name**:
+
+        ```ruby
+        cron_d 'job_to_remove' do
+          action :delete
+        end
+        ```
       DOC
 
       property :cron_name, String,
@@ -120,7 +128,7 @@ class Chef
 
       property :command, String,
         description: "The command to run.",
-        required: true
+        required: [:create]
 
       property :user, String,
         description: "The name of the user that runs the command.",
