@@ -114,11 +114,11 @@ if `command -v cspell`.empty?
 else
   namespace :spellcheck do
     task :run do
-      sh 'cspell **/* *.md'
+      sh 'cspell "**/*" "*.md"'
     end
 
     task :unknown_words do
-      sh 'cspell **/* *.md --wordsOnly --no-summary | sort | uniq'
+      sh 'cspell "**/*" "*.md" --wordsOnly --no-summary | sort | uniq'
     end
   end
 
