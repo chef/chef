@@ -135,7 +135,7 @@ depends 'windows', '>> 1.0'
 
 ### Logging Improvements May Cause Behavior Changes
 
-We've made low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to *both* the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 ### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
@@ -588,7 +588,7 @@ Several legacy Windows helpers have been deprecated as they will always return t
 
 ## Ohai 15.9
 
-- Improve the resilency of the `Shard` plugin when `dmidecode` cannot be found on a system. Thanks [@jaymzh](https://github.com/jaymzh)
+- Improve the resiliency of the `Shard` plugin when `dmidecode` cannot be found on a system. Thanks [@jaymzh](https://github.com/jaymzh)
 - Fixed detection of Openstack guests via DMI data. Thanks [@ramereth](https://github.com/ramereth)
 
 ## Platform Support
@@ -861,7 +861,7 @@ The `windows_task` resource is now idempotent when a system is joined to a domai
 
 ### x509_certificate
 
-The `x509_certificate` resource now includes a new `renew_before_expiry` property that allows you to auto renew certicates a specified number of days before they expire. Thanks [@julienhuon](https://github.com/julienhuon/) for this improvement.
+The `x509_certificate` resource now includes a new `renew_before_expiry` property that allows you to auto renew certificates a specified number of days before they expire. Thanks [@julienhuon](https://github.com/julienhuon/) for this improvement.
 
 ## Additional Recipe Helpers
 
@@ -1192,7 +1192,7 @@ openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-156
 
 ### nokogiri
 
-nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
+nokogiri has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
 
 # Chef Infra Client 15.2
 
@@ -1721,7 +1721,7 @@ The deprecated `Ohai::Util::Win32::GroupHelper` helper has been removed from Oha
 
 ### Ohai::System.refresh_plugins method removal
 
-The `refresh_plugins` method in the `Ohai::System` class has been removed as it has been unused for multiple major Ohai releases. If you are programatically using Ohai in your own Ruby application, you will need to update your code to use the `load_plugins` method instead.
+The `refresh_plugins` method in the `Ohai::System` class has been removed as it has been unused for multiple major Ohai releases. If you are programmatically using Ohai in your own Ruby application, you will need to update your code to use the `load_plugins` method instead.
 
 ### Ohai Microsoft VirtualPC / VirtualServer detection removal
 
@@ -1896,7 +1896,7 @@ openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-156
 
 ### nokogiri
 
-nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477).
+nokogiri has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477).
 
 # Chef Infra Client Release Notes 14.13:
 
@@ -1947,7 +1947,7 @@ In preparation for Chef Infra Client 15.0 we've added a placeholder `--chef-lice
 
 ## Important Bug Fixes
 
-- Blacklisting and whiteliting default and override level attributes is once again possible.
+- Blacklisting and whitelisting default and override level attributes is once again possible.
 - You may now encrypt a previously unencrypted data bag.
 - Resolved a regression introduced in Chef Infra Client 14.12.3 that resulted in errors when managing Windows services
 
@@ -2052,7 +2052,7 @@ Since Chef 13, `knife cookbook site` has actually called the `knife supermarket`
 
 ### Audit Mode
 
-Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superceded by InSpec and we will be removing this beta feature in Chef Infra Client 15 (April 2019).
+Chef's Audit mode was introduced in 2015 as a beta that needed to be enabled via client.rb. Its functionality has been superseded by InSpec and we will be removing this beta feature in Chef Infra Client 15 (April 2019).
 
 ### Cookbook Shadowing
 
@@ -2144,7 +2144,7 @@ windows_ad_join now uses the UPN format for usernames, which prevents some failu
 
 ### windows_certificate
 
-An issue was resolved in the :acl_add action of the windows_certificate resource, which caused the resource to fail. Thank you [@shoekstra](htts://github.com/shoekstra) for reporting this issue.
+An issue was resolved in the :acl_add action of the windows_certificate resource, which caused the resource to fail. Thank you [@shoekstra](https://github.com/shoekstra) for reporting this issue.
 
 ### windows_feature
 
@@ -3187,7 +3187,7 @@ Support for Windows 2003 has been removed from both Chef and Ohai, improving the
 
 ### Chef Solo `-r` flag
 
-The Chef Solor `-r` flag has been removed as it was deprecated and replaced with the `--recipe-url` flag in Chef 12.
+The Chef Solo `-r` flag has been removed as it was deprecated and replaced with the `--recipe-url` flag in Chef 12.
 
 ### node.set and node.set_unless attribute levels removal
 
@@ -3705,7 +3705,7 @@ The following properties are new for the `remote_file` resource:
 
 - `remote_user`<br>
   **Ruby types:** String<br>
-  _Windows only:_ The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specifed with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must** be specified.
+  _Windows only:_ The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must** be specified.
 
 - `remote_password`<br>
   **Ruby types** String<br>
@@ -4176,7 +4176,7 @@ Without a declared cwd the relative path was (most likely?) relative to wherever
 
 This change is most likely to only affect internals of tooling like chefspec if it affects anything at all.
 
-### PolicyFile failback to create non-policyfile nodes on Chef Server < 12.3 has been removed
+### PolicyFile fallback to create non-policyfile nodes on Chef Server < 12.3 has been removed
 
 PolicyFile users on Chef-13 should be using Chef Server 12.3 or higher.
 
@@ -4190,7 +4190,7 @@ Retained only for the service resource (where it makes some sense) and for the m
 
 ### Removed retrying of non-StandardError exceptions for Chef::Resource
 
-Exceptions not decending from StandardError (e.g. LoadError, SecurityError, SystemExit) will no longer trigger a retry if they are raised during the executiong of a resources with a non-zero retries setting.
+Exceptions not descending from StandardError (e.g. LoadError, SecurityError, SystemExit) will no longer trigger a retry if they are raised during the execution of a resources with a non-zero retries setting.
 
 ### Removed deprecated `method_missing` access from the Chef::Node object
 
@@ -4270,7 +4270,7 @@ The `recommends`, `suggests`, `conflicts`, `replaces` and `grouping` metadata fi
 
 ### All unignored cookbook files will now be uploaded.
 
-We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behaviour where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or Inspec tests, without having to make changes to the cookbook format to support them.
+We now treat every file under a cookbook directory as belonging to a cookbook, unless that file is ignored with a `chefignore` file. This is a change from the previous behavior where only files in certain directories, such as `recipes` or `templates`, were treated as special. This change allows chef to support new classes of files, such as Ohai plugins or Inspec tests, without having to make changes to the cookbook format to support them.
 
 ### DSL-based custom resources and providers no longer get module constants
 
@@ -4463,7 +4463,7 @@ The `execute` resource and similar resources such as `script`, `batch`, and `pow
 
 **Note**: When Chef is running as a service, this feature requires that the user that Chef runs as has 'SeAssignPrimaryTokenPrivilege' (aka 'SE_ASSIGNPRIMARYTOKEN_NAME') user right. By default only LocalSystem and NetworkService have this right when running as a service. This is necessary even if the user is an Administrator.
 
-This right bacn be added and checked in a recipe using this example:
+This right can be added and checked in a recipe using this example:
 
 ```ruby
 # Add 'SeAssignPrimaryTokenPrivilege' for the user
