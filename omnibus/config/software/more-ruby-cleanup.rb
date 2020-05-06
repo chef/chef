@@ -100,7 +100,7 @@ build do
       # don't delete these files if there's a non-empty bin dir in the same dir
       next if Dir.exist?(File.join(File.dirname(f), "bin")) && !Dir.empty?(File.join(File.dirname(f), "bin"))
 
-      # dont' perform this cleanup in chef gems
+      # don't perform this cleanup in chef gems
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 
       puts "Deleting #{f}"
