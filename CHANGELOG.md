@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.0.276 -->
+## [v16.0.276](https://github.com/chef/chef/tree/v16.0.276) (2020-05-06)
+
+#### Merged Pull Requests
+- More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.0.275 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50)) <!-- 16.0.276 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
