@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 45dff3307b8509dd52e1432c4ff1c2a6c43f316b
+  revision: 1d3b0b74a8a7c5244878c8b8f46946a1d2205641
   branch: master
   specs:
-    ohai (16.0.20)
+    ohai (16.1.0)
       chef-config (>= 12.8, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -209,7 +209,7 @@ GEM
     http_parser.rb (0.6.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.18.108)
+    inspec-core (4.18.111)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0)
@@ -234,8 +234,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.18.108)
-      inspec-core (= 4.18.108)
+    inspec-core-bin (4.18.111)
+      inspec-core (= 4.18.111)
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     jaro_winkler (1.5.4)
