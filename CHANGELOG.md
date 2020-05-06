@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.276 -->
-## [v16.0.276](https://github.com/chef/chef/tree/v16.0.276) (2020-05-06)
+<!-- latest_release 16.0.277 -->
+## [v16.0.277](https://github.com/chef/chef/tree/v16.0.277) (2020-05-06)
 
 #### Merged Pull Requests
-- More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50))
+- Update omnibus-software for new msys2 path [#9801](https://github.com/chef/chef/pull/9801) ([jaymalasinha](https://github.com/jaymalasinha))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.275 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update omnibus-software for new msys2 path [#9801](https://github.com/chef/chef/pull/9801) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 16.0.277 -->
 - More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50)) <!-- 16.0.276 -->
 <!-- release_rollup -->
 
