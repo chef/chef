@@ -97,8 +97,11 @@ build do
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
-      # don't delete these files if there's a bin dir in the same dir or we're in a chef owned gem
-      next if Dir.exist?(File.join(File.dirname(f), "bin")) || File.basename(File.expand_path("..", f)).start_with?("chef-")
+      # don't delete these files if there's a non-empty bin dir in the same dir
+      next if Dir.exist?(File.join(File.dirname(f), "bin")) && !Dir.empty?(File.join(File.dirname(f), "bin"))
+
+      # dont' perform this cleanup in chef gems
+      next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
