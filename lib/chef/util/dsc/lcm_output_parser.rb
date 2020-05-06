@@ -160,9 +160,9 @@ class Chef
 
           def self.parse_line(line)
             if match = line.match(/^.*?:.*?:\s*LCM:\s*\[(.*?)\](.*)/)
-                # If the line looks like
-                # What If: [machinename]: LCM: [op_action op_type] message
-                # extract op_action, op_type, and message
+              # If the line looks like
+              # What If: [machinename]: LCM: [op_action op_type] message
+              # extract op_action, op_type, and message
               operation, info = match.captures
               op_action, op_type = operation.strip.split(" ").map { |m| m.downcase.to_sym }
             else

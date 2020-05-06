@@ -268,7 +268,7 @@ module ChefConfig
     # Determine if the given path is protected by macOS System Integrity Protection.
     def self.is_sip_path?(path, node)
       if ChefUtils.macos?
-          # @todo: parse rootless.conf for this?
+        # @todo: parse rootless.conf for this?
         sip_paths = [
           "/System", "/bin", "/sbin", "/usr"
         ]

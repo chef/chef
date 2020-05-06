@@ -19,7 +19,7 @@ class Chef
         def children
           result = []
           seen = {}
-            # If multiple things have the same name, the first one wins.
+          # If multiple things have the same name, the first one wins.
           multiplexed_dirs.each do |dir|
             dir.children.each do |child|
               if seen[child.name]

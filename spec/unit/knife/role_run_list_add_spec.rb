@@ -21,8 +21,8 @@ require "spec_helper"
 
 describe Chef::Knife::RoleRunListAdd do
   before(:each) do
-#    Chef::Config[:role_name]  = "websimian"
-#    Chef::Config[:env_name]  = "QA"
+    #    Chef::Config[:role_name]  = "websimian"
+    #    Chef::Config[:env_name]  = "QA"
     @knife = Chef::Knife::RoleRunListAdd.new
     @knife.config = {
       after: nil,
@@ -36,10 +36,10 @@ describe Chef::Knife::RoleRunListAdd do
 
   describe "run" do
 
-#    it "should display all the things" do
-#      @knife.run
-#      @role.to_json.should == 'show all the things'
-#    end
+    #    it "should display all the things" do
+    #      @knife.run
+    #      @role.to_json.should == 'show all the things'
+    #    end
 
     it "should have a run list with the monkey role" do
       @knife.run

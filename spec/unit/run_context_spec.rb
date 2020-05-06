@@ -138,7 +138,7 @@ describe Chef::RunContext do
       expect(node).to receive(:loaded_recipe).with(:ancient, "aliens")
       expect do
         run_context.include_recipe("ancient::aliens")
-      # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
+        # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
       end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 

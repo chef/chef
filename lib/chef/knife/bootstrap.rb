@@ -93,12 +93,12 @@ class Chef
         description: "For WinRM basic authentication when using the 'ssl' auth method.",
         boolean: true
 
-        # This option was provided in knife bootstrap windows winrm,
-        # but it is ignored  in knife-windows/WinrmSession, and so remains unimplemeneted here.
-        # option :kerberos_keytab_file,
-        #   :short => "-T KEYTAB_FILE",
-        #   :long => "--keytab-file KEYTAB_FILE",
-        #   :description => "The Kerberos keytab file used for authentication"
+      # This option was provided in knife bootstrap windows winrm,
+      # but it is ignored  in knife-windows/WinrmSession, and so remains unimplemeneted here.
+      # option :kerberos_keytab_file,
+      #   :short => "-T KEYTAB_FILE",
+      #   :long => "--keytab-file KEYTAB_FILE",
+      #   :description => "The Kerberos keytab file used for authentication"
 
       option :kerberos_realm,
         short: "-R KERBEROS_REALM",
