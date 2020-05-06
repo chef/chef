@@ -547,7 +547,7 @@ class Chef
       end
 
       def get_stripped_unfrozen_value(value)
-        return nil if value.nil?
+        return nil unless value
 
         value.strip
       end

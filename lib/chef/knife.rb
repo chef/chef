@@ -345,31 +345,35 @@ class Chef
       exit(1)
     end
 
-    # keys from mixlib-cli options
-    def cli_keys
-      self.class.options.keys
+    # This is all set and default mixlib-config values.  We only need the default
+    # values here (the set values are explicitly mixed in again later), but there is
+    # no mixlib-config API to get a Hash back with only the default values.
+    #
+    # Assumption:  since config_file_defaults is the lowest precedence it doesn't matter
+    # that we include the set values here, but this is a hack and makes the name of the
+    # method a lie.  FIXME: make the name not a lie by adding an API to mixlib-config.
+    #
+    # @api private
+    #
+    def config_file_defaults
+      Chef::Config[:knife].save(true) # this is like "dup" to a (real) Hash, and includes default values (and user set values)
     end
 
-    # extracts the settings from the Chef::Config[:knife] sub-hash that correspond
-    # to knife cli options -- in preparation for merging config values with cli values
+    # This is only the user-set mixlib-config values.  We do not include the defaults
+    # here so that the config defaults do not override the cli defaults.
     #
-    # NOTE: due to weirdness in mixlib-config #has_key? is only true if the value has
-    # been set by the user -- the Chef::Config defaults return #has_key?() of false and
-    # this code DEPENDS on that functionality since applying the default values in
-    # Chef::Config[:knife] would break the defaults in the cli that we would otherwise
-    # overwrite.
+    # @api private
+    #
     def config_file_settings
-      cli_keys.each_with_object({}) do |key, memo|
-        if Chef::Config[:knife].key?(key)
-          memo[key] = Chef::Config[:knife][key]
-        end
-      end
+      Chef::Config[:knife].save(false) # this is like "dup" to a (real) Hash, and does not include default values (just user set values)
     end
 
     # config is merged in this order (inverse of precedence)
-    #  default_config       - mixlib-cli defaults (accessor from the mixin)
-    #  config_file_settings - Chef::Config[:knife] sub-hash
-    #  config               - mixlib-cli settings (accessor from the mixin)
+    #  config_file_defaults - Chef::Config[:knife] defaults from chef-config (XXX: this also includes the settings, but they get overwritten)
+    #  default_config       - mixlib-cli defaults (accessor from mixlib-cli)
+    #  config_file_settings - Chef::Config[:knife] user settings from the client.rb file
+    #  config               - mixlib-cli settings (accessor from mixlib-cli)
+    #
     def merge_configs
       # Update our original_config - if someone has created a knife command
       # instance directly, they are likely ot have set cmd.config values directly
@@ -377,7 +381,7 @@ class Chef
       @original_config = config.dup
       # other code may have a handle to the config object, so use Hash#replace to deliberately
       # update-in-place.
-      config.replace(default_config.merge(config_file_settings).merge(config))
+      config.replace(config_file_defaults.merge(default_config).merge(config_file_settings).merge(config))
     end
 
     #
@@ -387,8 +391,9 @@ class Chef
     # @return [Symbol,NilClass] return the source of the config key,
     # one of:
     #   - :cli - this was explicitly provided on the CLI
-    #   - :config - this came from Chef::Config[:knife]
+    #   - :config - this came from Chef::Config[:knife] explicitly being set
     #   - :cli_default - came from a declared CLI `option`'s `default` value.
+    #   - :config_default - this came from Chef::Config[:knife]'s defaults
     #   - nil - if the key could not be found in any source.
     #           This can happen when it is invalid, or has been
     #           set directly into #config without then calling #merge_config
@@ -396,6 +401,7 @@ class Chef
       return :cli if @original_config.include? key
       return :config if config_file_settings.key? key
       return :cli_default if default_config.include? key
+      return :config_default if config_file_defaults.key? key # must come after :config check
 
       nil
     end

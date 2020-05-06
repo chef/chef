@@ -1069,16 +1069,15 @@ class Chef
       # knife_config_key should be specified if the knife config lookup
       # key is different from the CLI flag lookup key.
       #
-      def config_value(key, knife_config_key = nil, default = nil)
-        if config.key? key
+      def config_value(key, fallback_key = nil, default = nil)
+        if config.key?(key)
+          # the first key is the primary key so we check the merged hash first
           config[key]
+        elsif config.key?(fallback_key)
+          # we get the old config option here (the deprecated cli option shouldn't exist)
+          config[fallback_key]
         else
-          lookup_key = knife_config_key || key
-          if Chef::Config[:knife].key?(lookup_key) || config.key?(lookup_key)
-            Chef::Config[:knife][lookup_key] || config[lookup_key]
-          else
-            default
-          end
+          default
         end
       end
 
