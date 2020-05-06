@@ -45,7 +45,7 @@ class Chef
       property :lang, String,
         description: "Sets the default system language.",
         regex: [LOCALE_REGEX],
-        validation_message: "The provided lang is not valid. It should be a non-empty string without any leading whitespaces."
+        validation_message: "The provided lang is not valid. It should be a non-empty string without any leading whitespace."
 
       property :lc_env, Hash,
         description: "A Hash of LC_* env variables in the form of `({ 'LC_ENV_VARIABLE' => 'VALUE' })`.",
@@ -59,7 +59,7 @@ class Chef
             end
           end
           unless h.values.all? { |x| x =~ LOCALE_REGEX }
-            error_msg = "Values of option lc_env should be non-empty string without any leading whitespaces."
+            error_msg = "Values of option lc_env should be non-empty string without any leading whitespace."
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
           h

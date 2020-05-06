@@ -175,7 +175,7 @@ class Chef
               raise Chef::Exceptions::ValidationFailed, error_msg
             end
             unless h.values.all? { |x| x =~ TIMEOUT_REGEX }
-              error_msg = "Values of option time_out should be non-empty string without any leading whitespaces."
+              error_msg = "Values of option time_out should be non-empty string without any leading whitespace."
               raise Chef::Exceptions::ValidationFailed, error_msg
             end
             h
