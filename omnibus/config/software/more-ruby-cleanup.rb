@@ -38,8 +38,10 @@ build do
     # find the embedded ruby gems dir and clean it up for globbing
     target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
     files = %w{
+      *-public_cert.pem
       *.blurb
       *Upgrade.md
+      .dockerignore
       autotest
       autotest/*
       bench
@@ -48,6 +50,7 @@ build do
       design_rationale.rb
       doc
       doc-api
+      Dockerfile*
       docs
       ed25519.png
       example
@@ -64,6 +67,7 @@ build do
       rakelib
       sample
       samples
+      samus.json
       site
       test
       tests
