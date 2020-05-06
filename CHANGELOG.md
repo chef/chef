@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.278 -->
-## [v16.0.278](https://github.com/chef/chef/tree/v16.0.278) (2020-05-06)
+<!-- latest_release 16.0.279 -->
+## [v16.0.279](https://github.com/chef/chef/tree/v16.0.279) (2020-05-06)
 
 #### Merged Pull Requests
-- Pin chef-telementry to 1.0.3 to avoid ffi build breakage  [#9808](https://github.com/chef/chef/pull/9808) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 4.18.111 [#9803](https://github.com/chef/chef/pull/9803) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.275 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core to 4.18.111 [#9803](https://github.com/chef/chef/pull/9803) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.279 -->
 - Pin chef-telementry to 1.0.3 to avoid ffi build breakage  [#9808](https://github.com/chef/chef/pull/9808) ([tas50](https://github.com/tas50)) <!-- 16.0.278 -->
 - Update omnibus-software for new msys2 path [#9801](https://github.com/chef/chef/pull/9801) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 16.0.277 -->
 - More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50)) <!-- 16.0.276 -->
