@@ -93,6 +93,16 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect(resource.returns).to eq([0, 3010])
   end
 
+  it "does not accept a string for the package_name property" do
+    expect { resource.package_name(%w{this should break}) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  # even though we don't do anything with arrays of versions we need them for current_value
+  it "accepts both Strings and Arrays for the version property" do
+    expect { resource.version "1.2.3" }.not_to raise_error
+    expect { resource.version ["1.2.3", "1.2.3.4"] }.not_to raise_error
+  end
+
   it "defaults source to the resource name" do
     # it's a little late to stub out File.absolute_path
     expect(resource.source).to include("solitaire.msi")
