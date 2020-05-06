@@ -25,6 +25,15 @@ license :project_license
 source path: "#{project.files_path}/#{name}"
 
 build do
+  block "Removing console and setup binaries" do
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/bin/{console,setup}").each do |f|
+      puts "Deleting #{f}"
+      FileUtils.rm_rf(f)
+    end
+  end
+end
+
+build do
   block "Removing additional non-code files from installed gems" do
     # find the embedded ruby gems dir and clean it up for globbing
     target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
