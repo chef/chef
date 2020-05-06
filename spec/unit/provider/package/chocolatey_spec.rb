@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::Package::Chocolatey do
+describe Chef::Provider::Package::Chocolatey, :windows_only do
   let(:timeout) { 900 }
 
   let(:new_resource) { Chef::Resource::ChocolateyPackage.new("git") }

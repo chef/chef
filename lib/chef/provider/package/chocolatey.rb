@@ -18,15 +18,16 @@
 require_relative "../package"
 require_relative "../../resource/chocolatey_package"
 require_relative "../../mixin/powershell_out"
+require_relative "../../win32/api/command_line_helper" if ChefUtils.windows?
 
 class Chef
   class Provider
     class Package
       class Chocolatey < Chef::Provider::Package
         include Chef::Mixin::PowershellOut
+        include Chef::ReservedNames::Win32::API::CommandLineHelper if ChefUtils.windows?
 
         provides :chocolatey_package
-
         # Declare that our arguments should be arrays
         use_multipackage_api
 
@@ -209,7 +210,7 @@ class Chef
         # @param include_source [Boolean] should the source parameter be added
         # @return [String] options from new_resource or empty string
         def cmd_args(include_source: true)
-          cmd_args = [ new_resource.options ]
+          cmd_args = new_resource.options.is_a?(String) ? command_line_to_argv_w_helper(new_resource.options) : Array(new_resource.options)
           cmd_args += common_options(include_source: include_source)
           cmd_args
         end
