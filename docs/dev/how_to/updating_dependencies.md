@@ -9,7 +9,5 @@ If you want to change our constraints (change which packages and versions we acc
 In order to update everything, run `rake dependencies`.  Note that the [Gemfile.lock](Gemfile.lock) pins Windows platform gems, and to fully regenerate the lockfile, you must use the following commands, or run `rake dependencies:update_gemfile_lock`:
 
 ```bash
-bundle lock --update --add-platform ruby
-bundle lock --update --add-platform x64-mingw32
-bundle lock --update --add-platform x86-mingw32
+bundle lock --update --add-platform ruby x64-mingw32 x86-mingw32
 ```
