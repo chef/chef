@@ -1,32 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.287 -->
-## [v16.0.287](https://github.com/chef/chef/tree/v16.0.287) (2020-05-07)
-
-#### Merged Pull Requests
-- Fix a misspelling in knife subcommand. [#9825](https://github.com/chef/chef/pull/9825) ([phiggins](https://github.com/phiggins))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.0.275 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix a misspelling in knife subcommand. [#9825](https://github.com/chef/chef/pull/9825) ([phiggins](https://github.com/phiggins)) <!-- 16.0.287 -->
-- Only require the driver_name property when creating printer ports [#9824](https://github.com/chef/chef/pull/9824) ([tas50](https://github.com/tas50)) <!-- 16.0.286 -->
-- Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
-- Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
-- Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
-- Update omnibus-software for Windows lalr1.java removal [#9815](https://github.com/chef/chef/pull/9815) ([btm](https://github.com/btm)) <!-- 16.0.284 -->
-- Add ohai_hint and openssl_* testing in Test Kitchen [#9813](https://github.com/chef/chef/pull/9813) ([tas50](https://github.com/tas50)) <!-- 16.0.283 -->
-- fix launchd provider for chef-16 [#9812](https://github.com/chef/chef/pull/9812) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.282 -->
-- Align all our comments with the code [#9811](https://github.com/chef/chef/pull/9811) ([tas50](https://github.com/tas50)) <!-- 16.0.281 -->
-- Fix windows_package not allowing version to be an array [#9810](https://github.com/chef/chef/pull/9810) ([tas50](https://github.com/tas50)) <!-- 16.0.280 -->
-- Bump inspec-core to 4.18.111 [#9803](https://github.com/chef/chef/pull/9803) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.279 -->
-- Pin chef-telementry to 1.0.3 to avoid ffi build breakage  [#9808](https://github.com/chef/chef/pull/9808) ([tas50](https://github.com/tas50)) <!-- 16.0.278 -->
-- Update omnibus-software for new msys2 path [#9801](https://github.com/chef/chef/pull/9801) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 16.0.277 -->
-- More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50)) <!-- 16.0.276 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.0.287](https://github.com/chef/chef/tree/v16.0.287) (2020-05-07)
+
+#### Merged Pull Requests
+- More cleanup of our installed gems [#9802](https://github.com/chef/chef/pull/9802) ([tas50](https://github.com/tas50))
+- Update omnibus-software for new msys2 path [#9801](https://github.com/chef/chef/pull/9801) ([jaymalasinha](https://github.com/jaymalasinha))
+- Pin chef-telementry to 1.0.3 to avoid ffi build breakage  [#9808](https://github.com/chef/chef/pull/9808) ([tas50](https://github.com/tas50))
+- Bump inspec-core to 4.18.111 [#9803](https://github.com/chef/chef/pull/9803) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fix windows_package not allowing version to be an array [#9810](https://github.com/chef/chef/pull/9810) ([tas50](https://github.com/tas50))
+- Align all our comments with the code [#9811](https://github.com/chef/chef/pull/9811) ([tas50](https://github.com/tas50))
+- fix launchd provider for chef-16 [#9812](https://github.com/chef/chef/pull/9812) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add ohai_hint and openssl_* testing in Test Kitchen [#9813](https://github.com/chef/chef/pull/9813) ([tas50](https://github.com/tas50))
+- Update omnibus-software for Windows lalr1.java removal [#9815](https://github.com/chef/chef/pull/9815) ([btm](https://github.com/btm))
+- Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50))
+- Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50))
+- Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50))
+- Only require the driver_name property when creating printer ports [#9824](https://github.com/chef/chef/pull/9824) ([tas50](https://github.com/tas50))
+- Fix a misspelling in knife subcommand. [#9825](https://github.com/chef/chef/pull/9825) ([phiggins](https://github.com/phiggins))
+<!-- latest_stable_release -->
+
 ## [v16.0.275](https://github.com/chef/chef/tree/v16.0.275) (2020-05-05)
 
 #### Merged Pull Requests
@@ -49,7 +47,6 @@
 - Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
 - fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd))
 - Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.0.257](https://github.com/chef/chef/tree/v16.0.257) (2020-04-28)
 
