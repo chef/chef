@@ -21,15 +21,11 @@ export FORCE_FFI_YAJL=ext
 export CHEF_LICENSE="accept-silent"
 export PATH=$PATH:/opt/omnibus-toolchain/embedded/bin
 
-echo "--- Installing Ruby 2.6"
-sudo amazon-linux-extras install ruby2.6 -y
-sudo yum install rubygem-bundler -y
-
 # Update Gems
 echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-bundle install --jobs=3 --retry=3 --path=vendor/bundle
+bundle install --jobs=3 --retry=3 --path=../vendor/bundle
 
 echo "--- Config information"
 
