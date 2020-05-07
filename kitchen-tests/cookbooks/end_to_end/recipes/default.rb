@@ -74,26 +74,6 @@ include_recipe "logrotate"
 
 include_recipe "git"
 
-directory "/etc/ssl"
-
-# Generate new key and certificate
-openssl_dhparam "/etc/ssl/dhparam.pem" do
-  key_length 1024
-  action :create
-end
-
-# Generate new key with aes-128-cbc cipher
-openssl_rsa_private_key "/etc/ssl/rsakey_aes128cbc.pem" do
-  key_length 1024
-  key_cipher "aes-128-cbc"
-  action :create
-end
-
-openssl_rsa_public_key "/etc/ssl/rsakey_aes128cbc.pub" do
-  private_key_path "/etc/ssl/rsakey_aes128cbc.pem"
-  action :create
-end
-
 # test various archive formats in the archive_file resource
 %w{tourism.tar.gz tourism.tar.xz tourism.zip}.each do |archive|
   cookbook_file File.join(Chef::Config[:file_cache_path], archive) do
@@ -147,4 +127,6 @@ include_recipe "::_sysctl"
 include_recipe "::_apt_preference"
 include_recipe "::_alternatives"
 include_recipe "::_cron"
+include_recipe "::_ohai_hint"
+include_recipe "::_openssl"
 include_recipe "::_tests"
