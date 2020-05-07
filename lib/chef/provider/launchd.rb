@@ -36,7 +36,6 @@ class Chef
         label
         mode
         owner
-        path
         source
         session_type
         type
@@ -44,7 +43,6 @@ class Chef
 
       def load_current_resource
         current_resource = Chef::Resource::Launchd.new(new_resource.name)
-        @path = path ? path : gen_path_from_type
       end
 
       def gen_path_from_type
@@ -90,25 +88,16 @@ class Chef
 
       def manage_plist(action)
         if source
-          cookbook_file @path do
-            cookbook_name = cookbook if cookbook
-            name(@path) if @path
-            backup(backup) if backup
-            group(group) if group
-            mode(mode) if mode
-            owner(owner) if owner
-            source(source) if source
+          cookbook_file path do
+            cookbook_name = new_resource.cookbook if new_resource.cookbook
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner, :source)
             action(action)
             only_if { manage_agent?(action) }
           end
         else
-          file @path do
-            name(@path) if @path
-            backup(backup) if backup
-            content(content) if content?
-            group(group) if group
-            mode(mode) if mode
-            owner(owner) if owner
+          file path do
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner)
+            content(file_content) if file_content?
             action(action)
             only_if { manage_agent?(action) }
           end
@@ -116,11 +105,11 @@ class Chef
       end
 
       def manage_service(action)
+        plist_path = path
         macosx_service label do
-          name(label) if label
-          service_name(label) if label
-          plist(@path) if @path
-          session_type(session_type) if session_type
+          service_name(new_resource.label) if new_resource.label
+          plist(plist_path) if plist_path
+          copy_properties_from(new_resource, :session_type)
           action(action)
           only_if { manage_agent?(action) }
         end
@@ -155,11 +144,11 @@ class Chef
         end
       end
 
-      def content?
-        !!content
+      def file_content?
+        !!file_content
       end
 
-      def content
+      def file_content
         plist_hash = new_resource.plist_hash || gen_hash
         ::Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
@@ -214,6 +203,11 @@ class Chef
         }.each_with_object({}) do |(key, val), memo|
           memo[val] = new_resource.send(key) if new_resource.send(key)
         end
+      end
+
+      # @api private
+      def path
+        @path = new_resource.path ? new_resource.path : gen_path_from_type
       end
     end
   end
