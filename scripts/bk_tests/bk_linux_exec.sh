@@ -23,6 +23,7 @@ export PATH=$PATH:/opt/omnibus-toolchain/embedded/bin
 
 echo "--- Installing Ruby 2.6"
 sudo amazon-linux-extras install ruby2.6 -y
+sudo yum install rubygem-bundler -y
 
 # Update Gems
 echo "--- Installing Gems"
