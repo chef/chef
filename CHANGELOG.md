@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.284 -->
-## [v16.0.284](https://github.com/chef/chef/tree/v16.0.284) (2020-05-07)
+<!-- latest_release 16.0.285 -->
+## [v16.0.285](https://github.com/chef/chef/tree/v16.0.285) (2020-05-07)
 
 #### Merged Pull Requests
-- Update omnibus-software for Windows lalr1.java removal [#9815](https://github.com/chef/chef/pull/9815) ([btm](https://github.com/btm))
+- Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.275 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Update omnibus-software for Windows lalr1.java removal [#9815](https://github.com/chef/chef/pull/9815) ([btm](https://github.com/btm)) <!-- 16.0.284 -->
 - Add ohai_hint and openssl_* testing in Test Kitchen [#9813](https://github.com/chef/chef/pull/9813) ([tas50](https://github.com/tas50)) <!-- 16.0.283 -->
 - fix launchd provider for chef-16 [#9812](https://github.com/chef/chef/pull/9812) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.282 -->
