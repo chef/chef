@@ -87,7 +87,6 @@ class Chef
       end
 
       def manage_plist(action)
-        path = path
         if source
           cookbook_file path do
             cookbook_name = new_resource.cookbook if new_resource.cookbook
@@ -106,10 +105,10 @@ class Chef
       end
 
       def manage_service(action)
-        path = path
+        plist_path = path
         macosx_service label do
           service_name(new_resource.label) if new_resource.label
-          plist(path) if path
+          plist(plist_path) if plist_path
           copy_properties_from(new_resource, :session_type)
           action(action)
           only_if { manage_agent?(action) }
