@@ -36,7 +36,6 @@ class Chef
         label
         mode
         owner
-        path
         source
         session_type
         type
@@ -44,7 +43,6 @@ class Chef
 
       def load_current_resource
         current_resource = Chef::Resource::Launchd.new(new_resource.name)
-        @path = path ? path : gen_path_from_type
       end
 
       def gen_path_from_type
@@ -89,26 +87,20 @@ class Chef
       end
 
       def manage_plist(action)
+        path = @path
         if source
-          cookbook_file @path do
-            cookbook_name = cookbook if cookbook
-            name(@path) if @path
-            backup(backup) if backup
-            group(group) if group
-            mode(mode) if mode
-            owner(owner) if owner
-            source(source) if source
+          cookbook_file path do
+            cookbook_name = new_resource.cookbook if new_resource.cookbook
+            name(path) if path
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner, :source)
             action(action)
             only_if { manage_agent?(action) }
           end
         else
-          file @path do
-            name(@path) if @path
-            backup(backup) if backup
+          file path do
+            name(path) if path
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner)
             content(content) if content?
-            group(group) if group
-            mode(mode) if mode
-            owner(owner) if owner
             action(action)
             only_if { manage_agent?(action) }
           end
@@ -116,11 +108,12 @@ class Chef
       end
 
       def manage_service(action)
+        path = @path
         macosx_service label do
-          name(label) if label
-          service_name(label) if label
-          plist(@path) if @path
-          session_type(session_type) if session_type
+          name(new_resource.label) if new_resource.label
+          service_name(new_resource.label) if new_resource.label
+          plist(path) if path
+          copy_properties_from(new_resource, :session_type)
           action(action)
           only_if { manage_agent?(action) }
         end
@@ -214,6 +207,11 @@ class Chef
         }.each_with_object({}) do |(key, val), memo|
           memo[val] = new_resource.send(key) if new_resource.send(key)
         end
+      end
+
+      # @api private
+      def path
+        @path = new_resource.path ? new_resource.path : gen_path_from_type
       end
     end
   end
