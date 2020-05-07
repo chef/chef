@@ -87,7 +87,7 @@ class Chef
       end
 
       def manage_plist(action)
-        path = @path
+        path = path
         if source
           cookbook_file path do
             cookbook_name = new_resource.cookbook if new_resource.cookbook
@@ -108,7 +108,7 @@ class Chef
       end
 
       def manage_service(action)
-        path = @path
+        path = path
         macosx_service label do
           name(new_resource.label) if new_resource.label
           service_name(new_resource.label) if new_resource.label
