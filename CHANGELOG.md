@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.281 -->
-## [v16.0.281](https://github.com/chef/chef/tree/v16.0.281) (2020-05-07)
+<!-- latest_release 16.0.282 -->
+## [v16.0.282](https://github.com/chef/chef/tree/v16.0.282) (2020-05-07)
 
 #### Merged Pull Requests
-- Align all our comments with the code [#9811](https://github.com/chef/chef/pull/9811) ([tas50](https://github.com/tas50))
+- fix launchd provider for chef-16 [#9812](https://github.com/chef/chef/pull/9812) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.275 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix launchd provider for chef-16 [#9812](https://github.com/chef/chef/pull/9812) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.282 -->
 - Align all our comments with the code [#9811](https://github.com/chef/chef/pull/9811) ([tas50](https://github.com/tas50)) <!-- 16.0.281 -->
 - Fix windows_package not allowing version to be an array [#9810](https://github.com/chef/chef/pull/9810) ([tas50](https://github.com/tas50)) <!-- 16.0.280 -->
 - Bump inspec-core to 4.18.111 [#9803](https://github.com/chef/chef/pull/9803) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.279 -->
