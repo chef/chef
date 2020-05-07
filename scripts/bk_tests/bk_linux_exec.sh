@@ -33,6 +33,7 @@ echo "--- Installing Ruby 2.7.1"
 /opt/asdf/bin/asdf global ruby 2.7.1
 
 # Update Gems
+echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc
 gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
 gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2) --force
