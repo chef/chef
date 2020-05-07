@@ -62,7 +62,7 @@ class Chef
 
       property :driver_name, String,
         description: "The exact name of printer driver installed on the system.",
-        required: true
+        required: [:create]
 
       property :location, String,
         description: "Printer location, such as `Fifth floor copy room`."
