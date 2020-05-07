@@ -1524,8 +1524,6 @@
     "realname",
     "realpath",
     "rebooter",
-    // This is a typo but needs more investigation.
-    "recind",
     "reconfig",
     "recursing",
     "redhat",
