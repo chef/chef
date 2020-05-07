@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.0.286 -->
+## [v16.0.286](https://github.com/chef/chef/tree/v16.0.286) (2020-05-07)
 
 #### Merged Pull Requests
+- Only require the driver_name property when creating printer ports [#9824](https://github.com/chef/chef/pull/9824) ([tas50](https://github.com/tas50))
 - Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50))
 - Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
@@ -11,6 +12,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Only require the driver_name property when creating printer ports [#9824](https://github.com/chef/chef/pull/9824) ([tas50](https://github.com/tas50)) <!-- 16.0.286 -->
 - Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
