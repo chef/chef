@@ -11,27 +11,24 @@ apt_update
 
 chef_sleep "2"
 
+execute "sleep 1"
+
+execute "sleep 1 second" do
+  command "sleep 1"
+  live_stream true
+end
+
+execute "sensitive sleep" do
+  command "sleep 1"
+  sensitive true
+end
+
 timezone "UTC"
+
+include_recipe "::_yum" if platform_family?("rhel")
 
 if platform_family?("rhel", "fedora", "amazon")
   include_recipe "selinux::disabled"
-end
-
-bash "disable yum metadata caching" do
-  code <<-EOH
-    echo http_caching=packages >> /etc/yum.conf
-  EOH
-  only_if { File.exist?("/etc/yum.conf") && File.readlines("/etc/yum.conf").grep(/http_caching=packages/).empty? }
-end
-
-yum_repository "epel" do
-  enabled true
-  description "Extra Packages for Enterprise Linux #{node["platform_version"].to_i} - $basearch"
-  failovermethod "priority"
-  gpgkey "https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-#{node["platform_version"].to_i}"
-  gpgcheck true
-  mirrorlist "https://mirrors.fedoraproject.org/metalink?repo=epel-#{node["platform_version"].to_i}&arch=$basearch"
-  only_if { rhel? }
 end
 
 build_essential do
@@ -50,18 +47,6 @@ users_manage "sysadmin" do
 end
 
 ssh_known_hosts_entry "github.com"
-
-sudo "sysadmins" do
-  group ["sysadmin", "%superadmin"]
-  nopasswd true
-end
-
-sudo "some_person" do
-  nopasswd true
-  user "some_person"
-  commands ["/opt/chef/bin/chef-client"]
-  env_keep_add %w{PATH RBENV_ROOT RBENV_VERSION}
-end
 
 include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
@@ -122,9 +107,10 @@ locale "set system locale" do
   only_if { debian? }
 end
 
+include_recipe "::_apt" if platform_family?("debian")
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
+include_recipe "::_sudo"
 include_recipe "::_sysctl"
-include_recipe "::_apt_preference"
 include_recipe "::_alternatives"
 include_recipe "::_cron"
 include_recipe "::_ohai_hint"
