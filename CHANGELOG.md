@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50))
 - Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Cache the gems during the Test Kitchen tests [#9818](https://github.com/chef/chef/pull/9818) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Expand our sudo, sysctl, execute, apt_update and apt_preference testing [#9816](https://github.com/chef/chef/pull/9816) ([tas50](https://github.com/tas50)) <!-- 16.0.285 -->
 - Update omnibus-software for Windows lalr1.java removal [#9815](https://github.com/chef/chef/pull/9815) ([btm](https://github.com/btm)) <!-- 16.0.284 -->
