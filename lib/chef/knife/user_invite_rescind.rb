@@ -20,14 +20,14 @@ require_relative "../knife"
 
 class Chef
   class Knife
-    class UserInviteRecind < Chef::Knife
+    class UserInviteRescind < Chef::Knife
       category "user"
-      banner "knife user invite recind [USERNAMES] (options)"
+      banner "knife user invite rescind [USERNAMES] (options)"
 
       option :all,
         short: "-a",
         long: "--all",
-        description: "Recind all invites!"
+        description: "Rescind all invites!"
 
       def run
         if (name_args.length < 1) && ! config.key?(:all)
@@ -36,18 +36,18 @@ class Chef
           exit 1
         end
 
-        # To recind we need to send a DELETE to association_requests/INVITE_ID
+        # To rescind we need to send a DELETE to association_requests/INVITE_ID
         # For user friendliness we look up the invite ID based on username.
         @invites = {}
         usernames = name_args
         rest.get_rest("association_requests").each { |i| @invites[i["username"]] = i["id"] }
         if config[:all]
-          ui.confirm("Are you sure you want to recind all association requests")
+          ui.confirm("Are you sure you want to rescind all association requests")
           @invites.each do |u, i|
             rest.delete_rest("association_requests/#{i}")
           end
         else
-          ui.confirm("Are you sure you want to recind the association requests for: #{usernames.join(", ")}")
+          ui.confirm("Are you sure you want to rescind the association requests for: #{usernames.join(", ")}")
           usernames.each do |u|
             if @invites.key?(u)
               rest.delete_rest("association_requests/#{@invites[u]}")
