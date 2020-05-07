@@ -44,10 +44,10 @@ describe Chef::Knife::RoleEnvRunListClear do
 
   describe "run" do
 
-#    it "should display all the things" do
-#      @knife.run
-#      @role.to_json.should == 'show all the things'
-#    end
+    #    it "should display all the things" do
+    #      @knife.run
+    #      @role.to_json.should == 'show all the things'
+    #    end
 
     it "should load the node" do
       expect(Chef::Role).to receive(:load).with("will").and_return(@role)

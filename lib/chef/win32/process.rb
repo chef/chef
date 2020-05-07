@@ -82,8 +82,8 @@ class Chef
         (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
       end
 
-        # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
-        # AND the PROCESS_VM_READ right
+      # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
+      # AND the PROCESS_VM_READ right
       def self.get_process_memory_info(handle)
         memory_info = PROCESS_MEMORY_COUNTERS.new
         unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)

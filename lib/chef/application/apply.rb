@@ -232,7 +232,7 @@ class Chef::Application::Apply < Chef::Application
     Chef::Application.fatal!("#{e.class}: #{e.message}", e)
   end
 
-    # Get this party started
+  # Get this party started
   def run(enforce_license = false)
     reconfigure
     check_license_acceptance if enforce_license

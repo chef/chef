@@ -93,7 +93,7 @@ class Chef
         description: "The local address the firewall rule applies to."
 
       property :local_port, [String, Integer, Array],
-               # split various formats of comma separated lists and provide a sorted array of strings to match PS output
+        # split various formats of comma separated lists and provide a sorted array of strings to match PS output
         coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map(&:to_s) },
         description: "The local port the firewall rule applies to."
 
@@ -101,7 +101,7 @@ class Chef
         description: "The remote address the firewall rule applies to."
 
       property :remote_port, [String, Integer, Array],
-               # split various formats of comma separated lists and provide a sorted array of strings to match PS output
+        # split various formats of comma separated lists and provide a sorted array of strings to match PS output
         coerce: proc { |d| d.is_a?(String) ? d.split(/\s*,\s*/).sort : Array(d).sort.map(&:to_s) },
         description: "The remote port the firewall rule applies to."
 

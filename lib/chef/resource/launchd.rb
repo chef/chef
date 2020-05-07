@@ -76,20 +76,20 @@ class Chef
       property :start_calendar_interval, [Hash, Array],
         description: "A Hash (similar to crontab) that defines the calendar frequency at which a job is started or an Array.",
         coerce: proc { |type|
-                  # Coerce into an array of hashes to make validation easier
+          # Coerce into an array of hashes to make validation easier
           array = if type.is_a?(Array)
                     type
                   else
                     [type]
                   end
 
-                  # Check to make sure that our array only has hashes
+          # Check to make sure that our array only has hashes
           unless array.all? { |obj| obj.is_a?(Hash) }
             error_msg = "start_calendar_interval must be a single hash or an array of hashes!"
             raise Chef::Exceptions::ValidationFailed, error_msg
           end
 
-                  # Make sure the hashes don't have any incorrect keys/values
+          # Make sure the hashes don't have any incorrect keys/values
           array.each do |entry|
             allowed_keys = %w{Minute Hour Day Weekday Month}
             unless entry.keys.all? { |key| allowed_keys.include?(key) }
@@ -105,7 +105,7 @@ class Chef
             end
           end
 
-                  # Don't return array if we only have one entry
+          # Don't return array if we only have one entry
           if array.size == 1
             array.first
           else

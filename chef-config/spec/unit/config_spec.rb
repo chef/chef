@@ -186,29 +186,29 @@ RSpec.describe ChefConfig::Config do
   end
 
   describe "when configuring formatters" do
-      # if TTY and not(force-logger)
-      #   formatter = configured formatter or default formatter
-      #   formatter goes to STDOUT/ERR
-      #   if log file is writeable
-      #     log level is configured level or info
-      #     log location is file
-      #   else
-      #     log level is warn
-      #     log location is STDERR
-      #    end
-      # elsif not(TTY) and force formatter
-      #   formatter = configured formatter or default formatter
-      #   if log_location specified
-      #     formatter goes to log_location
-      #   else
-      #     formatter goes to STDOUT/ERR
-      #   end
-      # else
-      #   formatter = "null"
-      #   log_location = configured-value or defualt
-      #   log_level = info or defualt
-      # end
-      #
+    # if TTY and not(force-logger)
+    #   formatter = configured formatter or default formatter
+    #   formatter goes to STDOUT/ERR
+    #   if log file is writeable
+    #     log level is configured level or info
+    #     log location is file
+    #   else
+    #     log level is warn
+    #     log location is STDERR
+    #    end
+    # elsif not(TTY) and force formatter
+    #   formatter = configured formatter or default formatter
+    #   if log_location specified
+    #     formatter goes to log_location
+    #   else
+    #     formatter goes to STDOUT/ERR
+    #   end
+    # else
+    #   formatter = "null"
+    #   log_location = configured-value or defualt
+    #   log_level = info or defualt
+    # end
+    #
     it "has an empty list of formatters by default" do
       expect(ChefConfig::Config.formatters).to eq([])
     end

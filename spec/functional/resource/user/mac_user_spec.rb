@@ -29,7 +29,7 @@ describe "Chef::Resource::User with Chef::Provider::User::MacUser provider", met
   def clean_user
     shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
   rescue Mixlib::ShellOut::ShellCommandFailed
-      # Raised when the user is already cleaned
+    # Raised when the user is already cleaned
   end
 
   def ensure_file_cache_path_exists

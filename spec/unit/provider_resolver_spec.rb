@@ -593,14 +593,14 @@ describe Chef::ProviderResolver do
           "debian" => {
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Debian ],
             package: [ Chef::Resource::AptPackage, Chef::Provider::Package::Apt ],
-    #        service: [ Chef::Resource::DebianService, Chef::Provider::Service::Debian ],
+            #        service: [ Chef::Resource::DebianService, Chef::Provider::Service::Debian ],
 
             "debian" => {
               "7.0" => {
               },
               "6.0" => {
                 ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
-    #            service: [ Chef::Resource::InsservService, Chef::Provider::Service::Insserv ],
+                #            service: [ Chef::Resource::InsservService, Chef::Provider::Service::Insserv ],
               },
               "5.0" => {
                 ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
@@ -619,7 +619,7 @@ describe Chef::ProviderResolver do
             "linuxmint" => {
               "3.1.4" => {
                 ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig ],
-    #            service: [ Chef::Resource::UpstartService, Chef::Provider::Service::Upstart ],
+                #            service: [ Chef::Resource::UpstartService, Chef::Provider::Service::Upstart ],
               },
             },
             "raspbian" => {
@@ -667,7 +667,7 @@ describe Chef::ProviderResolver do
             # TODO should be Chef::Resource::PortagePackage
             package: [ Chef::Resource::Package, Chef::Provider::Package::Portage ],
             portage_package: [ Chef::Resource::PortagePackage, Chef::Provider::Package::Portage ],
-    #        service: [ Chef::Resource::GentooService, Chef::Provider::Service::Gentoo ],
+            #        service: [ Chef::Resource::GentooService, Chef::Provider::Service::Gentoo ],
 
             "gentoo" => {
               "3.1.4" => {
@@ -676,14 +676,14 @@ describe Chef::ProviderResolver do
           },
 
           "rhel" => {
-    #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
+            #        service: [ Chef::Resource::SystemdService, Chef::Provider::Service::Systemd ],
             package: [ Chef::Resource::DnfPackage, Chef::Provider::Package::Dnf ],
             ifconfig: [ Chef::Resource::Ifconfig, Chef::Provider::Ifconfig::Redhat ],
 
             %w{amazon xcp xenserver ibm_powerkvm cloudlinux parallels} => {
               "3.1.4" => {
                 package: [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
-    #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
+                #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               },
             },
             %w{redhat centos scientific oracle} => {
@@ -692,14 +692,14 @@ describe Chef::ProviderResolver do
               },
               "6.0" => {
                 package: [ Chef::Resource::YumPackage, Chef::Provider::Package::Yum ],
-    #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
+                #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               },
             },
             "fedora" => {
               "15.0" => {
               },
               "14.0" => {
-    #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
+                #            service: [ Chef::Resource::RedhatService, Chef::Provider::Service::Redhat ],
               },
             },
           },
@@ -761,7 +761,7 @@ describe Chef::ProviderResolver do
           package: [ Chef::Resource::Package, Chef::Provider::Package::Bff ],
           rpm_package: [ Chef::Resource::RpmPackage, Chef::Provider::Package::Rpm ],
           user: [ Chef::Resource::User::AixUser, Chef::Provider::User::Aix ],
-    #      service: [ Chef::Resource::AixService, Chef::Provider::Service::Aix ],
+          #      service: [ Chef::Resource::AixService, Chef::Provider::Service::Aix ],
 
           "aix" => {
             "aix" => {
