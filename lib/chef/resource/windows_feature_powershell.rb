@@ -141,8 +141,8 @@ class Chef
       action_class do
         # @return [Array] features the user has requested to install which need installation
         def features_to_install
-          # the intersection of the features to install & disabled features are what needs installing
-          @install ||= new_resource.feature_name & node["powershell_features_cache"]["disabled"]
+          # the intersection of the features to install & disabled/removed features are what needs installing
+          @install ||= new_resource.feature_name & ( node["powershell_features_cache"]["disabled"] | node["powershell_features_cache"]["removed"] )
         end
 
         # @return [Array] features the user has requested to remove which need removing

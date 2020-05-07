@@ -35,10 +35,6 @@ describe Chef::Resource::WindowsFeaturePowershell do
     expect(resource.feature_name).to eql(%w{snmp dhcp})
   end
 
-  it "sets the default action as :install" do
-    expect(resource.action).to eql([:install])
-  end
-
   it "supports :delete, :install, :remove actions" do
     expect { resource.action :delete }.not_to raise_error
     expect { resource.action :install }.not_to raise_error
