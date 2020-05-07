@@ -100,7 +100,7 @@ class Chef
           file path do
             name(path) if path
             copy_properties_from(new_resource, :backup, :group, :mode, :owner)
-            content(content) if content?
+            content(file_content) if file_content?
             action(action)
             only_if { manage_agent?(action) }
           end
@@ -148,11 +148,11 @@ class Chef
         end
       end
 
-      def content?
-        !!content
+      def file_content?
+        !!file_content
       end
 
-      def content
+      def file_content
         plist_hash = new_resource.plist_hash || gen_hash
         ::Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
