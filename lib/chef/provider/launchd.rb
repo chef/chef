@@ -91,14 +91,12 @@ class Chef
         if source
           cookbook_file path do
             cookbook_name = new_resource.cookbook if new_resource.cookbook
-            name(path) if path
             copy_properties_from(new_resource, :backup, :group, :mode, :owner, :source)
             action(action)
             only_if { manage_agent?(action) }
           end
         else
           file path do
-            name(path) if path
             copy_properties_from(new_resource, :backup, :group, :mode, :owner)
             content(file_content) if file_content?
             action(action)
@@ -110,7 +108,6 @@ class Chef
       def manage_service(action)
         path = path
         macosx_service label do
-          name(new_resource.label) if new_resource.label
           service_name(new_resource.label) if new_resource.label
           plist(path) if path
           copy_properties_from(new_resource, :session_type)
