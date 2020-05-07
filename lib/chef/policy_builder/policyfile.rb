@@ -328,7 +328,7 @@ class Chef
         end
       end
 
-      # Do some mimimal validation of the policyfile we fetched from the
+      # Do some minimal validation of the policyfile we fetched from the
       # server. Compatibility mode relies on using data bags to store policy
       # files; therefore no real validation will be performed server-side and
       # we need to make additional checks to ensure the data will be formatted

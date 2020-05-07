@@ -70,6 +70,7 @@ class Chef
 
           if pkginfo.exitstatus != 0
             pkginfo.stderr.each_line do |line|
+              # cspell:disable-next-line
               if line =~ /[Uu]nqualified atom .*match.* multiple/
                 raise_error_for_query("matched multiple packages (please specify a category):\n#{pkginfo.inspect}")
               end

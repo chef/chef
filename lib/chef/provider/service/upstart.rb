@@ -41,7 +41,7 @@ class Chef
 
         # Upstart does more than start or stop a service, creating multiple 'states' [1] that a service can be in.
         # In chef, when we ask a service to start, we expect it to have started before performing the next step
-        # since we have top down dependencies. Which is to say we may follow witha resource next that requires
+        # since we have top down dependencies. Which is to say we may follow with a resource next that requires
         # that service to be running. According to [2] we can trust that sending a 'goal' such as start will not
         # return until that 'goal' is reached, or some error has occurred.
         #

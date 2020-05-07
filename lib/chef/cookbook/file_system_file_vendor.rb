@@ -27,7 +27,7 @@ class Chef
     # and throws the rest away then re-builds the list of files on the
     # disk. This is due to the manifest not having the on-disk file
     # locations, since in the chef-client case, that information is
-    # non-sensical.
+    # nonsensical.
     class FileSystemFileVendor < FileVendor
 
       attr_reader :cookbook_name

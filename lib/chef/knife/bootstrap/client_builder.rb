@@ -86,7 +86,7 @@ class Chef
           config[:chef_node_name]
         end
 
-        # @return [String] enviroment from the config
+        # @return [String] environment from the config
         def environment
           config[:environment]
         end

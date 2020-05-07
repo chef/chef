@@ -94,7 +94,7 @@ class Chef
         def summarize(data)
           if data.is_a?(Chef::Node)
             node = data
-            # special case clouds with their split horizon whatsis.
+            # special case clouds with their split horizon thing.
             ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
 
             summarized = <<~SUMMARY

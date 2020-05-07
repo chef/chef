@@ -53,7 +53,7 @@ class Chef
         description: "The path to the wrapper script used when running SSH with git. The `GIT_SSH` environment variable is set to this."
 
       property :checkout_branch, String,
-        description: "Set this to use a local branch to avoid checking SHAs or tags to a detatched head state."
+        description: "Set this to use a local branch to avoid checking SHAs or tags to a detached head state."
 
       alias :branch :revision
       alias :reference :revision

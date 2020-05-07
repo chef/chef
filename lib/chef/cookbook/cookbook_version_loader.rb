@@ -23,7 +23,7 @@ class Chef
   class Cookbook
     # This class is only used directly from the Chef::CookbookLoader and from chef-fs,
     # so it only affects legacy-mode chef-client runs and knife.  It is not used by
-    # server or zolo/zero modes.
+    # server or solo/zero modes.
     #
     # This seems to be mostly a glorified factory method for creating CookbookVersion
     # objects now, with creating Metadata objects bolted onto the side?  It used

@@ -32,7 +32,7 @@ class Chef
     #                            optionally filtering by category
     # subcommand_files         - returns an array of all subcommand files
     #                            that could be loaded
-    # commnad_class_from(args) - returns the subcommand class for the
+    # command_class_from(args) - returns the subcommand class for the
     #                            user-requested command
     #
     class SubcommandLoader

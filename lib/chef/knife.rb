@@ -327,7 +327,7 @@ class Chef
       end
 
       # Grab a copy before config merge occurs, so that we can later identify
-      # whare a given config value is sourced from.
+      # where a given config value is sourced from.
       @original_config = config.dup
 
       # copy Mixlib::CLI over so that it can be configured in config.rb/knife.rb

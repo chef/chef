@@ -382,7 +382,7 @@ describe Chef::Node::Attribute do
       expect(@attributes["command"]["ps"]).to eq("ps -ef")
     end
 
-    it "should return default data if it is not overriden or in attribute data" do
+    it "should return default data if it is not overridden or in attribute data" do
       expect(@attributes["music"]["mastodon"]).to eq("rocks")
     end
 

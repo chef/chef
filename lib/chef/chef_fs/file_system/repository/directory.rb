@@ -104,7 +104,7 @@ class Chef
             children.empty?
           end
 
-          # Public API callied by chef_fs/file_system
+          # Public API called by chef_fs/file_system
           def child(name)
             possible_child = make_child_entry(name)
             if possible_child.name_valid?

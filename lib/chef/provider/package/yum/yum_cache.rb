@@ -22,7 +22,7 @@ require "singleton" unless defined?(Singleton)
 
 #
 # These are largely historical APIs, the YumCache object no longer exists and this is a
-# fascade over the python helper class.  It should be considered deprecated-lite and
+# facade over the python helper class.  It should be considered deprecated-lite and
 # no new APIs should be added and should be added to the python_helper instead.
 #
 

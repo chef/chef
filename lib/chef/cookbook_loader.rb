@@ -27,7 +27,7 @@ require_relative "cookbook/metadata"
 
 class Chef
   # This class is used by knife, cheffs and legacy chef-solo modes.  It is not used by the server mode
-  # of chef-client or zolo/zero modes.
+  # of chef-client or solo/zero modes.
   #
   # This class implements orchestration around producing a single cookbook_version for a cookbook or
   # loading a Mash of all cookbook_versions, using the cookbook_version_loader class, and doing
@@ -138,7 +138,7 @@ class Chef
       cookbooks_by_name.values
     end
 
-    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loder object which points to tmp directory
+    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loader object which points to tmp directory
     def self.copy_to_tmp_dir_from_array(cookbooks)
       tmp_cookbook_file = Tempfile.new("tmp_working_dir_path")
       tmp_cookbook_file.close

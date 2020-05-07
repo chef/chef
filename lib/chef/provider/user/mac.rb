@@ -102,7 +102,7 @@ class Chef
           shadow_hash_hex = user_plist[:shadow_hash][0]
           return unless shadow_hash_hex && shadow_hash_hex != ""
 
-          # The password infomation is stored in the ShadowHashData key in the
+          # The password information is stored in the ShadowHashData key in the
           # plist. However, parsing it is a bit tricky as the value is itself
           # another encoded binary plist. We have to extract the encoded plist,
           # decode it from hex to a binary plist and then convert the binary
@@ -116,6 +116,8 @@ class Chef
           #
           #  eg:
           #
+          # spellchecker: disable
+          #
           # <array>
           #   <string>77687920 63616e27 74206170 706c6520 6275696c 6420636f 6e736973 74656e74 20746f6f 6c696e67</string>
           # </array>
@@ -125,6 +127,8 @@ class Chef
           # <array>
           #   <data>AADKAAAKAA4LAA0MAAAAAAAAAAA=</data>
           # </array>
+          #
+          # spellchecker: disable
           #
           begin
             shadow_binary_plist = [shadow_hash_hex.delete(" ")].pack("H*")
@@ -179,7 +183,7 @@ class Chef
           end
 
           if new_resource.manage_home
-            # "sydadminctl -addUser" will create the home directory if it's
+            # "sysadminctl -addUser" will create the home directory if it's
             # the default /Users/<username>, otherwise it sets it in plist
             # but does not create it. Here we'll ensure that it gets created
             # if we've been given a directory that is not the default.
@@ -554,7 +558,7 @@ class Chef
           # 0x0A                                    End of record denoted by \n
           # 0x5C                                    Escaping is denoted by \
           # 0x3A                                    Fields are separated by :
-          # 0x2C                                    Values are seperated by ,
+          # 0x2C                                    Values are separated by ,
           # dsRecTypeStandard:Users                 The record type we're configuring
           # 2                                       How many properties we're going to set
           # dsAttrTypeStandard:RecordName           Property 1: our users record name
@@ -598,7 +602,7 @@ class Chef
 
         def run_sysadminctl(args)
           # sysadminctl doesn't exit with a non-zero code when errors are encountered
-          # and ouputs everything to STDERR instead of STDOUT and STDERR. Therefore we'll
+          # and outputs everything to STDERR instead of STDOUT and STDERR. Therefore we'll
           # return the STDERR and let the caller handle it.
           shell_out!("sysadminctl", args).stderr
         end

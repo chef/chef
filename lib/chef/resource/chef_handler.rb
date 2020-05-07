@@ -107,7 +107,7 @@ class Chef
           end
         end
 
-        # Walks down the namespace heirarchy to return the class object for the given class name.
+        # Walks down the namespace hierarchy to return the class object for the given class name.
         # If the class is not available, NameError is thrown.
         #
         # @param class_full_name [String] full class name such as 'Chef::Handler::Foo' or 'MyHandler'.
@@ -118,7 +118,7 @@ class Chef
           class_name = ancestors.pop
 
           # We need to search the ancestors only for the first/uppermost namespace of the class, so we
-          # need to enable the #const_get inherit paramenter only when we are searching in Kernel scope
+          # need to enable the #const_get inherit parameter only when we are searching in Kernel scope
           # (see COOK-4117).
           parent = ancestors.inject(Kernel) { |scope, const_name| scope.const_get(const_name, scope === Kernel) }
           child = parent.const_get(class_name, parent === Kernel)

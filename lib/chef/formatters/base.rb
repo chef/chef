@@ -142,7 +142,7 @@ class Chef
 
       # Generic callback for any attribute/library/lwrp/recipe file in a
       # cookbook getting loaded. The per-filetype callbacks for file load are
-      # overriden so that they call this instead. This means that a subclass of
+      # overridden so that they call this instead. This means that a subclass of
       # Formatters::Base can implement #file_loaded to do the same thing for
       # every kind of file that Chef loads from a recipe instead of
       # implementing all the per-filetype callbacks.

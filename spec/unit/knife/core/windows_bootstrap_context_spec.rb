@@ -217,7 +217,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       let(:custom_url) { "file://something" }
       let(:config) { { msi_url: custom_url, install: true } }
 
-      it "returns the overriden url" do
+      it "returns the overridden url" do
         expect(bootstrap_context.msi_url).to eq(custom_url)
       end
 

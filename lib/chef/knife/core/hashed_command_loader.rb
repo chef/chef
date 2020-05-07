@@ -44,7 +44,7 @@ class Chef
           else
             commands = manifest[KEY]["plugins_by_category"]
           end
-          # If any of the specified plugins in the manifest dont have a valid path we will
+          # If any of the specified plugins in the manifest don't have a valid path we will
           # eventually get an error and the user will need to rehash - instead, lets just
           # print out 1 error here telling them to rehash
           errors = {}

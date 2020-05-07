@@ -103,7 +103,7 @@ describe Chef::Resource::Git, requires_git: true do
         revision "v1.0.0"
       end.should_be_updated
       expect_revision_to_be("HEAD", v1_commit)
-      expect_branch_to_be("tags/v1.0.0^0") # detatched
+      expect_branch_to_be("tags/v1.0.0^0") # detached
       # also verify the tag commit itself is what we expect as an extra sanity check
       expect_revision_to_be("v1.0.0", v1_tag)
     end
@@ -116,7 +116,7 @@ describe Chef::Resource::Git, requires_git: true do
       git deploy_directory do
         repository origin_repo
         revision "v1.0.0"
-        expect_branch_to_be("tags/v1.0.0^0") # detatched
+        expect_branch_to_be("tags/v1.0.0^0") # detached
       end.should_not_be_updated
     end
   end
@@ -128,7 +128,7 @@ describe Chef::Resource::Git, requires_git: true do
         revision rev_foo
       end.should_be_updated
       expect_revision_to_be("HEAD", rev_foo)
-      expect_branch_to_be("master~1") # detatched
+      expect_branch_to_be("master~1") # detached
     end
 
     it "checks out the expected revision ed18 to a local branch" do
@@ -138,7 +138,7 @@ describe Chef::Resource::Git, requires_git: true do
         checkout_branch "deploy"
       end.should_be_updated
       expect_revision_to_be("HEAD", rev_foo)
-      expect_branch_to_be("deploy") # detatched
+      expect_branch_to_be("deploy") # detached
     end
 
     it "doesn't update if up-to-date" do
@@ -152,7 +152,7 @@ describe Chef::Resource::Git, requires_git: true do
         repository origin_repo
         revision rev_foo
       end.should_not_be_updated
-      expect_branch_to_be("master~1") # detatched
+      expect_branch_to_be("master~1") # detached
     end
 
     it "checks out the expected revision 972d" do
@@ -161,7 +161,7 @@ describe Chef::Resource::Git, requires_git: true do
         revision rev_testing
       end.should_be_updated
       expect_revision_to_be("HEAD", rev_testing)
-      expect_branch_to_be("master~2") # detatched
+      expect_branch_to_be("master~2") # detached
     end
 
     it "checks out the expected revision 972d to a local branch" do

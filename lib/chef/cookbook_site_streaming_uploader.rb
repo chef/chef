@@ -147,7 +147,7 @@ class Chef
         class << res
           alias :to_s :body
 
-          # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
+          # BUG this makes the response compatible with what response_steps expects to test headers (response.headers[] -> response[])
           def headers # rubocop:disable Lint/NestedMethodDefinition
             self
           end

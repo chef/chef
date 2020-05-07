@@ -28,7 +28,7 @@ class Chef
 
     class <<self
 
-      # API to use to avoid create_addtions
+      # API to use to avoid create_additions
       def parse(source, opts = {})
         FFI_Yajl::Parser.parse(source, opts)
       rescue FFI_Yajl::ParseError => e

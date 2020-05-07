@@ -147,7 +147,7 @@ class Chef
         new_resource.updated_by_last_action(true) if res.updated?
       end
 
-      # Get the files to tranfer.  This returns files in lexicographical sort order.
+      # Get the files to transfer.  This returns files in lexicographical sort order.
       #
       # FIXME: it should do breadth-first, see CHEF-5080 (please use a performant sort)
       #
@@ -245,7 +245,7 @@ class Chef
         res = Chef::Resource::Directory.new(dir, run_context)
         res.cookbook_name = resource_cookbook
         if ChefUtils.windows? && rights
-          # rights are only meant to be applied to the toppest-level directory;
+          # rights are only meant to be applied to the highest-level directory;
           # Windows will handle inheritance.
           if dir == path
             rights.each do |r|

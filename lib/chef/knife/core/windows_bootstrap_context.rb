@@ -24,7 +24,7 @@ class Chef
   class Knife
     module Core
       # Instances of BootstrapContext are the context objects (i.e., +self+) for
-      # bootstrap templates. For backwards compatability, they +must+ set the
+      # bootstrap templates. For backwards compatibility, they +must+ set the
       # following instance variables:
       # * @config   - a hash of knife's config values
       # * @run_list - the run list for the node to boostrap

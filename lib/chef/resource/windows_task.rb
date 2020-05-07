@@ -274,7 +274,7 @@ class Chef
 
       ## Resource is not idempotent when day, start_day is not provided with frequency :weekly
       ## we set start_day when not given by user as current date based on which we set the day property for current current date day is monday ..
-      ## we set the monday as the day so at next run when  new_resource.day is nil and current_resource day is monday due to which udpate gets called
+      ## we set the monday as the day so at next run when  new_resource.day is nil and current_resource day is monday due to which update gets called
       def idempotency_warning_for_frequency_weekly(day, start_day)
         if start_day.nil? && day.nil?
           logger.warn "To maintain idempotency for frequency :weekly provide start_day, start_time and day."
@@ -295,19 +295,19 @@ class Chef
       end
 
       def validate_frequency_monthly(frequency_modifier, months, day)
-        # validates the frequency :monthly and raises error if frequency_modifier is first, second, thrid etc and day is not provided
+        # validates the frequency :monthly and raises error if frequency_modifier is first, second, third etc and day is not provided
         if (frequency_modifier != 1) && (frequency_modifier_includes_days_of_weeks?(frequency_modifier)) && !(day)
-          raise ArgumentError, "Please select day on which you want to run the task e.g. 'Mon, Tue'. Multiple values must be seprated by comma."
+          raise ArgumentError, "Please select day on which you want to run the task e.g. 'Mon, Tue'. Multiple values must be separated by comma."
         end
 
-        # frequency_modifer 2-12 is used to set every (n) months, so using :months propety with frequency_modifer is not valid since they both used to set months.
-        # Not checking value 1 here for frequecy_modifier since we are setting that as default value it won't break anything since preference is given to months property
+        # frequency_modifier 2-12 is used to set every (n) months, so using :months property with frequency_modifier is not valid since they both used to set months.
+        # Not checking value 1 here for frequency_modifier since we are setting that as default value it won't break anything since preference is given to months property
         if (frequency_modifier.to_i.between?(2, 12)) && !(months.nil?)
           raise ArgumentError, "For frequency :monthly either use property months or frequency_modifier to set months."
         end
       end
 
-      # returns true if frequency_modifer has values First, second, third, fourth, last, lastday
+      # returns true if frequency_modifier has values First, second, third, fourth, last, lastday
       def frequency_modifier_includes_days_of_weeks?(frequency_modifier)
         frequency_modifier = frequency_modifier.to_s.split(",")
         frequency_modifier.map! { |value| value.strip.upcase }

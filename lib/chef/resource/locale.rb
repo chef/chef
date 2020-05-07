@@ -120,7 +120,7 @@ class Chef
           end
         end
 
-        # Generates the localisation files from templates using locale-gen.
+        # Generates the localization files from templates using locale-gen.
         # @see http://manpages.ubuntu.com/manpages/cosmic/man8/locale-gen.8.html
         # @raise [Mixlib::ShellOut::ShellCommandFailed] not a supported language or locale
         #

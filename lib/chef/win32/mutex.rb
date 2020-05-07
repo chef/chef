@@ -95,7 +95,7 @@ if other threads attempt to acquire the mutex.")
         @handle = OpenMutexW(SYNCHRONIZE, true, name.to_wstring)
 
         if @handle == 0
-          # Mutext doesn't exist so create one.
+          # Mutex doesn't exist so create one.
           # In the initial creation of the mutex initial_owner is set to
           # false so that mutex will not be acquired until someone calls
           # acquire.

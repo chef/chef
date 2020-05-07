@@ -118,13 +118,13 @@ describe Chef::Provider::Package::Portage, "load_current_resource" do
         expect { @provider.candidate_version }.to raise_error(Chef::Exceptions::Package)
       end
 
-      it "should find the candidate_version if a category is specifed and there are no duplicates" do
+      it "should find the candidate_version if a category is specified and there are no duplicates" do
         status = double(stdout: "dev-vcs/git-2.16.2", exitstatus: 0)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)
         expect(@provider.candidate_version).to eq("2.16.2")
       end
 
-      it "should find the candidate_version if a category is not specifed and there are no duplicates" do
+      it "should find the candidate_version if a category is not specified and there are no duplicates" do
         status = double(stdout: "dev-vcs/git-2.16.2", exitstatus: 0)
         @provider = Chef::Provider::Package::Portage.new(@new_resource_without_category, @run_context)
         expect(@provider).to receive(:shell_out_compacted).and_return(status)

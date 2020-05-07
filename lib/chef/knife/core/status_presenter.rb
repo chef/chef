@@ -95,7 +95,7 @@ class Chef
           summarized = ""
           list.each do |data|
             node = data
-            # special case clouds with their split horizon whatsis.
+            # special case clouds with their split horizon thing.
             ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
             fqdn = (node[:cloud] && node[:cloud][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name

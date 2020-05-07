@@ -21,8 +21,8 @@ class Chef
   class Decorator
     # Lazy Array around Lazy Objects
     #
-    # This only lazys access through `#[]`.  In order to implement #each we need to
-    # know how many items we have and what their indexes are, so we'd have to evalute
+    # This makes access lazy through `#[]`.  In order to implement #each we need to
+    # know how many items we have and what their indexes are, so we'd have to evaluate
     # the proc which makes that impossible.  You can call methods like #each and the
     # decorator will forward the method, but item access will not be lazy.
     #

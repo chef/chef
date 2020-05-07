@@ -42,7 +42,7 @@ class Chef
           option :expiration_date,
             short: "-e DATE",
             long: "--expiration-date DATE",
-            description: "Optionally pass the expiration date for the key in ISO 8601 fomatted string: YYYY-MM-DDTHH:MM:SSZ e.g. 2013-12-24T21:00:00Z. Defaults to infinity if not passed. UTC timezone assumed."
+            description: "Optionally pass the expiration date for the key in ISO 8601 formatted string: YYYY-MM-DDTHH:MM:SSZ e.g. 2013-12-24T21:00:00Z. Defaults to infinity if not passed. UTC timezone assumed."
         end
       end
     end

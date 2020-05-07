@@ -317,12 +317,12 @@ describe Chef::Resource::WindowsTask, :windows_only do
         expect(subject).not_to be_updated_by_last_action
       end
 
-      it "updates a scheduled task to run every 5 hrs when frequency modifer updated to 5" do
+      it "updates a scheduled task to run every 5 hrs when frequency modifier updated to 5" do
         subject.run_action(:create)
         current_resource = call_for_load_current_resource
         trigger_details = current_resource.task.trigger(0)
         expect(trigger_details[:minutes_interval]).to eq(180)
-        # updating frequency modifer to 5 from 3
+        # updating frequency modifier to 5 from 3
         subject.frequency_modifier 5
         subject.run_action(:create)
         expect(subject).to be_updated_by_last_action
@@ -501,7 +501,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
         it "raises argument error if frequency_modifier is 'first, second' and day is not provided." do
           subject.frequency_modifier "first, second"
-          expect { subject.after_created }.to raise_error("Please select day on which you want to run the task e.g. 'Mon, Tue'. Multiple values must be seprated by comma.")
+          expect { subject.after_created }.to raise_error("Please select day on which you want to run the task e.g. 'Mon, Tue'. Multiple values must be separated by comma.")
         end
 
         it "raises argument error if months is passed along with frequency_modifier" do
@@ -532,7 +532,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
           expect { subject.after_created }.to raise_error("frequency_modifier value 0 is invalid. Valid values for :monthly frequency are 1 - 12, 'FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST'.")
         end
 
-        it "creates scheduled task to run task monthly on Monday and Friday of first, second and thrid week of month" do
+        it "creates scheduled task to run task monthly on Monday and Friday of first, second and third week of month" do
           subject.frequency_modifier "first, second, third"
           subject.day "Mon, Fri"
           expect { subject.after_created }.not_to raise_error(ArgumentError)

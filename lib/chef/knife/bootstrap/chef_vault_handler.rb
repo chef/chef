@@ -102,7 +102,7 @@ class Chef
           config[:bootstrap_vault_item]
         end
 
-        # Helper to return a ruby object represeting all the data bags and items
+        # Helper to return a ruby object representing all the data bags and items
         # to update via chef-vault.
         #
         # @return [Hash] deserialized ruby hash with all the vault items

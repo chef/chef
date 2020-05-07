@@ -540,7 +540,7 @@ BOOL WINAPI VerQueryValue(
         def file_search_handle(path)
           # Workaround for CHEF-4419:
           # Make sure paths starting with "/" has a drive letter
-          # assigned from the current working diretory.
+          # assigned from the current working directory.
           # Note: With CHEF-4427 this issue will be fixed with a
           # broader fix to map all the paths starting with "/" to
           # SYSTEM_DRIVE on windows.

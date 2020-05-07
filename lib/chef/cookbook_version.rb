@@ -358,7 +358,7 @@ class Chef
 
         # extract the preference part from the path.
         if manifest_record_path =~ %r{(#{Regexp.escape(segment.to_s)}/[^/]+/#{Regexp.escape(dirname)})/.+$}
-          # Note the specificy_dirname includes the segment and
+          # Note the specificity_dirname includes the segment and
           # dirname argument as above, which is what
           # preferences_for_path returns. It could be
           # "files/ubuntu-9.10/dirname", for example.
@@ -566,7 +566,7 @@ class Chef
     def find_preferred_manifest_record(node, segment, filename)
       preferences = preferences_for_path(node, segment, filename)
 
-      # in order of prefernce, look for the filename in the manifest
+      # in order of preference, look for the filename in the manifest
       preferences.find { |preferred_filename| manifest_records_by_path[preferred_filename] }
     end
 
