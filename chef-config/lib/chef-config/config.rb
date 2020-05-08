@@ -851,33 +851,6 @@ module ChefConfig
 
     # knife configuration data
     config_context :knife do
-      # XXX: none of these default values are applied to knife (and would create a backcompat
-      # break in knife if this bug was fixed since many of the defaults below are wrong).  this appears
-      # to be the start of an attempt to be able to use config_strict_mode true?  if so, this approach
-      # is fraught with peril because this namespace is used by every knife plugin in the wild and
-      # we would need to validate every cli option in every knife attribute out there and list them all here.
-      #
-      # based on the way that people may define `knife[:foobar] = "something"` for the knife-foobar
-      # gem plugin i'm pretty certain we can never turn on anything like config_string_mode since
-      # any config value may be a typo or it may be in some gem in some knife plugin we don't know about.
-      #
-      # we do still need to maintain at least one of these so that the knife config hash gets
-      # created.
-      #
-      # this whole situation is deeply unsatisfying.
-      default :ssh_port, nil
-      default :ssh_user, nil
-      default :ssh_attribute, nil
-      default :ssh_gateway, nil
-      default :ssh_gateway_identity, nil
-      default :bootstrap_version, nil
-      default :bootstrap_proxy, nil
-      default :bootstrap_template, nil
-      default :secret, nil
-      default :secret_file, nil
-      default :host_key_verify, nil
-      default :forward_agent, nil
-      default :sort_status_reverse, nil
       default :hints, {}
     end
 

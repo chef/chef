@@ -854,6 +854,7 @@ describe Chef::Knife::Bootstrap do
           context "and no CLI options have been given" do
             before do
               knife.config = {}
+              knife.merge_configs
             end
             let(:expected_result) do
               {
@@ -905,6 +906,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:connection_port] = 12
               knife.config[:winrm_port] = "13" # indirectly verify we're not looking for the wrong CLI flag
               knife.config[:connection_password] = "lobster"
+              knife.merge_configs
             end
 
             it "generates a config hash using the CLI options when available and falling back to Chef::Config values" do
@@ -1004,6 +1006,7 @@ describe Chef::Knife::Bootstrap do
           context "and no CLI options have been given" do
             before do
               knife.config = {}
+              knife.merge_configs
             end
             let(:expected_result) do
               {
@@ -1018,7 +1021,7 @@ describe Chef::Knife::Bootstrap do
                 keys_only: true,
                 key_files: ["/identity.pem", "/gateway.pem"],
                 sudo: false,
-                verify_host_key: nil,
+                verify_host_key: false,
                 port: 9999,
                 non_interactive: true,
               }
@@ -1056,6 +1059,7 @@ describe Chef::Knife::Bootstrap do
               knife.config[:use_sudo] = true
               knife.config[:use_sudo_pasword] = true
               knife.config[:ssh_forward_agent] = true
+              knife.merge_configs
             end
 
             let(:expected_result) do
@@ -1072,7 +1076,7 @@ describe Chef::Knife::Bootstrap do
                 keys_only: false, # implied false from config password present
                 key_files: ["/identity.pem", "/gateway.pem"], # Config
                 sudo: true, # ccli
-                verify_host_key: nil, # Config
+                verify_host_key: false, # Config
                 port: 12, # cli
                 non_interactive: true,
               }
@@ -1940,22 +1944,15 @@ describe Chef::Knife::Bootstrap do
       Chef::Config[:knife][:test_key_a] = "a from Chef::Config"
       Chef::Config[:knife][:test_key_c] = "c from Chef::Config"
       Chef::Config[:knife][:alt_test_key_c] = "alt c from Chef::Config"
+      knife.merge_configs
     end
 
-    it "returns CLI value when key is only provided by the CLI" do
-      expect(knife.config_value(:test_key_b)).to eq "b from cli"
-    end
-
-    it "returns CLI value when key is provided by CLI and Chef::Config" do
-      expect(knife.config_value(:test_key_a)).to eq "a from cli"
-    end
-
-    it "returns Chef::Config value whent he key is only provided by Chef::Config" do
-      expect(knife.config_value(:test_key_c)).to eq "c from Chef::Config"
+    it "returns the Chef::Config value from the cli when the CLI key is set" do
+      expect(knife.config_value(:test_key_a, :alt_test_key_c)).to eq "a from cli"
     end
 
     it "returns the Chef::Config value from the alternative key when the CLI key is not set" do
-      expect(knife.config_value(:test_key_c, :alt_test_key_c)).to eq "alt c from Chef::Config"
+      expect(knife.config_value(:test_key_d, :alt_test_key_c)).to eq "alt c from Chef::Config"
     end
 
     it "returns the default value when the key is not provided by CLI or Chef::Config" do
