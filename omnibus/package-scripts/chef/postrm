@@ -45,6 +45,6 @@ if [ ! -f /etc/redhat-release -a ! -f /etc/fedora-release -a ! -f /etc/system-re
   # not a redhat-ish RPM-based system
   cleanup_symlinks
 elif [ "x$1" = "x0" ]; then
-  # RPM-based system and we're deinstalling rather than upgrading
+  # RPM-based system and we're uninstalling rather than upgrading
   cleanup_symlinks
 fi

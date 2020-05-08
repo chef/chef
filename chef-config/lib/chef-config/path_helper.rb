@@ -130,13 +130,13 @@ module ChefConfig
     end
 
     # This is the INVERSE of Pathname#cleanpath, it converts forward
-    # slashes to backwhacks for Windows.  Since the Ruby API and the
+    # slashes to backslashes for Windows.  Since the Ruby API and the
     # Windows APIs all consume forward slashes, this helper function
     # should only be used for *DISPLAY* logic to send strings back
-    # to the user with backwhacks.  Internally, filename paths should
+    # to the user with backslashes.  Internally, filename paths should
     # generally be stored with forward slashes for consistency.  It is
     # not necessary or desired to blindly convert pathnames to have
-    # backwhacks on Windows.
+    # backslashes on Windows.
     #
     # Generally, if the user isn't going to be seeing it, you should be
     # using Pathname#cleanpath intead of this function.

@@ -208,7 +208,7 @@ do
 # architecture attribute for the parent resource which powershell_script
 # guard interpreter resources will inherit from the enclosing resource
 powershell_script "set i386 execution policy" do
-  guard_interpteter :powershell_script
+  guard_interpreter :powershell_script
   architecture :i386
   code "set-executionpolicy remotesigned"
   not_if "(get-executionpolicy -scope localmachine) -eq 'remotesigned'"
@@ -439,7 +439,7 @@ CP/M heritage even in 2014, and as Windows admins turned to PowerShell or were
 nudged toward it (often by Microsoft itself), it was asking a lot for Chef users to know
 how to use legacy `cmd.exe` to accomplish tasks. Most likely, users of `powershell_script`
 would choose to run powershell.exe in the `not_if` and `only_if` blocks. Since
-that was the common case for `powersell_script` users, the guards should have
+that was the common case for `powershell_script` users, the guards should have
 had some way to allow that, or to
 provide guard execution via PowerShell in a more natural fashion.
 

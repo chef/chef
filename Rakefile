@@ -58,7 +58,7 @@ namespace :pre_install do
   task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
 end
 
-# hack in all the preinstall tasks to occur before the tradtional install task
+# hack in all the preinstall tasks to occur before the traditional install task
 task install: "pre_install:all"
 
 # make sure we build the correct gemspec on windows
