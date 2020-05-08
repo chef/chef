@@ -1061,13 +1061,15 @@ class Chef
         }
       end
 
-      # Looks up configuration entries, first in the class member
-      # `config` which contains options populated from CLI flags.
-      # If the entry is not found there, Chef::Config[:knife][KEY]
-      # is checked.
+      # Knife plugins should just use the config hash and not call this method.  In the
+      # future there will be a way to deprecate Chef::Config options in addition to the
+      # CLI options, which will eliminate this methods primary purpose.
       #
-      # knife_config_key should be specified if the knife config lookup
-      # key is different from the CLI flag lookup key.
+      # In Chef-16 the single-argument verison of this function will be deprecated and
+      # config_value(:whatver) should be converted to config[:whatever].  That never had
+      # any purpose and never should have been used this way.
+      #
+      # @api deprecated
       #
       def config_value(key, fallback_key = nil, default = nil)
         if config.key?(key)
