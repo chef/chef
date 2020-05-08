@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.288 -->
-## [v16.0.288](https://github.com/chef/chef/tree/v16.0.288) (2020-05-08)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist))
+- Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50)) <!-- 16.0.288 -->
 - Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.288 -->
 <!-- release_rollup -->
 
