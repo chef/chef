@@ -46,7 +46,7 @@ class Chef
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:", <<~E)
               Your private key could not be loaded. If the key file exists, ensure that it is
-              readable by #{Chef::Dist::CLIENT}.
+              readable by #{Chef::Dist::PRODUCT}.
             E
             error_description.section("Relevant Config Settings:", <<~E)
               client_key        "#{api_key}"
@@ -99,7 +99,7 @@ class Chef
         # redirect.
         def describe_404_error(error_description)
           error_description.section("Resource Not Found:", <<~E)
-            The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
+            The #{Chef::Dist::SERVER_PRODUCT} returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
           E
           error_description.section("Relevant Config Settings:", <<~E)
             chef_server_url "#{server_url}"
