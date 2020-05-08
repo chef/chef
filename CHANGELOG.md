@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.20 -->
-## [v15.10.20](https://github.com/chef/chef/tree/v15.10.20) (2020-05-07)
+<!-- latest_release 15.10.21 -->
+## [v15.10.21](https://github.com/chef/chef/tree/v15.10.21) (2020-05-08)
 
 #### Merged Pull Requests
-- 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm))
+- Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.21 -->
 - 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm)) <!-- 15.10.20 -->
 - Fix for Chocolate_resource options causing extra quotes [#9809](https://github.com/chef/chef/pull/9809) ([btm](https://github.com/btm)) <!-- 15.10.19 -->
 - Update omnibus-software for new msys2 path [#9807](https://github.com/chef/chef/pull/9807) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.10.18 -->
