@@ -19,24 +19,13 @@ curl -fsSL https://chef.io/chef/install.sh | sudo bash -s -- -P omnibus-toolchai
 export BUNDLE_GEMFILE=$PWD/kitchen-tests/Gemfile
 export FORCE_FFI_YAJL=ext
 export CHEF_LICENSE="accept-silent"
-export PATH=$PATH:~/.asdf/shims:/opt/asdf/bin:/opt/asdf/shims:/opt/omnibus-toolchain/embedded/bin
-
-# Install ASDF software manager
-echo "--- Installing ASDF software version manager from master"
-sudo git clone https://github.com/asdf-vm/asdf.git /opt/asdf
-. /opt/asdf/asdf.sh
-. /opt/asdf/completions/asdf.bash
-
-echo "--- Installing Ruby 2.7.1"
-/opt/asdf/bin/asdf plugin-add ruby https://github.com/asdf-vm/asdf-ruby.git
-/opt/asdf/bin/asdf install ruby 2.7.1
-/opt/asdf/bin/asdf global ruby 2.7.1
+export PATH=$PATH:/opt/omnibus-toolchain/embedded/bin
 
 # Update Gems
 echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-bundle install --jobs=3 --retry=3 --path=../vendor/bundle
+/opt/omnibus-toolchain/bin/bundle install --jobs=3 --retry=3 --path=../vendor/bundle
 
 echo "--- Config information"
 
