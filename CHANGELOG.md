@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.0.288 -->
+## [v16.0.288](https://github.com/chef/chef/tree/v16.0.288) (2020-05-08)
+
+#### Merged Pull Requests
+- Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.0.287 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.288 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
