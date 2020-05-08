@@ -424,7 +424,7 @@ class Chef
             when TaskScheduler::AT_LOGON
               # TODO: handle option for this trigger
             when TaskScheduler::AT_SYSTEMSTART
-              # TODO: handle option for this trigger
+            # TODO: handle option for this trigger
           end
         end
 

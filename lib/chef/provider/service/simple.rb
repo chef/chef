@@ -117,9 +117,9 @@ class Chef
                 logger.trace("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
-            # Temporarily catching different types of exceptions here until we get Shellout fixed.
-            # TODO: Remove the line before one we get the ShellOut fix.
+              # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+              # Temporarily catching different types of exceptions here until we get Shellout fixed.
+              # TODO: Remove the line before one we get the ShellOut fix.
               @status_load_success = false
               @current_resource.running false
               nil

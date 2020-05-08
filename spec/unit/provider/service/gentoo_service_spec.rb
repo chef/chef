@@ -37,7 +37,7 @@ describe Chef::Provider::Service::Gentoo do
     allow(File).to receive(:exists?).with("/etc/runlevels/default/chef").and_return(false)
     allow(File).to receive(:readable?).with("/etc/runlevels/default/chef").and_return(false)
   end
- # new test: found_enabled state
+  # new test: found_enabled state
   #
   describe "load_current_resource" do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do

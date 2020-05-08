@@ -678,7 +678,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:enable_submodules)
     expect(@provider).to receive(:add_remotes)
     @provider.run_action(:checkout)
-   # @resource.should be_updated
+    # @resource.should be_updated
   end
 
   it "should not checkout if the destination exists or is a non empty directory" do
@@ -716,7 +716,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:enable_submodules)
     expect(@provider).to receive(:add_remotes)
     @provider.run_action(:sync)
-   # @resource.should be_updated
+    # @resource.should be_updated
   end
 
   it "does not fetch any updates if the remote revision matches the current revision" do
@@ -736,7 +736,7 @@ describe Chef::Provider::Git do
     expect(@provider).to receive(:action_checkout)
     expect(@provider).not_to receive(:shell_out!)
     @provider.run_action(:sync)
-   # @resource.should be_updated
+    # @resource.should be_updated
   end
 
   it "clones the repo instead of fetching updates if the deploy directory is empty" do

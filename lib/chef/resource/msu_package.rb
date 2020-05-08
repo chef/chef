@@ -39,7 +39,7 @@ class Chef
 
       # This is the same property as the main package resource except it has the skip docs set to true
       # This resource abuses the package resource by storing the versions of all the cabs in the MSU file
-      # in the version attribute from load current value even though those aren't technically the versio of the
+      # in the version attribute from load current value even though those aren't technically the version of the
       # msu. Since the user wouldn't actually set this we don't want it on the docs site.
       property :version, [String, Array],
         skip_docs: true,

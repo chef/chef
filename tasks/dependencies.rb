@@ -33,9 +33,7 @@ namespace :dependencies do
       Dir.chdir(dir) do
         Bundler.with_unbundled_env do
           rm_f "#{dir}/Gemfile.lock"
-          sh "bundle lock --update --add-platform ruby"
-          sh "bundle lock --update --add-platform x64-mingw32"
-          sh "bundle lock --update --add-platform x86-mingw32"
+          sh "bundle lock --update --add-platform ruby x64-mingw32 x86-mingw32"
         end
       end
     end

@@ -56,8 +56,10 @@ class Chef
           if @console_user
             @console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
             logger.trace("#{new_resource} console_user: '#{@console_user}'")
-            cmd = "su -l"
-            @base_user_cmd = cmd + "#{@console_user} -c"
+
+            @base_user_cmd = "su -l #{@console_user} -c"
+            logger.trace("#{new_resource} base_user_cmd: '#{@base_user_cmd}'")
+
             # Default LaunchAgent session should be Aqua
             @session_type = "Aqua" if @session_type.nil?
           end

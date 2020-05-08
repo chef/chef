@@ -340,6 +340,7 @@ class Chef
       # can also be overridden).  Exclude has priority over include, although the caller is likely better
       # off doing the set arithmetic themselves for explicitness.
       #
+      # ```ruby
       # action :doit do
       #   # use it inside a block
       #   file "/etc/whatever.xyz" do
@@ -350,6 +351,7 @@ class Chef
       #   r = declare_resource(:file, "etc/whatever.xyz")
       #   r.copy_properties_from(new_resource, :owner, :group, :mode)
       # end
+      # ```
       #
       # @param other [Object] the other object (Chef::Resource) which implements the properties API
       # @param includes [Array<Symbol>] splat-args list of symbols of the properties to copy.

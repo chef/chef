@@ -104,8 +104,8 @@ class Chef
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true
 
-      property :version, String,
-        description: "The version of a package to be installed or upgraded."
+      # we don't redefine the version property as a string here since we store the current value
+      # of version and that may be an array if multiple versions of a package are present on the system
 
       # windows can't take array options yet
       property :options, String,

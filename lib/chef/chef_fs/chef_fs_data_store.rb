@@ -204,7 +204,7 @@ class Chef
           @memory_store.create(path, name, data, *options)
 
         elsif path[0] == "cookbooks" && path.length == 2
-          # Do nothing.  The entry gets created when the cookbook is created.
+        # Do nothing.  The entry gets created when the cookbook is created.
 
         # /policy_groups/GROUP/policies/NAME
         elsif path[0] == "policy_groups" && path[2] == "policies"
@@ -724,8 +724,8 @@ class Chef
             path[-1] = "#{path[-1]}.json"
           end
 
-          # /acls/containers|nodes|... do NOT drop into the next elsif, and do
-          # not get .json appended
+        # /acls/containers|nodes|... do NOT drop into the next elsif, and do
+        # not get .json appended
 
         # /nodes|clients|.../x.json
         elsif path.length == 2

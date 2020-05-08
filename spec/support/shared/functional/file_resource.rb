@@ -370,7 +370,7 @@ shared_examples_for "a configured file resource" do
     Chef::Config[:ssl_verify_mode] = :verify_none
   end
 
-   # note the stripping of the drive letter from the tmpdir on windows
+  # note the stripping of the drive letter from the tmpdir on windows
   let(:backup_glob) { File.join(CHEF_SPEC_BACKUP_PATH, test_file_dir.sub(/^([A-Za-z]:)/, ""), "#{file_base}*") }
 
   # Most tests update the resource, but a few do not. We need to test that the
