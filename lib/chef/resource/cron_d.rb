@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require_relative "helpers/cron_validations"
+require_relative "helpers/cron"
 require "shellwords" unless defined?(Shellwords)
 require_relative "../dist"
 
@@ -122,9 +123,10 @@ class Chef
           "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
         }
 
-      property :weekday, [Integer, String],
-        description: "The day of the week on which this entry is to run (`0-7`, `mon-sun`, or `*`), where Sunday is both `0` and `7`.",
-        default: "*", callbacks: {
+      property :weekday, [Integer, String, Symbol],
+        description: "The day of the week on which this entry is to run (`0-7`, `mon-sun`, `monday-sunday`, or `*`), where Sunday is both `0` and `7`.",
+        default: "*", coerce: proc { |wday| Chef::ResourceHelpers::Cron.weekday_in_crontab(wday) },
+        callbacks: {
           "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
         }
 

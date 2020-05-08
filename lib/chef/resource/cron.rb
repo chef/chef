@@ -19,6 +19,7 @@
 
 require_relative "../resource"
 require_relative "helpers/cron_validations"
+require_relative "helpers/cron"
 require_relative "../provider/cron" # do not remove. we actually need this below
 
 class Chef
@@ -64,29 +65,12 @@ class Chef
           "should be a valid month spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_month(spec) },
         }
 
-      def weekday(arg = nil)
-        if arg.is_a?(Integer)
-          converted_arg = arg.to_s
-        else
-          converted_arg = arg
-        end
-        begin
-          error_message = "You provided '#{arg}' as a weekday, acceptable values are "
-          error_message << Provider::Cron::WEEKDAY_SYMBOLS.map { |sym| ":#{sym}" }.join(", ")
-          error_message << " and a string in crontab format"
-          if (arg.is_a?(Symbol) && !Provider::Cron::WEEKDAY_SYMBOLS.include?(arg)) ||
-              (!arg.is_a?(Symbol) && integerize(arg) > 7) ||
-              (!arg.is_a?(Symbol) && integerize(arg) < 0)
-            raise RangeError, error_message
-          end
-        rescue ArgumentError
-        end
-        set_or_return(
-          :weekday,
-          converted_arg,
-          kind_of: [String, Symbol]
-        )
-      end
+      property :weekday, [Integer, String, Symbol],
+        description: "The day of the week on which this entry is to run (`0-7`, `mon-sun`, `monday-sunday`, or `*`), where Sunday is both `0` and `7`.",
+        default: "*", coerce: proc { |wday| Chef::ResourceHelpers::Cron.weekday_in_crontab(wday) },
+        callbacks: {
+          "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
+        }
 
       property :time, Symbol,
         description: "A time interval.",

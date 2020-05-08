@@ -322,7 +322,7 @@ describe Chef::Provider::Cron do
         expect(cron.hour).to eq("5")
         expect(cron.day).to eq("*")
         expect(cron.month).to eq("Jan")
-        expect(cron.weekday).to eq("Mon")
+        expect(cron.weekday).to eq("1")
         expect(cron.command).to eq("/bin/true param1 param2")
       end
 
@@ -1037,48 +1037,6 @@ describe Chef::Provider::Cron do
       expect do
         @provider.send(:write_crontab, "Foo")
       end.to raise_error(Chef::Exceptions::Cron)
-    end
-  end
-
-  describe "weekday_in_crontab" do
-    context "when weekday is symbol" do
-      it "should return weekday in crontab format" do
-        @new_resource.weekday :wednesday
-        expect(@provider.send(:weekday_in_crontab)).to eq("3")
-      end
-
-      it "should raise an error with an unknown weekday" do
-        expect { @new_resource.weekday :caturday }.to raise_error(RangeError)
-      end
-    end
-
-    context "when weekday is a number in a string" do
-      it "should return the string" do
-        @new_resource.weekday "3"
-        expect(@provider.send(:weekday_in_crontab)).to eq("3")
-      end
-
-      it "should raise an error with an out of range number" do
-        expect { @new_resource.weekday "-1" }.to raise_error(RangeError)
-      end
-    end
-
-    context "when weekday is string with the name of the week" do
-      it "should return the string" do
-        @new_resource.weekday "mon"
-        expect(@provider.send(:weekday_in_crontab)).to eq("mon")
-      end
-    end
-
-    context "when weekday is an integer" do
-      it "should return the integer" do
-        @new_resource.weekday 1
-        expect(@provider.send(:weekday_in_crontab)).to eq("1")
-      end
-
-      it "should raise an error with an out of range integer" do
-        expect { @new_resource.weekday 45 }.to raise_error(RangeError)
-      end
     end
   end
 

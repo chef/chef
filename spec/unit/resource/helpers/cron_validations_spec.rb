@@ -34,8 +34,12 @@ describe Chef::ResourceHelpers::CronValidations do
       expect(Chef::ResourceHelpers::CronValidations.validate_dow(8)).to be false
     end
 
+    it "it accepts the string day with full name" do
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow("monday")).to be true
+    end
+
     it "returns false for an invalid string" do
-      expect(Chef::ResourceHelpers::CronValidations.validate_dow("monday")).to be false
+      expect(Chef::ResourceHelpers::CronValidations.validate_dow("funday")).to be false
     end
   end
 
