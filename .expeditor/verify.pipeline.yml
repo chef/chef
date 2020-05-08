@@ -326,7 +326,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux-2
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -341,7 +341,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux-2
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -356,7 +356,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1604
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -372,7 +372,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1804
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -387,7 +387,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-2004
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2004
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -402,7 +402,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -417,7 +417,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-9
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -432,7 +432,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-10
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -447,7 +447,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-6
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -462,7 +462,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -477,7 +477,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-8
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -492,7 +492,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-7
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-oraclelinux-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -507,7 +507,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-fedora-latest
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -522,7 +522,7 @@ steps:
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap-15
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-opensuse-leap-15
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
