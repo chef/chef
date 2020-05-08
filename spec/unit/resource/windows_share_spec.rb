@@ -18,7 +18,14 @@
 require "spec_helper"
 
 describe Chef::Resource::WindowsShare do
-  let(:resource) { Chef::Resource::WindowsShare.new("foobar") }
+  let(:node) do
+    Chef::Node.new.tap do |n|
+      n.automatic[:hostname] = "hostname"
+    end
+  end
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::WindowsShare.new("foobar", run_context) }
 
   it "sets resource name as :windows_share" do
     expect(resource.resource_name).to eql(:windows_share)
@@ -44,5 +51,25 @@ describe Chef::Resource::WindowsShare do
     expect(resource.path).to eql("C:\\chef")
     resource.path("C:/chef".dup)
     expect(resource.path).to eql("C:\\chef")
+  end
+
+  shared_examples "when users are passed" do
+    it "add hostname to user with/without hostname" do
+      expect(users).to eq(result)
+    end
+  end
+
+  %w{full_users change_users read_users}.each do |users|
+    context "when #{users} are passed" do
+      it_behaves_like "when users are passed" do
+        let(:users) { resource.send(users, ["mygroup"]) }
+        let(:result) { ["hostname\\mygroup"] }
+      end
+
+      it_behaves_like "when users are passed" do
+        let(:users) { resource.send(users, ["hostname1\\mygroup"]) }
+        let(:result) { ["hostname1\\mygroup"] }
+      end
+    end
   end
 end
