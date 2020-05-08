@@ -139,7 +139,7 @@ module ChefConfig
     # backslashes on Windows.
     #
     # Generally, if the user isn't going to be seeing it, you should be
-    # using Pathname#cleanpath intead of this function.
+    # using Pathname#cleanpath instead of this function.
     def self.cleanpath(path)
       path = Pathname.new(path).cleanpath.to_s
       # ensure all forward slashes are backslashes

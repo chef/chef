@@ -16,6 +16,7 @@ end
 # this caught a regression in 12.14.70 before it was released when i
 # ran it in lamont-ci, so added the test here so everyone else other than
 # me gets coverage for this as well.
+# cspell:disable-next-line
 file "/tmp/chef-test-\xFDmlaut" do
   content "testing illegal UTF-8 char in the filename"
 end

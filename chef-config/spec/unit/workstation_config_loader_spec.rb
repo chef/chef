@@ -52,7 +52,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
     end
 
     it "tests a path's existence" do
-      expect(config_loader.path_exists?("/nope/nope/nope/nope/frab/jab/nab")).to be(false)
+      expect(config_loader.path_exists?("/nope/nope/nope/nope/slab/jab/nab")).to be(false)
       expect(config_loader.path_exists?(__FILE__)).to be(true)
     end
 
@@ -214,7 +214,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
   describe "loading the config file" do
 
-    context "when no explicit config is specifed and no implicit config is found" do
+    context "when no explicit config is specified and no implicit config is found" do
 
       before do
         allow(config_loader).to receive(:path_exists?).with(an_instance_of(String)).and_return(false)
@@ -230,7 +230,7 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
 
     context "when an explicit config is given but it doesn't exist" do
 
-      let(:explicit_config_location) { "/nope/nope/nope/frab/jab/nab" }
+      let(:explicit_config_location) { "/nope/nope/nope/slab/jab/nab" }
 
       it "raises a configuration error" do
         expect { config_loader.load }.to raise_error(ChefConfig::ConfigurationError)
@@ -402,12 +402,12 @@ RSpec.describe ChefConfig::WorkstationConfigLoader do
       end
 
       context "has a non rb file" do
-        let(:sytax_error_content) { "{{{{{:{{" }
+        let(:syntax_error_content) { "{{{{{:{{" }
         let(:config_content) { "config_d_file_evaluated(true)" }
 
         let!(:not_confd_file) do
           Tempfile.new(["Chef-WorkstationConfigLoader-rspec-test", ".foorb"], tempdir).tap do |t|
-            t.print(sytax_error_content)
+            t.print(syntax_error_content)
             t.close
           end
         end
