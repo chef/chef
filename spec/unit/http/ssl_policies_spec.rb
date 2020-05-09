@@ -166,4 +166,24 @@ describe "HTTP SSL Policy" do
     end
 
   end
+
+  describe Chef::HTTP::VerifyPeerSSLPolicy do
+
+    let(:ssl_policy) { Chef::HTTP::VerifyPeerSSLPolicy.new(unconfigured_http_client) }
+
+    it "sets the OpenSSL verify mode to verify_peer" do
+      expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
+    end
+
+  end
+
+  describe Chef::HTTP::VerifyNoneSSLPolicy do
+
+    let(:ssl_policy) { Chef::HTTP::VerifyNoneSSLPolicy.new(unconfigured_http_client) }
+
+    it "sets the OpenSSL verify mode to verify_peer" do
+      expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
+    end
+
+  end
 end

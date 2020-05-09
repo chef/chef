@@ -94,6 +94,9 @@ class Chef
 
       property :show_progress, [ TrueClass, FalseClass ], default: false
 
+      property :ssl_verify_mode, equal_to: %i{verify_none verify_peer}, default: nil,
+        description: "Optional property to override SSL policy. If not specified, uses the SSL polify from config.rb."
+
       property :remote_user, String
 
       property :remote_domain, String
