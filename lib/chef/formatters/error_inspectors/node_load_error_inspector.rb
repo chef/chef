@@ -17,7 +17,7 @@
 #
 
 require_relative "api_error_formatting"
-require "chef-utils"
+require "chef-utils/dist"
 
 class Chef
   module Formatters

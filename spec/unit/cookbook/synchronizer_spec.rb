@@ -1,7 +1,7 @@
 require "spec_helper"
 require "chef/cookbook/synchronizer"
 require "chef/cookbook_version"
-require "chef-utils"
+require "chef-utils/dist/solo"
 
 describe Chef::CookbookCacheCleaner do
   describe "when cleaning up unused cookbook components" do

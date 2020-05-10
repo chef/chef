@@ -19,7 +19,7 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 require "chef/version"
 require "ohai/version"
-require "chef-utils"
+require "chef-utils/dist"
 
 describe "Chef Versions", :executables do
   include Chef::Mixin::ShellOut

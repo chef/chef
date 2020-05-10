@@ -17,7 +17,7 @@
 
 require "chef-config/mixin/credentials"
 autoload :Train, "train"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class TrainTransport

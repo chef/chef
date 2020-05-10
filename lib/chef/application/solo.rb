@@ -21,6 +21,7 @@ require_relative "../../chef"
 require_relative "client"
 require "fileutils" unless defined?(FileUtils)
 require "pathname" unless defined?(Pathname)
+require "chef-utils"
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #

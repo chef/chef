@@ -17,7 +17,7 @@
 #
 
 require_relative "../resource"
-require "chef-utils"
+require "chef-utils/dist/infra"
 require "iniparse"
 
 class Chef

@@ -24,7 +24,7 @@ module ChefUtils
       SHELL = "chef-shell".freeze
 
       # The chef-shell default configuration file
-      SHELL_CONF ="chef_shell.rb".freeze
+      SHELL_CONF = "chef_shell.rb".freeze
 
       # chef-zero executable
       ZERO = "Chef Infra Zero".freeze

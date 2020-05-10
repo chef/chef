@@ -26,7 +26,7 @@ require_relative "data_collector/run_end_message"
 require_relative "data_collector/run_start_message"
 require_relative "data_collector/config_validation"
 require_relative "data_collector/error_handlers"
-require "chef-utils"
+require "chef-utils/dist/automate"
 
 class Chef
   class DataCollector

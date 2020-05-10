@@ -1,6 +1,6 @@
 require_relative "base"
 require_relative "../config"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   module Formatters

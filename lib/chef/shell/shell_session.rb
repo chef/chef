@@ -28,7 +28,7 @@ require_relative "../run_list/run_list_expansion"
 require_relative "../formatters/base"
 require_relative "../formatters/doc"
 require_relative "../formatters/minimal"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 module Shell
   class ShellSession

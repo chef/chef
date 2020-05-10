@@ -15,7 +15,6 @@
 #
 
 require_relative "../resource"
-require "chef-utils"
 
 class Chef
   class Resource

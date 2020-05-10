@@ -44,7 +44,7 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require "chef_zero/server"
-require "chef-utils"
+require "chef-utils/dist/zero"
 module Net
   autoload :HTTPResponse, File.expand_path("../monkey_patches/net_http", __dir__)
 end

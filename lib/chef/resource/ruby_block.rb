@@ -19,7 +19,7 @@
 
 require_relative "../resource"
 require_relative "../provider/ruby_block"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Resource

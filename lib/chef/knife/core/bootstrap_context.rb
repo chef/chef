@@ -19,7 +19,7 @@
 require_relative "../../run_list"
 require_relative "../../util/path_helper"
 require "pathname" unless defined?(Pathname)
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Knife

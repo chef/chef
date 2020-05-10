@@ -25,7 +25,7 @@ require_relative "shell_session"
 require_relative "model_wrapper"
 require_relative "../server_api"
 require_relative "../json_compat"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 module Shell
   module Extensions
