@@ -19,7 +19,7 @@
 require_relative "../../run_list"
 require_relative "../../util/path_helper"
 require "pathname" unless defined?(Pathname)
-require_relative "../../dist"
+require "chef-utils"
 
 class Chef
   class Knife
@@ -184,7 +184,7 @@ class Chef
 
         def start_chef
           # If the user doesn't have a client path configure, let bash use the PATH for what it was designed for
-          client_path = chef_config[:chef_client_path] || Chef::Dist::CLIENT
+          client_path = chef_config[:chef_client_path] || ChefUtils::Dist::Infra::CLIENT
           s = "#{client_path} -j /etc/chef/first-boot.json"
           if config[:verbosity] && config[:verbosity] >= 3
             s << " -l trace"

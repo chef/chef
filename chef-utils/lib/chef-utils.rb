@@ -30,6 +30,7 @@ require_relative "chef-utils/dsl/virtualization"
 require_relative "chef-utils/dsl/which"
 require_relative "chef-utils/dsl/windows"
 require_relative "chef-utils/mash"
+require_relative "chef-utils/dist"
 
 # This is the Chef Infra Client DSL, not everything needs to go in here
 module ChefUtils

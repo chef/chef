@@ -20,7 +20,7 @@ require_relative "../mixin/uris"
 require_relative "package"
 require_relative "../provider/package/windows"
 require_relative "../win32/error" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -162,7 +162,7 @@ class Chef
 
       property :checksum, String,
         desired_state: false, coerce: (proc { |c| c.downcase }),
-        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{Chef::Dist::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
+        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{ChefUtils::Dist::Infra::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
 
       property :remote_file_attributes, Hash,
         desired_state: false,

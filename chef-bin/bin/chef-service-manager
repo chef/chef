@@ -21,13 +21,13 @@
 $:.unshift(File.join(__dir__, "..", "lib"))
 require "chef"
 require "chef/application/windows_service_manager"
-require "chef/dist"
+require "chef-utils/dist/infra"
 
 if Chef::Platform.windows?
   chef_client_service = {
-    service_name: Chef::Dist::CLIENT,
-    service_display_name: "#{Chef::Dist::PRODUCT} Service",
-    service_description: "Runs #{Chef::Dist::PRODUCT} on regular, configurable intervals.",
+    service_name: ChefUtils::Dist::Infra::CLIENT,
+    service_display_name: "#{ChefUtils::Dist::Infra::PRODUCT} Service",
+    service_description: "Runs #{ChefUtils::Dist::Infra::PRODUCT} on regular, configurable intervals.",
     service_file_path: File.expand_path("../chef-windows-service", $PROGRAM_NAME),
     delayed_start: true,
     dependencies: ["Winmgmt"],

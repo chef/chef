@@ -18,7 +18,7 @@
 require_relative "package"
 require_relative "../mixin/which"
 require_relative "../mixin/shell_out"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -52,7 +52,7 @@ class Chef
 
       # Flush the in-memory available/installed cache, this does not flush the dnf caches on disk
       property :flush_cache, Hash,
-        description: "Flush the in-memory cache before or after a DNF operation that installs, upgrades, or removes a package. DNF automatically synchronizes remote metadata to a local cache. The #{Chef::Dist::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{Chef::Dist::CLIENT} run. The in-memory cache allows packages to be installed during the #{Chef::Dist::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{Chef::Dist::CLIENT} run is in-progress.",
+        description: "Flush the in-memory cache before or after a DNF operation that installs, upgrades, or removes a package. DNF automatically synchronizes remote metadata to a local cache. The #{ChefUtils::Dist::Infra::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{ChefUtils::Dist::Infra::CLIENT} run. The in-memory cache allows packages to be installed during the #{ChefUtils::Dist::Infra::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{ChefUtils::Dist::Infra::CLIENT} run is in-progress.",
         default: { before: false, after: false },
         coerce: proc { |v|
           if v.is_a?(Hash)

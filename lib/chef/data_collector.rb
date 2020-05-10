@@ -26,7 +26,7 @@ require_relative "data_collector/run_end_message"
 require_relative "data_collector/run_start_message"
 require_relative "data_collector/config_validation"
 require_relative "data_collector/error_handlers"
-require_relative "dist"
+require "chef-utils"
 
 class Chef
   class DataCollector
@@ -197,7 +197,7 @@ class Chef
         else
           if code == "404"
             # Make the message non-scary for folks who don't have automate:
-            msg << " (This is normal if you do not have #{Chef::Dist::AUTOMATE})"
+            msg << " (This is normal if you do not have #{ChefUtils::Dist::Automate::PRODUCT})"
             Chef::Log.debug(msg)
           else
             Chef::Log.warn(msg)

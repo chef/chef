@@ -17,7 +17,7 @@
 #
 
 require_relative "api_error_formatting"
-require_relative "../../dist"
+require "chef-utils"
 
 class Chef
   module Formatters
@@ -46,7 +46,7 @@ class Chef
           when Chef::Exceptions::PrivateKeyMissing
             error_description.section("Private Key Not Found:", <<~E)
               Your private key could not be loaded. If the key file exists, ensure that it is
-              readable by #{Chef::Dist::PRODUCT}.
+              readable by #{ChefUtils::Dist::Infra::PRODUCT}.
             E
             error_description.section("Relevant Config Settings:", <<~E)
               client_key        "#{api_key}"
@@ -99,7 +99,7 @@ class Chef
         # redirect.
         def describe_404_error(error_description)
           error_description.section("Resource Not Found:", <<~E)
-            The #{Chef::Dist::SERVER_PRODUCT} returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
+            The #{ChefUtils::Dist::Server::PRODUCT} returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
           E
           error_description.section("Relevant Config Settings:", <<~E)
             chef_server_url "#{server_url}"

@@ -33,7 +33,7 @@ class Chef::Application::Solo < Chef::Application::Base
   option :config_file,
     short: "-c CONFIG",
     long: "--config CONFIG",
-    default: Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/solo.rb"),
+    default: "#{ChefConfig::Config.etc_chef_dir}/solo.rb",
     description: "The configuration file to use."
 
   unless ChefUtils.windows?

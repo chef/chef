@@ -19,7 +19,7 @@
 
 require_relative "../provider/package"
 require_relative "package"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -62,7 +62,7 @@ class Chef
       DOC
 
       property :homebrew_user, [ String, Integer ],
-        description: "The name or uid of the Homebrew owner to be used by #{Chef::Dist::PRODUCT} when executing a command."
+        description: "The name or uid of the Homebrew owner to be used by #{ChefUtils::Dist::Infra::PRODUCT} when executing a command."
 
     end
   end

@@ -50,7 +50,7 @@ class Chef::Application::Client < Chef::Application::Base
   option :pid_file,
     short: "-P PID_FILE",
     long: "--pid PIDFILE",
-    description: "Set the PID file location, for the #{Chef::Dist::CLIENT} daemon process. Defaults to /tmp/chef-client.pid.",
+    description: "Set the PID file location, for the #{ChefUtils::Dist::Infra::CLIENT} daemon process. Defaults to /tmp/chef-client.pid.",
     proc: nil
 
   option :runlist,
@@ -105,7 +105,7 @@ class Chef::Application::Client < Chef::Application::Base
         tarball_path = File.join(Chef::Config.chef_repo_path, "recipes.tgz")
         fetch_recipe_tarball(Chef::Config[:recipe_url], tarball_path)
         Mixlib::Archive.new(tarball_path).extract(Chef::Config.chef_repo_path, perms: false, ignore: /^\.$/)
-        config_path = File.join(Chef::Config.chef_repo_path, "#{Chef::Dist::USER_CONF_DIR}/config.rb")
+        config_path = File.join(Chef::Config.chef_repo_path, "#{ChefUtils::Dist::Infra::USER_CONF_DIR}/config.rb")
         Chef::Config.from_string(IO.read(config_path), config_path) if File.file?(config_path)
       end
     end
@@ -152,7 +152,7 @@ class Chef::Application::Client < Chef::Application::Base
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
-        config[:config_file] = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+        config[:config_file] = "#{ChefConfig::Config.etc_chef_dir}/client.rb"
       end
     end
 

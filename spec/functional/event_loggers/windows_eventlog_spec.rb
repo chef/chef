@@ -49,7 +49,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_start(version, run_status)
 
     expect(event_log.read(flags, offset).any? do |e|
-      e.source == Chef::Dist::SHORT && e.event_id == 10000 &&
+      e.source == ChefUtils::Dist::Infra::SHORT && e.event_id == 10000 &&
                                         e.string_inserts[0].include?(version)
     end ).to be_truthy
   end
@@ -58,7 +58,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_started(run_status)
 
     expect(event_log.read(flags, offset).any? do |e|
-      e.source == Chef::Dist::SHORT && e.event_id == 10001 &&
+      e.source == ChefUtils::Dist::Infra::SHORT && e.event_id == 10001 &&
                                         e.string_inserts[0].include?(run_id)
     end ).to be_truthy
   end
@@ -68,7 +68,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_completed(node)
 
     expect(event_log.read(flags, offset).any? do |e|
-      e.source == Chef::Dist::SHORT && e.event_id == 10002 &&
+      e.source == ChefUtils::Dist::Infra::SHORT && e.event_id == 10002 &&
                                          e.string_inserts[0].include?(run_id) &&
                                          e.string_inserts[1].include?(elapsed_time.to_s)
     end).to be_truthy
@@ -79,7 +79,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_failed(mock_exception)
 
     expect(event_log.read(flags, offset).any? do |e|
-      e.source == Chef::Dist::SHORT && e.event_id == 10003 &&
+      e.source == ChefUtils::Dist::Infra::SHORT && e.event_id == 10003 &&
         e.string_inserts[0].include?(run_id) &&
         e.string_inserts[1].include?(elapsed_time.to_s) &&
         e.string_inserts[2].include?(mock_exception.class.name) &&
@@ -93,7 +93,7 @@ describe Chef::EventLoggers::WindowsEventLogger, :windows_only do
     logger.run_failed(mock_exception)
 
     expect(event_log.read(flags, offset).any? do |e|
-      e.source == Chef::Dist::SHORT && e.event_id == 10003 &&
+      e.source == ChefUtils::Dist::Infra::SHORT && e.event_id == 10003 &&
         e.string_inserts[0].include?("UNKNOWN") &&
         e.string_inserts[1].include?("UNKNOWN") &&
         e.string_inserts[2].include?(mock_exception.class.name) &&

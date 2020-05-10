@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -71,7 +71,7 @@ class Chef
       #
       def lc_all(arg = nil)
         unless arg.nil?
-          Chef.deprecated(:locale_lc_all, "Changing LC_ALL can break #{Chef::Dist::PRODUCT}'s parsing of command output in unexpected ways.\n Use one of the more specific LC_ properties as needed.")
+          Chef.deprecated(:locale_lc_all, "Changing LC_ALL can break #{ChefUtils::Dist::Infra::PRODUCT}'s parsing of command output in unexpected ways.\n Use one of the more specific LC_ properties as needed.")
         end
       end
 

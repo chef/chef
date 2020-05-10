@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -24,24 +24,24 @@ class Chef
 
       provides :chef_client_scheduled_task
 
-      description "Use the **chef_client_scheduled_task** resource to setup the #{Chef::Dist::PRODUCT} to run as a Windows scheduled task. This resource will also create the specified log directory if it doesn't already exist."
+      description "Use the **chef_client_scheduled_task** resource to setup the #{ChefUtils::Dist::Infra::PRODUCT} to run as a Windows scheduled task. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
-      **Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence**:
+      **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-        chef_client_scheduled_task "Run #{Chef::Dist::PRODUCT} as a scheduled task"
+        chef_client_scheduled_task "Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task"
       ```
 
-      **Run #{Chef::Dist::PRODUCT} on system start**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} on system start**:
 
       ```ruby
-        chef_client_scheduled_task '#{Chef::Dist::PRODUCT} on start' do
+        chef_client_scheduled_task '#{ChefUtils::Dist::Infra::PRODUCT} on start' do
           frequency 'onstart'
         end
       ```
 
-      **Run #{Chef::Dist::PRODUCT} with extra options passed to the client**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
         chef_client_scheduled_task "Run an override recipe" do
@@ -64,14 +64,14 @@ class Chef
 
       property :task_name, String,
         description: "The name of the scheduled task to create.",
-        default: Chef::Dist::CLIENT
+        default: ChefUtils::Dist::Infra::CLIENT
 
       property :user, String,
-        description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
+        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         default: "System", sensitive: true
 
       property :password, String,
-        description: "The password for the user that #{Chef::Dist::PRODUCT} runs as.",
+        description: "The password for the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         sensitive: true
 
       property :frequency, String,
@@ -101,16 +101,16 @@ class Chef
       property :splay, [Integer, String],
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
-        description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time.",
+        description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time.",
         default: 300
 
       property :run_on_battery, [true, false],
-        description: "Run the #{Chef::Dist::PRODUCT} task when the system is on batteries.",
+        description: "Run the #{ChefUtils::Dist::Infra::PRODUCT} task when the system is on batteries.",
         default: true
 
       property :config_directory, String,
         description: "The path of the config directory.",
-        default: Chef::Dist::CONF_DIR
+        default: ChefConfig::Config.etc_chef_dir
 
       property :log_directory, String,
         description: "The path of the directory to create the log file in.",
@@ -122,11 +122,11 @@ class Chef
         default: "client.log"
 
       property :chef_binary_path, String,
-        description: "The path to the #{Chef::Dist::CLIENT} binary.",
-        default: "C:/#{Chef::Dist::LEGACY_CONF_DIR}/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}"
+        description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
+        default: "C:/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
 
       property :daemon_options, Array,
-        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
+        description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
         default: lazy { [] }
 
       action :add do

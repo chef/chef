@@ -19,7 +19,7 @@
 require_relative "base"
 require_relative "../platform/query_helpers"
 require_relative "../win32/eventlog"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   module EventLoggers
@@ -36,7 +36,7 @@ class Chef
       LOG_CATEGORY_ID = 11001
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = Chef::Dist::SHORT.freeze
+      SOURCE = ChefUtils::Dist::Infra::SHORT.freeze
 
       def self.available?
         ChefUtils.windows?

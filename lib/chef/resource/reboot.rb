@@ -17,7 +17,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -36,7 +36,7 @@ class Chef
 
       property :reason, String,
         description: "A string that describes the reboot action.",
-        default: "Reboot by #{Chef::Dist::PRODUCT}"
+        default: "Reboot by #{ChefUtils::Dist::Infra::PRODUCT}"
 
       property :delay_mins, Integer,
         description: "The amount of time (in minutes) to delay a reboot request.",
