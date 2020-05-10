@@ -19,7 +19,7 @@
 require_relative "../knife"
 require_relative "core/status_presenter"
 require_relative "core/node_presenter"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Knife
@@ -44,7 +44,7 @@ class Chef
 
       option :hide_by_mins,
         long: "--hide-by-mins MINS",
-        description: "Hide nodes that have run #{Chef::Dist::CLIENT} in the last MINS minutes"
+        description: "Hide nodes that have run #{ChefUtils::Dist::Infra::CLIENT} in the last MINS minutes"
 
       def append_to_query(term)
         @query << " AND " unless @query.empty?

@@ -18,7 +18,7 @@
 
 require "spec_helper"
 require "chef/provider/windows_task"
-require "chef/dist"
+require "chef-utils"
 
 describe Chef::Resource::WindowsTask, :windows_only do
   # resource.task.application_name will default to task_name unless resource.command is set
@@ -47,37 +47,37 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       context "With Arguments" do
         it "creates scheduled task and sets command arguments" do
-          subject.command "#{Chef::Dist::CLIENT} -W"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W"
           call_for_create_action
           # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
-          expect(current_resource.task.application_name).to eq(Chef::Dist::CLIENT)
+          expect(current_resource.task.application_name).to eq(ChefUtils::Dist::Infra::CLIENT)
           expect(current_resource.task.parameters).to eq("-W")
         end
 
         it "does not converge the resource if it is already converged" do
-          subject.command "#{Chef::Dist::CLIENT} -W"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W"
           subject.run_action(:create)
-          subject.command "#{Chef::Dist::CLIENT} -W"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W"
           subject.run_action(:create)
           expect(subject).not_to be_updated_by_last_action
         end
 
         it "creates scheduled task and sets command arguments when arguments inclusive single quotes" do
-          subject.command "#{Chef::Dist::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
           call_for_create_action
           # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
-          expect(current_resource.task.application_name).to eq(Chef::Dist::CLIENT)
+          expect(current_resource.task.application_name).to eq(ChefUtils::Dist::Infra::CLIENT)
           expect(current_resource.task.parameters).to eq("-W -L 'C:\\chef\\chef-ad-join.log'")
         end
 
         it "does not converge the resource if it is already converged" do
-          subject.command "#{Chef::Dist::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
           subject.run_action(:create)
-          subject.command "#{Chef::Dist::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
+          subject.command "#{ChefUtils::Dist::Infra::CLIENT} -W -L 'C:\\chef\\chef-ad-join.log'"
           subject.run_action(:create)
           expect(subject).not_to be_updated_by_last_action
         end
@@ -137,19 +137,19 @@ describe Chef::Resource::WindowsTask, :windows_only do
 
       context "Without Arguments" do
         it "creates scheduled task and sets command arguments" do
-          subject.command Chef::Dist::CLIENT
+          subject.command ChefUtils::Dist::Infra::CLIENT
           call_for_create_action
           # loading current resource again to check new task is creted and it matches task parameters
           current_resource = call_for_load_current_resource
           expect(current_resource.exists).to eq(true)
-          expect(current_resource.task.application_name).to eq(Chef::Dist::CLIENT)
+          expect(current_resource.task.application_name).to eq(ChefUtils::Dist::Infra::CLIENT)
           expect(current_resource.task.parameters).to be_empty
         end
 
         it "does not converge the resource if it is already converged" do
-          subject.command Chef::Dist::CLIENT
+          subject.command ChefUtils::Dist::Infra::CLIENT
           subject.run_action(:create)
-          subject.command Chef::Dist::CLIENT
+          subject.command ChefUtils::Dist::Infra::CLIENT
           subject.run_action(:create)
           expect(subject).not_to be_updated_by_last_action
         end

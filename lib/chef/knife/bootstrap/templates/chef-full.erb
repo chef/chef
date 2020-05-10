@@ -172,8 +172,8 @@ do_download() {
   <%= @config[:bootstrap_install_command] %>
 <% else %>
   install_sh="<%= @config[:bootstrap_url] ? @config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
-  if test -f /usr/bin/<%= Chef::Dist::CLIENT %>; then
-    echo "-----> Existing <%= Chef::Dist::PRODUCT %> installation detected"
+  if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
+    echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
   else
     echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
@@ -237,6 +237,6 @@ mkdir -p /etc/chef/client.d
 <%= client_d %>
 <% end -%>
 
-echo "Starting the first <%= Chef::Dist::PRODUCT %> Client run..."
+echo "Starting the first <%= ChefUtils::Dist::Infra::PRODUCT %> Client run..."
 
 <%= start_chef %>

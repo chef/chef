@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require "pathname" unless defined?(Pathname)
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   module ChefFS
@@ -49,7 +49,7 @@ class Chef
 
       option :chef_repo_path,
         long: "--chef-repo-path PATH",
-        description: "Overrides the location of #{Chef::Dist::PRODUCT} repo. Default is specified by chef_repo_path in the config"
+        description: "Overrides the location of #{ChefUtils::Dist::Infra::PRODUCT} repo. Default is specified by chef_repo_path in the config"
 
       option :concurrency,
         long: "--concurrency THREADS",

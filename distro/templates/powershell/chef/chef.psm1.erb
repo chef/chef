@@ -412,40 +412,40 @@ function Run-RubyCommand($command, $argList) {
 }
 
 
-function <%= Chef::Dist::APPLY %> {
-  Run-RubyCommand '<%= Chef::Dist::APPLY %>' $args
+function <%= ChefUtils::Dist::Apply::EXEC %> {
+  Run-RubyCommand '<%= ChefUtils::Dist::Apply::EXEC %>' $args
 }
 
-function <%= Chef::Dist::CLIENT %> {
-  Run-RubyCommand '<%= Chef::Dist::CLIENT %>' $args
+function <%= ChefUtils::Dist::Infra::CLIENT %> {
+  Run-RubyCommand '<%= ChefUtils::Dist::Infra::CLIENT %>' $args
 }
 
-function <%= Chef::Dist::EXEC %>-service-manager {
-  Run-RubyCommand '<%= Chef::Dist::EXEC %>-service-manager' $args
+function <%= ChefUtils::Dist::Infra::EXEC %>-service-manager {
+  Run-RubyCommand '<%= ChefUtils::Dist::Infra::EXEC %>-service-manager' $args
 }
 
-function <%= Chef::Dist::SHELL %> {
-  Run-RubyCommand '<%= Chef::Dist::SHELL %>' $args
+function <%= ChefUtils::Dist::Infra::SHELL %> {
+  Run-RubyCommand '<%= ChefUtils::Dist::Infra::SHELL %>' $args
 }
 
-function <%= Chef::Dist::SOLOEXEC %> {
-  Run-RubyCommand '<%= Chef::Dist::SOLOEXEC %>' $args
+function <%= ChefUtils::Dist::Solo::EXEC %> {
+  Run-RubyCommand '<%= ChefUtils::Dist::Solo::EXEC %>' $args
 }
 
-function <%= Chef::Dist::EXEC %>-windows-service {
-  Run-RubyCommand '<%= Chef::Dist::EXEC %>-windows-service' $args
+function <%= ChefUtils::Dist::Infra::EXEC %>-windows-service {
+  Run-RubyCommand '<%= ChefUtils::Dist::Infra::EXEC %>-windows-service' $args
 }
 
 function knife {
   Run-RubyCommand 'knife' $args
 }
 
-Export-ModuleMember -function <%= Chef::Dist::APPLY %>
-Export-ModuleMember -function <%= Chef::Dist::CLIENT %>
-Export-ModuleMember -function <%= Chef::Dist::EXEC %>-service-manager
-Export-ModuleMember -function <%= Chef::Dist::SHELL %>
-Export-ModuleMember -function <%= Chef::Dist::SOLOEXEC %>
-Export-ModuleMember -function <%= Chef::Dist::EXEC %>-windows-service
+Export-ModuleMember -function <%= ChefUtils::Dist::Apply::EXEC %>
+Export-ModuleMember -function <%= ChefUtils::Dist::Infra::CLIENT %>
+Export-ModuleMember -function <%= ChefUtils::Dist::Infra::EXEC %>-service-manager
+Export-ModuleMember -function <%= ChefUtils::Dist::Infra::SHELL %>
+Export-ModuleMember -function <%= ChefUtils::Dist::Solo::EXEC %>
+Export-ModuleMember -function <%= ChefUtils::Dist::Infra::EXEC %>-windows-service
 Export-ModuleMember -function knife
 
 # To debug this module, uncomment the line below

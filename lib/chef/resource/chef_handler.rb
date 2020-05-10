@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -50,7 +50,7 @@ class Chef
       # This action needs to find an rb file that presumably contains the indicated class in it and the
       # load that file. It then instantiates that class by name and registers it as a handler.
       action :enable do
-        description "Enables the handler for the current #{Chef::Dist::PRODUCT} run on the current node"
+        description "Enables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node"
 
         class_name = new_resource.class_name
         new_resource.type.each do |type, enable|
@@ -74,7 +74,7 @@ class Chef
       end
 
       action :disable do
-        description "Disables the handler for the current #{Chef::Dist::PRODUCT} run on the current node"
+        description "Disables the handler for the current #{ChefUtils::Dist::Infra::PRODUCT} run on the current node"
 
         new_resource.type.each_key do |type|
           unregister_handler(type, new_resource.class_name)

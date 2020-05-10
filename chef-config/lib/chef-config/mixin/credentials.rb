@@ -36,7 +36,7 @@ module ChefConfig
       #   normally set via a command-line option.
       # @return [String]
       def credentials_profile(profile = nil)
-        context_file = PathHelper.home(ChefConfig::Dist::USER_CONF_DIR, "context").freeze
+        context_file = PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "context").freeze
         if !profile.nil?
           profile
         elsif ENV.include?("CHEF_PROFILE")
@@ -53,7 +53,7 @@ module ChefConfig
       # @since 14.4
       # @return [String]
       def credentials_file_path
-        PathHelper.home(ChefConfig::Dist::USER_CONF_DIR, "credentials").freeze
+        PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR, "credentials").freeze
       end
 
       # Load and parse the credentials file.

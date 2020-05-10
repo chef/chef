@@ -25,7 +25,7 @@ require_relative "shell_session"
 require_relative "model_wrapper"
 require_relative "../server_api"
 require_relative "../json_compat"
-require_relative "../dist"
+require "chef-utils"
 
 module Shell
   module Extensions
@@ -69,7 +69,7 @@ module Shell
       def help_banner
         banner = []
         banner << ""
-        banner << "#{Chef::Dist::SHELL} Help"
+        banner << "#{ChefUtils::Dist::Infra::SHELL} Help"
         banner << "".ljust(80, "=")
         banner << "| " + "Command".ljust(25) + "| " + "Description"
         banner << "".ljust(80, "=")
@@ -194,7 +194,7 @@ module Shell
       explain(<<~E)
         ## SUMMARY ##
           When called with no argument, +help+ prints a table of all
-          #{Chef::Dist::SHELL} commands. When called with an argument COMMAND, +help+
+          #{ChefUtils::Dist::Infra::SHELL} commands. When called with an argument COMMAND, +help+
           prints a detailed explanation of the command if available, or the
           description if no explanation is available.
       E
@@ -208,9 +208,9 @@ module Shell
       end
       alias :halp :help
 
-      desc "prints information about #{Chef::Dist::PRODUCT}"
+      desc "prints information about #{ChefUtils::Dist::Infra::PRODUCT}"
       def version
-        puts "Welcome to the #{Chef::Dist::SHELL} #{::Chef::VERSION}\n" +
+        puts "Welcome to the #{ChefUtils::Dist::Infra::SHELL} #{::Chef::VERSION}\n" +
           "For usage see https://docs.chef.io/chef_shell/"
         :ucanhaz_automation
       end
@@ -228,7 +228,7 @@ module Shell
         :attributes
       end
 
-      desc "run #{Chef::Dist::PRODUCT} using the current recipe"
+      desc "run #{ChefUtils::Dist::Infra::PRODUCT} using the current recipe"
       def run_chef
         Chef::Log.level = :debug
         session = Shell.session
@@ -237,8 +237,8 @@ module Shell
         runrun
       end
 
-      desc "returns an object to control a paused #{Chef::Dist::PRODUCT} run"
-      subcommands resume: "resume the #{Chef::Dist::PRODUCT} run",
+      desc "returns an object to control a paused #{ChefUtils::Dist::Infra::PRODUCT} run"
+      subcommands resume: "resume the #{ChefUtils::Dist::Infra::PRODUCT} run",
                   step: "run only the next resource",
                   skip_back: "move back in the run list",
                   skip_forward: "move forward in the run list"
@@ -309,9 +309,9 @@ module Shell
               new_node = edit(existing_node)
 
         ## EDITOR SELECTION ##
-          #{Chef::Dist::SHELL} looks for an editor using the following logic
+          #{ChefUtils::Dist::Infra::SHELL} looks for an editor using the following logic
           1. Looks for an EDITOR set by Shell.editor = "EDITOR"
-          2. Looks for an EDITOR configured in your #{Chef::Dist::SHELL} config file
+          2. Looks for an EDITOR configured in your #{ChefUtils::Dist::Infra::SHELL} config file
           3. Uses the value of the EDITOR environment variable
       E
       def edit(object)
@@ -320,7 +320,7 @@ module Shell
           return :failburger
         end
 
-        filename = "#{Chef::Dist::SHELL}-edit-#{object.class.name}-"
+        filename = "#{ChefUtils::Dist::Infra::SHELL}-edit-#{object.class.name}-"
         if object.respond_to?(:name)
           filename += object.name
         elsif object.respond_to?(:id)

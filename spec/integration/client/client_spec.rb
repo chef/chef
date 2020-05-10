@@ -3,7 +3,7 @@ require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
-require "chef/dist"
+require "chef-utils"
 
 describe "chef-client" do
 
@@ -45,8 +45,8 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "bundle exec #{Chef::Dist::CLIENT} --minimal-ohai" }
-  let(:chef_solo) { "bundle exec #{Chef::Dist::SOLOEXEC} --legacy-mode --minimal-ohai" }
+  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai" }
+  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
 
   when_the_repository "has a cookbook with a no-op recipe" do
     before { file "cookbooks/x/recipes/default.rb", "" }

@@ -30,7 +30,7 @@ require_relative "version"
 require_relative "client"
 require_relative "config"
 require_relative "config_fetcher"
-require_relative "dist"
+require "chef-utils"
 
 require_relative "shell/shell_session"
 require_relative "workstation_config_loader"
@@ -131,11 +131,11 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      conf.prompt_c       = "#{Chef::Dist::EXEC}#{leader(m)} > "
+      conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
       conf.return_format  = " => %s \n"
-      conf.prompt_i       = "#{Chef::Dist::EXEC}#{leader(m)} (#{Chef::VERSION})> "
-      conf.prompt_n       = "#{Chef::Dist::EXEC}#{leader(m)} ?> "
-      conf.prompt_s       = "#{Chef::Dist::EXEC}#{leader(m)}%l> "
+      conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
+      conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
+      conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
       conf.use_tracer     = false
       conf.instance_variable_set(:@use_multiline, false)
       conf.instance_variable_set(:@use_singleline, false)
@@ -217,17 +217,17 @@ module Shell
       @footer
     end
 
-    banner("#{Chef::Dist::SHELL} #{Chef::VERSION}\n\nUsage: #{Chef::Dist::SHELL} [NAMED_CONF] (OPTIONS)")
+    banner("#{ChefUtils::Dist::Infra::SHELL} #{Chef::VERSION}\n\nUsage: #{ChefUtils::Dist::Infra::SHELL} [NAMED_CONF] (OPTIONS)")
 
     footer(<<~FOOTER)
-      When no CONFIG is specified, #{Chef::Dist::SHELL} attempts to load a default configuration file:
-      * If a NAMED_CONF is given, #{Chef::Dist::SHELL} will load ~/#{Chef::Dist::USER_CONF_DIR}/NAMED_CONF/#{Chef::Dist::SHELL_CONF}
-      * If no NAMED_CONF is given #{Chef::Dist::SHELL} will load ~/#{Chef::Dist::USER_CONF_DIR}/#{Chef::Dist::SHELL_CONF} if it exists
-      * If no #{Chef::Dist::SHELL_CONF} can be found, #{Chef::Dist::SHELL} falls back to load:
-            #{Chef::Dist::CONF_DIR}/client.rb if -z option is given.
-            #{Chef::Dist::CONF_DIR}/solo.rb   if --solo-legacy-mode option is given.
-            #{Chef::Dist::USER_CONF_DIR}/config.rb     if -s option is given.
-            #{Chef::Dist::USER_CONF_DIR}/knife.rb      if -s option is given.
+      When no CONFIG is specified, #{ChefUtils::Dist::Infra::SHELL} attempts to load a default configuration file:
+      * If a NAMED_CONF is given, #{ChefUtils::Dist::Infra::SHELL} will load ~/#{ChefUtils::Dist::Infra::USER_CONF_DIR}/NAMED_CONF/#{ChefUtils::Dist::Infra::SHELL_CONF}
+      * If no NAMED_CONF is given #{ChefUtils::Dist::Infra::SHELL} will load ~/#{ChefUtils::Dist::Infra::USER_CONF_DIR}/#{ChefUtils::Dist::Infra::SHELL_CONF} if it exists
+      * If no #{ChefUtils::Dist::Infra::SHELL_CONF} can be found, #{ChefUtils::Dist::Infra::SHELL} falls back to load:
+            #{ChefConfig::Config.etc_chef_dir}/client.rb if -z option is given.
+            #{ChefConfig::Config.etc_chef_dir}/solo.rb   if --solo-legacy-mode option is given.
+            #{ChefUtils::Dist::Infra::USER_CONF_DIR}/config.rb     if -s option is given.
+            #{ChefUtils::Dist::Infra::USER_CONF_DIR}/knife.rb      if -s option is given.
     FOOTER
 
     option :use_multiline,
@@ -274,19 +274,19 @@ module Shell
     option :solo_shell,
       short: "-s",
       long: "--solo",
-      description: "#{Chef::Dist::SOLO} session",
+      description: "#{ChefUtils::Dist::Solo::PRODUCT} session",
       boolean: true,
       proc: proc { Chef::Config[:solo] = true }
 
     option :client,
       short: "-z",
       long: "--client",
-      description: "#{Chef::Dist::PRODUCT} session",
+      description: "#{ChefUtils::Dist::Infra::PRODUCT} session",
       boolean: true
 
     option :solo_legacy_shell,
       long: "--solo-legacy-mode",
-      description: "#{Chef::Dist::SOLO} legacy session",
+      description: "#{ChefUtils::Dist::Solo::PRODUCT} legacy session",
       boolean: true,
       proc: proc { Chef::Config[:solo_legacy_mode] = true }
 
@@ -299,15 +299,15 @@ module Shell
     option :chef_server_url,
       short: "-S CHEFSERVERURL",
       long: "--server CHEFSERVERURL",
-      description: "The #{Chef::Dist::SERVER_PRODUCT} URL",
+      description: "The #{ChefUtils::Dist::Server::PRODUCT} URL",
       proc: nil
 
     option :version,
       short: "-v",
       long: "--version",
-      description: "Show #{Chef::Dist::PRODUCT} version",
+      description: "Show #{ChefUtils::Dist::Infra::PRODUCT} version",
       boolean: true,
-      proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
+      proc: lambda { |v| puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{::Chef::VERSION}" },
       exit: 0
 
     option :override_runlist,
@@ -356,18 +356,18 @@ module Shell
         config[:config_file]
       elsif environment
         Shell.env = environment
-        config_file_to_try = ::File.join(dot_chef_dir, environment, Chef::Dist::SHELL_CONF)
+        config_file_to_try = ::File.join(dot_chef_dir, environment, ChefUtils::Dist::Infra::SHELL_CONF)
         unless ::File.exist?(config_file_to_try)
-          puts "could not find #{Chef::Dist::SHELL} config for environment #{environment} at #{config_file_to_try}"
+          puts "could not find #{ChefUtils::Dist::Infra::SHELL} config for environment #{environment} at #{config_file_to_try}"
           exit 1
         end
         config_file_to_try
-      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, Chef::Dist::SHELL_CONF))
-        File.join(dot_chef_dir, Chef::Dist::SHELL_CONF)
+      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF))
+        File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF)
       elsif config[:solo_legacy_shell]
-        Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/solo.rb")
+        "#{ChefConfig::Config.etc_chef_dir}/solo.rb"
       elsif config[:client]
-        Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+        "#{ChefConfig::Config.etc_chef_dir}/client.rb"
       elsif config[:solo_shell]
         Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else

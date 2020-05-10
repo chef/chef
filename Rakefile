@@ -27,6 +27,7 @@ begin
   require_relative "tasks/docs"
   require_relative "tasks/spellcheck"
   require_relative "lib/chef/dist"
+  require "chef-utils"
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
 end

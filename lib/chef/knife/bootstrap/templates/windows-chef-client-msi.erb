@@ -109,13 +109,13 @@ goto Version10.0
 goto chef_installed
 
 :chef_installed
-@echo Checking for existing <%= Chef::Dist::PRODUCT %> installation
-WHERE <%= Chef::Dist::CLIENT %> >nul 2>nul
+@echo Checking for existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation
+WHERE <%= ChefUtils::Dist::Infra::CLIENT %> >nul 2>nul
 If !ERRORLEVEL!==0 (
-  @echo Existing <%= Chef::Dist::PRODUCT %> installation detected, skipping download
+  @echo Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected, skipping download
   goto key_create
 ) else (
-  @echo No existing installation of <%= Chef::Dist::PRODUCT %> detected
+  @echo No existing installation of <%= ChefUtils::Dist::Infra::PRODUCT %> detected
   goto install
 )
 
@@ -127,7 +127,7 @@ If !ERRORLEVEL!==0 (
   @rem Install Chef using the MSI installer
 
   @set "LOCAL_DESTINATION_MSI_PATH=<%= local_download_path %>"
-  @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\<%= Chef::Dist::CLIENT %>-msi%RANDOM%.log"
+  @set "CHEF_CLIENT_MSI_LOG_PATH=%TEMP%\<%= ChefUtils::Dist::Infra::CLIENT %>-msi%RANDOM%.log"
 
   @rem Clear any pre-existing downloads
   @echo Checking for existing downloaded package at "%LOCAL_DESTINATION_MSI_PATH%"
@@ -197,7 +197,7 @@ If !ERRORLEVEL!==0 (
   <%= install_chef %>
 
   @if ERRORLEVEL 1 (
-      echo <%= Chef::Dist::CLIENT %> package failed to install with status code !ERRORLEVEL!. > "&2"
+      echo <%= ChefUtils::Dist::Infra::CLIENT %> package failed to install with status code !ERRORLEVEL!. > "&2"
       echo See installation log for additional detail: %CHEF_CLIENT_MSI_LOG_PATH%. > "&2"
   ) else (
       @echo Installation completed successfully
@@ -274,5 +274,5 @@ echo Validation key written.
   <%= client_d %>
 <% end -%>
 
-@echo Starting <%= Chef::Dist::CLIENT %> to bootstrap the node...
+@echo Starting <%= ChefUtils::Dist::Infra::CLIENT %> to bootstrap the node...
 <%= start_chef %>

@@ -23,7 +23,7 @@ module Win32
   autoload :Certstore, "win32-certstore" if Chef::Platform.windows?
 end
 autoload :OpenSSL, "openssl"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource
@@ -84,7 +84,7 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
-        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
+        description: "Ensure that sensitive resource data is not logged by the #{ChefUtils::Dist::Infra::CLIENT}.",
         default: lazy { pfx_password ? true : false }, skip_docs: true
 
       action :create do

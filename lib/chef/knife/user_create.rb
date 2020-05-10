@@ -18,7 +18,7 @@
 #
 
 require_relative "../knife"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Knife
@@ -42,7 +42,7 @@ class Chef
       option :prevent_keygen,
         short: "-k",
         long: "--prevent-keygen",
-        description: "API V1 (#{Chef::Dist::SERVER_PRODUCT} 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
+        description: "API V1 (#{ChefUtils::Dist::Server::PRODUCT} 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
         boolean: true
 
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"

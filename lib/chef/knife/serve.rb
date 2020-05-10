@@ -16,7 +16,7 @@
 
 require_relative "../knife"
 require_relative "../local_mode"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Knife
@@ -30,11 +30,11 @@ class Chef
 
       option :chef_repo_path,
         long: "--chef-repo-path PATH",
-        description: "Overrides the location of #{Chef::Dist::PRODUCT} repo. Default is specified by chef_repo_path in the config."
+        description: "Overrides the location of #{ChefUtils::Dist::Infra::PRODUCT} repo. Default is specified by chef_repo_path in the config."
 
       option :chef_zero_host,
         long: "--chef-zero-host IP",
-        description: "Overrides the host upon which #{Chef::Dist::ZERO} listens. Default is 127.0.0.1."
+        description: "Overrides the host upon which #{ChefUtils::Dist::Zero::PRODUCT} listens. Default is 127.0.0.1."
 
       def configure_chef
         super

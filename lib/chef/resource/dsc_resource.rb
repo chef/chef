@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require_relative "../dsl/powershell"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Resource

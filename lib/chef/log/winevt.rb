@@ -19,7 +19,7 @@
 require_relative "../event_loggers/base"
 require_relative "../platform/query_helpers"
 require_relative "../mixin/unformatter"
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
   class Log
@@ -37,7 +37,7 @@ class Chef
       FATAL_EVENT_ID = 10104
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = Chef::Dist::SHORT.freeze
+      SOURCE = ChefUtils::Dist::Infra::SHORT.freeze
 
       include Chef::Mixin::Unformatter
 

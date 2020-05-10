@@ -17,7 +17,7 @@ require_relative "../client"
 require_relative "../util/threaded_job_queue"
 require_relative "../server_api"
 require "singleton" unless defined?(Singleton)
-require_relative "../dist"
+require "chef-utils"
 
 class Chef
 
@@ -65,7 +65,7 @@ class Chef
         # manifest.
         cache.find(File.join(%w{cookbooks ** {*,.*}})).each do |cache_filename|
           unless @valid_cache_entries[cache_filename]
-            Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer needed by #{Chef::Dist::CLIENT}.")
+            Chef::Log.info("Removing #{cache_filename} from the cache; it is no longer needed by #{ChefUtils::Dist::Infra::CLIENT}.")
             cache.delete(cache_filename)
           end
         end
