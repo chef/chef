@@ -16,6 +16,7 @@
 #
 
 require "uri" unless defined?(URI)
+require "chef-utils/dist"
 
 class Chef
   class DataCollector

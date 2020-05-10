@@ -21,6 +21,7 @@ require_relative "base"
 require_relative "../handler/error_report"
 require_relative "../workstation_config_loader"
 autoload :URI, "uri"
+require "chef-utils"
 module Mixlib
   module Authentication
     autoload :Log, "mixlib/authentication"

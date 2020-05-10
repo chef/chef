@@ -17,7 +17,7 @@
 #
 
 require_relative "package"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Resource

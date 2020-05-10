@@ -24,13 +24,13 @@ require "singleton" unless defined?(Singleton)
 require "pp" unless defined?(PP)
 require "etc" unless defined?(Etc)
 require "mixlib/cli" unless defined?(Mixlib::CLI)
+require "chef-utils/dist"
 
 require_relative "../chef"
 require_relative "version"
 require_relative "client"
 require_relative "config"
 require_relative "config_fetcher"
-require "chef-utils"
 
 require_relative "shell/shell_session"
 require_relative "workstation_config_loader"

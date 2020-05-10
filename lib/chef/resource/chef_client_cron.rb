@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require "chef-utils"
+require "chef-utils/dist/infra"
 require_relative "helpers/cron_validations"
 require "digest/md5" unless defined?(Digest::MD5)
 

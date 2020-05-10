@@ -18,7 +18,7 @@
 require_relative "package"
 require_relative "../mixin/which"
 require_relative "../mixin/shell_out"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Resource

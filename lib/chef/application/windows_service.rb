@@ -29,7 +29,7 @@ require "socket" unless defined?(Socket)
 require "uri" unless defined?(URI)
 require "win32/daemon"
 require_relative "../mixin/shell_out"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Application

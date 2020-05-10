@@ -5,8 +5,8 @@ require "chef/run_lock"
 require "chef/config"
 require "timeout"
 require "fileutils"
-require "chef/win32/security" if ChefUtils.windows?
 require "chef-utils"
+require "chef/win32/security" if ChefUtils.windows?
 
 describe ChefUtils::Dist::Solo::EXEC do
   include IntegrationSupport

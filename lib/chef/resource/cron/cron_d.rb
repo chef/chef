@@ -18,7 +18,6 @@
 require_relative "../../resource"
 require_relative "../helpers/cron_validations"
 require "shellwords" unless defined?(Shellwords)
-require "chef-utils"
 
 class Chef
   class Resource

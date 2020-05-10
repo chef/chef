@@ -19,7 +19,7 @@
 require_relative "../event_loggers/base"
 require_relative "../platform/query_helpers"
 require_relative "../mixin/unformatter"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   class Log

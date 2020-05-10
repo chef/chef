@@ -3,7 +3,7 @@ require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
-require "chef-utils"
+require "chef-utils/dist"
 
 describe "chef-client" do
 

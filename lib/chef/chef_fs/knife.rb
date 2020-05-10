@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require "pathname" unless defined?(Pathname)
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 class Chef
   module ChefFS

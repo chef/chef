@@ -18,7 +18,7 @@
 
 require "spec_helper"
 require "chef/provider/windows_task"
-require "chef-utils"
+require "chef-utils/dist/infra"
 
 describe Chef::Resource::WindowsTask, :windows_only do
   # resource.task.application_name will default to task_name unless resource.command is set
