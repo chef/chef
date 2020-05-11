@@ -17,7 +17,7 @@
 #
 
 require_relative "../knife"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef::Knife::Exec < Chef::Knife
 

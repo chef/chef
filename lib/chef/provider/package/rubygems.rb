@@ -22,7 +22,7 @@ require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
 require_relative "../../mixin/which"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 # Class methods on Gem are defined in rubygems
 autoload :Gem, "rubygems"

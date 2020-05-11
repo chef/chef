@@ -18,7 +18,7 @@
 
 require_relative "bootstrap_context"
 require_relative "../../util/path_helper"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef
   class Knife

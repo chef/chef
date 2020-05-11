@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef
   class Knife
