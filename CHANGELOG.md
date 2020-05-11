@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.289 -->
-## [v16.0.289](https://github.com/chef/chef/tree/v16.0.289) (2020-05-10)
+<!-- latest_release 16.0.290 -->
+## [v16.0.290](https://github.com/chef/chef/tree/v16.0.290) (2020-05-11)
 
 #### Merged Pull Requests
-- Use the dist values in server error messages [#9830](https://github.com/chef/chef/pull/9830) ([tas50](https://github.com/tas50))
-- Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50))
+- Stop upgrading rubygems in tests [#9835](https://github.com/chef/chef/pull/9835) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop upgrading rubygems in tests [#9835](https://github.com/chef/chef/pull/9835) ([tas50](https://github.com/tas50)) <!-- 16.0.290 -->
 - Use the dist values in server error messages [#9830](https://github.com/chef/chef/pull/9830) ([tas50](https://github.com/tas50)) <!-- 16.0.289 -->
 - Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50)) <!-- 16.0.288 -->
 - Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.288 -->
