@@ -1,5 +1,5 @@
 require_relative "base"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef
 

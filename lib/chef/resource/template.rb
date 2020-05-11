@@ -20,7 +20,7 @@
 
 require_relative "file"
 require_relative "../mixin/securable"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef
   class Resource

@@ -18,7 +18,7 @@
 # limitations under the License.
 
 require_relative "../resource"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 class Chef
   class Resource

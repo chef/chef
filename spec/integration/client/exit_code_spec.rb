@@ -5,7 +5,7 @@ require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
 require "chef/platform"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 
 describe "chef-client" do
 

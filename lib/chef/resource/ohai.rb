@@ -19,7 +19,7 @@
 #
 
 require_relative "../resource"
-require "chef-utils/dist/infra"
+require "chef-utils/dist"
 require "ohai" unless defined?(Ohai::System)
 
 class Chef

@@ -18,7 +18,7 @@
 #
 
 require_relative "../knife"
-require "chef-utils/dist/server"
+require "chef-utils/dist"
 
 class Chef
   class Knife
