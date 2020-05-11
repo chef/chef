@@ -1,5 +1,5 @@
 # The filename of the Ruby installer
-$RubyFilename = "rubyinstaller-devkit-2.6.5-1-x64.exe"
+$RubyFilename = "rubyinstaller-devkit-2.6.6-1-x64.exe"
 
 # The sha256 of the Ruby installer (capitalized?)
 $RubySHA256 = "BD2050496A149C7258ED4E2E44103756CA3A05C7328A939F0FDC97AE9616A96D"
