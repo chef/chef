@@ -80,13 +80,13 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
       5.times { new_resource.run_action(:create) }
       cron_should_exists(new_resource.name, new_resource.command)
     end
-    
+
     # Test cron for day of week
     weekdays = { Mon: 1, tuesday: 2, '3': 3, 'thursday': 4, 'Fri': 5, 6 => 6 }
-    weekdays.each do|key, value|
-      it "should create crontab entry and set #{value} for mon as weekday" do
+    weekdays.each do |key, value|
+      it "should create crontab entry and set #{value} for #{key} as weekday" do
         new_resource.weekday key
-        expect{ new_resource.run_action(:create) }.not_to raise_error
+        expect { new_resource.run_action(:create) }.not_to raise_error
         cron_should_exists(new_resource.name, new_resource.command)
       end
     end
