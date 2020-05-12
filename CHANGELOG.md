@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.291 -->
-## [v16.0.291](https://github.com/chef/chef/tree/v16.0.291) (2020-05-12)
+<!-- latest_release 16.0.292 -->
+## [v16.0.292](https://github.com/chef/chef/tree/v16.0.292) (2020-05-12)
 
 #### Merged Pull Requests
-- Update rubyinstaller-devkit-2.6.6-1-x64.exe SHA [#9845](https://github.com/chef/chef/pull/9845) ([christopher-snapp](https://github.com/christopher-snapp))
+- Add examples to windows_security_policy [#9842](https://github.com/chef/chef/pull/9842) ([IanMadd](https://github.com/IanMadd))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add examples to windows_security_policy [#9842](https://github.com/chef/chef/pull/9842) ([IanMadd](https://github.com/IanMadd)) <!-- 16.0.292 -->
 - Update rubyinstaller-devkit-2.6.6-1-x64.exe SHA [#9845](https://github.com/chef/chef/pull/9845) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.291 -->
 - Stop upgrading rubygems in tests [#9835](https://github.com/chef/chef/pull/9835) ([tas50](https://github.com/tas50)) <!-- 16.0.290 -->
 - Use the dist values in server error messages [#9830](https://github.com/chef/chef/pull/9830) ([tas50](https://github.com/tas50)) <!-- 16.0.289 -->
