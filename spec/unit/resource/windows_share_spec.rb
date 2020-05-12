@@ -54,21 +54,22 @@ describe Chef::Resource::WindowsShare do
   end
 
   shared_examples "when users are passed" do
-    it "add hostname to user with/without hostname" do
-      expect(users).to eq(result)
+    it "add hostname to user with hostname" do
+      expect(users_with_hostname).to eq(result_with_hostname)
+    end
+
+    it "add hostname to user without hostname" do
+      expect(users_without_hostname).to eq(result_without_hostname)
     end
   end
 
   %w{full_users change_users read_users}.each do |users|
     context "when #{users} are passed" do
       it_behaves_like "when users are passed" do
-        let(:users) { resource.send(users, ["mygroup"]) }
-        let(:result) { ["hostname\\mygroup"] }
-      end
-
-      it_behaves_like "when users are passed" do
-        let(:users) { resource.send(users, ["hostname1\\mygroup"]) }
-        let(:result) { ["hostname1\\mygroup"] }
+        let(:users_without_hostname) { resource.send(users, ["mygroup"]) }
+        let(:result_without_hostname) { ["hostname\\mygroup"] }
+        let(:users_with_hostname) { resource.send(users, ["hostname1\\mygroup"]) }
+        let(:result_with_hostname) { ["hostname1\\mygroup"] }
       end
     end
   end
