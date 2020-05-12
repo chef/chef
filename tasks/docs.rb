@@ -256,6 +256,11 @@ namespace :docs_site do
 
       r = {}
 
+      # Add a comment at the top stating that the resource yaml/md files are generated from chef/chef
+      r["generate_comment_1"] = "This file is generated from code in https://github.com/chef/chef/"
+      r["generate_comment_2"] = "To recommend changes to this file, make a pull request against"
+      r["generate_comment_3"] = "https://github.com/chef/chef/blob/master/lib/chef/resource/#{name}.rb"
+
       # We want all our resources to show up in the main resource reference page
       r["resource_reference"] = true
 
@@ -306,7 +311,7 @@ namespace :docs_site do
         FileUtils.mkdir_p "docs_site/#{resource}"
         # write out the yaml contents of the hash and append a --- since this is actually a yaml
         # block in the middle of a markdown page and the block needs an ending
-        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml + "---") }
+        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write((resource_data.to_yaml + "---").gsub(/generate_comment_\d:/, '#')) }
       end
     end
   end
