@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.21 -->
-## [v15.10.21](https://github.com/chef/chef/tree/v15.10.21) (2020-05-08)
+<!-- latest_release 15.10.22 -->
+## [v15.10.22](https://github.com/chef/chef/tree/v15.10.22) (2020-05-12)
 
 #### Merged Pull Requests
-- Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.10.22 -->
 - Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.21 -->
 - 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm)) <!-- 15.10.20 -->
 - Fix for Chocolate_resource options causing extra quotes [#9809](https://github.com/chef/chef/pull/9809) ([btm](https://github.com/btm)) <!-- 15.10.19 -->
