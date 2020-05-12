@@ -160,7 +160,7 @@ class Chef
 
         def start_chef
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\embedded\\bin\;%PATH%\"\n"
+          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\bin;#{ChefConfig::Config.c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
           start_chef << "#{Chef::Dist::CLIENT} -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
         end
 
