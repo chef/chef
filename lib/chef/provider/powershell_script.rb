@@ -94,7 +94,7 @@ class Chef
           # means a non-zero return and thus a syntactically invalid script.
 
           with_os_architecture(node, architecture: new_resource.architecture) do
-            shell_out!(validation_command, { returns: [0] })
+            shell_out!(validation_command, returns: [0])
           end
         end
       end
