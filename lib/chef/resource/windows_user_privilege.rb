@@ -72,6 +72,48 @@ class Chef
 
       introduced "16.0"
 
+      examples <<~DOC
+      **Set the SeNetworkLogonRight Privilege for the Builtin Administrators Group and Authenticated Users**:
+
+      ```ruby
+      windows_user_privilege 'Netowrk Logon Rights' do
+        privilege      'SeNetworkLogonRight'
+        users          ['BUILTIN\Administrators', 'NT AUTHORITY\Authenticated Users']
+        action         :set
+      end
+      ```
+
+      **Add the SeDenyRemoteInteractiveLogonRight Privilege to the Builtin Guests and Local Accounts User Groups**:
+
+      ```ruby
+      windows_user_privilege 'Remote interactive logon' do
+        privilege      'SeDenyRemoteInteractiveLogonRight'
+        users          ['Builtin\Guests', 'NT AUTHORITY\Local Account']
+        action         :add
+      end
+      ```
+
+      **Provide only the Builtin Guests and Administrator Groups with the SeCreatePageFile Privilege**:
+
+      ```ruby
+      windows_user_privilege 'Create Pagefile' do
+        privilege      'SeCreatePagefilePrivilege'
+        users          ['BUILTIN\Guests', 'BUILTIN\Administrators']
+        action         :set
+      end
+      ```
+
+      **Remove the SeCreatePageFile Privilege from the Builtin Guests Group**:
+
+      ```ruby
+      windows_user_privilege 'Create Pagefile' do
+        privilege      'SeCreatePagefilePrivilege'
+        users          ['BUILTIN\Guests']
+        action         :remove
+      end
+      ```
+      DOC
+
       property :principal, String,
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
         name_property: true
