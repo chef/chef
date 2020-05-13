@@ -76,7 +76,7 @@ class Chef
       **Set the SeNetworkLogonRight Privilege for the Builtin Administrators Group and Authenticated Users**:
 
       ```ruby
-      windows_user_privilege 'Netowrk Logon Rights' do
+      windows_user_privilege 'Network Logon Rights' do
         privilege      'SeNetworkLogonRight'
         users          ['BUILTIN\Administrators', 'NT AUTHORITY\Authenticated Users']
         action         :set
