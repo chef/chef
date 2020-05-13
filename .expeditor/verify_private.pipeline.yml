@@ -17,14 +17,18 @@ steps:
 
 - label: "Kitchen Tests Windows 10"
   commands:
-    - scripts/bk_tests/bk_win_prep.ps1
+    - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - kitchen test end-to-end-windows-10
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-windows-10
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
       KITCHEN_YAML: kitchen.azure.yml
   expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
     secrets:
       AZURE_TENANT_ID:
         account: azure/engineering-dev-test
