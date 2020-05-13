@@ -50,6 +50,41 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
+- label: ":rspec: Integration :ubuntu: 20.04 :ruby: 2.7"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+        privileged: true
+
+- label: ":rspec: Functional :ubuntu: 20.04 :ruby: 2.7"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y cron locales # needed for functional tests to pass
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+        privileged: true
+
+- label: ":rspec: Unit :ubuntu: 20.04 :ruby: 2.7"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+
 - label: ":rspec: Integration :centos: 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
