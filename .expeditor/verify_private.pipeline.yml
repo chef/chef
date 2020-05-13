@@ -1,0 +1,37 @@
+---
+expeditor:
+  cached_folders:
+    - vendor
+  defaults:
+    buildkite:
+      retry:
+        automatic:
+          limit: 1
+      timeout_in_minutes: 30
+
+steps:
+
+#########################################################################
+  # START TEST KITCHEN ONLY
+#########################################################################
+
+- label: "Kitchen Tests Windows 10"
+  commands:
+    - scripts/bk_tests/bk_win_prep.ps1
+    - cd kitchen-tests
+    - kitchen test end-to-end-windows-10
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.azure.yml
+  expeditor:
+    secrets:
+      AZURE_TENANT_ID:
+        account: azure/engineering-dev-test
+        field: tenant_id
+      AZURE_CLIENT_ID:
+        account: azure/engineering-dev-test
+        field: client_id
+      AZURE_CLIENT_SECRET:
+        account: azure/engineering-dev-test
+        field: client_secret

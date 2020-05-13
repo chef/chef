@@ -24,8 +24,11 @@ docker_images:
   - chef
 
 pipelines:
-  - verify:
+  - verify/public:
+      definition: .expeditor/verify_public.pipeline.yml
       public: true
+  - verify/private:
+      definition: .expeditor/verify_private.pipeline.yml
   - verify/habitat:
       description: >
         A temporary pipeline to verify the habitat plans. Performs a local build,
