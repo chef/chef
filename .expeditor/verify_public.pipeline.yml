@@ -15,7 +15,7 @@ steps:
   # Tests Ruby 2.7
 #########################################################################
 
-- label: ":rspec: Integration :ubuntu: 18.04 :ruby: 2.7"
+- label: "Integration Ubuntu 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -26,7 +26,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: ":rspec: Functional :ubuntu: 18.04 :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -39,7 +39,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: ":rspec: Unit :ubuntu: 18.04 :ruby: 2.7"
+- label: "Unit Ubuntu 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -50,7 +50,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
-- label: ":rspec: Integration :ubuntu: 20.04 :ruby: 2.7"
+- label: "Integration Ubuntu 20.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -61,7 +61,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: ":rspec: Functional :ubuntu: 20.04 :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -74,7 +74,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: ":rspec: Unit :ubuntu: 20.04 :ruby: 2.7"
+- label: "Unit Ubuntu 20.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -85,7 +85,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-20.04:2.7
 
-- label: ":rspec: Integration :centos: 7 :ruby: 2.7"
+- label: "Integration CentOS 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -96,7 +96,7 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: ":rspec: Functional :centos: 7 :ruby: 2.7"
+- label: "Functional CentOS 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
@@ -108,7 +108,7 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: ":rspec: Unit :centos: 7 :ruby: 2.7"
+- label: "Unit CentOS 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -119,7 +119,7 @@ steps:
       docker:
         image: rubydistros/centos-7:2.7
 
-- label: ":rspec: Integration :lizard: openSUSE 15 :ruby: 2.7"
+- label: "Integration openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -131,7 +131,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: ":rspec: Functional :lizard: openSUSE 15 :ruby: 2.7"
+- label: "Functional openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
@@ -143,7 +143,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: ":rspec: Unit :lizard: openSUSE 15 :ruby: 2.7"
+- label: "Unit openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -155,7 +155,7 @@ steps:
       docker:
         image: rubydistros/opensuse-15:2.7
 
-- label: ":rspec: Integration :fedora: :ruby: 2.7"
+- label: "Integration Fedora :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -166,7 +166,7 @@ steps:
         image: rubydistros/fedora-latest:2.7
         privileged: true
 
-- label: ":rspec: Functional :fedora: :ruby: 2.7"
+- label: "Functional Fedora :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
@@ -181,7 +181,7 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: ":rspec: Unit :fedora: :ruby: 2.7"
+- label: "Unit Fedora :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -196,7 +196,7 @@ steps:
 # Tests Ruby 2.6
 #########################################################################
 
-- label: ":rspec: Integration :windows: :ruby: 2.6"
+- label: "Integration Windows :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_win_integration.ps1
   expeditor:
@@ -208,7 +208,7 @@ steps:
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: ":rspec: Functional :windows: :ruby: 2.6"
+- label: "Functional Windows :ruby: 2.6"
   commands:
     - scripts/bk_tests/bk_win_functional.ps1
   expeditor:
@@ -217,7 +217,7 @@ steps:
         privileged: true
         shell: ["powershell", "-Command"]
 
-- label: "Chocolatey :windows: :ruby: 2.6"
+- label: "Chocolatey Windows :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_run_choco.ps1
   expeditor:
@@ -226,7 +226,7 @@ steps:
         host_os: windows
         shell: ["powershell", "-Command"]
 
-- label: ":rspec: Unit :windows: :ruby: 2.6"
+- label: "Unit Windows :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_win_unit.ps1
   expeditor:
@@ -248,7 +248,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: ":rspec: Integration :ruby: 2.6"
+- label: "Integration :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -259,7 +259,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: ":rspec: Functional :ruby: 2.6"
+- label: "Functional :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -272,7 +272,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: ":rspec: Unit :ruby: 2.6"
+- label: "Unit :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -287,7 +287,7 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "Test chef-sugar gem :ruby: 2.6"
+- label: "chef-sugar gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -297,7 +297,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test chef-zero gem :ruby: 2.6"
+- label: "chef-zero gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -310,7 +310,7 @@ steps:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
-- label: "Test cheffish gem :ruby: 2.6"
+- label: "cheffish gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -320,7 +320,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test chefspec gem :ruby: 2.6"
+- label: "chefspec gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -330,7 +330,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test knife-windows gem :ruby: 2.6"
+- label: "knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -340,7 +340,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test berkshelf gem :ruby: 2.6"
+- label: "berkshelf gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -357,7 +357,22 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: ":test-kitchen: Tests :aws-logo: 2"
+- label: "Kitchen: Amazon Linux 201X"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: "Kitchen: Amazon Linux 2"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -372,22 +387,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :aws-logo: 201X"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux-2
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: ":test-kitchen: Tests :ubuntu: 16.04"
+- label: "Kitchen: Ubuntu 16.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -403,7 +403,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :ubuntu: 18.04"
+- label: "Kitchen: Ubuntu 18.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -418,7 +418,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :ubuntu: 20.04"
+- label: "Kitchen: Ubuntu 20.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -433,7 +433,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :debian: 8"
+- label: "Kitchen: Debian 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -448,7 +448,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :debian: 9"
+- label: "Kitchen: Debian 9"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -463,7 +463,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :debian: 10"
+- label: "Kitchen: Debian 10"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -478,7 +478,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :centos: 6"
+- label: "Kitchen: CentOS 6"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -493,7 +493,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :centos: 7"
+- label: "Kitchen: CentOS 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -508,7 +508,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :centos: 8"
+- label: "Kitchen: CentOS 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -523,7 +523,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :oracle_linux: 7"
+- label: "Kitchen: Oracle Linux 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -538,7 +538,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :fedora: latest"
+- label: "Kitchen: Fedora latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
@@ -553,7 +553,7 @@ steps:
         privileged: true
         single-use: true
 
-- label: ":test-kitchen: Tests :lizard: openSUSE Leap: 15"
+- label: "Kitchen: openSUSE Leap: 15"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
