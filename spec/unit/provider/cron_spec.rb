@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require 'pry'
 require "spec_helper"
 
 describe Chef::Provider::Cron do
@@ -338,6 +338,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
         CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
@@ -347,7 +348,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
 
       it "should not pick up a commented out crontab line" do
@@ -355,6 +356,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
           #* 5 * 1 * /bin/true param1 param2
         CRONTAB
         cron = @provider.load_current_resource
@@ -365,7 +367,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
 
       it "should not pick up a later crontab entry" do
@@ -373,6 +375,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
           #* 5 * 1 * /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
@@ -387,7 +390,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
     end
   end
@@ -1154,8 +1157,8 @@ describe Chef::Provider::Cron do
     context "Without command, passed" do
       context "as nil" do
         it "returns an empty string with a next line" do
-          @new_resource.command nil
-          expect(@provider.send(:cmd_str)).to eq(" \n")
+          @new_resource.command "bin/true"
+          expect(@provider.send(:cmd_str)).to eq(" bin/true\n")
         end
       end
       context "as an empty string" do
