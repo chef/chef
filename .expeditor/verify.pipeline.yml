@@ -12,10 +12,10 @@ expeditor:
 steps:
 
 #########################################################################
-  # Tests Ruby 2.6
+  # Tests Ruby 2.7
 #########################################################################
 
-- label: ":rspec: Integration :ubuntu: :ruby: 2.6"
+- label: ":rspec: Integration :ubuntu: 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -23,10 +23,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: ":rspec: Functional :ubuntu: :ruby: 2.6"
+- label: ":rspec: Functional :ubuntu: 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -36,10 +36,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: ":rspec: Unit :ubuntu: :ruby: 2.6"
+- label: ":rspec: Unit :ubuntu: 18.04 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -48,9 +48,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: ":rspec: Integration :centos: :ruby: 2.6"
+- label: ":rspec: Integration :centos: 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -58,10 +58,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: ":rspec: Functional :centos: :ruby: 2.6"
+- label: ":rspec: Functional :centos: 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
@@ -70,10 +70,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: ":rspec: Unit :centos: :ruby: 2.6"
+- label: ":rspec: Unit :centos: 7 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -82,9 +82,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.7
 
-- label: ":rspec: Integration :lizard: openSUSE :ruby: 2.6"
+- label: ":rspec: Integration :lizard: openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -93,10 +93,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: ":rspec: Functional :lizard: openSUSE :ruby: 2.6"
+- label: ":rspec: Functional :lizard: openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
@@ -105,10 +105,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: ":rspec: Unit :lizard: openSUSE :ruby: 2.6"
+- label: ":rspec: Unit :lizard: openSUSE 15 :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -118,9 +118,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.7
 
-- label: ":rspec: Integration :fedora: :ruby: 2.6"
+- label: ":rspec: Integration :fedora: :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -128,10 +128,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.7
         privileged: true
 
-- label: ":rspec: Functional :fedora: :ruby: 2.6"
+- label: ":rspec: Functional :fedora: :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
@@ -140,13 +140,13 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.7
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: ":rspec: Unit :fedora: :ruby: 2.6"
+- label: ":rspec: Unit :fedora: :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -155,7 +155,11 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.7
+
+#########################################################################
+# Tests Ruby 2.6
+#########################################################################
 
 - label: ":rspec: Integration :windows: :ruby: 2.6"
   commands:
@@ -207,13 +211,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
-#########################################################################
-# Tests Ruby 2.7
-#########################################################################
-
-- label: ":rspec: Integration :ruby: 2.7"
+- label: ":rspec: Integration :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -221,10 +221,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:2.7-buster
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: ":rspec: Functional :ruby: 2.7"
+- label: ":rspec: Functional :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -234,10 +234,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:2.7-buster
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: ":rspec: Unit :ruby: 2.7"
+- label: ":rspec: Unit :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -246,7 +246,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: ruby:2.7-buster
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # EXTERNAL GEM TESTING
@@ -260,7 +260,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
@@ -270,7 +270,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
@@ -283,7 +283,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
@@ -293,7 +293,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
@@ -303,7 +303,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test berkshelf gem :ruby: 2.6"
   commands:
@@ -316,7 +316,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # START TEST KITCHEN ONLY
