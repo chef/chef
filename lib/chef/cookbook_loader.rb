@@ -27,7 +27,7 @@ require_relative "cookbook/metadata"
 
 class Chef
   # This class is used by knife, cheffs and legacy chef-solo modes.  It is not used by the server mode
-  # of chef-client or solo/zero modes.
+  # of chef-client or zolo/zero modes.
   #
   # This class implements orchestration around producing a single cookbook_version for a cookbook or
   # loading a Mash of all cookbook_versions, using the cookbook_version_loader class, and doing
