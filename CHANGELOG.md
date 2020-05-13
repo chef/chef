@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.295 -->
-## [v16.0.295](https://github.com/chef/chef/tree/v16.0.295) (2020-05-13)
+<!-- latest_release 16.0.296 -->
+## [v16.0.296](https://github.com/chef/chef/tree/v16.0.296) (2020-05-13)
 
 #### Merged Pull Requests
-- Test PRs against Ruby 2.7 [#9856](https://github.com/chef/chef/pull/9856) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 testing to our pipeline [#9859](https://github.com/chef/chef/pull/9859) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Ubuntu 20.04 testing to our pipeline [#9859](https://github.com/chef/chef/pull/9859) ([tas50](https://github.com/tas50)) <!-- 16.0.296 -->
 - Test PRs against Ruby 2.7 [#9856](https://github.com/chef/chef/pull/9856) ([tas50](https://github.com/tas50)) <!-- 16.0.295 -->
 - Add Debian 10 aarch64 support [#9837](https://github.com/chef/chef/pull/9837) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.294 -->
 - Avoid ruby deprecation warnings in cab_package and powershell_script [#9850](https://github.com/chef/chef/pull/9850) ([tas50](https://github.com/tas50)) <!-- 16.0.293 -->
