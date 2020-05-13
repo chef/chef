@@ -64,7 +64,7 @@ class Chef
       action :delete do
         # If you delete a service you want to make sure its not loaded or
         # the service will be in memory and you wont be able to stop it.
-        if ::File.exists?(@path)
+        if ::File.exists?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)
@@ -207,7 +207,7 @@ class Chef
 
       # @api private
       def path
-        @path = new_resource.path ? new_resource.path : gen_path_from_type
+        new_resource.path || gen_path_from_type
       end
     end
   end
