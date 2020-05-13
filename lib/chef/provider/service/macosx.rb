@@ -142,6 +142,15 @@ class Chef
         #
         # This makes some sense on macOS since launchctl is an "init"-style
         # supervisor that will restart daemons that are crashing, etc.
+        #
+        # FIXME: Does this make any sense at all?  The difference between enabled and
+        # running as state would seem to only be useful for completely broken
+        # services (enabled, not restarting, but not running => totally broken?).
+        #
+        # It seems like otherwise :enable is equivalent to :start, and :disable is
+        # equivalent to :stop?  But just with strangely different behavior in the
+        # face of a broken service?
+        #
         def enable_service
           if @current_resource.enabled
             logger.trace("#{@new_resource} already enabled, not enabling")
