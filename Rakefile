@@ -109,18 +109,14 @@ rescue LoadError
   puts "yard is not available. bundle install first to make sure all dependencies are installed."
 end
 
-if `command -v cspell`.empty?
-  puts "cspell is not available. Run `npm install -g cspell` to make it available."
-else
-  namespace :spellcheck do
-    task :run do
-      sh 'cspell "**/*" "*.md"'
-    end
-
-    task :unknown_words do
-      sh 'cspell "**/*" "*.md" --wordsOnly --no-summary | sort | uniq'
-    end
+namespace :spellcheck do
+  task :run do
+    sh 'cspell "**/*" "*.md"'
   end
 
-  task spellcheck: 'spellcheck:run'
+  task :unknown_words do
+    sh 'cspell "**/*" "*.md" --wordsOnly --no-summary | sort | uniq'
+  end
 end
+
+task spellcheck: 'spellcheck:run'
