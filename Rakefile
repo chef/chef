@@ -114,9 +114,11 @@ namespace :spellcheck do
     sh 'cspell "**/*" "*.md"'
   end
 
+  desc "List the unique unrecognized words in the project."
   task :unknown_words do
     sh 'cspell "**/*" "*.md" --wordsOnly --no-summary | sort | uniq'
   end
 end
 
+desc "Run spellcheck on the project."
 task spellcheck: "spellcheck:run"
