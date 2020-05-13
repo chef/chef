@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.298 -->
-## [v16.0.298](https://github.com/chef/chef/tree/v16.0.298) (2020-05-13)
+<!-- latest_release 16.0.299 -->
+## [v16.0.299](https://github.com/chef/chef/tree/v16.0.299) (2020-05-13)
 
 #### Merged Pull Requests
-- Switch end-to-end-windows-10 back to use the Linux scripts [#9862](https://github.com/chef/chef/pull/9862) ([btm](https://github.com/btm))
+- Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm)) <!-- 16.0.299 -->
 - Switch end-to-end-windows-10 back to use the Linux scripts [#9862](https://github.com/chef/chef/pull/9862) ([btm](https://github.com/btm)) <!-- 16.0.298 -->
 - private end to end windows 10 pipeline [#9857](https://github.com/chef/chef/pull/9857) ([btm](https://github.com/btm)) <!-- 16.0.297 -->
 - Add Ubuntu 20.04 testing to our pipeline [#9859](https://github.com/chef/chef/pull/9859) ([tas50](https://github.com/tas50)) <!-- 16.0.296 -->
