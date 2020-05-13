@@ -245,7 +245,7 @@ class Chef
         res = Chef::Resource::Directory.new(dir, run_context)
         res.cookbook_name = resource_cookbook
         if ChefUtils.windows? && rights
-          # rights are only meant to be applied to the highest-level directory;
+          # rights are only meant to be applied to the most top-level directory;
           # Windows will handle inheritance.
           if dir == path
             rights.each do |r|
