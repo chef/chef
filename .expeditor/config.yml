@@ -24,7 +24,7 @@ docker_images:
   - chef
 
 pipelines:
-  - verify/public:
+  - verify:
       definition: .expeditor/verify_public.pipeline.yml
       public: true
   - verify/private:
