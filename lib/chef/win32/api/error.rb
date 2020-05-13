@@ -64,7 +64,7 @@ class Chef
         ERROR_SHARING_VIOLATION   = 32
         ERROR_LOCK_VIOLATION      = 33
         ERROR_WRONG_DISK          = 34
-        ERROR_FCB_UNAVAILABLE     = 35  # gets returned for some unsuccessful DeviceIoControl calls
+        ERROR_FCB_UNAVAILABLE     = 35 # gets returned for some unsuccessful DeviceIoControl calls
         ERROR_SHARING_BUFFER_EXCEEDED = 36
         ERROR_HANDLE_EOF          = 38
         ERROR_HANDLE_DISK_FULL    = 39

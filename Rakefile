@@ -119,4 +119,4 @@ namespace :spellcheck do
   end
 end
 
-task spellcheck: 'spellcheck:run'
+task spellcheck: "spellcheck:run"
