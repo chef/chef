@@ -1,5 +1,7 @@
 unified_mode true
 
+TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
+TIMEOUT_REGEX = /\A\S+/.freeze
 WEEKDAYS = {
   sunday: "0", monday: "1", tuesday: "2", wednesday: "3", thursday: "4", friday: "5", saturday: "6",
   sun: "0", mon: "1", tue: "2", wed: "3", thu: "4", fri: "5", sat: "6"
@@ -62,8 +64,6 @@ property :environment, Hash,
   default: lazy { {} }
 
 
-TIMEOUT_OPTS = %w{duration preserve-status foreground kill-after signal}.freeze
-TIMEOUT_REGEX = /\A\S+/.freeze
 
 property :time_out, Hash,
   description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
@@ -82,7 +82,7 @@ property :time_out, Hash,
         raise Chef::Exceptions::ValidationFailed, error_msg
       end
       unless h.values.all? { |x| x =~ TIMEOUT_REGEX }
-        error_msg = "Values of option time_out should be non-empty string without any leading whitespaces."
+        error_msg = "Values of option time_out should be non-empty strings without any leading whitespace."
         raise Chef::Exceptions::ValidationFailed, error_msg
       end
       h
@@ -98,5 +98,5 @@ private
 # @return [Integer, String] A weekday formed as per the user inputs.
 def weekday_in_crontab(wday)
   weekday = wday.to_s.downcase.to_sym
-  weekday_in_crontab = WEEKDAYS[weekday] || wday
+  WEEKDAYS[weekday] || wday
 end

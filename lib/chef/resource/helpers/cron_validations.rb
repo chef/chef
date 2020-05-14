@@ -70,8 +70,8 @@ class Chef
         spec = spec.to_s
         spec == "*" ||
           validate_numeric(spec, 0, 7) ||
-          %w{sun mon tue wed thu fri sat}.include?(String(spec).downcase) ||
-          %w{sunday monday tuesday wednesday thursday friday saturday}.include?(String(spec).downcase)
+          %w{sun mon tue wed thu fri sat}.include?(spec.downcase) ||
+          %w{sunday monday tuesday wednesday thursday friday saturday}.include?(spec.downcase)
       end
 
       # validate the day of the month is 1-31

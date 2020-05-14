@@ -24,6 +24,8 @@ require_relative "../../provider/cron" # do not remove. we actually need this be
 class Chef
   class Resource
     class Cron < Chef::Resource
+      unified_mode true
+
       use "cron_shared"
 
       provides :cron
@@ -34,12 +36,6 @@ class Chef
 
       default_action :create
       allowed_actions :create, :delete
-
-      def initialize(name, run_context = nil)
-        super
-        @month = "*"
-        @weekday = "*"
-      end
 
       property :time, Symbol,
         description: "A time interval.",

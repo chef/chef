@@ -23,6 +23,8 @@ require_relative "../../dist"
 class Chef
   class Resource
     class CronD < Chef::Resource
+      unified_mode true
+
       use "cron_shared"
 
       provides :cron_d
