@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.299 -->
-## [v16.0.299](https://github.com/chef/chef/tree/v16.0.299) (2020-05-13)
+<!-- latest_release 16.0.300 -->
+## [v16.0.300](https://github.com/chef/chef/tree/v16.0.300) (2020-05-14)
 
 #### Merged Pull Requests
-- Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm))
+- Switch Ruby functional test on Windows to Ruby 2.7 [#9864](https://github.com/chef/chef/pull/9864) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Switch Ruby functional test on Windows to Ruby 2.7 [#9864](https://github.com/chef/chef/pull/9864) ([tas50](https://github.com/tas50)) <!-- 16.0.300 -->
 - Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm)) <!-- 16.0.299 -->
 - Switch end-to-end-windows-10 back to use the Linux scripts [#9862](https://github.com/chef/chef/pull/9862) ([btm](https://github.com/btm)) <!-- 16.0.298 -->
 - private end to end windows 10 pipeline [#9857](https://github.com/chef/chef/pull/9857) ([btm](https://github.com/btm)) <!-- 16.0.297 -->
