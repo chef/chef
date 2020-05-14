@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.0.301 -->
-## [v16.0.301](https://github.com/chef/chef/tree/v16.0.301) (2020-05-14)
+<!-- latest_release 16.0.302 -->
+## [v16.0.302](https://github.com/chef/chef/tree/v16.0.302) (2020-05-14)
 
 #### Merged Pull Requests
-- Update Chefstyle to 1.0.5, Ohai to 16.1.1, and cheffish to 15.0.3 [#9869](https://github.com/chef/chef/pull/9869) ([tas50](https://github.com/tas50))
+- Fixes and tests for Chef-16 regression in launchd [#9868](https://github.com/chef/chef/pull/9868) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.0.287 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixes and tests for Chef-16 regression in launchd [#9868](https://github.com/chef/chef/pull/9868) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.302 -->
 - Update Chefstyle to 1.0.5, Ohai to 16.1.1, and cheffish to 15.0.3 [#9869](https://github.com/chef/chef/pull/9869) ([tas50](https://github.com/tas50)) <!-- 16.0.301 -->
 - Switch Ruby functional test on Windows to Ruby 2.7 [#9864](https://github.com/chef/chef/pull/9864) ([tas50](https://github.com/tas50)) <!-- 16.0.300 -->
 - Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm)) <!-- 16.0.299 -->
