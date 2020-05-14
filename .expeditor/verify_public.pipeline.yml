@@ -192,6 +192,15 @@ steps:
       docker:
         image: rubydistros/fedora-latest:2.7
 
+- label: "Functional Windows :ruby: 2.7"
+  commands:
+    - scripts/bk_tests/bk_win_functional.ps1
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        shell: ["powershell", "-Command"]
+
 #########################################################################
 # Tests Ruby 2.6
 #########################################################################
@@ -206,15 +215,6 @@ steps:
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
-        shell: ["powershell", "-Command"]
-
-- label: "Functional Windows :ruby: 2.6"
-  commands:
-    - scripts/bk_tests/bk_win_functional.ps1
-  expeditor:
-    executor:
-      windows:
-        privileged: true
         shell: ["powershell", "-Command"]
 
 - label: "Chocolatey Windows :ruby: 2.6"

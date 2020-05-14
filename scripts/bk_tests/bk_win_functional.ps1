@@ -1,8 +1,8 @@
 # The filename of the Ruby installer
-$RubyFilename = "rubyinstaller-devkit-2.6.6-1-x64.exe"
+$RubyFilename = "rubyinstaller-devkit-2.7.1-1-x64.exe"
 
 # The sha256 of the Ruby installer (capitalized?)
-$RubySHA256 = "6381FA0C683D4B9F8CEEDAA6B8B1191A0C4029588F11F8C77979F6E2CC00DD98"
+$RubySHA256 = "B22C5C1C819A53A1676CCA3410E3FF1BB39A9510C0CFD1E7BA19A728AE4FE86F"
 
 # Where on disk to download Ruby to
 $RubyPath = "$env:temp\$RubyFilename"
