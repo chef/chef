@@ -62,23 +62,23 @@ class Chef
       end
 
       action :delete do
-        # If you delete a service you want to make sure its not loaded or
-        # the service will be in memory and you wont be able to stop it.
-        if ::File.exists?(@path)
+        if ::File.exists?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)
       end
 
       action :enable do
-        if manage_plist(:create)
-          manage_service(:restart)
-        else
-          manage_service(:enable)
+        manage_service(:nothing)
+        manage_plist(:create) do
+          notifies :restart, "macosx_service[#{label}]", :immediately
         end
+        manage_service(:enable)
       end
 
       action :disable do
+        return unless ::File.exist?(path)
+
         manage_service(:disable)
       end
 
@@ -86,13 +86,14 @@ class Chef
         manage_service(:restart)
       end
 
-      def manage_plist(action)
+      def manage_plist(action, &block)
         if source
           cookbook_file path do
             cookbook_name = new_resource.cookbook if new_resource.cookbook
             copy_properties_from(new_resource, :backup, :group, :mode, :owner, :source)
             action(action)
             only_if { manage_agent?(action) }
+            instance_eval(&block) if block_given?
           end
         else
           file path do
@@ -100,6 +101,7 @@ class Chef
             content(file_content) if file_content?
             action(action)
             only_if { manage_agent?(action) }
+            instance_eval(&block) if block_given?
           end
         end
       end
@@ -207,7 +209,7 @@ class Chef
 
       # @api private
       def path
-        @path = new_resource.path ? new_resource.path : gen_path_from_type
+        @path ||= new_resource.path ? new_resource.path : gen_path_from_type
       end
     end
   end

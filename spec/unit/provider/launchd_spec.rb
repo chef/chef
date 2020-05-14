@@ -194,48 +194,6 @@ describe Chef::Provider::Launchd do
       end
     end
 
-    describe "with an :enable action" do
-      describe "and the file has been updated" do
-        before(:each) do
-          allow(provider).to receive(
-            :manage_plist
-          ).with(:create).and_return(true)
-          allow(provider).to receive(
-            :manage_service
-          ).with(:restart).and_return(true)
-        end
-
-        it "should call manage_service with a :restart action" do
-          expect(provider.manage_service(:restart)).to be_truthy
-        end
-
-        it "works with action enable" do
-          expect(run_resource_setup_for_action(:enable)).to be_truthy
-          provider.action_enable
-        end
-      end
-
-      describe "and the file has not been updated" do
-        before(:each) do
-          allow(provider).to receive(
-            :manage_plist
-          ).with(:create).and_return(nil)
-          allow(provider).to receive(
-            :manage_service
-          ).with(:enable).and_return(true)
-        end
-
-        it "should call manage_service with a :enable action" do
-          expect(provider.manage_service(:enable)).to be_truthy
-        end
-
-        it "works with action enable" do
-          expect(run_resource_setup_for_action(:enable)).to be_truthy
-          provider.action_enable
-        end
-      end
-    end
-
     describe "with an :delete action" do
       describe "and the ld file is present" do
         before(:each) do
