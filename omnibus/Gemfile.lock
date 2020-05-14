@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: aa7a7eb9f199cfa80e0bcc64ec1fdfeede11ba4b
+  revision: 74e9d02cf7f9b164d67789a0a0a7e167143db6fb
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,16 +32,16 @@ GEM
     artifactory (3.0.12)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.310.0)
-    aws-sdk-core (3.94.1)
+    aws-partitions (1.314.0)
+    aws-sdk-core (3.95.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.30.0)
+    aws-sdk-kms (1.31.0)
       aws-sdk-core (~> 3, >= 3.71.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.63.1)
+    aws-sdk-s3 (1.64.0)
       aws-sdk-core (~> 3, >= 3.83.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -64,12 +64,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.0.275)
+    chef (16.0.287)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.0.275)
-      chef-utils (= 16.0.275)
+      chef-config (= 16.0.287)
+      chef-utils (= 16.0.287)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -98,12 +98,12 @@ GEM
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.0.275-universal-mingw32)
+    chef (16.0.287-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.0.275)
-      chef-utils (= 16.0.275)
+      chef-config (= 16.0.287)
+      chef-utils (= 16.0.287)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -145,15 +145,15 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (16.0.275)
+    chef-config (16.0.287)
       addressable
-      chef-utils (= 16.0.275)
+      chef-utils (= 16.0.287)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
     chef-sugar (5.1.9)
-    chef-utils (16.0.275)
+    chef-utils (16.0.287)
     chef-vault (4.0.1)
     chef-zero (15.0.0)
       ffi-yajl (~> 2.2)
@@ -259,7 +259,7 @@ GEM
       plist (~> 3.1)
       systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
-    pastel (0.7.3)
+    pastel (0.7.4)
       equatable (~> 0.6)
       tty-color (~> 0.5)
     pedump (0.5.4)
@@ -272,7 +272,7 @@ GEM
     plist (3.5.0)
     progressbar (1.10.1)
     proxifier (1.0.3)
-    public_suffix (4.0.4)
+    public_suffix (4.0.5)
     rack (2.2.2)
     rainbow (3.0.0)
     retryable (3.0.5)
