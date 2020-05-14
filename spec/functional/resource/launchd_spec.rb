@@ -22,47 +22,48 @@ describe Chef::Resource::Launchd, :macos_only, requires_root: true do
   include RecipeDSLHelper
 
   before(:each) do
-    shell_out("launchctl unload -wF /Library/LaunchAgents/io.chef.testing.fake.plist")
-    FileUtils.rm_f "/Library/LaunchAgents/io.chef.testing.fake.plist"
+    shell_out("launchctl unload -wF /Library/LaunchDaemons/io.chef.testing.fake.plist")
+    FileUtils.rm_f "/Library/LaunchDaemons/io.chef.testing.fake.plist"
   end
 
   after(:each) do
-    shell_out("launchctl unload -wF /Library/LaunchAgents/io.chef.testing.fake.plist")
-    FileUtils.rm_f "/Library/LaunchAgents/io.chef.testing.fake.plist"
+    shell_out("launchctl unload -wF /Library/LaunchDaemons/io.chef.testing.fake.plist")
+    FileUtils.rm_f "/Library/LaunchDaemons/io.chef.testing.fake.plist"
   end
 
   context ":enable" do
     it "enables a service" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :enable
       end.should_be_updated
-      expect(File.exist?("/Library/LaunchAgents/io.chef.testing.fake.plist")).to be true
+      expect(File.exist?("/Library/LaunchDaemons/io.chef.testing.fake.plist")).to be true
       expect(shell_out!("launchctl list io.chef.testing.fake").stdout).to match('"PID" = \d+')
       expect(shell_out!("launchctl list io.chef.testing.fake").stdout).not_to match('"PID" = 0')
     end
+
     it "should be idempotent" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :enable
       end.should_be_updated
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :enable
       end.should_not_be_updated
     end
@@ -71,39 +72,35 @@ describe Chef::Resource::Launchd, :macos_only, requires_root: true do
   context ":create" do
     it "creates a service" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create
       end.should_be_updated
-      expect(File.exist?("/Library/LaunchAgents/io.chef.testing.fake.plist")).to be true
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).to match('"PID" = \d+')
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).not_to match('"PID" = 0')
+      expect(File.exist?("/Library/LaunchDaemons/io.chef.testing.fake.plist")).to be true
+      expect(shell_out("launchctl list io.chef.testing.fake").exitstatus).not_to eql(0)
     end
 
     it "should be idempotent" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create
       end.should_be_updated
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create
       end.should_not_be_updated
     end
@@ -112,38 +109,34 @@ describe Chef::Resource::Launchd, :macos_only, requires_root: true do
   context ":create_if_missing" do
     it "creates a service if it is missing" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create_if_missing
       end.should_be_updated
-      expect(File.exist?("/Library/LaunchAgents/io.chef.testing.fake.plist")).to be true
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).to match('"PID" = \d+')
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).not_to match('"PID" = 0')
+      expect(File.exist?("/Library/LaunchDaemons/io.chef.testing.fake.plist")).to be true
+      expect(shell_out("launchctl list io.chef.testing.fake").exitstatus).not_to eql(0)
     end
     it "is idempotent" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create_if_missing
       end.should_be_updated
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :create_if_missing
       end.should_not_be_updated
     end
@@ -152,27 +145,43 @@ describe Chef::Resource::Launchd, :macos_only, requires_root: true do
   context ":delete" do
     it "deletes a service" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "60",
         ]
-        run_at_load false
-        type "agent"
+        run_at_load true
+        type "daemon"
         action :enable
       end
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
-        type "agent"
+        type "daemon"
         action :delete
       end.should_be_updated
-      expect(File.exist?("/Library/LaunchAgents/io.chef.testing.fake.plist")).to be false
+      expect(File.exist?("/Library/LaunchDaemons/io.chef.testing.fake.plist")).to be false
       expect(shell_out("launchctl list io.chef.testing.fake").exitstatus).not_to eql(0)
     end
     it "is idempotent" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
-        type "agent"
+        program_arguments [
+          "/bin/sleep",
+          "60",
+        ]
+        run_at_load true
+        type "daemon"
+        action :enable
+      end
+      launchd "io.chef.testing.fake" do
+        type "daemon"
+        action :delete
+      end.should_be_updated
+      launchd "io.chef.testing.fake" do
+        type "daemon"
+        action :delete
+      end.should_not_be_updated
+    end
+    it "works if the file does not exist" do
+      launchd "io.chef.testing.fake" do
+        type "daemon"
         action :delete
       end.should_not_be_updated
     end
@@ -181,31 +190,41 @@ describe Chef::Resource::Launchd, :macos_only, requires_root: true do
   context ":disable" do
     it "deletes a service" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
         program_arguments [
           "/bin/sleep",
           "1",
         ]
-        type "agent"
+        type "daemon"
         action :enable
       end
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
-        type "agent"
+        type "daemon"
         action :disable
       end.should_be_updated
-      expect(File.exist?("/Library/LaunchAgents/io.chef.testing.fake.plist")).to be true
-      pp shell_out!("launchctl list io.chef.testing.fake").stdout
-      pp shell_out!("launchctl unload -w /Library/LaunchAgents/io.chef.testing.fake.plist").stdout
-      pp shell_out!("launchctl stop io.chef.testing.fake").stderr
-      pp shell_out!("launchctl list io.chef.testing.fake").stdout
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).to match('"PID" = \d+')
-      expect(shell_out!("launchctl list io.chef.testing.fake").stdout).not_to match('"PID" = 0')
+      expect(File.exist?("/Library/LaunchDaemons/io.chef.testing.fake.plist")).to be true
+      expect(shell_out("launchctl list io.chef.testing.fake").exitstatus).not_to eql(0)
     end
     it "is idempotent" do
       launchd "io.chef.testing.fake" do
-        label "io.chef.testing.fake"
-        type "agent"
+        program_arguments [
+          "/bin/sleep",
+          "1",
+        ]
+        type "daemon"
+        action :enable
+      end
+      launchd "io.chef.testing.fake" do
+        type "daemon"
+        action :disable
+      end.should_be_updated
+      launchd "io.chef.testing.fake" do
+        type "daemon"
+        action :disable
+      end.should_not_be_updated
+    end
+    it "should work if the plist does not exist" do
+      launchd "io.chef.testing.fake" do
+        type "daemon"
         action :disable
       end.should_not_be_updated
     end

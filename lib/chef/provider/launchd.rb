@@ -79,6 +79,8 @@ class Chef
       end
 
       action :disable do
+        return unless ::File.exist?(path)
+
         manage_service(:disable)
       end
 
@@ -209,7 +211,7 @@ class Chef
 
       # @api private
       def path
-        @path = new_resource.path ? new_resource.path : gen_path_from_type
+        @path ||= new_resource.path ? new_resource.path : gen_path_from_type
       end
     end
   end
