@@ -62,8 +62,6 @@ class Chef
       end
 
       action :delete do
-        # If you delete a service you want to make sure its not loaded or
-        # the service will be in memory and you wont be able to stop it.
         if ::File.exists?(path)
           manage_service(:disable)
         end
