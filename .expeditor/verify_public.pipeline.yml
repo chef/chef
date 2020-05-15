@@ -201,42 +201,45 @@ steps:
         privileged: true
         shell: ["powershell", "-Command"]
 
-#########################################################################
-# Tests Ruby 2.6
-#########################################################################
-
-- label: "Integration Windows :ruby: 2.6"
+- label: "Integration Windows :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.7
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Chocolatey Windows :ruby: 2.6"
+- label: "Chocolatey Windows :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_run_choco.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.7
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 2.6"
+- label: "Unit Windows :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.7
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
+
+#########################################################################
+# Tests Ruby 2.6
+#########################################################################
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
