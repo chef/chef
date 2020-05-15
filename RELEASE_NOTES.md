@@ -35,7 +35,6 @@ The Chef Infra Client 16.0.287 includes important bug fixes for the Chef Infra C
 - Fixes the incorrectly spelled `knife user invite recind` command to be `knife user invite rescind`.
 - Update Chef InSpec to 4.8.111 with several minor improvements.
 
-
 # Chef Infra Client 16.0.275
 
 The Chef Infra Client 16.0.275 includes important regression fixes for the Chef Infra Client 16 release:
