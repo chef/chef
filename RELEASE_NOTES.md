@@ -17,7 +17,7 @@ InSpec has been updated from 4.18.111 to 4.18.114, which adds new `--reporter_me
 
 ## Debian 10 aarch64
 
-Chef Infra Client packages are now produces for Debian 10 on the aarch64 architecture. These packages are available at [downloads.chef.io](https://downloads.chef.io/chef/)
+Chef Infra Client packages are now produced for Debian 10 on the aarch64 architecture. These packages are available at [downloads.chef.io](https://downloads.chef.io/chef/).
 
 ## Bug Fixes
 
