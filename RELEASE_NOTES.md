@@ -13,7 +13,7 @@ ohai.optional_plugins = [ :Selinux ]
 
 ## Chef InSpec 4.18.114
 
-InSpec has been updated from 4.18.111 to 4.18.114, which adds new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate message and suppress stacktraces.
+InSpec has been updated from 4.18.111 to 4.18.114, which adds new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate messages and suppress backtraces.
 
 ## Debian 10 aarch64
 
