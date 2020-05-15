@@ -181,6 +181,12 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     end
   end
 
+  describe "#start_chef" do
+    it "returns the expected string" do
+      expect(bootstrap_context.start_chef).to match(%r{SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\/opscode\/chef\\bin;C:\/opscode\/chef\\embedded\\bin\;%PATH%\"\n})
+    end
+  end
+
   describe "msi_url" do
     context "when msi_url config option is not set" do
       let(:config) { { channel: "stable" } }
