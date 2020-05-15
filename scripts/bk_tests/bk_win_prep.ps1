@@ -16,5 +16,5 @@ if (-not $?) { throw "Unable to update Bundler" }
 bundle --version
 
 echo "--- bundle install"
-bundle install --jobs=3 --retry=3 --without omnibus_package docgen chefstyle
+bundle install --jobs=3 --retry=3 --without omnibus_package
 if (-not $?) { throw "Unable to install gem dependencies" }
