@@ -8,7 +8,6 @@ Ohai 16.1 includes a new `Selinux` plugin which exposes `node['selinux']['status
 
 ```ruby
 ohai.optional_plugins = [ :Selinux ]
-]
 ```
 
 ## Chef InSpec 4.18.114
