@@ -9,12 +9,30 @@ driver_config:
 
 provisioner:
   name: chef_zero
+  produce_name: chef
+  install_strategy: skip
   deprecations_as_errors: true
   chef_license: accept-no-persist
-  product_name: chef
   client_rb:
     diff_disabled: true
     always_dump_stacktrace: true
+
+lifecycle:
+  pre_converge:
+    - remote: echo "Downloading Git"
+    - remote: Invoke-WebRequest -UseBasicParsing -uri https://github.com/git-for-windows/git/releases/download/v2.26.2.windows.1/PortableGit-2.26.2-64-bit.7z.exe -OutFile \opscode\chef\bin\git.exe
+    - remote: git.exe --version
+    - remote: echo "Chef container's Chef / Ohai release:"
+    - remote: \opscode\chef\bin\chef-client.bat -v
+    - remote: \opscode\chef\bin\ohai.bat -v
+    - remote: \opscode\chef\embedded\bin\rake.bat --version
+    - remote: \opscode\chef\embedded\bin\bundle.bat -v
+    - remote: \opscode\chef\embedded\bin\gem.bat install appbundler appbundle-updater --no-doc
+    - remote: \opscode\chef\embedded\bin\appbundle-updater.bat chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
+    - remote: \opscode\chef\embedded\bin\appbundle-updater.bat chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
+    - remote: echo "Installed Chef \ Ohai release:"
+    - remote: \opscode\chef\bin\chef-client.bat -v
+    - remote: \opscode\chef\bin\ohai.bat -v
 
 transport:
   name: winrm
@@ -26,7 +44,7 @@ verifier:
 platforms:
 - name: windows-10
   driver:
-    image_id: /subscriptions/80b824de-ec53-4116-9868-3deeab10b0cd/resourceGroups/EDM_Master_Storage_Resource_Group/providers/Microsoft.Compute/images/testkitchen-win-10
+    image_id: /subscriptions/80b824de-ec53-4116-9868-3deeab10b0cd/resourceGroups/EDM_Master_Storage_Resource_Group/providers/Microsoft.Compute/images/chef16-win-10
     use_managed_disk: true
     winrm_powershell_script: |-
       Set-WSManQuickConfig -Force -SkipNetworkProfileCheck
