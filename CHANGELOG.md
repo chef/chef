@@ -1,36 +1,34 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.0 -->
-## [v16.1.0](https://github.com/chef/chef/tree/v16.1.0) (2020-05-15)
-
-#### Merged Pull Requests
-- Add 16.1 release notes [#9873](https://github.com/chef/chef/pull/9873) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.0.287 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Add 16.1 release notes [#9873](https://github.com/chef/chef/pull/9873) ([tas50](https://github.com/tas50)) <!-- 16.1.0 -->
-- Bump inspec-core to 4.18.114 [#9870](https://github.com/chef/chef/pull/9870) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.0.303 -->
-- Fixes and tests for Chef-16 regression in launchd [#9868](https://github.com/chef/chef/pull/9868) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.302 -->
-- Update Chefstyle to 1.0.5, Ohai to 16.1.1, and cheffish to 15.0.3 [#9869](https://github.com/chef/chef/pull/9869) ([tas50](https://github.com/tas50)) <!-- 16.0.301 -->
-- Switch Ruby functional test on Windows to Ruby 2.7 [#9864](https://github.com/chef/chef/pull/9864) ([tas50](https://github.com/tas50)) <!-- 16.0.300 -->
-- Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm)) <!-- 16.0.299 -->
-- Switch end-to-end-windows-10 back to use the Linux scripts [#9862](https://github.com/chef/chef/pull/9862) ([btm](https://github.com/btm)) <!-- 16.0.298 -->
-- private end to end windows 10 pipeline [#9857](https://github.com/chef/chef/pull/9857) ([btm](https://github.com/btm)) <!-- 16.0.297 -->
-- Add Ubuntu 20.04 testing to our pipeline [#9859](https://github.com/chef/chef/pull/9859) ([tas50](https://github.com/tas50)) <!-- 16.0.296 -->
-- Test PRs against Ruby 2.7 [#9856](https://github.com/chef/chef/pull/9856) ([tas50](https://github.com/tas50)) <!-- 16.0.295 -->
-- Add Debian 10 aarch64 support [#9837](https://github.com/chef/chef/pull/9837) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.294 -->
-- Avoid ruby deprecation warnings in cab_package and powershell_script [#9850](https://github.com/chef/chef/pull/9850) ([tas50](https://github.com/tas50)) <!-- 16.0.293 -->
-- Add examples to windows_security_policy [#9842](https://github.com/chef/chef/pull/9842) ([IanMadd](https://github.com/IanMadd)) <!-- 16.0.292 -->
-- Update rubyinstaller-devkit-2.6.6-1-x64.exe SHA [#9845](https://github.com/chef/chef/pull/9845) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.0.291 -->
-- Stop upgrading rubygems in tests [#9835](https://github.com/chef/chef/pull/9835) ([tas50](https://github.com/tas50)) <!-- 16.0.290 -->
-- Use the dist values in server error messages [#9830](https://github.com/chef/chef/pull/9830) ([tas50](https://github.com/tas50)) <!-- 16.0.289 -->
-- Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50)) <!-- 16.0.288 -->
-- Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.0.288 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.1.0](https://github.com/chef/chef/tree/v16.1.0) (2020-05-15)
+
+#### Merged Pull Requests
+- Remove the config hash defaults [#9827](https://github.com/chef/chef/pull/9827) ([lamont-granquist](https://github.com/lamont-granquist))
+- Try removing asdf entirely and just use omnibus-toolchain [#9828](https://github.com/chef/chef/pull/9828) ([tas50](https://github.com/tas50))
+- Use the dist values in server error messages [#9830](https://github.com/chef/chef/pull/9830) ([tas50](https://github.com/tas50))
+- Stop upgrading rubygems in tests [#9835](https://github.com/chef/chef/pull/9835) ([tas50](https://github.com/tas50))
+- Update rubyinstaller-devkit-2.6.6-1-x64.exe SHA [#9845](https://github.com/chef/chef/pull/9845) ([christopher-snapp](https://github.com/christopher-snapp))
+- Add examples to windows_security_policy [#9842](https://github.com/chef/chef/pull/9842) ([IanMadd](https://github.com/IanMadd))
+- Avoid ruby deprecation warnings in cab_package and powershell_script [#9850](https://github.com/chef/chef/pull/9850) ([tas50](https://github.com/tas50))
+- Add Debian 10 aarch64 support [#9837](https://github.com/chef/chef/pull/9837) ([christopher-snapp](https://github.com/christopher-snapp))
+- Test PRs against Ruby 2.7 [#9856](https://github.com/chef/chef/pull/9856) ([tas50](https://github.com/tas50))
+- Add Ubuntu 20.04 testing to our pipeline [#9859](https://github.com/chef/chef/pull/9859) ([tas50](https://github.com/tas50))
+- private end to end windows 10 pipeline [#9857](https://github.com/chef/chef/pull/9857) ([btm](https://github.com/btm))
+- Switch end-to-end-windows-10 back to use the Linux scripts [#9862](https://github.com/chef/chef/pull/9862) ([btm](https://github.com/btm))
+- Remove most of the emojis from the buildkite tests [#9863](https://github.com/chef/chef/pull/9863) ([btm](https://github.com/btm))
+- Switch Ruby functional test on Windows to Ruby 2.7 [#9864](https://github.com/chef/chef/pull/9864) ([tas50](https://github.com/tas50))
+- Update Chefstyle to 1.0.5, Ohai to 16.1.1, and cheffish to 15.0.3 [#9869](https://github.com/chef/chef/pull/9869) ([tas50](https://github.com/tas50))
+- Fixes and tests for Chef-16 regression in launchd [#9868](https://github.com/chef/chef/pull/9868) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core to 4.18.114 [#9870](https://github.com/chef/chef/pull/9870) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add 16.1 release notes [#9873](https://github.com/chef/chef/pull/9873) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.0.287](https://github.com/chef/chef/tree/v16.0.287) (2020-05-07)
 
 #### Merged Pull Requests
@@ -48,7 +46,6 @@
 - Don&#39;t update rubygems / bundler in the kitchen tests [#9819](https://github.com/chef/chef/pull/9819) ([tas50](https://github.com/tas50))
 - Only require the driver_name property when creating printer ports [#9824](https://github.com/chef/chef/pull/9824) ([tas50](https://github.com/tas50))
 - Fix a misspelling in knife subcommand. [#9825](https://github.com/chef/chef/pull/9825) ([phiggins](https://github.com/phiggins))
-<!-- latest_stable_release -->
 
 ## [v16.0.275](https://github.com/chef/chef/tree/v16.0.275) (2020-05-05)
 
