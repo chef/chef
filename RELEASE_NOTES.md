@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Ohai 16.1
 
-Ohai 16.1 includes a new `Selinux` plugin which exposes `node['selinux']['status']`, `node['selinux']['policy_booleans']`, `node['selinux']['process_contexts']`, and `node['selinux']['file_contexts']`. Thanks [@davide125](http://github.com/davide125) for this contribution. This new plugin is an optional plugin, which is disabled by default. It can be enabled within your `client.rb`:
+Ohai 16.1 includes a new `Selinux` plugin which exposes `node['selinux']['status']`, `node['selinux']['policy_booleans']`, `node['selinux']['process_contexts']`, and `node['selinux']['file_contexts']`. Thanks [@davide125](http://github.com/davide125) for this contribution. This new plugin is an optional plugin which is disabled by default. It can be enabled within your `client.rb`:
 
 ```ruby
 ohai.optional_plugins = [ :Selinux ]
@@ -12,7 +12,7 @@ ohai.optional_plugins = [ :Selinux ]
 
 ## Chef InSpec 4.18.114
 
-InSpec has been updated from 4.18.111 to 4.18.114, which adds new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate messages and suppress backtraces.
+InSpec has been updated from 4.18.111 to 4.18.114. This update adds new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate messages and suppress backtraces.
 
 ## Debian 10 aarch64
 
@@ -20,13 +20,13 @@ Chef Infra Client packages are now produced for Debian 10 on the aarch64 archite
 
 ## Bug Fixes
 
-- Resolved a regression in the `launchd` resource that would cause it to fail to converge.
+- Resolved a regression in the `launchd` resource that prevented it from converging.
 - The `:disable` action in the `launchd` resource no longer fails if the plist was not found.
 - Several Ruby 2.7 deprecation warnings have been resolved.
 
 # Chef Infra Client 16.0.287
 
-The Chef Infra Client 16.0.287 includes important bug fixes for the Chef Infra Client 16 release:
+The Chef Infra Client 16.0.287 release includes important bug fixes for the Chef Infra Client 16 release:
 
 - Fixes the failure to install Windows packages on the 2nd convergence of the Chef Infra Client.
 - Resolves several failures in the `launchd` resource.
@@ -37,7 +37,7 @@ The Chef Infra Client 16.0.287 includes important bug fixes for the Chef Infra C
 
 # Chef Infra Client 16.0.275
 
-The Chef Infra Client 16.0.275 includes important regression fixes for the Chef Infra Client 16 release:
+The Chef Infra Client 16.0.275 release includes important regression fixes for the Chef Infra Client 16 release:
 
 - Resolved failures when using the `windows_package` resource. Thanks for reporting this issue [@cookiecurse](https://github.com/cookiecurse).
 - Resolved log warnings when running `execute` resources.
@@ -135,7 +135,7 @@ depends 'windows', '>> 1.0'
 
 ### Logging Improvements May Cause Behavior Changes
 
-We've make low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to *both* the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've made low level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonzed client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 ### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
@@ -243,7 +243,7 @@ Use the `windows_user_privilege` resource to add users and groups to the specifi
 
 The `compile_time` property is now available for all resources so that they can be set to run at compile time without the need forcing the action.
 
-This allows you to replace forcing resources to run at compile time:
+Set the `compile_time` property instead of forcing the resource to run at compile time:
 
 ```ruby
   my_resource "foo" do
@@ -431,7 +431,7 @@ end
 
 ### after_resource
 
-A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper, then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine-grained control over the state information sent to Chef Automate, you can use a new `load_after_resource` helper to load the state of each property for reporting.
+A new `after_resource` state has been added to resources that allows you to better control the resource state information reported to Chef Automate when a resource converges. If your custom resource uses the `load_current_value` helper, then this after state is calculated automatically. If you don't utilize the `load_current_value` helper and would like fine grained control over the state information sent to Chef Automate, you can use a new `load_after_resource` helper to load the state of each property for reporting.
 
 ### identity Improvements
 
@@ -451,7 +451,7 @@ We optimized the files that ship with Chef Infra Client and eliminated many unne
 
 We've optimized the Chef Infra Client for modern Windows releases and improved the performance on these systems.
 
-### Simpler Version Comparisons with node[:platform_version]
+### Simpler Version Comparisons with node['platform_version']
 
 The `node['platform_version']` attribute returned from Ohai can now be intelligently compared as a version instead of as a String or Integer. Previously, to compare the platform_version, many users would first convert the version String to a Float with `node['platform_version']`. This introduced problems on many platforms, such as macOS, where macOS 10.9 would appear to be a greater version number than 10.15. You can now directly compare the version without converting it first.
 
@@ -501,7 +501,7 @@ Note: Unless you are experiencing performance issues in your libraries, we advis
 
 ### always_dump_stacktrace client.rb option
 
-A new `always_dump_stacktrace` client.rb configuration option and command-line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
+A new `always_dump_stacktrace` client.rb configuration option and command line option allows you to have any Ruby stacktraces from Chef Infra Client logged directly to the log file. This may help troubleshooting when used in conjunction with centralized logging systems such as Splunk. To enable this new option, run `chef-client --always-dump-stacktrace` or add the following to your `client.rb`:
 
 ```ruby
 always_dump_stacktrace true
@@ -818,7 +818,7 @@ vm.swappiness = 10
 
 ## Platform Support
 
-* Chef Infra Clients packages are now validated for Debian 10.
+- Chef Infra Clients packages are now validated for Debian 10.
 
 ## macOS Binary Signing
 
@@ -1091,7 +1091,7 @@ Ruby has been updated from 2.6.4 to 2.6.5 in order to resolve the following CVEs
 - [CVE-2019-16255](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16255): A code injection vulnerability of Shell#[] and Shell#test
 - [CVE-2019-16254](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16254): HTTP response splitting in WEBrick (Additional fix)
 - [CVE-2019-15845](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15845): A NUL injection vulnerability of File.fnmatch and File.fnmatch?
-- [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16201): Regular Expression Denial of Service vulnerability of WEBrick’s Digest access authentication
+- [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16201): Regular Expression Denial of Service vulnerability of WEBrick's Digest access authentication
 
 # Chef Infra Client 15.3
 
@@ -1139,13 +1139,13 @@ The `archive_file` resource now supports archives in the RAR 5.0 format as well 
 
 The `user` resource now supports the creation of users on macOS 10.14 and 10.15 systems. The updated resource now complies with macOS TCC policies by using a user with admin privileges to create and modify users. The following new properties have been added for macOS user creation:
 
-* `admin` sets a user to be an admin.
+- `admin` sets a user to be an admin.
 
-* `admin_username` and `admin_password` define the admin user credentials required for toggling SecureToken for a user. The value of 'admin_username' must correspond to a system user that is part of the 'admin' with SecureToken enabled in order to toggle SecureToken.
+- `admin_username` and `admin_password` define the admin user credentials required for toggling SecureToken for a user. The value of 'admin_username' must correspond to a system user that is part of the 'admin' with SecureToken enabled in order to toggle SecureToken.
 
-* `secure_token` is a boolean property that sets the desired state for SecureToken. FileVault requires a SecureToken for full disk encryption.
+- `secure_token` is a boolean property that sets the desired state for SecureToken. FileVault requires a SecureToken for full disk encryption.
 
-* `secure_token_password` is the plaintext password required to enable or disable `secure_token` for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it is not set.
+- `secure_token_password` is the plaintext password required to enable or disable `secure_token` for a user. If no salt is specified we assume the 'password' property corresponds to a plaintext password and will attempt to use it in place of secure_token_password if it is not set.
 
 #### Password property is now sensitive
 
