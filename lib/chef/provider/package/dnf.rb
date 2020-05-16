@@ -81,6 +81,31 @@ class Chef
           super
         end
 
+        #
+        # Override new_version_array in Chef::Provider::Package to to
+        # force package version comparisons to use the
+        # candidate_version values instead of new_resource.version.
+        #
+        # We do this because new_resource.version can specify a partial
+        # version spec, where as candidate_version has been expanded to
+        # a full EVRA, which can be accurately compared against
+        # installed_version later (also an EVRA, if it exists).
+        #
+        # If the there is no candidate_version we have to leave
+        # new_resource.version as is to preserve the fact that the user
+        # requested an unavailable version.
+        #
+
+        # @return [Array] new_version(s) as an array
+        def new_version_array
+          @new_version_array ||= \
+            [ new_resource.version ].flatten.each_with_index.map do |nv, i|
+              nv = nv.to_s.empty? ? nil : nv
+              cv = candidate_version[i]
+              nv and cv ? cv : nv
+            end
+        end
+
         def candidate_version
           package_name_array.each_with_index.map do |pkg, i|
             available_version(i).version_with_arch

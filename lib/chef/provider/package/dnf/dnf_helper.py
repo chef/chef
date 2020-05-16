@@ -52,37 +52,27 @@ def flushcache():
         pass
     get_sack().load_system_repo(build_cache=True)
 
-def version_tuple(versionstr):
-    e = '0'
-    v = None
-    r = None
-    colon_index = versionstr.find(':')
-    if colon_index > 0:
-        e = str(versionstr[:colon_index])
-    dash_index = versionstr.find('-')
-    if dash_index > 0:
-        tmp = versionstr[colon_index + 1:dash_index]
-        if tmp != '':
-            v = tmp
-        arch_index = versionstr.find('.', dash_index)
-        if arch_index > 0:
-            r = versionstr[dash_index + 1:arch_index]
-        else:
-            r = versionstr[dash_index + 1:]
-    else:
-        tmp = versionstr[colon_index + 1:]
-        if tmp != '':
-            v = tmp
-    return (e, v, r)
+def evras_split(evras):
+    evrs = []
+    archs = []
+    for evra in evras:
+        tmp = evra.split('.')
+        evrs.append('.'.join(tmp[0:-1]))
+        archs.append(tmp[-1])
+    return evrs, archs
 
-def versioncompare(versions):
+def versioncompare(evras):
     sack = get_sack()
-    if (versions[0] is None) or (versions[1] is None):
+    if (evras[0] is None) or (evras[1] is None):
       outpipe.write('0\n')
       outpipe.flush()
     else:
-      evr_comparison = dnf.rpm.rpm.labelCompare(version_tuple(versions[0]), version_tuple(versions[1]))
-      outpipe.write('{}\n'.format(evr_comparison))
+      evrs, archs = evras_split(evras)
+      rv = sack.evr_cmp(evrs[0], evrs[1])
+      if rv == 0 and archs[0] != archs[1]:
+          # Less than vs greater than is kinda nonsensical for arch.
+          rv = -1 if (archs[0] < archs[1]) else 1
+      outpipe.write('{}\n'.format(rv))
       outpipe.flush()
 
 def query(command):

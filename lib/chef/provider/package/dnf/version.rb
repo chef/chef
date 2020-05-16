@@ -37,7 +37,8 @@ class Chef
           end
 
           def version_with_arch
-            "#{version}.#{arch}" unless version.nil?
+            rvc = self.is_a?(EVRAVersion) ? EVRAString : String
+            rvc.new("#{version}.#{arch}") unless version.nil?
           end
 
           def name_with_arch
@@ -54,6 +55,21 @@ class Chef
 
           alias eql? ==
         end
+
+        #
+        # Helper classes to track if Version and String instances
+        # represent an rpm EVRA. This is important because it's
+        # impossible to differentiate between EVRs and EVRAs once they
+        # are in a string format, and we need to ensure we don't
+        # accidentally pass EVRs to functions that take EVRAs.
+        #
+
+        class EVRAVersion < Version
+        end
+
+        class EVRAString < String
+        end
+
       end
     end
   end

@@ -83,6 +83,15 @@ class Chef
           end
 
           def compare_versions(version1, version2)
+            #
+            # The python helper can only compare EVRA strings, so make
+            # sure we don't pass it anything else.
+            #
+            if !is_evra?(version1) || !is_evra?(version2)
+              # Who knows what we're comparing.
+              Chef::Log.debug "Non-EVRA version comparison: #{version1} <=> #{version2}"
+              return version1 <=> version2
+            end
             query("versioncompare", { "versions" => [version1, version2] }).to_i
           end
 
@@ -124,6 +133,10 @@ class Chef
           end
 
           private
+
+          def is_evra?(version)
+            return version.is_a?(EVRAVersion) || version.is_a?(EVRAString)
+          end
 
           # i couldn't figure out how to decompose an evr on the python side, it seems reasonably
           # painless to do it in ruby (generally massaging nevras in the ruby side is HIGHLY
@@ -171,7 +184,13 @@ class Chef
 
           def parse_response(output)
             array = output.split.map { |x| x == "nil" ? nil : x }
-            array.each_slice(3).map { |x| Version.new(*x) }.first
+            #
+            # The python helper only returns full NEVRA package
+            # specification, so create a EVRAVersion object (instead of
+            # a Version object) so we can differentiate between
+            # different instances of the two types later.
+            #
+            array.each_slice(3).map { |x| EVRAVersion.new(*x) }.first
           end
 
           def drain_fds
