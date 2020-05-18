@@ -146,7 +146,7 @@ shared_context Chef::Resource::WindowsScript do
       shared_examples_for "a script whose file system location cannot be accessed by other non-admin users" do
         let(:ruby_access_command) { file_access_command }
         it "generates a script in the local file system that prevents read access to other non-admin users" do
-          shell_out!(access_command, { user: windows_nonadmin_user, password: windows_nonadmin_user_password, returns: [access_denied_sentinel] })
+          shell_out!(access_command, user: windows_nonadmin_user, password: windows_nonadmin_user_password, returns: [access_denied_sentinel])
         end
       end
 
