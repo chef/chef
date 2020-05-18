@@ -24,7 +24,7 @@ ruby -v
 bundle --version
 
 Write-Output "--- bundle install"
-bundle install --jobs=3 --retry=3 --without omnibus_package docgen chefstyle
+bundle install --jobs=3 --retry=3 --without omnibus_package
 
 Write-Output "+++ bundle exec rake spec:functional"
 bundle exec rake spec:functional
