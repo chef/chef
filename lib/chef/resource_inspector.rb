@@ -69,8 +69,8 @@ module ResourceInspector
     dir, name = File.split(path)
     Chef::Cookbook::FileVendor.fetch_from_disk(path)
     loader = Chef::CookbookLoader.new(dir)
-    cookbooks = loader.load_cookbooks
-    resources = cookbooks[name].files_for(:resources)
+    cookbook = loader.load_cookbook(name)
+    resources = cookbook.files_for(:resources)
 
     resources.each_with_object({}) do |r, res|
       pth = r["full_path"]
@@ -83,13 +83,14 @@ module ResourceInspector
   # otherwise, if we have a path then extract all the resources from the cookbook
   # or else do a list of built in resources
   #
+  # @param arguments [Array, String] One of more paths to a cookbook or a resource file to inspect
   # @param complete [TrueClass, FalseClass] Whether to show properties defined in the base Resource class
   # @return [String] JSON formatting of all resources
   def self.inspect(arguments = [], complete: false)
     output = if arguments.empty?
                ObjectSpace.each_object(Class).select { |k| k < Chef::Resource }.each_with_object({}) { |klass, acc| acc[klass.resource_name] = extract_resource(klass) }
              else
-               arguments.each_with_object({}) do |arg, acc|
+               Array(arguments).each_with_object({}) do |arg, acc|
                  if File.directory?(arg)
                    extract_cookbook(arg, complete).each { |k, v| acc[k] = v }
                  else
