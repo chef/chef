@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.1.1 -->
+## [v16.1.1](https://github.com/chef/chef/tree/v16.1.1) (2020-05-18)
+
+#### Merged Pull Requests
+- fix windows bootstrap; replicate chef/chef/pull/9839 by Chad Jessup [#9878](https://github.com/chef/chef/pull/9878) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.1.0 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- fix windows bootstrap; replicate chef/chef/pull/9839 by Chad Jessup [#9878](https://github.com/chef/chef/pull/9878) ([bobchaos](https://github.com/bobchaos)) <!-- 16.1.1 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
