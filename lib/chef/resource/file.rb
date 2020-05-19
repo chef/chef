@@ -67,6 +67,7 @@ class Chef
 
       property :checksum, [ String, nil ],
         regex: /^\h{64}$/,
+        coerce: lambda { |s| s.is_a?(String) ? s.downcase : s },
         description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
 
       property :content, [ String, nil ], desired_state: false,

@@ -38,7 +38,7 @@ class Chef
         def define_resource_requirements
           if new_resource.checksum
             requirements.assert(:install) do |a|
-              a.assertion { new_resource.checksum.downcase == checksum(source_location) }
+              a.assertion { new_resource.checksum == checksum(source_location) }
               a.failure_message Chef::Exceptions::Package, "Checksum on resource (#{short_cksum(new_resource.checksum)}) does not match checksum on content (#{short_cksum(source_location)})"
             end
           end
