@@ -264,7 +264,7 @@ class Chef
           end
 
           result = properties.values.select(&:identity?)
-          # if there are no other identity properites set, then the name_property becomes the identity, or
+          # if there are no other identity properties set, then the name_property becomes the identity, or
           # failing that we use the actual name.
           if result.empty?
             result = name_property ? [ properties[name_property] ] : [ properties[:name] ]
@@ -355,7 +355,7 @@ class Chef
       #
       # @param other [Object] the other object (Chef::Resource) which implements the properties API
       # @param includes [Array<Symbol>] splat-args list of symbols of the properties to copy.
-      # @param exclude [Array<Symbol>] list of symbosl of the properties to exclude.
+      # @param exclude [Array<Symbol>] list of symbols of the properties to exclude.
       # @return the self object the properties were copied to for method chaining
       #
       def copy_properties_from(other, *includes, exclude: [ :name ])

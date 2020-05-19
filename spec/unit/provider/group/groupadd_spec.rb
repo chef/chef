@@ -57,7 +57,7 @@ describe Chef::Provider::Group::Groupadd do
       end
 
       it "should set the option for #{property} if the new resources #{property} is not null" do
-        allow(new_resource).to receive(property).and_return("wowaweea")
+        allow(new_resource).to receive(property).and_return("cactus")
         expect(provider.set_options).to eql([ option, new_resource.send(property), new_resource.group_name])
       end
     end

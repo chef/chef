@@ -143,7 +143,7 @@ module ChefUtils
         begin
           Gem::Requirement.create(other) =~ parsed_version
         rescue ArgumentError
-          # one side of the comparison wasn't parseable
+          # one side of the comparison wasn't parsable
           super
         end
       end

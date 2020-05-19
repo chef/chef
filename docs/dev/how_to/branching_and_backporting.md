@@ -2,7 +2,7 @@
 
 ## Branch Structure
 
-We develop and ship the current release of Chef off the master branch of this repository. Our goal is that `master` should always be in a shipable state. Previous stable releases of Chef are developed on their own branches named by the major version (ex: chef-14 or chef-13). We do not perform direct development on these stable branches, except to resolve build failures. Instead, we backport fixes from our master branch to these stable branches. Stable branches receive critical bugfixes and security releases, and stable Chef releases are made as necessary for security purposes.
+We develop and ship the current release of Chef off the master branch of this repository. Our goal is that `master` should always be in a shippable state. Previous stable releases of Chef are developed on their own branches named by the major version (ex: chef-14 or chef-13). We do not perform direct development on these stable branches, except to resolve build failures. Instead, we backport fixes from our master branch to these stable branches. Stable branches receive critical bugfixes and security releases, and stable Chef releases are made as necessary for security purposes.
 
 ## Backporting Fixes to Stable Releases
 
@@ -12,7 +12,7 @@ If there is a critical fix that you believe should be backported from master to 
 3. Inspect the Git history and find the `SHA`(s) associated with the fix.
 4. Backport the fix to a branch via cherry-pick:
     1. Check out the stable release branch: `git checkout chef-14`
-    2. Create a branch for your backport: `git checkout -b my_great_bug_packport`
+    2. Create a branch for your backport: `git checkout -b my_great_bug_backport`
     3. Cherry Pick the SHA with the fix: `git cherry-pick SHA`
     4. Address any conflicts (if necessary)
     5. Push the new branch to your origin: `git push origin`

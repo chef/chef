@@ -138,7 +138,7 @@ class Chef
       cookbooks_by_name.values
     end
 
-    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loder object which points to tmp directory
+    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loader object which points to tmp directory
     def self.copy_to_tmp_dir_from_array(cookbooks)
       tmp_cookbook_file = Tempfile.new("tmp_working_dir_path")
       tmp_cookbook_file.close

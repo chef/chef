@@ -250,7 +250,7 @@ class Chef
           private
 
           def logger
-            Chef::Log.with_child({ subsytem: "gem_installer_environment" })
+            Chef::Log.with_child({ subsystem: "gem_installer_environment" })
           end
 
         end

@@ -31,7 +31,7 @@ On your local machine fork the current master branch to a new stable branch. For
 
 Once you’ve forked to a new stable branch such as `chef-15` you’ll want to create a new branch so you can build a PR, which will get this branch ready for release:
 
-- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constrant for master to match the new major version, and remove all the update_dep.sh subscriptions which don’t work against stable branches.
+- In ./expeditor/config.yml add the version_constraint for the new branch, update the version_constraint for master to match the new major version, and remove all the update_dep.sh subscriptions which don’t work against stable branches.
 - In readme.md update the buildkite badge to point to the new stable branch image and link instead of pointing to master.
 - In kitchen-tests/Gemfile update the Ohai branch to point to the new Ohai stable
 - In kitchen-tests/kitchen.yml update chef_version to be your new stable version and not current. Ex: 15

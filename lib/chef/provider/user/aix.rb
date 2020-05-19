@@ -40,7 +40,7 @@ class Chef
           shell_out!("userdel", userdel_options, new_resource.username)
         end
 
-        # Aix does not support -r like other unix, sytem account is created by adding to 'system' group
+        # Aix does not support -r like other unix, system account is created by adding to 'system' group
         def useradd_options
           opts = []
           opts << "-g" << "system" if new_resource.system

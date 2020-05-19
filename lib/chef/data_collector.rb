@@ -184,7 +184,7 @@ class Chef
         begin
           code = e&.response&.code&.to_s
         rescue
-          # i really dont care
+          # i really don't care
         end
 
         code ||= "No HTTP Code"

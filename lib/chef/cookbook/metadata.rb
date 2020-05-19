@@ -357,7 +357,7 @@ class Chef
       # Array<String> - array of files or globs to eagerly load, otherwise it is treated like `false`
       #
       # @params arg [Array,String,TrueClass,FalseClass]
-      # @params [Array,TrueClass,FalseCalss]
+      # @params [Array,TrueClass,FalseClass]
       def eager_load_libraries(arg = nil)
         set_or_return(
           :eager_load_libraries,

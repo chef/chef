@@ -175,11 +175,11 @@ RSpec.describe ChefConfig::Config do
       end
 
       context "when passes multiple cookbook_paths in config options" do
-        let(:extra_config_options) { ["cookbook_path=[first_cookbook, secound_cookbooks]"] }
+        let(:extra_config_options) { ["cookbook_path=[first_cookbook, second_cookbooks]"] }
 
         it "expanded paths" do
           apply_config
-          expect(described_class[:cookbook_path]).to eq(["#{current_directory}/first_cookbook", "#{current_directory}/secound_cookbooks"])
+          expect(described_class[:cookbook_path]).to eq(["#{current_directory}/first_cookbook", "#{current_directory}/second_cookbooks"])
         end
       end
     end
@@ -205,8 +205,8 @@ RSpec.describe ChefConfig::Config do
     #   end
     # else
     #   formatter = "null"
-    #   log_location = configured-value or defualt
-    #   log_level = info or defualt
+    #   log_location = configured-value or default
+    #   log_level = info or default
     # end
     #
     it "has an empty list of formatters by default" do

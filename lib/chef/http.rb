@@ -269,7 +269,7 @@ class Chef
       if keepalives && !base_url.nil?
         # only reuse the http_client if we want keepalives and have a base_url
         @http_client ||= {}
-        # the per-host per-port cache here gets peristent connections correct when
+        # the per-host per-port cache here gets persistent connections correct when
         # redirecting to different servers
         if base_url.is_a?(String) # sigh, this kind of abuse can't happen with strongly typed languages
           @http_client[base_url] ||= build_http_client(base_url)

@@ -30,7 +30,7 @@ describe Chef::Win32::Registry do
   let(:sub_key) { "OpscodePrimes" }
   let(:missing_key_path) { 'HKCU\Software' }
   let(:registry) { Chef::Win32::Registry.new }
-  let(:hive_mock) { double("::Win32::Registry::KHKEY_CURRENT_USER") }
+  let(:hive_mock) { double("::Win32::Registry::HKEY_CURRENT_USER") }
   let(:reg_mock) { double("reg") }
 
   before(:all) do

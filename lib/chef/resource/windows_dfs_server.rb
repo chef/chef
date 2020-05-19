@@ -50,7 +50,7 @@ class Chef
         ps_results = powershell_out("Get-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' | Select LdapTimeoutSec, PreferLogonDC, EnableSiteCostedReferrals, SyncIntervalSec, UseFqdn | ConvertTo-Json")
 
         if ps_results.error?
-          raise "The dfs_server resource failed to fetch the current state via the Get-DfsnServerConfiguration PowerShell cmlet. Is the DFS Windows feature installed?"
+          raise "The dfs_server resource failed to fetch the current state via the Get-DfsnServerConfiguration PowerShell cmdlet. Is the DFS Windows feature installed?"
         end
 
         Chef::Log.debug("The Get-DfsnServerConfiguration results were #{ps_results.stdout}")

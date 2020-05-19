@@ -101,7 +101,7 @@ class Chef
         @events.library_load_start(count_files_by_segment(:libraries))
         cookbook_order.each do |cookbook|
           eager_load_libraries = cookbook_collection[cookbook].metadata.eager_load_libraries
-          if eager_load_libraries == true # actully true, not truthy
+          if eager_load_libraries == true # actually true, not truthy
             load_libraries_from_cookbook(cookbook)
           else
             $LOAD_PATH.unshift File.expand_path("libraries", cookbook_collection[cookbook].root_dir)

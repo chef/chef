@@ -94,7 +94,7 @@ class Chef
         host.typedef :ulong,   :HMENU # (L) Handle to a menu. http://msdn.microsoft.com/en-us/library/ms646977%28VS.85%29.aspx
         host.typedef :ulong,   :HMETAFILE # (L) Handle to a metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
         host.typedef :ulong,   :HMODULE # (L) Handle to an instance. Same as HINSTANCE today, but was different in 16-bit Windows.
-        host.typedef :ulong,   :HMONITOR # (L) Рandle to a display monitor. WinDef.h: if(WINVER >= 0x0500) host.typedef HANDLE HMONITOR;
+        host.typedef :ulong,   :HMONITOR # (L) Handle to a display monitor. WinDef.h: if(WINVER >= 0x0500) host.typedef HANDLE HMONITOR;
         host.typedef :ulong,   :HPALETTE # (L) Handle to a palette.
         host.typedef :ulong,   :HPEN # (L) Handle to a pen. http://msdn.microsoft.com/en-us/library/dd162786%28VS.85%29.aspx
         host.typedef :long,    :HRESULT # Return code used by COM interfaces. For more info, Structure of the COM Error Codes.
@@ -115,7 +115,7 @@ class Chef
         host.typedef :uint32,  :LCID # Locale identifier. For more information, see Locales.
         host.typedef :uint32,  :LCTYPE # Locale information type. For a list, see Locale Information Constants.
         host.typedef :uint32,  :LGRPID # Language group identifier. For a list, see EnumLanguageGroupLocales.
-        host.typedef :pointer, :LMSTR # Pointer to null termiated string of unicode characters
+        host.typedef :pointer, :LMSTR # Pointer to null terminated string of unicode characters
         host.typedef :long,    :LONG # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int32,   :LONG32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :LONG64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807

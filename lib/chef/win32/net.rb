@@ -40,6 +40,7 @@ class Chef
             usri3_priv: 0,
             usri3_home_dir: nil,
             usri3_comment: nil,
+            # cspell:disable-next-line
             usri3_flags: UF_SCRIPT | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT,
             usri3_script_path: nil,
             usri3_auth_flags: 0,

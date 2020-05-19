@@ -22,7 +22,7 @@ When incrementing a version, the following conditions will apply:
 
 ### Auto-bumping PATCH versions
 
-Chef projects are managed by our Expeditor release tooling application. This application is executed each time a GitHubb Pull Request is merged and incrementwss the patch version of the software before running the change through our internal CI/CD pipeline. As not all builds will make it successfully through the CI/CD pipeline, the versions available for public consumption might have gaps (e.g. 1.2.1, 1.2.10, 1.2.11, 1.2.12, 1.2.20), but all verisons have been built and tested.
+Chef projects are managed by our Expeditor release tooling application. This application is executed each time a GitHub Pull Request is merged and increments the patch version of the software before running the change through our internal CI/CD pipeline. As not all builds will make it successfully through the CI/CD pipeline, the versions available for public consumption might have gaps (e.g. 1.2.1, 1.2.10, 1.2.11, 1.2.12, 1.2.20), but all versions have been built and tested.
 
 ## Support Schedule
 

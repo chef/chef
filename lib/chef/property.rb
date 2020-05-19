@@ -574,7 +574,7 @@ class Chef
       # be using the existing getter/setter to manipulate it instead.
       return unless instance_variable_name
 
-      # Properties may override existing properties up the inheritance heirarchy, but
+      # Properties may override existing properties up the inheritance hierarchy, but
       # properties must not override inherited methods like Object#hash.  When the Resource is
       # placed into the resource collection the ruby Hash object will call the
       # Object#hash method on the resource, and overriding that with a property will cause
@@ -702,7 +702,7 @@ class Chef
       # override their own properties.
       return false unless [ Object, BasicObject, Kernel, Chef::Resource ].include?(declared_in.instance_method(name).owner)
 
-      # Allow top-level Chef::Resource proprties, such as `name`, to be overridden.
+      # Allow top-level Chef::Resource properties, such as `name`, to be overridden.
       # As of this writing, `name` is the only Chef::Resource property created with the
       # `property` definition, but this will allow for future properties to be extended
       # as needed.

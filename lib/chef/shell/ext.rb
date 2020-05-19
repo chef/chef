@@ -37,7 +37,7 @@ module Shell
     module ObjectCoreExtensions
 
       def ensure_session_select_defined
-        # irb breaks if you prematurely define IRB::JobMangager
+        # irb breaks if you prematurely define IRB::JobManager
         # so these methods need to be defined at the latest possible time.
         unless jobs.respond_to?(:select_session_by_context)
           def jobs.select_session_by_context(&block) # rubocop:disable Lint/NestedMethodDefinition

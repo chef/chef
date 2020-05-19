@@ -59,7 +59,7 @@ class Chef
 
       option :prefix_attribute,
         long: "--prefix-attribute ATTR",
-        description: "The attribute to use for prefixing the ouput - default depends on the context."
+        description: "The attribute to use for prefixing the output - default depends on the context."
 
       option :ssh_user,
         short: "-x USERNAME",

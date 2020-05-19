@@ -11,7 +11,7 @@ namespace :docs_site do
     require "fileutils"
     require "yaml"
 
-    # @return [String, nil] a pretty defaul value string or nil if we want to skip it
+    # @return [String, nil] a pretty default value string or nil if we want to skip it
     def pretty_default(default)
       return nil if default.nil? || default == "" || default == "lazy default"
 

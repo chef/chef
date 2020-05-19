@@ -94,7 +94,7 @@ class Chef
         boolean: true
 
       # This option was provided in knife bootstrap windows winrm,
-      # but it is ignored  in knife-windows/WinrmSession, and so remains unimplemeneted here.
+      # but it is ignored  in knife-windows/WinrmSession, and so remains unimplemented here.
       # option :kerberos_keytab_file,
       #   :short => "-T KEYTAB_FILE",
       #   :long => "--keytab-file KEYTAB_FILE",
@@ -275,7 +275,7 @@ class Chef
           accumulator
         }
 
-      # bootstrap override: url of a an installer shell script touse in place of omnitruck
+      # bootstrap override: url of a an installer shell script to use in place of omnitruck
       # Note that the bootstrap template _only_ references this out of Chef::Config, and not from
       # the provided options to knife bootstrap, so we set the Chef::Config option here.
       option :bootstrap_url,
@@ -713,7 +713,7 @@ class Chef
       # Fail if using plaintext auth without ssl because
       # this can expose keys in plaintext on the wire.
       # TODO test for this method
-      # TODO check that the protoocol is valid.
+      # TODO check that the protocol is valid.
       def validate_winrm_transport_opts!
         return true unless winrm?
 
@@ -967,7 +967,7 @@ class Chef
             gw_host = split[1]
           end
           gw_host, gw_port = gw_host.split(":", 2)
-          # TODO - validate convertable port in config validation?
+          # TODO - validate convertible port in config validation?
           gw_port = Integer(gw_port) rescue nil
           opts[:bastion_host] = gw_host
           opts[:bastion_user] = gw_user
@@ -1073,7 +1073,7 @@ class Chef
         remote_path
       end
 
-      # build the command string for bootrapping
+      # build the command string for bootstrapping
       # @return String
       def bootstrap_command(remote_path)
         if connection.windows?

@@ -106,25 +106,25 @@ shared_examples_for "a useradd-based user provider" do |supported_useradd_option
 
     describe "when the resource has a different home directory and supports home directory management" do
       before do
-        @new_resource.home "/wowaweea"
+        @new_resource.home "/banana"
         @new_resource.manage_home true
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eq(%w{-d /wowaweea})
+        expect(provider.universal_options).to eq(%w{-d /banana})
         expect(provider.usermod_options).to eq(%w{-m})
       end
     end
 
     describe "when the resource has a different home directory and supports home directory management (using real attributes)" do
       before do
-        @new_resource.home("/wowaweea")
+        @new_resource.home("/banana")
         @new_resource.manage_home true
         @new_resource.non_unique false
       end
 
       it "should set -m -d /homedir" do
-        expect(provider.universal_options).to eq(%w{-d /wowaweea})
+        expect(provider.universal_options).to eq(%w{-d /banana})
         expect(provider.usermod_options).to eq(%w{-m})
       end
     end

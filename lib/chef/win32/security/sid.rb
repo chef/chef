@@ -261,7 +261,7 @@ class Chef
 
         SYSTEM_USER = SERVICE_ACCOUNT_USERS + BUILT_IN_GROUPS
 
-        # Сheck if the user belongs to service accounts category
+        # Check if the user belongs to service accounts category
         #
         # @return [Boolean] True or False
         #
@@ -269,7 +269,7 @@ class Chef
           SERVICE_ACCOUNT_USERS.include?(user.to_s.upcase)
         end
 
-        # Сheck if the user is in builtin system group
+        # Check if the user is in builtin system group
         #
         # @return [Boolean] True or False
         #
@@ -277,7 +277,7 @@ class Chef
           BUILT_IN_GROUPS.include?(user.to_s.upcase)
         end
 
-        # Сheck if the user belongs to system users category
+        # Check if the user belongs to system users category
         #
         # @return [Boolean] True or False
         #
@@ -325,7 +325,7 @@ class Chef
                 Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
-                  # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN
+                  # RID for the Administrator account is always 500 and it's privilege is set to USER_PRIV_ADMIN
                   if user_info[:usri3_user_id] == 500 && user_info[:usri3_priv] == 2 # USER_PRIV_ADMIN (2) - Administrator
                     admin_account_name = user_info[:usri3_name].read_wstring
                     break

@@ -169,7 +169,7 @@ class Chef
         # is not multipackage.  The existing implementation of package_provider.installed_version should probably
         # be what `uninstall_version_array` is, and then that list should be sorted and last/first'd into the
         # current_resource.version.  The current_version_array method was not intended to be overwritten by
-        # sublasses (but ruby provides no feature to block doing so -- it is already marked as private).
+        # subclasses (but ruby provides no feature to block doing so -- it is already marked as private).
         #
         def current_version_array
           [ current_resource.version ]

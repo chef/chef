@@ -58,7 +58,7 @@ namespace :pre_install do
   task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
 end
 
-# hack in all the preinstall tasks to occur before the tradtional install task
+# hack in all the preinstall tasks to occur before the traditional install task
 task install: "pre_install:all"
 
 # make sure we build the correct gemspec on windows
@@ -108,3 +108,17 @@ begin
 rescue LoadError
   puts "yard is not available. bundle install first to make sure all dependencies are installed."
 end
+
+namespace :spellcheck do
+  task :run do
+    sh 'cspell "**/*" "*.md"'
+  end
+
+  desc "List the unique unrecognized words in the project."
+  task :unknown_words do
+    sh 'cspell "**/*" "*.md" --wordsOnly --no-summary | sort | uniq'
+  end
+end
+
+desc "Run spellcheck on the project."
+task spellcheck: "spellcheck:run"

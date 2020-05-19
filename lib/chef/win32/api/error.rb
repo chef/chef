@@ -64,7 +64,7 @@ class Chef
         ERROR_SHARING_VIOLATION   = 32
         ERROR_LOCK_VIOLATION      = 33
         ERROR_WRONG_DISK          = 34
-        ERROR_FCB_UNAVAILABLE     = 35  # gets returned for some unsuccessful DeviceIoControl calls
+        ERROR_FCB_UNAVAILABLE     = 35 # gets returned for some unsuccessful DeviceIoControl calls
         ERROR_SHARING_BUFFER_EXCEEDED = 36
         ERROR_HANDLE_EOF          = 38
         ERROR_HANDLE_DISK_FULL    = 39
@@ -90,6 +90,7 @@ class Chef
         ERROR_TOO_MANY_NAMES      = 68
         ERROR_TOO_MANY_SESS       = 69
         ERROR_SHARING_PAUSED      = 70
+        # cspell:disable-next-line
         ERROR_REQ_NOT_ACCEP       = 71
         ERROR_REDIR_PAUSED        = 72
 
@@ -876,6 +877,7 @@ class Chef
 
         # Flags for LoadLibraryEx
 
+        # cspell:disable-next-line
         DONT_RESOLVE_DLL_REFERENCES = 0x00000001
         LOAD_IGNORE_CODE_AUTHZ_LEVEL = 0x00000010
         LOAD_LIBRARY_AS_DATAFILE = 0x00000002

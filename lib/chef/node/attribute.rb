@@ -184,7 +184,7 @@ class Chef
       # return the role level override attribute component
       attr_reader :role_override
 
-      # return the enviroment level override attribute component
+      # return the environment level override attribute component
       attr_reader :env_override
 
       # return the force override level attribute component
@@ -535,7 +535,7 @@ class Chef
         e
       end
 
-      # Deep merge all attribute levels using hash-only merging between different precidence
+      # Deep merge all attribute levels using hash-only merging between different precedence
       # levels (so override arrays completely replace arrays set at any default level).
       #
       # The path allows for selectively deep-merging a subtree of the node object.

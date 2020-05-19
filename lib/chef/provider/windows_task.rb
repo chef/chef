@@ -72,6 +72,7 @@ class Chef
           6 => TaskScheduler::TASK_SIXTH,
           7 => TaskScheduler::TASK_SEVENTH,
           8 => TaskScheduler::TASK_EIGHTH,
+          # cspell:disable-next-line
           9 => TaskScheduler::TASK_NINETH,
           10 => TaskScheduler::TASK_TENTH,
           11 => TaskScheduler::TASK_ELEVENTH,
@@ -93,6 +94,7 @@ class Chef
           27 => TaskScheduler::TASK_TWENTY_SEVENTH,
           28 => TaskScheduler::TASK_TWENTY_EIGHTH,
           29 => TaskScheduler::TASK_TWENTY_NINTH,
+          # cspell:disable-next-line
           30 => TaskScheduler::TASK_THIRTYETH,
           31 => TaskScheduler::TASK_THIRTY_FIRST,
         }.freeze
@@ -229,7 +231,7 @@ class Chef
 
         private
 
-        # seprated command arguments from :command property
+        # separated command arguments from :command property
         def set_command_and_arguments
           cmd, *args = Chef::Util::PathHelper.split_args(new_resource.command)
           new_resource.command = cmd
@@ -577,7 +579,7 @@ class Chef
 
         def logon_type
           # Ref: https://msdn.microsoft.com/en-us/library/windows/desktop/aa383566(v=vs.85).aspx
-          # if nothing is passed as logon_type the TASK_LOGON_SERVICE_ACCOUNT is getting set as default so using that for comparision.
+          # if nothing is passed as logon_type the TASK_LOGON_SERVICE_ACCOUNT is getting set as default so using that for comparison.
           user_id = new_resource.user.to_s
           password = new_resource.password.to_s
           if Chef::ReservedNames::Win32::Security::SID.service_account_user?(user_id)

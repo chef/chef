@@ -152,7 +152,7 @@ class Chef
       new_resource.cookbook_name
     end
 
-    # hook that subclasses can use to do lazy validation for where properties aren't flexibile enough
+    # hook that subclasses can use to do lazy validation for where properties aren't flexible enough
     def check_resource_semantics!; end
 
     # a simple placeholder method that will be called / raise if a resource tries to
@@ -167,7 +167,7 @@ class Chef
 
     def load_after_resource
       # This is a backwards compatible hack, custom resources properly wire up a new after_resource
-      # via load_current_value.  It is acceptible for old style resources that cannot be easily made
+      # via load_current_value.  It is acceptable for old style resources that cannot be easily made
       # into custom resources to override this method and provide a proper after_resource.
       @after_resource = @new_resource
     end
@@ -190,7 +190,7 @@ class Chef
     def run_action(action = nil)
       @action = action unless action.nil?
 
-      # hook that subclasses can use to do lazy validation for where properties aren't flexibile enough
+      # hook that subclasses can use to do lazy validation for where properties aren't flexible enough
       check_resource_semantics!
 
       # force the validation of required properties

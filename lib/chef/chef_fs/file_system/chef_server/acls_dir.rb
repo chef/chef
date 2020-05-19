@@ -60,7 +60,7 @@ class Chef
                   AclDir.new(entity_type, self)
                 end
               end
-              @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHINGATALL/_acl
+              @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHING/_acl
             end
             @children
           end

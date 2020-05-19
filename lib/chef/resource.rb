@@ -930,7 +930,7 @@ class Chef
     end
 
     #
-    # A hook called after a resource is created.  Meant to be overriden by
+    # A hook called after a resource is created.  Meant to be overridden by
     # subclasses.
     #
     def after_created
@@ -1114,7 +1114,7 @@ class Chef
     # `action_class` method, the presence of either indicates that this is
     # going to be a Chef-12.5 custom resource.  If we never see one of these
     # directives then we are constructing an old-style Resource+Provider or
-    # LWRP or whatevs.
+    # LWRP or whatever.
     #
     # If a block is passed, the action_class is always created and the block is
     # run inside it.
@@ -1327,7 +1327,7 @@ class Chef
     # Once we no longer care about supporting chef < 14.4 then we can deprecate
     # this API.
     #
-    # @param arg [String] version constrant to match against (e.g. "> 14")
+    # @param arg [String] version constraint to match against (e.g. "> 14")
     #
     def self.chef_version_for_provides(constraint)
       @chef_version_for_provides = constraint

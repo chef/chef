@@ -124,7 +124,7 @@ class Chef
         # @return [Boolean]
         def exists?(pagefile)
           @exists ||= begin
-            logger.trace("Checking if #{pagefile} exists by runing: wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list")
+            logger.trace("Checking if #{pagefile} exists by running: wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list")
             cmd = shell_out("wmic.exe pagefileset where SettingID=\"#{get_setting_id(pagefile)}\" list /format:list", returns: [0])
             cmd.stderr.empty? && (cmd.stdout =~ /SettingID=#{get_setting_id(pagefile)}/i)
           end

@@ -249,7 +249,7 @@ class Chef
         end
 
         # Helper to convert choco.exe list output to a Hash
-        # (names are downcased for case-insenstive matching)
+        # (names are downcased for case-insensitive matching)
         #
         # @param cmd [String] command to run
         # @return [Hash] list output converted to ruby Hash

@@ -100,7 +100,7 @@ class Chef
 
             # If this is a package like the kernel that can be installed multiple times, we'll skip over this logic
             if new_resource.allow_downgrade && version_gt?(iv.version_with_arch, av.version_with_arch) && !python_helper.install_only_packages(name)
-              # We allow downgrading only in the evenit of single-package
+              # We allow downgrading only in the event of single-package
               # rules where the user explicitly allowed it
               method = "downgrade"
             end

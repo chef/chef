@@ -78,7 +78,7 @@ RSpec.describe ChefUtils::DSL::Which do
     end
 
     context "with a block" do
-      test_which("doesnt find it if its false", "foo1", others: [ "/dir1/foo1" ]) do |f|
+      test_which("doesn't find it if its false", "foo1", others: [ "/dir1/foo1" ]) do |f|
         false
       end
 

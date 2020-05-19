@@ -149,7 +149,7 @@ class Chef
           resolved_source_array.all? { |s| s && ::File.exist?(s) }
         end
 
-        # Helper to return all the nanes of the missing sources for error messages.
+        # Helper to return all the names of the missing sources for error messages.
         #
         # @return [Array<String>] Array of missing sources
         def missing_sources
