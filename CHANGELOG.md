@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.3 -->
-## [v16.1.3](https://github.com/chef/chef/tree/v16.1.3) (2020-05-18)
+<!-- latest_release 16.1.4 -->
+## [v16.1.4](https://github.com/chef/chef/tree/v16.1.4) (2020-05-19)
 
 #### Merged Pull Requests
-- Fix ruby 2.7 keyword argument warning. [#9883](https://github.com/chef/chef/pull/9883) ([phiggins](https://github.com/phiggins))
+- Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins)) <!-- 16.1.4 -->
 - Fix ruby 2.7 keyword argument warning. [#9883](https://github.com/chef/chef/pull/9883) ([phiggins](https://github.com/phiggins)) <!-- 16.1.3 -->
 - Fix failures inspecting a single cookbook [#9882](https://github.com/chef/chef/pull/9882) ([tas50](https://github.com/tas50)) <!-- 16.1.2 -->
 - fix windows bootstrap; replicate chef/chef/pull/9839 by Chad Jessup [#9878](https://github.com/chef/chef/pull/9878) ([bobchaos](https://github.com/bobchaos)) <!-- 16.1.1 -->
