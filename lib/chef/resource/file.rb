@@ -65,7 +65,8 @@ class Chef
       property :backup, [ Integer, FalseClass ], desired_state: false, default: 5,
                description: "The number of backups to be kept in `/var/chef/backup` (for UNIX- and Linux-based platforms) or `C:/chef/backup` (for the Microsoft Windows platform). Set to `false` to prevent backups from being kept."
 
-      property :checksum, [ /^[a-zA-Z0-9]{64}$/, nil ],
+      property :checksum, [ String, nil ],
+        regex: /^\h{64}$/,
         description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
 
       property :content, [ String, nil ], desired_state: false,
