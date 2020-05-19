@@ -56,14 +56,14 @@ class Chef
       allowed_actions :create, :delete, :touch, :create_if_missing
 
       property :path, String, name_property: true,
-               description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash (/) will point to the root of the current working directory of the #{Chef::Dist::CLIENT} process. This path can vary from system to system. Therefore, using a path that begins with a forward slash (/) is not recommended."
+        description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash (/) will point to the root of the current working directory of the #{Chef::Dist::CLIENT} process. This path can vary from system to system. Therefore, using a path that begins with a forward slash (/) is not recommended."
 
       property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { docker? && special_docker_files?(path) ? false : Chef::Config[:file_atomic_update] },
-               default_description: "False if modifying /etc/hosts, /etc/hostname, or /etc/resolv.conf within Docker containers. Otherwise default to the client.rb 'file_atomic_update' config value.",
-               description: "Perform atomic file updates on a per-resource basis. Set to true for atomic file updates. Set to false for non-atomic file updates. This setting overrides `file_atomic_update`, which is a global setting found in the `client.rb` file."
+        default_description: "False if modifying /etc/hosts, /etc/hostname, or /etc/resolv.conf within Docker containers. Otherwise default to the client.rb 'file_atomic_update' config value.",
+        description: "Perform atomic file updates on a per-resource basis. Set to true for atomic file updates. Set to false for non-atomic file updates. This setting overrides `file_atomic_update`, which is a global setting found in the `client.rb` file."
 
       property :backup, [ Integer, FalseClass ], desired_state: false, default: 5,
-               description: "The number of backups to be kept in `/var/chef/backup` (for UNIX- and Linux-based platforms) or `C:/chef/backup` (for the Microsoft Windows platform). Set to `false` to prevent backups from being kept."
+        description: "The number of backups to be kept in `/var/chef/backup` (for UNIX- and Linux-based platforms) or `C:/chef/backup` (for the Microsoft Windows platform). Set to `false` to prevent backups from being kept."
 
       property :checksum, [ String, nil ],
         regex: /^\h{64}$/,
@@ -71,15 +71,15 @@ class Chef
         description: "The SHA-256 checksum of the file. Use to ensure that a specific file is used. If the checksum does not match, the file is not used."
 
       property :content, [ String, nil ], desired_state: false,
-               description: "A string that is written to the file. The contents of this property replace any previous content when this property has something other than the default value. The default behavior will not modify content."
+        description: "A string that is written to the file. The contents of this property replace any previous content when this property has something other than the default value. The default behavior will not modify content."
 
       property :diff, [ String, nil ], desired_state: false, skip_docs: true
 
       property :force_unlink, [ TrueClass, FalseClass ], desired_state: false, default: false,
-               description: "How #{Chef::Dist::PRODUCT} handles certain situations when the target file turns out not to be a file. For example, when a target file is actually a symlink. Set to true for #{Chef::Dist::PRODUCT} to delete the non-file target and replace it with the specified file. Set to false for #{Chef::Dist::PRODUCT} to raise an error."
+        description: "How #{Chef::Dist::PRODUCT} handles certain situations when the target file turns out not to be a file. For example, when a target file is actually a symlink. Set to true for #{Chef::Dist::PRODUCT} to delete the non-file target and replace it with the specified file. Set to false for #{Chef::Dist::PRODUCT} to raise an error."
 
       property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false,
-               description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, #{Chef::Dist::PRODUCT} will manage the symlink's permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, #{Chef::Dist::PRODUCT} will follow the symlink and will manage the permissions and content of symlink's target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
+        description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, #{Chef::Dist::PRODUCT} will manage the symlink's permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, #{Chef::Dist::PRODUCT} will follow the symlink and will manage the permissions and content of symlink's target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
 
       property :verifications, Array, default: lazy { [] }
 
