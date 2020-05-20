@@ -132,12 +132,12 @@ RSpec.describe ChefUtils::DSL::Architecture do
     arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
   end
   context "on armv6l" do
-    let(:arch) { "armhf" }
+    let(:arch) { "armv6l" }
 
     arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
   end
   context "on armv7l" do
-    let(:arch) { "armhf" }
+    let(:arch) { "armv7l" }
 
     arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
   end
