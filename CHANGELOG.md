@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.6 -->
-## [v16.1.6](https://github.com/chef/chef/tree/v16.1.6) (2020-05-20)
+<!-- latest_release 16.1.7 -->
+## [v16.1.7](https://github.com/chef/chef/tree/v16.1.7) (2020-05-20)
 
 #### Merged Pull Requests
-- Small cleanups to checksum logic in file/windows_package/chef::mixin::checksum [#9886](https://github.com/chef/chef/pull/9886) ([phiggins](https://github.com/phiggins))
+- Fix bootstrapping windows from linux [#9889](https://github.com/chef/chef/pull/9889) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix bootstrapping windows from linux [#9889](https://github.com/chef/chef/pull/9889) ([btm](https://github.com/btm)) <!-- 16.1.7 -->
 - Small cleanups to checksum logic in file/windows_package/chef::mixin::checksum [#9886](https://github.com/chef/chef/pull/9886) ([phiggins](https://github.com/phiggins)) <!-- 16.1.6 -->
 - Added armv6l and armv7l to arm? and armhf? helpers [#9887](https://github.com/chef/chef/pull/9887) ([mattray](https://github.com/mattray)) <!-- 16.1.5 -->
 - Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins)) <!-- 16.1.4 -->
