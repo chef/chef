@@ -492,6 +492,20 @@ describe Chef::Resource do
       expect(r.resource_name).to eq :blah
       expect(r.declared_type).to eq :d
     end
+
+    # This tests some somewhat confusing behavior that used to occur due to the resource_name call
+    # automatically wiring up the old canonical provides line.
+    it "setting resoure_name does not override provides in prior resource" do
+      c1 = Class.new(Chef::Resource) do
+        resource_name :self_resource_name_test_4
+        provides :self_resource_name_test_4
+      end
+      c2 = Class.new(Chef::Resource) do
+        resource_name :self_resource_name_test_4
+        provides(:self_resource_name_test_4) { false } # simulates any filter that does not match
+      end
+      expect(Chef::Resource.resource_for_node(:self_resource_name_test_4, node)).to eql(c1)
+    end
   end
 
   describe "to_json" do

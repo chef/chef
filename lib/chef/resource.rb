@@ -950,16 +950,7 @@ class Chef
     def self.resource_name(name = NOT_PASSED)
       # Setter
       if name != NOT_PASSED
-        if name
-          @resource_name = name.to_sym
-          name = name.to_sym
-          # FIXME: determine a way to deprecate this magic behavior
-          unless Chef::ResourceResolver.includes_handler?(name, self)
-            provides name
-          end
-        else
-          @resource_name = nil
-        end
+        @resource_name = name.to_sym rescue nil
       end
 
       @resource_name = nil unless defined?(@resource_name)
