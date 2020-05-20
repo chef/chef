@@ -202,10 +202,12 @@ If !ERRORLEVEL!==0 (
   ) else (
       @echo Installation completed successfully
       del /f /q "%CHEF_CLIENT_MSI_LOG_PATH%"
-    )
+  )
 
 <% end %>
 
+@rem This line is required to separate the key_create label from the "block boundary"
+@rem Removing these lines will cause the error "The system cannot find the batch label specified - key_create"
 :key_create
 @endlocal
 
