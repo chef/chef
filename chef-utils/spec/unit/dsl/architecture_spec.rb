@@ -131,6 +131,17 @@ RSpec.describe ChefUtils::DSL::Architecture do
 
     arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
   end
+  context "on armv6l" do
+    let(:arch) { "armhf" }
+
+    arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
+  end
+  context "on armv7l" do
+    let(:arch) { "armhf" }
+
+    arch_reports_true_for(:armhf?, :_32_bit?, :arm?)
+  end
+
   context "on s390" do
     let(:arch) { "s390" }
 
