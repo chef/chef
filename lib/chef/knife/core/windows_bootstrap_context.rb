@@ -41,6 +41,21 @@ class Chef
           super(config, run_list, chef_config, secret)
         end
 
+        # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
+        # this presumes Windows so we can avoid changing the method definitions
+        # across Chef, ChefConfig, and ChefUtils for the circumstance where
+        # the methods are being run for a system other than the one Ruby is
+        # executing on.
+        #
+        # We only need to cleanpath the paths that we are passing to cmd.exe,
+        # anything written to a configuration file or passed as an argument
+        # will be interpreted by ruby later and do the right thing.
+        def cleanpath(path)
+          path = Pathname.new(path).cleanpath.to_s
+          path = path.gsub(File::SEPARATOR, '\\')
+          path
+        end
+
         def validation_key
           if File.exist?(File.expand_path(chef_config[:validation_key]))
             IO.read(File.expand_path(chef_config[:validation_key]))
@@ -262,7 +277,7 @@ class Chef
         end
 
         def bootstrap_directory
-          ChefConfig::Config.etc_chef_dir(true)
+          cleanpath(ChefConfig::Config.etc_chef_dir(true))
         end
 
         def local_download_path
