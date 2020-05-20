@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.4 -->
-## [v16.1.4](https://github.com/chef/chef/tree/v16.1.4) (2020-05-19)
+<!-- latest_release 16.1.5 -->
+## [v16.1.5](https://github.com/chef/chef/tree/v16.1.5) (2020-05-20)
 
 #### Merged Pull Requests
-- Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins))
+- Added armv6l and armv7l to arm? and armhf? helpers [#9887](https://github.com/chef/chef/pull/9887) ([mattray](https://github.com/mattray))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Added armv6l and armv7l to arm? and armhf? helpers [#9887](https://github.com/chef/chef/pull/9887) ([mattray](https://github.com/mattray)) <!-- 16.1.5 -->
 - Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins)) <!-- 16.1.4 -->
 - Fix ruby 2.7 keyword argument warning. [#9883](https://github.com/chef/chef/pull/9883) ([phiggins](https://github.com/phiggins)) <!-- 16.1.3 -->
 - Fix failures inspecting a single cookbook [#9882](https://github.com/chef/chef/pull/9882) ([tas50](https://github.com/tas50)) <!-- 16.1.2 -->
