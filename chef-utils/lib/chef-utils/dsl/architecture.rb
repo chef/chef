@@ -110,17 +110,17 @@ module ChefUtils
       # @return [Boolean]
       #
       def arm?(node = __getnode)
-        %w{armhf aarch64 arm64 arch64}.include?(node["kernel"]["machine"])
+        %w{armv6l armv7l armhf aarch64 arm64 arch64}.include?(node["kernel"]["machine"])
       end
 
-      # Determine if the current architecture is 32-bit ARM.
+      # Determine if the current architecture is 32-bit ARM hard float.
       #
       # @since 15.5
       #
       # @return [Boolean]
       #
       def armhf?(node = __getnode)
-        %w{armhf}.include?(node["kernel"]["machine"])
+        %w{armv6l armv7l armhf}.include?(node["kernel"]["machine"])
       end
 
       # Determine if the current architecture is s390x.
