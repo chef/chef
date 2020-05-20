@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.5 -->
-## [v16.1.5](https://github.com/chef/chef/tree/v16.1.5) (2020-05-20)
+<!-- latest_release 16.1.6 -->
+## [v16.1.6](https://github.com/chef/chef/tree/v16.1.6) (2020-05-20)
 
 #### Merged Pull Requests
-- Added armv6l and armv7l to arm? and armhf? helpers [#9887](https://github.com/chef/chef/pull/9887) ([mattray](https://github.com/mattray))
+- Small cleanups to checksum logic in file/windows_package/chef::mixin::checksum [#9886](https://github.com/chef/chef/pull/9886) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Small cleanups to checksum logic in file/windows_package/chef::mixin::checksum [#9886](https://github.com/chef/chef/pull/9886) ([phiggins](https://github.com/phiggins)) <!-- 16.1.6 -->
 - Added armv6l and armv7l to arm? and armhf? helpers [#9887](https://github.com/chef/chef/pull/9887) ([mattray](https://github.com/mattray)) <!-- 16.1.5 -->
 - Add spellcheck config and fix a bunch of violations [#9826](https://github.com/chef/chef/pull/9826) ([phiggins](https://github.com/phiggins)) <!-- 16.1.4 -->
 - Fix ruby 2.7 keyword argument warning. [#9883](https://github.com/chef/chef/pull/9883) ([phiggins](https://github.com/phiggins)) <!-- 16.1.3 -->
