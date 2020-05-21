@@ -1,11 +1,13 @@
 ---
-expeditor:
-  defaults:
-    buildkite:
-      retry:
-        automatic:
-          limit: 1
-      timeout_in_minutes: 30
+  expeditor:
+    cached_folders:
+      - vendor
+    defaults:
+      buildkite:
+        retry:
+          automatic:
+            limit: 1
+        timeout_in_minutes: 30
 
 steps:
 
@@ -222,7 +224,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # Tests Ruby 2.5
