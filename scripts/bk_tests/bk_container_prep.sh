@@ -12,9 +12,7 @@ if [ -f /etc/debian_version ]; then
 fi
 
 # make sure we have the omnibus_overrides specified version of rubygems / bundler
-echo "--- Install proper rubygems / bundler"
-gem update --system $(grep rubygems omnibus_overrides.rb | cut -d'"' -f2)
-gem --version
+echo "--- Install proper bundler"
 gem uninstall bundler -a -x || true
 gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
 bundle --version
