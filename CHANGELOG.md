@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.10.22 -->
-## [v15.10.22](https://github.com/chef/chef/tree/v15.10.22) (2020-05-12)
+<!-- latest_release 15.11.0 -->
+## [v15.11.0](https://github.com/chef/chef/tree/v15.11.0) (2020-05-21)
 
 #### Merged Pull Requests
-- Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp))
+- Update all deps to current [#9899](https://github.com/chef/chef/pull/9899) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update all deps to current [#9899](https://github.com/chef/chef/pull/9899) ([tas50](https://github.com/tas50)) <!-- 15.11.0 -->
 - Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.10.22 -->
 - Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.21 -->
 - 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm)) <!-- 15.10.20 -->
