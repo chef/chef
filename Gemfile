@@ -7,7 +7,6 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
-# necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "15-stable"
 
 gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
@@ -33,7 +32,7 @@ group(:omnibus_package) do
   gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
   gem "chef-vault"
   gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
-  gem "bcrypt_pbkdf" # ed25519 ssh key support done here as it's a native gem we can't put in train
+  gem "bcrypt_pbkdf", ">= 1.1.0.rc1" # ed25519 ssh key support done here as it's a native gem we can't put in train
 end
 
 group(:omnibus_package, :pry) do
