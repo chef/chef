@@ -34,17 +34,6 @@ require "rspec/mocks"
 
 require "webmock/rspec"
 
-if ENV["COVERAGE"]
-  require "simplecov"
-  SimpleCov.start do
-    add_filter "/spec/"
-    add_group "Remote File", "remote_file"
-    add_group "Resources", "/resource/"
-    add_group "Providers", "/provider/"
-    add_group "Knife", "knife"
-  end
-end
-
 require "chef"
 require "chef/knife"
 

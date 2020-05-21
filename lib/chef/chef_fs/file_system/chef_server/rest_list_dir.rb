@@ -71,7 +71,7 @@ class Chef
           # Children are foo.json and bar.json in this case.
           #
           def children
-              # Grab the names of the children, append json, and make child entries
+            # Grab the names of the children, append json, and make child entries
             @children ||= root.get_json(api_path).keys.sort.map do |key|
               make_child_entry(key, true)
             end

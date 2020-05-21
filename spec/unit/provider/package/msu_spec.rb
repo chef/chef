@@ -261,9 +261,9 @@ describe Chef::Provider::Package::Msu, :windows_only do
       expect(cab_files).to eql(["msu_dir/IE10-Windows6.1-KB2859903-x86.CAB"])
     end
 
-# We couldn't find any msu file with multiple cab files in it.
-# So we are not 100% sure about the structure of XML file in this case
-# The specs below cover 2 possible XML formats
+    # We couldn't find any msu file with multiple cab files in it.
+    # So we are not 100% sure about the structure of XML file in this case
+    # The specs below cover 2 possible XML formats
     context "handles different xml formats for multiple cab files in the msu package" do
       it "parses xml file with multiple <package> tags" do
         xml_file = File.join(CHEF_SPEC_DATA, "sample_msu2.xml")

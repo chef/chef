@@ -17,16 +17,16 @@ provisioner:
 lifecycle:
   pre_converge:
     - remote: echo "Chef container's Chef / Ohai release:"
-    - remote: /opt/chef/embedded/bin/chef-client -v
-    - remote: /opt/chef/embedded/bin/ohai -v
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
     - remote: /opt/chef/embedded/bin/rake --version
     - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
     - remote: echo "Installed Chef / Ohai release:"
-    - remote: /opt/chef/embedded/bin/chef-client -v
-    - remote: /opt/chef/embedded/bin/ohai -v
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
 
 verifier:
   name: inspec
@@ -74,6 +74,9 @@ platforms:
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN yum install -y centos-release-scl
+      - RUN yum install -y devtoolset-7
+      - RUN scl enable devtoolset-7 bash
 
 - name: centos-7
   driver:
@@ -89,13 +92,6 @@ platforms:
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
-- name: oraclelinux-6
-  driver:
-    image: dokken/oraclelinux-6
-    pid_one_command: /sbin/init
-    intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
@@ -150,6 +146,7 @@ platforms:
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
       - RUN /usr/bin/zypper --non-interactive install cron
+      - RUN /usr/bin/zypper --non-interactive install insserv-compat
 
 suites:
   - name: end-to-end

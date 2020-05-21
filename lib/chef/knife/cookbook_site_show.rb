@@ -24,7 +24,7 @@ class Chef
   class Knife
     class CookbookSiteShow < Knife::SupermarketShow
 
-    # Handle the subclassing (knife doesn't do this :()
+      # Handle the subclassing (knife doesn't do this :()
       dependency_loaders.concat(superclass.dependency_loaders)
 
       banner "knife cookbook site show COOKBOOK [VERSION] (options)"

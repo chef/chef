@@ -171,7 +171,7 @@ class Chef
       rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
         raise e
       rescue Exception
-          # things are ok.
+        # things are ok.
       end
 
       def self.file_access_check(path, desired_access)

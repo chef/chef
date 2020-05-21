@@ -61,8 +61,8 @@ describe Chef::Provider::OsxProfile do
           "ProfileVersion" => 1 }],
       }
     end
-      # If anything is changed within this profile, be sure to update the
-      # ProfileUUID in all_profiles to match the new config specific UUID
+    # If anything is changed within this profile, be sure to update the
+    # ProfileUUID in all_profiles to match the new config specific UUID
     let(:test_profile) do
       {
         "PayloadIdentifier" => "com.testprofile.screensaver",

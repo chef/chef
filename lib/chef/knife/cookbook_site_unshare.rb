@@ -25,7 +25,7 @@ class Chef
   class Knife
     class CookbookSiteUnshare < Knife::SupermarketUnshare
 
-    # Handle the subclassing (knife doesn't do this :()
+      # Handle the subclassing (knife doesn't do this :()
       dependency_loaders.concat(superclass.dependency_loaders)
 
       banner "knife cookbook site unshare COOKBOOK (options)"

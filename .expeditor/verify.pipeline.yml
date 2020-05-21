@@ -1,5 +1,7 @@
 ---
 expeditor:
+  cached_folders:
+    - vendor
   defaults:
     buildkite:
       retry:
@@ -21,7 +23,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
 - label: "Functional Specs Ubuntu :ruby: 2.6"
@@ -34,7 +36,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
 - label: "Unit Specs Ubuntu :ruby: 2.6"
@@ -44,11 +46,9 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Integration Specs CentOS :ruby: 2.6"
   commands:
@@ -58,7 +58,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
         privileged: true
 
 - label: "Functional Specs CentOS :ruby: 2.6"
@@ -70,7 +70,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
         privileged: true
 
 - label: "Unit Specs CentOS :ruby: 2.6"
@@ -80,11 +80,9 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
 
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
@@ -95,7 +93,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
         privileged: true
 
 - label: "Functional Specs openSUSE :ruby: 2.6"
@@ -107,7 +105,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
         privileged: true
 
 - label: "Unit Specs openSUSE :ruby: 2.6"
@@ -117,11 +115,9 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
 
 - label: "Integration Specs Fedora :ruby: 2.6"
   commands:
@@ -131,7 +127,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
         privileged: true
 
 - label: "Functional Specs Fedora :ruby: 2.6"
@@ -143,7 +139,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -156,18 +152,14 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
 
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_win_integration.ps1
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
         host_os: windows
@@ -180,8 +172,6 @@ steps:
   commands:
     - scripts/bk_tests/bk_win_functional.ps1
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       windows:
         privileged: true
@@ -191,8 +181,6 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_run_choco.ps1
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
         host_os: windows
@@ -202,8 +190,6 @@ steps:
   commands:
     - /workdir/scripts/bk_tests/bk_win_unit.ps1
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
         host_os: windows
@@ -218,11 +204,9 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake style
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # Tests Ruby 2.5
@@ -259,8 +243,6 @@ steps:
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
         image: ruby:2.5-buster
@@ -269,70 +251,60 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "Test chef-sugar gem :ruby: 2.6"
+- label: "chef-sugar gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test chef-zero gem :ruby: 2.6"
+- label: "chef-zero gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
-- label: "Test cheffish gem :ruby: 2.6"
+- label: "cheffish gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test chefspec gem :ruby: 2.6"
+- label: "chefspec gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test knife-windows gem :ruby: 2.6"
+- label: "knife-windows gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Test berkshelf gem :ruby: 2.6"
+- label: "berkshelf gem :ruby: 2.6"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
@@ -341,21 +313,19 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
   expeditor:
-    cached_folders:
-      - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen Tests :amazon: 2"
+- label: "Kitchen: Amazon Linux 201X"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -366,11 +336,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests :amazon: 201X"
+- label: "Kitchen: Amazon Linux 2"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-amazonlinux-2
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux-2
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -381,11 +351,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 16.04"
+- label: "Kitchen: Ubuntu 16.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1604
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1604
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -397,11 +367,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 18.04"
+- label: "Kitchen: Ubuntu 18.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-1804
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1804
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -412,11 +382,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Ubuntu: 20.04"
+- label: "Kitchen: Ubuntu 20.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-ubuntu-2004
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2004
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -427,11 +397,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 8"
+- label: "Kitchen: Debian 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-8
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -442,11 +412,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 9"
+- label: "Kitchen: Debian 9"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-9
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-9
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -457,11 +427,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Debian: 10"
+- label: "Kitchen: Debian 10"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-debian-10
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-10
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -472,11 +442,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests CentOS: 6"
+- label: "Kitchen: CentOS 6"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-6
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-6
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -487,11 +457,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests CentOS: 7"
+- label: "Kitchen: CentOS 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-7
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -502,11 +472,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests CentOS: 8"
+- label: "Kitchen: CentOS 8"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-centos-8
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -517,11 +487,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Oracle Linux: 6"
+- label: "Kitchen: Oracle Linux 7"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-6
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-oraclelinux-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -532,11 +502,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Oracle Linux: 7"
+- label: "Kitchen: Fedora latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-oraclelinux-7
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-fedora-latest
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -547,26 +517,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen Tests Fedora: latest"
+- label: "Kitchen: openSUSE Leap: 15"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
     - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-fedora-latest
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
-- label: "Kitchen Tests openSUSE Leap: 15"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - ~/.asdf/shims/bundle exec kitchen test end-to-end-opensuse-leap-15
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-opensuse-leap-15
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:

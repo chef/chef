@@ -7,7 +7,6 @@ source "https://rubygems.org"
 # of bundler versions prior to 1.12.0 (https://github.com/bundler/bundler/commit/193a14fe5e0d56294c7b370a0e59f93b2c216eed)
 gem "chef", path: "."
 
-# necessary until we release ohai 15
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "15-stable"
 
 gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
@@ -23,6 +22,9 @@ end
 
 gem "cheffish", "~> 14"
 
+# avoid bringing in the new http 4 gem that comes with other ffi baggage which breaks builds
+gem "chef-telemetry", "=1.0.3"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
@@ -30,7 +32,7 @@ group(:omnibus_package) do
   gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
   gem "chef-vault"
   gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
-  gem "bcrypt_pbkdf" # ed25519 ssh key support done here as it's a native gem we can't put in train
+  gem "bcrypt_pbkdf", ">= 1.1.0.rc1" # ed25519 ssh key support done here as it's a native gem we can't put in train
 end
 
 group(:omnibus_package, :pry) do
@@ -65,7 +67,6 @@ group(:development, :test) do
   gem "rspec-mocks", "~> 3.5"
   gem "rspec-expectations", "~> 3.5"
   gem "rspec_junit_formatter", "~> 0.2.0"
-  gem "simplecov"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
@@ -84,6 +85,7 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # These lines added for Windows development only.
 # For FFI to call into PowerShell we need the binaries and assemblies located
 # in the Ruby bindir.
+# The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
 #
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.

@@ -139,8 +139,8 @@ class Chef
         def notify_on_deprecation(message)
           Chef.deprecated(:exit_code, message)
         rescue Chef::Exceptions::DeprecatedFeatureError
-            # Have to rescue this, otherwise this unhandled error preempts
-            # the current exit code assignment.
+          # Have to rescue this, otherwise this unhandled error preempts
+          # the current exit code assignment.
         end
 
         def non_standard_exit_code_warning(exit_code)

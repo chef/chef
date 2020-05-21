@@ -159,16 +159,16 @@ class Chef
 
       private
 
-        ## Resource is not idempotent when day, start_day is not provided with frequency :weekly
-        ## we set start_day when not given by user as current date based on which we set the day property for current current date day is monday ..
-        ## we set the monday as the day so at next run when  new_resource.day is nil and current_resource day is monday due to which udpate gets called
+      ## Resource is not idempotent when day, start_day is not provided with frequency :weekly
+      ## we set start_day when not given by user as current date based on which we set the day property for current current date day is monday ..
+      ## we set the monday as the day so at next run when  new_resource.day is nil and current_resource day is monday due to which udpate gets called
       def idempotency_warning_for_frequency_weekly(day, start_day)
         if start_day.nil? && day.nil?
           logger.warn "To maintain idempotency for frequency :weekly provide start_day, start_time and day."
         end
       end
 
-        # Validate the passed value is numeric values only if it is a string
+      # Validate the passed value is numeric values only if it is a string
       def numeric_value_in_string?(val)
         return true if Integer(val)
       rescue ArgumentError
@@ -194,7 +194,7 @@ class Chef
         end
       end
 
-        # returns true if frequency_modifer has values First, second, third, fourth, last, lastday
+      # returns true if frequency_modifer has values First, second, third, fourth, last, lastday
       def frequency_modifier_includes_days_of_weeks?(frequency_modifier)
         frequency_modifier = frequency_modifier.to_s.split(",")
         frequency_modifier.map! { |value| value.strip.upcase }
@@ -209,7 +209,7 @@ class Chef
         raise ArgumentError, "Invalid value passed for `random_delay`. Please pass seconds as an Integer (e.g. 60) or a String with numeric values only (e.g. '60')." unless numeric_value_in_string?(random_delay)
       end
 
-        # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~f
+      # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~f
       def validate_start_day(start_day, frequency)
         if start_day && frequency == :none
           raise ArgumentError, "`start_day` property is not supported with frequency: #{frequency}"
@@ -221,7 +221,7 @@ class Chef
         end
       end
 
-        # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~
+      # @todo when we drop ruby 2.3 support this should be converted to .match?() instead of =~
       def validate_start_time(start_time, frequency)
         if start_time
           raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none
@@ -321,7 +321,7 @@ class Chef
         end
       end
 
-        # This method returns true if day has values from 1-31 which is a days of moths and used with frequency :monthly
+      # This method returns true if day has values from 1-31 which is a days of moths and used with frequency :monthly
       def days_includes_days_of_months?(days)
         days.map! { |day| day.to_s.strip.downcase }
         (days - VALID_DAYS_OF_MONTH).empty?
@@ -339,11 +339,11 @@ class Chef
         end
       end
 
-        # Converts the number of seconds to an ISO8601 duration format and returns it.
-        # Ref : https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
-        # e.g.
-        # ISO8601::Duration.new(65707200).to_s
-        # returns 'PT65707200S'
+      # Converts the number of seconds to an ISO8601 duration format and returns it.
+      # Ref : https://github.com/arnau/ISO8601/blob/master/lib/iso8601/duration.rb#L18-L23
+      # e.g.
+      # ISO8601::Duration.new(65707200).to_s
+      # returns 'PT65707200S'
       def sec_to_dur(seconds)
         ISO8601::Duration.new(seconds.to_i).to_s
       end
