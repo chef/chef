@@ -23,6 +23,9 @@ end
 
 gem "cheffish", "~> 14"
 
+# avoid bringing in the new http 4 gem that comes with other ffi baggage which breaks builds
+gem "chef-telemetry", "=1.0.3"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
