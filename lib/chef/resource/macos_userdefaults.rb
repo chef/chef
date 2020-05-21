@@ -74,12 +74,17 @@ class Chef
 
       load_current_value do |desired|
         value = coerce_booleans(desired.value)
-        drcmd = "defaults read '#{desired.domain}' "
-        drcmd << "'#{desired.key}' " if desired.key
-        shell_out_opts = {}
-        shell_out_opts[:user] = desired.user unless desired.user.nil?
-        vc = shell_out("#{drcmd} | grep -qx '#{value}'", shell_out_opts)
-        is_set vc.exitstatus == 0 ? true : false
+        cmd = "defaults read '#{desired.domain}' "
+        cmd << "'#{desired.key}' " if desired.key
+        cmd << " | grep -qx '#{value}'"
+
+        vc = if desired.user.nil?
+          shell_out(cmd)
+        else
+          shell_out(cmd, user: desired.user)
+        end
+
+        is_set vc.exitstatus == 0
       end
 
       action :write do
