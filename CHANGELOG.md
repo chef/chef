@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.9 -->
-## [v16.1.9](https://github.com/chef/chef/tree/v16.1.9) (2020-05-21)
+<!-- latest_release 16.1.10 -->
+## [v16.1.10](https://github.com/chef/chef/tree/v16.1.10) (2020-05-21)
 
 #### Merged Pull Requests
-- [chef-utils] fix typos [#9895](https://github.com/chef/chef/pull/9895) ([michel-slm](https://github.com/michel-slm))
+- Update openssl to 1.0.2v [#9903](https://github.com/chef/chef/pull/9903) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update openssl to 1.0.2v [#9903](https://github.com/chef/chef/pull/9903) ([tas50](https://github.com/tas50)) <!-- 16.1.10 -->
 - [chef-utils] fix typos [#9895](https://github.com/chef/chef/pull/9895) ([michel-slm](https://github.com/michel-slm)) <!-- 16.1.9 -->
 - Fixed armv6l and armv7l tests. [#9892](https://github.com/chef/chef/pull/9892) ([mattray](https://github.com/mattray)) <!-- 16.1.8 -->
 - Fix bootstrapping windows from linux [#9889](https://github.com/chef/chef/pull/9889) ([btm](https://github.com/btm)) <!-- 16.1.7 -->
