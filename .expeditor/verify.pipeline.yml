@@ -21,7 +21,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
 - label: "Functional Specs Ubuntu :ruby: 2.6"
@@ -34,7 +34,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
 - label: "Unit Specs Ubuntu :ruby: 2.6"
@@ -48,7 +48,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Integration Specs CentOS :ruby: 2.6"
   commands:
@@ -58,7 +58,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
         privileged: true
 
 - label: "Functional Specs CentOS :ruby: 2.6"
@@ -70,7 +70,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
         privileged: true
 
 - label: "Unit Specs CentOS :ruby: 2.6"
@@ -84,7 +84,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/centos-7
+        image: rubydistros/centos-7:2.6
 
 - label: "Integration Specs openSUSE :ruby: 2.6"
   commands:
@@ -95,7 +95,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
         privileged: true
 
 - label: "Functional Specs openSUSE :ruby: 2.6"
@@ -107,7 +107,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
         privileged: true
 
 - label: "Unit Specs openSUSE :ruby: 2.6"
@@ -121,7 +121,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/opensuse-15
+        image: rubydistros/opensuse-15:2.6
 
 - label: "Integration Specs Fedora :ruby: 2.6"
   commands:
@@ -131,7 +131,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
         privileged: true
 
 - label: "Functional Specs Fedora :ruby: 2.6"
@@ -143,7 +143,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
@@ -160,7 +160,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/fedora-latest
+        image: rubydistros/fedora-latest:2.6
 
 - label: "Integration Specs Windows :ruby: 2.6"
   commands:
@@ -279,7 +279,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test chef-zero gem :ruby: 2.6"
   commands:
@@ -291,7 +291,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
@@ -306,7 +306,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test chefspec gem :ruby: 2.6"
   commands:
@@ -318,7 +318,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test knife-windows gem :ruby: 2.6"
   commands:
@@ -330,7 +330,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "Test berkshelf gem :ruby: 2.6"
   commands:
@@ -345,7 +345,7 @@ steps:
       - vendor
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04
+        image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
   # START TEST KITCHEN ONLY
