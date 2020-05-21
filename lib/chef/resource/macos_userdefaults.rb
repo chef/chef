@@ -84,7 +84,7 @@ class Chef
           shell_out(cmd, user: desired.user)
         end
 
-        is_set vc.exitstatus == 0
+        is_set !vc.error?
       end
 
       action :write do
