@@ -66,7 +66,7 @@ class Chef
           #   }
           # }
           def children
-              # Grab the names of the children, append json, and make child entries
+            # Grab the names of the children, append json, and make child entries
             @children ||= begin
               result = []
               data = root.get_json(api_path)

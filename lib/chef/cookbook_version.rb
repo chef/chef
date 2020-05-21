@@ -327,10 +327,10 @@ class Chef
 
         # extract the preference part from the path.
         if manifest_record_path =~ %r{(#{Regexp.escape(segment.to_s)}/[^/]+/#{Regexp.escape(dirname)})/.+$}
-            # Note the specificy_dirname includes the segment and
-            # dirname argument as above, which is what
-            # preferences_for_path returns. It could be
-            # "files/ubuntu-9.10/dirname", for example.
+          # Note the specificy_dirname includes the segment and
+          # dirname argument as above, which is what
+          # preferences_for_path returns. It could be
+          # "files/ubuntu-9.10/dirname", for example.
           specificity_dirname = $1
 
           # Record the specificity_dirname only if it's in the list of

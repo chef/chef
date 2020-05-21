@@ -24,7 +24,7 @@ class Chef
   class Knife
     class CookbookSiteSearch < Knife::SupermarketSearch
 
-    # Handle the subclassing (knife doesn't do this :()
+      # Handle the subclassing (knife doesn't do this :()
       dependency_loaders.concat(superclass.dependency_loaders)
 
       banner "knife cookbook site search QUERY (options)"

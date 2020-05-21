@@ -37,7 +37,7 @@ task :super_install do
     sh("rake install")
   end
 
-# Templating the powershell extensions so we can inject distro constants
+  # Templating the powershell extensions so we can inject distro constants
   template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
   psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
   FileUtils.mkdir_p psm1_path

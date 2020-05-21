@@ -461,22 +461,22 @@ BOOL WINAPI DeviceIoControl(
 =end
         safe_attach_function :DeviceIoControl, %i{HANDLE DWORD LPVOID DWORD LPVOID DWORD LPDWORD pointer}, :BOOL
 
-# BOOL WINAPI DeleteVolumeMountPoint(
-  # _In_ LPCTSTR lpszVolumeMountPoint
-# );
+        # BOOL WINAPI DeleteVolumeMountPoint(
+        # _In_ LPCTSTR lpszVolumeMountPoint
+        # );
         safe_attach_function :DeleteVolumeMountPointW, [:LPCTSTR], :BOOL
 
-# BOOL WINAPI SetVolumeMountPoint(
-  # _In_ LPCTSTR lpszVolumeMountPoint,
-  # _In_ LPCTSTR lpszVolumeName
-# );
+        # BOOL WINAPI SetVolumeMountPoint(
+        # _In_ LPCTSTR lpszVolumeMountPoint,
+        # _In_ LPCTSTR lpszVolumeName
+        # );
         safe_attach_function :SetVolumeMountPointW, %i{LPCTSTR LPCTSTR}, :BOOL
 
-# BOOL WINAPI GetVolumeNameForVolumeMountPoint(
-  # _In_  LPCTSTR lpszVolumeMountPoint,
-  # _Out_ LPTSTR  lpszVolumeName,
-  # _In_  DWORD   cchBufferLength
-# );
+        # BOOL WINAPI GetVolumeNameForVolumeMountPoint(
+        # _In_  LPCTSTR lpszVolumeMountPoint,
+        # _Out_ LPTSTR  lpszVolumeName,
+        # _In_  DWORD   cchBufferLength
+        # );
         safe_attach_function :GetVolumeNameForVolumeMountPointW, %i{LPCTSTR LPTSTR DWORD}, :BOOL
 
 =begin
@@ -538,12 +538,12 @@ BOOL WINAPI VerQueryValue(
         # ensures the handle is closed on exit of the block
         # FIXME: yard with @yield
         def file_search_handle(path)
-            # Workaround for CHEF-4419:
-            # Make sure paths starting with "/" has a drive letter
-            # assigned from the current working diretory.
-            # Note: With CHEF-4427 this issue will be fixed with a
-            # broader fix to map all the paths starting with "/" to
-            # SYSTEM_DRIVE on windows.
+          # Workaround for CHEF-4419:
+          # Make sure paths starting with "/" has a drive letter
+          # assigned from the current working diretory.
+          # Note: With CHEF-4427 this issue will be fixed with a
+          # broader fix to map all the paths starting with "/" to
+          # SYSTEM_DRIVE on windows.
           path = ::File.expand_path(path) if path.start_with? "/"
           path = canonical_encode_path(path)
           find_data = WIN32_FIND_DATA.new

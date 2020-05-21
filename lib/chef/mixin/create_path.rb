@@ -53,14 +53,14 @@ class Chef
       private
 
       def create_dir(path)
-          # When doing multithreaded downloads into the file cache, the following
-          # interleaving raises an error here:
-          #
-          # thread1                                     thread2
-          # File.directory?(create_path) <- false
-          #                                             File.directory?(create_path) <- false
-          #                                             Dir.mkdir(create_path)
-          # Dir.mkdir(create_path) <- raises Errno::EEXIST
+        # When doing multithreaded downloads into the file cache, the following
+        # interleaving raises an error here:
+        #
+        # thread1                                     thread2
+        # File.directory?(create_path) <- false
+        #                                             File.directory?(create_path) <- false
+        #                                             Dir.mkdir(create_path)
+        # Dir.mkdir(create_path) <- raises Errno::EEXIST
         Chef::Log.trace("Creating directory #{path}")
         Dir.mkdir(path)
       rescue Errno::EEXIST

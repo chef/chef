@@ -168,7 +168,7 @@ class Chef
         has_platform
       end
 
-     # Implementation class for determining platform family dependent values
+      # Implementation class for determining platform family dependent values
       class PlatformFamilyDependentValue
 
         # Create a platform family dependent value object.
