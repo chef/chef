@@ -10,7 +10,7 @@
 
 ## Getting Started
 
-Chef Utils gem is common code and mixins for the core Chef Infra Ruby gems. This should be are "core library" or "foundations" library
+Chef Utils gem contains common code and mixins for the core Chef Infra Ruby gems. This is intended to be a "core" or "foundations" library
 for the chef ecosystem (and external related gems) which allows the use of core code and utility functions of the chef gem without requiring
 all the heaviness of the chef gem.
 
@@ -21,7 +21,7 @@ The Platform Family helpers provide an alternative to comparing values from `nod
 * `aix?`
 * `amazon?`
 * `arch?` - includes arch, manjaro, and antergos platforms
-* `debian?` - includes debian, ubuntu, linuxmint, raspbian, and duvian platforms
+* `debian?` - includes debian, ubuntu, linuxmint, raspbian, and devuan platforms
 * `dragonflybsd?`
 * `fedora?` - includes arista_eos, fedora, and pidora platforms
 * `freebsd?`
