@@ -79,10 +79,10 @@ class Chef
         cmd << " | grep -qx '#{value}'"
 
         vc = if desired.user.nil?
-          shell_out(cmd)
-        else
-          shell_out(cmd, user: desired.user)
-        end
+               shell_out(cmd)
+             else
+               shell_out(cmd, user: desired.user)
+             end
 
         is_set !vc.error?
       end
