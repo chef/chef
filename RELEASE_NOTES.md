@@ -22,7 +22,7 @@ Chef InSpec was updated from 4.18.104 to 4.18.114 with the following improvement
 
 ### windows_firewall
 
-The `windows_firewall` resource has been updated to supports firewall rules that are associated with more than one profile. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
+The `windows_firewall` resource has been updated to support firewall rules that are associated with more than one profile. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
 
 ### chocolatey_package
 
