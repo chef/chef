@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.11.1 -->
-## [v15.11.1](https://github.com/chef/chef/tree/v15.11.1) (2020-05-21)
+<!-- latest_release 15.11.2 -->
+## [v15.11.2](https://github.com/chef/chef/tree/v15.11.2) (2020-05-22)
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2v [#9902](https://github.com/chef/chef/pull/9902) ([tas50](https://github.com/tas50))
+- Modify verify pipeline to use rubydistros windows-2019 docker image [#9881](https://github.com/chef/chef/pull/9881) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.10.12 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Modify verify pipeline to use rubydistros windows-2019 docker image [#9881](https://github.com/chef/chef/pull/9881) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.11.2 -->
 - Update openssl to 1.0.2v [#9902](https://github.com/chef/chef/pull/9902) ([tas50](https://github.com/tas50)) <!-- 15.11.1 -->
 - Update all deps to current [#9899](https://github.com/chef/chef/pull/9899) ([tas50](https://github.com/tas50)) <!-- 15.11.0 -->
 - Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.10.22 -->
