@@ -39,6 +39,21 @@ class Chef
           super(config, run_list, chef_config, secret)
         end
 
+        # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
+        # this presumes Windows so we can avoid changing the method definitions
+        # across Chef, ChefConfig, and ChefUtils for the circumstance where
+        # the methods are being run for a system other than the one Ruby is
+        # executing on.
+        #
+        # We only need to cleanpath the paths that we are passing to cmd.exe,
+        # anything written to a configuration file or passed as an argument
+        # will be interpreted by ruby later and do the right thing.
+        def cleanpath(path)
+          path = Pathname.new(path).cleanpath.to_s
+          path = path.gsub(File::SEPARATOR, '\\')
+          path
+        end
+
         def validation_key
           if File.exist?(File.expand_path(@chef_config[:validation_key]))
             IO.read(File.expand_path(@chef_config[:validation_key]))
@@ -158,8 +173,8 @@ class Chef
 
         def start_chef
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\bin;#{ChefConfig::Config.c_opscode_dir}\\#{ChefConfig::Dist::DIR_SUFFIX}\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "chef-client -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
+          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\bin;#{ChefConfig::Config.c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
+          start_chef << "#{Chef::Dist::CLIENT} -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
         end
 
         def win_wget
@@ -260,7 +275,7 @@ class Chef
         end
 
         def bootstrap_directory
-          ChefConfig::Config.etc_chef_dir(true)
+          cleanpath(ChefConfig::Config.etc_chef_dir(true))
         end
 
         def local_download_path
