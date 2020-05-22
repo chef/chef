@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.10 -->
-## [v16.1.10](https://github.com/chef/chef/tree/v16.1.10) (2020-05-21)
+<!-- latest_release 16.1.12 -->
+## [v16.1.12](https://github.com/chef/chef/tree/v16.1.12) (2020-05-22)
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2v [#9903](https://github.com/chef/chef/pull/9903) ([tas50](https://github.com/tas50))
+- macos_userdefaults: Fix ruby 2.7 keyword args warning and refactor a bit [#9897](https://github.com/chef/chef/pull/9897) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- macos_userdefaults: Fix ruby 2.7 keyword args warning and refactor a bit [#9897](https://github.com/chef/chef/pull/9897) ([phiggins](https://github.com/phiggins)) <!-- 16.1.12 -->
 - Update openssl to 1.0.2v [#9903](https://github.com/chef/chef/pull/9903) ([tas50](https://github.com/tas50)) <!-- 16.1.10 -->
 - [chef-utils] fix typos [#9895](https://github.com/chef/chef/pull/9895) ([michel-slm](https://github.com/michel-slm)) <!-- 16.1.9 -->
 - Fixed armv6l and armv7l tests. [#9892](https://github.com/chef/chef/pull/9892) ([mattray](https://github.com/mattray)) <!-- 16.1.8 -->
