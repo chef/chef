@@ -726,7 +726,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
 
       it "with a prco equality pin in the name it upgrades a prior package" do
         preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
-        dnf_package.package_name("chef_rpm == 1.10")
+        dnf_package.package_name("chef_rpm = 1.10")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
@@ -742,7 +742,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
 
       it "with a prco equality pin in the name it downgrades a later package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
-        dnf_package.package_name("chef_rpm == 1.2")
+        dnf_package.package_name("chef_rpm = 1.2")
         dnf_package.run_action(:upgrade)
         expect(dnf_package.updated_by_last_action?).to be true
         expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
