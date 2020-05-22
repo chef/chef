@@ -163,6 +163,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.6
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -184,6 +185,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.6
         shell: ["powershell", "-Command"]
 
 - label: "Unit Specs Windows :ruby: 2.6"
@@ -193,6 +195,7 @@ steps:
     executor:
       docker:
         host_os: windows
+        image: rubydistros/windows-2019:2.6
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
