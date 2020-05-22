@@ -176,6 +176,7 @@ steps:
     executor:
       windows:
         privileged: true
+        single-use: true
         shell: ["powershell", "-Command"]
 
 - label: "Chocolatey Specs Windows :ruby: 2.6"
