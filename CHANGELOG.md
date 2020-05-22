@@ -1,32 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.11.3 -->
-## [v15.11.3](https://github.com/chef/chef/tree/v15.11.3) (2020-05-22)
-
-#### Merged Pull Requests
-- Multiple backports from Chef 16 [#9904](https://github.com/chef/chef/pull/9904) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.10.12 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Multiple backports from Chef 16 [#9904](https://github.com/chef/chef/pull/9904) ([tas50](https://github.com/tas50)) <!-- 15.11.3 -->
-- Modify verify pipeline to use rubydistros windows-2019 docker image [#9881](https://github.com/chef/chef/pull/9881) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.11.2 -->
-- Update openssl to 1.0.2v [#9902](https://github.com/chef/chef/pull/9902) ([tas50](https://github.com/tas50)) <!-- 15.11.1 -->
-- Update all deps to current [#9899](https://github.com/chef/chef/pull/9899) ([tas50](https://github.com/tas50)) <!-- 15.11.0 -->
-- Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.10.22 -->
-- Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.10.21 -->
-- 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm)) <!-- 15.10.20 -->
-- Fix for Chocolate_resource options causing extra quotes [#9809](https://github.com/chef/chef/pull/9809) ([btm](https://github.com/btm)) <!-- 15.10.19 -->
-- Update omnibus-software for new msys2 path [#9807](https://github.com/chef/chef/pull/9807) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 15.10.18 -->
-- Add SLES 15 / Ubuntu 20.04 aarch64 builds [#9761](https://github.com/chef/chef/pull/9761) ([tas50](https://github.com/tas50)) <!-- 15.10.17 -->
-- Backport #9511 to Chef 15 [#9723](https://github.com/chef/chef/pull/9723) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 15.10.16 -->
-- Update our omnibus software def to fix bundler on windows [#9713](https://github.com/chef/chef/pull/9713) ([tas50](https://github.com/tas50)) <!-- 15.10.15 -->
-- Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50)) <!-- 15.10.13 -->
-- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50)) <!-- 15.10.14 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.11.3](https://github.com/chef/chef/tree/v15.11.3) (2020-05-22)
+
+#### Merged Pull Requests
+- Update Nokogiri to 1.10.9 [#9708](https://github.com/chef/chef/pull/9708) ([tas50](https://github.com/tas50))
+- Update omnibus-software to avoid appbundler adding extra gems [#9709](https://github.com/chef/chef/pull/9709) ([tas50](https://github.com/tas50))
+- Update our omnibus software def to fix bundler on windows [#9713](https://github.com/chef/chef/pull/9713) ([tas50](https://github.com/tas50))
+- Backport #9511 to Chef 15 [#9723](https://github.com/chef/chef/pull/9723) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Add SLES 15 / Ubuntu 20.04 aarch64 builds [#9761](https://github.com/chef/chef/pull/9761) ([tas50](https://github.com/tas50))
+- Update omnibus-software for new msys2 path [#9807](https://github.com/chef/chef/pull/9807) ([jaymalasinha](https://github.com/jaymalasinha))
+- Fix for Chocolate_resource options causing extra quotes [#9809](https://github.com/chef/chef/pull/9809) ([btm](https://github.com/btm))
+- 15: Update omnibus-software to 74e9d0 [#9821](https://github.com/chef/chef/pull/9821) ([btm](https://github.com/btm))
+- Chef 15 backport of Chef 16 knife cleanup [#9797](https://github.com/chef/chef/pull/9797) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add Debian 10 aarch64 support [#9846](https://github.com/chef/chef/pull/9846) ([christopher-snapp](https://github.com/christopher-snapp))
+- Update all deps to current [#9899](https://github.com/chef/chef/pull/9899) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2v [#9902](https://github.com/chef/chef/pull/9902) ([tas50](https://github.com/tas50))
+- Modify verify pipeline to use rubydistros windows-2019 docker image [#9881](https://github.com/chef/chef/pull/9881) ([christopher-snapp](https://github.com/christopher-snapp))
+- Multiple backports from Chef 16 [#9904](https://github.com/chef/chef/pull/9904) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.10.12](https://github.com/chef/chef/tree/v15.10.12) (2020-04-22)
 
 #### Merged Pull Requests
@@ -49,7 +47,6 @@
 - Remove &quot;Code Can&quot; from dmg background [#9702](https://github.com/chef/chef/pull/9702) ([tas50](https://github.com/tas50))
 - Update omnibus-software to resolve shipping 2 copies of pry [#9701](https://github.com/chef/chef/pull/9701) ([tas50](https://github.com/tas50))
 - Update Ohai to 15.9 [#9707](https://github.com/chef/chef/pull/9707) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.9.17](https://github.com/chef/chef/tree/v15.9.17) (2020-04-03)
 
