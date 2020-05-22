@@ -1,5 +1,45 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 15.11
+
+## Bootstraping Bugfixes
+
+This release of Chef Infra Client resolves multiple issues when using `knife bootstrap` to bootstrap new nodes to a Chef Infra Server:
+
+- Bootstrapping from a Windows host to a Linux host with an ED25519 ssh key no longer fails
+- Resolved failures in the Windows bootstrap script
+- Incorrect paths when bootstrapping Windows nodes have been resolved
+
+## Chef InSpec 4.18.114
+
+Chef InSpec was updated from 4.18.104 to 4.18.114 with the following improvements:
+
+- Added new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate messages and suppress backtraces.
+- Fix for a warning when an input is provided
+- Inputs and controls can now have the same name
+
+## Resource Improvements
+
+### windows_firewall
+
+The `windows_firewall` resource has been updated to supports firewall rules that are associated with more than one profile. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
+
+### chocolatey_package
+
+The `chocolatey_package` resource has been updated to properly handle quotes within the `options` property. Thanks for reporting this issue [@dave-q](https://github.com/dave-q).
+
+## Platform Support
+
+### Additional aarch64 Builds
+
+Chef Infra Client is now tested on Debian 10, SLES 15, and Ubuntu 20.04 on the aarch64 architecture with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
+
+## Security Updates
+
+### openSSL
+
+openSSL has been updated from 1.0.2u to 1.0.2v which does not address any particular CVEs, but includes multiple security hardening updates.
+
 # Chef Infra Client 15.10
 
 ## Improvements
