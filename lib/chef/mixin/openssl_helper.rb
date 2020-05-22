@@ -218,7 +218,7 @@ class Chef
         # Chef 12 backward compatibility
         ::OpenSSL::PKey::EC.send(:alias_method, :private?, :private_key?)
 
-        request.sign(key, ::OpenSSL::Digest::SHA256.new)
+        request.sign(key, ::OpenSSL::Digest.new("SHA256"))
         request
       end
 
@@ -289,7 +289,7 @@ class Chef
         cert.add_extension ef.create_extension("authorityKeyIdentifier",
           "keyid:always,issuer:always")
 
-        cert.sign(key, ::OpenSSL::Digest::SHA256.new)
+        cert.sign(key, ::OpenSSL::Digest.new("SHA256"))
         cert
       end
 
@@ -319,7 +319,7 @@ class Chef
         crl.add_extension ::OpenSSL::X509::Extension.new("crlNumber", ::OpenSSL::ASN1::Integer(1))
         crl.add_extension ef.create_extension("authorityKeyIdentifier",
           "keyid:always,issuer:always")
-        crl.sign(ca_private_key, ::OpenSSL::Digest::SHA256.new)
+        crl.sign(ca_private_key, ::OpenSSL::Digest.new("SHA256"))
         crl
       end
 
@@ -398,7 +398,7 @@ class Chef
           ::OpenSSL::ASN1::Integer(get_next_crl_number(crl)))]
         crl.add_extension ef.create_extension("authorityKeyIdentifier",
           "keyid:always,issuer:always")
-        crl.sign(ca_private_key, ::OpenSSL::Digest::SHA256.new)
+        crl.sign(ca_private_key, ::OpenSSL::Digest.new("SHA256"))
         crl
       end
 

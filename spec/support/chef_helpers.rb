@@ -27,7 +27,7 @@ Chef::Log.level(Chef::Config.log_level)
 Chef::Config.solo(false)
 
 def sha256_checksum(path)
-  OpenSSL::Digest::SHA256.hexdigest(File.read(path))
+  OpenSSL::Digest.hexdigest("SHA256", File.read(path))
 end
 
 # extracted from Ruby < 2.5 to return a unique temp file name without creating it

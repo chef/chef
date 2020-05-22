@@ -158,7 +158,7 @@ class Chef::EncryptedDataBagItem
             d = OpenSSL::Cipher.new(algorithm)
             d.decrypt
             # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-            d.key = OpenSSL::Digest::SHA256.digest(key)
+            d.key = OpenSSL::Digest.digest("SHA256", key)
             d.iv = iv
             d
           end

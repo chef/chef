@@ -382,7 +382,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
               salt,
               iterations,
               128,
-              OpenSSL::Digest::SHA512.new
+              OpenSSL::Digest.new("SHA512")
             )
           end
 
@@ -627,7 +627,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
             salt,
             current_resource.iterations,
             128,
-            OpenSSL::Digest::SHA512.new
+            OpenSSL::Digest.new("SHA512")
           ).unpack("H*").first == current_resource.password
         end
 
