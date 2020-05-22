@@ -15,7 +15,7 @@ This release of Chef Infra Client resolves multiple issues when using `knife boo
 Chef InSpec was updated from 4.18.104 to 4.18.114 with the following improvements:
 
 - Added new `--reporter_message_truncation` and `--reporter_backtrace_inclusion` reporter options to truncate messages and suppress backtraces.
-- Fix for a warning when an input is provided
+- Fixed a warning when an input is provided
 - Inputs and controls can now have the same name
 
 ## Resource Improvements
