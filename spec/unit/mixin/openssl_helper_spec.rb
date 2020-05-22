@@ -488,7 +488,7 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.add_extension(ef.create_extension("keyUsage", "keyCertSign, cRLSign", true))
       @ca_cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
       @ca_cert.add_extension(ef.create_extension("authorityKeyIdentifier", "keyid:always", false))
-      @ca_cert.sign(@ca_key, OpenSSL::Digest::SHA256.new)
+      @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info_with_issuer = { "validity" => 365, "issuer" => @ca_cert }
       @info_without_issuer = { "validity" => 365 }
@@ -614,7 +614,7 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.add_extension(ef.create_extension("keyUsage", "keyCertSign, cRLSign", true))
       @ca_cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
       @ca_cert.add_extension(ef.create_extension("authorityKeyIdentifier", "keyid:always", false))
-      @ca_cert.sign(@ca_key, OpenSSL::Digest::SHA256.new)
+      @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info = { "validity" => 8, "issuer" => @ca_cert }
     end
@@ -684,7 +684,7 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.add_extension(ef.create_extension("keyUsage", "keyCertSign, cRLSign", true))
       @ca_cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
       @ca_cert.add_extension(ef.create_extension("authorityKeyIdentifier", "keyid:always", false))
-      @ca_cert.sign(@ca_key, OpenSSL::Digest::SHA256.new)
+      @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info = { "validity" => 8, "issuer" => @ca_cert }
 
@@ -765,7 +765,7 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.add_extension(ef.create_extension("keyUsage", "keyCertSign, cRLSign", true))
       @ca_cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
       @ca_cert.add_extension(ef.create_extension("authorityKeyIdentifier", "keyid:always", false))
-      @ca_cert.sign(@ca_key, OpenSSL::Digest::SHA256.new)
+      @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info = { "validity" => 8, "issuer" => @ca_cert }
 

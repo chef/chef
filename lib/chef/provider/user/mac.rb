@@ -495,7 +495,7 @@ class Chef
             convert_to_binary(current_resource.salt),
             current_resource.iterations.to_i,
             128,
-            OpenSSL::Digest::SHA512.new
+            OpenSSL::Digest.new("SHA512")
           ).unpack("H*")[0] != current_resource.password
         end
 
@@ -521,7 +521,7 @@ class Chef
                 salt.string,
                 new_resource.iterations,
                 128,
-                OpenSSL::Digest::SHA512.new
+                OpenSSL::Digest.new("SHA512")
               )
             )
           end

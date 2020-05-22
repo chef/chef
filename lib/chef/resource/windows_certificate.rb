@@ -308,7 +308,7 @@ class Chef
         #
         def import_certificates(cert_objs, is_pfx)
           [cert_objs].flatten.each do |cert_obj|
-            thumbprint = OpenSSL::Digest::SHA1.new(cert_obj.to_der).to_s # Fetch its thumbprint
+            thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s # Fetch its thumbprint
             # Need to check if return value is Boolean:true
             # If not then the given certificate should be added in certstore
             if verify_cert(thumbprint) == true

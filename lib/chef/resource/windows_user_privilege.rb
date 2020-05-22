@@ -126,8 +126,8 @@ class Chef
         required: true,
         coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
         callbacks: {
-           "Option privilege must include any of the: #{privilege_opts}" => lambda {
-             |v| (privilege_opts & v).size == v.size
+           "Option privilege must include any of the: #{privilege_opts}" => lambda { |v|
+             (privilege_opts & v).size == v.size
            },
          }
 
