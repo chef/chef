@@ -2,7 +2,7 @@ This file holds "in progress" release notes for the current release under develo
 
 # Chef Infra Client 15.11
 
-## Bootstraping Bugfixes
+## Bootstrapping Bugfixes
 
 This release of Chef Infra Client resolves multiple issues when using `knife bootstrap` to bootstrap new nodes to a Chef Infra Server:
 
