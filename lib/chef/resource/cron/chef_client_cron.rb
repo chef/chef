@@ -14,15 +14,16 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
-require_relative "../dist"
-require_relative "helpers/cron_validations"
+require_relative "../../resource"
+require_relative "../../dist"
 require "digest/md5"
 
 class Chef
   class Resource
     class ChefClientCron < Chef::Resource
       unified_mode true
+      
+      use "cron_common"
 
       provides :chef_client_cron
 
@@ -53,8 +54,6 @@ class Chef
       ```
       DOC
 
-      extend Chef::ResourceHelpers::CronValidations
-
       property :job_name, String,
         default: Chef::Dist::CLIENT,
         description: "The name of the cron job to create."
@@ -62,39 +61,6 @@ class Chef
       property :comment, String,
         description: "A comment to place in the cron.d file."
 
-      property :user, String,
-        description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
-        default: "root"
-
-      property :minute, [Integer, String],
-        description: "The minute at which #{Chef::Dist::PRODUCT} is to run (0 - 59) or a cron pattern such as '0,30'.",
-        default: "0,30", callbacks: {
-          "should be a valid minute spec" => method(:validate_minute),
-        }
-
-      property :hour, [Integer, String],
-        description: "The hour at which #{Chef::Dist::PRODUCT} is to run (0 - 23) or a cron pattern such as '0,12'.",
-        default: "*", callbacks: {
-          "should be a valid hour spec" => method(:validate_hour),
-        }
-
-      property :day, [Integer, String],
-        description: "The day of month at which #{Chef::Dist::PRODUCT} is to run (1 - 31) or a cron pattern such as '1,7,14,21,28'.",
-        default: "*", callbacks: {
-          "should be a valid day spec" => method(:validate_day),
-        }
-
-      property :month, [Integer, String],
-        description: "The month in the year on which #{Chef::Dist::PRODUCT} is to run (1 - 12, jan-dec, or *).",
-        default: "*", callbacks: {
-          "should be a valid month spec" => method(:validate_month),
-        }
-
-      property :weekday, [Integer, String],
-        description: "The day of the week on which #{Chef::Dist::PRODUCT} is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
-        default: "*", callbacks: {
-          "should be a valid weekday spec" => method(:validate_dow),
-        }
 
       property :splay, [Integer, String],
         default: 300,
@@ -102,8 +68,6 @@ class Chef
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
 
-      property :mailto, String,
-        description: "The e-mail address to e-mail any cron task failures to."
 
       property :accept_chef_license, [true, false],
         description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
@@ -134,9 +98,6 @@ class Chef
         default: lazy { [] },
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
 
-      property :environment, Hash,
-        default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

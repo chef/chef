@@ -18,7 +18,6 @@
 #
 
 require_relative "../../resource"
-require_relative "../helpers/cron_validations"
 require_relative "../../provider/cron" # do not remove. we actually need this below
 
 class Chef
@@ -26,7 +25,9 @@ class Chef
     class Cron < Chef::Resource
       unified_mode true
 
-      use "cron_shared"
+      use "cron_common"
+
+      use "cron_crond_common"
 
       provides :cron
 

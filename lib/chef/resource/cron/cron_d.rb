@@ -16,7 +16,6 @@
 #
 
 require_relative "../../resource"
-require_relative "../helpers/cron_validations"
 require "shellwords" unless defined?(Shellwords)
 require_relative "../../dist"
 
@@ -25,7 +24,9 @@ class Chef
     class CronD < Chef::Resource
       unified_mode true
 
-      use "cron_shared"
+      use "cron_common"
+
+      use "cron_crond_common"
 
       provides :cron_d
 

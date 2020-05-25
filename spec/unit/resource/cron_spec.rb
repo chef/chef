@@ -164,4 +164,92 @@ describe Chef::Resource::Cron do
       expect(resource.identity).to eq("tackle")
     end
   end
+
+  describe "Validations" do
+
+    context "#validate_dow" do
+      it "it accepts a string day" do
+        expect(Chef::Resource::Cron.validate_dow("mon")).to be true
+      end
+
+      it "it accepts an integer day" do
+        expect(Chef::Resource::Cron.validate_dow(0)).to be true
+      end
+
+      it "it accepts the string of *" do
+        expect(Chef::Resource::Cron.validate_dow("*")).to be true
+      end
+
+      it "returns false for an out of range integer" do
+        expect(Chef::Resource::Cron.validate_dow(8)).to be false
+      end
+
+      it "it accepts the string day with full name" do
+        expect(Chef::Resource::Cron.validate_dow("monday")).to be true
+      end
+
+      it "returns false for an invalid string" do
+        expect(Chef::Resource::Cron.validate_dow("funday")).to be false
+      end
+    end
+
+    context "#validate_month" do
+      it "it accepts a string month" do
+        expect(Chef::Resource::Cron.validate_month("feb")).to be true
+      end
+
+      it "it accepts an integer month" do
+        expect(Chef::Resource::Cron.validate_month(2)).to be true
+      end
+
+      it "it accepts the string of *" do
+        expect(Chef::Resource::Cron.validate_month("*")).to be true
+      end
+
+      it "returns false for an out of range integer" do
+        expect(Chef::Resource::Cron.validate_month(13)).to be false
+      end
+
+      it "returns false for an invalid string (typo)" do
+        expect(Chef::Resource::Cron.validate_month("janurary")).to be false
+      end
+    end
+
+    context "#validate_numeric" do
+      it "returns true if the value is in the allowed range" do
+        expect(Chef::Resource::Cron.validate_numeric(5, 1, 100)).to be true
+      end
+
+      it "returns false if the value less than the allowed range" do
+        expect(Chef::Resource::Cron.validate_numeric(-1, 1, 100)).to be false
+      end
+
+      it "returns false if the value more than the allowed range" do
+        expect(Chef::Resource::Cron.validate_numeric(101, 1, 100)).to be false
+      end
+    end
+  end
+
+  describe "#weekday_in_crontab" do
+    context "when weekday is symbol with full name as a day of week" do
+      it "should return weekday in crontab standard format" do
+        expect(resource.send(:weekday_in_crontab, :wednesday)).to eq("3")
+      end
+    end
+    context "when weekday is a number in a string" do
+      it "should return the string" do
+        expect(resource.send(:weekday_in_crontab, "3")).to eq("3")
+      end
+    end
+    context "when weekday is string with the short name as a day of week" do
+      it "should return the number string in crontab standard format" do
+        expect(resource.send(:weekday_in_crontab, "mon")).to eq("1")
+      end
+    end
+    context "when weekday is an integer" do
+      it "should return the integer" do
+        expect(resource.send(:weekday_in_crontab, 1)).to eq(1)
+      end
+    end
+  end
 end
