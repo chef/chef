@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.11.4 -->
+## [v15.11.4](https://github.com/chef/chef/tree/v15.11.4) (2020-05-26)
+
+#### Merged Pull Requests
+- Pin habitat bundler to 1.17.3 [#9915](https://github.com/chef/chef/pull/9915) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.11.3 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Pin habitat bundler to 1.17.3 [#9915](https://github.com/chef/chef/pull/9915) ([tas50](https://github.com/tas50)) <!-- 15.11.4 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
