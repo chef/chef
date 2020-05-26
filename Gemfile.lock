@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 0154d81e4caa42634b416e11cc34f4abf7ae2729
+  revision: c01c03fba0834bcebb7f90c9c27dd720ab8b4a58
   branch: master
   specs:
     ohai (16.1.1)
@@ -284,7 +284,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.1)
-    parser (2.7.1.2)
+    parser (2.7.1.3)
       ast (~> 2.4.0)
     parslet (1.8.2)
     pastel (0.7.4)
@@ -301,9 +301,9 @@ GEM
     pry-remote (0.1.8)
       pry (~> 0.9)
       slop (~> 3.0)
-    pry-stack_explorer (0.4.9.3)
-      binding_of_caller (>= 0.7)
-      pry (>= 0.9.11)
+    pry-stack_explorer (0.5.1)
+      binding_of_caller (~> 0.7)
+      pry (~> 0.13)
     public_suffix (4.0.5)
     rack (2.2.2)
     rainbow (3.0.0)
