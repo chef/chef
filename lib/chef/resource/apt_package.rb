@@ -46,7 +46,7 @@ class Chef
       apt_package %(package1 package2 package3)
       ```
 
-      **Install without using recommend packages as a dependency**
+      **Install without using recommend packages as a dependency**:
 
       ```ruby
       package 'apache2' do
