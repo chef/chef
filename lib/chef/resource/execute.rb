@@ -556,6 +556,12 @@ class Chef
           password "password"
         end
         ```
+
+        **Run a command with an external input file**:
+
+        execute 'md5sum' do
+          input File.read(__FILE__)
+        end
       EXAMPLES
 
       # The ResourceGuardInterpreter wraps a resource's guards in another resource.  That inner resource
