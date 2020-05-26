@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.15 -->
-## [v16.1.15](https://github.com/chef/chef/tree/v16.1.15) (2020-05-22)
+<!-- latest_release 16.1.16 -->
+## [v16.1.16](https://github.com/chef/chef/tree/v16.1.16) (2020-05-26)
 
 #### Merged Pull Requests
-- Update our usage of OpenSSL::Digest to avoid Ruby 3 breaking change [#9905](https://github.com/chef/chef/pull/9905) ([tas50](https://github.com/tas50))
+- Pull in updated omnibus-software for rubygems perf patch [#9916](https://github.com/chef/chef/pull/9916) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in updated omnibus-software for rubygems perf patch [#9916](https://github.com/chef/chef/pull/9916) ([tas50](https://github.com/tas50)) <!-- 16.1.16 -->
 - Update our usage of OpenSSL::Digest to avoid Ruby 3 breaking change [#9905](https://github.com/chef/chef/pull/9905) ([tas50](https://github.com/tas50)) <!-- 16.1.15 -->
 - Windows functional test should be single-use [#9908](https://github.com/chef/chef/pull/9908) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.1.14 -->
 - Refactor verify pipeline to use Ruby 2.7 on Windows docker image [#9877](https://github.com/chef/chef/pull/9877) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.1.13 -->
