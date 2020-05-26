@@ -103,8 +103,8 @@ class Chef
         description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{Chef::Dist::CLIENT} needs the 'Replace a process level token' and 'Adjust Memory Quotas for a process' permissions. The user that is running the command needs the 'Log on as a batch job' permission.\nBecause this requires a login, the user and password properties are required.",
         introduced: "13.3"
 
-      property :input, [String, nil],
-        introduced: "16.1",
+      property :input, [String],
+        introduced: "16.2",
         description: "An optional property to set the input sent to the command as STDIN."
 
       alias :env :environment
