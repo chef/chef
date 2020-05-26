@@ -7,7 +7,7 @@ WEEKDAYS = {
   sun: "0", mon: "1", tue: "2", wed: "3", thu: "4", fri: "5", sat: "6"
 }.freeze
 
-#Cron Validation Methods
+# Cron Validation Methods
 
 # validate a provided value is between two other provided values
 # we also allow * as a valid input
@@ -98,7 +98,6 @@ property :weekday, [Integer, String, Symbol],
 property :mailto, String,
   description: "Set the `MAILTO` environment variable."
 
-
 property :user, String,
   description: "The name of the user that runs the command.",
   default: "root"
@@ -106,7 +105,6 @@ property :user, String,
 property :environment, Hash,
   description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
   default: lazy { {} }
-
 
 private
 # Convert weekday input value into crontab format that

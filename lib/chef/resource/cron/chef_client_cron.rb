@@ -22,7 +22,7 @@ class Chef
   class Resource
     class ChefClientCron < Chef::Resource
       unified_mode true
-      
+
       use "cron_common"
 
       provides :chef_client_cron
@@ -61,13 +61,11 @@ class Chef
       property :comment, String,
         description: "A comment to place in the cron.d file."
 
-
       property :splay, [Integer, String],
         default: 300,
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
-
 
       property :accept_chef_license, [true, false],
         description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
@@ -97,7 +95,6 @@ class Chef
       property :daemon_options, Array,
         default: lazy { [] },
         description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
-
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
