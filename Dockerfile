@@ -20,7 +20,7 @@ LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 ARG EXPEDITOR_CHANNEL
 ARG CHANNEL=stable
 ARG EXPEDITOR_VERSION
-ARG VERSION=16.1.0
+ARG VERSION=16.1.16
 
 # Allow the build arg below to be controlled by either build arguments
 ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
