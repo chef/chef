@@ -138,8 +138,8 @@ class Chef
             opts[:ssl_verify_mode] = case new_resource.ssl_verify_mode
                                      when :verify_none
                                        Chef::HTTP::VerifyNoneSSLPolicy
-                                     else :verify_peer
-                                          Chef::HTTP::VerifyPeerSSLPolicy
+                                     when :verify_peer
+                                       Chef::HTTP::VerifyPeerSSLPolicy
                                      end
           end
           opts
