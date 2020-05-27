@@ -201,7 +201,7 @@ class Chef
           command 'command_to_run
             --option value
             --option value
-            --source #{node[:name_of_node][:ipsec][:local][:subnet]}
+            --source \#{node[:name_of_node][:ipsec][:local][:subnet]}
             -j test_rule'
 
           action :nothing
@@ -242,7 +242,7 @@ class Chef
           end
 
           execute 'install-mysql' do
-            command "mv #{node['mysql']['data_dir']} #{node['mysql']['ec2_path']}"
+            command "mv \#{node['mysql']['data_dir']} \#{node['mysql']['ec2_path']}"
             not_if do
               FileTest.directory?(node['mysql']['ec2_path'])
             end
@@ -290,7 +290,7 @@ class Chef
           pip_binary = '/usr/local/bin/pip'
         end
 
-        remote_file "#{Chef::Config[:file_cache_path]}/distribute_setup.py" do
+        remote_file "\#{Chef::Config[:file_cache_path]}/distribute_setup.py" do
           source 'http://python-distribute.org/distribute_setup.py'
           mode '0755'
 
@@ -309,7 +309,7 @@ class Chef
         where a command for installing Python might look something like:
 
         ```ruby
-        #{node['python']['binary']} distribute_setup.py #{::File.dirname(pip_binary)}/easy_install pip
+        \#{node['python']['binary']} distribute_setup.py \#{::File.dirname(pip_binary)}/easy_install pip
         ```
 
         **Control a service using the execute resource**:
@@ -353,8 +353,8 @@ class Chef
         #  the following code sample comes from the openvpn cookbook: https://github.com/chef-cookbooks/openvpn
 
         search("users", "*:*") do |u|
-          execute "generate-openvpn-#{u['id']}" do
-            command "./pkitool #{u['id']}"
+          execute "generate-openvpn-\#{u['id']}" do
+            command "./pkitool \#{u['id']}"
             cwd '/etc/openvpn/easy-rsa'
 
             environment(
@@ -370,22 +370,22 @@ class Chef
               'KEY_ORG' => node['openvpn']['key']['org'],
               'KEY_EMAIL' => node['openvpn']['key']['email']
             )
-            not_if { File.exist?("#{node['openvpn']['key_dir']}/#{u['id']}.crt") }
+            not_if { File.exist?("\#{node['openvpn']['key_dir']}/\#{u['id']}.crt") }
           end
 
           %w{ conf ovpn }.each do |ext|
-            template "#{node['openvpn']['key_dir']}/#{u['id']}.#{ext}" do
+            template "\#{node['openvpn']['key_dir']}/\#{u['id']}.\#{ext}" do
               source 'client.conf.erb'
               variables :username => u['id']
             end
           end
 
-          execute "create-openvpn-tar-#{u['id']}" do
+          execute "create-openvpn-tar-\#{u['id']}" do
             cwd node['openvpn']['key_dir']
             command <<~EOH
-              tar zcf #{u['id']}.tar.gz ca.crt #{u['id']}.crt #{u['id']}.key #{u['id']}.conf #{u['id']}.ovpn
+              tar zcf \#{u['id']}.tar.gz ca.crt \#{u['id']}.crt \#{u['id']}.key \#{u['id']}.conf \#{u['id']}.ovpn
             EOH
-            not_if { File.exist?("#{node['openvpn']['key_dir']}/#{u['id']}.tar.gz") }
+            not_if { File.exist?("\#{node['openvpn']['key_dir']}/\#{u['id']}.tar.gz") }
           end
         end
         ```
@@ -457,7 +457,7 @@ class Chef
         ```ruby
         execute 'create_user' do
           command <<~EOM
-            knife user create #{user}
+            knife user create \#{user}
               --admin
               --password password
               --disable-editing
@@ -494,7 +494,7 @@ class Chef
           user node['chef_workstation']['user']
 
           environment ({
-            'HOME' => "/home/#{node['chef_workstation']['user']}",
+            'HOME' => "/home/\#{node['chef_workstation']['user']}",
             'USER' => node['chef_workstation']['user']
           })
           not_if 'bundle check'
