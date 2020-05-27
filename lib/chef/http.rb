@@ -304,7 +304,8 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: keepalives)
+        ssl_policy = @options[:ssl_verify_mode] || Chef::HTTP::APISSLPolicy
+        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives)
       end
     end
 
