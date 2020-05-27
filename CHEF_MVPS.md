@@ -16,6 +16,7 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 * Bryan Berry
 * Bryan McLellan
 * Jeff Blaine
+* Nathen Harvey
 
 #### The MVP recipients
 
@@ -123,3 +124,12 @@ Each year at ChefConf, a number of individuals are awarded the Awesome Community
   * [Edmund Haselwanter](https://github.com/ehaselwanter)
   * [Tim Smith](https://github.com/tas50)
   * [Joshua Timberman](https://github.com/jtimberman)
+* [2019][USA](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/), [Europe](https://blog.chef.io/congratulations-to-our-chefconf-london-2019-award-winners/)
+  * [Dan Webb](https://github.com/damacus)
+* [Graham Weldon](https://github.com/predominant)
+* [Jason Field](https://github.com/xorima)
+* [Joshua Basch]()
+* [Karl Fischer](https://github.com/kmf)
+* [Nathen Harvey](https://github.com/NathenHarvey)
+* [Robb Kidd](https://github.com/RobbKidd)
+* [Tomas Heinen](https://github.com/tecracer-theinen)
