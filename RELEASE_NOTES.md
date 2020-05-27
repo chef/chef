@@ -2,7 +2,7 @@ This file holds "in progress" release notes for the current release under develo
 
 # Chef Infra Client 16.1.16
 
-This release resolves high priority bugs in the 16.1 release of Chef Infra Client:
+This release resolves high-priority bugs in the 16.1 release of Chef Infra Client:
 
 - Resolved a critical performance regression in the Rubygems release within Ruby 2.7, which was discovered by a Chef engineer.
 - Resolved several Ruby 2.7 deprecation warnings.
