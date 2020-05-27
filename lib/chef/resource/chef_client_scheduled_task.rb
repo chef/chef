@@ -48,6 +48,16 @@ class Chef
           daemon_options ["--override-runlist mycorp_base::default"]
         end
       ```
+
+      **Run #{Chef::Dist::PRODUCT} daily at 01:00 am, specifying a named run-list**:
+
+      ```ruby
+        chef_client_scheduled_task "Run chef-client named run-list daily" do
+          frequency 'daily'
+          start_time '01:00'
+          daemon_options ['-n audit_only']
+        end
+      ```
       DOC
 
       resource_name :chef_client_scheduled_task
@@ -129,13 +139,22 @@ class Chef
 
         # According to https://docs.microsoft.com/en-us/windows/desktop/taskschd/schtasks,
         # the :once, :onstart, :onlogon, and :onidle schedules don't accept schedule modifiers
+
+        frequency_mod = if new_resource.frequency == 'minutes' && new_resource.frequency_modifier == 30
+                          30
+                        elsif new_resource.frequency_modifier != 30
+                          new_resource.frequency_modifier
+                        else
+                          1
+                        end
+
         windows_task new_resource.task_name do
           run_level                      :highest
           command                        full_command
           user                           new_resource.user
           password                       new_resource.password
           frequency                      new_resource.frequency.to_sym
-          frequency_modifier             new_resource.frequency_modifier if frequency_supports_frequency_modifier?
+          frequency_modifier             frequency_mod if frequency_supports_frequency_modifier?
           start_time                     new_resource.start_time
           start_day                      new_resource.start_date unless new_resource.start_date.nil?
           random_delay                   new_resource.splay if frequency_supports_random_delay?
