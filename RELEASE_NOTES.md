@@ -1,5 +1,21 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 16.1.16
+
+This release resolves high priority bugs in the 16.1 release of Chef Infra Client:
+
+- Resolved a critical performance regression in the Rubygems release within Ruby 2.7, which was discovered by a Chef engineer.
+- Resolved several Ruby 2.7 deprecation warnings.
+- Added `armv6l` and `armv7l` architectures to the `arm?` and `armhf?` helpers
+- Resolved failures in the Windows bootstrap script
+- Resolved incorrect paths when bootstrapping Windows nodes
+
+## Security Updates
+
+### openSSL
+
+openSSL has been updated from 1.0.2u to 1.0.2v which does not address any particular CVEs, but includes multiple security hardening updates.
+
 # Chef Infra Client 16.1
 
 ## Ohai 16.1
