@@ -76,7 +76,7 @@ class Chef
           end
 
           execute "brew update" do
-            command [ "brew", "update" ]
+            command %w{brew update}
             default_env true
             user Homebrew.owner
             notifies :touch, "file[#{BREW_STAMP}]", :immediately

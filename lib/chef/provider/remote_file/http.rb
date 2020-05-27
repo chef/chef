@@ -139,7 +139,7 @@ class Chef
                                      when :verify_none
                                        Chef::HTTP::VerifyNoneSSLPolicy
                                      else :verify_peer
-                                       Chef::HTTP::VerifyPeerSSLPolicy
+                                          Chef::HTTP::VerifyPeerSSLPolicy
                                      end
           end
           opts
