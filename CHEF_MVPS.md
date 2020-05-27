@@ -127,7 +127,7 @@ Each year at ChefConf, a number of individuals are awarded the Awesome Community
 * [2019][USA](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/), [Europe](https://blog.chef.io/congratulations-to-our-chefconf-london-2019-award-winners/)
   * [Graham Weldon](https://github.com/predominant)
   * [Jason Field](https://github.com/xorima)
-  * [Joshua Basch]()
+  * [Joshua Basch](https://github.com/HT154)
   * [Karl Fischer](https://github.com/kmf)
   * [Nathen Harvey](https://github.com/NathenHarvey)
   * [Robb Kidd](https://github.com/RobbKidd)
