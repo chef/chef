@@ -34,7 +34,6 @@ class Chef
         description 'Make a shortcut to C:\\original_dir'
       end
       ```
-
       DOC
 
       property :shortcut_name, String,
