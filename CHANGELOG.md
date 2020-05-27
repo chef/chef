@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.17 -->
-## [v16.1.17](https://github.com/chef/chef/tree/v16.1.17) (2020-05-27)
+<!-- latest_release 16.1.18 -->
+## [v16.1.18](https://github.com/chef/chef/tree/v16.1.18) (2020-05-27)
 
 #### Merged Pull Requests
-- Chef-16.1 breaking change [#9890](https://github.com/chef/chef/pull/9890) ([lamont-granquist](https://github.com/lamont-granquist))
+- Adds the homebrew_update resource [#9896](https://github.com/chef/chef/pull/9896) ([damacus](https://github.com/damacus))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Adds the homebrew_update resource [#9896](https://github.com/chef/chef/pull/9896) ([damacus](https://github.com/damacus)) <!-- 16.1.18 -->
 - Chef-16.1 breaking change [#9890](https://github.com/chef/chef/pull/9890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.1.17 -->
 <!-- release_rollup -->
 
