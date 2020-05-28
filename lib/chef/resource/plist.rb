@@ -28,6 +28,17 @@ class Chef
 
       description "Use the **plist** resource to set config values in plist files on macOS systems."
       introduced "16.0"
+      examples <<~DOC
+        **Show hidden files in finder**:
+
+        ```ruby
+        plist 'show hidden files' do
+          path '/Users/vagrant/Library/Preferences/com.apple.finder.plist'
+          entry 'AppleShowAllFiles'
+          value true
+        end
+        ```
+      DOC
 
       property :path, String, name_property: true,
         description: "The path on disk to the plist file."
