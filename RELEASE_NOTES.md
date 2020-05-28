@@ -1372,6 +1372,7 @@ Chef Infra Client's Data Collection subsystem is used to report node changes dur
 A new `copy_properties_from` method for custom resources allows you copy properties from your custom resource into other resources you are calling, so you can avoid unnecessarily repeating code.
 
 To inherit all the properties of another resource:
+
 ```ruby
 resource_name :my_resource
 
@@ -1386,6 +1387,7 @@ end
 ```
 
 To selectively inherit certain properties from a resource:
+
 ```ruby
 resource_name :my_resource
 

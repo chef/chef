@@ -19,11 +19,14 @@ class Chef
       introduced "14.3"
       examples <<~DOC
         Install and load a kernel module, and ensure it loads on reboot.
+
         ```ruby
         kernel_module 'loop'
         ```
+
         Install and load a kernel with a specific set of options, and ensure it loads on reboot. Consult kernel module
         documentation for specific options that are supported.
+
         ```ruby
         kernel_module 'loop' do
           options [
@@ -32,31 +35,41 @@ class Chef
           ]
         end
         ```
+
         Load a kernel module.
+
         ```ruby
         kernel_module 'loop' do
           action :load
         end
         ```
-        Unload a kernel module and remove module config, so it doesn’t load on reboot.
+
+        Unload a kernel module and remove module config, so it doesn't load on reboot.
+
         ```ruby
         kernel_module 'loop' do
           action :uninstall
         end
         ```
+
         Unload kernel module.
+
         ```ruby
         kernel_module 'loop' do
           action :unload
         end
         ```
+
         Blacklist a module from loading.
+
         ```ruby
         kernel_module 'loop' do
           action :blacklist
         end
         ```
+
         Disable a kernel module.
+
         ```ruby
         kernel_module 'loop' do
           action :disable

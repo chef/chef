@@ -29,13 +29,21 @@ class Chef
       description "Use the **plist** resource to set config values in plist files on macOS systems."
       introduced "16.0"
 
-      property :path, String, name_property: true
+      property :path, String, name_property: true,
+        description: "The path on disk to the plist file."
+
       property :entry, String
       property :value, [TrueClass, FalseClass, String, Integer, Float, Hash]
       property :encoding, String, default: "binary"
-      property :owner, String, default: "root"
-      property :group, String, default: "wheel"
-      property :mode, [String, Integer]
+
+      property :owner, String, default: "root",
+        description: "The owner of the plist file."
+
+      property :group, String, default: "wheel",
+        description: "The group of the plist file."
+
+      property :mode, [String, Integer],
+        description: "The file mode of the plist file. Ex: '644'"
 
       PLISTBUDDY_EXECUTABLE = "/usr/libexec/PlistBuddy".freeze
       DEFAULTS_EXECUTABLE = "/usr/bin/defaults".freeze
