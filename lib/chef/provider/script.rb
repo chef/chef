@@ -47,10 +47,6 @@ class Chef
         "\"#{interpreter}\" #{flags} \"#{script_file.path}\""
       end
 
-      def load_current_resource
-        super
-      end
-
       action :run do
         script_file.puts(code)
         script_file.close
