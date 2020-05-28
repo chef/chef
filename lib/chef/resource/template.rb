@@ -69,7 +69,7 @@ class Chef
 
       property :local, [ TrueClass, FalseClass ],
         default: false, desired_state: false,
-        description: "Load a template from a local path. By default, the #{Chef::Dist::CLIENT} loads templates from a cookbook’s /templates directory. When this property is set to true, use the source property to specify the path to a template on the local node."
+        description: "Load a template from a local path. By default, the #{Chef::Dist::CLIENT} loads templates from a cookbook's /templates directory. When this property is set to true, use the source property to specify the path to a template on the local node."
 
       # Declares a helper method to be defined in the template context when
       # rendering.
