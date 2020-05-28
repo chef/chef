@@ -1,6 +1,6 @@
 #
 # Cookbook:: end_to_end
-# Recipe:: default
+# Recipe:: linux
 #
 # Copyright:: Copyright (c) Chef Software Inc.
 #
