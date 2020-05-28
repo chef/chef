@@ -6,4 +6,5 @@
 #
 
 include_recipe "::linux" if platform_family?("rhel", "debian")
+include_recipe "::macos" if macos?
 include_recipe "::windows" if windows?
