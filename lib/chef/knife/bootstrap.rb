@@ -1108,7 +1108,8 @@ class Chef
       # These keys are available in Chef::Config, and are prefixed with the protocol name.
       # For example, :user CLI option will map to :winrm_user and :ssh_user Chef::Config keys,
       # based on the connection protocol in use.
-      def knife_key_for_protocol(protocol, option)
+      def knife_key_for_protocol(new_option, option = nil)
+        option = new_option if option.nil? # hacky compat with both old Chef-15 style and new Chef-16 style API signature
         "#{connection_protocol}_#{option}".to_sym
       end
 
