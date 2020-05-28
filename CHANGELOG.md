@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.0 -->
-## [v16.2.0](https://github.com/chef/chef/tree/v16.2.0) (2020-05-27)
+<!-- latest_release 16.2.1 -->
+## [v16.2.1](https://github.com/chef/chef/tree/v16.2.1) (2020-05-28)
 
 #### Merged Pull Requests
-- Add ssl_verify option for remote_file [#9833](https://github.com/chef/chef/pull/9833) ([jaymzh](https://github.com/jaymzh))
+- Update &amp; add resource descriptions for documentation generation [#9923](https://github.com/chef/chef/pull/9923) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update &amp; add resource descriptions for documentation generation [#9923](https://github.com/chef/chef/pull/9923) ([tas50](https://github.com/tas50)) <!-- 16.2.1 -->
 - Add ssl_verify option for remote_file [#9833](https://github.com/chef/chef/pull/9833) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.0 -->
 - Add an input property to the execute resource for passing input on STDIN [#9910](https://github.com/chef/chef/pull/9910) ([phiggins](https://github.com/phiggins)) <!-- 16.1.19 -->
 - Adds the homebrew_update resource [#9896](https://github.com/chef/chef/pull/9896) ([damacus](https://github.com/damacus)) <!-- 16.1.18 -->
