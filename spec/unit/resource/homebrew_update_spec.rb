@@ -10,7 +10,6 @@ describe Chef::Resource::HomebrewUpdate do
   let(:stamp_file) { Dir.mktmpdir("apt_update_periodic") }
   let(:brew_update_cmd) { %w{homebrew update} }
 
-
   it "sets the default action as :periodic" do
     expect(resource.action).to eql([:periodic])
   end

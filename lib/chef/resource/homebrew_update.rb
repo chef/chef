@@ -30,7 +30,7 @@ class Chef
       description "Use the **homebrew_update** resource to manage Homebrew repository updates on MacOS."
       introduced "16.2"
       examples <<~DOC
-        **Update the Apt repository at a specified interval**:
+        **Update the homebrew repository data at a specified interval**:
         ```ruby
         homebrew_update 'all platforms' do
           frequency 86400
@@ -76,7 +76,7 @@ class Chef
           end
 
           execute "brew update" do
-            command [ "brew", "update" ]
+            command %w{brew update}
             default_env true
             user Homebrew.owner
             notifies :touch, "file[#{BREW_STAMP}]", :immediately
