@@ -135,12 +135,7 @@ class Chef
             opts[:disable_gzip] = true
           end
           if new_resource.ssl_verify_mode
-            opts[:ssl_verify_mode] = case new_resource.ssl_verify_mode
-                                     when :verify_none
-                                       Chef::HTTP::VerifyNoneSSLPolicy
-                                     when :verify_peer
-                                       Chef::HTTP::VerifyPeerSSLPolicy
-                                     end
+            opts[:ssl_verify_mode] = new_resource.ssl_verify_mode
           end
           opts
         end
