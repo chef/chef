@@ -46,13 +46,13 @@ describe Chef::Resource::ChefClientScheduledTask do
   it "validates the start_time property input" do
     expect { resource.start_time("8:00 am") }.to raise_error(Chef::Exceptions::ValidationFailed)
     expect { resource.start_time("8:00") }.to raise_error(Chef::Exceptions::ValidationFailed)
-    expect { resource.start_time("08:00") }.not_to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.start_time("08:00") }.not_to raise_error
   end
 
   it "validates the start_date property input" do
     expect { resource.start_date("2/1/20") }.to raise_error(Chef::Exceptions::ValidationFailed)
     expect { resource.start_date("02/01/20") }.to raise_error(Chef::Exceptions::ValidationFailed)
-    expect { resource.start_date("02/01/2020") }.not_to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.start_date("02/01/2020") }.not_to raise_error
   end
 
   it "raises an error if frequency_modifier is not a positive number" do

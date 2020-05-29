@@ -29,11 +29,11 @@ describe Chef::Resource::WindowsDnsZone do
   end
 
   it "the server_type property accepts 'Standalone'" do
-    expect { resource.server_type "Standalone" }.not_to raise_error(ArgumentError)
+    expect { resource.server_type "Standalone" }.not_to raise_error
   end
 
   it "the server_type property accepts 'Domain'" do
-    expect { resource.server_type "Domain" }.not_to raise_error(ArgumentError)
+    expect { resource.server_type "Domain" }.not_to raise_error
   end
 
   it "the resource raises an ArgumentError if invalid server_type is set" do

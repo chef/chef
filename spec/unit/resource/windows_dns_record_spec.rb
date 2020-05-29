@@ -29,15 +29,15 @@ describe Chef::Resource::WindowsDnsRecord do
   end
 
   it "the record_type property accepts 'CNAME'" do
-    expect { resource.record_type "CNAME" }.not_to raise_error(ArgumentError)
+    expect { resource.record_type "CNAME" }.not_to raise_error
   end
 
   it "the record_type property accepts 'ARecord'" do
-    expect { resource.record_type "ARecord" }.not_to raise_error(ArgumentError)
+    expect { resource.record_type "ARecord" }.not_to raise_error
   end
 
   it "the record_type property accepts 'PTR'" do
-    expect { resource.record_type "PTR" }.not_to raise_error(ArgumentError)
+    expect { resource.record_type "PTR" }.not_to raise_error
   end
 
   it "the resource raises an ArgumentError if invalid record_type is set" do
