@@ -18,34 +18,12 @@
 
 require "spec_helper"
 describe Chef::Provider::PowershellScript, "action_run" do
-
-  let(:powershell_version) { nil }
-  let(:node) do
-    node = Chef::Node.new
-    node.default["kernel"] = {}
-    node.default["kernel"][:machine] = :x86_64.to_s
-    unless powershell_version.nil?
-      node.default[:languages] = { powershell: { version: powershell_version } }
-    end
-    node
-  end
-
-  # code block is mandatory for the powershell provider
-  let(:code) { "" }
-
   let(:events) { Chef::EventDispatch::Dispatcher.new }
 
-  let(:run_context) { run_context = Chef::RunContext.new(node, {}, events) }
+  let(:run_context) { Chef::RunContext.new(Chef::Node.new, {}, events) }
 
   let(:new_resource) do
-    new_resource = Chef::Resource::PowershellScript.new("run some powershell code", run_context)
-    new_resource.code code
-    new_resource
-  end
-
-  def set_user_defined_flag
-    new_resource.flags "-ExecutionPolicy RemoteSigned"
-    provider
+    Chef::Resource::PowershellScript.new("run some powershell code", run_context)
   end
 
   let(:provider) do
@@ -75,7 +53,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
     end
 
     it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
-      set_user_defined_flag
+      new_resource.flags "-ExecutionPolicy RemoteSigned"
       expect(execution_policy_flag).to eq("RemoteSigned")
     end
   end
