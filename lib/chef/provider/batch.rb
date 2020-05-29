@@ -25,8 +25,6 @@ class Chef
       provides :batch
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
-
         interpreter_path = Chef::Util::PathHelper.join(basepath, interpreter)
 
         "\"#{interpreter_path}\" #{flags} \"#{script_file.path}\""

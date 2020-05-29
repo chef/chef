@@ -23,24 +23,24 @@ class Chef
   class Provider
     class WindowsScript < Chef::Provider::Script
 
-      attr_reader :is_forced_32bit
-
       protected
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize(new_resource, run_context)
-        super
+      def target_architecture
+        @target_architecture ||= if new_resource.architecture.nil?
+                                   node_windows_architecture(run_context.node)
+                                 else
+                                   new_resource.architecture
+                                 end
+      end
 
-        target_architecture = if new_resource.architecture.nil?
-                                node_windows_architecture(run_context.node)
-                              else
-                                new_resource.architecture
-                              end
-
-        @is_wow64 = wow64_architecture_override_required?(run_context.node, target_architecture)
-
-        @is_forced_32bit = forced_32bit_override_required?(run_context.node, target_architecture)
+      def basepath
+        if forced_32bit_override_required?(run_context.node, target_architecture)
+          wow64_directory
+        else
+          run_context.node["kernel"]["os_info"]["system_directory"]
+        end
       end
 
       public
@@ -48,8 +48,8 @@ class Chef
       action :run do
         wow64_redirection_state = nil
 
-        if @is_wow64
-          wow64_redirection_state = disable_wow64_file_redirection(@run_context.node)
+        if wow64_architecture_override_required?(run_context.node, target_architecture)
+          wow64_redirection_state = disable_wow64_file_redirection(run_context.node)
         end
 
         begin
@@ -58,7 +58,7 @@ class Chef
           raise
         ensure
           unless wow64_redirection_state.nil?
-            restore_wow64_file_redirection(@run_context.node, wow64_redirection_state)
+            restore_wow64_file_redirection(run_context.node, wow64_redirection_state)
           end
         end
       end
