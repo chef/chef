@@ -56,7 +56,6 @@ class Chef
       end
 
       def validate_script_syntax!
-        interpreter_arguments = new_resource.flags
         Tempfile.open(["chef_powershell_script-user-code", ".ps1"]) do |user_script_file|
           # Wrap the user's code in a PowerShell script block so that
           # it isn't executed. However, syntactically invalid script
@@ -74,7 +73,7 @@ class Chef
           # written to the file system at this point, which is required since
           # the intent is to execute the code just written to it.
           user_script_file.close
-          validation_command = "\"#{interpreter}\" #{interpreter_arguments} -Command \". '#{user_script_file.path}'\""
+          validation_command = "\"#{interpreter}\" #{new_resource.flags} -Command \". '#{user_script_file.path}'\""
 
           # Note that other script providers like bash allow syntax errors
           # to be suppressed by setting 'returns' to a value that the
