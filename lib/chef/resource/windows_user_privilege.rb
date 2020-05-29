@@ -68,7 +68,7 @@ class Chef
                         }
 
       provides :windows_user_privilege
-      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege. \n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
+      description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
       introduced "16.0"
 
@@ -78,7 +78,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Network Logon Rights' do
         privilege      'SeNetworkLogonRight'
-        users          ['BUILTIN\Administrators', 'NT AUTHORITY\Authenticated Users']
+        users          ['BUILTIN\\Administrators', 'NT AUTHORITY\\Authenticated Users']
         action         :set
       end
       ```
@@ -88,7 +88,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Remote interactive logon' do
         privilege      'SeDenyRemoteInteractiveLogonRight'
-        users          ['Builtin\Guests', 'NT AUTHORITY\Local Account']
+        users          ['Builtin\\Guests', 'NT AUTHORITY\\Local Account']
         action         :add
       end
       ```
@@ -98,7 +98,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Create Pagefile' do
         privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\Guests', 'BUILTIN\Administrators']
+        users          ['BUILTIN\\Guests', 'BUILTIN\\Administrators']
         action         :set
       end
       ```
@@ -108,7 +108,7 @@ class Chef
       ```ruby
       windows_user_privilege 'Create Pagefile' do
         privilege      'SeCreatePagefilePrivilege'
-        users          ['BUILTIN\Guests']
+        users          ['BUILTIN\\Guests']
         action         :remove
       end
       ```

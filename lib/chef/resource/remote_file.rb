@@ -22,6 +22,7 @@ require_relative "file"
 require_relative "../provider/remote_file"
 require_relative "../mixin/securable"
 require_relative "../mixin/uris"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -31,7 +32,7 @@ class Chef
 
       provides :remote_file
 
-      description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the file resource."
+      description "Use the **remote_file** resource to transfer a file from a remote location using file specificity. This resource is similar to the **file** resource. Note: Fetching files from the `files/` directory in a cookbook should be done with the **cookbook_file** resource."
 
       def initialize(name, run_context = nil)
         super
@@ -72,7 +73,8 @@ class Chef
         end
       end
 
-      property :checksum, String
+      property :checksum, String,
+        description: "Optional, see `use_conditional_get`. The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{Chef::Dist::PRODUCT} does not download it."
 
       # Disable or enable ETag and Last Modified conditional GET. Equivalent to
       #   use_etag(true_or_false)
@@ -82,25 +84,39 @@ class Chef
         use_last_modified(true_or_false)
       end
 
-      property :use_etag, [ TrueClass, FalseClass ], default: true
+      property :use_etag, [ TrueClass, FalseClass ], default: true,
+        description: "Enable ETag headers. Set to false to disable ETag headers. To use this setting, `use_conditional_get` must also be set to true."
 
       alias :use_etags :use_etag
 
-      property :use_last_modified, [ TrueClass, FalseClass ], default: true
+      property :use_last_modified, [ TrueClass, FalseClass ], default: true,
+        description: "Enable `If-Modified-Since` headers. Set to `false` to disable `If-Modified-Since` headers. To use this setting, `use_conditional_get` must also be set to `true`."
 
-      property :ftp_active_mode, [ TrueClass, FalseClass ], default: false
+      property :ftp_active_mode, [ TrueClass, FalseClass ], default: false,
+        description: "Whether #{Chef::Dist::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
-      property :headers, Hash, default: lazy { {} }
+      property :headers, Hash, default: lazy { {} },
+        description: "A Hash of custom HTTP headers."
 
       property :show_progress, [ TrueClass, FalseClass ], default: false
 
-      property :remote_user, String
+      property :ssl_verify_mode, Symbol, equal_to: %i{verify_none verify_peer},
+        introduced: "16.2",
+        description: "Optional property to override SSL policy. If not specified, uses the SSL polify from `config.rb`."
 
-      property :remote_domain, String
+      property :remote_user, String,
+        introduced: "13.4",
+        description: '**Windows only** The name of a user with access to the remote file specified by the source property. The user name may optionally be specified with a domain, such as: `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. The domain may also be set using the `remote_domain` property. Note that this property is ignored if source is not a UNC path. If this property is specified, the `remote_password` property is required.'
 
-      property :remote_password, String, sensitive: true
+      property :remote_domain, String,
+        introduced: "13.4",
+        description: "**Windows only** The domain of the user specified by the `remote_user` property. By default the resource will authenticate against the domain of the remote system, or as a local account if the remote system is not joined to a domain. If the remote system is not part of a domain, it is necessary to authenticate as a local user on the remote system by setting the domain to `.`, for example: remote_domain '.'. The domain may also be specified as part of the `remote_user` property."
 
-      property :authentication, equal_to: %i{remote local}, default: :remote
+      property :remote_password, String, sensitive: true,
+        introduced: "13.4",
+        description: "**Windows only** The password of the user specified by the `remote_user` property. This property is required if `remote_user` is specified and may only be specified if `remote_user` is specified. The `sensitive` property for this resource will automatically be set to `true` if `remote_password` is specified."
+
+      property :authentication, Symbol, equal_to: %i{remote local}, default: :remote
 
       def after_created
         validate_identity_platform(remote_user, remote_password, remote_domain)

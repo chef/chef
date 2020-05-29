@@ -30,7 +30,6 @@ When the resource writer defines `load_current_value` on the resource class, it 
 2. Copy all non-desired-state values from the desired resource into the new instance.
 3. Call `load_current_value` on the new instance.
 
-
 ```ruby
 class File < Chef::Resource
   property :path, name_attribute: true

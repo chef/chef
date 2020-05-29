@@ -22,8 +22,7 @@ end
 
 gem "cheffish", ">= 14"
 
-# avoid bringing in the new http 4 gem that comes with other ffi baggage which breaks builds
-gem "chef-telemetry", "=1.0.3"
+gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 
 group(:omnibus_package) do
   gem "appbundler"

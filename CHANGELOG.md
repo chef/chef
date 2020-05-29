@@ -1,15 +1,26 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.1.17 -->
-## [v16.1.17](https://github.com/chef/chef/tree/v16.1.17) (2020-05-27)
+<!-- latest_release 16.2.8 -->
+## [v16.2.8](https://github.com/chef/chef/tree/v16.2.8) (2020-05-29)
 
 #### Merged Pull Requests
-- Chef-16.1 breaking change [#9890](https://github.com/chef/chef/pull/9890) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update chef-telemetry to 1.0.8 and InSpec to 4.19 [#9934](https://github.com/chef/chef/pull/9934) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update chef-telemetry to 1.0.8 and InSpec to 4.19 [#9934](https://github.com/chef/chef/pull/9934) ([tas50](https://github.com/tas50)) <!-- 16.2.8 -->
+- hostname: Improve the windows reboot message [#9927](https://github.com/chef/chef/pull/9927) ([tas50](https://github.com/tas50)) <!-- 16.2.7 -->
+- hostname: Remove support for Solaris 5.10 [#9928](https://github.com/chef/chef/pull/9928) ([tas50](https://github.com/tas50)) <!-- 16.2.6 -->
+- Make sure file is properly scoped in cron_access [#9931](https://github.com/chef/chef/pull/9931) ([tas50](https://github.com/tas50)) <!-- 16.2.5 -->
+- Fix chefstyle violations. [#9929](https://github.com/chef/chef/pull/9929) ([phiggins](https://github.com/phiggins)) <!-- 16.2.4 -->
+- Improve auto-generated docs [#9926](https://github.com/chef/chef/pull/9926) ([tas50](https://github.com/tas50)) <!-- 16.2.3 -->
+- Update to ssl_verify_mode on remote_file [#9925](https://github.com/chef/chef/pull/9925) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.2 -->
+- Update &amp; add resource descriptions for documentation generation [#9923](https://github.com/chef/chef/pull/9923) ([tas50](https://github.com/tas50)) <!-- 16.2.1 -->
+- Add ssl_verify option for remote_file [#9833](https://github.com/chef/chef/pull/9833) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.0 -->
+- Add an input property to the execute resource for passing input on STDIN [#9910](https://github.com/chef/chef/pull/9910) ([phiggins](https://github.com/phiggins)) <!-- 16.1.19 -->
+- Adds the homebrew_update resource [#9896](https://github.com/chef/chef/pull/9896) ([damacus](https://github.com/damacus)) <!-- 16.1.18 -->
 - Chef-16.1 breaking change [#9890](https://github.com/chef/chef/pull/9890) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.1.17 -->
 <!-- release_rollup -->
 

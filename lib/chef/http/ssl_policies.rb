@@ -129,5 +129,23 @@ class Chef
       end
     end
 
+    # This policy is used when we want to explicitly turn on verification
+    # for a specific request regardless of the API Policy. For example, when
+    # doing a `remote_file` where the user specified `verify_mode :verify_peer`
+    class VerifyPeerSSLPolicy < DefaultSSLPolicy
+      def set_verify_mode
+        http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
+    end
+
+    # This policy is used when we want to explicitly turn off verification
+    # for a specific request regardless of the API Policy. For example, when
+    # doing a `remote_file` where the user specified `verify_mode :verify_none`
+    class VerifyNoneSSLPolicy < DefaultSSLPolicy
+      def set_verify_mode
+        http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+    end
+
   end
 end

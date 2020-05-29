@@ -134,6 +134,9 @@ class Chef
             logger.trace("Turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
           end
+          if new_resource.ssl_verify_mode
+            opts[:ssl_verify_mode] = new_resource.ssl_verify_mode
+          end
           opts
         end
 

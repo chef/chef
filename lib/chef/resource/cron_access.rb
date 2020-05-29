@@ -28,7 +28,7 @@ class Chef
       provides(:cron_manage) # legacy name @todo in Chef 15 we should { true } this so it wins over the cookbook
 
       introduced "14.4"
-      description "Use the **cron_access** resource to manage the /etc/cron.allow and /etc/cron.deny files. Note: This resource previously shipped in the `cron` cookbook as `cron_manage`, which it can still be used as for backwards compatibility with existing Chef Infra Client releases."
+      description "Use the **cron_access** resource to manage cron's cron.allow and cron.deny files. Note: This resource previously shipped in the `cron` cookbook as `cron_manage`, which it can still be used as for backwards compatibility with existing Chef Infra Client releases."
       examples <<~DOC
         **Add the mike user to cron.allow**
 
@@ -58,11 +58,18 @@ class Chef
         description: "An optional property to set the user name if it differs from the resource block's name.",
         name_property: true
 
+      CRON_PATHS = {
+          "aix" => "/var/adm/cron",
+          "solaris" => "/etc/cron.d",
+          "default" => "/etc",
+      }.freeze
+
       action :allow do
         description "Add the user to the cron.allow file."
+        allow_path = ::File.join(value_for_platform_family(CRON_PATHS), "cron.allow")
 
         with_run_context :root do
-          edit_resource(:template, "/etc/cron.allow") do |new_resource|
+          edit_resource(:template, allow_path) do |new_resource|
             source ::File.expand_path("../support/cron_access.erb", __FILE__)
             local true
             mode "0600"
@@ -76,9 +83,10 @@ class Chef
 
       action :deny do
         description "Add the user to the cron.deny file."
+        deny_path = ::File.join(value_for_platform_family(CRON_PATHS), "cron.deny")
 
         with_run_context :root do
-          edit_resource(:template, "/etc/cron.deny") do |new_resource|
+          edit_resource(:template, deny_path) do |new_resource|
             source ::File.expand_path("../support/cron_access.erb", __FILE__)
             local true
             mode "0600"

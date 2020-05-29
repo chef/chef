@@ -292,6 +292,21 @@ class Chef
     private
 
     # @api private
+    def ssl_policy
+      return Chef::HTTP::APISSLPolicy unless @options[:ssl_verify_mode]
+
+      case @options[:ssl_verify_mode]
+      when :verify_none
+        Chef::HTTP::VerifyNoneSSLPolicy
+      when :verify_peer
+        Chef::HTTP::VerifyPeerSSLPolicy
+      else
+        Chef::Log.error("Chef::HTTP was passed an ssl_verify_mode of #{@options[:ssl_verify_mode]} which is unsupported. Falling back to the API policy")
+        Chef::HTTP::APISSLPolicy
+      end
+    end
+
+    # @api private
     def build_http_client(base_url)
       if chef_zero_uri?(base_url)
         # PERFORMANCE CRITICAL: *MUST* lazy require here otherwise we load up webrick
@@ -304,7 +319,7 @@ class Chef
 
         SocketlessChefZeroClient.new(base_url)
       else
-        BasicClient.new(base_url, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: keepalives)
+        BasicClient.new(base_url, ssl_policy: ssl_policy, keepalives: keepalives)
       end
     end
 

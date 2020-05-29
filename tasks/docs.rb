@@ -184,7 +184,7 @@ namespace :docs_site do
       properties = {}
 
       # these package properties support passing arrays for the package name
-      properties["common_resource_functionality_multiple_packages"] = true if %w{yum_package apt_package zypper_package homebrew_package dnf_package pacman_package}.include?(name)
+      properties["common_resource_functionality_multiple_packages"] = true if %w{yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
 
       properties["common_resource_functionality_resources_common_windows_security"] = true if name == "remote_directory"
 
