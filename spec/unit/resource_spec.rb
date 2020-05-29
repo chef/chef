@@ -378,7 +378,7 @@ describe Chef::Resource do
       it "does not propagate validation errors" do
         resource_class = Class.new(Chef::Resource) { property :foo, String, required: true }
         resource = resource_class.new("required_property_tests")
-        expect { resource.to_text }.to_not raise_error Chef::Exceptions::ValidationFailed
+        expect { resource.to_text }.to_not raise_error
       end
     end
   end
