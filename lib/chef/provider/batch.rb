@@ -24,10 +24,6 @@ class Chef
 
       provides :batch
 
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context, ".bat")
-      end
-
       def command
         basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
 
@@ -40,6 +36,9 @@ class Chef
         new_resource.flags.nil? ? "/c" : new_resource.flags + " /c"
       end
 
+      def script_extension
+        ".bat"
+      end
     end
   end
 end

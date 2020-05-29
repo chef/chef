@@ -26,8 +26,8 @@ class Chef
 
       provides :powershell_script
 
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context, ".ps1")
+      def initialize(*args)
+        super
         add_exit_status_wrapper
       end
 
@@ -182,6 +182,9 @@ class Chef
         EOH
       end
 
+      def script_extension
+        ".ps1"
+      end
     end
   end
 end

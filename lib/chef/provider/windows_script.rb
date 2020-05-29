@@ -29,9 +29,8 @@ class Chef
 
       include Chef::Mixin::WindowsArchitectureHelper
 
-      def initialize( new_resource, run_context, script_extension = "")
-        super( new_resource, run_context )
-        @script_extension = script_extension
+      def initialize(new_resource, run_context)
+        super
 
         target_architecture = if new_resource.architecture.nil?
                                 node_windows_architecture(run_context.node)
@@ -65,10 +64,11 @@ class Chef
       end
 
       def script_file
-        base_script_name = "chef-script"
-        temp_file_arguments = [ base_script_name, @script_extension ]
+        @script_file ||= Tempfile.open(["chef-script", script_extension])
+      end
 
-        @script_file ||= Tempfile.open(temp_file_arguments)
+      def script_extension
+        raise Chef::Exceptions::Override, "You must override #{__method__} in #{self}"
       end
     end
   end
