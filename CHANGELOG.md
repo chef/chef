@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.11.6 -->
-## [v15.11.6](https://github.com/chef/chef/tree/v15.11.6) (2020-05-29)
+<!-- latest_release 15.11.7 -->
+## [v15.11.7](https://github.com/chef/chef/tree/v15.11.7) (2020-05-29)
 
 #### Merged Pull Requests
-- Avoid some constant warnings in specs [#9935](https://github.com/chef/chef/pull/9935) ([tas50](https://github.com/tas50))
+- Pull in spec task / helper from master [#9936](https://github.com/chef/chef/pull/9936) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in spec task / helper from master [#9936](https://github.com/chef/chef/pull/9936) ([tas50](https://github.com/tas50)) <!-- 15.11.7 -->
 - Avoid some constant warnings in specs [#9935](https://github.com/chef/chef/pull/9935) ([tas50](https://github.com/tas50)) <!-- 15.11.6 -->
 - Additional Chef-16 knife config API compatibility [#9924](https://github.com/chef/chef/pull/9924) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.11.5 -->
 - Pin habitat bundler to 1.17.3 [#9915](https://github.com/chef/chef/pull/9915) ([tas50](https://github.com/tas50)) <!-- 15.11.4 -->
