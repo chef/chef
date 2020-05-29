@@ -66,7 +66,7 @@ class Chef
 
       action :allow do
         description "Add the user to the cron.allow file."
-        allow_path = File.join(value_for_platform_family(CRON_PATHS), "cron.allow")
+        allow_path = ::File.join(value_for_platform_family(CRON_PATHS), "cron.allow")
 
         with_run_context :root do
           edit_resource(:template, allow_path) do |new_resource|
@@ -83,7 +83,7 @@ class Chef
 
       action :deny do
         description "Add the user to the cron.deny file."
-        deny_path = File.join(value_for_platform_family(CRON_PATHS), "cron.deny")
+        deny_path = ::File.join(value_for_platform_family(CRON_PATHS), "cron.deny")
 
         with_run_context :root do
           edit_resource(:template, deny_path) do |new_resource|
