@@ -26,11 +26,6 @@ class Chef
 
       provides :powershell_script
 
-      def initialize(*args)
-        super
-        add_exit_status_wrapper
-      end
-
       action :run do
         validate_script_syntax!
         super()
@@ -53,12 +48,11 @@ class Chef
 
       protected
 
-      # Process exit codes are strange with PowerShell and require
-      # special handling to cover common use cases.
-      def add_exit_status_wrapper
-        self.code = wrapper_script
+      def code
+        code = wrapper_script
         logger.trace("powershell_script provider called with script code:\n\n#{new_resource.code}\n")
         logger.trace("powershell_script provider will execute transformed code:\n\n#{code}\n")
+        code
       end
 
       def validate_script_syntax!
@@ -99,6 +93,8 @@ class Chef
         end
       end
 
+      # Process exit codes are strange with PowerShell and require
+      # special handling to cover common use cases.
       # A wrapper script is used to launch user-supplied script while
       # still obtaining useful process exit codes. Unless you
       # explicitly call exit in PowerShell, the powershell.exe
