@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.5 -->
-## [v16.2.5](https://github.com/chef/chef/tree/v16.2.5) (2020-05-29)
+<!-- latest_release 16.2.6 -->
+## [v16.2.6](https://github.com/chef/chef/tree/v16.2.6) (2020-05-29)
 
 #### Merged Pull Requests
-- Make sure file is properly scoped in cron_access [#9931](https://github.com/chef/chef/pull/9931) ([tas50](https://github.com/tas50))
+- hostname: Remove support for Solaris 5.10 [#9928](https://github.com/chef/chef/pull/9928) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- hostname: Remove support for Solaris 5.10 [#9928](https://github.com/chef/chef/pull/9928) ([tas50](https://github.com/tas50)) <!-- 16.2.6 -->
 - Make sure file is properly scoped in cron_access [#9931](https://github.com/chef/chef/pull/9931) ([tas50](https://github.com/tas50)) <!-- 16.2.5 -->
 - Fix chefstyle violations. [#9929](https://github.com/chef/chef/pull/9929) ([phiggins](https://github.com/phiggins)) <!-- 16.2.4 -->
 - Improve auto-generated docs [#9926](https://github.com/chef/chef/pull/9926) ([tas50](https://github.com/tas50)) <!-- 16.2.3 -->
