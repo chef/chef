@@ -43,9 +43,7 @@ class Chef
         end
       end
 
-      public
-
-      action :run do
+      def with_wow64_redirection_disabled
         wow64_redirection_state = nil
 
         if wow64_architecture_override_required?(run_context.node, target_architecture)
@@ -53,13 +51,21 @@ class Chef
         end
 
         begin
-          super()
+          yield
         rescue
           raise
         ensure
           unless wow64_redirection_state.nil?
             restore_wow64_file_redirection(run_context.node, wow64_redirection_state)
           end
+        end
+      end
+
+      public
+
+      action :run do
+        with_wow64_redirection_disabled do
+          super()
         end
       end
 
