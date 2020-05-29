@@ -93,7 +93,7 @@ describe Chef::FileAccessControl do
     end
 
     it "wraps uids to their negative complements to correctly handle negative uids" do
-      # More: Mac OS X (at least) has negative UIDs for 'nobody' and some other
+      # More: macOS (at least) has negative UIDs for 'nobody' and some other
       # users. Ruby doesn't believe in negative UIDs so you get the diminished radix
       # complement (i.e., it wraps around the maximum size of C unsigned int) of these
       # uids. So we have to get ruby and negative uids to smoke the peace pipe
