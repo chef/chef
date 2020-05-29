@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.4 -->
-## [v16.2.4](https://github.com/chef/chef/tree/v16.2.4) (2020-05-28)
+<!-- latest_release 16.2.5 -->
+## [v16.2.5](https://github.com/chef/chef/tree/v16.2.5) (2020-05-29)
 
 #### Merged Pull Requests
-- Fix chefstyle violations. [#9929](https://github.com/chef/chef/pull/9929) ([phiggins](https://github.com/phiggins))
+- Make sure file is properly scoped in cron_access [#9931](https://github.com/chef/chef/pull/9931) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure file is properly scoped in cron_access [#9931](https://github.com/chef/chef/pull/9931) ([tas50](https://github.com/tas50)) <!-- 16.2.5 -->
 - Fix chefstyle violations. [#9929](https://github.com/chef/chef/pull/9929) ([phiggins](https://github.com/phiggins)) <!-- 16.2.4 -->
 - Improve auto-generated docs [#9926](https://github.com/chef/chef/pull/9926) ([tas50](https://github.com/tas50)) <!-- 16.2.3 -->
 - Update to ssl_verify_mode on remote_file [#9925](https://github.com/chef/chef/pull/9925) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.2 -->
