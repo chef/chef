@@ -54,10 +54,7 @@ describe Chef::Provider::PowershellScript, "action_run" do
 
   context "when setting interpreter flags" do
     before(:each) do
-      allow(provider).to receive(:is_forced_32bit).and_return(false)
-      os_info_double = double("os_info")
-      allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
-      allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
+      allow(provider).to receive(:basepath).and_return("C:\\Windows\\system32")
     end
 
     it "sets the -File flag as the last flag" do
