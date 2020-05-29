@@ -27,7 +27,7 @@ EOF
 
 # Output of the command:
 # => gpg --with-fingerprint [FILE]
-GPG_FINGER = <<~EOF.freeze
+ZYPPER_GPG_FINGER = <<~EOF.freeze
   pub  2048R/3DBDC284 2011-08-19 [expires: 2024-06-14]
         Key fingerprint = 573B FD6B 3D8F BC64 1079  A6AB ABF5 BD82 7BD9 BF62
   uid                            nginx signing key <signing-key@nginx.com>
@@ -49,7 +49,7 @@ describe Chef::Provider::ZypperRepository do
   end
 
   let(:gpg_finger) do
-    double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
+    double("shell_out", stdout: ZYPPER_GPG_FINGER, exitstatus: 0, error?: false)
   end
 
   it "responds to load_current_resource" do
