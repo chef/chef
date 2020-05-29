@@ -38,7 +38,7 @@ EOF
 
 # Output of the command:
 # => gpg --with-fingerprint --with-colons [FILE]
-GPG_FINGER = <<~EOF.freeze
+APT_GPG_FINGER = <<~EOF.freeze
   pub:-:1024:17:327574EE02A818DD:2009-04-22:::-:Cloudera Apt Repository:
   fpr:::::::::F36A89E33CC1BD0F71079007327574EE02A818DD:
   sub:-:2048:16:84080586D1CA74A1:2009-04-22::::
@@ -63,7 +63,7 @@ describe Chef::Provider::AptRepository do
   end
 
   let(:gpg_finger) do
-    double("shell_out", stdout: GPG_FINGER, exitstatus: 0, error?: false)
+    double("shell_out", stdout: APT_GPG_FINGER, exitstatus: 0, error?: false)
   end
 
   let(:gpg_shell_out_success) do
