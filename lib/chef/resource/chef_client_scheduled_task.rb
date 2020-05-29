@@ -140,7 +140,7 @@ class Chef
         # According to https://docs.microsoft.com/en-us/windows/desktop/taskschd/schtasks,
         # the :once, :onstart, :onlogon, and :onidle schedules don't accept schedule modifiers
 
-        frequency_mod = if new_resource.frequency == 'minutes' && new_resource.frequency_modifier == 30
+        frequency_mod = if new_resource.frequency == "minute" && new_resource.frequency_modifier == 30
                           30
                         elsif new_resource.frequency_modifier != 30
                           new_resource.frequency_modifier
