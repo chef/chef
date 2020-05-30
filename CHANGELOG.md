@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.8 -->
-## [v16.2.8](https://github.com/chef/chef/tree/v16.2.8) (2020-05-29)
+<!-- latest_release 16.2.9 -->
+## [v16.2.9](https://github.com/chef/chef/tree/v16.2.9) (2020-05-30)
 
 #### Merged Pull Requests
-- Update chef-telemetry to 1.0.8 and InSpec to 4.19 [#9934](https://github.com/chef/chef/pull/9934) ([tas50](https://github.com/tas50))
+- Set up CI with Azure Pipelines [#9894](https://github.com/chef/chef/pull/9894) ([btm](https://github.com/btm))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Set up CI with Azure Pipelines [#9894](https://github.com/chef/chef/pull/9894) ([btm](https://github.com/btm)) <!-- 16.2.9 -->
 - Update chef-telemetry to 1.0.8 and InSpec to 4.19 [#9934](https://github.com/chef/chef/pull/9934) ([tas50](https://github.com/tas50)) <!-- 16.2.8 -->
 - hostname: Improve the windows reboot message [#9927](https://github.com/chef/chef/pull/9927) ([tas50](https://github.com/tas50)) <!-- 16.2.7 -->
 - hostname: Remove support for Solaris 5.10 [#9928](https://github.com/chef/chef/pull/9928) ([tas50](https://github.com/tas50)) <!-- 16.2.6 -->
