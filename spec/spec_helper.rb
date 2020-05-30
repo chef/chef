@@ -24,17 +24,16 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
-# Ruby 1.9 Compat
-$:.unshift File.expand_path("../..", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../..", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../chef-config/lib", __FILE__)
+$LOAD_PATH.unshift File.expand_path("../../chef-utils/lib", __FILE__)
+$LOAD_PATH.unshift File.dirname(__FILE__)
 
 require "rubygems"
 require "rspec/mocks"
 
 require "webmock/rspec"
-
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
-$:.unshift(File.expand_path("../lib", __FILE__))
-$:.unshift(File.dirname(__FILE__))
 
 require "chef"
 require "chef/knife"
