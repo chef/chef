@@ -24,10 +24,3 @@ macos_userdefaults "set dock size" do
   key "tilesize"
   value "20"
 end
-
-macos_userdefaults "disable time machine normal schedule" do
-  domain "/System/Library/LaunchDaemons/com.apple.backupd-auto"
-  key "Disabled"
-  value "TRUE"
-  sudo true
-end
