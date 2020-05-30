@@ -5,9 +5,9 @@
 # Copyright:: Copyright (c) Chef Software Inc.
 #
 
-dmg_package "Tunnelblick" do
-  source   "https://tunnelblick.net/release/Tunnelblick_3.8.2a_build_5481.dmg"
-  checksum "3857f395f2c0026943bc76d46cb8bb97f5655e9ea0d9a8d2bdca1e5d82a7325b"
+dmg_package "LittleSecrets" do
+  source   "https://www.mani.de/download/littlesecrets/LittleSecrets1.9.4.dmg"
+  checksum "8281c1f648c038b296a02940126c29032ff387b90a880d63834e303e1b3a5ff7"
   action   :install
 end
 
