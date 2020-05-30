@@ -61,5 +61,7 @@ launchd "io.chef.testing.fake" do
   action "enable"
 end
 
+include_recipe "::_dmg_package"
+include_recipe "::_macos_userdefaults"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
