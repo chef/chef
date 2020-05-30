@@ -6,9 +6,8 @@ variables:
 
 trigger:
 - master
-# TODO: 20190528 - should we be testing end_to_end on chef-15 and chef-14?
+# TODO: 20190528 - should we be testing end_to_end on chef-15?
 #- chef-15
-#- chef-14
 
 pool:
   vmImage: $(imageName)
@@ -17,9 +16,9 @@ jobs:
   - job:
     strategy:
       matrix:
-        linux:
+        ubuntu_kitchen_tests:
           imageName: 'ubuntu-latest'
-        mac:
+        mac_kitchen_tests:
           imageName: 'macos-latest'
 
     steps:
@@ -53,7 +52,7 @@ jobs:
   - job:
     strategy:
       matrix:
-        windows:
+        windows_kitchen_tests:
           imageName: 'windows-latest'
 
     steps:
