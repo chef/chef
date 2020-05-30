@@ -16,9 +16,9 @@ jobs:
   - job:
     strategy:
       matrix:
-        linux:
+        ubuntu_kitchen_tests:
           imageName: 'ubuntu-latest'
-        mac:
+        mac_kitchen_tests:
           imageName: 'macos-latest'
 
     steps:
@@ -52,7 +52,7 @@ jobs:
   - job:
     strategy:
       matrix:
-        windows:
+        windows_kitchen_tests:
           imageName: 'windows-latest'
 
     steps:
