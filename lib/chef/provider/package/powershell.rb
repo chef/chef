@@ -53,6 +53,9 @@ class Chef
 
         # Installs the package specified with the version passed else latest version will be installed
         def install_package(names, versions)
+          # To enable tls 1.2, which is disabled by default in some OS
+          powershell_out("[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12")
+
           names.each_with_index do |name, index|
             cmd = powershell_out(build_powershell_package_command("Install-Package '#{name}'", versions[index]), timeout: new_resource.timeout)
             next if cmd.nil?
@@ -115,7 +118,8 @@ class Chef
           command = [command] unless command.is_a?(Array)
           cmdlet_name = command.first
           command.unshift("(")
-          %w{-Force -ForceBootstrap}.each do |arg|
+          # -WarningAction SilentlyContinue is used to suppress the warnings from stdout
+          %w{-Force -ForceBootstrap -WarningAction SilentlyContinue}.each do |arg|
             command.push(arg)
           end
           command.push("-RequiredVersion #{version}") if version
