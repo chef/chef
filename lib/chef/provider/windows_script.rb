@@ -25,6 +25,8 @@ class Chef
 
       protected
 
+      attr_accessor :script_file_path
+
       include Chef::Mixin::WindowsArchitectureHelper
 
       def target_architecture
@@ -62,22 +64,22 @@ class Chef
       end
 
       def command
-        "\"#{interpreter}\" #{flags} \"#{script_file.path}\""
+        "\"#{interpreter}\" #{flags} \"#{script_file_path}\""
       end
 
-      def set_owner_and_group
+      def set_owner_and_group(file_path)
         if ChefUtils.windows?
           # And on Windows also this is a no-op if there is no user specified.
-          grant_alternate_user_read_access
+          grant_alternate_user_read_access(file_path)
         else
           # FileUtils itself implements a no-op if +user+ or +group+ are nil
           # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
           # as an unprivileged user.
-          FileUtils.chown(new_resource.user, new_resource.group, script_file.path)
+          FileUtils.chown(new_resource.user, new_resource.group, file_path)
         end
       end
 
-      def grant_alternate_user_read_access
+      def grant_alternate_user_read_access(file_path)
         # Do nothing if an alternate user isn't specified -- the file
         # will already have the correct permissions for the user as part
         # of the default ACL behavior on Windows.
@@ -85,7 +87,7 @@ class Chef
 
         # Duplicate the script file's existing DACL
         # so we can add an ACE later
-        securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(script_file.path)
+        securable_object = Chef::ReservedNames::Win32::Security::SecurableObject.new(file_path)
         aces = securable_object.security_descriptor.dacl.reduce([]) { |result, current| result.push(current) }
 
         username = new_resource.user
@@ -107,19 +109,20 @@ class Chef
         (securable_object.dacl = acl)
       end
 
-      def unlink_script_file
-        script_file && script_file.close!
-      end
-
       def with_temp_script_file
-        script_file.puts(code)
-        script_file.close
+        Tempfile.open(["chef-script", script_extension]) do |script_file|
+          script_file.puts(code)
+          script_file.close
 
-        set_owner_and_group
+          set_owner_and_group(script_file.path)
 
-        yield
+          # This needs to be set here so that the call to #command in Execute works.
+          self.script_file_path = script_file.path
 
-        unlink_script_file
+          yield
+
+          self.script_file_path = nil
+        end
       end
 
       def input
@@ -134,10 +137,6 @@ class Chef
             super()
           end
         end
-      end
-
-      def script_file
-        @script_file ||= Tempfile.open(["chef-script", script_extension])
       end
 
       def script_extension

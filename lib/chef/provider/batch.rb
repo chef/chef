@@ -27,7 +27,7 @@ class Chef
       def command
         interpreter_path = Chef::Util::PathHelper.join(basepath, interpreter)
 
-        "\"#{interpreter_path}\" #{new_resource.flags} /c \"#{script_file.path}\""
+        "\"#{interpreter_path}\" #{new_resource.flags} /c \"#{script_file_path}\""
       end
 
       def script_extension

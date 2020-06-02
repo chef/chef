@@ -41,7 +41,7 @@ class Chef
         # error status of a failed Windows process that ran at the
         # end of the script, it gets changed to '1'.
         #
-        "\"#{interpreter_path}\" #{new_resource.flags} -File \"#{script_file.path}\""
+        "\"#{interpreter_path}\" #{new_resource.flags} -File \"#{script_file_path}\""
       end
 
       protected
