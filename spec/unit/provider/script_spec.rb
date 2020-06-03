@@ -36,12 +36,12 @@ describe Chef::Provider::Script, "action_run" do
 
   describe "#command" do
     it "is only the intepreter in quotes by default" do
-      expect(provider.command.strip).to eq(%Q{"perl"})
+      expect(provider.command.strip).to eq(%q{"perl"})
     end
 
     it "is the interpreter in quotes with the flags when flags are used" do
       new_resource.flags "-f"
-      expect(provider.command).to eq(%Q{"perl" -f})
+      expect(provider.command).to eq(%q{"perl" -f})
     end
   end
 
