@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.2.10 -->
+## [v16.2.10](https://github.com/chef/chef/tree/v16.2.10) (2020-06-03)
 
 #### Merged Pull Requests
+- archive_file: better handle mode property and deprecate Integer values [#9950](https://github.com/chef/chef/pull/9950) ([tas50](https://github.com/tas50))
 - Add additional testing for macOS hosts [#9939](https://github.com/chef/chef/pull/9939) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- archive_file: better handle mode property and deprecate Integer values [#9950](https://github.com/chef/chef/pull/9950) ([tas50](https://github.com/tas50)) <!-- 16.2.10 -->
 - Add additional testing for macOS hosts [#9939](https://github.com/chef/chef/pull/9939) ([tas50](https://github.com/tas50)) <!-- 16.2.9 -->
 - Set up CI with Azure Pipelines [#9894](https://github.com/chef/chef/pull/9894) ([btm](https://github.com/btm)) <!-- 16.2.9 -->
 - Update chef-telemetry to 1.0.8 and InSpec to 4.19 [#9934](https://github.com/chef/chef/pull/9934) ([tas50](https://github.com/tas50)) <!-- 16.2.8 -->
