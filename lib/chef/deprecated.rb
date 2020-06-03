@@ -237,6 +237,10 @@ class Chef
       target 29
     end
 
+    class ArchiveFileIntegerFileMode < Base
+      target 30
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"
