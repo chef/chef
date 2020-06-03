@@ -39,22 +39,5 @@ describe Chef::Provider::PowershellScript, "action_run" do
       flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
       expect(flags.pop).to eq("-File")
     end
-
-    let(:execution_policy_flag) do
-      provider_flags = provider.flags.split(" ")
-      # Last occurance of "executionpolicy"
-      execution_policy_index = provider_flags.map(&:downcase).rindex("-executionpolicy")
-
-      execution_policy_index ? provider_flags[execution_policy_index + 1] : nil
-    end
-
-    it "sets default -ExecutionPolicy flag to 'Bypass'" do
-      expect(execution_policy_flag).to eq("Bypass")
-    end
-
-    it "sets user defined -ExecutionPolicy flag to 'RemoteSigned'" do
-      new_resource.flags "-ExecutionPolicy RemoteSigned"
-      expect(execution_policy_flag).to eq("RemoteSigned")
-    end
   end
 end

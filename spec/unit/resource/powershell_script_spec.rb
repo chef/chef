@@ -136,23 +136,18 @@ describe Chef::Resource::PowershellScript do
     it_behaves_like "a Windows script resource"
   end
 
-  context "Attribute: flags" do
+  describe "#flags" do
     let(:resource) { @resource }
-    let(:default) { "FLAGS" }
-    before(:each) do
-      allow(@resource).to receive(:default_flags).and_return(default)
+
+    it "appends user's flags to the defaults" do
+      flags = %q{-Lunch "tacos"}
+      resource.flags = flags
+
+      expect(resource.flags).to eq("#{resource.default_flags} #{flags}")
     end
-    context "When User input given" do
-      it "Appands user input after the default flags" do
-        flags = "USER FLAGS"
-        resource.flags flags
-        expect(resource.flags).to eql(default + " " + flags)
-      end
-    end
-    context "When User input is not given" do
-      it "Uses default flags" do
-        expect(resource.flags).to eql(default)
-      end
+
+    it "uses the defaults when user doesn't provide flags" do
+      expect(resource.flags).to eq(resource.default_flags)
     end
   end
 end
