@@ -65,7 +65,7 @@ class Chef
         description: "The group of the extracted files."
 
       property :mode, [String, Integer],
-        description: "The mode of the extracted files. Integer values are deprecated as octal strings (ex. 0755) would not be interpreted correctly.",
+        description: "The mode of the extracted files. Integer values are deprecated as octal values (ex. 0755) would not be interpreted correctly.",
         default: "755"
 
       property :destination, String,
