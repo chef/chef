@@ -109,6 +109,7 @@ end
 
 include_recipe "::_apt" if platform_family?("debian")
 include_recipe "::_zypper" if suse?
+include_recipe "::_snap" if platform?("ubuntu")
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
 include_recipe "::_sysctl"
