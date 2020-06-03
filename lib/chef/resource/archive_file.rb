@@ -19,6 +19,7 @@
 #
 
 require_relative "../resource"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Resource
@@ -35,6 +36,18 @@ class Chef
 
         ```ruby
         archive_file 'Precompiled.zip' do
+          path '/tmp/Precompiled.zip'
+          destination '/srv/files'
+        end
+        ```
+
+        **Set specific permissions on the extracted files**:
+
+        ```ruby
+        archive_file 'Precompiled.zip' do
+          owner 'tsmith'
+          group 'staff'
+          mode '700'
           path '/tmp/Precompiled.zip'
           destination '/srv/files'
         end
@@ -72,10 +85,10 @@ class Chef
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
 
-      require "fileutils" unless defined?(FileUtils)
-
       action :extract do
         description "Extract and archive file."
+
+        require_libarchive
 
         unless ::File.exist?(new_resource.path)
           raise Errno::ENOENT, "No archive found at #{new_resource.path}! Cannot continue."
@@ -114,6 +127,10 @@ class Chef
       end
 
       action_class do
+        def require_libarchive
+          require "ffi-libarchive"
+        end
+
         def define_resource_requirements
           if new_resource.mode.is_a?(Integer)
             Chef.deprecated(:archive_file_integer_file_mode, "The mode property should be passed to archive_file resources as a String and not an Integer to ensure the value is properly interpreted.")
@@ -143,8 +160,6 @@ class Chef
         #
         # @return [Boolean]
         def archive_differs_from_disk?(src, dest)
-          require "ffi-libarchive"
-
           modified = false
           Dir.chdir(dest) do
             archive = Archive::Reader.open_filename(src)
@@ -171,8 +186,6 @@ class Chef
         #
         # @return [void]
         def extract(src, dest, options = [])
-          require "ffi-libarchive"
-
           converge_by("extract #{src} to #{dest}") do
             flags = [options].flatten.map { |option| extract_option_map[option] }.compact.reduce(:|)
 
