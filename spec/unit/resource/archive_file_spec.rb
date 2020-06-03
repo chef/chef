@@ -18,8 +18,11 @@
 require "spec_helper"
 
 describe Chef::Resource::ArchiveFile do
-
-  let(:resource) { Chef::Resource::ArchiveFile.new("foo") }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::ArchiveFile.new("foo", run_context) }
+  let(:provider) { resource.provider_for_action(:extract) }
 
   it "has a resource name of :archive_file" do
     expect(resource.resource_name).to eql(:archive_file)
@@ -39,6 +42,12 @@ describe Chef::Resource::ArchiveFile do
 
   it "mode property defaults to '755'" do
     expect(resource.mode).to eql("755")
+  end
+
+  it "mode property throws a deprecation warning if Integers are passed" do
+    expect(Chef::Log).to receive(:deprecation)
+    resource.mode 755
+    provider.define_resource_requirements
   end
 
   it "options property defaults to [:time]" do
