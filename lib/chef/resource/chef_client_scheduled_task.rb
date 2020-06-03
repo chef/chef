@@ -82,7 +82,8 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "Numeric value to go with the scheduled task frequency",
-        default: 30
+        default: lazy { frequency == "minute" ? 30 : 1 }, 
+        default_description: "30 if frequency is 'minute', 1 otherwise"
 
       property :accept_chef_license, [true, false],
         description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
@@ -140,21 +141,13 @@ class Chef
         # According to https://docs.microsoft.com/en-us/windows/desktop/taskschd/schtasks,
         # the :once, :onstart, :onlogon, and :onidle schedules don't accept schedule modifiers
 
-        frequency_mod = if new_resource.frequency == "minute" && new_resource.frequency_modifier == 30
-                          30
-                        elsif new_resource.frequency_modifier != 30
-                          new_resource.frequency_modifier
-                        else
-                          1
-                        end
-
         windows_task new_resource.task_name do
           run_level                      :highest
           command                        full_command
           user                           new_resource.user
           password                       new_resource.password
           frequency                      new_resource.frequency.to_sym
-          frequency_modifier             frequency_mod if frequency_supports_frequency_modifier?
+          frequency_modifier             new_resource.frequency_modifier if frequency_supports_frequency_modifier?
           start_time                     new_resource.start_time
           start_day                      new_resource.start_date unless new_resource.start_date.nil?
           random_delay                   new_resource.splay if frequency_supports_random_delay?
