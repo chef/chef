@@ -67,18 +67,6 @@ class Chef
         "\"#{interpreter}\" #{flags} \"#{script_file_path}\""
       end
 
-      def set_owner_and_group(file_path)
-        if ChefUtils.windows?
-          # And on Windows also this is a no-op if there is no user specified.
-          grant_alternate_user_read_access(file_path)
-        else
-          # FileUtils itself implements a no-op if +user+ or +group+ are nil
-          # You can prove this by running FileUtils.chown(nil,nil,'/tmp/file')
-          # as an unprivileged user.
-          FileUtils.chown(new_resource.user, new_resource.group, file_path)
-        end
-      end
-
       def grant_alternate_user_read_access(file_path)
         # Do nothing if an alternate user isn't specified -- the file
         # will already have the correct permissions for the user as part
@@ -114,7 +102,7 @@ class Chef
           script_file.puts(code)
           script_file.close
 
-          set_owner_and_group(script_file.path)
+          grant_alternate_user_read_access(script_file.path)
 
           # This needs to be set here so that the call to #command in Execute works.
           self.script_file_path = script_file.path
