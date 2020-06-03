@@ -1,5 +1,7 @@
 puts "CHEF UTILS THINKS WE ARE ON UBUNTU" if ubuntu?
 puts "CHEF UTILS THINKS WE ARE ON RHEL" if rhel?
+puts "CHEF UTILS THINKS WE ARE ON MACOS" if macos?
+puts "CHEF UTILS THINKS WE ARE ON WINDOWS" if windows?
 
 #
 # ubuntu cookbook overrides
