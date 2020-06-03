@@ -43,6 +43,16 @@ describe Chef::Resource::ChefClientScheduledTask do
     expect(resource.frequency_modifier).to eql(10)
   end
 
+  it "expects default frequency modifier to be 30 when frequency is set to 'minute'" do
+    resource.frequency "minute"
+    expect(resource.frequency_modifier).to eql(30)
+  end
+
+  it "expects default frequency modifier to be 1 when frequency is set to 'daily'" do
+    resource.frequency "daily"
+    expect(resource.frequency_modifier).to eql(1)
+  end
+
   it "validates the start_time property input" do
     expect { resource.start_time("8:00 am") }.to raise_error(Chef::Exceptions::ValidationFailed)
     expect { resource.start_time("8:00") }.to raise_error(Chef::Exceptions::ValidationFailed)
@@ -70,12 +80,12 @@ describe Chef::Resource::ChefClientScheduledTask do
 
   describe "#client_cmd" do
     it "creates a valid command if using all default properties" do
-      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb")
+      expect(provider.client_cmd).to eql("/opt/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2")
+      expect(provider.client_cmd).to eql("/opt/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --foo 1 --bar 2") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb --foo 1 --bar 2")
     end
 
     it "uses custom config dir if set" do
@@ -86,17 +96,17 @@ describe Chef::Resource::ChefClientScheduledTask do
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "C:/foo/bar"
-      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c /etc/chef/client.rb")
+      expect(provider.client_cmd).to eql("/opt/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c /etc/chef/client.rb") | eql("C:/opscode/chef/bin/chef-client -L C:/foo/bar/my-client.log -c C:\\chef/client.rb")
     end
 
     it "uses custom chef-client binary if set" do
       resource.chef_binary_path "C:/foo/bar/chef-client"
-      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb")
+      expect(provider.client_cmd).to eql("C:/foo/bar/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb") | eql("C:/foo/bar/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb")
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.client_cmd).to eql("C:/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept")
+      expect(provider.client_cmd).to eql("/opt/opscode/chef/bin/chef-client -L /etc/chef/log/client.log -c /etc/chef/client.rb --chef-license accept") | eql("C:/opscode/chef/bin/chef-client -L C:\\chef/log/client.log -c C:\\chef/client.rb --chef-license accept")
     end
   end
 end
