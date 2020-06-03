@@ -65,7 +65,7 @@ class Chef
         description: "The group of the extracted files."
 
       property :mode, [String, Integer],
-        description: "The mode of the extracted files.",
+        description: "The mode of the extracted files. Integer values are deprecated as octal strings (ex. 0755) would not be interpreted correctly.",
         default: "755"
 
       property :destination, String,
@@ -97,7 +97,8 @@ class Chef
           Chef::Log.trace("File or directory does not exist at destination path: #{new_resource.destination}")
 
           converge_by("create directory #{new_resource.destination}") do
-            FileUtils.mkdir_p(new_resource.destination, mode: new_resource.mode.to_i)
+            # @todo when we remove the ability for mode to be an int we can remove the .to_s below
+            FileUtils.mkdir_p(new_resource.destination, mode: new_resource.mode.to_s.to_i(8))
           end
 
           extract(new_resource.path, new_resource.destination, Array(new_resource.options))
