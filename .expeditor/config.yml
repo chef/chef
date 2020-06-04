@@ -151,7 +151,7 @@ subscriptions:
   - workload: ruby_gem_published:ohai-*
     actions:
       - bash:.expeditor/update_dep.sh
-  - workload: ruby_gem_published:inspec-core-*
+  - workload: ruby_gem_published:inspec-core-bin-*
     actions:
       - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:train-core-*
