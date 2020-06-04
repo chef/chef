@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.11 -->
-## [v16.2.11](https://github.com/chef/chef/tree/v16.2.11) (2020-06-04)
+<!-- latest_release 16.2.12 -->
+## [v16.2.12](https://github.com/chef/chef/tree/v16.2.12) (2020-06-04)
 
 #### Merged Pull Requests
-- archive_file: move ffi-libarchive into a simple helper method [#9951](https://github.com/chef/chef/pull/9951) ([tas50](https://github.com/tas50))
+- Add nightly cleanup of orphaned test resources [#9943](https://github.com/chef/chef/pull/9943) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add nightly cleanup of orphaned test resources [#9943](https://github.com/chef/chef/pull/9943) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.12 -->
 - archive_file: move ffi-libarchive into a simple helper method [#9951](https://github.com/chef/chef/pull/9951) ([tas50](https://github.com/tas50)) <!-- 16.2.11 -->
 - archive_file: better handle mode property and deprecate Integer values [#9950](https://github.com/chef/chef/pull/9950) ([tas50](https://github.com/tas50)) <!-- 16.2.10 -->
 - Add additional testing for macOS hosts [#9939](https://github.com/chef/chef/pull/9939) ([tas50](https://github.com/tas50)) <!-- 16.2.9 -->
