@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: d8b485c06560bffe507ba519137a5aceb8ee0ac8
+  revision: 0e9ee45a766c84f9c5cfb867fbeb85c092121f37
   branch: master
   specs:
-    chefstyle (1.0.5)
-      rubocop (= 0.83.0)
+    chefstyle (1.1.0)
+      rubocop (= 0.85.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -39,7 +39,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (~> 1.9, >= 1.9.25)
+      ffi (>= 1.9.25, < 1.13)
       ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -73,7 +73,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (~> 1.9, >= 1.9.25)
+      ffi (>= 1.9.25, < 1.13)
       ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -158,10 +158,10 @@ GEM
       mixlib-log (>= 2.0, < 4.0)
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
-    cheffish (15.0.3)
+    cheffish (16.0.2)
       chef-zero (>= 14.0)
       net-ssh
-    coderay (1.1.2)
+    coderay (1.1.3)
     concurrent-ruby (1.1.6)
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
@@ -198,7 +198,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.19.0)
+    inspec-core (4.19.2)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0)
@@ -223,8 +223,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.19.0)
-      inspec-core (= 4.19.0)
+    inspec-core-bin (4.19.2)
+      inspec-core (= 4.19.2)
     ipaddress (0.8.3)
     iso8601 (0.12.1)
     json (2.3.0)
@@ -318,13 +318,17 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.83.0)
+    rubocop (0.85.0)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.7)
       rexml
+      rubocop-ast (>= 0.0.3)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
+    rubocop-ast (0.0.3)
+      parser (>= 2.7.0.1)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
     ruby-shadow (2.5.0)
