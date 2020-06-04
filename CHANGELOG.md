@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.13 -->
-## [v16.2.13](https://github.com/chef/chef/tree/v16.2.13) (2020-06-04)
+<!-- latest_release 16.2.14 -->
+## [v16.2.14](https://github.com/chef/chef/tree/v16.2.14) (2020-06-04)
 
 #### Merged Pull Requests
-- Pin FFI &lt; 1.13 and bump inspec-core-bin to 4.19.2 [#9954](https://github.com/chef/chef/pull/9954) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Fixed Powershell_Package does not throw error when it cannot connect … [#9946](https://github.com/chef/chef/pull/9946) ([sanga1794](https://github.com/sanga1794))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed Powershell_Package does not throw error when it cannot connect … [#9946](https://github.com/chef/chef/pull/9946) ([sanga1794](https://github.com/sanga1794)) <!-- 16.2.14 -->
 - Pin FFI &lt; 1.13 and bump inspec-core-bin to 4.19.2 [#9954](https://github.com/chef/chef/pull/9954) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.13 -->
 - Add nightly cleanup of orphaned test resources [#9943](https://github.com/chef/chef/pull/9943) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.12 -->
 - archive_file: move ffi-libarchive into a simple helper method [#9951](https://github.com/chef/chef/pull/9951) ([tas50](https://github.com/tas50)) <!-- 16.2.11 -->
