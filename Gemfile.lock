@@ -39,7 +39,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (~> 1.9, >= 1.9.25)
+      ffi (>= 1.9.25, < 1.13)
       ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -73,7 +73,7 @@ PATH
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (~> 1.9, >= 1.9.25)
+      ffi (>= 1.9.25, < 1.13)
       ffi-libarchive
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -177,9 +177,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     fauxhai-ng (8.2.0)
       net-ssh
-    ffi (1.13.0)
-    ffi (1.13.0-x64-mingw32)
-    ffi (1.13.0-x86-mingw32)
+    ffi (1.12.2)
+    ffi (1.12.2-x64-mingw32)
+    ffi (1.12.2-x86-mingw32)
     ffi-libarchive (1.0.0)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
