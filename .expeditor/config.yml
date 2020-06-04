@@ -69,6 +69,11 @@ github:
     - chef-14:
         version_constraint: 14*
 
+schedules:
+  - name: cleanup_orphaned_test_resources
+    description: Cleanup orphaned test resources
+    cronline: "0 1 * * *" # every day at 1am
+
 changelog:
   rollup_header: Changes not yet released to stable
 
@@ -96,6 +101,10 @@ merge_actions:
       only_if: built_in:bump_version
 
 subscriptions:
+  - workload: schedule_triggered:{{agent_id}}:cleanup_orphaned_test_resources:*
+    actions:
+      - bash:.expeditor/cleanup_orphaned_test_resources.sh
+
   # the omnibus/docker/gem chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
