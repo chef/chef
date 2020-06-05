@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Fix rspec warning about `not_to raise_error` with a specific exception. [#9937](https://github.com/chef/chef/pull/9937) ([phiggins](https://github.com/phiggins))
 - update learn chef name, discourse name, and copyright year [#9958](https://github.com/chef/chef/pull/9958) ([bennyvasquez](https://github.com/bennyvasquez))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix rspec warning about `not_to raise_error` with a specific exception. [#9937](https://github.com/chef/chef/pull/9937) ([phiggins](https://github.com/phiggins)) <!-- 16.2.16 -->
 - update learn chef name, discourse name, and copyright year [#9958](https://github.com/chef/chef/pull/9958) ([bennyvasquez](https://github.com/bennyvasquez)) <!-- 16.2.16 -->
 - Fix zypper_repository key handling on SLES 15+ [#9956](https://github.com/chef/chef/pull/9956) ([tas50](https://github.com/tas50)) <!-- 16.2.16 -->
 - Add spellcheck to CI [#9957](https://github.com/chef/chef/pull/9957) ([phiggins](https://github.com/phiggins)) <!-- 16.2.15 -->
