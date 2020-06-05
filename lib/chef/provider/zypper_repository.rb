@@ -119,7 +119,7 @@ class Chef
       #
       # @return [Gem::Version] the version of GPG
       def gpg_version
-        so = shell_out("gpg --version")
+        so = shell_out!("gpg --version")
         # matches 2.0 and 2.2 versions from SLES 12 and 15: https://rubular.com/r/e6D0WfGK6SXvUp
         version = /gpg \(GnuPG\)\s*(.*)/.match(so.stdout)[1]
         logger.trace("GPG package version is #{version}")
@@ -133,27 +133,30 @@ class Chef
       def key_installed?(key_path)
         so = shell_out("/bin/rpm -qa gpg-pubkey*")
         # expected output & match: http://rubular.com/r/RdF7EcXEtb
-        status = /gpg-pubkey-#{key_fingerprint(key_path)}/.match(so.stdout)
+        status = /gpg-pubkey-#{short_key_id(key_path)}/.match(so.stdout)
         logger.trace("GPG key at #{key_path} is known by rpm? #{status ? "true" : "false"}")
         status
       end
 
-      # extract the gpg key fingerprint from a local file
+      # extract the gpg key's short key id from a local file. Learning moment: This 8 hex value ID
+      # is sometimes incorrectly called the fingerprint. The fingerprint is the full length value
+      # and googling for that will just result in sad times.
+      #
       # @param [String] key_path the path to the key on the local filesystem
       #
-      # @return [String] the fingerprint of the key
-      def key_fingerprint(key_path)
+      # @return [String] the short key id of the key
+      def short_key_id(key_path)
         if gpg_version >= Gem::Version.new("2.2") # SLES 15+
           so = shell_out!("gpg --import-options import-show --dry-run --import --with-colons #{key_path}")
           # expected output and match: https://rubular.com/r/uXWJo3yfkli1qA
-          fingerprint = /fpr:*\h*(\h{8}):/.match(so.stdout)[1].downcase
+          short_key_id = /fpr:*\h*(\h{8}):/.match(so.stdout)[1].downcase
         else # SLES 12 and earlier
           so = shell_out!("gpg --with-fingerprint #{key_path}")
           # expected output and match: http://rubular.com/r/BpfMjxySQM
-          fingerprint = %r{pub\s*\S*/(\S*)}.match(so.stdout)[1].downcase
+          short_key_id = %r{pub\s*\S*/(\S*)}.match(so.stdout)[1].downcase
         end
-        logger.trace("GPG fingerprint of key at #{key_path} is #{fingerprint}")
-        fingerprint
+        logger.trace("GPG short key ID of key at #{key_path} is #{short_key_id}")
+        short_key_id
       end
 
       # install the provided gpg key
