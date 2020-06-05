@@ -102,7 +102,7 @@ class Chef
 
       property :ssl_verify_mode, Symbol, equal_to: %i{verify_none verify_peer},
         introduced: "16.2",
-        description: "Optional property to override SSL policy. If not specified, uses the SSL polify from `config.rb`."
+        description: "Optional property to override SSL policy. If not specified, uses the SSL policy from `config.rb`."
 
       property :remote_user, String,
         introduced: "13.4",
