@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.2.17 -->
+## [v16.2.17](https://github.com/chef/chef/tree/v16.2.17) (2020-06-05)
 
 #### Merged Pull Requests
+- Change script resources to use pipes rather than writing to temp files [#9932](https://github.com/chef/chef/pull/9932) ([phiggins](https://github.com/phiggins))
 - Fix rspec warning about `not_to raise_error` with a specific exception. [#9937](https://github.com/chef/chef/pull/9937) ([phiggins](https://github.com/phiggins))
 - update learn chef name, discourse name, and copyright year [#9958](https://github.com/chef/chef/pull/9958) ([bennyvasquez](https://github.com/bennyvasquez))
 <!-- latest_release -->
@@ -11,6 +12,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Change script resources to use pipes rather than writing to temp files [#9932](https://github.com/chef/chef/pull/9932) ([phiggins](https://github.com/phiggins)) <!-- 16.2.17 -->
 - Fix rspec warning about `not_to raise_error` with a specific exception. [#9937](https://github.com/chef/chef/pull/9937) ([phiggins](https://github.com/phiggins)) <!-- 16.2.16 -->
 - update learn chef name, discourse name, and copyright year [#9958](https://github.com/chef/chef/pull/9958) ([bennyvasquez](https://github.com/bennyvasquez)) <!-- 16.2.16 -->
 - Fix zypper_repository key handling on SLES 15+ [#9956](https://github.com/chef/chef/pull/9956) ([tas50](https://github.com/tas50)) <!-- 16.2.16 -->
