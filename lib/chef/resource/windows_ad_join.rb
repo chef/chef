@@ -25,6 +25,35 @@ class Chef
 
       description "Use the **windows_ad_join** resource to join a Windows Active Directory domain."
       introduced "14.0"
+      examples <<~DOC
+      **Join a domain**
+
+      ```ruby
+      windows_ad_join 'ad.example.org' do
+        domain_user 'nick'
+        domain_password 'p@ssw0rd1'
+      end
+      ```
+
+      **Join a domain, as `win-workstation`**
+
+      ```ruby
+      windows_ad_join 'ad.example.org' do
+        domain_user 'nick'
+        domain_password 'p@ssw0rd1'
+        new_hostname 'win-workstation'
+      end
+      ```
+
+      **Leave the current domain and re-join the `local` workgroup**
+
+      ```ruby
+      windows_ad_join 'Leave domain' do
+        action :leave
+        workgroup 'local'
+      end
+      ```
+      DOC
 
       property :domain_name, String,
         description: "An optional property to set the FQDN of the Active Directory domain to join if it differs from the resource block's name.",
