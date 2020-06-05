@@ -26,7 +26,7 @@ describe Chef::Resource::WindowsUac do
 
   %i{no_prompt secure_prompt_for_creds secure_prompt_for_consent prompt_for_creds prompt_for_consent prompt_for_consent_non_windows_binaries}.each do |val|
     it "the consent_behavior_admins property accepts :#{val}" do
-      expect { resource.consent_behavior_admins val }.not_to raise_error(ArgumentError)
+      expect { resource.consent_behavior_admins val }.not_to raise_error
     end
   end
 
@@ -36,7 +36,7 @@ describe Chef::Resource::WindowsUac do
 
   %i{auto_deny secure_prompt_for_creds prompt_for_creds}.each do |val|
     it "the consent_behavior_users property accepts :#{val}" do
-      expect { resource.consent_behavior_users val }.not_to raise_error(ArgumentError)
+      expect { resource.consent_behavior_users val }.not_to raise_error
     end
   end
 

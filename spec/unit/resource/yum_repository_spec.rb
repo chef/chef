@@ -73,52 +73,52 @@ describe Chef::Resource::YumRepository do
   end
 
   it "the timeout property expects numeric Strings" do
-    expect { resource.timeout "123" }.not_to raise_error(ArgumentError)
+    expect { resource.timeout "123" }.not_to raise_error
     expect { resource.timeout "123foo" }.to raise_error(ArgumentError)
   end
 
   it "the priority property expects numeric Strings from '1' to '99'" do
-    expect { resource.priority "99" }.not_to raise_error(ArgumentError)
-    expect { resource.priority "1" }.not_to raise_error(ArgumentError)
+    expect { resource.priority "99" }.not_to raise_error
+    expect { resource.priority "1" }.not_to raise_error
     expect { resource.priority "100" }.to raise_error(ArgumentError)
     expect { resource.priority "0" }.to raise_error(ArgumentError)
   end
 
   it "the failovermethod property accepts 'priority' or 'roundrobin'" do
-    expect { resource.failovermethod "priority" }.not_to raise_error(ArgumentError)
-    expect { resource.failovermethod "roundrobin" }.not_to raise_error(ArgumentError)
+    expect { resource.failovermethod "priority" }.not_to raise_error
+    expect { resource.failovermethod "roundrobin" }.not_to raise_error
     expect { resource.failovermethod "bob" }.to raise_error(ArgumentError)
   end
 
   it "the http_caching property accepts 'packages', 'all', or 'none'" do
-    expect { resource.http_caching "packages" }.not_to raise_error(ArgumentError)
-    expect { resource.http_caching "all" }.not_to raise_error(ArgumentError)
-    expect { resource.http_caching "none" }.not_to raise_error(ArgumentError)
+    expect { resource.http_caching "packages" }.not_to raise_error
+    expect { resource.http_caching "all" }.not_to raise_error
+    expect { resource.http_caching "none" }.not_to raise_error
     expect { resource.http_caching "bob" }.to raise_error(ArgumentError)
   end
 
   it "the metadata_expire property accepts a time value or 'never'" do
-    expect { resource.metadata_expire "100" }.not_to raise_error(ArgumentError)
-    expect { resource.metadata_expire "100d" }.not_to raise_error(ArgumentError)
-    expect { resource.metadata_expire "100h" }.not_to raise_error(ArgumentError)
-    expect { resource.metadata_expire "100m" }.not_to raise_error(ArgumentError)
-    expect { resource.metadata_expire "never" }.not_to raise_error(ArgumentError)
+    expect { resource.metadata_expire "100" }.not_to raise_error
+    expect { resource.metadata_expire "100d" }.not_to raise_error
+    expect { resource.metadata_expire "100h" }.not_to raise_error
+    expect { resource.metadata_expire "100m" }.not_to raise_error
+    expect { resource.metadata_expire "never" }.not_to raise_error
     expect { resource.metadata_expire "100s" }.to raise_error(ArgumentError)
   end
 
   it "the mirror_expire property accepts a time value" do
-    expect { resource.mirror_expire "100" }.not_to raise_error(ArgumentError)
-    expect { resource.mirror_expire "100d" }.not_to raise_error(ArgumentError)
-    expect { resource.mirror_expire "100h" }.not_to raise_error(ArgumentError)
-    expect { resource.mirror_expire "100m" }.not_to raise_error(ArgumentError)
+    expect { resource.mirror_expire "100" }.not_to raise_error
+    expect { resource.mirror_expire "100d" }.not_to raise_error
+    expect { resource.mirror_expire "100h" }.not_to raise_error
+    expect { resource.mirror_expire "100m" }.not_to raise_error
     expect { resource.mirror_expire "never" }.to raise_error(ArgumentError)
   end
 
   it "the mirrorlist_expire property accepts a time value" do
-    expect { resource.mirrorlist_expire "100" }.not_to raise_error(ArgumentError)
-    expect { resource.mirrorlist_expire "100d" }.not_to raise_error(ArgumentError)
-    expect { resource.mirrorlist_expire "100h" }.not_to raise_error(ArgumentError)
-    expect { resource.mirrorlist_expire "100m" }.not_to raise_error(ArgumentError)
+    expect { resource.mirrorlist_expire "100" }.not_to raise_error
+    expect { resource.mirrorlist_expire "100d" }.not_to raise_error
+    expect { resource.mirrorlist_expire "100h" }.not_to raise_error
+    expect { resource.mirrorlist_expire "100m" }.not_to raise_error
     expect { resource.mirrorlist_expire "never" }.to raise_error(ArgumentError)
   end
 
