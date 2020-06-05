@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.15 -->
-## [v16.2.15](https://github.com/chef/chef/tree/v16.2.15) (2020-06-05)
+<!-- latest_release 16.2.16 -->
+## [v16.2.16](https://github.com/chef/chef/tree/v16.2.16) (2020-06-05)
 
 #### Merged Pull Requests
-- Add spellcheck to CI [#9957](https://github.com/chef/chef/pull/9957) ([phiggins](https://github.com/phiggins))
+- Fix zypper_repository key handling on SLES 15+ [#9956](https://github.com/chef/chef/pull/9956) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix zypper_repository key handling on SLES 15+ [#9956](https://github.com/chef/chef/pull/9956) ([tas50](https://github.com/tas50)) <!-- 16.2.16 -->
 - Add spellcheck to CI [#9957](https://github.com/chef/chef/pull/9957) ([phiggins](https://github.com/phiggins)) <!-- 16.2.15 -->
 - Fixed Powershell_Package does not throw error when it cannot connect … [#9946](https://github.com/chef/chef/pull/9946) ([sanga1794](https://github.com/sanga1794)) <!-- 16.2.14 -->
 - Pin FFI &lt; 1.13 and bump inspec-core-bin to 4.19.2 [#9954](https://github.com/chef/chef/pull/9954) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.13 -->
