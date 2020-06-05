@@ -77,17 +77,9 @@ describe "a class that mixes in user_context" do
       end
 
       context "when the block raises an exception" do
-        class UserContextTestException < RuntimeError
-        end
-        let(:block_parameter) { Proc.new { raise UserContextTextException } }
-
-        it "raises the exception raised by the block" do
-          expect { instance_with_user_context.with_context("kamilah", nil, "chef4life", &block_parameter) }.not_to raise_error
-        end
-
         it "closes the logon session so resources are not leaked" do
           expect(logon_session).to receive(:close)
-          expect { instance_with_user_context.with_context("kamilah", nil, "chef4life", &block_parameter) }.not_to raise_error
+          expect { instance_with_user_context.with_context("kamilah", nil, "chef4life") { 1/0 } }.to raise_error(ZeroDivisionError)
         end
       end
     end
