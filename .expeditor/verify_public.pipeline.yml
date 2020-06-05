@@ -571,3 +571,11 @@ steps:
       linux:
         privileged: true
         single-use: true
+
+- label: "Spellcheck"
+  commands:
+    - npm install -g cspell
+    - cspell "**/*" "*.md"
+  expeditor:
+    executor:
+      docker:
