@@ -243,7 +243,7 @@ describe Chef::DataBag do
 
         expect do
           Chef::DataBag.load("foo")
-        end.to raise_error Chef::Exceptions::InvalidDataBagPath, "Please create databag folder at '/var/chef/data_bags'"
+        end.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' not found. Please create this directory."
       end
 
     end
