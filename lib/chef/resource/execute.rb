@@ -74,7 +74,7 @@ class Chef
           creates '/var/lib/slapd/uid.bdb'
 
           action :run
-          environment ({'HOME' => '/home/myhome'})
+          environment ({'HOME' => '/home/my_home'})
         end
         ```
 
