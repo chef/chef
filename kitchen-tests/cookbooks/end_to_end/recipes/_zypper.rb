@@ -10,4 +10,4 @@ zypper_repository "nginx repo" do
   gpgkey "https://nginx.org/keys/nginx_signing.key"
 end
 
-zypper_package 'nginx'
+zypper_package "nginx"

@@ -121,7 +121,7 @@ class Chef
       def gpg_version
         so = shell_out("gpg --version")
         # matches 2.0 and 2.2 versions from SLES 12 and 15: https://rubular.com/r/e6D0WfGK6SXvUp
-        version = %r{gpg \(GnuPG\)\s*(.*)}.match(so.stdout)[1]
+        version = /gpg \(GnuPG\)\s*(.*)/.match(so.stdout)[1]
         logger.trace("GPG package version is #{version}")
         Gem::Version.new(version)
       end
@@ -144,9 +144,9 @@ class Chef
       # @return [String] the fingerprint of the key
       def key_fingerprint(key_path)
         if gpg_version >= Gem::Version.new("2.2") # SLES 15+
-          so = shell_out!("gpg --import-options import-show --dry-run --import #{key_path}")
-          # expected output and match: https://rubular.com/r/WARlJQBo0IdP7h
-          fingerprint = %r{key \h*(\h{8}):}.match(so.stdout)[1].downcase
+          so = shell_out!("gpg --import-options import-show --dry-run --import --with-colons #{key_path}")
+          # expected output and match: https://rubular.com/r/uXWJo3yfkli1qA
+          fingerprint = /fpr:*\h*(\h{8}):/.match(so.stdout)[1].downcase
         else # SLES 12 and earlier
           so = shell_out!("gpg --with-fingerprint #{key_path}")
           # expected output and match: http://rubular.com/r/BpfMjxySQM
