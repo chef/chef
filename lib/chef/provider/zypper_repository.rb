@@ -123,7 +123,7 @@ class Chef
         # matches 2.0 and 2.2 versions from SLES 12 and 15: https://rubular.com/r/e6D0WfGK6SXvUp
         version = %r{gpg \(GnuPG\)\s*(.*)}.match(so.stdout)[1]
         logger.trace("GPG package version is #{version}")
-        version
+        Gem::Version.new(version)
       end
 
       # is the provided key already installed
