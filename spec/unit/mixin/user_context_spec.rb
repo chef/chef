@@ -79,7 +79,7 @@ describe "a class that mixes in user_context" do
       context "when the block raises an exception" do
         it "closes the logon session so resources are not leaked" do
           expect(logon_session).to receive(:close)
-          expect { instance_with_user_context.with_context("kamilah", nil, "chef4life") { 1/0 } }.to raise_error(ZeroDivisionError)
+          expect { instance_with_user_context.with_context("kamilah", nil, "chef4life") { 1 / 0 } }.to raise_error(ZeroDivisionError)
         end
       end
     end
