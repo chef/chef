@@ -94,6 +94,13 @@ describe Chef::Application do
           end
         end
 
+        describe "when enforce_license is set to false" do
+          it "should not check the license acceptance" do
+            expect(@app).to_not receive(:check_license_acceptance)
+            @app.run(enforce_license: false)
+          end
+        end
+
         it "should run the actual application" do
           expect(@app).to receive(:run_application).and_return(true)
           @app.run
