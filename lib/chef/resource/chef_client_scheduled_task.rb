@@ -82,7 +82,7 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         description: "Numeric value to go with the scheduled task frequency",
-        default: lazy { frequency == "minute" ? 30 : 1 }, 
+        default: lazy { frequency == "minute" ? 30 : 1 },
         default_description: "30 if frequency is 'minute', 1 otherwise"
 
       property :accept_chef_license, [true, false],
