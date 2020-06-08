@@ -25,6 +25,17 @@ class Chef
 
       description "Use the **windows_auto_run** resource to set applications to run at login."
       introduced "14.0"
+      examples <<~DOC
+      **Run BGInfo at login**:
+
+      ```ruby
+      windows_auto_run 'BGINFO' do
+        program 'C:/Sysinternals/bginfo.exe'
+        args    '\'C:/Sysinternals/Config.bgi\' /NOLICPROMPT /TIMER:0'
+        action  :create
+      end
+      ```
+      DOC
 
       property :program_name, String,
         description: "The name of the program to run at login if it differs from the resource block's name.",
