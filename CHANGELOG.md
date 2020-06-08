@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.20 -->
-## [v16.2.20](https://github.com/chef/chef/tree/v16.2.20) (2020-06-08)
+<!-- latest_release 16.2.21 -->
+## [v16.2.21](https://github.com/chef/chef/tree/v16.2.21) (2020-06-08)
 
 #### Merged Pull Requests
-- Fix wrong unit test exposed by cleaning up rspec deprecations. [#9961](https://github.com/chef/chef/pull/9961) ([phiggins](https://github.com/phiggins))
+- Add more resource docs + improve yaml generation [#9960](https://github.com/chef/chef/pull/9960) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add more resource docs + improve yaml generation [#9960](https://github.com/chef/chef/pull/9960) ([tas50](https://github.com/tas50)) <!-- 16.2.21 -->
 - Fix wrong unit test exposed by cleaning up rspec deprecations. [#9961](https://github.com/chef/chef/pull/9961) ([phiggins](https://github.com/phiggins)) <!-- 16.2.20 -->
 - Update train-core to the latest [#9959](https://github.com/chef/chef/pull/9959) ([tas50](https://github.com/tas50)) <!-- 16.2.19 -->
 - Update to the chef_client_scheduled_task resource frequency_modify default functionality [#9920](https://github.com/chef/chef/pull/9920) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.18 -->
