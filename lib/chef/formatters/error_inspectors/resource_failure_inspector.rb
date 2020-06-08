@@ -37,7 +37,7 @@ class Chef
           error_description.section(exception.class.name, exception.message)
 
           unless filtered_bt.empty?
-            error_description.section("Cookbook Trace:", filtered_bt.join("\n"))
+            error_description.section("Cookbook Trace: (most recent call first)", filtered_bt.join("\n"))
           end
 
           unless dynamic_resource?
