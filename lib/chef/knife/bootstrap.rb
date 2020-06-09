@@ -40,7 +40,16 @@ class Chef
       option :connection_password,
         short: "-P PASSWORD",
         long: "--connection-password PASSWORD",
-        description: "Authenticate to the target host with this password."
+        description: "Authenticate to the target host with this password.",
+        proc: Proc.new { |v|
+          # If a user passes -P and leaves out the password the knife interprets the next flag as the password
+          # which is incredibly hard to troubleshoot. Let's help the user out here by seeing if a short or long
+          # flag is in the password field.
+          # regular expression explaination: https://rubular.com/r/gcknBouOOHokhT
+          if v.match?(/^(-([a-zA-Z])$)|(--([a-z]|_)*)$/)
+            raise ArgumentError, "It looks as though you haven't passed a value with the '--connection-password' / '-P' values. Leave off this flag to be prompted for the password or provide a valid password."
+          end
+        }
 
       option :connection_port,
         short: "-p PORT",

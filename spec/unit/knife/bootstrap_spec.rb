@@ -50,6 +50,29 @@ describe Chef::Knife::Bootstrap do
     k
   end
 
+  context "--connection-password validation" do
+    context "when passed with a password value" do
+      let(:bootstrap_cli_options) { [ "-P", "some_password" ] }
+      it "does not raise an error" do
+        expect { knife.merge_configs }.not_to raise_error
+      end
+    end
+
+    context "with no value and the next flag is a short flag" do
+      let(:bootstrap_cli_options) { [ "-P", "-U", "ubuntu" ] }
+      it "raises an error" do
+        expect { knife.merge_configs }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "with no value and the next flag is a long flag" do
+      let(:bootstrap_cli_options) { [ "-P", "--sudo" ] }
+      it "raises an error" do
+        expect { knife.merge_configs }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
   context "#check_license" do
     let(:acceptor) { instance_double(LicenseAcceptance::Acceptor) }
 
