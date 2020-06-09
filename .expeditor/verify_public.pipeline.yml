@@ -574,6 +574,7 @@ steps:
 
 - label: "Spellcheck"
   commands:
+    - ruby -rjson -e "JSON.parse(File.read('cspell.json'))" 2>/dev/null || (echo "Failed to parse config file 'cspell.json', skipping spellcheck" && exit 1)
     - npm install -g cspell
     - cspell "**/*" "*.md"
   expeditor:
