@@ -42,7 +42,7 @@ class Chef
         long: "--connection-password PASSWORD",
         description: "Authenticate to the target host with this password.",
         proc: Proc.new { |v|
-          # If a user passes -P and leaves out the password the knife interprets the next flag as the password
+          # If a user passes -P and leaves out the password knife interprets the next flag as the password
           # which is incredibly hard to troubleshoot. Let's help the user out here by seeing if a short or long
           # flag is in the password field.
           # regular expression explaination: https://rubular.com/r/gcknBouOOHokhT
