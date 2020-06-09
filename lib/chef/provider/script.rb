@@ -16,9 +16,7 @@
 # limitations under the License.
 #
 
-require "tempfile" unless defined?(Tempfile)
 require_relative "execute"
-require_relative "../win32/security" if ChefUtils.windows?
 require "forwardable" unless defined?(Forwardable)
 
 class Chef
