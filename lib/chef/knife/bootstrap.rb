@@ -619,7 +619,7 @@ class Chef
       end
 
       def connect!
-        ui.info("Connecting to #{ui.color(server_name, :bold)}")
+        ui.info("Connecting to #{ui.color(server_name, :bold)} using #{connection_protocol}")
         opts ||= connection_opts.dup
         do_connect(opts)
       rescue Train::Error => e
