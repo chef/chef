@@ -597,11 +597,8 @@ class Chef
 
           bootstrap_context.client_pem = client_builder.client_path
         else
-          ui.info <<~EOM
-            Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}...
-            Delete your validation key in order to use your user credentials for client registration instead.
-          EOM
-
+          ui.warn "Performing legacy client registration with the validation key at #{Chef::Config[:validation_key]}..."
+          ui.warn "Remove the key file or remove the 'validation_key' configuration option from your config.rb (knife.rb) to use more secure user credentials for client registration."
         end
       end
 
