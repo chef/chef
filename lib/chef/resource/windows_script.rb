@@ -27,8 +27,6 @@ class Chef
 
       unified_mode true
 
-      provides :windows_script
-
       # This is an abstract resource meant to be subclasses; thus no 'provides'
 
       set_guard_inherited_attributes(:architecture)
