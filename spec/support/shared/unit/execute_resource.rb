@@ -75,7 +75,7 @@ shared_examples_for "an execute resource" do
   end
 
   it "the old path property (that never worked) is not supported in chef >= 13" do
-    expect { @resource.path [ "woot" ] }.to raise_error
+    expect(@resource).not_to respond_to(:path)
   end
 
   it "should accept an integer for the return code" do
