@@ -86,6 +86,39 @@ class Chef
       
       description "The windows_audit_policy resource allows for configuring system and per-user Windows advanced audit policy settings."
       
+      examples <<~DOC
+      **Set Logon and Logoff policy to "Success and Failure"**:
+
+      ```ruby
+      windows_audit_policy "Set Audit Policy for 'Logon and Logoff' actions to 'Success and Failure' do
+        sub_category   %w(Logon Logoff)
+        success        true
+        failure        true
+        action         :set
+      end
+      ```
+
+      **Set Credential Validation policy to "Success"**:
+
+      ```ruby
+      windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success' do
+        sub_category   'Credential Validation'
+        success        true
+        failure        false
+        action         :set
+      end
+      ```
+      **Enable CrashOnAuditFail option**:
+
+      ```ruby
+      windows_audit_policy "Enable CrashOnAuditFail option' do
+        crash_on_audit_fail        true
+        action                     :set
+      end
+      ```
+
+      DOC
+      
       property :sub_category, [String, Array],
         coerce: proc { |p| Array(p) },
         description: "The audit policy subcategory, specified by GUID or name. Defaults to system if no user is specified."
