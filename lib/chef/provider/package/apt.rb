@@ -89,6 +89,7 @@ class Chef
         end
 
         def install_package(name, version)
+          name = check_availablity(name)
           package_name = name.zip(version).map do |n, v|
             package_data[n][:virtual] ? n : "#{n}=#{v}"
           end
@@ -101,6 +102,7 @@ class Chef
         end
 
         def remove_package(name, version)
+          name = check_availablity(name)
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
@@ -108,6 +110,7 @@ class Chef
         end
 
         def purge_package(name, version)
+          name = check_availablity(name)
           package_name = name.map do |n|
             package_data[n][:virtual] ? resolve_virtual_package_name(n) : n
           end
@@ -115,10 +118,12 @@ class Chef
         end
 
         def lock_package(name, version)
+          name = check_availablity(name)
           run_noninteractive("apt-mark", options, "hold", name)
         end
 
         def unlock_package(name, version)
+          name = check_availablity(name)
           run_noninteractive("apt-mark", options, "unhold", name)
         end
 
@@ -229,6 +234,12 @@ class Chef
           }
         end
 
+        def check_availablity(name)
+          name.map do |pkg|
+            showpkg = run_noninteractive("apt-cache", "search", pkg).stdout
+            showpkg.empty? ? logger.warn("Unable to locate package  #{pkg} ") : pkg
+          end
+        end
       end
     end
   end
