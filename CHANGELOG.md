@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.24 -->
-## [v16.2.24](https://github.com/chef/chef/tree/v16.2.24) (2020-06-10)
+<!-- latest_release 16.2.25 -->
+## [v16.2.25](https://github.com/chef/chef/tree/v16.2.25) (2020-06-10)
 
 #### Merged Pull Requests
-- Let the user know what protocol we&#39;re using in knife bootstrap [#9973](https://github.com/chef/chef/pull/9973) ([tas50](https://github.com/tas50))
+- Warn during bootstrapping when using validation keys [#9974](https://github.com/chef/chef/pull/9974) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Warn during bootstrapping when using validation keys [#9974](https://github.com/chef/chef/pull/9974) ([tas50](https://github.com/tas50)) <!-- 16.2.25 -->
 - Let the user know what protocol we&#39;re using in knife bootstrap [#9973](https://github.com/chef/chef/pull/9973) ([tas50](https://github.com/tas50)) <!-- 16.2.24 -->
 - Add Windows 8 Tester [#9971](https://github.com/chef/chef/pull/9971) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.23 -->
 - knife vault on windows 10 fails due to ERROR: Chef::Exceptions::InvalidDataBagPath [#9952](https://github.com/chef/chef/pull/9952) ([snehaldwivedi](https://github.com/snehaldwivedi)) <!-- 16.2.22 -->
