@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../platform/query_helpers"
 require_relative "script"
 require_relative "../mixin/windows_architecture_helper"
 
