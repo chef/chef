@@ -105,18 +105,18 @@ describe Chef::Resource::WindowsAuditPolicy do
   end
 
   it "expects failure property to have a true or false value if entered" do
-    expect { resource.success "not_a_true_or_false" }.to raise_error
+    expect { resource.failure "not_a_true_or_false" }.to raise_error
   end
 
   subcat_opts.each do |val|
     it "the subcategory property accepts :#{val}" do
-      expect { resource.consent_behavior_users val }.not_to raise_error
+      expect { resource.sub_category val }.not_to raise_error
     end
   end
 
   %i{Logout subjugate_mortals misfits}.each do |val|
-    it "the resource raises an ArgumentError if invalid sub_category is set" do
-      expect { resource.consent_behavior_users val }.to raise_error(ArgumentError)
+    it "the resource raises an ArgumentError if invalid sub_category property is set" do
+      expect { resource.sub_category val }.to raise_error(ArgumentError)
     end
   end
 
