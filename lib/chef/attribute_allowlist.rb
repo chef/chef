@@ -2,14 +2,14 @@
 require_relative "exceptions"
 
 class Chef
-  class Blacklist
+  class AttributeAllowlist
 
-    # filter takes two arguments - the data you want to filter, and a blacklisted array
-    # of keys you want discarded. You can capture a subtree of the data to filter by
+    # filter takes two arguments - the data you want to filter, and an an array of
+    # keys you want included. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
     #
-    # Blacklist.filter(
+    # AttributeAllowlist.filter(
     #   { "filesystem" => {
     #       "/dev/disk" => {
     #         "size" => "10mb"
@@ -26,42 +26,47 @@ class Chef
     #     }
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
-    # will exclude the eth0 and /dev/disk subtrees.
-    def self.filter(data, blacklist = nil)
-      return data if blacklist.nil?
+    # will capture the eth0 and /dev/disk subtrees.
+    def self.filter(data, allowlist = nil)
+      return data if allowlist.nil?
 
-      blacklist.each do |item|
-        Chef::Log.warn("Removing item #{item}")
-        remove_data(data, item)
+      new_data = {}
+      allowlist.each do |item|
+        add_data(data, new_data, item)
       end
-      data
+      new_data
     end
 
-    # Walk the data according to the keys provided by the blacklisted item
-    # to get a reference to the item that will be removed.
-    def self.remove_data(data, item)
+    # Walk the data has according to the keys provided by the allowlisted item
+    # and add the data to the allowlisting result.
+    def self.add_data(data, new_data, item)
       parts = to_array(item)
 
-      item_ref = data
+      all_data = data
+      filtered_data = new_data
       parts[0..-2].each do |part|
-        unless item_ref[part]
-          Chef::Log.warn("Could not find blacklist attribute #{item}.")
+        unless all_data.key?(part)
+          Chef::Log.warn("Could not find allowlist attribute #{item}.")
           return nil
         end
 
-        item_ref = item_ref[part]
+        filtered_data[part] ||= {}
+        filtered_data = filtered_data[part]
+        all_data = all_data[part]
       end
 
-      unless item_ref.key?(parts[-1])
-        Chef::Log.warn("Could not find blacklist attribute #{item}.")
+      # Note: You can't do all_data[parts[-1]] here because the value
+      # may be false-y
+      unless all_data.key?(parts[-1])
+        Chef::Log.warn("Could not find allowlist attribute #{item}.")
         return nil
       end
 
-      item_ref.delete(parts[-1])
-      data
+      filtered_data[parts[-1]] = all_data[parts[-1]]
+      new_data
     end
 
-    private_class_method :remove_data
+    private_class_method :add_data
 
     # Accepts a String or an Array, and returns an Array of String keys that
     # are used to traverse the data hash. Strings are split on "/", Arrays are

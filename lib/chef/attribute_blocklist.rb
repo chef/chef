@@ -2,14 +2,14 @@
 require_relative "exceptions"
 
 class Chef
-  class Whitelist
+  class AttributeBlocklist
 
-    # filter takes two arguments - the data you want to filter, and a whitelisted array
-    # of keys you want included. You can capture a subtree of the data to filter by
+    # filter takes two arguments - the data you want to filter, and an array
+    # of keys you want discarded. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
     #
-    # Whitelist.filter(
+    # AttributeBlocklist.filter(
     #   { "filesystem" => {
     #       "/dev/disk" => {
     #         "size" => "10mb"
@@ -26,47 +26,42 @@ class Chef
     #     }
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
-    # will capture the eth0 and /dev/disk subtrees.
-    def self.filter(data, whitelist = nil)
-      return data if whitelist.nil?
+    # will exclude the eth0 and /dev/disk subtrees.
+    def self.filter(data, blocklist = nil)
+      return data if blocklist.nil?
 
-      new_data = {}
-      whitelist.each do |item|
-        add_data(data, new_data, item)
+      blocklist.each do |item|
+        Chef::Log.warn("Removing item #{item}")
+        remove_data(data, item)
       end
-      new_data
+      data
     end
 
-    # Walk the data has according to the keys provided by the whitelisted item
-    # and add the data to the whitelisting result.
-    def self.add_data(data, new_data, item)
+    # Walk the data according to the keys provided by the blocklisted item
+    # to get a reference to the item that will be removed.
+    def self.remove_data(data, item)
       parts = to_array(item)
 
-      all_data = data
-      filtered_data = new_data
+      item_ref = data
       parts[0..-2].each do |part|
-        unless all_data.key?(part)
-          Chef::Log.warn("Could not find whitelist attribute #{item}.")
+        unless item_ref[part]
+          Chef::Log.warn("Could not find blocklist attribute #{item}.")
           return nil
         end
 
-        filtered_data[part] ||= {}
-        filtered_data = filtered_data[part]
-        all_data = all_data[part]
+        item_ref = item_ref[part]
       end
 
-      # Note: You can't do all_data[parts[-1]] here because the value
-      # may be false-y
-      unless all_data.key?(parts[-1])
-        Chef::Log.warn("Could not find whitelist attribute #{item}.")
+      unless item_ref.key?(parts[-1])
+        Chef::Log.warn("Could not find blocklist attribute #{item}.")
         return nil
       end
 
-      filtered_data[parts[-1]] = all_data[parts[-1]]
-      new_data
+      item_ref.delete(parts[-1])
+      data
     end
 
-    private_class_method :add_data
+    private_class_method :remove_data
 
     # Accepts a String or an Array, and returns an Array of String keys that
     # are used to traverse the data hash. Strings are split on "/", Arrays are
