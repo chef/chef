@@ -34,6 +34,6 @@ describe Chef::Resource::Timezone do
 
   it "supports the :set action only" do
     expect { resource.action :set }.not_to raise_error
-    expect { resource.action :unset }.to raise_error
+    expect { resource.action :unset }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end

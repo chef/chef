@@ -18,6 +18,8 @@
 
 require_relative "script"
 require_relative "../mixin/windows_architecture_helper"
+require_relative "../win32/security" if ChefUtils.windows?
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Provider
