@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.27 -->
-## [v16.2.27](https://github.com/chef/chef/tree/v16.2.27) (2020-06-11)
+<!-- latest_release 16.2.28 -->
+## [v16.2.28](https://github.com/chef/chef/tree/v16.2.28) (2020-06-11)
 
 #### Merged Pull Requests
-- Stop producing packages for EOL Debian 8 [#9981](https://github.com/chef/chef/pull/9981) ([tas50](https://github.com/tas50))
+- Use /etc/chef for bootstrapping instead of ChefConfig [#9984](https://github.com/chef/chef/pull/9984) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use /etc/chef for bootstrapping instead of ChefConfig [#9984](https://github.com/chef/chef/pull/9984) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.2.28 -->
 - Stop producing packages for EOL Debian 8 [#9981](https://github.com/chef/chef/pull/9981) ([tas50](https://github.com/tas50)) <!-- 16.2.27 -->
 - Allow for the latest net-ssh and ffi 1.13.1  [#9978](https://github.com/chef/chef/pull/9978) ([tas50](https://github.com/tas50)) <!-- 16.2.26 -->
 - Warn during bootstrapping when using validation keys [#9974](https://github.com/chef/chef/pull/9974) ([tas50](https://github.com/tas50)) <!-- 16.2.25 -->
