@@ -176,7 +176,7 @@ class Chef
         unless new_resource.sub_category.empty?
           new_resource.sub_category.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)
-      
+
             sval = new_resource.success ? "enable" : "disable"
             fval = new_resource.failure ? "enable" : "disable"
             converge_by "Update Audit Policy for \"#{subcategory}\" to Success:#{sval} and Failure:#{fval}" do
@@ -188,7 +188,7 @@ class Chef
             end
           end
         end
-      
+
         if !new_resource.crash_on_audit_fail.nil? && option_configured?("CrashOnAuditFail", new_resource.crash_on_audit_fail)
           val = new_resource.crash_on_audit_fail ? "Enable" : "Disable"
           converge_by "Configure Audit: CrashOnAuditFail to #{val}" do
@@ -196,7 +196,7 @@ class Chef
             powershell_exec(cmd)
           end
         end
-      
+
         if !new_resource.full_privilege_auditing.nil? && option_configured?("FullPrivilegeAuditing", new_resource.full_privilege_auditing)
           val = new_resource.full_privilege_auditing ? "Enable" : "Disable"
           converge_by "Configure Audit: FullPrivilegeAuditing to #{val}" do
@@ -204,7 +204,7 @@ class Chef
             powershell_exec(cmd)
           end
         end
-      
+
         if !new_resource.audit_base_directories.nil? && option_configured?("AuditBaseDirectories", new_resource.audit_base_directories)
           val = new_resource.audit_base_directories ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseDirectories to #{val}" do
@@ -212,7 +212,7 @@ class Chef
             powershell_exec(cmd)
           end
         end
-      
+
         if !new_resource.audit_base_objects.nil? && option_configured?("AuditBaseObjects", new_resource.audit_base_objects)
           val = new_resource.audit_base_objects ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseObjects to #{val}" do
@@ -220,7 +220,7 @@ class Chef
             powershell_exec(cmd)
           end
         end
-      end      
+      end
     end
   end
 end
