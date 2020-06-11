@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.2.29 -->
+## [v16.2.29](https://github.com/chef/chef/tree/v16.2.29) (2020-06-11)
 
 #### Merged Pull Requests
+- Small code cleanups in script/windows_script [#9979](https://github.com/chef/chef/pull/9979) ([phiggins](https://github.com/phiggins))
 - Update with 2020 MVPs [#9985](https://github.com/chef/chef/pull/9985) ([Xorima](https://github.com/Xorima))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Small code cleanups in script/windows_script [#9979](https://github.com/chef/chef/pull/9979) ([phiggins](https://github.com/phiggins)) <!-- 16.2.29 -->
 - Update with 2020 MVPs [#9985](https://github.com/chef/chef/pull/9985) ([Xorima](https://github.com/Xorima)) <!-- 16.2.28 -->
 - Use /etc/chef for bootstrapping instead of ChefConfig [#9984](https://github.com/chef/chef/pull/9984) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.2.28 -->
 - Stop producing packages for EOL Debian 8 [#9981](https://github.com/chef/chef/pull/9981) ([tas50](https://github.com/tas50)) <!-- 16.2.27 -->
