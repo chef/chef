@@ -118,10 +118,10 @@ class Chef
       ```
 
       DOC
-      
+
       property :sub_category, [String, Array],
         coerce: proc { |p| Array(p) },
-        description: "The audit policy subcategory, specified by GUID or name. Defaults to system if no user is specified."
+        description: "The audit policy subcategory, specified by GUID or name. Defaults to system if no user is specified.",
         callbacks: { "Subcategories entered should be an actual advanced audit policy subcategory" => proc { |n| (Array(n) - subcat_opts).empty? } }
       
       property :success, [true, false],
