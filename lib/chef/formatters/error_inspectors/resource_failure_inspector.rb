@@ -79,8 +79,8 @@ class Chef
               loop do
 
                 # low rent parser. try to gracefully handle nested blocks in resources
-                nesting += 1 if lines[current_line] =~ /[\s]+do[\s]*/
-                nesting -= 1 if lines[current_line] =~ /end[\s]*$/
+                nesting += 1 if /[\s]+do[\s]*/.match?(lines[current_line])
+                nesting -= 1 if /end[\s]*$/.match?(lines[current_line])
 
                 relevant_lines << format_line(current_line, lines[current_line])
 

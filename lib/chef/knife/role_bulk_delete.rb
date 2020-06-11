@@ -40,7 +40,7 @@ class Chef
         matcher = /#{@name_args[0]}/
         roles_to_delete = {}
         all_roles.each do |name, role|
-          next unless name =~ matcher
+          next unless name&.match?(matcher)
 
           roles_to_delete[role.name] = role
         end

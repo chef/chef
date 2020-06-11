@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-if RUBY_PLATFORM =~ /mswin|mingw|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   require "win32/daemon"
 
   class SpecService < ::Win32::Daemon

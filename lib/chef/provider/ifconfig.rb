@@ -59,12 +59,12 @@ class Chef
 
         @net_tools_version = shell_out("ifconfig", "--version")
         @net_tools_version.stdout.each_line do |line|
-          if line =~ /^net-tools (\d+\.\d+)/
+          if /^net-tools (\d+\.\d+)/.match?(line)
             @ifconfig_version = line.match(/^net-tools (\d+\.\d+)/)[1]
           end
         end
         @net_tools_version.stderr.each_line do |line|
-          if line =~ /^net-tools (\d+\.\d+)/
+          if /^net-tools (\d+\.\d+)/.match?(line)
             @ifconfig_version = line.match(/^net-tools (\d+\.\d+)/)[1]
           end
         end
@@ -88,11 +88,11 @@ class Chef
               @int_name = line[0..9].strip
               @interfaces[@int_name] = { "hwaddr" => (line =~ /(HWaddr)/ ? ($') : "nil").strip.chomp }
             else
-              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet addr:/
-              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Bcast:/
-              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Mask:/
-              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /MTU:/
-              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/
+              @interfaces[@int_name]["inet_addr"] = (line =~ /inet addr:(\S+)/ ? Regexp.last_match(1) : "nil") if /inet addr:/.match?(line)
+              @interfaces[@int_name]["bcast"] = (line =~ /Bcast:(\S+)/ ? Regexp.last_match(1) : "nil") if /Bcast:/.match?(line)
+              @interfaces[@int_name]["mask"] = (line =~ /Mask:(\S+)/ ? Regexp.last_match(1) : "nil") if /Mask:/.match?(line)
+              @interfaces[@int_name]["mtu"] = (line =~ /MTU:(\S+)/ ? Regexp.last_match(1) : "nil") if /MTU:/.match?(line)
+              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if /Metric:/.match?(line)
             end
 
             next unless @interfaces.key?(new_resource.device)

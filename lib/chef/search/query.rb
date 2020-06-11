@@ -105,7 +105,7 @@ class Chef
       private
 
       def fuzzify_node_query(query)
-        if query !~ /:/
+        if !/:/.match?(query)
           "tags:*#{query}* OR roles:*#{query}* OR fqdn:*#{query}* OR addresses:*#{query}* OR policy_name:*#{query}* OR policy_group:*#{query}*"
         else
           query

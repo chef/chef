@@ -54,7 +54,7 @@ class Chef
           rest.get("data/#{@data_bag_name}")
           ui.info("Data bag #{@data_bag_name} already exists")
         rescue Net::HTTPClientException => e
-          raise unless e.to_s =~ /^404/
+          raise unless /^404/.match?(e.to_s)
 
           # if it doesn't exists, try to create it
           rest.post("data", { "name" => @data_bag_name })

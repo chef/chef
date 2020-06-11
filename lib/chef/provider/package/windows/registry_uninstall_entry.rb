@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "win32/registry" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require "win32/registry" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 
 class Chef
   class Provider

@@ -163,7 +163,7 @@ class Chef
           # a problem. We'll check stderr and make sure we see that it finished
           # correctly.
           res = run_sysadminctl(cmd)
-          unless res.downcase =~ /creating user/
+          unless /creating user/.match?(res.downcase)
             raise Chef::Exceptions::User, "error when creating user: #{res}"
           end
 
@@ -309,7 +309,7 @@ class Chef
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
           # a problem. We'll check stderr and make sure we see that it finished
           res = run_sysadminctl(cmd)
-          unless res.downcase =~ /deleting record|not found/
+          unless /deleting record|not found/.match?(res.downcase)
             raise Chef::Exceptions::User, "error deleting user: #{res}"
           end
 
@@ -372,7 +372,7 @@ class Chef
           next_uid_guess = base_uid
           users_uids = run_dscl("list", "/Users", "uid")
           while next_uid_guess < search_limit + base_uid
-            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+            if users_uids&.match?(Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n"))
               next_uid_guess += 1
             else
               uid = next_uid_guess
@@ -430,7 +430,7 @@ class Chef
           # sysadminctl doesn't exit with a non-zero exit code if it encounters
           # a problem. We'll check stderr and make sure we see that it finished
           res = run_sysadminctl(cmd)
-          unless res.downcase =~ /done/
+          unless /done/.match?(res.downcase)
             raise Chef::Exceptions::User, "error when modifying SecureToken: #{res}"
           end
 
@@ -611,7 +611,7 @@ class Chef
           result = shell_out("dscl", "-plist", ".", "-#{args[0]}", args[1..-1])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
-          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if /No such key: /.match?(result.stdout)
 
           result.stdout
         end

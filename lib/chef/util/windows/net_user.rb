@@ -100,7 +100,7 @@ class Chef::Util::Windows::NetUser < Chef::Util::Windows
   rescue Chef::Exceptions::Win32APIError => e
     Chef::Log.trace(e)
     # we're only interested in the incorrect password failures
-    if e.to_s =~ /System Error Code: 1326/
+    if /System Error Code: 1326/.match?(e.to_s)
       return false
     end
 

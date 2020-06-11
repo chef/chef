@@ -20,7 +20,7 @@
 
 require_relative "simple"
 require_relative "../../win32_service_constants"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require_relative "../../win32/error"
   require "win32/service"
 end

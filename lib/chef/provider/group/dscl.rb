@@ -39,7 +39,7 @@ class Chef
           result = dscl(*args)
           return "" if ( args.first =~ /^delete/ ) && ( result[1].exitstatus != 0 )
           raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") unless result[1].exitstatus == 0
-          raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") if result[2] =~ /No such key: /
+          raise(Chef::Exceptions::Group, "dscl error: #{result.inspect}") if /No such key: /.match?(result[2])
 
           result[2]
         end
@@ -77,7 +77,7 @@ class Chef
           gid = nil; next_gid_guess = 200
           groups_gids = safe_dscl("list", "/Groups", "gid")
           while next_gid_guess < search_limit + 200
-            if groups_gids =~ Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n")
+            if groups_gids&.match?(Regexp.new("#{Regexp.escape(next_gid_guess.to_s)}\n"))
               next_gid_guess += 1
             else
               gid = next_gid_guess

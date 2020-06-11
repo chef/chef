@@ -450,7 +450,7 @@ module ChefConfig
     default :repo_mode do
       if local_mode && !chef_zero.osc_compat
         "hosted_everything"
-      elsif chef_server_url =~ %r{/+organizations/.+}
+      elsif %r{/+organizations/.+}.match?(chef_server_url)
         "hosted_everything"
       else
         "everything"
@@ -506,7 +506,7 @@ module ChefConfig
     default(:chef_server_root) do
       # if the chef_server_url is a path to an organization, aka
       # 'some_url.../organizations/*' then remove the '/organization/*' by default
-      if configuration[:chef_server_url] =~ %r{/organizations/\S*$}
+      if %r{/organizations/\S*$}.match?(configuration[:chef_server_url])
         configuration[:chef_server_url].split("/")[0..-3].join("/")
       elsif configuration[:chef_server_url] # default to whatever chef_server_url is
         configuration[:chef_server_url]
@@ -1118,7 +1118,7 @@ module ChefConfig
       # proxy before parsing. The regex /^.*:\/\// matches, for example, http://. Reusing proxy
       # here since we are really just trying to get the string built correctly.
       proxy = unless proxy_env_var.empty?
-                if proxy_env_var =~ %r{^.*://}
+                if %r{^.*://}.match?(proxy_env_var)
                   URI.parse(proxy_env_var)
                 else
                   URI.parse("#{scheme}://#{proxy_env_var}")

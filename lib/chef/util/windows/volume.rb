@@ -25,7 +25,7 @@ class Chef::Util::Windows::Volume < Chef::Util::Windows
   attr_reader :mount_point
 
   def initialize(name)
-    name += "\\" unless name =~ /\\$/ # trailing slash required
+    name += "\\" unless /\\$/.match?(name) # trailing slash required
     @mount_point = name
   end
 

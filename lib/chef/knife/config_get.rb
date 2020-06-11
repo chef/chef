@@ -75,7 +75,7 @@ class Chef
               # It's a regex.
               filter_re = Regexp.new($1, $2 ? Regexp::IGNORECASE : 0)
               config_data.each do |key, value|
-                output_data[key] = value if key.to_s =~ filter_re
+                output_data[key] = value if key.to_s&.match?(filter_re)
               end
             else
               # It's a dotted path string.
