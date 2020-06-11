@@ -17,7 +17,6 @@
 #
 
 require_relative "script"
-require_relative "../provider/script"
 
 class Chef
   class Resource

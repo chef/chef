@@ -16,33 +16,19 @@
 # limitations under the License.
 #
 
-require_relative "../platform/query_helpers"
 require_relative "script"
 require_relative "../mixin/windows_architecture_helper"
 
 class Chef
   class Resource
     class WindowsScript < Chef::Resource::Script
-      unified_mode true
+      include Chef::Mixin::WindowsArchitectureHelper
 
-      provides :windows_script
+      unified_mode true
 
       # This is an abstract resource meant to be subclasses; thus no 'provides'
 
       set_guard_inherited_attributes(:architecture)
-
-      protected
-
-      def initialize(name, run_context, resource_name, interpreter_command)
-        super(name, run_context)
-        @interpreter = interpreter_command
-        @resource_name = resource_name if resource_name
-        @default_guard_interpreter = self.resource_name
-      end
-
-      include Chef::Mixin::WindowsArchitectureHelper
-
-      public
 
       def architecture(arg = nil)
         assert_architecture_compatible!(arg) unless arg.nil?

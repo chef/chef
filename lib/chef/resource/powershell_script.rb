@@ -48,8 +48,10 @@ class Chef
                   " idempotent, as they are typically unique to the environment in which they are run. Use not_if"\
                   " and only_if to guard this resource for idempotence."
 
-      def initialize(name, run_context = nil)
-        super(name, run_context, :powershell_script, "powershell.exe")
+      def initialize(*args)
+        super
+        @interpreter = "powershell.exe"
+        @default_guard_interpreter = resource_name
         @convert_boolean_return = false
       end
 
