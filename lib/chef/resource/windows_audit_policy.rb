@@ -80,12 +80,12 @@ class Chef
                      "Credential Validation",
                      "Kerberos Service Ticket Operations",
                      "Other Account Logon Events",
-                     "Kerberos Authentication Service"
+                     "Kerberos Authentication Service",
                     ]
       resource_name :windows_audit_policy
-      
+
       description "The windows_audit_policy resource allows for configuring system and per-user Windows advanced audit policy settings."
-      
+
       examples <<~DOC
       **Set Logon and Logoff policy to "Success and Failure"**:
 
@@ -123,31 +123,31 @@ class Chef
         coerce: proc { |p| Array(p) },
         description: "The audit policy subcategory, specified by GUID or name. Defaults to system if no user is specified.",
         callbacks: { "Subcategories entered should be an actual advanced audit policy subcategory" => proc { |n| (Array(n) - subcat_opts).empty? } }
-      
+
       property :success, [true, false],
                description: "Specify success auditing. By setting this property to true the resource will enable success for the category or sub category. Success is the default and is applied if neither success nor failure are specified."
-      
+
       property :failure, [true, false],
                description: "Specify failure auditing. By setting this property to true the resource will enable failure for the category or sub category. Success is the default and is applied if neither success nor failure are specified."
-      
+
       property :include_user, String,
                description: "The audit policy specified by the category or subcategory is applied per-user if specified. When a user is specified, include user. Include and exclude cannot be used at the same time."
-      
+
       property :exclude_user, String,
                description: "The audit policy specified by the category or subcategory is applied per-user if specified. When a user is specified, exclude user. Include and exclude cannot be used at the same time."
-      
+
       property :crash_on_audit_fail, [true, false],
                description: "Setting this audit policy option to true will cause the system to crash if the auditing system is unable to log events."
-      
+
       property :full_privilege_auditing, [true, false],
                description: "Setting this audit policy option to true will force the audit of all privilege changes except SeAuditPrivilege. Setting this property may cause the logs to fill up more quickly."
-      
+
       property :audit_base_objects, [true, false],
                description: "Setting this audit policy option to true will force the system to assign a System Access Control List to named objects to enable auditing of base objects such as mutexes."
-      
+
       property :audit_base_directories, [true, false],
                description: "Setting this audit policy option to true will force the system to assign a System Access Control List to named objects to enable auditing of container objects such as directories."
-      
+
       def subcategory_configured?(subcat, successval, failval)
         setting = if successval && failval
                     "Success and Failure$"
@@ -163,7 +163,7 @@ class Chef
           if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
         CODE
       end
-      
+
       def option_configured?(optname, optsetting)
         setting = optsetting ? "Enabled$" : "Disabled$"
         powershell_exec(<<-CODE).result
@@ -171,24 +171,25 @@ class Chef
           if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
         CODE
       end
-      
+
       action :set do
         unless new_resource.sub_category.empty?
           new_resource.sub_category.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)
+
             sval = new_resource.success ? "enable" : "disable"
             fval = new_resource.failure ? "enable" : "disable"
             cmd = "auditpol /set "
             cmd << "/user:\"#{new_resource.include_user}\" /include " if new_resource.include_user
             cmd << "/user:\"#{new_resource.exclude_user}\" /exclude " if new_resource.exclude_user
             cmd << "/subcategory:\"#{subcategory}\" /success:#{sval} /failure:#{fval}"
-      
+
             powershell_script "Update Audit Policy for Subcategory: #{subcategory}" do
               code cmd
             end
           end
         end
-      
+
         if !new_resource.crash_on_audit_fail.nil? && option_configured?("CrashOnAuditFail", new_resource.crash_on_audit_fail)
           val = new_resource.crash_on_audit_fail ? "Enable" : "Disable"
           cmd = "auditpol /set /option:CrashOnAuditFail /value:#{val}"
@@ -196,7 +197,7 @@ class Chef
             code cmd
           end
         end
-      
+
         if !new_resource.full_privilege_auditing.nil? && option_configured?("FullPrivilegeAuditing", new_resource.full_privilege_auditing)
           val = new_resource.full_privilege_auditing ? "Enable" : "Disable"
           cmd = "auditpol /set /option:FullPrivilegeAuditing /value:#{val}"
@@ -204,7 +205,7 @@ class Chef
             code cmd
           end
         end
-      
+
         if !new_resource.audit_base_directories.nil? && option_configured?("AuditBaseDirectories", new_resource.audit_base_directories)
           val = new_resource.audit_base_directories ? "Enable" : "Disable"
           cmd = "auditpol /set /option:AuditBaseDirectories /value:#{val}"
@@ -212,7 +213,7 @@ class Chef
             code cmd
           end
         end
-      
+
         if !new_resource.audit_base_objects.nil? && option_configured?("AuditBaseObjects", new_resource.audit_base_objects)
           val = new_resource.audit_base_objects ? "Enable" : "Disable"
           cmd = "auditpol /set /option:AuditBaseObjects /value:#{val}"
@@ -220,7 +221,7 @@ class Chef
             code cmd
           end
         end
-      end      
+      end
     end
   end
 end

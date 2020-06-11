@@ -76,7 +76,7 @@ describe Chef::Resource::WindowsAuditPolicy do
                  "Credential Validation",
                  "Kerberos Service Ticket Operations",
                  "Other Account Logon Events",
-                 "Kerberos Authentication Service"
+                 "Kerberos Authentication Service",
                 ]
   let(:resource) { Chef::Resource::WindowsAuditPolicy.new("fakey_fakerton") }
 
