@@ -90,7 +90,7 @@ class Chef
       **Set Logon and Logoff policy to "Success and Failure"**:
 
       ```ruby
-      windows_audit_policy "Set Audit Policy for 'Logon and Logoff' actions to 'Success and Failure' do
+      windows_audit_policy "Set Audit Policy for "Logon and Logoff" actions to "Success and Failure" do
         sub_category   %w(Logon Logoff)
         success        true
         failure        true
@@ -101,8 +101,8 @@ class Chef
       **Set Credential Validation policy to "Success"**:
 
       ```ruby
-      windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success' do
-        sub_category   'Credential Validation'
+      windows_audit_policy "Set Audit Policy for "Credential Validation" actions to "Success" do
+        sub_category   "Credential Validation"
         success        true
         failure        false
         action         :set
@@ -111,7 +111,7 @@ class Chef
       **Enable CrashOnAuditFail option**:
 
       ```ruby
-      windows_audit_policy "Enable CrashOnAuditFail option' do
+      windows_audit_policy "Enable CrashOnAuditFail option" do
         crash_on_audit_fail        true
         action                     :set
       end
@@ -177,10 +177,10 @@ class Chef
           new_resource.sub_category.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)
       
-            sval = new_resource.success ? 'enable' : 'disable'
-            fval = new_resource.failure ? 'enable' : 'disable'
+            sval = new_resource.success ? "enable" : "disable"
+            fval = new_resource.failure ? "enable" : "disable"
             converge_by "Update Audit Policy for \"#{subcategory}\" to Success:#{sval} and Failure:#{fval}" do
-              cmd = 'auditpol /set '
+              cmd = "auditpol /set "
               cmd += "/user:\"#{new_resource.include_user}\" /include " if new_resource.include_user
               cmd += "/user:\"#{new_resource.exclude_user}\" /exclude " if new_resource.exclude_user
               cmd += "/subcategory:\"#{subcategory}\" /success:#{sval} /failure:#{fval}"
@@ -189,32 +189,32 @@ class Chef
           end
         end
       
-        if !new_resource.crash_on_audit_fail.nil? && option_configured?('CrashOnAuditFail', new_resource.crash_on_audit_fail)
-          val = new_resource.crash_on_audit_fail ? 'Enable' : 'Disable'
+        if !new_resource.crash_on_audit_fail.nil? && option_configured?("CrashOnAuditFail", new_resource.crash_on_audit_fail)
+          val = new_resource.crash_on_audit_fail ? "Enable" : "Disable"
           converge_by "Configure Audit: CrashOnAuditFail to #{val}" do
             cmd = "auditpol /set /option:CrashOnAuditFail /value:#{val}"
             powershell_exec(cmd)
           end
         end
       
-        if !new_resource.full_privilege_auditing.nil? && option_configured?('FullPrivilegeAuditing', new_resource.full_privilege_auditing)
-          val = new_resource.full_privilege_auditing ? 'Enable' : 'Disable'
+        if !new_resource.full_privilege_auditing.nil? && option_configured?("FullPrivilegeAuditing", new_resource.full_privilege_auditing)
+          val = new_resource.full_privilege_auditing ? "Enable" : "Disable"
           converge_by "Configure Audit: FullPrivilegeAuditing to #{val}" do
             cmd = "auditpol /set /option:FullPrivilegeAuditing /value:#{val}"
             powershell_exec(cmd)
           end
         end
       
-        if !new_resource.audit_base_directories.nil? && option_configured?('AuditBaseDirectories', new_resource.audit_base_directories)
-          val = new_resource.audit_base_directories ? 'Enable' : 'Disable'
+        if !new_resource.audit_base_directories.nil? && option_configured?("AuditBaseDirectories", new_resource.audit_base_directories)
+          val = new_resource.audit_base_directories ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseDirectories to #{val}" do
             cmd = "auditpol /set /option:AuditBaseDirectories /value:#{val}"
             powershell_exec(cmd)
           end
         end
       
-        if !new_resource.audit_base_objects.nil? && option_configured?('AuditBaseObjects', new_resource.audit_base_objects)
-          val = new_resource.audit_base_objects ? 'Enable' : 'Disable'
+        if !new_resource.audit_base_objects.nil? && option_configured?("AuditBaseObjects", new_resource.audit_base_objects)
+          val = new_resource.audit_base_objects ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseObjects to #{val}" do
             cmd = "auditpol /set /option:AuditBaseObjects /value:#{val}"
             powershell_exec(cmd)
