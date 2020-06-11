@@ -30,7 +30,7 @@ class Chef
       def initialize(*args)
         super
         @interpreter = "cmd.exe"
-        @default_guard_interpreter = self.resource_name
+        @default_guard_interpreter = resource_name
       end
 
     end

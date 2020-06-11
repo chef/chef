@@ -51,7 +51,7 @@ class Chef
       def initialize(*args)
         super
         @interpreter = "powershell.exe"
-        @default_guard_interpreter = self.resource_name
+        @default_guard_interpreter = resource_name
         @convert_boolean_return = false
       end
 
