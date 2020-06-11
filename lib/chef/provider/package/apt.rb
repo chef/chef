@@ -235,10 +235,11 @@ class Chef
         end
 
         def check_availability(name)
-          name.map do |pkg|
+          available_packages = name.map do |pkg|
             showpkg = run_noninteractive("apt-cache", "search", pkg).stdout
             showpkg.empty? ? logger.warn("Unable to locate package  #{pkg} ") : pkg
           end
+          available_packages.compact
         end
       end
     end
