@@ -109,7 +109,6 @@ end
 
 include_recipe "::_apt" if platform_family?("debian")
 include_recipe "::_zypper" if suse?
-include_recipe "::_snap" if platform?("ubuntu")
 include_recipe "::_chef-vault" unless includes_recipe?("end_to_end::chef-vault")
 include_recipe "::_sudo"
 include_recipe "::_sysctl"
@@ -118,3 +117,7 @@ include_recipe "::_cron"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests"
+
+# at the moment these do not run properly in docker
+# we need to investage if this is a snap on docker issue or a chef issue
+# include_recipe "::_snap" if platform?("ubuntu")
