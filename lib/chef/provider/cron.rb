@@ -259,8 +259,8 @@ class Chef
         return "" if new_resource.time_out.empty?
 
         str = " timeout"
-        str << " --preserve-status" if new_resource.time_out["preserve-status"].to_s.downcase == "true"
-        str << " --foreground" if new_resource.time_out["foreground"].to_s.downcase == "true"
+        str << " --preserve-status" if new_resource.time_out["preserve-status"].to_s.casecmp("true") == 0
+        str << " --foreground" if new_resource.time_out["foreground"].to_s.casecmp("true") == 0
         str << " --kill-after #{new_resource.time_out["kill-after"]}" if new_resource.time_out["kill-after"]
         str << " --signal #{new_resource.time_out["signal"]}" if new_resource.time_out["signal"]
         str << " #{new_resource.time_out["duration"]};"

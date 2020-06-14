@@ -20,7 +20,7 @@ require_relative "../reserved_names"
 require_relative "api"
 require_relative "../mixin/wide_string"
 
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require_relative "../monkey_patches/win32/registry"
   require_relative "api/registry"
   require "win32/registry" unless defined?(Win32::Registry)
@@ -31,7 +31,7 @@ class Chef
   class Win32
     class Registry
 
-      if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
         include Chef::ReservedNames::Win32::API::Registry
         extend Chef::ReservedNames::Win32::API::Registry
       end

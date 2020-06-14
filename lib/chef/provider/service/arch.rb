@@ -33,7 +33,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   def load_current_resource
     raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exists?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
+    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless /DAEMONS=\((.*)\)/m.match?(::File.read("/etc/rc.conf"))
 
     super
 

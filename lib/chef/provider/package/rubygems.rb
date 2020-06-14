@@ -420,7 +420,7 @@ class Chef
         end
 
         def is_omnibus?
-          if RbConfig::CONFIG["bindir"] =~ %r{/(opscode|chef|chefdk)/embedded/bin}
+          if %r{/(opscode|chef|chefdk)/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
@@ -447,7 +447,7 @@ class Chef
 
           scheme = URI.parse(new_resource.source).scheme
           # URI.parse gets confused by MS Windows paths with forward slashes.
-          scheme = nil if scheme =~ /^[a-z]$/
+          scheme = nil if /^[a-z]$/.match?(scheme)
           %w{http https}.include?(scheme)
         rescue URI::InvalidURIError
           logger.trace("#{new_resource} failed to parse source '#{new_resource.source}' as a URI, assuming a local path")

@@ -50,7 +50,7 @@ class Chef
         description: "The type of device: :device, :label, or :uuid",
         coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
         default: :device,
-        equal_to: RUBY_PLATFORM =~ /solaris/i ? %i{ device } : %i{ device label uuid }
+        equal_to: RUBY_PLATFORM.match?(/solaris/i) ? %i{ device } : %i{ device label uuid }
 
       # @todo this should get refactored away: https://github.com/chef/chef/issues/7621
       property :mounted, [TrueClass, FalseClass], default: false, skip_docs: true

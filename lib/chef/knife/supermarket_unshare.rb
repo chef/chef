@@ -48,7 +48,7 @@ class Chef
         begin
           rest.delete "#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}"
         rescue Net::HTTPClientException => e
-          raise e unless e.message =~ /Forbidden/
+          raise e unless /Forbidden/.match?(e.message)
 
           ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
           exit 1

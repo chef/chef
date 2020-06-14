@@ -118,7 +118,7 @@ class Chef
 
         if ancestor.length == path.length
           ""
-        elsif path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/
+        elsif /#{PathUtils.regexp_path_separator}/.match?(path[ancestor.length, 1])
           path[ancestor.length + 1..-1]
         else
           nil
