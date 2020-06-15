@@ -26,11 +26,7 @@ describe Chef::Resource::WindowsFirewallProfile do
 
   %i{Domain Private Public}.each do |profile|
     it "The profile accepts values for the \"#{profile}\" Profile" do
-      expect { resource.profile profile,
-               resource.profile_enabled true,
-               resource.default_inbound_block true,
-               resource.default_outbound_allow true,
-              }.not_to raise_error
+      expect { resource.profile profile }.not_to raise_error
     end
   end
   

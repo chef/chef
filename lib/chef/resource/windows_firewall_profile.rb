@@ -20,7 +20,7 @@ class Chef
   class Resource
     class WindowsFirewallProfile < Chef::Resource
       provides :windows_firewall_profile
-      description 'Use the **windows_firewall_profile** resource to enable, disable, and configure the Windows firewall.'
+      description "Use the **windows_firewall_profile** resource to enable, disable, and configure the Windows firewall."
       introduced "16.2"
 
       examples <<~DOC
@@ -63,17 +63,17 @@ class Chef
 
       unified_mode true
 
-      property :profile, String, required: true, equal_to: %w(Domain Public Private), description: 'Set the Windows Profile being configured'
-      property :profile_enabled, [true, false], default: true, description: 'Set the status of the firewall profile to Enabled or Disabled'
-      property :default_inbound_block, [true, false, nil], default: true, description: 'Set the default policy for inbound network traffic to blocked'
-      property :default_outbound_allow, [true, false, nil], default: true, description: 'Set the default policy for outbound network traffic to blocked'
-      property :allow_inbound_rules, [true, false, nil], description: 'Allow users to set inbound firewall rules'
-      property :allow_local_firewall_rules, [true, false, nil], description: 'Merges inbound firewall rules into the policy'
-      property :allow_local_ipsec_rules, [true, false, nil], description: 'Allow users to manage local connection security rules'
-      property :allow_user_apps, [true, false, nil], description: 'Allow user applications to manage firewall'
-      property :allow_user_ports, [true, false, nil], description: 'Allow users to manage firewall port rules'
-      property :allow_unicast_response, [true, false, nil], description: 'Allow unicast responses to multicast and broadcast messages'
-      property :display_notification, [true, false, nil], description: 'Display a notification when firewall blocks certain activity'
+      property :profile, String, required: true, equal_to: %w{ Domain Public Private }, description: "Set the Windows Profile being configured"
+      property :profile_enabled, [true, false], default: true, description: "Set the status of the firewall profile to Enabled or Disabled"
+      property :default_inbound_block, [true, false, nil], default: true, description: "Set the default policy for inbound network traffic to blocked"
+      property :default_outbound_allow, [true, false, nil], default: true, description: "Set the default policy for outbound network traffic to blocked"
+      property :allow_inbound_rules, [true, false, nil], description: "Allow users to set inbound firewall rules"
+      property :allow_local_firewall_rules, [true, false, nil], description: "Merges inbound firewall rules into the policy"
+      property :allow_local_ipsec_rules, [true, false, nil], description: "Allow users to manage local connection security rules"
+      property :allow_user_apps, [true, false, nil], description: "Allow user applications to manage firewall"
+      property :allow_user_ports, [true, false, nil], description: "Allow users to manage firewall port rules"
+      property :allow_unicast_response, [true, false, nil], description: "Allow unicast responses to multicast and broadcast messages"
+      property :display_notification, [true, false, nil], description: "Display a notification when firewall blocks certain activity"
 
       load_current_value do |desired|
         ps_results = powershell_exec(<<-CODE).result
@@ -104,52 +104,52 @@ class Chef
       action :configure do
         converge_if_changed :profile_enabled do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += "-Enabled #{new_resource.profile_enabled ? 'True' : 'False'} "
+          cmd += "-Enabled #{new_resource.profile_enabled ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :default_inbound_block do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.default_inbound_block.nil? ? '-DefaultInboundAction NotConfigured ' : "-DefaultInboundAction #{new_resource.default_inbound_block ? 'Block' : 'Allow'} "
+          cmd += new_resource.default_inbound_block.nil? ? "-DefaultInboundAction NotConfigured " : "-DefaultInboundAction #{new_resource.default_inbound_block ? "Block" : "Allow"} "
           powershell_exec(cmd)
         end
         converge_if_changed :default_outbound_allow do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.default_outbound_allow.nil? ? '-DefaultOutboundAction NotConfigured ' : "-DefaultOutboundAction #{new_resource.default_outbound_allow ? 'Allow' : 'Block'} "
+          cmd += new_resource.default_outbound_allow.nil? ? "-DefaultOutboundAction NotConfigured " : "-DefaultOutboundAction #{new_resource.default_outbound_allow ? "Allow" : "Block"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_inbound_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_inbound_rules.nil? ? '-AllowInboundRules NotConfigured ' : "-AllowInboundRules #{new_resource.allow_inbound_rules ? 'True' : 'False'} "
+          cmd += new_resource.allow_inbound_rules.nil? ? "-AllowInboundRules NotConfigured " : "-AllowInboundRules #{new_resource.allow_inbound_rules ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_local_firewall_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_local_firewall_rules.nil? ? '-AllowLocalFirewallRules NotConfigured ' : "-AllowLocalFirewallRules #{new_resource.allow_local_firewall_rules ? 'True' : 'False'} "
+          cmd += new_resource.allow_local_firewall_rules.nil? ? "-AllowLocalFirewallRules NotConfigured " : "-AllowLocalFirewallRules #{new_resource.allow_local_firewall_rules ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_local_ipsec_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_local_ipsec_rules.nil? ? '-AllowLocalIPsecRules NotConfigured ' : "-AllowLocalIPsecRules #{new_resource.allow_local_ipsec_rules ? 'True' : 'False'} "
+          cmd += new_resource.allow_local_ipsec_rules.nil? ? "-AllowLocalIPsecRules NotConfigured " : "-AllowLocalIPsecRules #{new_resource.allow_local_ipsec_rules ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_user_apps do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_user_apps.nil? ? '-AllowUserApps NotConfigured ' : "-AllowUserApps #{new_resource.allow_user_apps ? 'True' : 'False'} "
+          cmd += new_resource.allow_user_apps.nil? ? "-AllowUserApps NotConfigured " : "-AllowUserApps #{new_resource.allow_user_apps ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_user_ports do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_user_ports.nil? ? '-AllowUserPorts NotConfigured ' : "-AllowUserPorts #{new_resource.allow_user_ports ? 'True' : 'False'} "
+          cmd += new_resource.allow_user_ports.nil? ? "-AllowUserPorts NotConfigured " : "-AllowUserPorts #{new_resource.allow_user_ports ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :allow_unicast_response do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_unicast_response.nil? ? '-AllowUnicastResponseToMulticast NotConfigured ' : "-AllowUnicastResponseToMulticast #{new_resource.allow_unicast_response ? 'True' : 'False'} "
+          cmd += new_resource.allow_unicast_response.nil? ? "-AllowUnicastResponseToMulticast NotConfigured " : "-AllowUnicastResponseToMulticast #{new_resource.allow_unicast_response ? "True" : "False"} "
           powershell_exec(cmd)
         end
         converge_if_changed :display_notification do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.display_notification.nil? ? '-NotifyOnListen NotConfigured ' : "-NotifyOnListen #{new_resource.display_notification ? 'True' : 'False'} "
+          cmd += new_resource.display_notification.nil? ? "-NotifyOnListen NotConfigured " : "-NotifyOnListen #{new_resource.display_notification ? "True" : "False"} "
           powershell_exec(cmd)
         end
       end
