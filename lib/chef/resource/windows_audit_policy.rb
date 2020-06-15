@@ -84,7 +84,7 @@ class Chef
                                 ]
       provides :windows_audit_policy
 
-      description "The windows_audit_policy resource allows for configuring system and per-user Windows advanced audit policy settings."
+      description "Use the **windows_audit_policy** resource to configure system level and per-user Windows advanced audit policy settings."
 
       examples <<~DOC
       **Set Logon and Logoff policy to "Success and Failure"**:
@@ -184,7 +184,7 @@ class Chef
               cmd += "/user:\"#{new_resource.include_user}\" /include " if new_resource.include_user
               cmd += "/user:\"#{new_resource.exclude_user}\" /exclude " if new_resource.exclude_user
               cmd += "/subcategory:\"#{subcategory}\" /success:#{s_val} /failure:#{f_val}"
-              powershell_exec(cmd)
+              powershell_exec!(cmd)
             end
           end
         end
@@ -193,7 +193,7 @@ class Chef
           val = new_resource.crash_on_audit_fail ? "Enable" : "Disable"
           converge_by "Configure Audit: CrashOnAuditFail to #{val}" do
             cmd = "auditpol /set /option:CrashOnAuditFail /value:#{val}"
-            powershell_exec(cmd)
+            powershell_exec!(cmd)
           end
         end
 
@@ -201,7 +201,7 @@ class Chef
           val = new_resource.full_privilege_auditing ? "Enable" : "Disable"
           converge_by "Configure Audit: FullPrivilegeAuditing to #{val}" do
             cmd = "auditpol /set /option:FullPrivilegeAuditing /value:#{val}"
-            powershell_exec(cmd)
+            powershell_exec!(cmd)
           end
         end
 
@@ -209,7 +209,7 @@ class Chef
           val = new_resource.audit_base_directories ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseDirectories to #{val}" do
             cmd = "auditpol /set /option:AuditBaseDirectories /value:#{val}"
-            powershell_exec(cmd)
+            powershell_exec!(cmd)
           end
         end
 
@@ -217,7 +217,7 @@ class Chef
           val = new_resource.audit_base_objects ? "Enable" : "Disable"
           converge_by "Configure Audit: AuditBaseObjects to #{val}" do
             cmd = "auditpol /set /option:AuditBaseObjects /value:#{val}"
-            powershell_exec(cmd)
+            powershell_exec!(cmd)
           end
         end
       end
