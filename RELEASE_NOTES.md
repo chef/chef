@@ -1,5 +1,79 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Chef Infra Client 16.2
+
+## Breaking Change in Resources
+
+## New Resources
+
+### windows_audit_policy
+
+The `windows_audit_policy` resource is used to configure system-level and per-user Windows advanced audit policy settings. See the [windows_audit_policy Documentation](https://docs.chef.io/resources/windows_audit_policy/) for complete usage information.
+
+For example you can enable auditing of successful credential validation:
+
+```ruby
+windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success'" do
+  subcategory  'Credential Validation'
+  success true
+  failure false
+  action :set
+end
+```
+
+### homebrew_update
+
+The `homebrew_update` resource is used to update the available package cache for the Homebrew package system similar to the behavior of the `apt_update` resource. See the [homebrew_update Documentation](https://docs.chef.io/resources/homebrew_update/) for complete usage information. Thanks for adding this new resource [@damacus](http://github.com/damacus).
+
+## Resource Updates
+
+### archive_file
+
+The `archive_file` resource has been updated with two important fixes. The resource will no longer fail with uninitialized constant errors under some scenarios. Additionally the behavior of the `mode` property has been improved to prevent incorrect file modes being applied to the decompressed files. Due to how file modes and Integer values are processed in Ruby this resource will now produce a deprecation warnings if Integer values are passed. Using String values lets us accurately pass values such as '644' or '0644' without ambiguity as to the user's intent. Thanks for reporting these issues [@sfiggins](http://github.com/sfiggins) and [@hammerhead](http://github.com/hammerhead).
+
+### chef_client_scheduled_task
+
+The `chef_client_scheduled_task` resource has been updated to default the `frequency_modifier` property to `30` if the `frequency` property is set to `minutes` otherwise it still defaults to `1`. This provides a more predictable schedule behavior for users.
+
+### cron_access
+
+The `cron_access` resource has been updated to support Solaris and AIX systems. Thanks [@aklyachkin](http://github.com/aklyachkin).
+
+### execute
+
+The `execute` resource has a new `input` property which allows you to pass `stdin` input to the command being executed.
+
+### powershell_package
+
+The `powershell_package` resource has been updated to use TLS 1.2 when communicating on the PowerShell Gallery on Windows 2012-2016. Previously this resource used the system default of TLS 1.0, which now fails as PowerShell Gallery requires TLS 1.2. Thanks for reporting this issues [@Xorima](http://github.com/Xorima).
+
+### remote_file
+
+The `remote_file` resource has a new property `ssl_verify_mode` which allows you to control SSL validation at the property level. This can be used to verify certificates (Chef Infra Client's defaults) with `:verify_peer` or to skip verification in the case of a self signed certifcate `:verify_none`. Thanks [@jaymzh](http://github.com/jaymzh).
+
+### script
+
+The various `script` resources such as `bash` or `ruby` now pass the provided script content to the interpreter using system pipes instead of writing to a temporary file and executing it. Executing script content using pipes is faster, more secure as potentially sensitive scripts aren't written to disk, and bypasses issues around user privileges.
+
+### snap_package
+
+Multiple issues with the `snap_package` resource have been resolved including an inifinite wait that occured as well as issues specifying package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
+
+### zypper_repository
+
+The `zypper_repository` resource has been updated to work with the newer release of GPG in openSUSE 15 and SLES 15. This prevents failures when importing GPG keys in the resource.
+
+## Knife bootstrap updates
+
+- Knife bootstrap will now warn when bootstrapping a system using a validation key. Users should instead use `validatorless bootstrapping` with `knife bootstrap` which generates node and client keys using the client key of the user bootstrapping the node. This method is far more secure as an org-wide validation key does not not need to be distributed or rotated. Users can switch to `validatorless bootstrapping` by removing any `validation_key` entries in their `config.rb (knife.rb)` file.
+- Resolved an error bootstrapping Linux nodes from Windows hosts
+- Improved information messages during the bootstrap process
+
+## Platform Packages
+
+- Debian 8 packages are no longer being produced as Debian 8 is now end of life.
+- We now produce Windows 8 packages
+
 # Chef Infra Client 16.1.16
 
 This release resolves high-priority bugs in the 16.1 release of Chef Infra Client:
