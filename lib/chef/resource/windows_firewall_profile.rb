@@ -34,6 +34,7 @@ class Chef
         default_outbound_allow true
         allow_inbound_rules true
         display_notification false
+        action :configure
       end
       ```
 
