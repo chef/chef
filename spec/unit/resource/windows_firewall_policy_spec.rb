@@ -24,18 +24,18 @@ describe Chef::Resource::WindowsFirewallProfile do
     expect(resource.resource_name).to eql(:windows_firewall_profile)
   end
 
-  %i{Domain Private Public}.each do |profile|
+  %w{ Domain Private Public }.each do |this_profile|
     it "The profile accepts values for the \"#{profile}\" Profile" do
-      expect { resource.profile profile }.not_to raise_error
+      expect { resource.profile this_profile }.not_to raise_error
     end
   end
-  
+
   it "the profile property does not accept bad profile names" do
     expect { resource.profile "Special" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "the profile_enabled property does not accept a non true-false option" do
-    expect { resource.profile_enabled nil }.to raise_error(ArgumentError)
+    expect { resource.profile_enabled "yes" }.to raise_error(ArgumentError)
   end
 
   it "the resource's default_inbound_block property only accepts true, false, or nil " do
@@ -62,8 +62,8 @@ describe Chef::Resource::WindowsFirewallProfile do
   it "the resource's allow_unicast_response property only accepts true, false, or nil " do
     expect { resource.allow_unicast_response "True" }.to raise_error(ArgumentError)
   end
-  it "the resource's display_notifications property only accepts true, false, or nil " do
-    expect { resource.display_notifications "Sometimes" }.to raise_error(ArgumentError)
+  it "the resource's display_notification property only accepts true, false, or nil " do
+    expect { resource.display_notification "Sometimes" }.to raise_error(ArgumentError)
   end
 
   it "sets the default action as :configure" do
@@ -71,14 +71,14 @@ describe Chef::Resource::WindowsFirewallProfile do
   end
 
   it "sets the default profile_enabled parameter to be set to true" do
-    expect(resource.profile_enabled).to eql([true])
+    expect(resource.profile_enabled).to eql(true)
   end
 
   it "sets the default default_inbound_block parameter to be set to true" do
-    expect(resource.default_inbound_block).to eql([true])
+    expect(resource.default_inbound_block).to eql(true)
   end
 
   it "sets the default default_outbound_allow parameter to be set to true" do
-    expect(resource.default_outbound_allow).to eql([true])
+    expect(resource.default_outbound_allow).to eql(true)
   end
 end

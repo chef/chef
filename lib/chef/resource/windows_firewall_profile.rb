@@ -109,47 +109,56 @@ class Chef
         end
         converge_if_changed :default_inbound_block do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.default_inbound_block.nil? ? "-DefaultInboundAction NotConfigured " : "-DefaultInboundAction #{new_resource.default_inbound_block ? "Block" : "Allow"} "
+          cmd += "-DefaultInboundAction NotConfigured " if new_resource.default_inbound_block.nil?
+          cmd += "-DefaultInboundAction #{new_resource.default_inbound_block ? "Block" : "Allow"} " unless new_resource.default_inbound_block.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :default_outbound_allow do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.default_outbound_allow.nil? ? "-DefaultOutboundAction NotConfigured " : "-DefaultOutboundAction #{new_resource.default_outbound_allow ? "Allow" : "Block"} "
+          cmd += "-DefaultOutboundAction NotConfigured " if new_resource.default_outbound_allow.nil?
+          cmd += "-DefaultOutboundAction #{new_resource.default_outbound_allow ? "Allow" : "Block"} " unless new_resource.default_outbound_allow.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_inbound_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_inbound_rules.nil? ? "-AllowInboundRules NotConfigured " : "-AllowInboundRules #{new_resource.allow_inbound_rules ? "True" : "False"} "
+          cmd += "-AllowInboundRules NotConfigured " if new_resource.allow_inbound_rules.nil?
+          cmd += "-AllowInboundRules #{new_resource.allow_inbound_rules ? "True" : "False"} " unless new_resource.allow_inbound_rules.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_local_firewall_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_local_firewall_rules.nil? ? "-AllowLocalFirewallRules NotConfigured " : "-AllowLocalFirewallRules #{new_resource.allow_local_firewall_rules ? "True" : "False"} "
+          cmd += "-AllowLocalFirewallRules NotConfigured " if new_resource.allow_local_firewall_rules.nil?
+          cmd += "-AllowLocalFirewallRules #{new_resource.allow_local_firewall_rules ? "True" : "False"} " unless new_resource.allow_local_firewall_rules.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_local_ipsec_rules do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_local_ipsec_rules.nil? ? "-AllowLocalIPsecRules NotConfigured " : "-AllowLocalIPsecRules #{new_resource.allow_local_ipsec_rules ? "True" : "False"} "
+          cmd += "-AllowLocalIPsecRules NotConfigured " if new_resource.allow_local_ipsec_rules.nil?
+          cmd += "-AllowLocalIPsecRules #{new_resource.allow_local_ipsec_rules ? "True" : "False"} " unless new_resource.allow_local_ipsec_rules.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_user_apps do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_user_apps.nil? ? "-AllowUserApps NotConfigured " : "-AllowUserApps #{new_resource.allow_user_apps ? "True" : "False"} "
+          cmd += "-AllowUserApps NotConfigured " if new_resource.allow_user_apps.nil?
+          cmd += "-AllowUserApps #{new_resource.allow_user_apps ? "True" : "False"} " unless new_resource.allow_user_apps.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_user_ports do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_user_ports.nil? ? "-AllowUserPorts NotConfigured " : "-AllowUserPorts #{new_resource.allow_user_ports ? "True" : "False"} "
+          cmd += "-AllowUserPorts NotConfigured " if new_resource.allow_user_ports.nil?
+          cmd += "-AllowUserPorts #{new_resource.allow_user_ports ? "True" : "False"} " unless new_resource.allow_user_ports.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :allow_unicast_response do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.allow_unicast_response.nil? ? "-AllowUnicastResponseToMulticast NotConfigured " : "-AllowUnicastResponseToMulticast #{new_resource.allow_unicast_response ? "True" : "False"} "
+          cmd += "-AllowUnicastResponseToMulticast NotConfigured " if new_resource.allow_unicast_response.nil?
+          cmd += "-AllowUnicastResponseToMulticast #{new_resource.allow_unicast_response ? "True" : "False"} " unless new_resource.allow_unicast_response.nil?
           powershell_exec(cmd)
         end
         converge_if_changed :display_notification do
           cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} "
-          cmd += new_resource.display_notification.nil? ? "-NotifyOnListen NotConfigured " : "-NotifyOnListen #{new_resource.display_notification ? "True" : "False"} "
+          cmd += "-NotifyOnListen NotConfigured " if new_resource.display_notification.nil?
+          cmd += "-NotifyOnListen #{new_resource.display_notification ? "True" : "False"} " unless new_resource.display_notification.nil?
           powershell_exec(cmd)
         end
       end
