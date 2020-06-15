@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.33 -->
-## [v16.2.33](https://github.com/chef/chef/tree/v16.2.33) (2020-06-15)
+<!-- latest_release 16.2.34 -->
+## [v16.2.34](https://github.com/chef/chef/tree/v16.2.34) (2020-06-15)
 
 #### Merged Pull Requests
-- Fix how enforce_license is set in run method for chef-apply [#9963](https://github.com/chef/chef/pull/9963) ([ramereth](https://github.com/ramereth))
+- Create windows_audit_policy resource [#9980](https://github.com/chef/chef/pull/9980) ([chef-davin](https://github.com/chef-davin))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Create windows_audit_policy resource [#9980](https://github.com/chef/chef/pull/9980) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.34 -->
 - Fix how enforce_license is set in run method for chef-apply [#9963](https://github.com/chef/chef/pull/9963) ([ramereth](https://github.com/ramereth)) <!-- 16.2.33 -->
 - Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50)) <!-- 16.2.32 -->
 - Use .match? not =~ when match values aren&#39;t necessary [#9989](https://github.com/chef/chef/pull/9989) ([tas50](https://github.com/tas50)) <!-- 16.2.31 -->
