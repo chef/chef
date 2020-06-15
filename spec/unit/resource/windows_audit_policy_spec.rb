@@ -49,7 +49,7 @@ describe Chef::Resource::WindowsAuditPolicy do
     expect { resource.failure "not_a_true_or_false" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  WindowsAuditPolicy::WIN_AUDIT_SUBCATEGORIES.each do |val|
+  Chef::Resource::WindowsAuditPolicy::WIN_AUDIT_SUBCATEGORIES.each do |val|
     it "the subcategory property accepts :#{val}" do
       expect { resource.subcategory val }.not_to raise_error
     end
