@@ -49,7 +49,7 @@ class Chef
         end
       ```
 
-      **Run #{Chef::Dist::PRODUCT} daily at 01:00 am, specifying a named run-list**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} daily at 01:00 am, specifying a named run-list**:
 
       ```ruby
         chef_client_scheduled_task "Run chef-client named run-list daily" do
