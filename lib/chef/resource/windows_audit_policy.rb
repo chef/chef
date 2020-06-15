@@ -82,7 +82,7 @@ class Chef
                                  "User / Device Claims",
                                  "User Account Management",
                                 ]
-      resource_name :windows_audit_policy
+      provides :windows_audit_policy
 
       description "The windows_audit_policy resource allows for configuring system and per-user Windows advanced audit policy settings."
 
