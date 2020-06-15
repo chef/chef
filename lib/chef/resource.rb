@@ -451,6 +451,9 @@ class Chef
       description: "Determines whether or not the resource is executed during the compile time phase.",
       default: false, desired_state: false
 
+    # TODO: fill in doc info
+    property :umask, String
+
     # The time it took (in seconds) to run the most recently-run action.  Not
     # cumulative across actions.  This is set to 0 as soon as a new action starts
     # running, and set to the elapsed time at the end of the action.
@@ -588,7 +591,9 @@ class Chef
       begin
         return if should_skip?(action)
 
-        provider_for_action(action).run_action
+        with_umask do
+          provider_for_action(action).run_action
+        end
       rescue StandardError => e
         if ignore_failure
           logger.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
@@ -610,6 +615,20 @@ class Chef
       # A negative value can occur when a resource changes the system time backwards
       @elapsed_time = 0 if @elapsed_time < 0
       events.resource_completed(self)
+    end
+
+    def with_umask
+      if umask.nil?
+        yield
+        return
+      end
+
+      old_value = ::File.umask(umask.oct)
+      begin
+        yield
+      ensure
+        ::File.umask(old_value)
+      end
     end
 
     #
