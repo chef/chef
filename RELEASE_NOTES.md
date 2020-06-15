@@ -23,7 +23,7 @@ end
 
 ### homebrew_update
 
-The `homebrew_update` resource is used to update the available package cache for the Homebrew package system similar to the behavior of the `apt_update` resource. See the [homebrew_update Documentation](https://docs.chef.io/resources/homebrew_update/) for complete usage information. Thanks for adding this new resource [@damacus](http://github.com/damacus).
+The `homebrew_update` resource is used to update the available package cache for the Homebrew package system similar to the behavior of the `apt_update` resource. See the [homebrew_update Documentation](https://docs.chef.io/resources/homebrew_update/) for complete usage information. Thanks for adding this new resource, [@damacus](http://github.com/damacus).
 
 ## Resource Updates
 
