@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.34 -->
-## [v16.2.34](https://github.com/chef/chef/tree/v16.2.34) (2020-06-15)
+<!-- latest_release 16.2.35 -->
+## [v16.2.35](https://github.com/chef/chef/tree/v16.2.35) (2020-06-15)
 
 #### Merged Pull Requests
-- Create windows_audit_policy resource [#9980](https://github.com/chef/chef/pull/9980) ([chef-davin](https://github.com/chef-davin))
+- Add &quot;most recent call first&quot; to traceback message [#9967](https://github.com/chef/chef/pull/9967) ([zfjagann](https://github.com/zfjagann))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add &quot;most recent call first&quot; to traceback message [#9967](https://github.com/chef/chef/pull/9967) ([zfjagann](https://github.com/zfjagann)) <!-- 16.2.35 -->
 - Create windows_audit_policy resource [#9980](https://github.com/chef/chef/pull/9980) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.34 -->
 - Fix how enforce_license is set in run method for chef-apply [#9963](https://github.com/chef/chef/pull/9963) ([ramereth](https://github.com/ramereth)) <!-- 16.2.33 -->
 - Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50)) <!-- 16.2.32 -->
