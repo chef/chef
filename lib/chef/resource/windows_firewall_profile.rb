@@ -66,7 +66,7 @@ class Chef
       property :profile, String, required: true, equal_to: %w{ Domain Public Private }, description: "Set the Windows Profile being configured"
       property :profile_enabled, [true, false], default: true, description: "Set the status of the firewall profile to Enabled or Disabled"
       property :default_inbound_block, [true, false, nil], default: true, description: "Set the default policy for inbound network traffic to blocked"
-      property :default_outbound_allow, [true, false, nil], default: true, description: "Set the default policy for outbound network traffic to blocked"
+      property :default_outbound_allow, [true, false, nil], default: true, description: "Set the default policy for outbound network traffic to allowed"
       property :allow_inbound_rules, [true, false, nil], description: "Allow users to set inbound firewall rules"
       property :allow_local_firewall_rules, [true, false, nil], description: "Merges inbound firewall rules into the policy"
       property :allow_local_ipsec_rules, [true, false, nil], description: "Allow users to manage local connection security rules"

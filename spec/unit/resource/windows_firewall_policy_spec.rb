@@ -25,7 +25,7 @@ describe Chef::Resource::WindowsFirewallProfile do
   end
 
   %w{ Domain Private Public }.each do |this_profile|
-    it "The profile accepts values for the \"#{profile}\" Profile" do
+    it "The profile accepts values for the \"#{this_profile}\" Profile" do
       expect { resource.profile this_profile }.not_to raise_error
     end
   end
