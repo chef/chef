@@ -36,7 +36,7 @@ class Chef
       ```ruby
       windows_certificate 'c:/test/mycert.pfx' do
         pfx_password 'password'
-        private_key_acl ["acme\fred", "pc\jane"]
+        private_key_acl ["acme\\fred", "pc\\jane"]
       end
       ```
 

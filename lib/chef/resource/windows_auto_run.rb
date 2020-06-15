@@ -26,7 +26,7 @@ class Chef
       description "Use the **windows_auto_run** resource to set applications to run at login."
       introduced "14.0"
       examples <<~DOC
-      **Run BGInfo at login**:
+      **Run BGInfo at login**
 
       ```ruby
       windows_auto_run 'BGINFO' do
