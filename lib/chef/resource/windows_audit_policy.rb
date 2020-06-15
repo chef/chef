@@ -164,10 +164,10 @@ class Chef
         CODE
       end
 
-      def option_configured?(optname, optsetting)
-        setting = optsetting ? "Enabled$" : "Disabled$"
+      def option_configured?(option_name, option_setting)
+        setting = option_setting ? "Enabled$" : "Disabled$"
         powershell_exec(<<-CODE).result
-          $auditpol_config = auditpol /get /option:#{optname}
+          $auditpol_config = auditpol /get /option:#{option_name}
           if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
         CODE
       end
