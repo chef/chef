@@ -154,6 +154,11 @@ class Chef
         sha_hash?(result) ? result : nil
       end
 
+      def already_on_target_branch?
+        current_branch = git("rev-parse", "--abbrev-ref", "HEAD", cwd: cwd, returns: [0, 128]).stdout.strip
+        current_branch == (new_resource.checkout_branch || new_resource.revision)
+      end
+
       def add_remotes
         if new_resource.additional_remotes.length > 0
           new_resource.additional_remotes.each_pair do |remote_name, remote_url|
@@ -193,6 +198,9 @@ class Chef
             # detached head
             git("checkout", target_revision, cwd: cwd)
             logger.info "#{new_resource} checked out reference: #{target_revision}"
+          elsif already_on_target_branch?
+            # we are already on the proper branch
+            git("reset", "--hard", target_revision, cwd: cwd)
           else
             # need a branch with a tracking branch
             git("branch", "-f", new_resource.revision, target_revision, cwd: cwd)
@@ -222,13 +230,13 @@ class Chef
           logger.trace "Fetching updates from #{new_resource.remote} and resetting to revision #{target_revision}"
           git("fetch", "--prune", new_resource.remote, cwd: cwd)
           git("fetch", new_resource.remote, "--tags", cwd: cwd)
-          if new_resource.checkout_branch
+          if sha_hash?(new_resource.revision) || is_tag? || already_on_target_branch?
+            # detached head or if we are already on the proper branch
+            git("reset", "--hard", target_revision, cwd: cwd)
+          elsif new_resource.checkout_branch
             # check out to a local branch
             git("branch", "-f", new_resource.checkout_branch, target_revision, cwd: cwd)
             git("checkout", new_resource.checkout_branch, cwd: cwd)
-          elsif sha_hash?(new_resource.revision) || is_tag?
-            # detached head
-            git("reset", "--hard", target_revision, cwd: cwd)
           else
             # need a branch with a tracking branch
             git("branch", "-f", new_resource.revision, target_revision, cwd: cwd)
