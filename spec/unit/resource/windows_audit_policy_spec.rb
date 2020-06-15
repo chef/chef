@@ -16,6 +16,7 @@
 #
 
 require "spec_helper"
+require "chef/resource/windows_audit_policy"
 
 describe Chef::Resource::WindowsAuditPolicy do
   let(:resource) { Chef::Resource::WindowsAuditPolicy.new("fakey_fakerton") }
