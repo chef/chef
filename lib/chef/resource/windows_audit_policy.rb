@@ -85,6 +85,7 @@ class Chef
       provides :windows_audit_policy
 
       description "Use the **windows_audit_policy** resource to configure system level and per-user Windows advanced audit policy settings."
+      introduced: "16.2"
 
       examples <<~DOC
       **Set Logon and Logoff policy to "Success and Failure"**:
@@ -108,6 +109,7 @@ class Chef
         action         :set
       end
       ```
+
       **Enable CrashOnAuditFail option**:
 
       ```ruby
@@ -116,7 +118,6 @@ class Chef
         action                     :set
       end
       ```
-
       DOC
 
       property :subcategory, [String, Array],
