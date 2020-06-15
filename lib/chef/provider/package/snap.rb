@@ -137,7 +137,7 @@ class Chef
 
           # while it is expected to allow clients to connect using https over
           # a tcp socket, at this point only a unix socket is supported. the
-          # socket is /run/snapd.socket note - unix socket is not defined on
+          # socket is /run/snapd.socket note - UNIXSocket is not defined on
           # windows systems
           if defined?(::UNIXSocket)
             UNIXSocket.open("/run/snapd.socket") do |socket|
