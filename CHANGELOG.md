@@ -1,15 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.32 -->
-## [v16.2.32](https://github.com/chef/chef/tree/v16.2.32) (2020-06-15)
+<!-- latest_release 16.2.36 -->
+## [v16.2.36](https://github.com/chef/chef/tree/v16.2.36) (2020-06-15)
 
 #### Merged Pull Requests
-- Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50))
+- Improve resource documentation [#9995](https://github.com/chef/chef/pull/9995) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve resource documentation [#9995](https://github.com/chef/chef/pull/9995) ([tas50](https://github.com/tas50)) <!-- 16.2.36 -->
+- Add &quot;most recent call first&quot; to traceback message [#9967](https://github.com/chef/chef/pull/9967) ([zfjagann](https://github.com/zfjagann)) <!-- 16.2.35 -->
+- Create windows_audit_policy resource [#9980](https://github.com/chef/chef/pull/9980) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.34 -->
+- Fix how enforce_license is set in run method for chef-apply [#9963](https://github.com/chef/chef/pull/9963) ([ramereth](https://github.com/ramereth)) <!-- 16.2.33 -->
 - Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50)) <!-- 16.2.32 -->
 - Use .match? not =~ when match values aren&#39;t necessary [#9989](https://github.com/chef/chef/pull/9989) ([tas50](https://github.com/tas50)) <!-- 16.2.31 -->
 - Fix snap_package bugs [#9944](https://github.com/chef/chef/pull/9944) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.30 -->
