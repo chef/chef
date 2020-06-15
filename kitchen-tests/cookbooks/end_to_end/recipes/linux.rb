@@ -119,5 +119,5 @@ include_recipe "::_openssl"
 include_recipe "::_tests"
 
 # at the moment these do not run properly in docker
-# we need to investage if this is a snap on docker issue or a chef issue
+# we need to investigate if this is a snap on docker issue or a chef issue
 # include_recipe "::_snap" if platform?("ubuntu")
