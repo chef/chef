@@ -29,7 +29,7 @@ class Chef
       provides :homebrew_package
       provides :package, os: "darwin"
 
-      description "Use the **homebrew_package** resource to manage packages for the macOS platform. Note: Starting with #{Chef::Dist::PRODUCT} 16 the homebrew resource now accepts an array of packages for installing multiple packages at once."
+      description "Use the **homebrew_package** resource to manage packages for the macOS platform. Note: Starting with #{ChefUtils::Dist::Infra::PRODUCT} 16 the homebrew resource now accepts an array of packages for installing multiple packages at once."
       introduced "12.0"
       examples <<~DOC
       **Install a package**:

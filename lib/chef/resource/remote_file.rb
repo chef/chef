@@ -22,7 +22,7 @@ require_relative "file"
 require_relative "../provider/remote_file"
 require_relative "../mixin/securable"
 require_relative "../mixin/uris"
-require_relative "../dist"
+require "chef-utils/dist"
 
 class Chef
   class Resource
@@ -74,7 +74,7 @@ class Chef
       end
 
       property :checksum, String,
-        description: "Optional, see `use_conditional_get`. The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{Chef::Dist::PRODUCT} does not download it."
+        description: "Optional, see `use_conditional_get`. The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{ChefUtils::Dist::Infra::PRODUCT} does not download it."
 
       # Disable or enable ETag and Last Modified conditional GET. Equivalent to
       #   use_etag(true_or_false)
@@ -93,7 +93,7 @@ class Chef
         description: "Enable `If-Modified-Since` headers. Set to `false` to disable `If-Modified-Since` headers. To use this setting, `use_conditional_get` must also be set to `true`."
 
       property :ftp_active_mode, [ TrueClass, FalseClass ], default: false,
-        description: "Whether #{Chef::Dist::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
+        description: "Whether #{ChefUtils::Dist::Infra::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
       property :headers, Hash, default: lazy { {} },
         description: "A Hash of custom HTTP headers."
