@@ -1,14 +1,14 @@
-package 'snapd' do
+package "snapd" do
   action :upgrade
 end
 
-service 'snapd' do
+service "snapd" do
   action :start
 end
 
-execute 'sleep 5'
+execute "sleep 5"
 
-snap_package 'black' do
+snap_package "black" do
   action :upgrade
-  channel 'beta'
+  channel "beta"
 end
