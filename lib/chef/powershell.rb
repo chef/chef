@@ -34,7 +34,7 @@ class Chef
     # @param script [String] script to run
     # @return [Object] output
     def initialize(script)
-      raise "Chef::PowerShell can only be used on the Windows platform." unless RUBY_PLATFORM =~ /mswin|mingw32|windows/
+      raise "Chef::PowerShell can only be used on the Windows platform." unless RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 
       exec(script)
     end

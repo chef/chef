@@ -76,9 +76,9 @@ class Chef
 
           in_info = false
           ::File.readlines(path).each_with_object([]) do |line, acc|
-            if line =~ /^### BEGIN INIT INFO/
+            if /^### BEGIN INIT INFO/.match?(line)
               in_info = true
-            elsif line =~ /^### END INIT INFO/
+            elsif /^### END INIT INFO/.match?(line)
               break acc
             elsif in_info
               if line =~ /Default-(Start|Stop):\s+(\d.*)/

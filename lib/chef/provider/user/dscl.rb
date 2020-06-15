@@ -215,7 +215,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           next_uid_guess = base_uid
           users_uids = run_dscl("list", "/Users", "uid")
           while next_uid_guess < search_limit + base_uid
-            if users_uids =~ Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n")
+            if users_uids&.match?(Regexp.new("#{Regexp.escape(next_uid_guess.to_s)}\n"))
               next_uid_guess += 1
             else
               uid = next_uid_guess
@@ -291,7 +291,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         end
 
         def validate_home_dir_specification!
-          unless new_resource.home =~ %r{^/}
+          unless %r{^/}.match?(new_resource.home)
             raise(Chef::Exceptions::InvalidHomeDirectory, "invalid path spec for User: '#{new_resource.username}', home directory: '#{new_resource.home}'")
           end
         end
@@ -587,7 +587,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           result = shell_out("dscl", ".", "-#{args[0]}", args[1..-1])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
-          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout =~ /No such key: /
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if /No such key: /.match?(result.stdout)
 
           result.stdout
         end

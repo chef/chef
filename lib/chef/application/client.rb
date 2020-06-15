@@ -39,7 +39,7 @@ class Chef::Application::Client < Chef::Application::Base
       long: "--daemonize [WAIT]",
       description: "Daemonize the process. Accepts an optional integer which is the " \
         "number of seconds to wait before the first daemonized run.",
-      proc: lambda { |wait| wait =~ /^\d+$/ ? wait.to_i : true }
+      proc: lambda { |wait| /^\d+$/.match?(wait) ? wait.to_i : true }
   end
 
   option :pid_file,

@@ -91,7 +91,7 @@ class Chef
               old_services_list = rc_conf_local.match(/^pkg_scripts="(.*)"/)
               old_services_list = old_services_list ? old_services_list[1].split(" ") : []
               new_services_list = old_services_list + [new_resource.service_name]
-              if rc_conf_local =~ /^pkg_scripts="(.*)"/
+              if /^pkg_scripts="(.*)"/.match?(rc_conf_local)
                 new_rcl = rc_conf_local.sub(/^pkg_scripts="(.*)"/, "pkg_scripts=\"#{new_services_list.join(" ")}\"")
               else
                 new_rcl = rc_conf_local + "\n" + "pkg_scripts=\"#{new_services_list.join(" ")}\"\n"
@@ -158,7 +158,7 @@ class Chef
           result = false
           var_name = builtin_service_enable_variable_name
           if var_name
-            if rc_conf =~ /^#{Regexp.escape(var_name)}=(.*)/
+            if /^#{Regexp.escape(var_name)}=(.*)/.match?(rc_conf)
               result = true
             end
           end
@@ -170,7 +170,7 @@ class Chef
           var_name = builtin_service_enable_variable_name
           if var_name
             if m = rc_conf.match(/^#{Regexp.escape(var_name)}=(.*)/)
-              unless m[1] =~ /"?[Nn][Oo]"?/
+              unless /"?[Nn][Oo]"?/.match?(m[1])
                 result = true
               end
             end
@@ -186,7 +186,7 @@ class Chef
             if var_name
               if m = rc_conf_local.match(/^#{Regexp.escape(var_name)}=(.*)/)
                 @enabled_state_found = true
-                unless m[1] =~ /"?[Nn][Oo]"?/ # e.g. looking for httpd_flags=NO
+                unless /"?[Nn][Oo]"?/.match?(m[1]) # e.g. looking for httpd_flags=NO
                   result = true
                 end
               end

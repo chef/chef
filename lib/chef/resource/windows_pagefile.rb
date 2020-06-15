@@ -113,7 +113,7 @@ class Chef
         # we do this here and not in the property itself because if automatic_managed
         # is set then this validation is not necessary / doesn't make sense at all
         def validate_name
-          return if /^.:.*.sys/ =~ new_resource.path
+          return if /^.:.*.sys/.match?(new_resource.path)
 
           raise "#{new_resource.path} does not match the format DRIVE:\\path\\file.sys for pagefiles. Example: C:\\pagefile.sys"
         end

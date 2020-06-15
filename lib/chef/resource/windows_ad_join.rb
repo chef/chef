@@ -204,7 +204,7 @@ class Chef
         #   links: https://docs.microsoft.com/en-us/windows/win32/ad/naming-properties#userprincipalname https://tools.ietf.org/html/rfc822
         #   regex: https://rubular.com/r/isAWojpTMKzlnp
         def sanitize_usename
-          if new_resource.domain_user =~ /@/
+          if /@/.match?(new_resource.domain_user)
             new_resource.domain_user
           else
             "#{new_resource.domain_user}@#{new_resource.domain_name}"

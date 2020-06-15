@@ -248,7 +248,7 @@ class Chef
         category_desc = preferred_category ? preferred_category + " " : ""
         msg "Available #{category_desc}subcommands: (for details, knife SUB-COMMAND --help)\n\n"
         subcommand_loader.list_commands(preferred_category).sort.each do |category, commands|
-          next if category =~ /deprecated/i
+          next if /deprecated/i.match?(category)
 
           msg "** #{category.upcase} COMMANDS **"
           commands.sort.each do |command|

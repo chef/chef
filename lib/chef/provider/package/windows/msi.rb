@@ -18,7 +18,7 @@
 
 # TODO: Allow new_resource.source to be a Product Code as a GUID for uninstall / network install
 
-require_relative "../../../win32/api/installer" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require_relative "../../../win32/api/installer" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 require_relative "../../../mixin/shell_out"
 
 class Chef
@@ -26,7 +26,7 @@ class Chef
     class Package
       class Windows
         class MSI
-          include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+          include Chef::ReservedNames::Win32::API::Installer if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
           include Chef::Mixin::ShellOut
 
           def initialize(resource, uninstall_entries)
@@ -84,7 +84,7 @@ class Chef
                 .map(&:uninstall_string).uniq.each do |uninstall_string|
                   uninstall_string = "msiexec /x #{uninstall_string.match(/{.*}/)}"
                   uninstall_string += expand_options(new_resource.options)
-                  uninstall_string += " /q" unless uninstall_string.downcase =~ %r{ /q}
+                  uninstall_string += " /q" unless %r{ /q}.match?(uninstall_string.downcase)
                   logger.trace("#{new_resource} removing MSI package version using '#{uninstall_string}'")
                   shell_out!(uninstall_string, default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
                 end

@@ -171,7 +171,7 @@ class Chef
           begin
             return buff !~ /\A[\s[:print:]]*\z/m
           rescue ArgumentError => e
-            return true if e.message =~ /invalid byte sequence/
+            return true if /invalid byte sequence/.match?(e.message)
 
             raise
           end

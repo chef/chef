@@ -330,7 +330,7 @@ class Chef
 
         # make sure the start_day is in MM/DD/YYYY format: http://rubular.com/r/cgjHemtWl5
         if start_day
-          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless %r{^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$} =~ start_day
+          raise ArgumentError, "`start_day` property must be in the MM/DD/YYYY format." unless %r{^(0[1-9]|1[012])[- /.](0[1-9]|[12][0-9]|3[01])[- /.](19|20)\d\d$}.match?(start_day)
         end
       end
 
@@ -338,7 +338,7 @@ class Chef
       def validate_start_time(start_time, frequency)
         if start_time
           raise ArgumentError, "`start_time` property is not supported with `frequency :none`" if frequency == :none
-          raise ArgumentError, "`start_time` property must be in the HH:mm format (e.g. 6:20pm -> 18:20)." unless /^[0-2][0-9]:[0-5][0-9]$/ =~ start_time
+          raise ArgumentError, "`start_time` property must be in the HH:mm format (e.g. 6:20pm -> 18:20)." unless /^[0-2][0-9]:[0-5][0-9]$/.match?(start_time)
         else
           raise ArgumentError, "`start_time` needs to be provided with `frequency :once`" if frequency == :once
         end

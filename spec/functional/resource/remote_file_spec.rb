@@ -134,7 +134,7 @@ describe Chef::Resource::RemoteFile do
       let(:smb_file_local_file_name) { "smb_file.txt" }
       let(:smb_file_local_path) { File.join( smb_share_root_directory, smb_file_local_file_name ) }
       let(:smb_share_name) { "chef_smb_test" }
-      let(:smb_remote_path) { File.join("//#{ENV["COMPUTERNAME"]}", smb_share_name, smb_file_local_file_name).gsub(%r{/}, "\\") }
+      let(:smb_remote_path) { File.join("//#{ENV["COMPUTERNAME"]}", smb_share_name, smb_file_local_file_name).tr("/", "\\") }
       let(:smb_file_content) { "hellofun" }
       let(:local_destination_path) { File.join(Dir.tmpdir, make_tmpname("chef_remote_file")) }
       let(:windows_current_user) { ENV["USERNAME"] }
@@ -155,7 +155,7 @@ describe Chef::Resource::RemoteFile do
       before do
         shell_out("net.exe share #{smb_share_name} /delete")
         File.write(smb_file_local_path, smb_file_content )
-        shell_out!("net.exe share #{smb_share_name}=\"#{smb_share_root_directory.gsub(%r{/}, '\\')}\" /grant:\"authenticated users\",read")
+        shell_out!("net.exe share #{smb_share_name}=\"#{smb_share_root_directory.tr("/", '\\')}\" /grant:\"authenticated users\",read")
       end
 
       after do

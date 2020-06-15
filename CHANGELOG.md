@@ -1,16 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.29 -->
-## [v16.2.29](https://github.com/chef/chef/tree/v16.2.29) (2020-06-11)
+<!-- latest_release 16.2.32 -->
+## [v16.2.32](https://github.com/chef/chef/tree/v16.2.32) (2020-06-15)
 
 #### Merged Pull Requests
-- Small code cleanups in script/windows_script [#9979](https://github.com/chef/chef/pull/9979) ([phiggins](https://github.com/phiggins))
-- Update with 2020 MVPs [#9985](https://github.com/chef/chef/pull/9985) ([Xorima](https://github.com/Xorima))
+- Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable snap dokken tests for now [#9993](https://github.com/chef/chef/pull/9993) ([tas50](https://github.com/tas50)) <!-- 16.2.32 -->
+- Use .match? not =~ when match values aren&#39;t necessary [#9989](https://github.com/chef/chef/pull/9989) ([tas50](https://github.com/tas50)) <!-- 16.2.31 -->
+- Fix snap_package bugs [#9944](https://github.com/chef/chef/pull/9944) ([jaymzh](https://github.com/jaymzh)) <!-- 16.2.30 -->
 - Small code cleanups in script/windows_script [#9979](https://github.com/chef/chef/pull/9979) ([phiggins](https://github.com/phiggins)) <!-- 16.2.29 -->
 - Update with 2020 MVPs [#9985](https://github.com/chef/chef/pull/9985) ([Xorima](https://github.com/Xorima)) <!-- 16.2.28 -->
 - Use /etc/chef for bootstrapping instead of ChefConfig [#9984](https://github.com/chef/chef/pull/9984) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.2.28 -->

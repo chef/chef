@@ -91,7 +91,7 @@ module ChefConfig
     def self.windows_max_length_exceeded?(path)
       # Check to see if paths without the \\?\ prefix are over the maximum allowed length for the Windows API
       # http://msdn.microsoft.com/en-us/library/windows/desktop/aa365247%28v=vs.85%29.aspx
-      unless path =~ /^\\\\?\\/
+      unless /^\\\\?\\/.match?(path)
         if path.length > WIN_MAX_PATH
           return true
         end
@@ -103,7 +103,7 @@ module ChefConfig
     def self.printable?(string)
       # returns true if string is free of non-printable characters (escape sequences)
       # this returns false for whitespace escape sequences as well, e.g. \n\t
-      if string =~ /[^[:print:]]/
+      if /[^[:print:]]/.match?(string)
         false
       else
         true
