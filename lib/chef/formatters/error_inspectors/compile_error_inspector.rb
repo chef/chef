@@ -41,7 +41,7 @@ class Chef
 
           if found_error_in_cookbooks?
             traceback = filtered_bt.map { |line| "  #{line}" }.join("\n")
-            error_description.section("Cookbook Trace:", traceback)
+            error_description.section("Cookbook Trace: (most recent call first)", traceback)
             error_description.section("Relevant File Content:", context)
           end
 
