@@ -22,66 +22,66 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsAuditPolicy < Chef::Resource
-      subcat_opts = ["Security State Change",
-                     "Security System Extension",
-                     "System Integrity",
-                     "IPsec Driver",
-                     "Other System Events",
-                     "Logon",
-                     "Logoff",
-                     "Account Lockout",
-                     "IPsec Main Mode",
-                     "IPsec Quick Mode",
-                     "IPsec Extended Mode",
-                     "Special Logon",
-                     "Other Logon/Logoff Events",
-                     "Network Policy Server",
-                     "User / Device Claims",
-                     "Group Membership",
-                     "File System",
-                     "Registry",
-                     "Kernel Object",
-                     "SAM",
-                     "Certification Services",
-                     "Application Generated",
-                     "Handle Manipulation",
-                     "File Share",
-                     "Filtering Platform Packet Drop",
-                     "Filtering Platform Connection",
-                     "Other Object Access Events",
-                     "Detailed File Share",
-                     "Removable Storage",
-                     "Central Policy Staging",
-                     "Sensitive Privilege Use",
-                     "Non Sensitive Privilege Use",
-                     "Other Privilege Use Events",
-                     "Process Creation",
-                     "Process Termination",
-                     "DPAPI Activity",
-                     "RPC Events",
-                     "Plug and Play Events",
-                     "Token Right Adjusted Events",
-                     "Audit Policy Change",
-                     "Authentication Policy Change",
-                     "Authorization Policy Change",
-                     "MPSSVC Rule-Level Policy Change",
-                     "Filtering Platform Policy Change",
-                     "Other Policy Change Events",
-                     "User Account Management",
-                     "Computer Account Management",
-                     "Security Group Management",
-                     "Distribution Group Management",
-                     "Application Group Management",
-                     "Other Account Management Events",
-                     "Directory Service Access",
-                     "Directory Service Changes",
-                     "Directory Service Replication",
-                     "Detailed Directory Service Replication",
-                     "Credential Validation",
-                     "Kerberos Service Ticket Operations",
-                     "Other Account Logon Events",
-                     "Kerberos Authentication Service",
-                    ]
+      WIN_AUDIT_SUBCATEGORIES = ["Account Lockout",
+                                 "Application Generated",
+                                 "Application Group Management",
+                                 "Audit Policy Change",
+                                 "Authentication Policy Change",
+                                 "Authorization Policy Change",
+                                 "Central Policy Staging",
+                                 "Certification Services",
+                                 "Computer Account Management",
+                                 "Credential Validation",
+                                 "DPAPI Activity",
+                                 "Detailed Directory Service Replication",
+                                 "Detailed File Share",
+                                 "Directory Service Access",
+                                 "Directory Service Changes",
+                                 "Directory Service Replication",
+                                 "Distribution Group Management",
+                                 "File Share",
+                                 "File System",
+                                 "Filtering Platform Connection",
+                                 "Filtering Platform Packet Drop",
+                                 "Filtering Platform Policy Change",
+                                 "Group Membership",
+                                 "Handle Manipulation",
+                                 "IPsec Driver",
+                                 "IPsec Extended Mode",
+                                 "IPsec Main Mode",
+                                 "IPsec Quick Mode",
+                                 "Kerberos Authentication Service",
+                                 "Kerberos Service Ticket Operations",
+                                 "Kernel Object",
+                                 "Logoff",
+                                 "Logon",
+                                 "MPSSVC Rule-Level Policy Change",
+                                 "Network Policy Server",
+                                 "Non Sensitive Privilege Use",
+                                 "Other Account Logon Events",
+                                 "Other Account Management Events",
+                                 "Other Logon/Logoff Events",
+                                 "Other Object Access Events",
+                                 "Other Policy Change Events",
+                                 "Other Privilege Use Events",
+                                 "Other System Events",
+                                 "Plug and Play Events",
+                                 "Process Creation",
+                                 "Process Termination",
+                                 "RPC Events",
+                                 "Registry",
+                                 "Removable Storage",
+                                 "SAM",
+                                 "Security Group Management",
+                                 "Security State Change",
+                                 "Security System Extension",
+                                 "Sensitive Privilege Use",
+                                 "Special Logon",
+                                 "System Integrity",
+                                 "Token Right Adjusted Events",
+                                 "User / Device Claims",
+                                 "User Account Management",
+                                ]
       resource_name :windows_audit_policy
 
       description "The windows_audit_policy resource allows for configuring system and per-user Windows advanced audit policy settings."
@@ -90,8 +90,8 @@ class Chef
       **Set Logon and Logoff policy to "Success and Failure"**:
 
       ```ruby
-      windows_audit_policy "Set Audit Policy for "Logon and Logoff" actions to "Success and Failure" do
-        sub_category   %w(Logon Logoff)
+      windows_audit_policy "Set Audit Policy for 'Logon and Logoff' actions to 'Success and Failure'" do
+        subcategory   %w(Logon Logoff)
         success        true
         failure        true
         action         :set
@@ -101,8 +101,8 @@ class Chef
       **Set Credential Validation policy to "Success"**:
 
       ```ruby
-      windows_audit_policy "Set Audit Policy for "Credential Validation" actions to "Success" do
-        sub_category   "Credential Validation"
+      windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success'" do
+        subcategory   "Credential Validation"
         success        true
         failure        false
         action         :set
@@ -119,10 +119,10 @@ class Chef
 
       DOC
 
-      property :sub_category, [String, Array],
+      property :subcategory, [String, Array],
         coerce: proc { |p| Array(p) },
-        description: "The audit policy subcategory, specified by GUID or name. Defaults to system if no user is specified.",
-        callbacks: { "Subcategories entered should be an actual advanced audit policy subcategory" => proc { |n| (Array(n) - subcat_opts).empty? } }
+        description: "The audit policy subcategory, specified by GUID or name. Applied system-wide if no user is specified.",
+        callbacks: { "Subcategories entered should be actual advanced audit policy subcategories" => proc { |n| (Array(n) - WIN_AUDIT_SUBCATEGORIES).empty? } }
 
       property :success, [true, false],
                description: "Specify success auditing. By setting this property to true the resource will enable success for the category or sub category. Success is the default and is applied if neither success nor failure are specified."
@@ -148,18 +148,18 @@ class Chef
       property :audit_base_directories, [true, false],
                description: "Setting this audit policy option to true will force the system to assign a System Access Control List to named objects to enable auditing of container objects such as directories."
 
-      def subcategory_configured?(subcat, successval, failval)
-        setting = if successval && failval
+      def subcategory_configured?(sub_cat, success_value, failure_value)
+        setting = if success_value && failure_value
                     "Success and Failure$"
-                  elsif successval && !failval
+                  elsif success_value && !failure_value
                     "Success$"
-                  elsif !successval && failval
+                  elsif !success_value && failure_value
                     "(Failure$)&!(Success and Failure$)"
                   else
                     "No Auditing"
                   end
         powershell_exec(<<-CODE).result
-          $auditpol_config = auditpol /get /subcategory:"#{subcat}"
+          $auditpol_config = auditpol /get /subcategory:"#{sub_cat}"
           if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
         CODE
       end
@@ -173,17 +173,17 @@ class Chef
       end
 
       action :set do
-        unless new_resource.sub_category.empty?
-          new_resource.sub_category.each do |subcategory|
+        unless new_resource.subcategory.empty?
+          new_resource.subcategory.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)
 
-            sval = new_resource.success ? "enable" : "disable"
-            fval = new_resource.failure ? "enable" : "disable"
-            converge_by "Update Audit Policy for \"#{subcategory}\" to Success:#{sval} and Failure:#{fval}" do
+            s_val = new_resource.success ? "enable" : "disable"
+            f_val = new_resource.failure ? "enable" : "disable"
+            converge_by "Update Audit Policy for \"#{subcategory}\" to Success:#{s_val} and Failure:#{f_val}" do
               cmd = "auditpol /set "
               cmd += "/user:\"#{new_resource.include_user}\" /include " if new_resource.include_user
               cmd += "/user:\"#{new_resource.exclude_user}\" /exclude " if new_resource.exclude_user
-              cmd += "/subcategory:\"#{subcategory}\" /success:#{sval} /failure:#{fval}"
+              cmd += "/subcategory:\"#{subcategory}\" /success:#{s_val} /failure:#{f_val}"
               powershell_exec(cmd)
             end
           end
