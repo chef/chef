@@ -35,6 +35,10 @@ The `archive_file` resource has been updated with two important fixes. The resou
 
 The `chef_client_scheduled_task` resource has been updated to default the `frequency_modifier` property to `30` if the `frequency` property is set to `minutes` otherwise it still defaults to `1`. This provides a more predictable schedule behavior for users.
 
+### cron / cron_d
+
+The `cron` and `cron_d` resources have been updated using the new Custom Resource Partials functionality introduced in Chef Infra Client 16. This has allowed us to standardize the properties used to declare cron job timing between the two resources. Timing properties all accept the same types / ranges and include the same validation, which makes moving from `cron` to `cron_d` seemless.
+
 ### cron_access
 
 The `cron_access` resource has been updated to support Solaris and AIX systems. Thanks [@aklyachkin](http://github.com/aklyachkin).
