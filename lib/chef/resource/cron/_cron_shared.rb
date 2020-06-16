@@ -60,16 +60,15 @@ property :user, String,
   default: "root"
 
 property :environment, Hash,
-  description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
+  description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`. **Note**: These variables must exist for a command to be run successfully.",
   default: lazy { {} }
 
 property :time_out, Hash,
-  description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
-  Accepted valid options are:
-  `preserve-status` (BOOL, default: 'false'),
-  `foreground` (BOOL, default: 'false'),
-  `kill-after` (in seconds),
-  `signal` (a name like 'HUP' or a number)",
+  description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`. Accepted valid options are:
+  - `preserve-status` (BOOL, default: 'false'),
+  - `foreground` (BOOL, default: 'false'),
+  - `kill-after` (in seconds),
+  - `signal` (a name like 'HUP' or a number)",
   default: lazy { {} },
   introduced: "15.7",
   coerce: proc { |h|
