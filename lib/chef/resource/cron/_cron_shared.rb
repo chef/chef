@@ -63,8 +63,6 @@ property :environment, Hash,
   description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
   default: lazy { {} }
 
-
-
 property :time_out, Hash,
   description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`.
   Accepted valid options are:
@@ -90,7 +88,6 @@ property :time_out, Hash,
       { "duration" => h }
     end
   }
-
 
 private
 # Convert weekday input value into crontab format that
