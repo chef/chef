@@ -452,7 +452,7 @@ class Chef
       default: false, desired_state: false
 
     # TODO: fill in doc info
-    property :umask, String
+    property :umask, String, desired_state: false
 
     # The time it took (in seconds) to run the most recently-run action.  Not
     # cumulative across actions.  This is set to 0 as soon as a new action starts
