@@ -33,7 +33,7 @@ property :month, [Integer, String],
 
 property :weekday, [Integer, String, Symbol],
   description: "The day of the week on which this entry is to run (`0-7`, `mon-sun`, `monday-sunday`, or `*`), where Sunday is both `0` and `7`.",
-  default: "*", coerce: proc { |wday| weekday_in_crontab(wday) },
+  default: "*", coerce: proc { |day| weekday_in_crontab(day) },
   callbacks: {
     "should be a valid weekday spec" => ->(spec) { Chef::ResourceHelpers::CronValidations.validate_dow(spec) },
   }
@@ -92,7 +92,7 @@ private
 # Convert weekday input value into crontab format that
 # could be written in the crontab
 # @return [Integer, String] A weekday formed as per the user inputs.
-def weekday_in_crontab(wday)
-  weekday = wday.to_s.downcase.to_sym
-  WEEKDAYS[weekday] || wday
+def weekday_in_crontab(day)
+  weekday = day.to_s.downcase.to_sym
+  WEEKDAYS[weekday] || day
 end
