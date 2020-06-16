@@ -34,51 +34,44 @@ describe Chef::Resource::WindowsFirewallProfile do
     expect { resource.profile "Special" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  it "the profile_enabled property does not accept a non true-false option" do
-    expect { resource.profile_enabled "yes" }.to raise_error(ArgumentError)
+  it "the resource's default_inbound_action property only strings Block, Allow, or NotConfigured" do
+    expect { resource.default_inbound_action "AllowSome" }.to raise_error(ArgumentError)
+    expect { resource.default_inbound_action "Block"}.not_to raise_error
   end
-
-  it "the resource's default_inbound_block property only accepts true, false, or nil " do
-    expect { resource.default_inbound_block "Block" }.to raise_error(ArgumentError)
+  it "the resource's default_outbound_action property only accepts strings Block, Allow, or NotConfigured" do
+    expect { resource.default_outbound_action "BlockMost" }.to raise_error(ArgumentError)
+    expect { resource.default_outbound_action "Allow"}.not_to raise_error
   end
-  it "the resource's default_outbound_allow property only accepts true, false, or nil " do
-    expect { resource.default_outbound_allow "NotConfigured" }.to raise_error(ArgumentError)
-  end
-  it "the resource's allow_inbound_rules property only accepts true, false, or nil " do
+  it "the resource's allow_inbound_rules property only accepts strings True, False, or NotConfigured" do
     expect { resource.allow_inbound_rules "Yes" }.to raise_error(ArgumentError)
+    expect { resource.allow_inbound_rules "True"}.not_to raise_error
   end
-  it "the resource's allow_local_firewall_rules property only accepts true, false, or nil " do
+  it "the resource's allow_local_firewall_rules property only accepts strings True, False, or NotConfigured" do
     expect { resource.allow_local_firewall_rules "No" }.to raise_error(ArgumentError)
+    expect { resource.allow_local_firewall_rules "False"}.not_to raise_error
   end
-  it "the resource's allow_local_ipsec_rules property only accepts true, false, or nil " do
+  it "the resource's allow_local_ipsec_rules property only accepts strings True, False, or NotConfigured" do
     expect { resource.allow_local_ipsec_rules "Yes" }.to raise_error(ArgumentError)
+    expect { resource.allow_local_ipsec_rules "True"}.not_to raise_error
   end
-  it "the resource's allow_user_apps property only accepts true, false, or nil " do
+  it "the resource's allow_user_apps property only accepts strings True, False, or NotConfigured" do
     expect { resource.allow_user_apps "No" }.to raise_error(ArgumentError)
+    expect { resource.allow_user_apps "False"}.not_to raise_error
   end
-  it "the resource's allow_user_ports property only accepts true, false, or nil " do
-    expect { resource.allow_user_ports "NotConfigured" }.to raise_error(ArgumentError)
+  it "the resource's allow_user_ports property only accepts strings True, False, or NotConfigured" do
+    expect { resource.allow_user_ports nil }.to raise_error(ArgumentError)
+    expect { resource.allow_user_ports "NotConfigured"}.not_to raise_error
   end
-  it "the resource's allow_unicast_response property only accepts true, false, or nil " do
-    expect { resource.allow_unicast_response "True" }.to raise_error(ArgumentError)
+  it "the resource's allow_unicast_response property only accepts strings True, False, or NotConfigured" do
+    expect { resource.allow_unicast_response true }.to raise_error(ArgumentError)
+    expect { resource.allow_unicast_response "True"}.not_to raise_error
   end
-  it "the resource's display_notification property only accepts true, false, or nil " do
-    expect { resource.display_notification "Sometimes" }.to raise_error(ArgumentError)
+  it "the resource's display_notification property only accepts strings True, False, or NotConfigured" do
+    expect { resource.display_notification false }.to raise_error(ArgumentError)
+    expect { resource.display_notification "False"}.not_to raise_error
   end
 
   it "sets the default action as :configure" do
-    expect(resource.action).to eql([:configure])
-  end
-
-  it "sets the default profile_enabled parameter to be set to true" do
-    expect(resource.profile_enabled).to eql(true)
-  end
-
-  it "sets the default default_inbound_block parameter to be set to true" do
-    expect(resource.default_inbound_block).to eql(true)
-  end
-
-  it "sets the default default_outbound_allow parameter to be set to true" do
-    expect(resource.default_outbound_allow).to eql(true)
+    expect(resource.action).to eql([:enable])
   end
 end
