@@ -1282,7 +1282,7 @@ describe Chef::Resource do
 
       resource.umask = "0123"
 
-      expect { resource.with_umask { 1/0 } }.to raise_error(ZeroDivisionError)
+      expect { resource.with_umask { 1 / 0 } }.to raise_error(ZeroDivisionError)
 
       expect(::File.umask).to eq(original_value)
     end
