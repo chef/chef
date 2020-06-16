@@ -132,10 +132,10 @@ describe Chef::Resource::Cron do
 
   describe "weekday" do
     it "rejects any weekday over 7" do
-      expect { resource.weekday "8" }.to raise_error(RangeError)
+      expect { resource.weekday "8" }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
     it "rejects any symbols which don't represent day of week" do
-      expect { resource.weekday :foo }.to raise_error(RangeError)
+      expect { resource.weekday :foo }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
   end
 

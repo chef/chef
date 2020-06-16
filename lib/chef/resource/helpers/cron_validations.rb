@@ -62,13 +62,16 @@ class Chef
         end
       end
 
-      # validate the provided day of the week is sun-sat, 0-7, or *
+      # validate the provided day of the week is sun-sat, sunday-saturday, 0-7, or *
+      # Added crontab param to check cron resource
       # @param spec the value to validate
       # @return [Boolean] valid or not?
       def validate_dow(spec)
+        spec = spec.to_s
         spec == "*" ||
           validate_numeric(spec, 0, 7) ||
-          %w{sun mon tue wed thu fri sat}.include?(String(spec).downcase)
+          %w{sun mon tue wed thu fri sat}.include?(spec.downcase) ||
+          %w{sunday monday tuesday wednesday thursday friday saturday}.include?(spec.downcase)
       end
 
       # validate the day of the month is 1-31

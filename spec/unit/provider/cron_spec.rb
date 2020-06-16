@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require "spec_helper"
 
 describe Chef::Provider::Cron do
@@ -322,7 +321,7 @@ describe Chef::Provider::Cron do
         expect(cron.hour).to eq("5")
         expect(cron.day).to eq("*")
         expect(cron.month).to eq("Jan")
-        expect(cron.weekday).to eq("Mon")
+        expect(cron.weekday).to eq("1")
         expect(cron.command).to eq("/bin/true param1 param2")
       end
 
@@ -338,6 +337,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
         CRONTAB
         cron = @provider.load_current_resource
         expect(@provider.cron_exists).to eq(true)
@@ -347,7 +347,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
 
       it "should not pick up a commented out crontab line" do
@@ -355,6 +355,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
           #* 5 * 1 * /bin/true param1 param2
         CRONTAB
         cron = @provider.load_current_resource
@@ -365,7 +366,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
 
       it "should not pick up a later crontab entry" do
@@ -373,6 +374,7 @@ describe Chef::Provider::Cron do
           0 2 * * * /some/other/command
 
           # Chef Name: cronhole some stuff
+          * * * * * /bin/true
           #* 5 * 1 * /bin/true param1 param2
           # Chef Name: something else
           2 * 1 * * /bin/false
@@ -387,7 +389,7 @@ describe Chef::Provider::Cron do
         expect(cron.month).to eq("*")
         expect(cron.weekday).to eq("*")
         expect(cron.time).to eq(nil)
-        expect(cron.command).to eq(nil)
+        expect(cron.command).to eq("/bin/true")
       end
     end
   end
@@ -1040,48 +1042,6 @@ describe Chef::Provider::Cron do
     end
   end
 
-  describe "weekday_in_crontab" do
-    context "when weekday is symbol" do
-      it "should return weekday in crontab format" do
-        @new_resource.weekday :wednesday
-        expect(@provider.send(:weekday_in_crontab)).to eq("3")
-      end
-
-      it "should raise an error with an unknown weekday" do
-        expect { @new_resource.weekday :caturday }.to raise_error(RangeError)
-      end
-    end
-
-    context "when weekday is a number in a string" do
-      it "should return the string" do
-        @new_resource.weekday "3"
-        expect(@provider.send(:weekday_in_crontab)).to eq("3")
-      end
-
-      it "should raise an error with an out of range number" do
-        expect { @new_resource.weekday "-1" }.to raise_error(RangeError)
-      end
-    end
-
-    context "when weekday is string with the name of the week" do
-      it "should return the string" do
-        @new_resource.weekday "mon"
-        expect(@provider.send(:weekday_in_crontab)).to eq("mon")
-      end
-    end
-
-    context "when weekday is an integer" do
-      it "should return the integer" do
-        @new_resource.weekday 1
-        expect(@provider.send(:weekday_in_crontab)).to eq("1")
-      end
-
-      it "should raise an error with an out of range integer" do
-        expect { @new_resource.weekday 45 }.to raise_error(RangeError)
-      end
-    end
-  end
-
   describe "#env_var_str" do
     context "when no env vars are set" do
       it "returns an empty string" do
@@ -1196,8 +1156,8 @@ describe Chef::Provider::Cron do
     context "Without command, passed" do
       context "as nil" do
         it "returns an empty string with a next line" do
-          @new_resource.command nil
-          expect(@provider.send(:cmd_str)).to eq(" \n")
+          @new_resource.command "bin/true"
+          expect(@provider.send(:cmd_str)).to eq(" bin/true\n")
         end
       end
       context "as an empty string" do
