@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.37 -->
-## [v16.2.37](https://github.com/chef/chef/tree/v16.2.37) (2020-06-16)
+<!-- latest_release 16.2.38 -->
+## [v16.2.38](https://github.com/chef/chef/tree/v16.2.38) (2020-06-16)
 
 #### Merged Pull Requests
-- Cron and Cron_d resource weekday property fixes [#10001](https://github.com/chef/chef/pull/10001) ([tas50](https://github.com/tas50))
+- Cleanup more resource examples [#10002](https://github.com/chef/chef/pull/10002) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Cleanup more resource examples [#10002](https://github.com/chef/chef/pull/10002) ([tas50](https://github.com/tas50)) <!-- 16.2.38 -->
 - Cron and Cron_d resource weekday property fixes [#10001](https://github.com/chef/chef/pull/10001) ([tas50](https://github.com/tas50)) <!-- 16.2.37 -->
 - Improve resource documentation [#9995](https://github.com/chef/chef/pull/9995) ([tas50](https://github.com/tas50)) <!-- 16.2.36 -->
 - Add &quot;most recent call first&quot; to traceback message [#9967](https://github.com/chef/chef/pull/9967) ([zfjagann](https://github.com/zfjagann)) <!-- 16.2.35 -->
