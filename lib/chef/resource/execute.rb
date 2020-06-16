@@ -27,15 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      description <<~DESC
-        Use the **execute** resource to execute a single command. Commands that
-        are executed with this resource are (by their nature) not idempotent,
-        as they are typically unique to the environment in which they are run.
-        Use not_if and only_if to guard this resource for idempotence.
-
-        Note: Use the **script** resource to execute a script using a specific
-        interpreter (Ruby, Python, Perl, csh, or Bash).'
-      DESC
+      description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use not_if and only_if to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
 
       examples <<~EXAMPLES
         **Run a command upon notification**:
@@ -90,35 +82,6 @@ class Chef
         file '/etc/yum.repos.d/bad.repo' do
           action :delete
           notifies :run, 'execute[clean-yum-cache]', :immediately
-
-          notifies :create, 'ruby_block[reload-internal-yum-cache]', :immediately
-        end
-        ```
-
-        **Install repositories from a file, trigger a command, and force the internal cache to reload**:
-
-        The following example shows how to install new Yum repositories from a file,
-        where the installation of the repository triggers a creation of the Yum cache
-        that forces the internal cache for Chef Infra Client to reload.
-
-        ```ruby
-        execute 'create-yum-cache' do
-          command 'yum -q makecache'
-          action :nothing
-        end
-
-        ruby_block 'reload-internal-yum-cache' do
-          block do
-            Chef::Provider::Package::Yum::YumCache.instance.reload
-          end
-          action :nothing
-        end
-
-        cookbook_file '/etc/yum.repos.d/custom.repo' do
-          source 'custom'
-          mode '0755'
-          notifies :run, 'execute[create-yum-cache]', :immediately
-          notifies :create, 'ruby_block[reload-internal-yum-cache]', :immediately
         end
         ```
 
@@ -243,9 +206,7 @@ class Chef
 
           execute 'install-mysql' do
             command "mv \#{node['mysql']['data_dir']} \#{node['mysql']['ec2_path']}"
-            not_if do
-              FileTest.directory?(node['mysql']['ec2_path'])
-            end
+            not_if { ::File.directory?(node['mysql']['ec2_path']) }
           end
 
           [node['mysql']['ec2_path'], node['mysql']['data_dir']].each do |dir|
@@ -293,8 +254,7 @@ class Chef
         remote_file "\#{Chef::Config[:file_cache_path]}/distribute_setup.py" do
           source 'http://python-distribute.org/distribute_setup.py'
           mode '0755'
-
-          not_if { File.exist?(pip_binary) }
+          not_if { ::File.exist?(pip_binary) }
         end
 
         execute 'install-pip' do
@@ -302,7 +262,7 @@ class Chef
           command <<~EOF
             # command for installing Python goes here
           EOF
-          not_if { File.exist?(pip_binary) }
+          not_if { ::File.exist?(pip_binary) }
         end
         ```
 
@@ -334,7 +294,7 @@ class Chef
 
         ```ruby
         execute 'start-tomcat' do
-          command '/etc/init.d/tomcat6 start'
+          command '/etc/init.d/tomcat start'
           action :run
         end
         ```
@@ -350,27 +310,12 @@ class Chef
         search for users:
 
         ```ruby
-        #  the following code sample comes from the openvpn cookbook: https://github.com/chef-cookbooks/openvpn
+        #  the following code sample comes from the openvpn cookbook:
 
         search("users", "*:*") do |u|
           execute "generate-openvpn-\#{u['id']}" do
             command "./pkitool \#{u['id']}"
             cwd '/etc/openvpn/easy-rsa'
-
-            environment(
-              'EASY_RSA' => '/etc/openvpn/easy-rsa',
-              'KEY_CONFIG' => '/etc/openvpn/easy-rsa/openssl.cnf',
-              'KEY_DIR' => node['openvpn']['key_dir'],
-              'CA_EXPIRE' => node['openvpn']['key']['ca_expire'].to_s,
-              'KEY_EXPIRE' => node['openvpn']['key']['expire'].to_s,
-              'KEY_SIZE' => node['openvpn']['key']['size'].to_s,
-              'KEY_COUNTRY' => node['openvpn']['key']['country'],
-              'KEY_PROVINCE' => node['openvpn']['key']['province'],
-              'KEY_CITY' => node['openvpn']['key']['city'],
-              'KEY_ORG' => node['openvpn']['key']['org'],
-              'KEY_EMAIL' => node['openvpn']['key']['email']
-            )
-            not_if { File.exist?("\#{node['openvpn']['key_dir']}/\#{u['id']}.crt") }
           end
 
           %w{ conf ovpn }.each do |ext|
@@ -379,23 +324,12 @@ class Chef
               variables :username => u['id']
             end
           end
-
-          execute "create-openvpn-tar-\#{u['id']}" do
-            cwd node['openvpn']['key_dir']
-            command <<~EOH
-              tar zcf \#{u['id']}.tar.gz ca.crt \#{u['id']}.crt \#{u['id']}.key \#{u['id']}.conf \#{u['id']}.ovpn
-            EOH
-            not_if { File.exist?("\#{node['openvpn']['key_dir']}/\#{u['id']}.tar.gz") }
-          end
         end
         ```
 
         where
 
-        - the search will use both of the **execute** resources, unless the condition
-          specified by the `not_if` commands are met
-        - the `environments` property in the first **execute** resource is being used to
-          define values that appear as variables in the OpenVPN configuration
+        - the search data will be used to create **execute** resources
         - the **template** resource tells Chef Infra Client which template to use
 
         **Enable remote login for macOS**:
@@ -594,13 +528,13 @@ class Chef
         description: "The current working directory from which the command will be run."
 
       property :environment, Hash,
-        description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'})."
+        description: "A Hash of environment variables in the form of `({'ENV_VARIABLE' => 'VALUE'})`. **Note**: These variables must exist for a command to be run successfully."
 
       property :group, [ String, Integer ],
         description: "The group name or group ID that must be changed before running a command."
 
       property :live_stream, [ TrueClass, FalseClass ], default: false,
-        description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::CLIENT} event stream."
+        description: "Send the output of the command run by this execute resource block to the #{Chef::Dist::PRODUCT} event stream."
 
       # default_env defaults to `false` so that the command execution more exactly matches what the user gets on the command line without magic
       property :default_env, [ TrueClass, FalseClass ], desired_state: false, default: false,
@@ -628,7 +562,7 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [ TrueClass, FalseClass ],
-        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
+        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::PRODUCT}.",
         default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
