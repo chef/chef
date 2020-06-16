@@ -76,7 +76,7 @@ class Chef
         description: "Set the default policy for outbound network traffic"
 
       property :allow_inbound_rules, String, equal_to: %w{ True False NotConfigured }, description: "Allow users to set inbound firewall rules"
-      property :allow_local_firewall_rules, String, equal_to: %w{ True False NotConfigured },description: "Merges inbound firewall rules into the policy"
+      property :allow_local_firewall_rules, String, equal_to: %w{ True False NotConfigured }, description: "Merges inbound firewall rules into the policy"
       property :allow_local_ipsec_rules, String, equal_to: %w{ True False NotConfigured }, description: "Allow users to manage local connection security rules"
       property :allow_user_apps, String, equal_to: %w{ True False NotConfigured }, description: "Allow user applications to manage firewall"
       property :allow_user_ports, String, equal_to: %w{ True False NotConfigured }, description: "Allow users to manage firewall port rules"
@@ -106,9 +106,9 @@ class Chef
       action :enable do
         converge_if_changed :default_inbound_action, :default_outbound_action, :allow_inbound_rules, :allow_local_firewall_rules,
           :allow_local_ipsec_rules, :allow_user_apps, :allow_user_ports, :allow_unicast_response, :display_notification do
-          fw_cmd = firewall_command(new_resource.profile)
-          powershell_exec!(fw_cmd)
-        end
+            fw_cmd = firewall_command(new_resource.profile)
+            powershell_exec!(fw_cmd)
+          end
         unless firewall_enabled?(new_resource.profile)
           converge_by "Enable the #{new_resource.profile} Firewall Profile" do
             cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} -Enabled \"True\""
