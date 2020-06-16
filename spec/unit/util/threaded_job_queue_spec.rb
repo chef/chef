@@ -21,6 +21,15 @@ end
 describe Chef::Util::ThreadedJobQueue do
   let(:queue) { Chef::Util::ThreadedJobQueue.new }
 
+  around(:example) do |example|
+    old_value = Thread.report_on_exception
+    Thread.report_on_exception = false
+
+    example.run
+
+    Thread.report_on_exception = old_value
+  end
+
   it "should pass mutex to jobs with an arity of 1" do
     job = double
     expect(job).to receive(:arity).at_least(:once).and_return(1)
