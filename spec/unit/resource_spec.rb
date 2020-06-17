@@ -1239,21 +1239,26 @@ describe Chef::Resource do
 
   describe "#with_umask" do
     let(:resource) { Chef::Resource.new("testy testerson") }
+    let!(:original_umask) { ::File.umask }
+
+    after do
+      ::File.umask(original_umask)
+    end
+
     it "does not affect the umask by default" do
-      original_value = ::File.umask
       block_value = nil
 
       resource.with_umask do
         block_value = ::File.umask
       end
 
-      expect(block_value).to eq(original_value)
+      expect(block_value).to eq(original_umask)
     end
 
     it "changes the umask in the block to the set value" do
-      block_value = nil
-
       resource.umask = "0123"
+
+      block_value = nil
 
       resource.with_umask do
         block_value = ::File.umask
@@ -1266,25 +1271,21 @@ describe Chef::Resource do
     end
 
     it "resets the umask afterwards" do
-      original_value = ::File.umask
-
       resource.umask = "0123"
 
       resource.with_umask do
         "noop"
       end
 
-      expect(::File.umask).to eq(original_value)
+      expect(::File.umask).to eq(original_umask)
     end
 
     it "resets the umask if the block raises an error" do
-      original_value = ::File.umask
-
       resource.umask = "0123"
 
       expect { resource.with_umask { 1 / 0 } }.to raise_error(ZeroDivisionError)
 
-      expect(::File.umask).to eq(original_value)
+      expect(::File.umask).to eq(original_umask)
     end
   end
 end
