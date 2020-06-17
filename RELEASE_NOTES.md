@@ -104,7 +104,7 @@ The `zypper_repository` resource has been updated to work with the newer release
 
 ## Platform Packages
 
-- Debian 8 packages are no longer being produced as Debian 8 is now end of life.
+- Debian 8 packages are no longer being produced as Debian 8 is now end-of-life.
 - We now produce Windows 8 packages
 
 # What's New in 16.1.16
