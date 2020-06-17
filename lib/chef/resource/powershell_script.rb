@@ -39,6 +39,30 @@ class Chef
           end
         }
 
+      property :convert_boolean_return, [true, false],
+        default: false,
+        description: <<~DESC
+          Return `0` if the last line of a command is evaluated to be true or to return `1` if the last line is evaluated to be false.
+
+          When the `guard_interpreter` common attribute is set to `:powershell_script`, a string command will be evaluated as if this value were set to `true`. This is because the behavior of this attribute is similar to the value of the `"$?"` expression common in UNIX interpreters. For example, this:
+
+          ```ruby
+          powershell_script 'make_safe_backup' do
+            guard_interpreter :powershell_script
+            code 'cp ~/data/nodes.json ~/data/nodes.bak'
+            not_if 'test-path ~/data/nodes.bak'
+          end
+          ```
+
+          is similar to:
+          ```ruby
+          bash 'make_safe_backup' do
+            code 'cp ~/data/nodes.json ~/data/nodes.bak'
+            not_if 'test -e ~/data/nodes.bak'
+          end
+          ```
+        DESC
+
       description "Use the **powershell_script** resource to execute a script using the Windows PowerShell"\
                   " interpreter, much like how the script and script-based resources—bash, csh, perl, python,"\
                   " and ruby—are used. The powershell_script is specific to the Microsoft Windows platform"\
@@ -52,15 +76,6 @@ class Chef
         super
         @interpreter = "powershell.exe"
         @default_guard_interpreter = resource_name
-        @convert_boolean_return = false
-      end
-
-      def convert_boolean_return(arg = nil)
-        set_or_return(
-          :convert_boolean_return,
-          arg,
-          kind_of: [ FalseClass, TrueClass ]
-        )
       end
 
       # Allow callers evaluating guards to request default
