@@ -1,17 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.39 -->
-## [v16.2.39](https://github.com/chef/chef/tree/v16.2.39) (2020-06-17)
+<!-- latest_release 16.2.40 -->
+## [v16.2.40](https://github.com/chef/chef/tree/v16.2.40) (2020-06-17)
 
 #### Merged Pull Requests
-- Fix for windows_audit_policy bug for when a value for the subcategory property isn&#39;t entered [#10007](https://github.com/chef/chef/pull/10007) ([chef-davin](https://github.com/chef-davin))
-- Soft fail spellchecker in ci [#10003](https://github.com/chef/chef/pull/10003) ([phiggins](https://github.com/phiggins))
-- Silence exception output in threaded test. [#10005](https://github.com/chef/chef/pull/10005) ([phiggins](https://github.com/phiggins))
+- Update InSpec to 4.20.6 [#10008](https://github.com/chef/chef/pull/10008) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update InSpec to 4.20.6 [#10008](https://github.com/chef/chef/pull/10008) ([tas50](https://github.com/tas50)) <!-- 16.2.40 -->
 - Fix for windows_audit_policy bug for when a value for the subcategory property isn&#39;t entered [#10007](https://github.com/chef/chef/pull/10007) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.39 -->
 - Soft fail spellchecker in ci [#10003](https://github.com/chef/chef/pull/10003) ([phiggins](https://github.com/phiggins)) <!-- 16.2.38 -->
 - Silence exception output in threaded test. [#10005](https://github.com/chef/chef/pull/10005) ([phiggins](https://github.com/phiggins)) <!-- 16.2.38 -->
