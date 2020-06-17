@@ -451,6 +451,17 @@ class Chef
       description: "Determines whether or not the resource is executed during the compile time phase.",
       default: false, desired_state: false
 
+    # Set a umask to be used for the duration of converging the resource.
+    # Defaults to `nil`, which means to use the system umask.
+    #
+    # @param arg [String] The umask to apply while converging the resource.
+    # @return [Boolean] The umask to apply while converging the resource.
+    #
+    property :umask, String,
+      desired_state: false,
+      introduced: "16.2",
+      description: "Set a umask to be used for the duration of converging the resource. Defaults to `nil`, which means to use the system umask."
+
     # The time it took (in seconds) to run the most recently-run action.  Not
     # cumulative across actions.  This is set to 0 as soon as a new action starts
     # running, and set to the elapsed time at the end of the action.
@@ -588,7 +599,9 @@ class Chef
       begin
         return if should_skip?(action)
 
-        provider_for_action(action).run_action
+        with_umask do
+          provider_for_action(action).run_action
+        end
       rescue StandardError => e
         if ignore_failure
           logger.error("#{custom_exception_message(e)}; ignore_failure is set, continuing")
@@ -610,6 +623,13 @@ class Chef
       # A negative value can occur when a resource changes the system time backwards
       @elapsed_time = 0 if @elapsed_time < 0
       events.resource_completed(self)
+    end
+
+    def with_umask
+      old_value = ::File.umask(umask.oct) if umask
+      yield
+    ensure
+      ::File.umask(old_value) if umask
     end
 
     #
