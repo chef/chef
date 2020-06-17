@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.43 -->
-## [v16.2.43](https://github.com/chef/chef/tree/v16.2.43) (2020-06-17)
+<!-- latest_release 16.2.44 -->
+## [v16.2.44](https://github.com/chef/chef/tree/v16.2.44) (2020-06-17)
 
 #### Merged Pull Requests
-- Minor docs updates and MacOS -&gt; macOS [#10010](https://github.com/chef/chef/pull/10010) ([tas50](https://github.com/tas50))
+- Update the list of allowed policies for the windows_security_policy resource [#10012](https://github.com/chef/chef/pull/10012) ([chef-davin](https://github.com/chef-davin))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the list of allowed policies for the windows_security_policy resource [#10012](https://github.com/chef/chef/pull/10012) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.44 -->
 - Minor docs updates and MacOS -&gt; macOS [#10010](https://github.com/chef/chef/pull/10010) ([tas50](https://github.com/tas50)) <!-- 16.2.43 -->
 - Add a umask property for resources. [#10000](https://github.com/chef/chef/pull/10000) ([phiggins](https://github.com/phiggins)) <!-- 16.2.42 -->
 - Bump ohai to 16.2.0 [#10009](https://github.com/chef/chef/pull/10009) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.41 -->
