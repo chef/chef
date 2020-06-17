@@ -174,7 +174,7 @@ class Chef
       end
 
       action :set do
-        unless new_resource.subcategory.empty?
+        unless new_resource.subcategory.nil?
           new_resource.subcategory.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)
 
