@@ -62,7 +62,7 @@ The `archive_file` resource has been updated with two important fixes. The resou
 
 ### chef_client_scheduled_task
 
-The `chef_client_scheduled_task` resource has been updated to default the `frequency_modifier` property to `30` if the `frequency` property is set to `minutes` otherwise it still defaults to `1`. This provides a more predictable schedule behavior for users.
+The `chef_client_scheduled_task` resource has been updated to default the `frequency_modifier` property to `30` if the `frequency` property is set to `minutes`, otherwise it still defaults to `1`. This provides a more predictable schedule behavior for users.
 
 ### cron / cron_d
 
