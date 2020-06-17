@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.41 -->
-## [v16.2.41](https://github.com/chef/chef/tree/v16.2.41) (2020-06-17)
+<!-- latest_release 16.2.42 -->
+## [v16.2.42](https://github.com/chef/chef/tree/v16.2.42) (2020-06-17)
 
 #### Merged Pull Requests
-- Bump ohai to 16.2.0 [#10009](https://github.com/chef/chef/pull/10009) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add a umask property for resources. [#10000](https://github.com/chef/chef/pull/10000) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.1.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a umask property for resources. [#10000](https://github.com/chef/chef/pull/10000) ([phiggins](https://github.com/phiggins)) <!-- 16.2.42 -->
 - Bump ohai to 16.2.0 [#10009](https://github.com/chef/chef/pull/10009) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.41 -->
 - Update InSpec to 4.20.6 [#10008](https://github.com/chef/chef/pull/10008) ([tas50](https://github.com/tas50)) <!-- 16.2.40 -->
 - Fix for windows_audit_policy bug for when a value for the subcategory property isn&#39;t entered [#10007](https://github.com/chef/chef/pull/10007) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.39 -->
