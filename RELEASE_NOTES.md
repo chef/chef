@@ -66,7 +66,7 @@ The `chef_client_scheduled_task` resource has been updated to default the `frequ
 
 ### cron / cron_d
 
-The `cron` and `cron_d` resources have been updated using the new Custom Resource Partials functionality introduced in Chef Infra Client 16. This has allowed us to standardize the properties used to declare cron job timing between the two resources. Timing properties all accept the same types / ranges and include the same validation, which makes moving from `cron` to `cron_d` seamless.
+The `cron` and `cron_d` resources have been updated using the new Custom Resource Partials functionality introduced in Chef Infra Client 16. This has allowed us to standardize the properties used to declare cron job timing between the two resources. The timing properties in both resources all accept the same types and ranges, and include the same validation, which makes moving from `cron` to `cron_d` seamless.
 
 ### cron_access
 
