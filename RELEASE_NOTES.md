@@ -66,7 +66,7 @@ The `homebrew_update` resource is used to update the available package cache for
 
 ## Resource Updates
 
-## All resources now include umask property
+### All resources now include umask property
 
 All resources, including custom resources, now have a `umask` property which allows you to specify a umask for file creation. If not specified the system default will continue to be used.
 
