@@ -33,6 +33,16 @@ We've introduced several Cookstyle rules to detect both custom resources and leg
 
 **[ChefDeprecations/HWRPWithoutProvides](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationshwrpwithoutprovides)**: detects legacy HWRPs that don't include the necessary provides and resource_name calls for Chef Infra Client 16.
 
+## Chef InSpec 4.20.6
+
+Chef InSpec has been updated from 4.18.114 to 4.2.0.6. This new release includes the following improvements:
+
+- Develop your own Chef InSpec Reporter plugins to control how Chef InSpec will report result data.
+- The `inspec archive` command packs your profile into a `tar.gz` file that includes the profile in JSON form as the inspec.json file.
+- Certain substrings within a `.toml` file no longer cause unexpected crashes.
+- Accurate InSpec CLI input parsing for numeric values and structured data, which were previously treated as strings. Numeric values are cast to an `integer` or `float` and `YAML` or `JSON` structures are converted to a hash or an array.
+- Suppress deprecation warnings on inspec exec with the `--silence-deprecations` option.
+
 ## New Resources
 
 ### windows_audit_policy
