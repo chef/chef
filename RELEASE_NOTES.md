@@ -82,7 +82,7 @@ The `powershell_package` resource has been updated to use TLS 1.2 when communica
 
 ### remote_file
 
-The `remote_file` resource has a new property `ssl_verify_mode` which allows you to control SSL validation at the property level. This can be used to verify certificates (Chef Infra Client's defaults) with `:verify_peer` or to skip verification in the case of a self signed certificate with `:verify_none`. Thanks [@jaymzh](http://github.com/jaymzh).
+The `remote_file` resource has a new property `ssl_verify_mode` which allows you to control SSL validation at the property level. This can be used to verify certificates (Chef Infra Client's defaults) with `:verify_peer` or to skip verification in the case of a self-signed certificate with `:verify_none`. Thanks [@jaymzh](http://github.com/jaymzh).
 
 ### script
 
