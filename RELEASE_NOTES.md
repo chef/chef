@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Breaking Change in Resources
 
-In Chef Infra Client 16.0 we made changes to how the custom resource names are applied in order to resolve some longstanding edge-cases. This change had several unintended side effects so we're further changing how custom names are set in this release of Chef Infra Client.
+In Chef Infra Client 16.0, we changed the way that custom resource names are applied in order to resolve some longstanding edge-cases. This change had several unintended side effects, so we're further changing how custom names are set in this release of Chef Infra Client.
 
 Previously you could set a custom name for a resource via `resource_name` and under the hood this would also magically set the `provides` for the resource. Magic is great when it works, but is confusing when it doesn't. We've decided to remove some of this magic and instead rely on more explicit provides statements in resources. For cookbooks that support just Chef Infra Client 16 and later you should change any `resource_name` calls to `provides` instead. If you need to support older releases of Chef Infra Client as well as 16+ you'll want to include both `resource_name` and `provides` for full compatibility.
 
