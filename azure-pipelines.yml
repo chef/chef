@@ -1,4 +1,4 @@
-# End-to-End Test of Chef in MacOS
+# End-to-End Test of Chef in macOS
 
 variables:
   FORCE_FFI_YAJL: 'ext'

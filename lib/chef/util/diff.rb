@@ -136,7 +136,7 @@ class Chef
           return "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"
         end
 
-        # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
+        # macOS(BSD?) diff will *sometimes* happily spit out nasty binary diffs
         return "(current file is binary, diff output suppressed)" if is_binary?(old_file)
         return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
