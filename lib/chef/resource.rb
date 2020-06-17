@@ -459,6 +459,7 @@ class Chef
     #
     property :umask, String,
       desired_state: false,
+      introduced: "16.2",
       description: "Set a umask to be used for the duration of converging the resource. Defaults to `nil`, which means to use the system umask."
 
     # The time it took (in seconds) to run the most recently-run action.  Not
