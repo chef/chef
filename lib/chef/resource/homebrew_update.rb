@@ -19,6 +19,7 @@
 #
 
 require_relative "../resource"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -27,7 +28,7 @@ class Chef
 
       provides(:homebrew_update) { true }
 
-      description "Use the **homebrew_update** resource to manage Homebrew repository updates on MacOS."
+      description "Use the **homebrew_update** resource to manage Homebrew repository updates on macOS."
       introduced "16.2"
       examples <<~DOC
         **Update the homebrew repository data at a specified interval**:
@@ -37,7 +38,7 @@ class Chef
           action :periodic
         end
         ```
-        **Update the Homebrew repository at the start of a Chef Infra Client run**:
+        **Update the Homebrew repository at the start of a #{Chef::Dist::PRODUCT} run**:
         ```ruby
         homebrew_update 'update'
         ```

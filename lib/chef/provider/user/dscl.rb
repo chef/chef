@@ -536,7 +536,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
 
           # We flush the cache here in order to make sure that we read fresh information
           # for the user.
-          shell_out("dscacheutil", "-flushcache") # FIXME: this is MacOS version dependent
+          shell_out("dscacheutil", "-flushcache") # FIXME: this is macOS version dependent
 
           begin
             user_plist_file = "#{USER_PLIST_DIRECTORY}/#{new_resource.username}.plist"
