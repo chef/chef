@@ -39,7 +39,7 @@ We've introduced several Cookstyle rules to detect both custom resources and leg
 
 The `windows_audit_policy` resource is used to configure system-level and per-user Windows advanced audit policy settings. See the [windows_audit_policy Documentation](https://docs.chef.io/resources/windows_audit_policy/) for complete usage information.
 
-For example you can enable auditing of successful credential validation:
+For example, you can enable auditing of successful credential validation:
 
 ```ruby
 windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success'" do
