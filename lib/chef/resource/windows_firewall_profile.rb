@@ -21,7 +21,7 @@ class Chef
     class WindowsFirewallProfile < Chef::Resource
       provides :windows_firewall_profile
       description "Use the **windows_firewall_profile** resource to enable, disable, and configure the Windows firewall."
-      introduced "16.2"
+      introduced "16.3"
 
       examples <<~DOC
       **Enable and Configure the Private Profile of the Windows Profile**:
