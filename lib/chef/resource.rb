@@ -451,7 +451,12 @@ class Chef
       description: "Determines whether or not the resource is executed during the compile time phase.",
       default: false, desired_state: false
 
-    # TODO: fill in doc info
+    # Set a umask to be used for the duration of converging the resource.
+    # Defaults to `nil`, which means to use the system umask.
+    #
+    # @param arg [String] The umask to apply while converging the resource.
+    # @return [Boolean] The umask to apply while converging the resource.
+    #
     property :umask, String, desired_state: false
 
     # The time it took (in seconds) to run the most recently-run action.  Not
