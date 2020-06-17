@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Soft fail spellchecker in ci [#10003](https://github.com/chef/chef/pull/10003) ([phiggins](https://github.com/phiggins))
 - Silence exception output in threaded test. [#10005](https://github.com/chef/chef/pull/10005) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Soft fail spellchecker in ci [#10003](https://github.com/chef/chef/pull/10003) ([phiggins](https://github.com/phiggins)) <!-- 16.2.38 -->
 - Silence exception output in threaded test. [#10005](https://github.com/chef/chef/pull/10005) ([phiggins](https://github.com/phiggins)) <!-- 16.2.38 -->
 - Cleanup more resource examples [#10002](https://github.com/chef/chef/pull/10002) ([tas50](https://github.com/tas50)) <!-- 16.2.38 -->
 - Cron and Cron_d resource weekday property fixes [#10001](https://github.com/chef/chef/pull/10001) ([tas50](https://github.com/tas50)) <!-- 16.2.37 -->
