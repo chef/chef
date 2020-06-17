@@ -29,9 +29,9 @@ provides :foo
 
 We've introduced several Cookstyle rules to detect both custom resources and legacy HWRPs that need to be updated for this change:
 
-**ChefDeprecations/ResourceUsesOnlyResourceName**: detects resources that only set resource_name and automatically adds a provides call as well.
+**[ChefDeprecations/ResourceUsesOnlyResourceName](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationsresourceusesonlyresourcename)**: detects resources that only set resource_name and automatically adds a provides call as well.
 
-**ChefDeprecations/ResourceWithoutNameOrProvides**: detects legacy HWRPs that don't include the necessary provides and resource_name calls for Chef Infra Client 16.
+**[ChefDeprecations/HWRPWithoutProvides](https://github.com/chef/cookstyle/blob/master/docs/cops_chefdeprecations.md#chefdeprecationshwrpwithoutprovides)**: detects legacy HWRPs that don't include the necessary provides and resource_name calls for Chef Infra Client 16.
 
 ## New Resources
 
@@ -55,6 +55,10 @@ end
 The `homebrew_update` resource is used to update the available package cache for the Homebrew package system similar to the behavior of the `apt_update` resource. See the [homebrew_update Documentation](https://docs.chef.io/resources/homebrew_update/) for complete usage information. Thanks for adding this new resource, [@damacus](http://github.com/damacus).
 
 ## Resource Updates
+
+## All resources now include umask property
+
+All resources, including custom resources, now have a `umask` property which allows you to specify a umask for file creation. If not specified the system default will continue to be used.
 
 ### archive_file
 
