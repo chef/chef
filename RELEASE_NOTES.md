@@ -90,7 +90,7 @@ The various `script` resources such as `bash` or `ruby` now pass the provided sc
 
 ### snap_package
 
-Multiple issues with the `snap_package` resource have been resolved including an infinite wait that occurred as well as issues specifying package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
+Multiple issues with the `snap_package` resource have been resolved, including an infinite wait that occurred, and issues with specifying the package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
 
 ### zypper_repository
 
