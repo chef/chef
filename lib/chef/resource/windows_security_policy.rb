@@ -21,7 +21,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsSecurityPolicy < Chef::Resource
-      resource_name :windows_security_policy
+      provides :windows_security_policy
 
       # The valid policy_names options found here
       # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
