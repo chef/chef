@@ -38,7 +38,7 @@ class Chef
       **Set the timezone to UTC with a friendly resource name**
 
       ```ruby
-      timezone 'Set the hosts timezone to UTC' do
+      timezone 'Set the host's timezone to UTC' do
         timezone 'UTC'
       end
       ```
