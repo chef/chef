@@ -29,6 +29,21 @@ class Chef
 
       description "Use the **ssh_known_hosts_entry** resource to add an entry for the specified host in /etc/ssh/ssh_known_hosts or a user's known hosts file if specified."
       introduced "14.3"
+      examples <<~DOC
+      **Add a single entry for github.com with the key auto detected**
+
+      ```ruby
+      ssh_known_hosts_entry 'github.com'
+      ```
+
+      **Add a single entry with your own provided key**
+
+      ```ruby
+      ssh_known_hosts_entry 'github.com' do
+        key 'node.example.com ssh-rsa ...'
+      end
+      ```
+      DOC
 
       property :host, String,
         description: "The host to add to the known hosts file.",

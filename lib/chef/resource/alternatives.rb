@@ -89,7 +89,7 @@ class Chef
         description: "The path to the alternatives link."
 
       property :path, String,
-        description: "The full path to the original application binary such as `/usr/bin/ruby27`."
+        description: "The absolute path to the original application binary such as `/usr/bin/ruby27`."
 
       property :priority, [String, Integer],
         coerce: proc { |n| n.to_i },
