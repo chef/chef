@@ -139,7 +139,7 @@ class Chef
 
       # handle legacy cookbook property
       def after_created
-        raise "The 'visudo_path' property from the sudo cookbook has been replaced with the 'visudo_binary' property. The path is now more intelligently determined and for most users specifying the path should no longer be necessary. If this resource still cannot determine the path to visudo then provide the full path to the binary with the 'visudo_binary' property." if visudo_path
+        raise "The 'visudo_path' property from the sudo cookbook has been replaced with the 'visudo_binary' property. The path is now more intelligently determined and for most users specifying the path should no longer be necessary. If this resource still cannot determine the path to visudo then provide the absolute path to the binary with the 'visudo_binary' property." if visudo_path
       end
 
       # VERY old legacy properties

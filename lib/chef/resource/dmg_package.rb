@@ -66,7 +66,7 @@ class Chef
         description: "The remote URL that is used to download the `.dmg` file, if specified."
 
       property :file, String,
-        description: "The full path to the `.dmg` file on the local system."
+        description: "The absolute path to the `.dmg` file on the local system."
 
       property :owner, [String, Integer],
         description: "The user that should own the package installation."
