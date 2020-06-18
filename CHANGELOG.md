@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.2.45 -->
+## [v16.2.45](https://github.com/chef/chef/tree/v16.2.45) (2020-06-18)
+
+#### Merged Pull Requests
+- Bump inspec-core-bin to 4.20.10 [#10017](https://github.com/chef/chef/pull/10017) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.2.44 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Bump inspec-core-bin to 4.20.10 [#10017](https://github.com/chef/chef/pull/10017) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.45 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
