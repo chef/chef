@@ -30,6 +30,7 @@ describe "knife config use-profile", :workstation do
     knife("config", "use-profile", *cmd_args, instance_filter: lambda { |instance|
       # Fake the failsafe check because this command doesn't actually process knife.rb.
       $__KNIFE_INTEGRATION_FAILSAFE_CHECK << " ole"
+      allow(File).to receive(:file?).and_call_original
     })
   end
 
@@ -73,15 +74,56 @@ describe "knife config use-profile", :workstation do
 
   context "with an argument" do
     let(:cmd_args) { %w{production} }
+    before { file(".chef/credentials", <<~EOH) }
+      [production]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+    EOH
     it do
       is_expected.to eq "Set default profile to production\n"
       expect(File.read(path_to(".chef/context"))).to eq "production\n"
     end
   end
 
+  context "with no credentials file" do
+    let(:cmd_args) { %w{production} }
+    subject { knife_use_profile.stderr }
+    it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
+  end
+
+  context "with an empty credentials file" do
+    let(:cmd_args) { %w{production} }
+    before { file(".chef/credentials", "") }
+    subject { knife_use_profile.stderr }
+    it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
+  end
+
+  context "with an wrong argument" do
+    let(:cmd_args) { %w{staging} }
+    before { file(".chef/credentials", <<~EOH) }
+      [production]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+    EOH
+    subject { knife_use_profile }
+    it { expect { subject }.to raise_error ChefConfig::ConfigurationError, "Profile staging doesn't exist. Please add it to #{path_to(".chef/credentials")} and if it is profile with DNS name check that you are not missing single quotes around it as per docs https://docs.chef.io/workstation/knife_setup/#knife-profiles." }
+  end
+
   context "with $CHEF_HOME" do
     let(:cmd_args) { %w{staging} }
-    before { ENV["CHEF_HOME"] = path_to("chefhome"); file("chefhome/tmp", "") }
+    before do
+      ENV["CHEF_HOME"] = path_to("chefhome"); file("chefhome/tmp", "")
+      file("chefhome/.chef/credentials", <<~EOH
+      [staging]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+      EOH
+      )
+    end
+
     it do
       is_expected.to eq "Set default profile to staging\n"
       expect(File.read(path_to("chefhome/.chef/context"))).to eq "staging\n"
@@ -91,7 +133,18 @@ describe "knife config use-profile", :workstation do
 
   context "with $KNIFE_HOME" do
     let(:cmd_args) { %w{development} }
-    before { ENV["KNIFE_HOME"] = path_to("knifehome"); file("knifehome/tmp", "") }
+
+    before do
+      ENV["KNIFE_HOME"] = path_to("knifehome"); file("knifehome/tmp", "")
+      file("knifehome/.chef/credentials", <<~EOH
+      [development]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+      EOH
+      )
+    end
+
     it do
       is_expected.to eq "Set default profile to development\n"
       expect(File.read(path_to("knifehome/.chef/context"))).to eq "development\n"

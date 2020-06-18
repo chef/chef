@@ -33,17 +33,27 @@ class Chef
       end
 
       def run
+        credentials_data = self.class.config_loader.parse_credentials_file
         context_file = ChefConfig::PathHelper.home(".chef", "context").freeze
         profile = @name_args[0]&.strip
-        if profile && !profile.empty?
+        if profile.nil? || profile.empty?
+          show_usage
+          ui.fatal("You must specify a profile")
+          exit 1
+        end
+
+        if credentials_data.nil? || credentials_data.empty?
+          ui.fatal("No profiles found, #{self.class.config_loader.credentials_file_path} does not exist or is empty")
+          exit 1
+        end
+
+        if credentials_data[profile].nil?
+          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{self.class.config_loader.credentials_file_path} and if it is profile with DNS name check that you are not missing single quotes around it as per docs https://docs.chef.io/workstation/knife_setup/#knife-profiles."
+        else
           # Ensure the .chef/ folder exists.
           FileUtils.mkdir_p(File.dirname(context_file))
           IO.write(context_file, "#{profile}\n")
           ui.msg("Set default profile to #{profile}")
-        else
-          show_usage
-          ui.fatal("You must specify a profile")
-          exit 1
         end
       end
 
