@@ -22,25 +22,30 @@ require_relative "../dist"
 
 class Chef
   class Resource
-    # Use the chef_gem resource to install a gem only for the instance of Ruby that is dedicated to the chef-client.
-    # When a gem is installed from a local file, it must be added to the node using the remote_file or cookbook_file
-    # resources.
-    #
-    # The chef_gem resource works with all of the same properties and options as the gem_package resource, but does not
-    # accept the gem_binary property because it always uses the CurrentGemEnvironment under which the chef-client is
-    # running. In addition to performing actions similar to the gem_package resource, the chef_gem resource does the
-    # following:
-    #  - Runs its actions immediately, before convergence, allowing a gem to be used in a recipe immediately after it is
-    #    installed
-    #  - Runs Gem.clear_paths after the action, ensuring that gem is aware of changes so that it can be required
-    #    immediately after it is installed
-
     require_relative "gem_package"
     require_relative "../dist"
 
     class ChefGem < Chef::Resource::Package::GemPackage
       unified_mode true
       provides :chef_gem
+
+      description <<~DESC
+        Use the **chef_gem** resource to install a gem only for the instance of Ruby that is dedicated to the chef-client.
+        When a gem is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources.
+
+        The **chef_gem** resource works with all of the same properties and options as the **gem_package** resource, but does not
+        accept the `gem_binary` property because it always uses the `CurrentGemEnvironment` under which the `chef-client` is
+        running. In addition to performing actions similar to the **gem_package** resource, the **chef_gem** resource does the
+        following:
+        - Runs its actions immediately, before convergence, allowing a gem to be used in a recipe immediately after it is installed.
+        - Runs `Gem.clear_paths` after the action, ensuring that gem is aware of changes so that it can be required immediately after it is installed.
+
+        Warning: The **chef_gem** and **gem_package** resources are both used to install Ruby gems. For any machine on which Chef Infra Client is
+        installed, there are two instances of Ruby. One is the standard, system-wide instance of Ruby and the other is a dedicated instance that is
+        available only to Chef Infra Client.
+        Use the **chef_gem** resource to install gems into the instance of Ruby that is dedicated to Chef Infra Client.
+        Use the **gem_package** resource to install all other gems (i.e. install gems system-wide).
+      DESC
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
