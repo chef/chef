@@ -96,7 +96,7 @@ class Chef
             self_ace.mask = securable_object.predict_rights_mask(target_ace.mask)
             new_target_acl << self_ace
           end
-          # As there is no inheritence needed in case of WRITE permissions.
+          # As there is no inheritance needed in case of WRITE permissions.
           if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE && target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
             children_ace = target_ace.dup
             children_ace.flags |= INHERIT_ONLY_ACE
@@ -242,7 +242,7 @@ class Chef
         flags = 0
 
         #
-        # Configure child inheritence only if the resource is some
+        # Configure child inheritance only if the resource is some
         # type of a directory.
         #
         if resource.is_a? Chef::Resource::Directory

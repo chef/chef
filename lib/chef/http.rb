@@ -52,7 +52,7 @@ class Chef
 
       def handle_chunk(next_chunk)
         # stream handlers handle responses so must be applied in reverse order
-        # (same as #apply_stream_complete_middleware or #apply_response_midddleware)
+        # (same as #apply_stream_complete_middleware or #apply_response_middleware)
         @stream_handlers.reverse.inject(next_chunk) do |chunk, handler|
           Chef::Log.trace("Chef::HTTP::StreamHandler calling #{handler.class}#handle_chunk")
           handler.handle_chunk(chunk)
