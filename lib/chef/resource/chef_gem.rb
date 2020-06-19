@@ -22,9 +22,6 @@ require_relative "../dist"
 
 class Chef
   class Resource
-    require_relative "gem_package"
-    require_relative "../dist"
-
     class ChefGem < Chef::Resource::Package::GemPackage
       unified_mode true
       provides :chef_gem
