@@ -111,6 +111,7 @@ end
 
 namespace :spellcheck do
   task :run do
+    sh 'wget https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt'
     sh 'cspell "**/*"'
   end
 

@@ -727,7 +727,7 @@ Several legacy Windows helpers have been deprecated as they will always return t
 
 - Resolved a regression that prevented the `service` resource from working correctly on Windows. Thanks [@Axuba](https://github.com/Axuba)
 - Implemented VMware and Hyper-V detection on Linux systems
-- Implemented VMware, Hyper-V, Virtualbox, KVM and Xen detection on Windows systems
+- Implemented VMware, Hyper-V, VirtualBox, KVM and Xen detection on Windows systems
 - Added helpers `virtual_system?` and `physical_system?`. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen)
 
 ## Ohai 15.9
