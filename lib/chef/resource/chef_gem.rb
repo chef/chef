@@ -47,6 +47,37 @@ class Chef
         Use the **gem_package** resource to install all other gems (i.e. install gems system-wide).
       DESC
 
+      examples <<~EXAMPLES
+        **Compile time vs. converge time installation of gems**
+
+        To install a gem while Chef Infra Client is configuring the node (the converge phase), set the `compile_time` property to `false`:
+        ```ruby
+        chef_gem 'right_aws' do
+          compile_time false
+          action :install
+        end
+        ```
+
+        To install a gem while the resource collection is being built (the compile phase), set the `compile_time` property to `true`:
+        ```ruby
+        chef_gem 'right_aws' do
+          compile_time true
+          action :install
+        end
+        ```
+
+        Install MySQL for Chef
+        ```ruby
+        apt_update
+
+        build_essential 'install compilation tools' do
+          compile_time true
+        end
+
+        chef_gem 'mysql'
+        ```
+      EXAMPLES
+
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
         identity: true
