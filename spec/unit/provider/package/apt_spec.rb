@@ -278,7 +278,6 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should run apt-get install with the package name and version" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!). with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -288,7 +287,6 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should run apt-get install with the package name and version and options if specified" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "--force-yes", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -305,7 +303,6 @@ describe Chef::Provider::Package::Apt do
         @new_resource.provider = nil
         @provider.new_resource = @new_resource
 
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "-o", "APT::Default-Release=lenny-backports", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -316,7 +313,6 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should run apt-get install with the package name and quotes options if specified" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "--force-yes", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confnew", "install", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -331,7 +327,6 @@ describe Chef::Provider::Package::Apt do
       # tests apt-get on 1404 that does not support --allow-downgrades
       before(:each) do
         ubuntu1404downgrade_stubs
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
       end
 
       it "should run apt-get install with the package name and version" do
@@ -391,7 +386,7 @@ describe Chef::Provider::Package::Apt do
     describe Chef::Resource::AptPackage, "remove_package" do
 
       it "should run apt-get remove with the package name" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
+        allow(@provider).to receive(:resolve_package_versions).with("irssi").and_return(["0.8.12-7"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "remove", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -401,7 +396,7 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should run apt-get remove with the package name and options if specified" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
+        allow(@provider).to receive(:resolve_package_versions).with("irssi").and_return(["0.8.12-7"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--force-yes", "remove", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -416,7 +411,7 @@ describe Chef::Provider::Package::Apt do
     describe "when purging a package" do
 
       it "should run apt-get purge with the package name" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
+        allow(@provider).to receive(:resolve_package_versions).with("irssi").and_return(["0.8.12-7"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "purge", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -426,7 +421,7 @@ describe Chef::Provider::Package::Apt do
       end
 
       it "should run apt-get purge with the package name and options if specified" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
+        allow(@provider).to receive(:resolve_package_versions).with("irssi").and_return(["0.8.12-7"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--force-yes", "purge", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -498,7 +493,6 @@ describe Chef::Provider::Package::Apt do
 
     describe "when reconfiguring a package" do
       it "should run dpkg-reconfigure package" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "dpkg-reconfigure", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -510,7 +504,6 @@ describe Chef::Provider::Package::Apt do
 
     describe "when locking a package" do
       it "should run apt-mark hold package" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "hold", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -519,7 +512,6 @@ describe Chef::Provider::Package::Apt do
         @provider.lock_package("irssi", "0.8.12-7")
       end
       it "should not lock if the package is already locked" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         allow(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "showhold", timeout: 900
         ).and_return(instance_double(
@@ -533,7 +525,6 @@ describe Chef::Provider::Package::Apt do
 
     describe "when unlocking a package" do
       it "should run apt-mark unhold package" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "unhold", "irssi",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -542,7 +533,6 @@ describe Chef::Provider::Package::Apt do
         @provider.unlock_package("irssi", "0.8.12-7")
       end
       it "should not unlock if the package is already unlocked" do
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         allow(@provider).to receive(:shell_out_compacted!).with(
           "apt-mark", "showhold", timeout: 900
         ).and_return(instance_double(
@@ -557,7 +547,6 @@ describe Chef::Provider::Package::Apt do
     describe "when installing a virtual package" do
       it "should install the package without specifying a version" do
         ubuntu1804downgrade_stubs
-        allow(@provider).to receive(:check_availability).and_return(["libmysqlclient15-dev"])
         @provider.package_data["libmysqlclient15-dev"][:virtual] = true
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev",
@@ -570,7 +559,7 @@ describe Chef::Provider::Package::Apt do
 
     describe "when removing a virtual package" do
       it "should remove the resolved name instead of the virtual package name" do
-        allow(@provider).to receive(:check_availability).and_return(["libmysqlclient15-dev"])
+        allow(@provider).to receive(:resolve_package_versions).with("libmysqlclient15-dev").and_return(["not_a_real_version"])
         expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "remove", "libmysqlclient-dev",
@@ -583,7 +572,7 @@ describe Chef::Provider::Package::Apt do
 
     describe "when purging a virtual package" do
       it "should purge the resolved name instead of the virtual package name" do
-        allow(@provider).to receive(:check_availability).and_return(["libmysqlclient15-dev"])
+        allow(@provider).to receive(:resolve_package_versions).with("libmysqlclient15-dev").and_return(["not_a_real_version"])
         expect(@provider).to receive(:resolve_virtual_package_name).with("libmysqlclient15-dev").and_return("libmysqlclient-dev")
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "purge", "libmysqlclient-dev",
@@ -598,7 +587,6 @@ describe Chef::Provider::Package::Apt do
       it "can install a virtual package followed by a non-virtual package" do
         ubuntu1804downgrade_stubs
         # https://github.com/chef/chef/issues/2914
-        allow(@provider).to receive(:check_availability).and_return(%w{libmysqlclient15-dev irssi})
         expect(@provider).to receive(:shell_out_compacted!).with(
           "apt-get", "-q", "-y", "--allow-downgrades", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install", "libmysqlclient15-dev", "irssi=0.8.12-7",
           env: { "DEBIAN_FRONTEND" => "noninteractive" },
@@ -620,7 +608,6 @@ describe Chef::Provider::Package::Apt do
 
       it "should install the package if the installed version is older" do
         ubuntu1804downgrade_stubs
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:version_compare).with("1.6~beta1", "1.1.0").and_return(1)
         allow(@provider).to receive(:get_current_versions).and_return("0.4.0")
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)
@@ -635,7 +622,6 @@ describe Chef::Provider::Package::Apt do
 
       it "should not compare versions if an existing version is not installed" do
         ubuntu1804downgrade_stubs
-        allow(@provider).to receive(:check_availability).and_return(["irssi"])
         expect(@provider).to receive(:version_compare).with("1.6~beta1", "1.1.0").and_return(1)
         allow(@provider).to receive(:get_current_versions).and_return(nil)
         allow(@new_resource).to receive(:allow_downgrade).and_return(false)
