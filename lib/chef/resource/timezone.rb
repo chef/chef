@@ -28,6 +28,21 @@ class Chef
 
       description "Use the **timezone** resource to change the system timezone on Windows, Linux, and macOS hosts. Timezones are specified in tz database format, with a complete list of available TZ values for Linux and macOS here: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones and for Windows here: https://ss64.com/nt/timezones.html."
       introduced "14.6"
+      examples <<~DOC
+      **Set the timezone to UTC**
+
+      ```ruby
+      timezone 'UTC'
+      ```
+
+      **Set the timezone to UTC with a friendly resource name**
+
+      ```ruby
+      timezone 'Set the host's timezone to UTC' do
+        timezone 'UTC'
+      end
+      ```
+      DOC
 
       property :timezone, String,
         description: "An optional property to set the timezone value if it differs from the resource block's name.",

@@ -21,25 +21,27 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsSecurityPolicy < Chef::Resource
-      resource_name :windows_security_policy
+      provides :windows_security_policy
 
       # The valid policy_names options found here
       # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
-      policy_names = %w{MinimumPasswordAge
-                MaximumPasswordAge
-                MinimumPasswordLength
-                PasswordComplexity
-                PasswordHistorySize
-                LockoutBadCount
-                RequireLogonToChangePassword
-                ForceLogoffWhenHourExpire
-                NewAdministratorName
-                NewGuestName
-                ClearTextPassword
-                LSAAnonymousNameLookup
-                EnableAdminAccount
-                EnableGuestAccount
-                }
+      policy_names = %w{LockoutDuration
+                        MaximumPasswordAge
+                        MinimumPasswordAge
+                        MinimumPasswordLength
+                        PasswordComplexity
+                        PasswordHistorySize
+                        LockoutBadCount
+                        ResetLockoutCount
+                        RequireLogonToChangePassword
+                        ForceLogoffWhenHourExpire
+                        NewAdministratorName
+                        NewGuestName
+                        ClearTextPassword
+                        LSAAnonymousNameLookup
+                        EnableAdminAccount
+                        EnableGuestAccount
+                       }
       description "Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform."
       introduced "16.0"
 

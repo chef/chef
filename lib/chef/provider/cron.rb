@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require_relative "../log"
 require_relative "../provider"
 
@@ -27,8 +26,6 @@ class Chef
 
       SPECIAL_TIME_VALUES = %i{reboot yearly annually monthly weekly daily midnight hourly}.freeze
       CRON_ATTRIBUTES = %i{minute hour day month weekday time command mailto path shell home environment}.freeze
-      WEEKDAY_SYMBOLS = %i{sunday monday tuesday wednesday thursday friday saturday}.freeze
-
       CRON_PATTERN = %r{\A([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+)\s([-0-9*,/]+|[a-zA-Z]{3})\s([-0-9*,/]+|[a-zA-Z]{3})\s(.*)}.freeze
       SPECIAL_PATTERN = /\A(@(#{SPECIAL_TIME_VALUES.join('|')}))\s(.*)/.freeze
       ENV_PATTERN = /\A(\S+)=(\S*)/.freeze
@@ -287,15 +284,6 @@ class Chef
         newcron << duration_str + time_out_str + cmd_str
 
         newcron.join("\n")
-      end
-
-      def weekday_in_crontab
-        weekday_in_crontab = WEEKDAY_SYMBOLS.index(new_resource.weekday)
-        if weekday_in_crontab.nil?
-          new_resource.weekday
-        else
-          weekday_in_crontab.to_s
-        end
       end
     end
   end

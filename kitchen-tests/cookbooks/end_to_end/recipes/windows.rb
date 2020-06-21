@@ -27,6 +27,11 @@ timezone "UTC"
 
 include_recipe "ntp"
 
+windows_security_policy "EnableGuestAccount" do
+  secoption "EnableGuestAccount"
+  secvalue "1"
+end
+
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
