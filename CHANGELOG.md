@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.48 -->
-## [v16.2.48](https://github.com/chef/chef/tree/v16.2.48) (2020-06-18)
+<!-- latest_release 16.2.49 -->
+## [v16.2.49](https://github.com/chef/chef/tree/v16.2.49) (2020-06-22)
 
 #### Merged Pull Requests
-- Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50))
+- Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.44 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins)) <!-- 16.2.49 -->
 - Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50)) <!-- 16.2.48 -->
 - Fix for knife config use-profile doesn&#39;t validate that the profile exist [#10011](https://github.com/chef/chef/pull/10011) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.2.47 -->
 - windows_security_policy was using resource_name instead of provides [#10018](https://github.com/chef/chef/pull/10018) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.46 -->
