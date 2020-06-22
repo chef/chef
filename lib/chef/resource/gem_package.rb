@@ -25,7 +25,40 @@ class Chef
       unified_mode true
       provides :gem_package
 
-      description "Use the **gem_package** resource to manage gem packages that are only included in recipes. When a package is installed from a local file, it must be added to the node using the remote_file or cookbook_file resources."
+      description <<~DESC
+        Use the **gem_package** resource to manage gem packages that are only included in recipes.
+        When a gem is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources.
+
+        Note: The **gem_package** resource must be specified as `gem_package` and cannot be shortened to `package` in a recipe.
+
+        Warning: The **chef_gem** and **gem_package** resources are both used to install Ruby gems. For any machine on which #{Chef::Dist::PRODUCT} is
+        installed, there are two instances of Ruby. One is the standard, system-wide instance of Ruby and the other is a dedicated instance that is
+        available only to #{Chef::Dist::PRODUCT}.
+        Use the **chef_gem** resource to install gems into the instance of Ruby that is dedicated to #{Chef::Dist::PRODUCT}.
+        Use the **gem_package** resource to install all other gems (i.e. install gems system-wide).
+      DESC
+
+      examples <<~EXAMPLES
+        The following examples demonstrate various approaches for using the **gem_package** resource in recipes:
+
+        **Install a gem file from the local file system**
+
+        ```ruby
+        gem_package 'right_aws' do
+          source '/tmp/right_aws-1.11.0.gem'
+          action :install
+        end
+        ```
+
+        **Use the `ignore_failure` common attribute**
+
+        ```ruby
+        gem_package 'syntax' do
+          action :install
+          ignore_failure true
+        end
+        ```
+      EXAMPLES
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",
@@ -53,7 +86,7 @@ class Chef
         default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
 
       property :gem_binary, String, desired_state: false,
-        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{Chef::Dist::PRODUCT} will be installed."
+        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{Chef::Dist::PRODUCT} will be used."
 
       property :include_default_source, [ TrueClass, FalseClass, nil ],
         description: "Set to `false` to not include `Chef::Config[:rubygems_url]` in the sources.",
