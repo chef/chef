@@ -112,20 +112,6 @@ namespace :docs_site do
       fixed_arr.compact.join(", ")
     end
 
-    # split out notes from the description field. We didn't design a note syntax so we stick them in there
-    def note_text(description)
-      return nil if description.nil?
-
-      description.split("Note: ")[1]
-    end
-
-    # Returns description without embedded notes that may be present
-    def description_text(description)
-      return nil if description.nil?
-
-      description.split(" Note:")[0]
-    end
-
     # build the menu entry for this resource
     def build_menu_item(name)
       {
@@ -250,6 +236,38 @@ namespace :docs_site do
       properties
     end
 
+    # Breaks a block of text into the different sections expected for the description,
+    # using the markers "Note:" for "note" sections and "Warning:" for "warning" sections.
+    # TODO: has the limitation that the plain description section is assumed to come first,
+    # and is followed by one or more "note"s or "warning"s sections.
+    def build_description(text)
+      return [{ "markdown" => nil }] if text.nil?
+
+      description_pattern = /(Note:|Warning:)?((?:(?!Note:|Warning:).)*)/m
+
+      description = []
+
+      text.scan(description_pattern) do |preface, body|
+        body.strip!
+        next if body.empty?
+
+        element = { "markdown" => body }
+
+        case preface
+        when "Note:"
+          description << { "note" => element }
+        when "Warning:"
+          description << { "warning" => element }
+        when nil
+          description << element
+        else
+          raise "Unexpected thing happened! preface: '#{preface}', body: '#{body}'"
+        end
+      end
+
+      description
+    end
+
     # the main method that builds what will become the yaml file
     def build_resource_data(name, data)
       properties = data["properties"].reject { |v| v["name"] == "name" || v["deprecated"] }.sort_by! { |v| v["name"] }
@@ -266,12 +284,7 @@ namespace :docs_site do
       r["resource"] = name
       r["aliases"] = ["/resource_#{name}.html"]
       r["menu"] = build_menu_item(name)
-      r["resource_description_list"] = {}
-      r["resource_description_list"] = [{ "markdown" => description_text(data["description"]) }]
-
-      # if the description contained a note then add it
-      r["resource_description_list"] << { "note" => { "markdown" => note_text(data["description"]) } } unless note_text(data["description"]).nil?
-
+      r["resource_description_list"] = build_description(data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
