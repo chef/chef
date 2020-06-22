@@ -1927,6 +1927,7 @@ describe Chef::Knife::Bootstrap do
       Chef::Config[:knife][:test_key_c] = "c from Chef::Config"
       Chef::Config[:knife][:alt_test_key_c] = "alt c from Chef::Config"
       knife.merge_configs
+      Chef::Config[:treat_deprecation_warnings_as_errors] = false
     end
 
     it "returns the Chef::Config value from the cli when the CLI key is set" do
