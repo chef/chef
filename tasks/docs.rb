@@ -251,13 +251,13 @@ namespace :docs_site do
         body.strip!
         next if body.empty?
 
-        element = {"markdown" => body}
+        element = { "markdown" => body }
 
         case preface
         when "Note:"
-          description << {"note" => element}
+          description << { "note" => element }
         when "Warning:"
-          description << {"warning" => element}
+          description << { "warning" => element }
         when nil
           description << element
         else
