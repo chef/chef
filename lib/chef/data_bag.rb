@@ -94,7 +94,7 @@ class Chef
         names = []
         paths.each do |path|
           unless File.directory?(path)
-            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
+            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' not found. Please create this directory."
           end
 
           names += Dir.glob(File.join(
@@ -122,7 +122,7 @@ class Chef
         data_bag = {}
         paths.each do |path|
           unless File.directory?(path)
-            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
+            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' not found. Please create this directory."
           end
 
           Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path, name.to_s), "*.json")).inject({}) do |bag, f|
