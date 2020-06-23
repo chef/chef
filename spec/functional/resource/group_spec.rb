@@ -18,7 +18,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::Group, :requires_root_or_running_windows do
@@ -88,6 +87,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def user(username)
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
     if ohai[:platform_family] == "windows"
       usr.password("ComplexPass11!")
@@ -309,6 +309,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   let(:included_members) { [] }
   let(:excluded_members) { [] }
   let(:group_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
     group.excluded_members(excluded_members)

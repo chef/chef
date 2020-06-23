@@ -62,6 +62,10 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
     r
   end
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   before do
     user_resource.run_action(:create)
 

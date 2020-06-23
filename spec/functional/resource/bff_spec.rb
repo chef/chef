@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # Run the test only for AIX platform.

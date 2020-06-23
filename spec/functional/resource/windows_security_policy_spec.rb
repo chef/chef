@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/powershell_out"
 
 describe Chef::Resource::WindowsSecurityPolicy, :windows_only do

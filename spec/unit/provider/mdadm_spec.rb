@@ -22,9 +22,7 @@ require "ostruct"
 describe Chef::Resource::Mdadm do
 
   before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     @new_resource = Chef::Resource::Mdadm.new("/dev/md1", run_context)
     @new_resource.devices ["/dev/sdz1", "/dev/sdz2", "/dev/sdz3"]
     @provider = @new_resource.provider_for_action(:create)

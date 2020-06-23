@@ -21,6 +21,10 @@ require "spec_helper"
 describe Chef::Resource::WindowsPath, :windows_only do
   let(:path) { "test_path" }
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   before(:all) do
     @old_path = ENV["PATH"].dup
   end

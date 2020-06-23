@@ -653,14 +653,17 @@ describe "LWRP" do
       end
     end
 
-    let(:recipe) do
+    let(:run_context) do
       cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
       cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
       cookbook_loader.load_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_loader)
       node = Chef::Node.new
       events = Chef::EventDispatch::Dispatcher.new
-      run_context = Chef::RunContext.new(node, cookbook_collection, events)
+      Chef::RunContext.new(node, cookbook_collection, events)
+    end
+
+    let(:recipe) do
       Chef::Recipe.new("hjk", "test", run_context)
     end
 

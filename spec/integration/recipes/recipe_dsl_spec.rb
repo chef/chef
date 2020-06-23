@@ -1233,6 +1233,10 @@ describe "Recipe DSL methods" do
   before { Namer.current_index += 1 }
 
   context "with an LWRP that declares actions" do
+    let(:run_context) do
+      Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    end
+
     let(:resource_class) do
       Class.new(Chef::Resource::LWRPBase) do
         provides :"recipe_dsl_spec#{Namer.current_index}"

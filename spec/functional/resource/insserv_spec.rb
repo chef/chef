@@ -18,7 +18,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "fileutils"
 
@@ -54,6 +53,8 @@ describe Chef::Resource::Service, :requires_root, :opensuse do
 
   # Actual tests
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
     new_resource = Chef::Resource::Service.new("inittest", run_context)
     new_resource.provider Chef::Provider::Service::Insserv
     new_resource.supports({ status: true, restart: true, reload: true })

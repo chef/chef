@@ -19,7 +19,6 @@
 #
 
 require "etc"
-require "functional/resource/base"
 
 shared_context "setup correct permissions" do
   if windows?

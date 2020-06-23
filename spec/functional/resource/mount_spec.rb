@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "tmpdir"
 
@@ -102,6 +101,8 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
   end
 
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
     new_resource = Chef::Resource::Mount.new(@mount_point, run_context)
     new_resource.device      @device
     new_resource.name        @mount_point

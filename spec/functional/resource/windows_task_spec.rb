@@ -25,10 +25,11 @@ describe Chef::Resource::WindowsTask, :windows_only do
   let(:task_name) { "chef-client-functional-test" }
   let(:new_resource) { Chef::Resource::WindowsTask.new(task_name) }
   let(:windows_task_provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::WindowsTask.new(new_resource, run_context)
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
   describe "action :create" do
