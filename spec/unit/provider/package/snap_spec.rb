@@ -169,7 +169,7 @@ describe Chef::Provider::Package::Snap do
 
       it "does not throw an error if installed version not found" do
         provider.load_current_resource
-        expect(provider.get_current_versions).to eq([nil])
+        expect(provider.get_current_versions).to eq([])
       end
     end
   end
