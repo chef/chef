@@ -39,7 +39,7 @@ group(:omnibus_package, :pry) do
   gem "pry"
   gem "pry-byebug"
   gem "pry-remote"
-  gem "pry-stack_explorer"
+  gem "pry-stack_explorer", "~> 0.4.0" # pin to allow Ruby 2.5
 end
 
 group(:docgen) do
