@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.49 -->
-## [v16.2.49](https://github.com/chef/chef/tree/v16.2.49) (2020-06-22)
+<!-- latest_release 16.2.50 -->
+## [v16.2.50](https://github.com/chef/chef/tree/v16.2.50) (2020-06-23)
 
 #### Merged Pull Requests
-- Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins))
+- Bump ohai to 16.2.1 [#10035](https://github.com/chef/chef/pull/10035) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.44 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 16.2.1 [#10035](https://github.com/chef/chef/pull/10035) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.50 -->
 - Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins)) <!-- 16.2.49 -->
 - Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50)) <!-- 16.2.48 -->
 - Fix for knife config use-profile doesn&#39;t validate that the profile exist [#10011](https://github.com/chef/chef/pull/10011) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.2.47 -->
