@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.6 -->
-## [v15.12.6](https://github.com/chef/chef/tree/v15.12.6) (2020-06-23)
+<!-- latest_release 15.12.7 -->
+## [v15.12.7](https://github.com/chef/chef/tree/v15.12.7) (2020-06-23)
 
 #### Merged Pull Requests
-- archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50))
+- Let the user know what protocol we&#39;re using in knife bootstrap [#10039](https://github.com/chef/chef/pull/10039) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Let the user know what protocol we&#39;re using in knife bootstrap [#10039](https://github.com/chef/chef/pull/10039) ([tas50](https://github.com/tas50)) <!-- 15.12.7 -->
 - archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50)) <!-- 15.12.6 -->
 - Support for AIX and Solaris in cron_allow resource  [#10036](https://github.com/chef/chef/pull/10036) ([tas50](https://github.com/tas50)) <!-- 15.12.5 -->
 - Fix zypper_repository key handling on SLES 15+ [#10030](https://github.com/chef/chef/pull/10030) ([tas50](https://github.com/tas50)) <!-- 15.12.4 -->
