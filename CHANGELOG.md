@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.13 -->
-## [v15.12.13](https://github.com/chef/chef/tree/v15.12.13) (2020-06-23)
+<!-- latest_release 15.12.14 -->
+## [v15.12.14](https://github.com/chef/chef/tree/v15.12.14) (2020-06-23)
 
 #### Merged Pull Requests
-- Bump Ohai to 15.12 to support macOS Big Sur [#10046](https://github.com/chef/chef/pull/10046) ([tas50](https://github.com/tas50))
+- Use /etc/chef for bootstrapping instead of ChefConfig [#10044](https://github.com/chef/chef/pull/10044) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use /etc/chef for bootstrapping instead of ChefConfig [#10044](https://github.com/chef/chef/pull/10044) ([tas50](https://github.com/tas50)) <!-- 15.12.14 -->
 - Bump Ohai to 15.12 to support macOS Big Sur [#10046](https://github.com/chef/chef/pull/10046) ([tas50](https://github.com/tas50)) <!-- 15.12.13 -->
 - Add Windows 8 Tester [#10045](https://github.com/chef/chef/pull/10045) ([tas50](https://github.com/tas50)) <!-- 15.12.12 -->
 - Fix snap_package bugs [#10042](https://github.com/chef/chef/pull/10042) ([tas50](https://github.com/tas50)) <!-- 15.12.11 -->
