@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.2 -->
-## [v15.12.2](https://github.com/chef/chef/tree/v15.12.2) (2020-06-23)
+<!-- latest_release 15.12.3 -->
+## [v15.12.3](https://github.com/chef/chef/tree/v15.12.3) (2020-06-23)
 
 #### Merged Pull Requests
-- archive_file: move ffi-libarchive into a simple helper method [#10033](https://github.com/chef/chef/pull/10033) ([tas50](https://github.com/tas50))
+- Fixed Powershell_Package does not throw error when it cannot connect to powershell gallery [#10032](https://github.com/chef/chef/pull/10032) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed Powershell_Package does not throw error when it cannot connect to powershell gallery [#10032](https://github.com/chef/chef/pull/10032) ([tas50](https://github.com/tas50)) <!-- 15.12.3 -->
 - archive_file: move ffi-libarchive into a simple helper method [#10033](https://github.com/chef/chef/pull/10033) ([tas50](https://github.com/tas50)) <!-- 15.12.2 -->
 - hostname: Improve the windows reboot message [#10031](https://github.com/chef/chef/pull/10031) ([tas50](https://github.com/tas50)) <!-- 15.12.1 -->
 - Update Ruby in Expeditor to 2.6.6 [#10034](https://github.com/chef/chef/pull/10034) ([tas50](https://github.com/tas50)) <!-- 15.12.0 -->
