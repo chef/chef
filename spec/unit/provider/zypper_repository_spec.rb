@@ -73,7 +73,7 @@ describe Chef::Provider::ZypperRepository do
   end
 
   let(:rpm_key_finger) do
-    double("shell_out", stdout: RPM_KEYS, exitstatus: 0, error?: false)
+    double("shell_out", stdout: ZYPPER_RPM_KEYS, exitstatus: 0, error?: false)
   end
 
   let(:gpg_20) do
