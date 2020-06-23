@@ -131,7 +131,7 @@ describe Chef::Provider::Package::Powershell do
     end
 
     it "should set the candidate_version to the latest version when not pinning and package name is space seperated" do
-      allow(provider).to receive(:powershell_out).with("( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
+      allow(provider).to receive(:powershell_out).with("( Find-Package '7-Zip 16.02 (x64)' -Force -ForceBootstrap -WarningAction SilentlyContinue ).Version", { timeout: new_resource.timeout }).and_return(package_7zip_available)
       new_resource.package_name(["7-Zip 16.02 (x64)"])
       new_resource.version(nil)
       expect(provider.candidate_version).to eql(["16.02"])
