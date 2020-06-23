@@ -8,7 +8,7 @@ Update `knife bootstrap` to use `train` as its backend via `chef-core`, and inte
     I want to be able to bootstrap a system without logging secure data on that system
     so that chef-client's keys are not exposed to anyone who can read the logs.
 
-    As a Chef User who adminsters Windows nodes,
+    As a Chef User who administers Windows nodes,
     I want to be able to bootstrap a system using the core Chef package
     so that I don't have extra things to download first.
 
@@ -51,7 +51,7 @@ remains largely unchanged.
 
 We will also remove the following obsolete or unsupported behaviors:
 
-* `--prelease` flag - Chef hasn't been pre-released in quite some time.
+* `--prerelease` flag - Chef hasn't been pre-released in quite some time.
 * `--install-as-service` - For many years we have suggested users not run chef-client as a service due to memory leaks in long running Ruby processes.
 * `--kerberos-keytab-file` - this is not implemented in the WinRM gem we use, and so was
 passed through to no effect.
@@ -126,7 +126,7 @@ Tests must ensure that options resolve correctly from the CLI, knife configurati
 
 #### Validation
 
-Existing windows bootstrap validation checks should be preserved, unless they are superceded by related
+Existing windows bootstrap validation checks should be preserved, unless they are superseded by related
 validations for ssh bootstrap.
 
 #### Context

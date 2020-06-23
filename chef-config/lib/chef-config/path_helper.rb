@@ -130,16 +130,16 @@ module ChefConfig
     end
 
     # This is the INVERSE of Pathname#cleanpath, it converts forward
-    # slashes to backwhacks for Windows.  Since the Ruby API and the
+    # slashes to backslashes for Windows.  Since the Ruby API and the
     # Windows APIs all consume forward slashes, this helper function
     # should only be used for *DISPLAY* logic to send strings back
-    # to the user with backwhacks.  Internally, filename paths should
+    # to the user with backslashes.  Internally, filename paths should
     # generally be stored with forward slashes for consistency.  It is
     # not necessary or desired to blindly convert pathnames to have
-    # backwhacks on Windows.
+    # backslashes on Windows.
     #
     # Generally, if the user isn't going to be seeing it, you should be
-    # using Pathname#cleanpath intead of this function.
+    # using Pathname#cleanpath instead of this function.
     def self.cleanpath(path)
       path = Pathname.new(path).cleanpath.to_s
       # ensure all forward slashes are backslashes
@@ -265,7 +265,7 @@ module ChefConfig
       end
     end
 
-    # Determine if the given path is protected by OS X System Integrity Protection.
+    # Determine if the given path is protected by macOS System Integrity Protection.
     def self.is_sip_path?(path, node)
       if node["platform"] == "mac_os_x" && Gem::Version.new(node["platform_version"]) >= Gem::Version.new("10.11")
         # @todo: parse rootless.conf for this?
@@ -282,7 +282,7 @@ module ChefConfig
       end
     end
 
-    # Determine if the given path is on the exception list for OS X System Integrity Protection.
+    # Determine if the given path is on the exception list for macOS System Integrity Protection.
     def self.writable_sip_path?(path)
       # todo: parse rootless.conf for this?
       sip_exceptions = [
