@@ -162,7 +162,7 @@
 - Another round of description updates &amp;&amp; Docs generator tweaks [#9778](https://github.com/chef/chef/pull/9778) ([tas50](https://github.com/tas50))
 - Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50))
 - Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist))
-- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
+- Fix required errors in apt_preference and sysctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
 - fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd))
 - Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50))
 
@@ -1130,7 +1130,7 @@
 - Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50))
 - Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50))
 - Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
-- systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
+- sysctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
 - homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
 
 ## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
@@ -3295,7 +3295,7 @@ of partial templates.
 * windows_user: look up username instead of resource name (Issue #1705)
 * Remove the unused bootstrap templates that install chef from rubygems
 * Remove the Chef 10 functionality from bootstrap.
-* Deprecate --distro / --template_file options in favor of --boostrap-template
+* Deprecate --distro / --template_file options in favor of --bootstrap-template
 * Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
   to be able to configure these settings on the bootstrapped node.
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.

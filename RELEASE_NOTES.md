@@ -727,7 +727,7 @@ Several legacy Windows helpers have been deprecated as they will always return t
 
 - Resolved a regression that prevented the `service` resource from working correctly on Windows. Thanks [@Axuba](https://github.com/Axuba)
 - Implemented VMware and Hyper-V detection on Linux systems
-- Implemented VMware, Hyper-V, Virtualbox, KVM and Xen detection on Windows systems
+- Implemented VMware, Hyper-V, VirtualBox, KVM and Xen detection on Windows systems
 - Added helpers `virtual_system?` and `physical_system?`. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen)
 
 ## Ohai 15.9
@@ -1072,7 +1072,7 @@ We've further optimized our install footprint and reduced the size of `/opt/chef
 
 ## filesystem2 Ohai Data on Windows
 
-Ohai 15.6 includes new `node['filesystem2']` data on Windows hosts. Fileystem2 presents filesystem data by both mountpoint and by device name. This data structure matches that of the filesystem plugin on Linux and other *nix operating systems. Thanks [@jaymzh](https://github.com/jaymzh) for this new data structure.
+Ohai 15.6 includes new `node['filesystem2']` data on Windows hosts. Filesystem2 presents filesystem data by both mountpoint and by device name. This data structure matches that of the filesystem plugin on Linux and other *nix operating systems. Thanks [@jaymzh](https://github.com/jaymzh) for this new data structure.
 
 # What's New in 15.5.15
 
@@ -2642,7 +2642,7 @@ The windows_package resource now supports setting the `sensitive` property to av
 
 ### sysctl
 
-The sysctl resource will now update the on-disk `systctl.d` file even if the current sysctl value matches the desired value.
+The sysctl resource will now update the on-disk `sysctl.d` file even if the current sysctl value matches the desired value.
 
 ### windows_task
 

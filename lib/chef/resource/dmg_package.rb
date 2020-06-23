@@ -38,7 +38,7 @@ class Chef
         end
         ```
 
-        **Install Virtualbox from the .mpkg**:
+        **Install VirtualBox from the .mpkg**:
 
         ```ruby
         dmg_package 'Virtualbox' do

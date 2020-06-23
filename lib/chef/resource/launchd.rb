@@ -68,7 +68,7 @@ class Chef
       # check.  According to `man 5 launchd.plist`:
       #   StartCalendarInterval <dictionary of integers or array of dictionaries of integers>
       #     ... Missing arguments are considered to be wildcard.
-      # What the man page doesn't state, but what was observed (OSX 10.11.5, launchctrl v3.4.0)
+      # What the man page doesn't state, but what was observed (OSX 10.11.5, launchctl v3.4.0)
       # Is that keys that are specified, but invalid, will also be treated as a wildcard
       # this means that an entry like:
       #   { "Hour"=>0, "Weekday"=>"6-7"}
