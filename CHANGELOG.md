@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.18 -->
-## [v15.12.18](https://github.com/chef/chef/tree/v15.12.18) (2020-06-23)
+<!-- latest_release 15.12.19 -->
+## [v15.12.19](https://github.com/chef/chef/tree/v15.12.19) (2020-06-23)
 
 #### Merged Pull Requests
-- Fix rspec warning about `not_to raise_error` with a specific exception. [#10037](https://github.com/chef/chef/pull/10037) ([tas50](https://github.com/tas50))
+- Pull in the latest net-ssh/net-sftp &amp; remove the http2 dep in chef-telemetry [#10053](https://github.com/chef/chef/pull/10053) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in the latest net-ssh/net-sftp &amp; remove the http2 dep in chef-telemetry [#10053](https://github.com/chef/chef/pull/10053) ([tas50](https://github.com/tas50)) <!-- 15.12.19 -->
 - Fix rspec warning about `not_to raise_error` with a specific exception. [#10037](https://github.com/chef/chef/pull/10037) ([tas50](https://github.com/tas50)) <!-- 15.12.18 -->
 - Fix wrong unit test exposed by cleaning up rspec deprecations. [#10051](https://github.com/chef/chef/pull/10051) ([tas50](https://github.com/tas50)) <!-- 15.12.17 -->
 - Bump all deps to current [#10028](https://github.com/chef/chef/pull/10028) ([tas50](https://github.com/tas50)) <!-- 15.12.16 -->
