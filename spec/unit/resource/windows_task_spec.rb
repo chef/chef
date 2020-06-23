@@ -144,7 +144,7 @@ describe Chef::Resource::WindowsTask, :windows_only do
       resource.frequency :once
       resource.random_delay "20"
       resource.start_time "15:00"
-      expect { resource.after_created }.to_not raise_error(ArgumentError, "`random_delay` property is supported only for frequency :once, :minute, :hourly, :daily, :weekly and :monthly")
+      expect { resource.after_created }.to_not raise_error
     end
 
     it "raises error for invalid random_delay" do
