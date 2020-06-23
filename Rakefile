@@ -25,6 +25,7 @@ begin
   require_relative "tasks/dependencies"
   require_relative "tasks/announce"
   require_relative "tasks/docs"
+  require_relative "tasks/spellcheck"
   require_relative "lib/chef/dist"
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
@@ -108,18 +109,3 @@ begin
 rescue LoadError
   puts "yard is not available. bundle install first to make sure all dependencies are installed."
 end
-
-namespace :spellcheck do
-  task :run do
-    sh "wget https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt"
-    sh 'cspell "**/*"'
-  end
-
-  desc "List the unique unrecognized words in the project."
-  task :unknown_words do
-    sh 'cspell "**/*" --wordsOnly --no-summary | sort | uniq'
-  end
-end
-
-desc "Run spellcheck on the project."
-task spellcheck: "spellcheck:run"
