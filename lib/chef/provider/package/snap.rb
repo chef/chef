@@ -140,7 +140,7 @@ class Chef
           # socket is /run/snapd.socket note - unixsocket is not defined on
           # windows systems
           if defined?(::UNIXSocket)
-            UNIXSocket.open('/run/snapd.socket') do |socket|
+            UNIXSocket.open("/run/snapd.socket") do |socket|
               # send request, read the response, split the response and parse
               # the body
               socket.write(request)
@@ -169,7 +169,7 @@ class Chef
               # - jaymzh
 
               Chef::Log.trace(
-                "snap_package[#{new_resource.package_name}]: reading headers",
+                "snap_package[#{new_resource.package_name}]: reading headers"
               )
               loop do
                 response = socket.readline
@@ -177,15 +177,16 @@ class Chef
               end
               Chef::Log.trace(
                 "snap_package[#{new_resource.package_name}]: past headers, " +
-                'onto the body...',
+                "onto the body..."
               )
               result = nil
-              body = ''
+              body = ""
               socket.each_char do |c|
                 body << c
                 # we know we're not done if we don't have a char that
                 # can end JSON
-                next unless ['}', ']'].include?(c)
+                next unless ["}", "]"].include?(c)
+
                 begin
                   result = JSON.parse(body)
                   # if we get here, we were able to parse the json so we
