@@ -138,6 +138,7 @@ class Chef
 
     attr_reader :logger
 
+    def_delegator :@run_context, :transport
     def_delegator :@run_context, :transport_connection
 
     #
@@ -252,11 +253,7 @@ class Chef
         logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
         ENV["PATH"] = ChefUtils::DSL::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
 
-        if Chef::Config.target_mode?
-          get_ohai_data_remotely
-        else
-          run_ohai
-        end
+        run_ohai
 
         unless Chef::Config[:solo_legacy_mode]
           register
@@ -450,7 +447,6 @@ class Chef
     # @see Chef::PolicyBuilder#load_node
     #
     # @api private
-    #
     def load_node
       policy_builder.load_node
       run_status.node = policy_builder.node
@@ -577,32 +573,6 @@ class Chef
     end
 
     #
-    # Populate the minimal ohai attributes defined in #run_ohai with data train collects.
-    #
-    # Eventually ohai may support colleciton of data.
-    #
-    def get_ohai_data_remotely
-      ohai.data[:fqdn] = if transport_connection.respond_to?(:hostname)
-                           transport_connection.hostname
-                         else
-                           Chef::Config[:target_mode][:host]
-                         end
-      if transport_connection.respond_to?(:os)
-        ohai.data[:platform] = transport_connection.os.name
-        ohai.data[:platform_version] = transport_connection.os.release
-        ohai.data[:os] = transport_connection.os.family_hierarchy[1]
-        ohai.data[:platform_family] = transport_connection.os.family
-      end
-      # train does not collect these specifically
-      # ohai.data[:machinename] = nil
-      # ohai.data[:hostname] = nil
-      # ohai.data[:os_version] = nil # kernel version
-
-      ohai.data[:ohai_time] = Time.now.to_f
-      events.ohai_completed(node)
-    end
-
-    #
     # Run ohai plugins.  Runs all ohai plugins unless minimal_ohai is specified.
     #
     # Sends the ohai_completed event when finished.
@@ -614,6 +584,8 @@ class Chef
     #
     def run_ohai
       filter = Chef::Config[:minimal_ohai] ? %w{fqdn machinename hostname platform platform_version ohai_time os os_version init_package} : nil
+      ohai.backend = transport if Chef::Config.target_mode?
+
       ohai.all_plugins(filter)
       events.ohai_completed(node)
     end
