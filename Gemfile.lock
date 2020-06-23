@@ -166,7 +166,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
-    diff-lcs (1.4)
+    diff-lcs (1.4.1)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
     ed25519 (1.2.4)
