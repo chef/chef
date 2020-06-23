@@ -20,7 +20,7 @@ disk as appropriate. If the command's return code indicates failure,
 the provider will raise an error.
 
 The path to the temporary file with the proposed content will be
-available by using Ruby's sprinf formatting:
+available by using Ruby's sprintf formatting:
 
    "%{path}"
 

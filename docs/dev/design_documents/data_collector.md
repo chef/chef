@@ -190,7 +190,7 @@ The Run Start Schema will be used by Chef to notify the data collection server a
   "description": "Data Collector - Runs run_start schema",
   "properties": {
     "chef_server_fqdn": {
-      "description": "It is the FQDN of the chef_server against whch current reporting instance runs",
+      "description": "It is the FQDN of the chef_server against which current reporting instance runs",
       "type": "string"
     },
     "entity_uuid": {
@@ -266,7 +266,7 @@ The Run End Schema will be used by Chef Client to notify the data collection ser
     "description": "Data Collector - Runs run_converge schema",
     "properties": {
         "chef_server_fqdn": {
-            "description": "It is the FQDN of the chef_server against whch current reporting instance runs",
+            "description": "It is the FQDN of the chef_server against which current reporting instance runs",
             "type": "string"
         },
         "end_time": {

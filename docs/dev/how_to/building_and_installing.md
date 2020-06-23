@@ -1,8 +1,9 @@
 # Building and Installing
 
 Chef Infra can be built and installed in two distinct ways:
-	- A gem built from this repository and installed into your own Ruby installation
-	- A system native package containing its own Ruby built using our Omnibus packaging system
+
+- A gem built from this repository and installed into your own Ruby installation
+- A system native package containing its own Ruby built using our Omnibus packaging system
 
 **NOTE:** As an end user, please download the [Chef Infra package](https://downloads.chef.io/chef) for managing systems, or the [Chef Workstation package](https://downloads.chef.io/chef-workstation) for authoring Chef cookbooks and administering your Chef infrastructure.
 

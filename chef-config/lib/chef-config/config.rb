@@ -483,7 +483,7 @@ module ChefConfig
       # 11 (true) or Chef Server 12 (false). Chef Zero can still serve
       # policyfile objects in Chef 11 mode, as long as `repo_mode` is set to
       # "hosted_everything". The primary differences are:
-      # * Chef 11 mode doesn't support multi-tennant, so there is no
+      # * Chef 11 mode doesn't support multi-tenant, so there is no
       #   distinction between global and org-specific objects (since there are
       #   no orgs).
       # * Chef 11 mode doesn't expose RBAC objects
@@ -531,7 +531,7 @@ module ChefConfig
     # switching based on it is almost certainly doing the wrong thing and papering over
     # bugs that should be fixed in one or the other class, and will be brittle and destined
     # to break in the future (and not necessarily on a major version bump). Checking this value
-    # is also not sufficent to determine if we are not running against a server since this can
+    # is also not sufficient to determine if we are not running against a server since this can
     # be unset but :local_mode may be set.  It would be accurate to check both :solo and :local_mode
     # to determine if we're not running against a server, but the more semantically accurate test
     # is going to be combining :solo_legacy_mode and :local_mode.
@@ -956,7 +956,7 @@ module ChefConfig
     # distribution.
     #
     # The disadvantages of lazily loading files are that users some time find it
-    # confusing that their cookbooks are not fully synchronzied to the cache initially,
+    # confusing that their cookbooks are not fully synchronized to the cache initially,
     # and more importantly the time-sensitive URLs which are in the manifest may time
     # out on long Chef runs before the resource that uses the file is converged
     # (leading to many confusing 403 errors on template/cookbook_file resources).
@@ -1113,7 +1113,7 @@ module ChefConfig
     end
 
     # Given a scheme, host, and port, return the correct proxy URI based on the
-    # set environment variables, unless exluded by no_proxy, in which case nil
+    # set environment variables, unless excluded by no_proxy, in which case nil
     # is returned
     def self.proxy_uri(scheme, host, port)
       proxy_env_var = ENV["#{scheme}_proxy"].to_s.strip
