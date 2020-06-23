@@ -31,3 +31,7 @@ Lint/ShadowedException:
   Enabled: false
 Lint/UriEscapeUnescape:
   Enabled: false
+
+# These are fixed on master and not needed here
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: false
