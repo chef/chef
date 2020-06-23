@@ -705,7 +705,7 @@ class Chef
 
       # FIXME: someone needs to clean this up properly:  https://github.com/chef/chef/issues/9645
       # This code is deliberately left without an abstraction around deprecating the config options to avoid knife plugins from
-      # using those methods (which will need to be deprecated and break them) via inheretance (ruby does not have a true `private`
+      # using those methods (which will need to be deprecated and break them) via inheritance (ruby does not have a true `private`
       # so the lack of any inheritable implementation is because of that).
       #
       def winrm_auth_method
