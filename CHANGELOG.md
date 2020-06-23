@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.9 -->
-## [v15.12.9](https://github.com/chef/chef/tree/v15.12.9) (2020-06-23)
+<!-- latest_release 15.12.10 -->
+## [v15.12.10](https://github.com/chef/chef/tree/v15.12.10) (2020-06-23)
 
 #### Merged Pull Requests
-- Warn during bootstrapping when using validation keys [#10041](https://github.com/chef/chef/pull/10041) ([tas50](https://github.com/tas50))
+- Silence exception output in threaded test. [#10043](https://github.com/chef/chef/pull/10043) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Silence exception output in threaded test. [#10043](https://github.com/chef/chef/pull/10043) ([tas50](https://github.com/tas50)) <!-- 15.12.10 -->
 - Warn during bootstrapping when using validation keys [#10041](https://github.com/chef/chef/pull/10041) ([tas50](https://github.com/tas50)) <!-- 15.12.9 -->
 - knife vault on windows 10 fails due to ERROR: Chef::Exceptions::InvalidDataBagPath [#10040](https://github.com/chef/chef/pull/10040) ([tas50](https://github.com/tas50)) <!-- 15.12.8 -->
 - Let the user know what protocol we&#39;re using in knife bootstrap [#10039](https://github.com/chef/chef/pull/10039) ([tas50](https://github.com/tas50)) <!-- 15.12.7 -->
