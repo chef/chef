@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.5 -->
-## [v15.12.5](https://github.com/chef/chef/tree/v15.12.5) (2020-06-23)
+<!-- latest_release 15.12.6 -->
+## [v15.12.6](https://github.com/chef/chef/tree/v15.12.6) (2020-06-23)
 
 #### Merged Pull Requests
-- Support for AIX and Solaris in cron_allow resource  [#10036](https://github.com/chef/chef/pull/10036) ([tas50](https://github.com/tas50))
+- archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50)) <!-- 15.12.6 -->
 - Support for AIX and Solaris in cron_allow resource  [#10036](https://github.com/chef/chef/pull/10036) ([tas50](https://github.com/tas50)) <!-- 15.12.5 -->
 - Fix zypper_repository key handling on SLES 15+ [#10030](https://github.com/chef/chef/pull/10030) ([tas50](https://github.com/tas50)) <!-- 15.12.4 -->
 - Fixed Powershell_Package does not throw error when it cannot connect to powershell gallery [#10032](https://github.com/chef/chef/pull/10032) ([tas50](https://github.com/tas50)) <!-- 15.12.3 -->
