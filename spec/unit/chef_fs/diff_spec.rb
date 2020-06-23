@@ -25,7 +25,7 @@ require "chef/chef_fs/command_line"
 # windows match: "--- /dev/null\tTue Oct 16 18:04:34 2012"
 def remove_os_differences(diff)
   diff = diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
-  diff.gsub(/^@@ -\d(,\d)? \+\d(,\d)? @@/, "CONTEXT_LINE_NUMBERS")
+  diff.gsub(/^@@ -\d(,\d)? \+-?\d(,-?\d)? @@/, "CONTEXT_LINE_NUMBERS")
 end
 
 describe "diff", uses_diff: true do
