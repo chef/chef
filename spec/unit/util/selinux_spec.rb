@@ -30,6 +30,7 @@ describe Chef::Util::Selinux do
   end
 
   before do
+    allow(ChefUtils).to receive(:windows?).and_return(false)
     TestClass.reset_state
     @test_instance = TestClass.new
   end
