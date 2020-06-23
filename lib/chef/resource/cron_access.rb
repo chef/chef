@@ -55,10 +55,10 @@ class Chef
         name_property: true
 
       CRON_PATHS = {
-          'aix' => '/var/adm/cron',
-          'solaris' => '/etc/cron.d',
-          'default' => '/etc'
-      }
+          "aix" => "/var/adm/cron",
+          "solaris" => "/etc/cron.d",
+          "default" => "/etc",
+      }.freeze
 
       action :allow do
         description "Add the user to the cron.allow file."
