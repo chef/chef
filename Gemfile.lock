@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: fd8167b01d6648f6751da3bc47f2d49bc621e0cc
+  revision: ae23ca40a68b58dbff20e20a47105c265ceb0ce2
   branch: master
   specs:
-    ohai (16.2.0)
+    ohai (16.2.1)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -166,7 +166,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
-    diff-lcs (1.3)
+    diff-lcs (1.4)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
     ed25519 (1.2.4)
@@ -272,8 +272,8 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.2)
-    parser (2.7.1.3)
-      ast (~> 2.4.0)
+    parser (2.7.1.4)
+      ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.7.4)
       equatable (~> 0.6)
