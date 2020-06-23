@@ -84,3 +84,5 @@ distro/powershell/chef/chef.psm1
 
 # tool logs
 ext/win32-eventlog/mkmf.log
+
+chef_dictionary.txt

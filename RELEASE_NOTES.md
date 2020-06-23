@@ -22,6 +22,10 @@ The `archive_file` resource has been updated with two important fixes. The resou
 
 The `cron_access` resource has been updated to support Solaris and AIX systems. Thanks [@aklyachkin](http://github.com/aklyachkin).
 
+### msu_package resource improvements
+
+The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these cumulative update packages will not correctly install over the previous versions. We also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue, [@danielfloyd](https://github.com/danielfloyd).
+
 ### powershell_package
 
 The `powershell_package` resource has been updated to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Previously this resource used the system default cipher suite which did not include TLS 1.2. The PowerShell Gallery now requires TLS 1.2 for all communication, which caused failures on Windows Server 2012-2016. Thanks for reporting this issue [@Xorima](http://github.com/Xorima).
