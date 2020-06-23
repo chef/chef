@@ -1,6 +1,13 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-# What's New in 16.2
+# What's New in 16.2.50
+
+- Correctly identify the new macOS Big Sur (11.0) beta as platform "mac_os_x".
+- Fix `knife config use-profile` to fail if an invalid profile is provided.
+- Fix failures running the `windows_security_policy` resource.
+- Update InSpec from 4.20.6 to 4.20.10.
+
+# What's New in 16.2.44
 
 ## Breaking Change in Resources
 
