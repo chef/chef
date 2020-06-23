@@ -2198,7 +2198,8 @@
     "lib/chef/provider/package/yum/simplejson/*",
     "omnibus/resources/chef/**/*",
     "kitchen-tests/cookbooks/end_to_end/files/*",
-    "spec/**"
+    "spec/**",
+    "docs_site"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".
