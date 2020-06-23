@@ -40,6 +40,14 @@ The `zypper_repository` resource has been updated to work with the newer release
 - Resolved an error bootstrapping Linux nodes from Windows hosts
 - Improved information messages during the bootstrap process
 
+## SSH Improvements
+
+The `net-ssh` library used by the `knife ssh` and `knife bootstrap` commands has been updated, bringing improvements to SSH connectivity:
+
+- Support for additional key exchange and transport algorithms
+- Support algorithm subtraction syntax in the `ssh_config` file
+- Support empty lines and comments in `known_hosts` file
+
 ## Initial macOS Big Sur Support
 
 Chef Infra Client now correctly detects macOS Big Sur (11.0) beta as being platform "mac_os_x". Chef Infra Client 15.12 has not been fully qualified for macOS Big Sur, but we will continue to validate against this release and provide any additional support updates.
