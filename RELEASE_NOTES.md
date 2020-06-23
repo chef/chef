@@ -1,6 +1,55 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-# Chef Infra Client 15.11
+# What's New In 15.12
+
+## Chef InSpec 4.20.6
+
+Chef InSpec has been updated from 4.18.114 to 4.2.0.6. This new release includes the following improvements:
+
+- Develop your own Chef InSpec Reporter plugins to control how Chef InSpec will report result data.
+- The `inspec archive` command packs your profile into a `tar.gz` file that includes the profile in JSON form as the inspec.json file.
+- Certain substrings within a `.toml` file no longer cause unexpected crashes.
+- Accurate InSpec CLI input parsing for numeric values and structured data, which were previously treated as strings. Numeric values are cast to an `integer` or `float` and `YAML` or `JSON` structures are converted to a hash or an array.
+- Suppress deprecation warnings on inspec exec with the `--silence-deprecations` option.
+
+## Resource Updates
+
+### archive_file
+
+The `archive_file` resource has been updated with two important fixes. The resource will no longer fail with uninitialized constant errors under some scenarios. Additionally, the behavior of the `mode` property has been improved to prevent incorrect file modes from being applied to the decompressed files. Due to how file modes and Integer values are processed in Ruby, this resource will now produce a deprecation warning if integer values are passed. Using string values lets us accurately pass values such as '644' or '0644' without ambiguity as to the user's intent. Thanks for reporting these issues [@sfiggins](http://github.com/sfiggins) and [@hammerhead](http://github.com/hammerhead).
+
+### cron_access
+
+The `cron_access` resource has been updated to support Solaris and AIX systems. Thanks [@aklyachkin](http://github.com/aklyachkin).
+
+### powershell_package
+
+The `powershell_package` resource has been updated to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Previously this resource used the system default cipher suite which did not include TLS 1.2. The PowerShell Gallery now requires TLS 1.2 for all communication, which caused failures on Windows Server 2012-2016. Thanks for reporting this issue [@Xorima](http://github.com/Xorima).
+
+### snap_package
+
+Multiple issues with the `snap_package` resource have been resolved, including an infinite wait that occurred, and issues with specifying the package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
+
+### zypper_repository
+
+The `zypper_repository` resource has been updated to work with the newer release of GPG in openSUSE 15 and SLES 15. This prevents failures when importing GPG keys in the resource.
+
+## Knife bootstrap updates
+
+- Knife bootstrap will now warn when bootstrapping a system using a validation key. Users should instead use `validatorless bootstrapping` with `knife bootstrap` which generates node and client keys using the client key of the user bootstrapping the node. This method is far more secure as an org-wide validation key does not not need to be distributed or rotated. Users can switch to `validatorless bootstrapping` by removing any `validation_key` entries in their `config.rb (knife.rb)` file.
+- Resolved an error bootstrapping Linux nodes from Windows hosts
+- Improved information messages during the bootstrap process
+
+## Initial macOS Big Sur Support
+
+Chef Infra Client now correctly detects macOS Big Sur (11.0) beta as being platform "mac_os_x". Chef Infra Client 15.12 has not been fully qualified for macOS Big Sur, but we will continue to validate against this release and provide any additional support updates.
+
+## Platform Packages
+
+- Debian 8 packages are no longer being produced as Debian 8 is now end-of-life.
+- We now produce Windows 8 packages
+
+# What's New In 15.11
 
 ## Bootstrapping Bugfixes
 
@@ -40,7 +89,7 @@ Chef Infra Client is now tested on Debian 10, SLES 15, and Ubuntu 20.04 on the a
 
 openSSL has been updated from 1.0.2u to 1.0.2v which does not address any particular CVEs, but includes multiple security hardening updates.
 
-# Chef Infra Client 15.10
+# What's New In 15.10
 
 ## Improvements
 
@@ -70,7 +119,7 @@ openSSL has been updated from 1.0.2u to 1.0.2v which does not address any partic
 
 Chef Infra Client is now tested on Amazon Linux 2 running on x86_64 and aarch64 with packages available on the [Chef Downloads Page](https://downloads.chef.io/chef).
 
-# Chef Infra Client 15.9
+# What's New In 15.9
 
 ## Chef InSpec 4.18.100
 
@@ -134,7 +183,7 @@ libarchive has been updated from 3.4.0 to 3.4.2 to resolve multiple security vul
   - [CVE-2019-19221](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-19221): archive_wstring_append_from_mbs in archive_string.c has an out-of-bounds read because of an incorrect mbrtowc or mbtowc call
   - [CVE-2020-9308](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-9308): archive_read_support_format_rar5.c in libarchive before 3.4.2 attempts to unpack a RAR5 file with an invalid or corrupted header
 
-# Chef Infra Client 15.8
+# What's New In 15.8
 
 ## New notify_group functionality
 
@@ -297,7 +346,7 @@ vm.swappiness = 10
 
 Each binary in the macOS Chef Infra Client installation is now signed to improve the integrity of the installation and ensure compatibility with macOS Catalina security requirements.
 
-# Chef Infra Client 15.7
+# What's New In 15.7
 
 ## Updated Resources
 
@@ -371,7 +420,7 @@ Returns `true` if the system is a Windows Server Core edition.
 
 OpenSSL has been updated to 1.0.2u to resolve [CVE-2019-1551](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-1551)
 
-# Chef Infra Client 15.6
+# What's New In 15.6
 
 ## Updated Resources
 
@@ -403,13 +452,13 @@ We've further optimized our install footprint and reduced the size of `/opt/chef
 
 Ohai 15.6 includes new `node['filesystem2']` data on Windows hosts. Fileystem2 presents filesystem data by both mountpoint and by device name. This data structure matches that of the filesystem plugin on Linux and other *nix operating systems. Thanks [@jaymzh](https://github.com/jaymzh) for this new data structure.
 
-# Chef Infra Client 15.5.15
+# What's New In 15.5.15
 
 The Chef Infra Client 15.5.15 release includes fixes for two regressions. A regression in the `build_essential` resource caused failures on `rhel` platforms and a second regression caused Chef Infra Client to fail when starting with `enforce_path_sanity` enabled. As part of this fix we've added a new property, `raise_if_unsupported`, to the `build-essential` resource. Instead of silently continuing, this property will fail a Chef Infra Client run if an unknown platform is encountered.
 
 We've also updated the `windows_package` resource. The resource will now provide better error messages if invalid options are passed to the `installer_type` property and the `checksum` property will now accept uppercase SHA256 checksums.
 
-# Chef Infra Client 15.5.9
+# What's New In 15.5.9
 
 ## New Cookbook Helpers
 
@@ -481,7 +530,7 @@ The `windows_firewall` resource has been updated to support passing in an array 
 
 libxslt has been updated to 1.1.34 to resolve [CVE-2019-13118](https://nvd.nist.gov/vuln/detail/CVE-2019-13118).
 
-# Chef Infra Client 15.4
+# What's New In 15.4
 
 ## converge_if_changed Improvements
 
@@ -566,7 +615,7 @@ Ruby has been updated from 2.6.4 to 2.6.5 in order to resolve the following CVEs
 * [CVE-2019-15845](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-15845): A NUL injection vulnerability of File.fnmatch and File.fnmatch?
 * [CVE-2019-16201](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-16201): Regular Expression Denial of Service vulnerability of WEBrick’s Digest access authentication
 
-# Chef Infra Client 15.3
+# What's New In 15.3
 
 ## Custom Resource Unified Mode
 
@@ -667,7 +716,7 @@ openssl has been updated from 1.0.2s to 1.0.2t in order to resolve [CVE-2019-156
 
 nokogori has been updated from 1.10.2 to 1.10.4 in order to resolve [CVE-2019-5477](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5477)
 
-# Chef Infra Client 15.2
+# What's New In 15.2
 
 ## Updated Resources
 
@@ -729,7 +778,7 @@ Chef InSpec has been updated from 4.6.4 to 4.10.4 with the following changes:
 
 bzip2 has been updated from 1.0.6 to 1.0.8 to resolve [CVE-2016-3189](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2016-3189) and [CVE-2019-12900](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-12900).
 
-# Chef Infra Client 15.1
+# What's New In 15.1
 
 ## New Resources
 
@@ -777,13 +826,13 @@ Chef InSpec has been updated from 4.3.2 to 4.6.4 with the following changes:
   - When fetching profiles from GitHub, the URL can now include periods.
   - The performance of InSpec startup has been improved.
 
-# Chef Infra Client 15.0.300
+# What's New In 15.0.300
 
 This release includes critical bugfixes for the 15.0 release:
   - Fix `knife bootstrap` over SSH when `requiretty` is configured on the host.
   - Added the `--chef-license` CLI flag to `chef-apply` and `chef-solo` commands.
 
-# Chef Infra Client 15.0.298
+# What's New In 15.0.298
 
 This release includes critical bugfixes for the 15.0 release:
   - Allow accepting the license on non-interactive Windows sessions
@@ -793,7 +842,7 @@ This release includes critical bugfixes for the 15.0 release:
   - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
   - Resolve failures using the ca_trust_file option with `knife bootstrap`
 
-# Chef Infra Client 15.0.293
+# What's New In 15.0.293
 
 ## Chef Client is now Chef Infra Client
 
@@ -1053,7 +1102,7 @@ Instead of specifying protocol with `-o`, it is also possible to prefix the targ
   knife bootstrap winrm://example.com
 ```
 
-### Chef Infra Client packages remove /opt/chef before installation
+### What's New In packages remove /opt/chef before installation
 
 Upon upgrading Chef Infra Client packages, the `/opt/chef` directory is removed. This ensures any `chef_gem` installed gem versions and other modifications to `/opt/chef` will removed to prevent upgrade issues. Due to technical details with rpm script execution order, the implementation involves a a pre-installation script that wipes `/opt/chef` before every install, and is done consistently this way on every package manager.
 
@@ -1200,7 +1249,7 @@ The `refresh_plugins` method in the `Ohai::System` class has been removed as it 
 
 The `Virtualization` plugin will no longer detect systems running on the circa ~2005 VirtualPC or VirtualServer hypervisors. These hypervisors were long ago deprecated by Microsoft and support can no longer be tested.
 
-# Chef Infra Client Release Notes 14.13:
+# What's New In 14.13
 
 ## Updated Resources
 
@@ -1241,7 +1290,7 @@ The `CHEF-25` deprecation for resource collisions between cookbooks and resource
 * openssl 1.0.2r -> 1.0.2s (bugfix only release)
 * cacerts 2019-01-23 -> 2019-05-15
 
-# Chef Infra Client Release Notes 14.12:
+# What's New In 14.12:
 
 ## Updated Resources
 
@@ -1260,7 +1309,7 @@ The windows_certificate resource now imports nested certificates while importing
 * InSpec 3.7.1 -> 3.9.0
 * The unused windows-api gem is no longer bundled with Chef on Windows hosts
 
-# Chef Infra Client Release Notes 14.11:
+# What's New In 14.11:
 
 ## Updated Resources
 
