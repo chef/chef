@@ -1747,8 +1747,8 @@ describe Chef::Knife::Bootstrap do
         allow(vault_handler_mock).to receive(:doing_chef_vault?).and_return false
       end
 
-      it "shows a message" do
-        expect(knife.ui).to receive(:info)
+      it "shows a warning message" do
+        expect(knife.ui).to receive(:warn).twice
         knife.register_client
       end
     end
