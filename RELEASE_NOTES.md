@@ -32,7 +32,7 @@ The `powershell_package` resource has been updated to use TLS 1.2 when communica
 
 ### snap_package
 
-Multiple issues with the `snap_package` resource have been resolved, including an infinite wait that occurred, and issues with specifying the package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
+Multiple issues with the `snap_package` resource have been resolved, including an infinite wait that occurred and issues with specifying the package version or channel. Thanks [@jaymzh](http://github.com/jaymzh).
 
 ### zypper_repository
 
