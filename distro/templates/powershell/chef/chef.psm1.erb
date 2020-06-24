@@ -358,7 +358,7 @@ function Run-RubyCommand($command, $argList) {
   # When arguments come into this method, the standard PS rules for interpreting cmdlet arguments
   # apply.  When using & (call operator) and providing an array of arguments, powershell (verified
   # on PS 4.0 on Windows Server 2012R2) will not evaluate them but (contrary to documentation),
-  # it will still marginally interpret them.  The behaviour of PS 5.0 seems to be different but
+  # it will still marginally interpret them.  The behavior of PS 5.0 seems to be different but
   # ignore that for now.  If any of the provided arguments has a space in it, powershell checks
   # the first and last character to ensure that they are " characters (and that's all it checks).
   # If they are not, it will blindly surround that argument with " characters.  It won't do this
@@ -381,10 +381,10 @@ function Run-RubyCommand($command, $argList) {
   # Command line:
   # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  "foo '' bar "baz"" "foo '' bar "baz""
   #
-  # $x = "abc'123'nospace`"lulz`"!!!"
+  # $x = "abc'123'nospace`"lol`"!!!"
   # & EchoArgs @($x, $x)
   # Command line:
-  # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  abc'123'nospace"lulz"!!! abc'123'nospace"lulz"!!!
+  # "C:\Program Files (x86)\PowerShell Community Extensions\Pscx3\Pscx\Apps\EchoArgs.exe"  abc'123'nospace"lol"!!! abc'123'nospace"lol"!!!
   #
   # $x = "`"`"Look ma! Tonnes of spaces! 'foo' 'bar'`"`""
   # & EchoArgs @($x, $x)

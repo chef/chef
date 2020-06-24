@@ -151,7 +151,7 @@ class Chef
       #     source "y.txt.erb"
       #     variables {}
       #   end
-      #   resource.variables.merge!({ home: "/home/klowns"  })
+      #   resource.variables.merge!({ home: "/home/clowns"  })
       #
       def edit_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         edit_resource!(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)

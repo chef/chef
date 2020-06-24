@@ -53,7 +53,7 @@ it is created, so registration may be accomplished easily:
 If one of the prior methods is not used to register for the Action Collection, then the Action Collection will disable itself and will not compile
 the Action Collection in order to not waste the memory overhead of tracking the actions during the run.  The Data Collector takes advantage of this
 since if the run start message from the Data Collector is refused by the server, then the Data Collector disables itself, and then does not register
-with the Action Collection, which would disable the Action Collection.  This makes use of the delayed hooking through the `action_collection_regsitration`
+with the Action Collection, which would disable the Action Collection.  This makes use of the delayed hooking through the `action_collection_registration`
 so that the Data Collector never registers itself after it is disabled.
 
 ## Searching

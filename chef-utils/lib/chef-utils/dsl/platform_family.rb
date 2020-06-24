@@ -301,7 +301,7 @@ module ChefUtils
       end
 
       # RedHat distros -- fedora and rhel platform_families, nothing else. This is most likely not as useful as the
-      # "fedora_dervied?" helper.
+      # "fedora_derived?" helper.
       #
       # @param [Chef::Node] node the node to check
       # @since 15.5

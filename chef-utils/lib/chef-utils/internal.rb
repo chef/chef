@@ -27,7 +27,7 @@ module ChefUtils
   #
   # This gem may be used by gems like mixlib-shellout which can be consumed by external non-Chef utilities,
   # so including brittle code here which depends on the existence of the chef-client will cause broken
-  # behavior downstream.  You must practice defensive coding, and not make assumptions about runnign within chef-client.
+  # behavior downstream.  You must practice defensive coding, and not make assumptions about running within chef-client.
   #
   # Other consumers may mix in the helper classes and then override the methods here and provide their own custom
   # wiring and override what is provided here.  They are marked as private because no downstream user should ever touch

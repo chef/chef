@@ -60,4 +60,8 @@ describe Chef::Resource::MsuPackage do
     resource.source("package.msu")
     expect(resource.source).not_to eq("package.msu")
   end
+
+  it "sets timeout property to 3600 by default" do
+    expect(resource.timeout).to eql(3600)
+  end
 end

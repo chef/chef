@@ -121,7 +121,7 @@ describe "Chef::Resource.property" do
 
   context "deprecated properties" do
     it "does not create a deprecation warning on definition" do
-      expect { resource_class.class_eval { property :x, String, deprecated: 10 } }.not_to raise_error Chef::Exceptions::DeprecatedFeatureError
+      expect { resource_class.class_eval { property :x, String, deprecated: 10 } }.not_to raise_error
     end
 
     with_property ":x, deprecated: 'a deprecated property'" do
