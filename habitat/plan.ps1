@@ -13,6 +13,7 @@ $pkg_bin_dirs=@(
 $pkg_deps=@(
   "core/cacerts"
   "chef/ruby27-plus-devkit"
+  "chef/chef-powershell-shim"
 )
 
 function Invoke-Begin {
@@ -28,7 +29,6 @@ function Invoke-Begin {
 
 function Invoke-SetupEnvironment {
     Push-RuntimeEnv -IsPath GEM_PATH "$pkg_prefix/vendor"
-    Push-RuntimeEnv -IsPath RUBY_DLL_PATH "$pkg_prefix/lib"
 
     Set-RuntimeEnv APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
     Set-RuntimeEnv FORCE_FFI_YAJL "ext" # Always use the C-extensions because we use MRI on all the things and C is fast.
@@ -77,9 +77,6 @@ function Invoke-Build {
     try {
         Push-Location "${HAB_CACHE_SRC_PATH}/${pkg_dirname}"
 
-        Write-BuildLine " ** Copying Chef DLLs"
-        New-Item -ItemType Directory -Force -Path "$pkg_prefix/lib"
-        Get-ChildItem ./distro/ruby_bin_folder -Filter "*.dll" | Copy-Item -Destination "$pkg_prefix/lib"
         $env:_BUNDER_WINDOWS_DLLS_COPIED = "1"
 
         Write-BuildLine " ** Using bundler to retrieve the Ruby dependencies"
