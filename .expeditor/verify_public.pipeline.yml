@@ -322,7 +322,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:2.6
 
 - label: "chefspec gem :ruby: 2.7"
   commands:
