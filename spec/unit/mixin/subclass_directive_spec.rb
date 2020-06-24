@@ -31,9 +31,9 @@ class ChildWithoutDirective < SubclassDirectiveParent
 end
 
 describe Chef::Mixin::Uris do
-  let (:child) { SubclassDirectiveChild.new }
+  let(:child) { SubclassDirectiveChild.new }
 
-  let (:other_child) { ChildWithoutDirective.new }
+  let(:other_child) { ChildWithoutDirective.new }
 
   it "the child instance has the directive set" do
     expect(child.behave_differently?).to be true

@@ -20,8 +20,8 @@ require "chef"
 require "chef/util/powershell/ps_credential"
 
 describe Chef::Util::Powershell::PSCredential do
-  let (:username) { "foo" }
-  let (:password) { "ThIsIsThEpAsSwOrD" }
+  let(:username) { "foo" }
+  let(:password) { "ThIsIsThEpAsSwOrD" }
 
   context "when username and password are provided" do
     let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password) }

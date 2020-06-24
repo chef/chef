@@ -32,7 +32,7 @@ describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
       @run_context = Chef::RunContext.new(new_node, {}, events)
     end
 
-    let (:plaintext) { "p@assword" }
+    let(:plaintext) { "p@assword" }
 
     it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)

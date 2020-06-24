@@ -72,7 +72,7 @@ describe Chef::HTTP::APIVersions do
   end
 
   context "with an unacceptable api version" do
-    let (:return_value) { "406" }
+    let(:return_value) { "406" }
     it "resets the list of supported versions" do
       Chef::ServerAPIVersions.instance.set_versions({ "min_version" => 1, "max_version" => 3 })
       run_api_version_handler

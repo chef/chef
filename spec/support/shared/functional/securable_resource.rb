@@ -135,7 +135,7 @@ shared_context "use Windows permissions", :windows_only do
     }
   end
 
-  let (:write_flag) { 3 }
+  let(:write_flag) { 3 }
 
   RSpec::Matchers.define :have_expected_properties do |mask, type, flags|
     match do |ace|

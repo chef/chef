@@ -83,7 +83,7 @@ describe Chef::Knife::CookbookDownload do
         }
       end
 
-      let (:cookbook) do
+      let(:cookbook) do
         cb = Chef::CookbookVersion.new("foobar")
         cb.version = "1.0.0"
         cb.manifest = manifest_data
@@ -91,7 +91,7 @@ describe Chef::Knife::CookbookDownload do
       end
 
       describe "and no version" do
-        let (:manifest_data) { { all_files: [] } }
+        let(:manifest_data) { { all_files: [] } }
         it "should determine which version to download" do
           expect(@knife).to receive(:determine_version).and_return("1.0.0")
           expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)

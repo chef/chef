@@ -114,7 +114,7 @@ describe Chef::Util::Selinux do
   end
 
   describe "when restorecon binary exists on the system" do
-    let (:path) { "/path/to/awesome directory" }
+    let(:path) { "/path/to/awesome directory" }
 
     before do
       @restorecon_enabled_path = File.join("/sbin", "restorecon")

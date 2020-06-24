@@ -95,7 +95,7 @@ describe Chef::Knife::DataBagEdit do
       let(:is_encrypted?) { true }
       let(:db) { Chef::DataBagItem.from_hash(enc_raw_hash) }
       # If the data bag is encrypted, it gets passed to `edit` as a hash.  Otherwise, it gets passed as a DataBag
-      let (:data_to_edit) { raw_hash }
+      let(:data_to_edit) { raw_hash }
 
       before(:each) do
         expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)

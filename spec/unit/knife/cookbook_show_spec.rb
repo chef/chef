@@ -27,24 +27,24 @@ describe Chef::Knife::CookbookShow do
     allow(Chef::CookbookVersion).to receive(:load).and_return(cb)
   end
 
-  let (:knife) do
+  let(:knife) do
     knife = Chef::Knife::CookbookShow.new
     knife.config = {}
     knife.name_args = [ "cookbook_name" ]
     knife
   end
 
-  let (:cb) do
+  let(:cb) do
     cb = Chef::CookbookVersion.new("cookbook_name")
     cb.manifest = manifest
     cb
   end
 
-  let (:rest) { double(Chef::ServerAPI) }
+  let(:rest) { double(Chef::ServerAPI) }
 
-  let (:content) { "Example recipe text" }
+  let(:content) { "Example recipe text" }
 
-  let (:manifest) do
+  let(:manifest) do
     {
       "all_files" => [
         {
@@ -68,7 +68,7 @@ describe Chef::Knife::CookbookShow do
     end
 
     describe "with 1 argument: versions" do
-      let (:response) do
+      let(:response) do
         {
           "cookbook_name" => {
             "url" => "http://url/cookbooks/cookbook_name",

@@ -28,7 +28,7 @@ describe Chef::Resource::Bash, :unix_only do
   end
 
   describe "when setting the command property" do
-    let (:command) { "wizard racket" }
+    let(:command) { "wizard racket" }
 
     it "should raise an exception when trying to set the command" do
       expect { resource.command command }.to raise_error(Chef::Exceptions::Script)

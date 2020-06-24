@@ -23,15 +23,15 @@ require "spec_helper"
 
 describe Chef::Provider::DscScript do
   context "when DSC is available" do
-    let (:node) do
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       node
     end
-    let (:events) { Chef::EventDispatch::Dispatcher.new }
-    let (:run_context) { Chef::RunContext.new(node, {}, events) }
-    let (:resource) { Chef::Resource::DscScript.new("script", run_context) }
-    let (:provider) do
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::DscScript.new("script", run_context) }
+    let(:provider) do
       Chef::Provider::DscScript.new(resource, run_context)
     end
 
@@ -145,11 +145,11 @@ describe Chef::Provider::DscScript do
   end
 
   context "when Dsc is not available" do
-    let (:node) { Chef::Node.new }
-    let (:events) { Chef::EventDispatch::Dispatcher.new }
-    let (:run_context) { Chef::RunContext.new(node, {}, events) }
-    let (:resource) { Chef::Resource::DscScript.new("script", run_context) }
-    let (:provider) { Chef::Provider::DscScript.new(resource, run_context) }
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::DscScript.new("script", run_context) }
+    let(:provider) { Chef::Provider::DscScript.new(resource, run_context) }
 
     describe "action_run" do
       ["1.0", "2.0", "3.0"].each do |version|
