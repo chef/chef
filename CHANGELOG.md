@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.54 -->
-## [v16.2.54](https://github.com/chef/chef/tree/v16.2.54) (2020-06-24)
+<!-- latest_release 16.2.55 -->
+## [v16.2.55](https://github.com/chef/chef/tree/v16.2.55) (2020-06-24)
 
 #### Merged Pull Requests
-- Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins))
-- Setup cspell to pull from our common dictionary [#10021](https://github.com/chef/chef/pull/10021) ([tas50](https://github.com/tas50))
+- Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins)) <!-- 16.2.55 -->
 - Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins)) <!-- 16.2.54 -->
 - Setup cspell to pull from our common dictionary [#10021](https://github.com/chef/chef/pull/10021) ([tas50](https://github.com/tas50)) <!-- 16.2.53 -->
 - Fix broken tests after updating diff-lcs dep [#10052](https://github.com/chef/chef/pull/10052) ([phiggins](https://github.com/phiggins)) <!-- 16.2.52 -->
