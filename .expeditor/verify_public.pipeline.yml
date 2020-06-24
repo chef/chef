@@ -291,7 +291,7 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "chef-sugar gem :ruby: 2.6"
+- label: "chef-sugar gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -299,9 +299,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: "chef-zero gem :ruby: 2.6"
+- label: "chef-zero gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -309,12 +309,12 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
-- label: "cheffish gem :ruby: 2.6"
+- label: "cheffish gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -322,9 +322,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: "chefspec gem :ruby: 2.6"
+- label: "chefspec gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -332,9 +332,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: "knife-windows gem :ruby: 2.6"
+- label: "knife-windows gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -342,20 +342,19 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
 
-- label: "berkshelf gem :ruby: 2.6"
+- label: "berkshelf gem :ruby: 2.7"
   commands:
     - /workdir/scripts/bk_tests/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y graphviz
-    - gem install bundler -v 1.17.3 # necessary for berks Gemfile.lock for now
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test berkshelf/berkshelf master rake
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.6
+        image: rubydistros/ubuntu-18.04:2.7
 
 #########################################################################
   # START TEST KITCHEN ONLY
