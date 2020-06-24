@@ -24,7 +24,7 @@ The `cron_access` resource has been updated to support Solaris and AIX systems. 
 
 ### msu_package resource improvements
 
-The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these cumulative update packages will not correctly install over the previous versions. We also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue, [@danielfloyd](https://github.com/danielfloyd).
+The `msu_package` resource has been improved to work better with Microsoft's cumulative update packages. Newer releases of these cumulative update packages will not correctly install over the previous versions. We also extended the default timeout for installing MSU packages to 60 minutes. Thanks for reporting the timeout issue [@danielfloyd](https://github.com/danielfloyd).
 
 ### powershell_package
 
