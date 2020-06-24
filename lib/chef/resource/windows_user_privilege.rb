@@ -112,6 +112,15 @@ class Chef
         action         :remove
       end
       ```
+
+      **Clear all users from the SeDenyNetworkLogonRight Privilege**:
+
+      ```ruby
+      windows_user_privilege 'Allow any user the Network Logon right' do
+        privilege      'SeDenyNetworkLogonRight'
+        action         :clear
+      end
+      ```
       DOC
 
       property :principal, String,
@@ -132,8 +141,8 @@ class Chef
          }
 
       load_current_value do |new_resource|
-        unless new_resource.principal.nil?
-          privilege Chef::ReservedNames::Win32::Security.get_account_right(new_resource.principal) unless new_resource.action.include?(:set)
+        unless new_resource.principal.nil? || new_resource.action.include?(:set) || new_resource.action.include?(:clear)
+          privilege Chef::ReservedNames::Win32::Security.get_account_right(new_resource.principal)
         end
       end
 
@@ -175,6 +184,20 @@ class Chef
               converge_by("adding user '#{user}' to privilege #{privilege}") do
                 Chef::ReservedNames::Win32::Security.add_account_right(user, privilege)
               end
+            end
+          end
+        end
+      end
+
+      action :clear do
+        new_resource.privilege.each do |privilege|
+          accounts = Chef::ReservedNames::Win32::Security.get_account_with_user_rights(privilege)
+
+          # comparing the existing accounts for privilege with users
+          # Removing only accounts which is not matching with users in new_resource
+          accounts.each do |account|
+            converge_by("removing user '#{account}' from privilege #{privilege}") do
+              Chef::ReservedNames::Win32::Security.remove_account_right(account, privilege)
             end
           end
         end
