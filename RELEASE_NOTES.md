@@ -46,7 +46,7 @@ The `zypper_repository` resource has been updated to work with the newer release
 
 ## SSH Improvements
 
-The `net-ssh` library used by the `knife ssh` and `knife bootstrap` commands has been updated, bringing improvements to SSH connectivity:
+The `net-ssh` library used by the `knife ssh` and `knife bootstrap` commands has been updated bringing improvements to SSH connectivity:
 
 - Support for additional key exchange and transport algorithms
 - Support algorithm subtraction syntax in the `ssh_config` file
