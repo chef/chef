@@ -27,6 +27,12 @@ describe Chef::Provider::DscResource do
     Chef::Provider::DscResource.new(resource, run_context)
   end
 
+  let(:node) do
+    node = Chef::Node.new
+    node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
+    node
+  end
+
   context "when PowerShell does not support Invoke-DscResource" do
     let (:node) do
       node = Chef::Node.new
@@ -170,10 +176,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "define_resource_requirements" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module usage is valid" do
       before do
         allow(provider).to receive(:module_usage_valid?).and_return(true)
@@ -208,10 +210,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "module_usage_valid?" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module_name and module_version both are not provided" do
       before do
         provider.instance_variable_set(:@module_name, nil)
@@ -262,10 +260,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "module_info_object" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module_version is not given" do
       before do
         provider.instance_variable_set(:@module_version, nil)
@@ -292,10 +286,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "invoke_resource" do
-    let (:node) do
-      set_node_object
-    end
-
     let(:cmdlet) { double(run!: nil) }
 
     before(:each) do
@@ -337,10 +327,4 @@ describe Chef::Provider::DscResource do
       end
     end
   end
-end
-
-def set_node_object
-  node = Chef::Node.new
-  node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
-  node
 end
