@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: ae23ca40a68b58dbff20e20a47105c265ceb0ce2
+  revision: 7bd12469af0ba7227d77124dce4cdf7b9051e331
   branch: master
   specs:
     ohai (16.2.1)
@@ -166,7 +166,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
-    diff-lcs (1.4.1)
+    diff-lcs (1.4.2)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
     ed25519 (1.2.4)
