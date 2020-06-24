@@ -28,7 +28,7 @@ class Chef
       # bootstrap templates. For backwards compatibility, they +must+ set the
       # following instance variables:
       # * @config   - a hash of knife's config values
-      # * @run_list - the run list for the node to boostrap
+      # * @run_list - the run list for the node to bootstrap
       #
       class BootstrapContext
 

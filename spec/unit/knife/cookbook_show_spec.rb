@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-# rename to cookbook not coookbook
 require "spec_helper"
 
 describe Chef::Knife::CookbookShow do

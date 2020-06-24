@@ -703,8 +703,17 @@ class Chef
         true
       end
 
+      # FIXME: someone needs to clean this up properly:  https://github.com/chef/chef/issues/9645
+      # This code is deliberately left without an abstraction around deprecating the config options to avoid knife plugins from
+      # using those methods (which will need to be deprecated and break them) via inheritance (ruby does not have a true `private`
+      # so the lack of any inheritable implementation is because of that).
+      #
       def winrm_auth_method
-        config_value(:winrm_auth_method, :winrm_authentication_protocol, "negotiate")
+        config.key?(:winrm_auth_method) ? config[:winrm_auth_method] : config.key?(:winrm_authentications_protocol) ? config[:winrm_authentication_protocol] : "negotiate" # rubocop:disable Style/NestedTernaryOperator
+      end
+
+      def ssh_verify_host_key
+        config.key?(:ssh_verify_host_key) ? config[:ssh_verify_host_key] : config.key?(:host_key_verify) ? config[:host_key_verify] : "always" # rubocop:disable Style/NestedTernaryOperator
       end
 
       # Fail if using plaintext auth without ssl because
@@ -905,7 +914,7 @@ class Chef
           { self_signed: config[:winrm_no_verify_cert] === true }
         elsif ssh?
           # Fall back to the old knife config key name for back compat.
-          { verify_host_key: config_value(:ssh_verify_host_key, :host_key_verify, "always") }
+          { verify_host_key: ssh_verify_host_key }
         else
           {}
         end
@@ -1051,7 +1060,7 @@ class Chef
       # @api deprecated
       #
       def config_value(key, fallback_key = nil, default = nil)
-        Chef.deprecated(:knife_bootstrap_apis, "Use of config_value without a fallback_key is deprecated.  Knife plugin authors should access the config hash directly, which does correct merging of cli and config options.") if fallback_key.nil?
+        Chef.deprecated(:knife_bootstrap_apis, "Use of config_value is deprecated.  Knife plugin authors should access the config hash directly, which does correct merging of cli and config options.")
         if config.key?(key)
           # the first key is the primary key so we check the merged hash first
           config[key]

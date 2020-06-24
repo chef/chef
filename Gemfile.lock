@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: fd8167b01d6648f6751da3bc47f2d49bc621e0cc
+  revision: 7bd12469af0ba7227d77124dce4cdf7b9051e331
   branch: master
   specs:
-    ohai (16.2.0)
+    ohai (16.2.1)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -28,12 +28,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.2.48)
+    chef (16.2.56)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.48)
-      chef-utils (= 16.2.48)
+      chef-config (= 16.2.56)
+      chef-utils (= 16.2.56)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -62,12 +62,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.2.48-universal-mingw32)
+    chef (16.2.56-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.48)
-      chef-utils (= 16.2.48)
+      chef-config (= 16.2.56)
+      chef-utils (= 16.2.56)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.2.48)
-      chef (= 16.2.48)
+    chef-bin (16.2.56)
+      chef (= 16.2.56)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.2.48)
+    chef-config (16.2.56)
       addressable
-      chef-utils (= 16.2.48)
+      chef-utils (= 16.2.56)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.2.48)
+    chef-utils (16.2.56)
 
 GEM
   remote: https://rubygems.org/
@@ -166,7 +166,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
-    diff-lcs (1.3)
+    diff-lcs (1.4.2)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
     ed25519 (1.2.4)
@@ -226,7 +226,7 @@ GEM
     inspec-core-bin (4.20.10)
       inspec-core (= 4.20.10)
     ipaddress (0.8.3)
-    iso8601 (0.12.1)
+    iso8601 (0.12.2)
     json (2.3.0)
     json_schemer (0.2.11)
       ecma-re-validator (~> 0.2)
@@ -272,8 +272,8 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.2)
-    parser (2.7.1.3)
-      ast (~> 2.4.0)
+    parser (2.7.1.4)
+      ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.7.4)
       equatable (~> 0.6)

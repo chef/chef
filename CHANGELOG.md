@@ -1,22 +1,35 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.48 -->
-## [v16.2.48](https://github.com/chef/chef/tree/v16.2.48) (2020-06-18)
+<!-- latest_release 16.2.56 -->
+## [v16.2.56](https://github.com/chef/chef/tree/v16.2.56) (2020-06-24)
 
 #### Merged Pull Requests
-- Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50))
+- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
-<!-- release_rollup since=16.2.44 -->
+<!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
-- Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50)) <!-- 16.2.48 -->
-- Fix for knife config use-profile doesn&#39;t validate that the profile exist [#10011](https://github.com/chef/chef/pull/10011) ([Vasu1105](https://github.com/Vasu1105)) <!-- 16.2.47 -->
-- windows_security_policy was using resource_name instead of provides [#10018](https://github.com/chef/chef/pull/10018) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.46 -->
-- Bump inspec-core-bin to 4.20.10 [#10017](https://github.com/chef/chef/pull/10017) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.45 -->
+- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock)) <!-- 16.2.56 -->
+- Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins)) <!-- 16.2.55 -->
+- Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins)) <!-- 16.2.54 -->
+- Setup cspell to pull from our common dictionary [#10021](https://github.com/chef/chef/pull/10021) ([tas50](https://github.com/tas50)) <!-- 16.2.53 -->
+- Fix broken tests after updating diff-lcs dep [#10052](https://github.com/chef/chef/pull/10052) ([phiggins](https://github.com/phiggins)) <!-- 16.2.52 -->
+- More aggressively deprecate config_value [#10025](https://github.com/chef/chef/pull/10025) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.51 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.2.50](https://github.com/chef/chef/tree/v16.2.50) (2020-06-23)
+
+#### Merged Pull Requests
+- Bump inspec-core-bin to 4.20.10 [#10017](https://github.com/chef/chef/pull/10017) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- windows_security_policy was using resource_name instead of provides [#10018](https://github.com/chef/chef/pull/10018) ([chef-davin](https://github.com/chef-davin))
+- Fix for knife config use-profile doesn&#39;t validate that the profile exist [#10011](https://github.com/chef/chef/pull/10011) ([Vasu1105](https://github.com/Vasu1105))
+- Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50))
+- Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins))
+- Bump ohai to 16.2.1 [#10035](https://github.com/chef/chef/pull/10035) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_stable_release -->
+
 ## [v16.2.44](https://github.com/chef/chef/tree/v16.2.44) (2020-06-17)
 
 #### Merged Pull Requests
@@ -74,7 +87,6 @@
 - Add a umask property for resources. [#10000](https://github.com/chef/chef/pull/10000) ([phiggins](https://github.com/phiggins))
 - Minor docs updates and MacOS -&gt; macOS [#10010](https://github.com/chef/chef/pull/10010) ([tas50](https://github.com/tas50))
 - Update the list of allowed policies for the windows_security_policy resource [#10012](https://github.com/chef/chef/pull/10012) ([chef-davin](https://github.com/chef-davin))
-<!-- latest_stable_release -->
 
 ## [v16.1.16](https://github.com/chef/chef/tree/v16.1.16) (2020-05-27)
 
@@ -154,7 +166,7 @@
 - Another round of description updates &amp;&amp; Docs generator tweaks [#9778](https://github.com/chef/chef/pull/9778) ([tas50](https://github.com/tas50))
 - Fix failing RHEL 6 kitchen tests [#9740](https://github.com/chef/chef/pull/9740) ([tas50](https://github.com/tas50))
 - Fix windows package super bug and cleanup [#9790](https://github.com/chef/chef/pull/9790) ([lamont-granquist](https://github.com/lamont-granquist))
-- Fix required errors in apt_preference and systctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
+- Fix required errors in apt_preference and sysctl resources [#9791](https://github.com/chef/chef/pull/9791) ([tas50](https://github.com/tas50))
 - fix Habitat Windows package build [#9739](https://github.com/chef/chef/pull/9739) ([robbkidd](https://github.com/robbkidd))
 - Fix failures in the cron_d resource :remove action [#9794](https://github.com/chef/chef/pull/9794) ([tas50](https://github.com/tas50))
 
@@ -1122,7 +1134,7 @@
 - Update license scout to 1.0.22 [#8131](https://github.com/chef/chef/pull/8131) ([tas50](https://github.com/tas50))
 - Backport various name_property fixes in resources from Chef 15 [#8134](https://github.com/chef/chef/pull/8134) ([tas50](https://github.com/tas50))
 - Allow for mixlib-archive 1.x [#8141](https://github.com/chef/chef/pull/8141) ([tas50](https://github.com/tas50))
-- systctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
+- sysctl: Allow slashes in key or block name [#8142](https://github.com/chef/chef/pull/8142) ([tas50](https://github.com/tas50))
 - homebrew_cask: Ensure the resource is fully idempotent [#8143](https://github.com/chef/chef/pull/8143) ([tas50](https://github.com/tas50))
 
 ## [v14.8.12](https://github.com/chef/chef/tree/v14.8.12) (2018-12-13)
@@ -3287,7 +3299,7 @@ of partial templates.
 * windows_user: look up username instead of resource name (Issue #1705)
 * Remove the unused bootstrap templates that install chef from rubygems
 * Remove the Chef 10 functionality from bootstrap.
-* Deprecate --distro / --template_file options in favor of --boostrap-template
+* Deprecate --distro / --template_file options in favor of --bootstrap-template
 * Add `:node_ssl_verify_mode` & `:node_verify_api_cert` options to bootstrap
   to be able to configure these settings on the bootstrapped node.
 * Add partial_search dsl method to Chef::Search::Query, add result filtering to search.

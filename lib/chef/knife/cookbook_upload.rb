@@ -23,9 +23,6 @@ require_relative "../knife"
 class Chef
   class Knife
     class CookbookUpload < Knife
-      CHECKSUM = "checksum".freeze
-      MATCH_CHECKSUM = /[0-9a-f]{32,}/.freeze
-
       deps do
         require_relative "../mixin/file_class"
         include Chef::Mixin::FileClass
@@ -245,7 +242,7 @@ class Chef
         # manifest object, but the manifest becomes invalid when you
         # regenerate the metadata
         broken_files = cookbook.dup.manifest_records_by_path.select do |path, info|
-          info[CHECKSUM].nil? || info[CHECKSUM] !~ MATCH_CHECKSUM
+          !/[0-9a-f]{32,}/.match?(info["checksum"])
         end
         unless broken_files.empty?
           broken_filenames = Array(broken_files).map { |path, info| path }

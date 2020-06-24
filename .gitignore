@@ -87,3 +87,6 @@ ext/win32-eventlog/mkmf.log
 
 # ignore byebug command history file.
 .byebug_history
+
+# our custom dictionary pulled from https://github.com/chef/chef_dictionary/
+chef_dictionary.txt

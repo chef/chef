@@ -51,7 +51,7 @@ class Chef
           # in the case where i'm running chef-solo on my homedir as myself and some root-shell
           # work has caused dotfiles of mine to change to root-owned, i'm fine with this not being
           # exceptional, and i think most use cases will consider this to not be exceptional, and
-          # the right thing is to fix the ownership of the file to the user running the commmand
+          # the right thing is to fix the ownership of the file to the user running the command
           # (which requires write perms to the directory, or mv will throw an exception)
           begin
             ::File.chown(uid, nil, src)

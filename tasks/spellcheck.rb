@@ -1,3 +1,4 @@
+#
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -12,8 +13,22 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-module ChefUtils
-  CHEFUTILS_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "16.2.56".freeze
+namespace :spellcheck do
+  task :fetch_common do
+    sh "wget https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt"
+  end
+
+  task run: :fetch_common do
+    sh 'cspell "**/*"'
+  end
+
+  desc "List the unique unrecognized words in the project."
+  task unknown_words: :fetch_common  do
+    sh 'cspell "**/*" --wordsOnly --no-summary | sort | uniq'
+  end
 end
+
+desc "Run spellcheck on the project."
+task spellcheck: "spellcheck:run"
