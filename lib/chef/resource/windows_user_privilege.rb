@@ -141,7 +141,7 @@ class Chef
          }
 
       load_current_value do |new_resource|
-        unless new_resource.principal.nil? || new_resource.action.include?(:set) || new_resource.action.include?(:clear)
+        if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))
           privilege Chef::ReservedNames::Win32::Security.get_account_right(new_resource.principal)
         end
       end
