@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.59 -->
-## [v16.2.59](https://github.com/chef/chef/tree/v16.2.59) (2020-06-25)
+<!-- latest_release 16.2.60 -->
+## [v16.2.60](https://github.com/chef/chef/tree/v16.2.60) (2020-06-25)
 
 #### Merged Pull Requests
-- Bump the external tests to 2.7 [#10062](https://github.com/chef/chef/pull/10062) ([lamont-granquist](https://github.com/lamont-granquist))
+- specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins)) <!-- 16.2.60 -->
 - Bump the external tests to 2.7 [#10062](https://github.com/chef/chef/pull/10062) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.59 -->
 - Bump train-core to 3.3.4 [#10067](https://github.com/chef/chef/pull/10067) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.58 -->
 - Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari)) <!-- 16.2.57 -->
