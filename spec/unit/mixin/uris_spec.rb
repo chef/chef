@@ -24,7 +24,7 @@ class Chef::UrisTest
 end
 
 describe Chef::Mixin::Uris do
-  let (:uris) { Chef::UrisTest.new }
+  let(:uris) { Chef::UrisTest.new }
 
   describe "#uri_scheme?" do
     it "matches 'scheme://foo.com'" do

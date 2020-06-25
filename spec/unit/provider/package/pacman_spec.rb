@@ -17,13 +17,6 @@
 #
 require "spec_helper"
 
-def create_provider_for(name)
-  @new_resource = Chef::Resource::Package.new(name)
-  provider = Chef::Provider::Package::Pacman.new(@new_resource, @run_context)
-  allow(provider).to receive(:shell_out_compacted).and_return(@status)
-  provider
-end
-
 RSpec.shared_examples "current_resource" do |pkg, version, candidate|
   let(:current_resource) { @provider.load_current_resource }
   before(:each) do
@@ -45,11 +38,23 @@ RSpec.shared_examples "current_resource" do |pkg, version, candidate|
 end
 
 describe Chef::Provider::Package::Pacman do
+  def create_provider_for(name)
+    new_resource = Chef::Resource::Package.new(name)
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    provider = Chef::Provider::Package::Pacman.new(new_resource, run_context)
+
+    pacman_out = <<~PACMAN_OUT
+      extra nano 3.450-1
+      extra emacs 0.12.0-1 [installed]
+      core sed 3.234-2 [installed: 3.234-1]
+    PACMAN_OUT
+
+    allow(provider).to receive(:shell_out_compacted).and_return(double(stdout: pacman_out, exitstatus: 0))
+    provider
+  end
+
   before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @pacman_conf = <<~PACMAN_CONF
+    pacman_conf = <<~PACMAN_CONF
       [options]
       HoldPkg      = pacman glibc
       Architecture = auto
@@ -68,15 +73,7 @@ describe Chef::Provider::Package::Pacman do
     PACMAN_CONF
 
     allow(::File).to receive(:exist?).with("/etc/pacman.conf").and_return(true)
-    allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(@pacman_conf)
-
-    pacman_out = <<~PACMAN_OUT
-      extra nano 3.450-1
-      extra emacs 0.12.0-1 [installed]
-      core sed 3.234-2 [installed: 3.234-1]
-    PACMAN_OUT
-    @status = double(stdout: pacman_out, exitstatus: 0)
-
+    allow(::File).to receive(:read).with("/etc/pacman.conf").and_return(pacman_conf)
   end
 
   describe "loading the current resource" do

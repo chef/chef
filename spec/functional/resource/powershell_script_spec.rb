@@ -23,8 +23,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
   include_context Chef::Resource::WindowsScript
 
-  let (:architecture_command) { "echo $env:PROCESSOR_ARCHITECTURE" }
-  let (:output_command) { " | out-file -encoding ASCII " }
+  let(:architecture_command) { "echo $env:PROCESSOR_ARCHITECTURE" }
+  let(:output_command) { " | out-file -encoding ASCII " }
 
   it_behaves_like "a Windows script running on Windows"
 
@@ -68,8 +68,8 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       end
     end
 
-    let (:negative_exit_status) { -27 }
-    let (:unsigned_exit_status) { (-negative_exit_status ^ 65535) + 1 }
+    let(:negative_exit_status) { -27 }
+    let(:unsigned_exit_status) { (-negative_exit_status ^ 65535) + 1 }
     it "returns the exit status -27 as a signed integer or an unsigned 16-bit 2's complement value of 65509 for a powershell script that exits with -27" do
 
       # Versions of PowerShell prior to 4.0 return a 16-bit unsigned value --

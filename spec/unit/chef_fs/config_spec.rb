@@ -203,8 +203,8 @@ describe Chef::ChefFS::Config do
         })
       end
 
-      let (:path) { "/roles/foo.json" }
-      let (:entry) { Entry.new(path) }
+      let(:path) { "/roles/foo.json" }
+      let(:entry) { Entry.new(path) }
 
       it "returns the entry's path if the cwd isn't in the config" do
         cfg = Chef::ChefFS::Config.new(config, "/my_repo/cookbooks")
