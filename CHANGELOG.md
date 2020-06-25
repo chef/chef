@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.56 -->
-## [v16.2.56](https://github.com/chef/chef/tree/v16.2.56) (2020-06-24)
+<!-- latest_release 16.2.57 -->
+## [v16.2.57](https://github.com/chef/chef/tree/v16.2.57) (2020-06-25)
 
 #### Merged Pull Requests
-- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock))
+- Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari)) <!-- 16.2.57 -->
 - consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock)) <!-- 16.2.56 -->
 - Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins)) <!-- 16.2.55 -->
 - Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins)) <!-- 16.2.54 -->
