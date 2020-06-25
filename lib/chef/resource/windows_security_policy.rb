@@ -80,13 +80,25 @@ class Chef
       property :secvalue, String, required: true,
       description: "Policy value to be set for policy name."
 
+      load_current_value do |desired|
+        secopt_values = load_secopts_state
+        output = powershell_out(secopt_values)
+        if output.stdout.empty?
+          current_value_does_not_exist!
+        else
+          state = Chef::JSONCompat.from_json(output.stdout)
+        end
+        secvalue state[desired.secoption.to_s]
+      end
+
       action :set do
-        security_option = new_resource.secoption
-        security_value = new_resource.secvalue
-        powershell_script "#{security_option} set to #{security_value}" do
-          convert_boolean_return true
-          code <<-EOH
+        converge_if_changed :secvalue do
+          security_option = new_resource.secoption
+          security_value = new_resource.secvalue
+
+          cmd = <<-EOH
             $security_option = "#{security_option}"
+            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\#{security_option}_Export.inf
             if ( ($security_option -match "NewGuestName") -Or ($security_option -match "NewAdministratorName") )
               {
                 $#{security_option}_Remediation = (Get-Content $env:TEMP\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace '#{security_option}\\s*=\\s*\\"\\w*\\"', '#{security_option} = "#{security_value}"' } | Set-Content $env:TEMP\\#{security_option}_Export.inf
@@ -99,20 +111,36 @@ class Chef
               }
             Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
           EOH
-          not_if <<-EOH
-            $#{security_option}_Export = C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\#{security_option}_Export.inf
-            $ExportAudit = (Get-Content $env:TEMP\\#{security_option}_Export.inf | Select-String -Pattern #{security_option})
-            $check_digit = $ExportAudit -match '#{security_option} = #{security_value}'
-            $check_string = $ExportAudit -match '#{security_option} = "#{security_value}"'
-            if ( $check_string -Or $check_digit )
-              {
-                Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
-                $true
-              }
-            else
-              {
-                $false
-              }
+
+          powershell_exec!(cmd)
+        end
+      end
+
+      action_class do
+        def load_secopts_state
+          <<-EOH
+            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
+            $secopts_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
+            Remove-Item $env:TEMP\\secopts_export.inf -force
+            $secopts_hash = ($secopts_data -Replace '"'| ConvertFrom-StringData)
+            ([PSCustomObject]@{
+              RequireLogonToChangePassword = $secopts_hash.RequireLogonToChangePassword
+              PasswordComplexity = $secopts_hash.PasswordComplexity
+              LSAAnonymousNameLookup = $secopts_hash.LSAAnonymousNameLookup
+              EnableAdminAccount = $secopts_hash.EnableAdminAccount
+              PasswordHistorySize = $secopts_hash.PasswordHistorySize
+              MinimumPasswordLength = $secopts_hash.MinimumPasswordLength
+              ResetLockoutCount = $secopts_hash.ResetLockoutCount
+              MaximumPasswordAge = $secopts_hash.MaximumPasswordAge
+              ClearTextPassword = $secopts_hash.ClearTextPassword
+              NewAdministratorName = $secopts_hash.NewAdministratorName
+              LockoutDuration = $secopts_hash.LockoutDuration
+              EnableGuestAccount = $secopts_hash.EnableGuestAccount
+              ForceLogoffWhenHourExpire = $secopts_hash.ForceLogoffWhenHourExpire
+              MinimumPasswordAge = $secopts_hash.MinimumPasswordAge
+              NewGuestName = $secopts_hash.NewGuestName
+              LockoutBadCount = $secopts_hash.LockoutBadCount
+            }) | ConvertTo-Json
           EOH
         end
       end
