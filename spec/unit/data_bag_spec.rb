@@ -237,7 +237,7 @@ describe Chef::DataBag do
         data_bag_list = Chef::DataBag.list
         expect(data_bag_list).to eq({ "bar" => "bar", "foo" => "foo" })
       end
-
+      
       it "should raise an error if the configured data_bag_path is invalid" do
         file_dir_stub(@paths.first, false)
         msg = "Data bag path '#{windows? ? "C:/var/chef" : "/var/chef"}/data_bags' not found. Please create this directory."

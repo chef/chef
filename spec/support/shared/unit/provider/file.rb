@@ -503,7 +503,7 @@ shared_examples_for Chef::Provider::File do
           expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, /sensitive/)
         end
       end
-    end
+    end 
 
     context "do_create_file" do
       context "when the file exists" do

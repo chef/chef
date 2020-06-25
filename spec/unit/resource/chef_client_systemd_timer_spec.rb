@@ -43,7 +43,6 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   describe "#chef_client_cmd" do
-
     let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
 
     it "creates a valid command if using all default properties" do

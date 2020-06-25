@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::SystemdUnit do
+describe Chef::Provider::SystemdUnit, :linux_only do
 
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
@@ -222,22 +222,21 @@ describe Chef::Provider::SystemdUnit do
 
     # A password is required when specifying a user on Windows. Since systemd resources
     # won't actually run on Windows, skip these tests rather than code a workaround.
-    unless windows?
-      it "loads the user unit content if the file exists and user is set" do
-        new_resource.user("joe")
-        allow(File).to receive(:exist?)
-          .with(unit_path_user)
-          .and_return(true)
-        allow(File).to receive(:read)
-          .with(unit_path_user)
-          .and_return(unit_content_string)
-        expect(File).to receive(:exist?)
-          .with(unit_path_user)
-        expect(File).to receive(:read)
-          .with(unit_path_user)
-        provider.load_current_resource
-        expect(current_resource.content).to eq(unit_content_string)
-      end
+    it "loads the user unit content if the file exists and user is set" do
+      new_resource.user("joe")
+      allow(File).to receive(:exist?)
+        .with(unit_path_user)
+        .and_return(true)
+      allow(File).to receive(:read)
+        .with(unit_path_user)
+        .and_return(unit_content_string)
+      expect(File).to receive(:exist?)
+        .with(unit_path_user)
+      expect(File).to receive(:read)
+        .with(unit_path_user)
+      provider.load_current_resource
+      expect(current_resource.content).to eq(unit_content_string)
+    end
 
       it "does not load the user unit if the file does not exist and user is set" do
         new_resource.user("joe")
@@ -249,7 +248,6 @@ describe Chef::Provider::SystemdUnit do
         provider.load_current_resource
         expect(current_resource.content).to eq(nil)
       end
-    end
   end
 
   %w{/bin/systemctl /usr/bin/systemctl}.each do |systemctl_path|

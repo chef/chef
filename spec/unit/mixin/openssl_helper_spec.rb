@@ -687,7 +687,6 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info = { "validity" => 8, "issuer" => @ca_cert }
-
       @crl = @instance.gen_x509_crl(@ca_key, @info)
     end
 
@@ -761,6 +760,7 @@ describe Chef::Mixin::OpenSSLHelper do
       ef = OpenSSL::X509::ExtensionFactory.new
       ef.subject_certificate = @ca_cert
       ef.issuer_certificate = @ca_cert
+
       @ca_cert.add_extension(ef.create_extension("basicConstraints", "CA:TRUE", true))
       @ca_cert.add_extension(ef.create_extension("keyUsage", "keyCertSign, cRLSign", true))
       @ca_cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
@@ -768,7 +768,6 @@ describe Chef::Mixin::OpenSSLHelper do
       @ca_cert.sign(@ca_key, OpenSSL::Digest.new("SHA256"))
 
       @info = { "validity" => 8, "issuer" => @ca_cert }
-
       @crl = @instance.gen_x509_crl(@ca_key, @info)
       @revoke_info = { "serial" => 1, "reason" => 0 }
     end
