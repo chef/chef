@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.2.64 -->
+## [v16.2.64](https://github.com/chef/chef/tree/v16.2.64) (2020-06-26)
 
 #### Merged Pull Requests
+- Pick some of the unit test fixes from #10068 [#10074](https://github.com/chef/chef/pull/10074) ([lamont-granquist](https://github.com/lamont-granquist))
 - Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pick some of the unit test fixes from #10068 [#10074](https://github.com/chef/chef/pull/10074) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.64 -->
 - Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.63 -->
 - Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50)) <!-- 16.2.63 -->
 - fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock)) <!-- 16.2.62 -->
