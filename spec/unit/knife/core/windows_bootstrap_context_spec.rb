@@ -148,26 +148,22 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#config_content" do
     before do
-      root_path = windows? ? "c:/chef" : "/chef"
-
       bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_level: :info,
         config_log_location: STDOUT,
         chef_server_url: "http://chef.example.com:4444",
         validation_client_name: "chef-validator-testing",
-        file_cache_path: windows? ? "#{root_path}/cache" : "#{root_path}/cache",
-        file_backup_path: windows? ? "#{root_path}/backup" : "#{root_path}/backup",
-        cache_options: ({ path: "#{root_path}/cache/checksums", skip_expires: true })))
+        file_cache_path: "c:/chef/cache",
+        file_backup_path: "c:/chef/backup",
+        cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })))
     end
 
     it "generates the config file data" do
-      root_path = windows? ? "C:\\chef" : "\\chef"
-
       expected = <<~EXPECTED
         echo.chef_server_url  "http://chef.example.com:4444"
         echo.validation_client_name "chef-validator-testing"
-        echo.file_cache_path   "#{root_path}/cache"
-        echo.file_backup_path  "#{root_path}/backup"
-        echo.cache_options     ^({:path =^> "#{root_path}/cache/checksums", :skip_expires =^> true}^)
+        echo.file_cache_path   "C:/chef/cache"
+        echo.file_backup_path  "C:/chef/backup"
+        echo.cache_options     ^({:path =^> "C:/chef/cache/checksums", :skip_expires =^> true}^)
         echo.# Using default node name ^(fqdn^)
         echo.log_level :info
         echo.log_location       STDOUT
@@ -187,7 +183,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#start_chef" do
     it "returns the expected string" do
-      expect(bootstrap_context.start_chef).to match(/SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\;%PATH%\"\n/)
+      expect(bootstrap_context.start_chef).to match(%r{SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\/opscode\/chef\\bin;C:\/opscode\/chef\\embedded\\bin\;%PATH%\"\n})
     end
   end
 
