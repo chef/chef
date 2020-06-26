@@ -154,8 +154,8 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         config_log_location: STDOUT,
         chef_server_url: "http://chef.example.com:4444",
         validation_client_name: "chef-validator-testing",
-        file_cache_path: windows? ? "#{root_path}/cache" : "#{root_path}/cache",
-        file_backup_path: windows? ? "#{root_path}/backup" : "#{root_path}/backup",
+        file_cache_path: "#{root_path}/cache",
+        file_backup_path: "#{root_path}/backup",
         cache_options: ({ path: "#{root_path}/cache/checksums", skip_expires: true })))
     end
 
