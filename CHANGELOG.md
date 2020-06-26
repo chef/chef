@@ -1,41 +1,39 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.22 -->
-## [v15.12.22](https://github.com/chef/chef/tree/v15.12.22) (2020-06-26)
-
-#### Merged Pull Requests
-- Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.11.8 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50)) <!-- 15.12.22 -->
-- fix msu_package installation and extend the timeout to 60 minutes with a new property [#10056](https://github.com/chef/chef/pull/10056) ([tas50](https://github.com/tas50)) <!-- 15.12.21 -->
-- Pull in misc docs / comment updates from master [#10054](https://github.com/chef/chef/pull/10054) ([tas50](https://github.com/tas50)) <!-- 15.12.20 -->
-- Pull in the latest net-ssh/net-sftp &amp; remove the http2 dep in chef-telemetry [#10053](https://github.com/chef/chef/pull/10053) ([tas50](https://github.com/tas50)) <!-- 15.12.19 -->
-- Fix rspec warning about `not_to raise_error` with a specific exception. [#10037](https://github.com/chef/chef/pull/10037) ([tas50](https://github.com/tas50)) <!-- 15.12.18 -->
-- Fix wrong unit test exposed by cleaning up rspec deprecations. [#10051](https://github.com/chef/chef/pull/10051) ([tas50](https://github.com/tas50)) <!-- 15.12.17 -->
-- Bump all deps to current [#10028](https://github.com/chef/chef/pull/10028) ([tas50](https://github.com/tas50)) <!-- 15.12.16 -->
-- Bump InSpec to 4.20.10 [#10049](https://github.com/chef/chef/pull/10049) ([tas50](https://github.com/tas50)) <!-- 15.12.15 -->
-- Use /etc/chef for bootstrapping instead of ChefConfig [#10044](https://github.com/chef/chef/pull/10044) ([tas50](https://github.com/tas50)) <!-- 15.12.14 -->
-- Bump Ohai to 15.12 to support macOS Big Sur [#10046](https://github.com/chef/chef/pull/10046) ([tas50](https://github.com/tas50)) <!-- 15.12.13 -->
-- Add Windows 8 Tester [#10045](https://github.com/chef/chef/pull/10045) ([tas50](https://github.com/tas50)) <!-- 15.12.12 -->
-- Fix snap_package bugs [#10042](https://github.com/chef/chef/pull/10042) ([tas50](https://github.com/tas50)) <!-- 15.12.11 -->
-- Silence exception output in threaded test. [#10043](https://github.com/chef/chef/pull/10043) ([tas50](https://github.com/tas50)) <!-- 15.12.10 -->
-- Warn during bootstrapping when using validation keys [#10041](https://github.com/chef/chef/pull/10041) ([tas50](https://github.com/tas50)) <!-- 15.12.9 -->
-- knife vault on windows 10 fails due to ERROR: Chef::Exceptions::InvalidDataBagPath [#10040](https://github.com/chef/chef/pull/10040) ([tas50](https://github.com/tas50)) <!-- 15.12.8 -->
-- Let the user know what protocol we&#39;re using in knife bootstrap [#10039](https://github.com/chef/chef/pull/10039) ([tas50](https://github.com/tas50)) <!-- 15.12.7 -->
-- archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50)) <!-- 15.12.6 -->
-- Support for AIX and Solaris in cron_allow resource  [#10036](https://github.com/chef/chef/pull/10036) ([tas50](https://github.com/tas50)) <!-- 15.12.5 -->
-- Fix zypper_repository key handling on SLES 15+ [#10030](https://github.com/chef/chef/pull/10030) ([tas50](https://github.com/tas50)) <!-- 15.12.4 -->
-- Fixed Powershell_Package does not throw error when it cannot connect to powershell gallery [#10032](https://github.com/chef/chef/pull/10032) ([tas50](https://github.com/tas50)) <!-- 15.12.3 -->
-- archive_file: move ffi-libarchive into a simple helper method [#10033](https://github.com/chef/chef/pull/10033) ([tas50](https://github.com/tas50)) <!-- 15.12.2 -->
-- hostname: Improve the windows reboot message [#10031](https://github.com/chef/chef/pull/10031) ([tas50](https://github.com/tas50)) <!-- 15.12.1 -->
-- Update Ruby in Expeditor to 2.6.6 [#10034](https://github.com/chef/chef/pull/10034) ([tas50](https://github.com/tas50)) <!-- 15.12.0 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.12.22](https://github.com/chef/chef/tree/v15.12.22) (2020-06-26)
+
+#### Merged Pull Requests
+- Update Ruby in Expeditor to 2.6.6 [#10034](https://github.com/chef/chef/pull/10034) ([tas50](https://github.com/tas50))
+- hostname: Improve the windows reboot message [#10031](https://github.com/chef/chef/pull/10031) ([tas50](https://github.com/tas50))
+- archive_file: move ffi-libarchive into a simple helper method [#10033](https://github.com/chef/chef/pull/10033) ([tas50](https://github.com/tas50))
+- Fixed Powershell_Package does not throw error when it cannot connect to powershell gallery [#10032](https://github.com/chef/chef/pull/10032) ([tas50](https://github.com/tas50))
+- Fix zypper_repository key handling on SLES 15+ [#10030](https://github.com/chef/chef/pull/10030) ([tas50](https://github.com/tas50))
+- Support for AIX and Solaris in cron_allow resource  [#10036](https://github.com/chef/chef/pull/10036) ([tas50](https://github.com/tas50))
+- archive_file: better handle mode property and deprecate Integer values  [#10038](https://github.com/chef/chef/pull/10038) ([tas50](https://github.com/tas50))
+- Let the user know what protocol we&#39;re using in knife bootstrap [#10039](https://github.com/chef/chef/pull/10039) ([tas50](https://github.com/tas50))
+- knife vault on windows 10 fails due to ERROR: Chef::Exceptions::InvalidDataBagPath [#10040](https://github.com/chef/chef/pull/10040) ([tas50](https://github.com/tas50))
+- Warn during bootstrapping when using validation keys [#10041](https://github.com/chef/chef/pull/10041) ([tas50](https://github.com/tas50))
+- Silence exception output in threaded test. [#10043](https://github.com/chef/chef/pull/10043) ([tas50](https://github.com/tas50))
+- Fix snap_package bugs [#10042](https://github.com/chef/chef/pull/10042) ([tas50](https://github.com/tas50))
+- Add Windows 8 Tester [#10045](https://github.com/chef/chef/pull/10045) ([tas50](https://github.com/tas50))
+- Bump Ohai to 15.12 to support macOS Big Sur [#10046](https://github.com/chef/chef/pull/10046) ([tas50](https://github.com/tas50))
+- Use /etc/chef for bootstrapping instead of ChefConfig [#10044](https://github.com/chef/chef/pull/10044) ([tas50](https://github.com/tas50))
+- Bump InSpec to 4.20.10 [#10049](https://github.com/chef/chef/pull/10049) ([tas50](https://github.com/tas50))
+- Bump all deps to current [#10028](https://github.com/chef/chef/pull/10028) ([tas50](https://github.com/tas50))
+- Fix wrong unit test exposed by cleaning up rspec deprecations. [#10051](https://github.com/chef/chef/pull/10051) ([tas50](https://github.com/tas50))
+- Fix rspec warning about `not_to raise_error` with a specific exception. [#10037](https://github.com/chef/chef/pull/10037) ([tas50](https://github.com/tas50))
+- Pull in the latest net-ssh/net-sftp &amp; remove the http2 dep in chef-telemetry [#10053](https://github.com/chef/chef/pull/10053) ([tas50](https://github.com/tas50))
+- Pull in misc docs / comment updates from master [#10054](https://github.com/chef/chef/pull/10054) ([tas50](https://github.com/tas50))
+- fix msu_package installation and extend the timeout to 60 minutes with a new property [#10056](https://github.com/chef/chef/pull/10056) ([tas50](https://github.com/tas50))
+- Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.11.8](https://github.com/chef/chef/tree/v15.11.8) (2020-06-01)
 
 #### Merged Pull Requests
@@ -44,7 +42,6 @@
 - Avoid some constant warnings in specs [#9935](https://github.com/chef/chef/pull/9935) ([tas50](https://github.com/tas50))
 - Pull in spec task / helper from master [#9936](https://github.com/chef/chef/pull/9936) ([tas50](https://github.com/tas50))
 - Revert the change to the load paths in the specs [#9938](https://github.com/chef/chef/pull/9938) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.11.3](https://github.com/chef/chef/tree/v15.11.3) (2020-05-22)
 
