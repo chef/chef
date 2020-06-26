@@ -117,10 +117,10 @@ class Chef
       action_class do
         def load_security_options_state
           <<-EOH
-            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
+            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\security_options_export.inf | Out-Null
             # cspell:disable-next-line
-            $security_options_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
-            Remove-Item $env:TEMP\\secopts_export.inf -force
+            $security_options_data = (Get-Content $env:TEMP\\security_options_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
+            Remove-Item $env:TEMP\\security_options_export.inf -force
             $security_options_hash = ($security_options_data -Replace '"'| ConvertFrom-StringData)
             ([PSCustomObject]@{
               RequireLogonToChangePassword = $security_options_hash.RequireLogonToChangePassword
