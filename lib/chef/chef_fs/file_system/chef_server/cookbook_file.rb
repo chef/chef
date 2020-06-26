@@ -18,7 +18,7 @@
 
 require_relative "../base_fs_object"
 require_relative "../../../http/simple"
-require "openssl" unless defined?(OpenSSL)
+require "digest" unless defined?(Digest)
 
 class Chef
   module ChefFS
@@ -69,7 +69,7 @@ class Chef
           private
 
           def calc_checksum(value)
-            OpenSSL::Digest.hexdigest("MD5", value)
+            ::Digest::MD5.hexdigest(value)
           end
         end
       end
