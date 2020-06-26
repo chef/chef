@@ -39,7 +39,7 @@ Gem::Specification.new do |s|
   s.add_dependency "tty-screen", "~> 0.6" # knife list
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
-  s.add_dependency "ffi-libarchive"
+  s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3"
   s.add_dependency "chef-zero", ">= 14.0.11"
 
   s.add_dependency "plist", "~> 3.2"
