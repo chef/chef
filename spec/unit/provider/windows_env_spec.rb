@@ -20,9 +20,11 @@ require "spec_helper"
 
 describe Chef::Provider::WindowsEnv, :windows_only do
 
-  before do
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
 
+  before do
     @new_resource = Chef::Resource::WindowsEnv.new("FOO")
     @new_resource.value("bar")
     @new_resource.user("<System>")
