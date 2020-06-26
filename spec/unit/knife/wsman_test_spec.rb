@@ -1,6 +1,6 @@
 #
 # Author:: Steven Murawski (<smurawski@chef.io>)
-# Copyright:: Copyright (c) 2015-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,6 +37,7 @@ describe Chef::Knife::WsmanTest do
     allow(Chef::HTTP::DefaultSSLPolicy).to receive(:new)
       .with(http_client_mock.ssl_config)
       .and_return(ssl_policy)
+    subject.merge_configs
   end
 
   subject { Chef::Knife::WsmanTest.new(["-m", "localhost"]) }

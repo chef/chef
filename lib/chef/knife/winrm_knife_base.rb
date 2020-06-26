@@ -1,6 +1,6 @@
 #
 # Author:: Steven Murawski (<smurawski@chef.io)
-# Copyright:: Copyright (c) 2015-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 require_relative "../knife"
 require_relative "winrm_base"
 require_relative "winrm_shared_options"
+require_relative "winrm_session"
 
 class Chef
   class Knife
@@ -39,15 +40,8 @@ class Chef
           include Chef::Knife::WinrmBase
           include Chef::Knife::WinrmSharedOptions
 
-          def locate_config_value(key)
-            key = key.to_sym
-            value = config[key] || Chef::Config[:knife][key] || default_config[key]
-            Chef::Log.debug("Looking for key #{key} and found value #{value}")
-            value
-          end
-
           def validate_winrm_options!
-            winrm_auth_protocol = locate_config_value(:winrm_authentication_protocol)
+            winrm_auth_protocol = config[:winrm_authentication_protocol]
 
             unless Chef::Knife::WinrmBase::WINRM_AUTH_PROTOCOL_LIST.include?(winrm_auth_protocol)
               ui.error "Invalid value '#{winrm_auth_protocol}' for --winrm-authentication-protocol option."
@@ -125,7 +119,7 @@ class Chef
             @session_results = []
             queue = Queue.new
             @winrm_sessions.each { |s| queue << s }
-            num_sessions = locate_config_value(:concurrency)
+            num_sessions = config[:concurrency]
             num_targets = @winrm_sessions.length
             num_sessions = (num_sessions.nil? || num_sessions == 0) ? num_targets : [num_sessions, num_targets].min
 
@@ -151,7 +145,7 @@ class Chef
             if authorization_error?(e)
               unless config[:suppress_auth_failure]
                 # Display errors if the caller hasn't opted to retry
-                ui.error "Failed to authenticate to #{s.host} as #{locate_config_value(:winrm_user)}"
+                ui.error "Failed to authenticate to #{s.host} as #{config[:winrm_user]}"
                 ui.info "Response: #{e.message}"
                 ui.info get_failed_authentication_hint
                 raise e
@@ -207,33 +201,35 @@ class Chef
           end
 
           def resolve_session_options
+            config[:winrm_port] ||= ( config[:winrm_transport] == "ssl" ) ? "5986" : "5985"
+
             @session_opts = {
               user: resolve_winrm_user,
-              password: locate_config_value(:winrm_password),
-              port: locate_config_value(:winrm_port),
+              password: config[:winrm_password],
+              port: config[:winrm_port],
               operation_timeout: resolve_winrm_session_timeout,
               basic_auth_only: resolve_winrm_basic_auth,
               disable_sspi: resolve_winrm_disable_sspi,
               transport: resolve_winrm_transport,
               no_ssl_peer_verification: resolve_no_ssl_peer_verification,
               ssl_peer_fingerprint: resolve_ssl_peer_fingerprint,
-              shell: locate_config_value(:winrm_shell),
-              codepage: locate_config_value(:winrm_codepage),
+              shell: config[:winrm_shell],
+              codepage: config[:winrm_codepage],
             }
 
             if @session_opts[:user] && (not @session_opts[:password])
-              @session_opts[:password] = Chef::Config[:knife][:winrm_password] = config[:winrm_password] = get_password
+              @session_opts[:password] = config[:winrm_password] = get_password
             end
 
             if @session_opts[:transport] == :kerberos
               @session_opts.merge!(resolve_winrm_kerberos_options)
             end
 
-            @session_opts[:ca_trust_path] = locate_config_value(:ca_trust_file) if locate_config_value(:ca_trust_file)
+            @session_opts[:ca_trust_path] = config[:ca_trust_file] if config[:ca_trust_file]
           end
 
           def resolve_winrm_user
-            user = locate_config_value(:winrm_user)
+            user = config[:winrm_user]
 
             # Prefixing with '.\' when using negotiate
             # to auth user against local machine domain
@@ -249,23 +245,23 @@ class Chef
 
           def resolve_winrm_session_timeout
             # 30 min (Default) OperationTimeout for long bootstraps fix for KNIFE_WINDOWS-8
-            locate_config_value(:session_timeout).to_i * 60 if locate_config_value(:session_timeout)
+            config[:session_timeout].to_i * 60 if config[:session_timeout]
           end
 
           def resolve_winrm_basic_auth
-            locate_config_value(:winrm_authentication_protocol) == "basic"
+            config[:winrm_authentication_protocol] == "basic"
           end
 
           def resolve_winrm_kerberos_options
             kerberos_opts = {}
-            kerberos_opts[:keytab] = locate_config_value(:kerberos_keytab_file) if locate_config_value(:kerberos_keytab_file)
-            kerberos_opts[:realm] = locate_config_value(:kerberos_realm) if locate_config_value(:kerberos_realm)
-            kerberos_opts[:service] = locate_config_value(:kerberos_service) if locate_config_value(:kerberos_service)
+            kerberos_opts[:keytab] = config[:kerberos_keytab_file] if config[:kerberos_keytab_file]
+            kerberos_opts[:realm] = config[:kerberos_realm] if config[:kerberos_realm]
+            kerberos_opts[:service] = config[:kerberos_service] if config[:kerberos_service]
             kerberos_opts
           end
 
           def resolve_winrm_transport
-            transport = locate_config_value(:winrm_transport).to_sym
+            transport = config[:winrm_transport].to_sym
             if config.any? { |k, v| k.to_s =~ /kerberos/ && !v.nil? }
               transport = :kerberos
             elsif transport != :ssl && negotiate_auth?
@@ -276,11 +272,11 @@ class Chef
           end
 
           def resolve_no_ssl_peer_verification
-            locate_config_value(:ca_trust_file).nil? && config[:winrm_ssl_verify_mode] == :verify_none && resolve_winrm_transport == :ssl
+            config[:ca_trust_file].nil? && config[:winrm_ssl_verify_mode] == :verify_none && resolve_winrm_transport == :ssl
           end
 
           def resolve_ssl_peer_fingerprint
-            locate_config_value(:ssl_peer_fingerprint)
+            config[:ssl_peer_fingerprint]
           end
 
           def resolve_winrm_disable_sspi
@@ -292,7 +288,7 @@ class Chef
           end
 
           def negotiate_auth?
-            locate_config_value(:winrm_authentication_protocol) == "negotiate"
+            config[:winrm_authentication_protocol] == "negotiate"
           end
 
           def warn_no_ssl_peer_verification

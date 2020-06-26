@@ -1,6 +1,6 @@
 #
 # Author:: Steven Murawski <smurawski@chef.io>
-# Copyright:: Copyright (c) 2015-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) 2015-2020 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,6 @@
 require "spec_helper"
 require_relative "../../../lib/chef/knife/winrm"
 require_relative "dummy_winrm_connection"
-
-Chef::Knife::Winrm.load_deps
 
 describe Chef::Knife::WinrmSession do
   let(:winrm_connection) { Dummy::Connection.new }

@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@chef.io>
-# Copyright:: Copyright (c) 2013-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,7 @@
 
 require "spec_helper"
 require_relative "../../../lib/chef/knife/winrm"
-require_relative "dummy_winrm_connection"
-
-Chef::Knife::Winrm.load_deps
+require_relative "../../support/dummy_winrm_connection"
 
 describe Chef::Knife::Winrm do
   before do
@@ -252,7 +250,7 @@ describe Chef::Knife::Winrm do
         end
 
         it "sets the user specified winrm port" do
-          Chef::Config[:knife] = { winrm_port: "5988" }
+          winrm_command_http.config[:knife] = { winrm_port: "5988" }
           expect(Chef::Knife::WinrmSession).to receive(:new).with(hash_including(transport: :plaintext)).and_call_original
           expect(WinRM::Connection).to receive(:new).with(hash_including(transport: :plaintext)).and_return(winrm_connection)
           winrm_command_http.configure_chef
@@ -271,7 +269,7 @@ describe Chef::Knife::Winrm do
         let(:winrm_command_https) { Chef::Knife::Winrm.new(["-m", "localhost", "-x", "testuser", "-P", "testpassword", "--winrm-transport", "ssl", "echo helloworld"]) }
 
         it "uses the https uri scheme if the ssl transport is specified" do
-          Chef::Config[:knife] = { winrm_transport: "ssl" }
+          winrm_command_http.config[:winrm_transport] = "ssl"
           expect(Chef::Knife::WinrmSession).to receive(:new).with(hash_including(transport: :ssl)).and_call_original
           expect(WinRM::Connection).to receive(:new).with(hash_including(endpoint: "https://localhost:5986/wsman")).and_return(winrm_connection)
           winrm_command_https.configure_chef
@@ -279,7 +277,7 @@ describe Chef::Knife::Winrm do
         end
 
         it "uses the winrm port '5986' by default for ssl transport" do
-          Chef::Config[:knife] = { winrm_transport: "ssl" }
+          winrm_command_http.config[:winrm_transport] = "ssl"
           expect(Chef::Knife::WinrmSession).to receive(:new).with(hash_including(transport: :ssl)).and_call_original
           expect(WinRM::Connection).to receive(:new).with(hash_including(endpoint: "https://localhost:5986/wsman")).and_return(winrm_connection)
           winrm_command_https.configure_chef
@@ -363,8 +361,8 @@ describe Chef::Knife::Winrm do
 
     before(:each) do
       allow(Chef::Knife::WinrmSession).to receive(:new).and_return(session)
-      Chef::Config[:knife] = { winrm_transport: "plaintext" }
       @winrm = Chef::Knife::Winrm.new(["-m", "localhost", "-x", "testuser", "-P", "testpassword", "--winrm-authentication-protocol", "basic", "echo helloworld"])
+      @winrm.config[:winrm_transport] = "plaintext"
     end
 
     it "returns with 0 if the command succeeds" do
@@ -377,7 +375,6 @@ describe Chef::Knife::Winrm do
       command_status = 510
 
       @winrm.config[:returns] = "0"
-      Chef::Config[:knife][:returns] = [0]
 
       allow(@winrm).to receive(:relay_winrm_command)
       allow(@winrm.ui).to receive(:error)
@@ -388,7 +385,6 @@ describe Chef::Knife::Winrm do
     it "exits with non-zero status if the command fails and returns config is set to 0" do
       command_status = 1
       @winrm.config[:returns] = "0,53"
-      Chef::Config[:knife][:returns] = [0, 53]
       allow(@winrm).to receive(:relay_winrm_command).and_return(command_status)
       allow(@winrm.ui).to receive(:error)
       allow(session).to receive(:exit_code).and_return(command_status)
@@ -397,7 +393,7 @@ describe Chef::Knife::Winrm do
 
     it "exits with a zero status if the command returns an expected non-zero status" do
       command_status = 53
-      Chef::Config[:knife][:returns] = [0, 53]
+      @winrm.config[:returns] = "0,53"
       allow(@winrm).to receive(:relay_winrm_command).and_return(command_status)
       allow(session).to receive(:exit_codes).and_return({ "thishost" => command_status })
       exit_code = @winrm.run
@@ -450,7 +446,7 @@ describe Chef::Knife::Winrm do
 
     context "when winrm_authentication_protocol specified" do
       before do
-        Chef::Config[:knife] = { winrm_transport: "plaintext" }
+        @winrm.config[:winrm_transport] = "plaintext"
         allow(@winrm).to receive(:relay_winrm_command).and_return(0)
       end
 
