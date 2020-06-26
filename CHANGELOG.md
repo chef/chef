@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.62 -->
-## [v16.2.62](https://github.com/chef/chef/tree/v16.2.62) (2020-06-26)
+<!-- latest_release 16.2.63 -->
+## [v16.2.63](https://github.com/chef/chef/tree/v16.2.63) (2020-06-26)
 
 #### Merged Pull Requests
-- fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock))
+- Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50)) <!-- 16.2.63 -->
 - fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock)) <!-- 16.2.62 -->
 - Update the windows_user_privilege resource to have a `:clear` action [#10063](https://github.com/chef/chef/pull/10063) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.61 -->
 - specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins)) <!-- 16.2.60 -->
