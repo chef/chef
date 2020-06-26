@@ -94,7 +94,7 @@ describe Chef::Provider::Batch do
   end
 
   describe "#command" do
-    let(:basepath) { "C:\\Windows\\system32" }
+    let(:basepath) { "C:\\Windows\\system32\\" }
     let(:interpreter) { File.join(basepath, "cmd.exe") }
 
     before do

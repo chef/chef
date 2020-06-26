@@ -454,7 +454,11 @@ describe Chef::Environment do
 
         expect do
           Chef::Environment.load("foo")
-        end.to raise_error Chef::Exceptions::InvalidEnvironmentPath, "Environment path '/var/chef/environments' is invalid"
+        end.to raise_error(
+          an_instance_of(Chef::Exceptions::InvalidEnvironmentPath).and having_attributes(
+            message: "Environment path '#{windows? ? "C:/var/chef/environments" : "/var/chef/environments"}' is invalid"
+          )
+        )
       end
 
       it "should raise an error if the file does not exist" do
