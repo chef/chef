@@ -1255,19 +1255,36 @@ describe Chef::Resource do
       expect(block_value).to eq(original_umask)
     end
 
-    it "changes the umask in the block to the set value" do
-      resource.umask = "0123"
+    if windows?
+      it "is a no-op on Windows" do
+        resource.umask = "0123"
 
-      block_value = nil
+        block_value = nil
 
-      resource.with_umask do
-        block_value = ::File.umask
+        resource.with_umask do
+          block_value = ::File.umask
+        end
+
+        # Format the returned value so a potential error message is easier to understand.
+        actual_value = block_value.to_s(8).rjust(4, "0")
+
+        expect(actual_value).to eq("0000")
       end
+    else
+      it "changes the umask in the block to the set value" do
+        resource.umask = "0123"
 
-      # Format the returned value so a potential error message is easier to understand.
-      actual_value = block_value.to_s(8).rjust(4, "0")
+        block_value = nil
 
-      expect(actual_value).to eq("0123")
+        resource.with_umask do
+          block_value = ::File.umask
+        end
+
+        # Format the returned value so a potential error message is easier to understand.
+        actual_value = block_value.to_s(8).rjust(4, "0")
+
+        expect(actual_value).to eq("0123")
+      end
     end
 
     it "resets the umask afterwards" do
