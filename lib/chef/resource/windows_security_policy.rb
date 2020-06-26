@@ -82,12 +82,10 @@ class Chef
 
       load_current_value do |desired|
         secopt_values = load_secopts_state
-        output = powershell_out(secopt_values)
-        if output.stdout.empty?
-          current_value_does_not_exist!
-        else
-          state = Chef::JSONCompat.from_json(output.stdout)
-        end
+        output = powershell_out(secopt_values).stdout.strip
+        current_value_does_not_exist! if output.empty?
+          
+        state = Chef::JSONCompat.from_json(output)
         secvalue state[desired.secoption.to_s]
       end
 
