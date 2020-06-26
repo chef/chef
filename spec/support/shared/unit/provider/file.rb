@@ -484,19 +484,23 @@ shared_examples_for Chef::Provider::File do
 
         it "raises an exception if any verification fails" do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
-          provider.new_resource.verify windows? ? "REM" : "true"
-          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
-          msg = "Proposed content for #{provider.new_resource.path} failed verification #{windows? ? "cmd.exe /c exit 1" : "false"}"
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, /#{msg}/)
+          allow(provider).to receive(:tempfile).and_return(tempfile)
+          provider.new_resource.verify windows? ? "cmd.exe c exit 1" : "false"
+          provider.new_resource.verify.each do |v|
+            allow(v).to receive(:verify).and_return(false)
+          end
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed)
         end
 
         it "does not show verification for sensitive resources" do
           allow(File).to receive(:directory?).with("C:\\Windows\\system32/cmd.exe").and_return(false)
-          provider.new_resource.verify windows? ? "REM" : "true"
-          provider.new_resource.verify windows? ? "cmd.exe /c exit 1" : "false"
+          allow(provider).to receive(:tempfile).and_return(tempfile)
           provider.new_resource.sensitive true
-          msg = "Proposed content for #{provider.new_resource.path} failed verification [sensitive]\nTemporary file moved to #{backupfile}"
-          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, msg)
+          provider.new_resource.verify windows? ? "cmd.exe c exit 1" : "false"
+          provider.new_resource.verify.each do |v|
+            allow(v).to receive(:verify).and_return(false)
+          end
+          expect { provider.send(:do_validate_content) }.to raise_error(Chef::Exceptions::ValidationFailed, /sensitive/)
         end
       end
     end

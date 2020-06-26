@@ -164,6 +164,8 @@ describe Chef::Application::Solo do
   end
 
   context "in local mode" do
+    let(:root_path) { windows? ? "C:/var/chef" : "/var/chef" }
+
     before do
       Chef::Config[:solo_legacy_mode] = false
     end
@@ -197,10 +199,10 @@ describe Chef::Application::Solo do
     end
 
     it "sets the repo path" do
-      expect(Chef::Config).to receive(:find_chef_repo_path).and_return("/var/chef")
+      expect(Chef::Config).to receive(:find_chef_repo_path).and_return(root_path)
       app.reconfigure
       expect(Chef::Config.key?(:chef_repo_path)).to be_truthy
-      expect(Chef::Config[:chef_repo_path]).to eq ("/var/chef")
+      expect(Chef::Config[:chef_repo_path]).to eq (root_path)
     end
 
     it "runs chef-client in local mode" do

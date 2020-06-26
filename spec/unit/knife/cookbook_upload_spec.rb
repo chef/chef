@@ -323,19 +323,18 @@ describe Chef::Knife::CookbookUpload do
 
         context "when cookbook path is an array" do
           it "should warn users that no cookbooks exist" do
-            knife.config[:cookbook_path] = ["/chef-repo/cookbooks", "/home/user/cookbooks"]
-            expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path].join(', ')}'\. Use --cookbook-path to specify the desired path\./
-            )
+            coockbook_path = windows? ? "C:/chef-repo/cookbooks" : "C:/chef-repo/cookbooks"
+            knife.config[:cookbook_path] = [coockbook_path, "/home/user/cookbooks"]
+            expect(knife.ui).to receive(:warn).with("Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path].join(", ")}'. Use --cookbook-path to specify the desired path.")
             knife.run
           end
         end
 
         context "when cookbook path is a string" do
           it "should warn users that no cookbooks exist" do
-            knife.config[:cookbook_path] = "/chef-repo/cookbooks"
+            knife.config[:cookbook_path] = windows? ? "C:/chef-repo/cookbooks" : "C:/chef-repo/cookbooks"
             expect(knife.ui).to receive(:warn).with(
-              /Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path]}'\. Use --cookbook-path to specify the desired path\./
+              "Could not find any cookbooks in your cookbook path: '#{knife.config[:cookbook_path]}'. Use --cookbook-path to specify the desired path."
             )
             knife.run
           end

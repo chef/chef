@@ -240,20 +240,23 @@ describe Chef::DataBag do
 
       it "should raise an error if the configured data_bag_path is invalid" do
         file_dir_stub(@paths.first, false)
+        msg = "Data bag path '#{windows? ? "C:/var/chef" : "/var/chef"}/data_bags' not found. Please create this directory."
 
         expect do
           Chef::DataBag.load("foo")
-        end.to raise_error Chef::Exceptions::InvalidDataBagPath, "Data bag path '/var/chef/data_bags' not found. Please create this directory."
+        end.to raise_error Chef::Exceptions::InvalidDataBagPath, msg
       end
 
     end
 
     describe "data bag with string path" do
-      it_should_behave_like "data bag in solo mode", "/var/chef/data_bags"
+      it_should_behave_like "data bag in solo mode", "#{windows? ? "C:/var/chef" : "/var/chef"}/data_bags"
     end
 
     describe "data bag with array path" do
-      it_should_behave_like "data bag in solo mode", ["/var/chef/data_bags", "/var/chef/data_bags_2"]
+      it_should_behave_like "data bag in solo mode", %w{data_bags data_bags_2}.map { |data_bag|
+        "#{windows? ? "C:/var/chef" : "/var/chef"}/#{data_bag}"
+      }
     end
   end
 
