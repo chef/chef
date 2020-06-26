@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 309b638d8434b8a98f7c54329947ea11c8373ef4
+  revision: d8d6cc3aa61b8ba9611be452f43618f5a6138ade
   branch: master
   specs:
-    chefstyle (1.1.1)
-      rubocop (= 0.85.1)
+    chefstyle (1.1.2)
+      rubocop (= 0.86.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -40,7 +40,7 @@ PATH
       ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (>= 1.9.25)
-      ffi-libarchive
+      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
@@ -74,7 +74,7 @@ PATH
       ed25519 (~> 1.2)
       erubis (~> 2.7)
       ffi (>= 1.9.25)
-      ffi-libarchive
+      ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
@@ -318,13 +318,13 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.85.1)
+    rubocop (0.86.0)
       parallel (~> 1.10)
       parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.7)
       rexml
-      rubocop-ast (>= 0.0.3)
+      rubocop-ast (>= 0.0.3, < 1.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (0.0.3)
