@@ -65,7 +65,7 @@ describe Chef::Resource::Service, :requires_root, :opensuse do
     provider
   end
 
-  let (:service_name) { "Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)" }
+  let(:service_name) { "Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)" }
 
   let(:current_resource) do
     provider.load_current_resource

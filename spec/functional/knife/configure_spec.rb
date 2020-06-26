@@ -21,7 +21,7 @@ require "spec_helper"
 require "chef/knife/configure"
 
 describe "knife configure" do
-  let (:ohai) do
+  let(:ohai) do
     OHAI_SYSTEM
   end
 

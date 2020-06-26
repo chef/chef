@@ -24,7 +24,7 @@ describe "knife data bag from file", :workstation do
 
   include_context "default config options"
 
-  let (:db_dir) { "#{@repository_dir}/data_bags" }
+  let(:db_dir) { "#{@repository_dir}/data_bags" }
 
   when_the_chef_server "has an empty data bag" do
     before do

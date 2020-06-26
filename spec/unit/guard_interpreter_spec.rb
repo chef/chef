@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::GuardInterpreter do
   describe "#for_resource" do
-    let (:resource) { Chef::Resource.new("foo") }
+    let(:resource) { Chef::Resource.new("foo") }
 
     it "returns a DefaultGuardInterpreter if the resource has guard_interpreter set to :default" do
       resource.guard_interpreter :default

@@ -30,7 +30,7 @@ describe Chef::Provider::User::Dscl do
   let(:salt) { nil }
   let(:iterations) { nil }
 
-  let (:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
 
   let(:node) do
     Chef::Node.new.tap do |node|
@@ -39,7 +39,7 @@ describe Chef::Provider::User::Dscl do
     end
   end
 
-  let (:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
 
   let(:new_resource) do
     r = Chef::Resource::User::DsclUser.new("toor", run_context)

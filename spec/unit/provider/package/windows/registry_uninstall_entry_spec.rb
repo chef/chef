@@ -8,7 +8,7 @@ describe Chef::Provider::Package::Windows::RegistryUninstallEntry do
 
   describe "when QuietUninstallString key not present" do
     let(:quiet_uninstall_string) { nil }
-    let (:quiet_uninstall_string_key) { Chef::Provider::Package::Windows::RegistryUninstallEntry.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry).uninstall_string }
+    let(:quiet_uninstall_string_key) { Chef::Provider::Package::Windows::RegistryUninstallEntry.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry).uninstall_string }
     it "returns UninstallString key value" do
       expect(quiet_uninstall_string_key).to eql "UninstallStringPath"
     end
@@ -16,14 +16,14 @@ describe Chef::Provider::Package::Windows::RegistryUninstallEntry do
 
   describe "when QuietUninstallString key present" do
     let(:quiet_uninstall_string) { "QuietUninstallString" }
-    let (:quiet_uninstall_string_key) { Chef::Provider::Package::Windows::RegistryUninstallEntry.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry).uninstall_string }
+    let(:quiet_uninstall_string_key) { Chef::Provider::Package::Windows::RegistryUninstallEntry.quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry).uninstall_string }
     it "returns QuietUninstallString key value" do
       expect(quiet_uninstall_string_key).to eql "QuietUninstallStringPath"
     end
   end
 
   describe ".find_entries", :windows_only do
-    let (:registry_uninstall_entry) { Chef::Provider::Package::Windows::RegistryUninstallEntry }
+    let(:registry_uninstall_entry) { Chef::Provider::Package::Windows::RegistryUninstallEntry }
     before(:each) do
       allow_any_instance_of(::Win32::Registry).to receive(:open).and_return("::Win32::Registry::HKEY_CURRENT_USER")
     end

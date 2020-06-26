@@ -1,15 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.56 -->
-## [v16.2.56](https://github.com/chef/chef/tree/v16.2.56) (2020-06-24)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock))
+- Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.63 -->
+- Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50)) <!-- 16.2.63 -->
+- fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock)) <!-- 16.2.62 -->
+- Update the windows_user_privilege resource to have a `:clear` action [#10063](https://github.com/chef/chef/pull/10063) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.61 -->
+- specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins)) <!-- 16.2.60 -->
+- Bump the external tests to 2.7 [#10062](https://github.com/chef/chef/pull/10062) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.59 -->
+- Bump train-core to 3.3.4 [#10067](https://github.com/chef/chef/pull/10067) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.58 -->
+- Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari)) <!-- 16.2.57 -->
 - consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock)) <!-- 16.2.56 -->
 - Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins)) <!-- 16.2.55 -->
 - Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins)) <!-- 16.2.54 -->

@@ -20,15 +20,21 @@ require "chef"
 require "spec_helper"
 
 describe Chef::Provider::DscResource do
-  let (:events) { Chef::EventDispatch::Dispatcher.new }
-  let (:run_context) { Chef::RunContext.new(node, {}, events) }
-  let (:resource) { Chef::Resource::DscResource.new("dscresource", run_context) }
-  let (:provider) do
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::DscResource.new("dscresource", run_context) }
+  let(:provider) do
     Chef::Provider::DscResource.new(resource, run_context)
   end
 
+  let(:node) do
+    node = Chef::Node.new
+    node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
+    node
+  end
+
   context "when PowerShell does not support Invoke-DscResource" do
-    let (:node) do
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       node
@@ -45,7 +51,7 @@ describe Chef::Provider::DscResource do
 
     context "when RefreshMode is not set to Disabled" do
       context "and the WMF 5 is a preview release" do
-        let (:node) do
+        let(:node) do
           node = Chef::Node.new
           node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
           node
@@ -58,7 +64,7 @@ describe Chef::Provider::DscResource do
         end
       end
       context "and the WMF is 5 RTM or newer" do
-        let (:node) do
+        let(:node) do
           node = Chef::Node.new
           node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
           node
@@ -74,15 +80,15 @@ describe Chef::Provider::DscResource do
   end
 
   context "when the LCM supports Invoke-DscResource" do
-    let (:node) do
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       node
     end
-    let (:resource_result) { double("CmdletResult", return_value: { "InDesiredState" => true }, stream: "description") }
-    let (:invoke_dsc_resource) { double("cmdlet", run!: resource_result) }
-    let (:store) { double("ResourceStore", find: resource_records) }
-    let (:resource_records) { [] }
+    let(:resource_result) { double("CmdletResult", return_value: { "InDesiredState" => true }, stream: "description") }
+    let(:invoke_dsc_resource) { double("cmdlet", run!: resource_result) }
+    let(:store) { double("ResourceStore", find: resource_records) }
+    let(:resource_records) { [] }
 
     before do
       allow(Chef::Util::DSC::ResourceStore).to receive(:instance).and_return(store)
@@ -124,7 +130,7 @@ describe Chef::Provider::DscResource do
     end
 
     context "resource name cannot be found" do
-      let (:resource_records) { [] }
+      let(:resource_records) { [] }
 
       it "raises ResourceNotFound" do
         expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::ResourceNotFound)
@@ -133,7 +139,7 @@ describe Chef::Provider::DscResource do
 
     context "resource name is found" do
       context "no module name for resource found" do
-        let (:resource_records) { [{}] }
+        let(:resource_records) { [{}] }
 
         it "returns the default dsc resource module" do
           expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
@@ -144,7 +150,7 @@ describe Chef::Provider::DscResource do
       end
 
       context "a module name for resource is found" do
-        let (:resource_records) { [{ "Module" => { "Name" => "ModuleName" } }] }
+        let(:resource_records) { [{ "Module" => { "Name" => "ModuleName" } }] }
 
         it "returns the default dsc resource module" do
           expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
@@ -155,7 +161,7 @@ describe Chef::Provider::DscResource do
       end
 
       context "multiple resource are found" do
-        let (:resource_records) do
+        let(:resource_records) do
           [
           { "Module" => { "Name" => "ModuleName1", "Version" => "1.0.0.0" } },
           { "Module" => { "Name" => "ModuleName1", "Version" => "2.0.0.0" } },
@@ -170,10 +176,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "define_resource_requirements" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module usage is valid" do
       before do
         allow(provider).to receive(:module_usage_valid?).and_return(true)
@@ -208,10 +210,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "module_usage_valid?" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module_name and module_version both are not provided" do
       before do
         provider.instance_variable_set(:@module_name, nil)
@@ -262,10 +260,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "module_info_object" do
-    let (:node) do
-      set_node_object
-    end
-
     context "module_version is not given" do
       before do
         provider.instance_variable_set(:@module_version, nil)
@@ -292,10 +286,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "invoke_resource" do
-    let (:node) do
-      set_node_object
-    end
-
     let(:cmdlet) { double(run!: nil) }
 
     before(:each) do
@@ -337,10 +327,4 @@ describe Chef::Provider::DscResource do
       end
     end
   end
-end
-
-def set_node_object
-  node = Chef::Node.new
-  node.automatic[:languages][:powershell][:version] = "5.0.10586.0"
-  node
 end

@@ -21,6 +21,7 @@ require_relative "../../chef"
 require_relative "../application"
 require_relative "../client"
 require_relative "../config"
+require_relative "../config_fetcher"
 require_relative "../log"
 require "fileutils" unless defined?(FileUtils)
 require "tempfile" unless defined?(Tempfile)

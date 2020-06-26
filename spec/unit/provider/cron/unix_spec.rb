@@ -93,7 +93,7 @@ describe Chef::Provider::Cron::Unix do
     end
 
     context "when any other error occurs" do
-      let (:exitstatus) { 2 }
+      let(:exitstatus) { 2 }
 
       it "should raise an exception if another error occurs" do
         expect do

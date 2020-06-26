@@ -20,17 +20,17 @@ require "spec_helper"
 require "chef/chef_fs/file_pattern"
 require "chef/chef_fs/command_line"
 
-# Removes the date stamp from the diff and replaces it with ' DATE'
-# example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
-# windows match: "--- /dev/null\tTue Oct 16 18:04:34 2012"
-# https://rubular.com/r/5JdtZDqWnZhB9J
-def remove_os_differences(diff)
-  diff = diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
-  diff.gsub(/^@@ -\d(,\d)? \+-?\d(,-?\d)? @@/, "CONTEXT_LINE_NUMBERS")
-end
-
 describe "diff", uses_diff: true do
   include FileSystemSupport
+
+  # Removes the date stamp from the diff and replaces it with ' DATE'
+  # example match: "/dev/null\t2012-10-16 16:15:54.000000000 +0000"
+  # windows match: "--- /dev/null\tTue Oct 16 18:04:34 2012"
+  # https://rubular.com/r/5JdtZDqWnZhB9J
+  def remove_os_differences(diff)
+    diff = diff.gsub(/([+-]{3}.*)\t.*/, '\1 DATE')
+    diff.gsub(/^@@ -\d(,\d)? \+-?\d(,-?\d)? @@/, "CONTEXT_LINE_NUMBERS")
+  end
 
   context "with two filesystems with all types of difference" do
     let(:a) do

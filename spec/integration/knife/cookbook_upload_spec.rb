@@ -25,7 +25,7 @@ describe "knife cookbook upload", :workstation do
 
   include_context "default config options"
 
-  let (:cb_dir) { "#{@repository_dir}/cookbooks" }
+  let(:cb_dir) { "#{@repository_dir}/cookbooks" }
 
   when_the_chef_server "is empty" do
     when_the_repository "has a cookbook" do

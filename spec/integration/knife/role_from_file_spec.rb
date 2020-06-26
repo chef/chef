@@ -24,7 +24,7 @@ describe "knife role from file", :workstation do
 
   # include_context "default config options"
 
-  let (:role_dir) { "#{@repository_dir}/roles" }
+  let(:role_dir) { "#{@repository_dir}/roles" }
 
   when_the_chef_server "is empty" do
     when_the_repository "has some roles" do

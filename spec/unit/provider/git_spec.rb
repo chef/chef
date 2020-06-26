@@ -293,7 +293,7 @@ describe Chef::Provider::Git do
       end
     end
     context "with a timeout set" do
-      let (:seconds) { 10 }
+      let(:seconds) { 10 }
       before { @resource.timeout(seconds) }
       it "clones a repo with amended git options" do
         expect(@provider).to receive(:shell_out!).with(expected_cmd, default_options.merge(timeout: seconds))
@@ -301,7 +301,7 @@ describe Chef::Provider::Git do
       end
     end
     context "with a specific home" do
-      let (:override_home) do
+      let(:override_home) do
         { "HOME" => "/home/masterNinja" }
       end
       let(:overrided_options) do
@@ -337,7 +337,7 @@ describe Chef::Provider::Git do
       allow(Etc).to receive(:getpwuid).and_return(double("Struct::Passwd", name: @resource.user, dir: "/home/deployNinja"))
     end
     context "with a specific home" do
-      let (:override_home) do
+      let(:override_home) do
         { "HOME" => "/home/masterNinja" }
       end
       let(:overrided_options) do
