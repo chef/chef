@@ -87,7 +87,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def user(username)
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     usr = Chef::Resource.resource_for_node(:user, node).new(username, run_context)
     if ohai[:platform_family] == "windows"
       usr.password("ComplexPass11!")
@@ -111,6 +110,15 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       u.run_action(:remove)
     end
     # TODO: User shouldn't exist
+  end
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   shared_examples_for "correct group management" do
@@ -309,7 +317,6 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   let(:included_members) { [] }
   let(:excluded_members) { [] }
   let(:group_resource) do
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     group = Chef::Resource::Group.new(group_name, run_context)
     group.members(included_members)
     group.excluded_members(excluded_members)
