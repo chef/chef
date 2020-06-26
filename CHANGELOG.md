@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.21 -->
-## [v15.12.21](https://github.com/chef/chef/tree/v15.12.21) (2020-06-24)
+<!-- latest_release 15.12.22 -->
+## [v15.12.22](https://github.com/chef/chef/tree/v15.12.22) (2020-06-26)
 
 #### Merged Pull Requests
-- fix msu_package installation and extend the timeout to 60 minutes with a new property [#10056](https://github.com/chef/chef/pull/10056) ([tas50](https://github.com/tas50))
+- Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.11.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50)) <!-- 15.12.22 -->
 - fix msu_package installation and extend the timeout to 60 minutes with a new property [#10056](https://github.com/chef/chef/pull/10056) ([tas50](https://github.com/tas50)) <!-- 15.12.21 -->
 - Pull in misc docs / comment updates from master [#10054](https://github.com/chef/chef/pull/10054) ([tas50](https://github.com/tas50)) <!-- 15.12.20 -->
 - Pull in the latest net-ssh/net-sftp &amp; remove the http2 dep in chef-telemetry [#10053](https://github.com/chef/chef/pull/10053) ([tas50](https://github.com/tas50)) <!-- 15.12.19 -->
