@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.68 -->
-## [v16.2.68](https://github.com/chef/chef/tree/v16.2.68) (2020-06-29)
+<!-- latest_release 16.2.69 -->
+## [v16.2.69](https://github.com/chef/chef/tree/v16.2.69) (2020-06-29)
 
 #### Merged Pull Requests
-- specs: Remove test file that added a method to top-level scope. [#10027](https://github.com/chef/chef/pull/10027) ([phiggins](https://github.com/phiggins))
+- Bump inspec-core-bin to 4.21.1 [#10081](https://github.com/chef/chef/pull/10081) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.21.1 [#10081](https://github.com/chef/chef/pull/10081) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.69 -->
 - specs: Remove test file that added a method to top-level scope. [#10027](https://github.com/chef/chef/pull/10027) ([phiggins](https://github.com/phiggins)) <!-- 16.2.68 -->
 - Revert &quot;Merge pull request #10052 from chef/fix-diff-tests&quot; [#10078](https://github.com/chef/chef/pull/10078) ([phiggins](https://github.com/phiggins)) <!-- 16.2.67 -->
 - Update tests and docs for umask on Windows. [#10077](https://github.com/chef/chef/pull/10077) ([phiggins](https://github.com/phiggins)) <!-- 16.2.66 -->
