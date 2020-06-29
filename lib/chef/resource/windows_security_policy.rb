@@ -81,12 +81,43 @@ class Chef
       description: "Policy value to be set for policy name."
 
       load_current_value do |desired|
-        security_option_values = load_security_options_state
-        output = powershell_out(security_option_values).stdout.strip
-        current_value_does_not_exist! if output.empty?
+        output = powershell_exec(<<-CODE).result
+          C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
+          $secopts_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
+          Remove-Item $env:TEMP\\secopts_export.inf -force
+          $secopts_hash = ($secopts_data -Replace '"'| ConvertFrom-StringData)
+          ([PSCustomObject]@{
+            RequireLogonToChangePassword = $secopts_hash.RequireLogonToChangePassword
+            PasswordComplexity = $secopts_hash.PasswordComplexity
+            LSAAnonymousNameLookup = $secopts_hash.LSAAnonymousNameLookup
+            EnableAdminAccount = $secopts_hash.EnableAdminAccount
+            PasswordHistorySize = $secopts_hash.PasswordHistorySize
+            MinimumPasswordLength = $secopts_hash.MinimumPasswordLength
+            ResetLockoutCount = $secopts_hash.ResetLockoutCount
+            MaximumPasswordAge = $secopts_hash.MaximumPasswordAge
+            ClearTextPassword = $secopts_hash.ClearTextPassword
+            NewAdministratorName = $secopts_hash.NewAdministratorName
+            LockoutDuration = $secopts_hash.LockoutDuration
+            EnableGuestAccount = $secopts_hash.EnableGuestAccount
+            ForceLogoffWhenHourExpire = $secopts_hash.ForceLogoffWhenHourExpire
+            MinimumPasswordAge = $secopts_hash.MinimumPasswordAge
+            NewGuestName = $secopts_hash.NewGuestName
+            LockoutBadCount = $secopts_hash.LockoutBadCount
+          }) | ConvertTo-Json
+        CODE
 
+        current_value_does_not_exist! if output.empty?
         state = Chef::JSONCompat.from_json(output)
-        secvalue state[desired.secoption.to_s]
+
+        if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
+          if state["LockoutBadCount"] == "0"
+            raise Chef::Exceptions::ValidationFailed.new "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+          else
+            secvalue state[desired.secoption.to_s]
+          end
+        else
+          secvalue state[desired.secoption.to_s]
+        end
       end
 
       action :set do
@@ -111,36 +142,6 @@ class Chef
           EOH
 
           powershell_exec!(cmd)
-        end
-      end
-
-      action_class do
-        def load_security_options_state
-          <<-EOH
-            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\security_options_export.inf | Out-Null
-            # cspell:disable-next-line
-            $security_options_data = (Get-Content $env:TEMP\\security_options_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
-            Remove-Item $env:TEMP\\security_options_export.inf -force
-            $security_options_hash = ($security_options_data -Replace '"'| ConvertFrom-StringData)
-            ([PSCustomObject]@{
-              RequireLogonToChangePassword = $security_options_hash.RequireLogonToChangePassword
-              PasswordComplexity = $security_options_hash.PasswordComplexity
-              LSAAnonymousNameLookup = $security_options_hash.LSAAnonymousNameLookup
-              EnableAdminAccount = $security_options_hash.EnableAdminAccount
-              PasswordHistorySize = $security_options_hash.PasswordHistorySize
-              MinimumPasswordLength = $security_options_hash.MinimumPasswordLength
-              ResetLockoutCount = $security_options_hash.ResetLockoutCount
-              MaximumPasswordAge = $security_options_hash.MaximumPasswordAge
-              ClearTextPassword = $security_options_hash.ClearTextPassword
-              NewAdministratorName = $security_options_hash.NewAdministratorName
-              LockoutDuration = $security_options_hash.LockoutDuration
-              EnableGuestAccount = $security_options_hash.EnableGuestAccount
-              ForceLogoffWhenHourExpire = $security_options_hash.ForceLogoffWhenHourExpire
-              MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
-              NewGuestName = $security_options_hash.NewGuestName
-              LockoutBadCount = $security_options_hash.LockoutBadCount
-            }) | ConvertTo-Json
-          EOH
         end
       end
     end
