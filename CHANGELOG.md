@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.65 -->
-## [v16.2.65](https://github.com/chef/chef/tree/v16.2.65) (2020-06-26)
+<!-- latest_release 16.2.66 -->
+## [v16.2.66](https://github.com/chef/chef/tree/v16.2.66) (2020-06-29)
 
 #### Merged Pull Requests
-- Revert openssl digest update that broke FIPS [#10058](https://github.com/chef/chef/pull/10058) ([tas50](https://github.com/tas50))
+- Update tests and docs for umask on Windows. [#10077](https://github.com/chef/chef/pull/10077) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update tests and docs for umask on Windows. [#10077](https://github.com/chef/chef/pull/10077) ([phiggins](https://github.com/phiggins)) <!-- 16.2.66 -->
 - Revert openssl digest update that broke FIPS [#10058](https://github.com/chef/chef/pull/10058) ([tas50](https://github.com/tas50)) <!-- 16.2.65 -->
 - Pick some of the unit test fixes from #10068 [#10074](https://github.com/chef/chef/pull/10074) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.64 -->
 - Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.63 -->
