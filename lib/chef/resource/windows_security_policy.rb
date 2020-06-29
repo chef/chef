@@ -83,26 +83,27 @@ class Chef
       load_current_value do |desired|
         output = powershell_exec(<<-CODE).result
           C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
-          $secopts_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
+          # cspell:disable-next-line
+          $security_options_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
           Remove-Item $env:TEMP\\secopts_export.inf -force
-          $secopts_hash = ($secopts_data -Replace '"'| ConvertFrom-StringData)
+          $security_options_hash = ($security_options_data -Replace '"'| ConvertFrom-StringData)
           ([PSCustomObject]@{
-            RequireLogonToChangePassword = $secopts_hash.RequireLogonToChangePassword
-            PasswordComplexity = $secopts_hash.PasswordComplexity
-            LSAAnonymousNameLookup = $secopts_hash.LSAAnonymousNameLookup
-            EnableAdminAccount = $secopts_hash.EnableAdminAccount
-            PasswordHistorySize = $secopts_hash.PasswordHistorySize
-            MinimumPasswordLength = $secopts_hash.MinimumPasswordLength
-            ResetLockoutCount = $secopts_hash.ResetLockoutCount
-            MaximumPasswordAge = $secopts_hash.MaximumPasswordAge
-            ClearTextPassword = $secopts_hash.ClearTextPassword
-            NewAdministratorName = $secopts_hash.NewAdministratorName
-            LockoutDuration = $secopts_hash.LockoutDuration
-            EnableGuestAccount = $secopts_hash.EnableGuestAccount
-            ForceLogoffWhenHourExpire = $secopts_hash.ForceLogoffWhenHourExpire
-            MinimumPasswordAge = $secopts_hash.MinimumPasswordAge
-            NewGuestName = $secopts_hash.NewGuestName
-            LockoutBadCount = $secopts_hash.LockoutBadCount
+            RequireLogonToChangePassword = $security_options_hash.RequireLogonToChangePassword
+            PasswordComplexity = $security_options_hash.PasswordComplexity
+            LSAAnonymousNameLookup = $security_options_hash.LSAAnonymousNameLookup
+            EnableAdminAccount = $security_options_hash.EnableAdminAccount
+            PasswordHistorySize = $security_options_hash.PasswordHistorySize
+            MinimumPasswordLength = $security_options_hash.MinimumPasswordLength
+            ResetLockoutCount = $security_options_hash.ResetLockoutCount
+            MaximumPasswordAge = $security_options_hash.MaximumPasswordAge
+            ClearTextPassword = $security_options_hash.ClearTextPassword
+            NewAdministratorName = $security_options_hash.NewAdministratorName
+            LockoutDuration = $security_options_hash.LockoutDuration
+            EnableGuestAccount = $security_options_hash.EnableGuestAccount
+            ForceLogoffWhenHourExpire = $security_options_hash.ForceLogoffWhenHourExpire
+            MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
+            NewGuestName = $security_options_hash.NewGuestName
+            LockoutBadCount = $security_options_hash.LockoutBadCount
           }) | ConvertTo-Json
         CODE
 
