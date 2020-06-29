@@ -17,11 +17,11 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "timeout"
 
 describe Chef::Resource::Execute do
   let(:resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     resource = Chef::Resource::Execute.new("foo_resource", run_context)
     resource.command("echo hello")
     resource

@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/version"
 require "chef/shell"
 

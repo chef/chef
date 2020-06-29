@@ -17,11 +17,12 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 
 describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
   let(:resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
     resource = Chef::Resource::Bash.new("foo_resource", run_context)
     resource.code(code) unless code.nil?
     resource

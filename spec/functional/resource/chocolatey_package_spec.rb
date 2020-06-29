@@ -25,6 +25,10 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
   let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(" ")}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   subject do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name

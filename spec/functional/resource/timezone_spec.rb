@@ -21,6 +21,8 @@ describe Chef::Resource::Timezone, :windows_only do
   let(:timezone) { "GMT Standard Time" }
 
   def timezone_resource
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
     Chef::Resource::Timezone.new(timezone, run_context)
   end
 

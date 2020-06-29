@@ -71,6 +71,7 @@ describe Chef::Resource::Link do
   end
 
   def user(user)
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     usr = Chef::Resource.resource_for_node(:user, node).new(user, run_context)
     usr.password("ComplexPass11!") if windows?
     usr

@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
@@ -27,6 +26,7 @@ describe Chef::Resource::Ifconfig, :requires_root, :requires_ifconfig, external:
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::Ifconfig.new("10.10.0.1", run_context)
     new_resource
   end
