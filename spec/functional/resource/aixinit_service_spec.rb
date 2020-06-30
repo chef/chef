@@ -56,6 +56,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   # Actual tests
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::Service.new("chefinittest", run_context)
     new_resource.provider Chef::Provider::Service::AixInit
     new_resource.supports({ status: true, restart: true, reload: true })

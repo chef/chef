@@ -100,9 +100,16 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
     expect(shell_out("cat #{unix_mount_config_file}").stdout).not_to include("#{mount_point}:")
   end
 
-  let(:new_resource) do
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
+  end
 
+  let(:new_resource) do
     new_resource = Chef::Resource::Mount.new(@mount_point, run_context)
     new_resource.device      @device
     new_resource.name        @mount_point

@@ -23,6 +23,7 @@ describe Chef::Resource::BffPackage, :requires_root, external: ohai[:platform] !
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::BffPackage.new(@pkg_name, run_context)
     new_resource.source @pkg_path
     new_resource
