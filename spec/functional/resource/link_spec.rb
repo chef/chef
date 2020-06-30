@@ -64,14 +64,10 @@ describe Chef::Resource::Link do
     end
   end
 
-  def node
+  def user(user)
     node = Chef::Node.new
     node.consume_external_attrs(ohai.data, {})
-    node
-  end
-
-  def user(user)
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    run_context = Chef::RunContext.new(node, {}, Chef::EventDispatch::Dispatcher.new)
     usr = Chef::Resource.resource_for_node(:user, node).new(user, run_context)
     usr.password("ComplexPass11!") if windows?
     usr
