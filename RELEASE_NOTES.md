@@ -5,7 +5,7 @@ This file holds "in progress" release notes for the current release under develo
 - Habitat packages for Chef Infra Client 16 are now published with full support for the `powershell_exec` helper now added.
 - Added a new `clear` action to the `windows_user_privilege` resource.
 - Resolved a regression in Chef Infra Client 16.1 and later that caused failures running on FIPS enabled systems.
-- Resolved failures in the archive_file resource when running on Windows hosts.
+- Resolved failures in the `archive_file` resource when running on Windows hosts.
 - Resolved a failure when running `chef-apply` with the `-j` option. Thanks [@komazarari](https://github.com/komazarari).
 - Chef Infra Client running within GitHub Actions is now properly identified as running in a Docker container. Thanks [@jaymzh](http://github.com/jaymzh).
 - SSH connections are now reused improving the speed of knife bootstrap and remote resource on slow network links. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
