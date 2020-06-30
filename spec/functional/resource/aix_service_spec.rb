@@ -79,6 +79,10 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     shell_out("id -u #{ENV["USER"]}").stdout.chomp
   end
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   describe "When service is a subsystem" do
     before(:all) do
       script_dir = File.join(File.dirname(__FILE__), "/../assets/")
