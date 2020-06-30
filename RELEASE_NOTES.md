@@ -8,7 +8,7 @@ This file holds "in progress" release notes for the current release under develo
 - Resolved failures in the `archive_file` resource when running on Windows hosts.
 - Resolved a failure when running `chef-apply` with the `-j` option. Thanks [@komazarari](https://github.com/komazarari).
 - Chef Infra Client running within GitHub Actions is now properly identified as running in a Docker container. Thanks [@jaymzh](http://github.com/jaymzh).
-- SSH connections are now reused improving the speed of knife bootstrap and remote resources on slow network links. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
+- SSH connections are now reused, improving the speed of knife bootstrap and remote resources on slow network links. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen).
 - `node['network']['interfaces']` data now correctly identifies IPv6 next hops for IPv4 routes. Thanks [@cooperlees](https://github.com/cooperlees).
 - Updated  InSpec from 4.20.10 to 4.21.1.
 
