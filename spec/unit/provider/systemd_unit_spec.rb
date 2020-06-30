@@ -238,16 +238,16 @@ describe Chef::Provider::SystemdUnit, :linux_only do
       expect(current_resource.content).to eq(unit_content_string)
     end
 
-      it "does not load the user unit if the file does not exist and user is set" do
-        new_resource.user("joe")
-        allow(File).to receive(:exist?)
-          .with(unit_path_user)
-          .and_return(false)
-        expect(File).to_not receive(:read)
-          .with(unit_path_user)
-        provider.load_current_resource
-        expect(current_resource.content).to eq(nil)
-      end
+    it "does not load the user unit if the file does not exist and user is set" do
+      new_resource.user("joe")
+      allow(File).to receive(:exist?)
+        .with(unit_path_user)
+        .and_return(false)
+      expect(File).to_not receive(:read)
+        .with(unit_path_user)
+      provider.load_current_resource
+      expect(current_resource.content).to eq(nil)
+    end
   end
 
   %w{/bin/systemctl /usr/bin/systemctl}.each do |systemctl_path|
