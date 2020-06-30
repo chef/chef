@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 7bd12469af0ba7227d77124dce4cdf7b9051e331
+  revision: 8028951abb141fef97a9b2ddc5e2120f63fbc16a
   branch: master
   specs:
-    ohai (16.2.1)
+    ohai (16.2.3)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -166,7 +166,7 @@ GEM
     crack (0.4.3)
       safe_yaml (~> 1.0.0)
     debug_inspector (0.0.3)
-    diff-lcs (1.4.2)
+    diff-lcs (1.4.3)
     ecma-re-validator (0.2.1)
       regexp_parser (~> 1.2)
     ed25519 (1.2.4)
@@ -227,7 +227,7 @@ GEM
       inspec-core (= 4.21.1)
     ipaddress (0.8.3)
     iso8601 (0.12.2)
-    json (2.3.0)
+    json (2.3.1)
     json_schemer (0.2.11)
       ecma-re-validator (~> 0.2)
       hana (~> 1.3)
