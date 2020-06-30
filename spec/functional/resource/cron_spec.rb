@@ -63,8 +63,6 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   end
 
   let(:new_resource) do
-    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
-
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user "root"
     new_resource.minute "0"
