@@ -16,8 +16,8 @@
 #
 
 # This script sets the SSL_CERT_FILE environment variable to the CA cert bundle
-# that ships with omnibus packages of Chef and Chef DK. If this environment
-# variable is already configured, this script is a no-op.
+# that ships with omnibus packages of Chef Infra Client and Chef Workstation. If
+# this environment variable is already configured, this script is a no-op.
 #
 # This is required to make Chef tools use https URLs out of the box.
 

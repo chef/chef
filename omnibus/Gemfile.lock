@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: d75718522deb9faeb3c21b50c60e94daf70ce9b6
+  revision: 320d9350cdf39abdcc4c37d5bc2971b3c222a0a0
   branch: master
   specs:
-    omnibus (7.0.13)
+    omnibus (7.0.14)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.335.0)
+    aws-partitions (1.337.0)
     aws-sdk-core (3.102.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -41,7 +41,7 @@ GEM
     aws-sdk-kms (1.35.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.71.1)
+    aws-sdk-s3 (1.72.0)
       aws-sdk-core (~> 3, >= 3.102.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -164,7 +164,7 @@ GEM
     citrus (3.0.2)
     cleanroom (1.0.0)
     concurrent-ruby (1.1.6)
-    diff-lcs (1.4.2)
+    diff-lcs (1.4.3)
     ed25519 (1.2.4)
     equatable (0.6.1)
     erubi (1.9.0)
@@ -193,7 +193,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.12.2)
     jmespath (1.4.0)
-    json (2.3.0)
+    json (2.3.1)
     kitchen-vagrant (1.6.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)

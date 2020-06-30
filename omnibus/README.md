@@ -1,17 +1,16 @@
-# Client Tools Omnibus project
+# Chef Infra Client Omnibus project
 
 This project creates full-stack platform-specific packages for the following projects:
 
 - AngryChef
 - Chef
-- Chef with FIPS enabled
 
 ## Installation
 
 You must have a sane Ruby environment with Bundler installed. Ensure all the required gems are installed:
 
 ```shell
-$ bundle install --without development
+bundle install --without development
 ```
 
 ## Usage
@@ -117,7 +116,7 @@ For a complete list of all commands and platforms, run `kitchen list` or `kitche
 ## License
 
 ```text
-Copyright 2012-2018, Chef Software, Inc.
+Copyright:: Chef Software, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
