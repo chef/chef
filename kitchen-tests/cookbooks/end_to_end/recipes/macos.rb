@@ -56,6 +56,8 @@ include_recipe "git"
   end
 end
 
+build_essential
+
 launchd "io.chef.testing.fake" do
   source "io.chef.testing.fake.plist"
   action "enable"
