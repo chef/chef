@@ -6,38 +6,43 @@
 - Reserve deprecation ID that was used in Chef-15 [#10091](https://github.com/chef/chef/pull/10091) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup since=16.2.50 -->
+<!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
 - Reserve deprecation ID that was used in Chef-15 [#10091](https://github.com/chef/chef/pull/10091) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.74 -->
-- Fix release build tests, part 3 [#10093](https://github.com/chef/chef/pull/10093) ([phiggins](https://github.com/phiggins)) <!-- 16.2.73 -->
-- Fix release build tests, part 2 [#10089](https://github.com/chef/chef/pull/10089) ([phiggins](https://github.com/phiggins)) <!-- 16.2.72 -->
-- Fix release build tests [#10088](https://github.com/chef/chef/pull/10088) ([phiggins](https://github.com/phiggins)) <!-- 16.2.71 -->
-- Pin dff-lcs, bump ohai, &amp; misc omnibus updates [#10085](https://github.com/chef/chef/pull/10085) ([tas50](https://github.com/tas50)) <!-- 16.2.70 -->
-- Bump inspec-core-bin to 4.21.1 [#10081](https://github.com/chef/chef/pull/10081) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.69 -->
-- specs: Remove test file that added a method to top-level scope. [#10027](https://github.com/chef/chef/pull/10027) ([phiggins](https://github.com/phiggins)) <!-- 16.2.68 -->
-- Revert &quot;Merge pull request #10052 from chef/fix-diff-tests&quot; [#10078](https://github.com/chef/chef/pull/10078) ([phiggins](https://github.com/phiggins)) <!-- 16.2.67 -->
-- Update tests and docs for umask on Windows. [#10077](https://github.com/chef/chef/pull/10077) ([phiggins](https://github.com/phiggins)) <!-- 16.2.66 -->
-- Revert openssl digest update that broke FIPS [#10058](https://github.com/chef/chef/pull/10058) ([tas50](https://github.com/tas50)) <!-- 16.2.65 -->
-- Pick some of the unit test fixes from #10068 [#10074](https://github.com/chef/chef/pull/10074) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.64 -->
-- Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.2.63 -->
-- Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50)) <!-- 16.2.63 -->
-- fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock)) <!-- 16.2.62 -->
-- Update the windows_user_privilege resource to have a `:clear` action [#10063](https://github.com/chef/chef/pull/10063) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.61 -->
-- specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins)) <!-- 16.2.60 -->
-- Bump the external tests to 2.7 [#10062](https://github.com/chef/chef/pull/10062) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.59 -->
-- Bump train-core to 3.3.4 [#10067](https://github.com/chef/chef/pull/10067) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.58 -->
-- Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari)) <!-- 16.2.57 -->
-- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock)) <!-- 16.2.56 -->
-- Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins)) <!-- 16.2.55 -->
-- Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins)) <!-- 16.2.54 -->
-- Setup cspell to pull from our common dictionary [#10021](https://github.com/chef/chef/pull/10021) ([tas50](https://github.com/tas50)) <!-- 16.2.53 -->
-- Fix broken tests after updating diff-lcs dep [#10052](https://github.com/chef/chef/pull/10052) ([phiggins](https://github.com/phiggins)) <!-- 16.2.52 -->
-- More aggressively deprecate config_value [#10025](https://github.com/chef/chef/pull/10025) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.51 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.2.73](https://github.com/chef/chef/tree/v16.2.73) (2020-07-01)
+
+#### Merged Pull Requests
+- More aggressively deprecate config_value [#10025](https://github.com/chef/chef/pull/10025) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix broken tests after updating diff-lcs dep [#10052](https://github.com/chef/chef/pull/10052) ([phiggins](https://github.com/phiggins))
+- Setup cspell to pull from our common dictionary [#10021](https://github.com/chef/chef/pull/10021) ([tas50](https://github.com/tas50))
+- Bump diff-lcs to get bugfix. [#10057](https://github.com/chef/chef/pull/10057) ([phiggins](https://github.com/phiggins))
+- Inline some constants to prevent redefenition warnings in tests. [#10047](https://github.com/chef/chef/pull/10047) ([phiggins](https://github.com/phiggins))
+- consume powershell shim DLLs from hab package [#10022](https://github.com/chef/chef/pull/10022) ([mwrock](https://github.com/mwrock))
+- Fixed broken chef-apply with -j [#10066](https://github.com/chef/chef/pull/10066) ([komazarari](https://github.com/komazarari))
+- Bump train-core to 3.3.4 [#10067](https://github.com/chef/chef/pull/10067) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump the external tests to 2.7 [#10062](https://github.com/chef/chef/pull/10062) ([lamont-granquist](https://github.com/lamont-granquist))
+- specs: Remove more methods defined on the top-level scope [#10060](https://github.com/chef/chef/pull/10060) ([phiggins](https://github.com/phiggins))
+- Update the windows_user_privilege resource to have a `:clear` action [#10063](https://github.com/chef/chef/pull/10063) ([chef-davin](https://github.com/chef-davin))
+- fix habitat based windows service tests [#10070](https://github.com/chef/chef/pull/10070) ([mwrock](https://github.com/mwrock))
+- Update ffi-libarchive for windows fixes / pin the dep [#10072](https://github.com/chef/chef/pull/10072) ([tas50](https://github.com/tas50))
+- Remove Azure private verify pipeline [#10019](https://github.com/chef/chef/pull/10019) ([christopher-snapp](https://github.com/christopher-snapp))
+- Pick some of the unit test fixes from #10068 [#10074](https://github.com/chef/chef/pull/10074) ([lamont-granquist](https://github.com/lamont-granquist))
+- Revert openssl digest update that broke FIPS [#10058](https://github.com/chef/chef/pull/10058) ([tas50](https://github.com/tas50))
+- Update tests and docs for umask on Windows. [#10077](https://github.com/chef/chef/pull/10077) ([phiggins](https://github.com/phiggins))
+- Revert &quot;Merge pull request #10052 from chef/fix-diff-tests&quot; [#10078](https://github.com/chef/chef/pull/10078) ([phiggins](https://github.com/phiggins))
+- specs: Remove test file that added a method to top-level scope. [#10027](https://github.com/chef/chef/pull/10027) ([phiggins](https://github.com/phiggins))
+- Bump inspec-core-bin to 4.21.1 [#10081](https://github.com/chef/chef/pull/10081) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Pin dff-lcs, bump ohai, &amp; misc omnibus updates [#10085](https://github.com/chef/chef/pull/10085) ([tas50](https://github.com/tas50))
+- Fix release build tests [#10088](https://github.com/chef/chef/pull/10088) ([phiggins](https://github.com/phiggins))
+- Fix release build tests, part 2 [#10089](https://github.com/chef/chef/pull/10089) ([phiggins](https://github.com/phiggins))
+- Fix release build tests, part 3 [#10093](https://github.com/chef/chef/pull/10093) ([phiggins](https://github.com/phiggins))
+<!-- latest_stable_release -->
+
 ## [v16.2.50](https://github.com/chef/chef/tree/v16.2.50) (2020-06-23)
 
 #### Merged Pull Requests
@@ -47,7 +52,6 @@
 - Add more examples to the resource code [#10020](https://github.com/chef/chef/pull/10020) ([tas50](https://github.com/tas50))
 - Resource doc updates [#10024](https://github.com/chef/chef/pull/10024) ([phiggins](https://github.com/phiggins))
 - Bump ohai to 16.2.1 [#10035](https://github.com/chef/chef/pull/10035) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
-<!-- latest_stable_release -->
 
 ## [v16.2.44](https://github.com/chef/chef/tree/v16.2.44) (2020-06-17)
 
