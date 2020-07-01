@@ -65,6 +65,12 @@ class Chef
 
           LWRPBase.loaded_lwrps[filename] = true
 
+          unless resource_class.resource_name.nil?
+            if Chef.resource_handler_map.get(node, resource_class.resource_name, canonical: true) == resource_class
+              Chef.deprecated(:resource_name_without_provides, "Resource #{resource_class.resource_name} needs `provides :#{resource_class.resource_name}` in addition to `resource_name :#{resource_class.resource_name}` declaration")
+            end
+          end
+
           # wire up the default resource name after the class is parsed only if we haven't declared one.
           # (this ordering is important for MapCollision deprecation warnings)
           resource_class.resource_name resource_name.to_sym if resource_class.resource_name.nil?
