@@ -27,7 +27,12 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   let(:timeout) { 3600 }
 
   let(:run_context) do
-    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }

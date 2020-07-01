@@ -80,8 +80,14 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   end
 
   let(:run_context) do
-    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
+
 
   describe "When service is a subsystem" do
     before(:all) do
