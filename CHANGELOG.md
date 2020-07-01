@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.72 -->
-## [v16.2.72](https://github.com/chef/chef/tree/v16.2.72) (2020-06-30)
+<!-- latest_release 16.2.73 -->
+## [v16.2.73](https://github.com/chef/chef/tree/v16.2.73) (2020-07-01)
 
 #### Merged Pull Requests
-- Fix release build tests, part 2 [#10089](https://github.com/chef/chef/pull/10089) ([phiggins](https://github.com/phiggins))
+- Fix release build tests, part 3 [#10093](https://github.com/chef/chef/pull/10093) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.50 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix release build tests, part 3 [#10093](https://github.com/chef/chef/pull/10093) ([phiggins](https://github.com/phiggins)) <!-- 16.2.73 -->
 - Fix release build tests, part 2 [#10089](https://github.com/chef/chef/pull/10089) ([phiggins](https://github.com/phiggins)) <!-- 16.2.72 -->
 - Fix release build tests [#10088](https://github.com/chef/chef/pull/10088) ([phiggins](https://github.com/phiggins)) <!-- 16.2.71 -->
 - Pin dff-lcs, bump ohai, &amp; misc omnibus updates [#10085](https://github.com/chef/chef/pull/10085) ([tas50](https://github.com/tas50)) <!-- 16.2.70 -->
