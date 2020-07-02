@@ -60,7 +60,7 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects the justification property to accept a string value" do
-    expect { resource.justification "Because I don't want to run this compliance test"}.not_to raise_error
+    expect { resource.justification "Because I don't want to run this compliance test" }.not_to raise_error
   end
 
   it "expects the justification property to fail if given a non-string value" do
