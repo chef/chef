@@ -81,7 +81,7 @@ class Chef
       description: "Policy value to be set for policy name."
 
       load_current_value do |desired|
-        output = powershell_exec(<<-CODE).result
+        powershell_code = <<-CODE
           C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
           # cspell:disable-next-line
           $security_options_data = (Get-Content $env:TEMP\\secopts_export.inf | Select-String -Pattern "^[CEFLMNPR].* =.*$" | Out-String)
@@ -106,9 +106,9 @@ class Chef
             LockoutBadCount = $security_options_hash.LockoutBadCount
           }) | ConvertTo-Json
         CODE
-
-        current_value_does_not_exist! if output.empty?
-        state = Chef::JSONCompat.from_json(output)
+        output = powershell_out(powershell_code)
+        current_value_does_not_exist! if output.stdout.empty?
+        state = Chef::JSONCompat.from_json(output.stdout)
 
         if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
           if state["LockoutBadCount"] == "0"
@@ -142,7 +142,7 @@ class Chef
             Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
           EOH
 
-          powershell_exec!(cmd)
+          powershell_out!(cmd)
         end
       end
     end
