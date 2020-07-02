@@ -64,6 +64,6 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects the justification property to fail if given a non-string value" do
-    expect { resource.justification nil }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.justification true }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end
