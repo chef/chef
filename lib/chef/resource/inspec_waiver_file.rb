@@ -73,7 +73,11 @@ class Chef
         callbacks: {
           "Expiration date should match the following format: YYYY-MM-DD" => proc { |e|
             re = Regexp.new('([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))').freeze
-            re.match?(e)
+            if re.match?(e) || e.nil?
+              true
+            else
+              false
+            end
           },
           }
 
@@ -83,73 +87,55 @@ class Chef
       property :justification, String,
         description: "Can be any text you want and might include a reason for the waiver as well as who signed off on the waiver."
 
-      load_current_value do |desired_state|
-        filename = desired_state.file
-        if ::File.file?(filename) && ::File.readable?(filename) && !::File.zero?(filename)
-          yaml_contents = IO.read(filename)
-          waiver_hash = ::YAML.safe_load(yaml_contents)
+      action :add do
+        filename = new_resource.file
+        yaml_contents = if ::File.file?(filename) && ::File.readable?(filename) && !::File.zero?(filename)
+                          IO.read(new_resource.file)
+                        else
+                          ""
+                        end
+        waiver_hash = {}
+        waiver_hash = ::YAML.safe_load(yaml_contents) unless yaml_contents.empty?
+        control_hash = {}
+        control_hash["expiration_date"] = new_resource.expiration.to_s unless new_resource.expiration.nil?
+        control_hash["run"] = new_resource.run_test unless new_resource.run_test.nil?
+        control_hash["justification"] = new_resource.justification.to_s
 
-          file desired_state.file
-          if waiver_hash.key?("#{desired_state.control}")
-            control desired_state.control
-            if waiver_hash[desired_state.control].key?("expiration_date")
-              expiration waiver_hash[desired_state.control]["expiration_date"]
-            else
-              expiration "1111-11-11"
+        if waiver_hash.key?("#{new_resource.control}")
+          unless waiver_hash["#{new_resource.control}"] == control_hash
+            waiver_hash["#{new_resource.control}"] = {}
+            waiver_hash["#{new_resource.control}"] = control_hash
+            waiver_hash = waiver_hash.sort.to_h
+            file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
+              path new_resource.file
+              content waiver_hash.to_yaml
+              action :create
             end
-            if waiver_hash[desired_state.control].key?("run")
-              run_test waiver_hash[desired_state.control]["run"]
-            end
-            if waiver_hash[desired_state.control].key?("justification")
-              justification waiver_hash[desired_state.control]["justification"]
-            else
-              justification ""
-            end
-          else
-            control ""
           end
         else
-          file ""
-          control ""
-          justification ""
-          expiration "1111-11-11"
-        end
-      end
-
-      action :add do
-        converge_if_changed :file do
-          file "Create Waiver File #{new_resource.file}" do
-            path new_resource.file
-            action :create_if_missing
-          end
-        end
-        converge_if_changed :control, :expiration, :run_test, :justification do
-          yaml_contents = IO.read(new_resource.file)
-          waiver_hash = if yaml_contents.empty?
-                          {}
-                        else
-                          waiver_hash = ::YAML.safe_load(yaml_contents)
-                        end
           waiver_hash["#{new_resource.control}"] = {}
-          control_hash = {}
-          control_hash["expiration_date"] = new_resource.expiration.to_s unless new_resource.expiration.nil?
-          control_hash["run"] = new_resource.run_test unless new_resource.run_test.nil?
-          control_hash["justification"] = new_resource.justification.to_s
           waiver_hash["#{new_resource.control}"] = control_hash
           waiver_hash = waiver_hash.sort.to_h
-          ::File.open(new_resource.file, "w") { |f| f.puts waiver_hash.to_yaml }
+          file "Update Waiver File #{new_resource.file} to add waiver for control #{new_resource.control}" do
+            path new_resource.file
+            content waiver_hash.to_yaml
+            action :create
+          end
         end
       end
 
       action :remove do
-        if current_resource.file == new_resource.file
+        filename = new_resource.file
+        if ::File.file?(filename) && ::File.readable?(filename) && !::File.zero?(filename)
           yaml_contents = IO.read(filename)
           waiver_hash = ::YAML.safe_load(yaml_contents)
-          if waiver_hash.key?(new_resource.control)
-            converge_by "Removing #{new_resource.control} from waiver file #{new_resource.file}" do
-              waiver_hash.delete("#{new_resource.control}")
-              waiver_hash = waiver_hash.sort.to_h
-              ::File.open(new_resource.file, "w") { |f| f.puts waiver_hash.to_yaml }
+          if waiver_hash.key?("#{new_resource.control}")
+            waiver_hash.delete("#{new_resource.control}")
+            waiver_hash = waiver_hash.sort.to_h
+            file "Update Waiver File #{new_resource.file} to remove waiver for control #{new_resource.control}" do
+              path new_resource.file
+              content waiver_hash.to_yaml
+              action :create
             end
           end
         end
