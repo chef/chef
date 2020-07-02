@@ -644,12 +644,21 @@ RSpec.describe ChefConfig::Config do
 
         end
 
-        # On Windows, we'll detect an omnibus build and set this to the
-        # cacert.pem included in the package, but it's nil if you're on Windows
-        # w/o omnibus (e.g., doing development on Windows, custom build, etc.)
         unless is_windows
-          it "ChefConfig::Config[:ssl_ca_file] defaults to nil" do
-            expect(ChefConfig::Config[:ssl_ca_file]).to be_nil
+          describe "finding the Unix embedded dir" do
+            let(:default_config_location) { "/opt/chef/embedded/lib/ruby/gems/2.7.0/gems/chef-config-16.2.73/lib/chef-config/config.rb" }
+            let(:default_ca_file) { "/opt/chef/embedded/ssl/certs/cacert.pem" }
+
+            it "finds the embedded dir in the default location" do
+              allow(ChefConfig::Config).to receive(:_this_file).and_return(default_config_location)
+              expect(ChefConfig::Config.embedded_dir).to eq("/opt/chef/embedded")
+            end
+
+            it "sets the ssl_ca_cert path if the cert file is available" do
+              allow(ChefConfig::Config).to receive(:_this_file).and_return(default_config_location)
+              allow(File).to receive(:exist?).with(default_ca_file).and_return(true)
+              expect(ChefConfig::Config.ssl_ca_file).to eq(default_ca_file)
+            end
           end
         end
 
