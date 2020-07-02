@@ -91,7 +91,7 @@ shared_context Chef::Resource::WindowsScript do
       end
 
       context "when the guard's architecture is specified as 64-bit" do
-        let (:guard_architecture) { :x86_64 }
+        let(:guard_architecture) { :x86_64 }
         it "executes a 64-bit guard", :windows64_only do
           resource.only_if resource_guard_command, architecture: guard_architecture
           resource.run_action(:run)
@@ -100,7 +100,7 @@ shared_context Chef::Resource::WindowsScript do
       end
 
       context "when the guard's architecture is specified as 32-bit" do
-        let (:guard_architecture) { :i386 }
+        let(:guard_architecture) { :i386 }
         it "executes a 32-bit guard" do
           resource.only_if resource_guard_command, architecture: guard_architecture
           resource.run_action(:run)

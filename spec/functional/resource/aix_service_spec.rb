@@ -18,7 +18,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 shared_examples "src service" do
@@ -78,6 +77,15 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   def get_user_id
     shell_out("id -u #{ENV["USER"]}").stdout.chomp
+  end
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   describe "When service is a subsystem" do

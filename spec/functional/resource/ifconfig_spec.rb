@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
@@ -25,6 +24,15 @@ include_flag = !(%w{amazon debian aix}.include?(ohai[:platform_family]) || (ohai
 
 describe Chef::Resource::Ifconfig, :requires_root, :requires_ifconfig, external: include_flag do
   include Chef::Mixin::ShellOut
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
+  end
 
   let(:new_resource) do
     new_resource = Chef::Resource::Ifconfig.new("10.10.0.1", run_context)

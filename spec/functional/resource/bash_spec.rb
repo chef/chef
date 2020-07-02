@@ -17,18 +17,19 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 
 describe Chef::Resource::Bash, :unix_only do
   let(:code) { "echo hello" }
   let(:resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+
     resource = Chef::Resource::Bash.new("foo_resource", run_context)
     resource.code(code) unless code.nil?
     resource
   end
 
   describe "when setting the command property" do
-    let (:command) { "wizard racket" }
+    let(:command) { "wizard racket" }
 
     it "should raise an exception when trying to set the command" do
       expect { resource.command command }.to raise_error(Chef::Exceptions::Script)

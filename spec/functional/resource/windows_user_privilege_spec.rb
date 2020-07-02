@@ -16,7 +16,6 @@
 #
 
 require_relative "../../spec_helper"
-require_relative "../../functional/resource/base"
 
 describe Chef::Resource::WindowsUserPrivilege, :windows_only do
   let(:principal) { nil }

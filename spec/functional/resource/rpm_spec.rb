@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
@@ -26,6 +25,7 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::RpmPackage.new(@pkg_name, run_context)
     new_resource.source @pkg_path
     new_resource

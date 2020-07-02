@@ -20,14 +20,15 @@ require "spec_helper"
 
 describe Chef::Provider::WindowsEnv, :windows_only do
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   before do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
     @new_resource = Chef::Resource::WindowsEnv.new("FOO")
     @new_resource.value("bar")
     @new_resource.user("<System>")
-    @provider = Chef::Provider::WindowsEnv.new(@new_resource, @run_context)
+    @provider = Chef::Provider::WindowsEnv.new(@new_resource, run_context)
   end
 
   it "assumes the key_name exists by default" do

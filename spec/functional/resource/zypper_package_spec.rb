@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
@@ -50,6 +49,10 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
   after(:all) do
     shell_out!("rpm -qa --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm | xargs -r rpm -e")
     FileUtils.rm_f "/etc/zypp/repos.d/chef-zypp-localtesting.repo"
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
   let(:package_name) { "chef_rpm" }

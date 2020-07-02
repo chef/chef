@@ -27,8 +27,8 @@ class Chef::UnformatterTest
 end
 
 describe Chef::Mixin::Unformatter do
-  let (:unformatter) { Chef::UnformatterTest.new }
-  let (:message) { "Test Message" }
+  let(:unformatter) { Chef::UnformatterTest.new }
+  let(:message) { "Test Message" }
 
   describe "#write" do
     context "with a timestamp" do

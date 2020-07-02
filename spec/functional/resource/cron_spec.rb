@@ -18,7 +18,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::Cron, :requires_root, :unix_only do
@@ -53,6 +52,16 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   end
 
   # Actual tests
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
+  end
+
   let(:new_resource) do
     new_resource = Chef::Resource::Cron.new("Chef functional test cron", run_context)
     new_resource.user "root"

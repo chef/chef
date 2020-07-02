@@ -24,7 +24,7 @@ describe "knife node from file", :workstation do
 
   # include_context "default config options"
 
-  let (:node_dir) { "#{@repository_dir}/nodes" }
+  let(:node_dir) { "#{@repository_dir}/nodes" }
 
   when_the_chef_server "is empty" do
     when_the_repository "has some nodes" do

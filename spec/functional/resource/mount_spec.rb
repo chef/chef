@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "tmpdir"
 
@@ -99,6 +98,15 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
 
   def mount_should_be_disabled(mount_point)
     expect(shell_out("cat #{unix_mount_config_file}").stdout).not_to include("#{mount_point}:")
+  end
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   let(:new_resource) do

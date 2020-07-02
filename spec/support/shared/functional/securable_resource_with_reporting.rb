@@ -1,5 +1,4 @@
 
-require "functional/resource/base"
 
 ALL_EXPANDED_PERMISSIONS = ["generic read",
                             "generic write",

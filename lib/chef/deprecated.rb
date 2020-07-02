@@ -241,6 +241,10 @@ class Chef
       target 30
     end
 
+    class ResourceNameWithoutProvides < Base
+      target 31
+    end
+
     class Generic < Base
       def url
         "https://docs.chef.io/chef_deprecations_client/"

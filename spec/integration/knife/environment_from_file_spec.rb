@@ -24,7 +24,7 @@ describe "knife environment from file", :workstation do
 
   # include_context "default config options"
 
-  let (:env_dir) { "#{@repository_dir}/environments" }
+  let(:env_dir) { "#{@repository_dir}/environments" }
 
   when_the_chef_server "is empty" do
     when_the_repository "has some environments" do

@@ -119,10 +119,10 @@ describe "Resource.load_current_value" do
       end
     end
 
-    let (:subresource_name) do
+    let(:subresource_name) do
       :"load_current_value_subresource_dsl#{Namer.current_index}"
     end
-    let (:subresource_class) do
+    let(:subresource_class) do
       r = Class.new(resource_class) do
         property :y, default: lazy { "default_y #{Namer.incrementing_value}" }
       end

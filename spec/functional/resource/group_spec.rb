@@ -18,7 +18,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::Group, :requires_root_or_running_windows do
@@ -111,6 +110,15 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
       u.run_action(:remove)
     end
     # TODO: User shouldn't exist
+  end
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   shared_examples_for "correct group management" do

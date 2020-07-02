@@ -25,7 +25,7 @@ class Chef::PSTypeTester
 end
 
 describe Chef::Mixin::PowershellTypeCoercions do
-  let (:test_class) { Chef::PSTypeTester.new }
+  let(:test_class) { Chef::PSTypeTester.new }
 
   describe "#translate_type" do
     it "single quotes a string" do

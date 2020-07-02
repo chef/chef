@@ -229,8 +229,8 @@ describe Chef::Resource::RemoteFile do
           end
 
           context "when the resource is accessed using an alternate user's identity with no access to the file" do
-            let (:windows_nonadmin_user) { "chefremfile1" }
-            let (:windows_nonadmin_user_password) { "j82ajfxK3;2Xe1" }
+            let(:windows_nonadmin_user) { "chefremfile1" }
+            let(:windows_nonadmin_user_password) { "j82ajfxK3;2Xe1" }
             include_context "a non-admin Windows user"
 
             before do
@@ -246,8 +246,8 @@ describe Chef::Resource::RemoteFile do
         end
 
         context "when the the file is only accessible as a specific alternate identity" do
-          let (:windows_nonadmin_user) { "chefremfile2" }
-          let (:windows_nonadmin_user_password) { "j82ajfxK3;2Xe2" }
+          let(:windows_nonadmin_user) { "chefremfile2" }
+          let(:windows_nonadmin_user_password) { "j82ajfxK3;2Xe2" }
           include_context "a non-admin Windows user"
 
           before do
@@ -279,8 +279,8 @@ describe Chef::Resource::RemoteFile do
           end
 
           context "when the resource is accessed using an alternate user's identity with no access to the file" do
-            let (:windows_nonadmin_user) { "chefremfile3" }
-            let (:windows_nonadmin_user_password) { "j82ajfxK3;2Xe3" }
+            let(:windows_nonadmin_user) { "chefremfile3" }
+            let(:windows_nonadmin_user_password) { "j82ajfxK3;2Xe3" }
             include_context "a non-admin Windows user"
 
             let(:remote_user) { windows_nonadmin_user_qualified }

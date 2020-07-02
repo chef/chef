@@ -43,13 +43,16 @@ describe Chef::Resource::ChefClientSystemdTimer do
   end
 
   describe "#chef_client_cmd" do
+
+    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+
     it "creates a valid command if using all default properties" do
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client -c /etc/chef/client.rb")
+      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client -c #{root_path}")
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --foo 1 --bar 2 -c /etc/chef/client.rb")
+      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path}")
     end
 
     it "uses custom config dir if set" do
@@ -59,12 +62,12 @@ describe Chef::Resource::ChefClientSystemdTimer do
 
     it "uses custom chef-client binary if set" do
       resource.chef_binary_path "/usr/local/bin/chef-client"
-      expect(provider.chef_client_cmd).to eql("/usr/local/bin/chef-client -c /etc/chef/client.rb")
+      expect(provider.chef_client_cmd).to eql("/usr/local/bin/chef-client -c #{root_path}")
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --chef-license accept -c /etc/chef/client.rb")
+      expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --chef-license accept -c #{root_path}")
     end
   end
 end

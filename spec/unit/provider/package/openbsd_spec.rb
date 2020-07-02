@@ -27,7 +27,7 @@ describe Chef::Provider::Package::Openbsd do
     node
   end
 
-  let (:provider) do
+  let(:provider) do
     events = Chef::EventDispatch::Dispatcher.new
     run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::Package::Openbsd.new(new_resource, run_context)

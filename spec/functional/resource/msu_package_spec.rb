@@ -26,11 +26,17 @@ describe Chef::Resource::MsuPackage, :win2012r2_only do
   let(:package_identity) { "Package_for_KB2959977~31bf3856ad364e35~amd64~~6.3.1.1" }
   let(:timeout) { 3600 }
 
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
+  end
+
   let(:new_resource) { Chef::Resource::CabPackage.new("windows_test_pkg") }
   let(:cab_provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
     Chef::Provider::Package::Cab.new(new_resource, run_context)
   end
 

@@ -112,7 +112,8 @@ describe Chef::Resource::File::Verification do
       end
 
       it "returns true if the command succeeds" do
-        v = Chef::Resource::File::Verification.new(parent_resource, "true", {})
+        test_command = platform_specific_verify_command("path")
+        v = Chef::Resource::File::Verification.new(parent_resource, test_command, {})
         expect(v.verify(temp_path)).to eq(true)
       end
 

@@ -17,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 
 describe Chef::Resource::WindowsPackage, :windows_only, :volatile do
   let(:pkg_name) { nil }

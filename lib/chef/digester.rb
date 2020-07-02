@@ -19,6 +19,7 @@
 #
 
 require "openssl" unless defined?(OpenSSL)
+require "digest" unless defined?(Digest)
 require "singleton" unless defined?(Singleton)
 
 class Chef
@@ -50,11 +51,11 @@ class Chef
     end
 
     def generate_md5_checksum_for_file(file)
-      checksum_file(file, OpenSSL::Digest.new("MD5"))
+      checksum_file(file, ::Digest::MD5.new)
     end
 
     def generate_md5_checksum(io)
-      checksum_io(io, OpenSSL::Digest.new("MD5"))
+      checksum_io(io, ::Digest::MD5.new)
     end
 
     private
