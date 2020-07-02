@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.77 -->
-## [v16.2.77](https://github.com/chef/chef/tree/v16.2.77) (2020-07-02)
+<!-- latest_release 16.2.78 -->
+## [v16.2.78](https://github.com/chef/chef/tree/v16.2.78) (2020-07-02)
 
 #### Merged Pull Requests
-- Use bash not execute in build_essential for better output [#10096](https://github.com/chef/chef/pull/10096) ([tas50](https://github.com/tas50))
+- Bump train-core to 3.3.6 [#10104](https://github.com/chef/chef/pull/10104) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump train-core to 3.3.6 [#10104](https://github.com/chef/chef/pull/10104) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.78 -->
 - Use bash not execute in build_essential for better output [#10096](https://github.com/chef/chef/pull/10096) ([tas50](https://github.com/tas50)) <!-- 16.2.77 -->
 - Bump inspec-core-bin to 4.21.3 [#10101](https://github.com/chef/chef/pull/10101) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.76 -->
 - Fix syslog logging on Chef-16 [#10097](https://github.com/chef/chef/pull/10097) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.75 -->
