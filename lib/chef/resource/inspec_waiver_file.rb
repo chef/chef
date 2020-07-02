@@ -16,7 +16,6 @@
 
 require_relative "../resource"
 require_relative "../dist"
-require_relative "mixin/from_file"
 require "yaml"
 
 class Chef
