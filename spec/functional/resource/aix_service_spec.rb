@@ -88,7 +88,6 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
     Chef::RunContext.new(node, {}, events)
   end
 
-
   describe "When service is a subsystem" do
     before(:all) do
       script_dir = File.join(File.dirname(__FILE__), "/../assets/")
