@@ -84,6 +84,7 @@ class Chef
                           klass.superclass.to_s
                         end
         Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize } )
+        return map
       end
 
       # The map is sorted in order of preference already; we just need to find
