@@ -2,6 +2,8 @@
 
 set -euo pipefail
 
+export HAB_LICENSE="accept"
+
 hab_target="$1"
 
 # print error message followed by usage and exit
@@ -18,3 +20,4 @@ error () {
 echo "--- :habicat: Installing latest version of Habitat"
 rm -rf /hab
 curl https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh | bash -s -- -t "$hab_target"
+hab license accept
