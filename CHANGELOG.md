@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.75 -->
-## [v16.2.75](https://github.com/chef/chef/tree/v16.2.75) (2020-07-02)
+<!-- latest_release 16.2.76 -->
+## [v16.2.76](https://github.com/chef/chef/tree/v16.2.76) (2020-07-02)
 
 #### Merged Pull Requests
-- Fix syslog logging on Chef-16 [#10097](https://github.com/chef/chef/pull/10097) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core-bin to 4.21.3 [#10101](https://github.com/chef/chef/pull/10101) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.21.3 [#10101](https://github.com/chef/chef/pull/10101) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.76 -->
 - Fix syslog logging on Chef-16 [#10097](https://github.com/chef/chef/pull/10097) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.75 -->
 - Reserve deprecation ID that was used in Chef-15 [#10091](https://github.com/chef/chef/pull/10091) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.2.74 -->
 <!-- release_rollup -->
