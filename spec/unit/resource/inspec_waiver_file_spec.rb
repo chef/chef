@@ -56,14 +56,14 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects the run_test property to only accept true or false values" do
-    expect { resource.run_test "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.run_test true }.not_to raise_error
   end
 
   it "expects the justification property to accept a string value" do
     expect { resource.justification "Because I don't want to run this compliance test"}.not_to raise_error
   end
 
-  it "expects the run_test property to fail if given a non-string value" do
-    expect { resource.run_test nil }.to raise_error(Chef::Exceptions::ValidationFailed)
+  it "expects the justification property to fail if given a non-string value" do
+    expect { resource.justification nil }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end
