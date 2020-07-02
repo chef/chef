@@ -44,26 +44,26 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects expiration property to fail with date format YYYY/MM/DD" do
-    expect { resource.failure "2022/09/23" }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.expiration "2022/09/23" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "expects expiration property to match YYYY-MM-DD" do
-    expect { resource.failure "2022-09-23" }.not_to raise_error
+    expect { resource.expiration "2022-09-23" }.not_to raise_error
   end
 
-  it "expects the run_tests property to fail validation when not a true/false value" do
-    expect { resource.run_tests "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
+  it "expects the run_test property to fail validation when not a true/false value" do
+    expect { resource.run_test "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  it "expects the run_tests property to only accept true or false values" do
-    expect { resource.run_tests "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
+  it "expects the run_test property to only accept true or false values" do
+    expect { resource.run_test "yes" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "expects the justification property to accept a string value" do
     expect { resource.justification "Because I don't want to run this compliance test"}.not_to raise_error
   end
 
-  it "expects the run_tests property to fail if given a non-string value" do
-    expect { resource.run_tests nil }.to raise_error(Chef::Exceptions::ValidationFailed)
+  it "expects the run_test property to fail if given a non-string value" do
+    expect { resource.run_test nil }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end
