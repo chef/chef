@@ -29,8 +29,8 @@ class Chef
       ```ruby
       windows_firewall_profile 'Configure and Enable Windows Firewall Private Profile' do
         profiles 'Private'
-        default_inbound_action 'True'
-        default_outbound_action 'True'
+        default_inbound_action 'Block'
+        default_outbound_action 'Allow'
         allow_inbound_rules 'True'
         display_notification 'False'
         action :enable
@@ -42,8 +42,8 @@ class Chef
       ```ruby
       windows_firewall_profile 'Configure and Enable Windows Firewall Public Profile' do
         profile 'Public'
-        default_inbound_action 'True'
-        default_outbound_action 'True'
+        default_inbound_action 'Block'
+        default_outbound_action 'Allow'
         allow_inbound_rules 'False'
         display_notification 'False'
         action :enable
