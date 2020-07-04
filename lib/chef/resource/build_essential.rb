@@ -64,7 +64,7 @@ class Chef
 
         case
         when debian?
-          package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }
+          package %w{ autoconf binutils-doc bison build-essential flex gettext libncurses-dev }
         when fedora_derived?
           package %w{ autoconf bison flex gcc gcc-c++ gettext kernel-devel make m4 ncurses-devel patch }
         when freebsd?
