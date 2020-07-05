@@ -343,7 +343,7 @@ class Chef
       formatters_for_run.map do |formatter_name, output_path|
         if output_path.nil?
           Chef::Formatters.new(formatter_name, STDOUT_FD, STDERR_FD)
-        else
+        elsif output_path.is_a?(String)
           io = File.open(output_path, "a+")
           io.sync = true
           Chef::Formatters.new(formatter_name, io, io)

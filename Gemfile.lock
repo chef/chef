@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 6a5391298d6fa2f2c2e8fa9a09c31f33a1497ae0
+  revision: 8028951abb141fef97a9b2ddc5e2120f63fbc16a
   branch: master
   specs:
     ohai (16.2.3)
@@ -28,12 +28,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.2.74)
+    chef (16.2.80)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.74)
-      chef-utils (= 16.2.74)
+      chef-config (= 16.2.80)
+      chef-utils (= 16.2.80)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,12 +62,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.2.74-universal-mingw32)
+    chef (16.2.80-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.74)
-      chef-utils (= 16.2.74)
+      chef-config (= 16.2.80)
+      chef-utils (= 16.2.80)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.2.74)
-      chef (= 16.2.74)
+    chef-bin (16.2.80)
+      chef (= 16.2.80)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.2.74)
+    chef-config (16.2.80)
       addressable
-      chef-utils (= 16.2.74)
+      chef-utils (= 16.2.80)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.2.74)
+    chef-utils (16.2.80)
 
 GEM
   remote: https://rubygems.org/
@@ -198,7 +198,7 @@ GEM
     htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.21.1)
+    inspec-core (4.21.3)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0)
@@ -223,8 +223,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.21.1)
-      inspec-core (= 4.21.1)
+    inspec-core-bin (4.21.3)
+      inspec-core (= 4.21.3)
     ipaddress (0.8.3)
     iso8601 (0.12.2)
     json (2.3.1)
@@ -353,7 +353,7 @@ GEM
     tins (1.25.0)
       sync
     tomlrb (1.2.9)
-    train-core (3.3.4)
+    train-core (3.3.6)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)

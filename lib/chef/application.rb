@@ -194,14 +194,26 @@ class Chef
       chef_config[:log_location].map! do |log_location|
         case log_location
         when :syslog, "syslog"
+          force_force_logger
           logger::Syslog.new
         when :win_evt, "win_evt"
+          force_force_logger
           logger::WinEvt.new
         else
           # should be a path or STDOUT
           log_location
         end
       end
+    end
+
+    # Force the logger by default for the :winevt and :syslog loggers.  Since we do not and cannot
+    # support multiple log levels in a mix-and-match situation with formatters and loggers, and the
+    # formatters do not support syslog, we force the formatter off by default and the log level is
+    # thus info by default.  Users can add `--force-formatter -l info` to get back formatter output
+    # on STDOUT along with syslog logging.
+    #
+    def force_force_logger
+      chef_config[:force_logger] = true unless chef_config[:force_formatter]
     end
 
     # Use of output formatters is assumed if `force_formatter` is set or if `force_logger` is not set
