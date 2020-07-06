@@ -27,12 +27,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (15.12.23)
+    chef (15.12.24)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.12.23)
-      chef-utils (= 15.12.23)
+      chef-config (= 15.12.24)
+      chef-utils (= 15.12.24)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -59,12 +59,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (15.12.23-universal-mingw32)
+    chef (15.12.24-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.0)
       bundler (>= 1.10)
-      chef-config (= 15.12.23)
-      chef-utils (= 15.12.23)
+      chef-config (= 15.12.24)
+      chef-utils (= 15.12.24)
       chef-zero (>= 14.0.11)
       diff-lcs (~> 1.2, >= 1.2.4)
       ed25519 (~> 1.2)
@@ -107,15 +107,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (15.12.23)
-      chef (= 15.12.23)
+    chef-bin (15.12.24)
+      chef (= 15.12.24)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (15.12.23)
+    chef-config (15.12.24)
       addressable
-      chef-utils (= 15.12.23)
+      chef-utils (= 15.12.24)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -124,7 +124,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (15.12.23)
+    chef-utils (15.12.24)
 
 GEM
   remote: https://rubygems.org/
@@ -221,7 +221,7 @@ GEM
     inspec-core-bin (4.20.10)
       inspec-core (= 4.20.10)
     ipaddress (0.8.3)
-    iso8601 (0.12.2)
+    iso8601 (0.12.3)
     json (2.3.0)
     json_schemer (0.2.11)
       ecma-re-validator (~> 0.2)
@@ -235,9 +235,9 @@ GEM
       tty-box (~> 0.3)
       tty-prompt (~> 0.18)
     little-plugger (1.1.4)
-    logging (2.2.2)
+    logging (2.3.0)
       little-plugger (~> 1.1)
-      multi_json (~> 1.10)
+      multi_json (~> 1.14)
     method_source (1.0.0)
     mixlib-archive (1.0.5)
       mixlib-log

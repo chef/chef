@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.23 -->
-## [v15.12.23](https://github.com/chef/chef/tree/v15.12.23) (2020-07-01)
+<!-- latest_release 15.12.24 -->
+## [v15.12.24](https://github.com/chef/chef/tree/v15.12.24) (2020-07-06)
 
 #### Merged Pull Requests
-- Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist))
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth)) <!-- 15.12.24 -->
 - Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.12.23 -->
 <!-- release_rollup -->
 
