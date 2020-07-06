@@ -35,10 +35,13 @@
 #
 # XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
 #
+
+require_relative "dist"
+
 class Chef
   class NodeMap
     COLLISION_WARNING = <<~EOH.gsub(/\s+/, " ").strip
-      %{type_caps} %{key} from the client is overriding the %{type} from a cookbook.  Please upgrade your cookbook
+      %{type_caps} %{key} built into %{client_name} is being overridden by the %{type} from a cookbook. Please upgrade your cookbook
         or remove the cookbook from your run_list.
     EOH
 
@@ -83,7 +86,7 @@ class Chef
                         else
                           klass.superclass.to_s
                         end
-        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize } )
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: Chef::Dist::PRODUCT } )
       end
 
       # The map is sorted in order of preference already; we just need to find
