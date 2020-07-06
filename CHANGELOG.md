@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.80 -->
-## [v16.2.80](https://github.com/chef/chef/tree/v16.2.80) (2020-07-03)
+<!-- latest_release 16.2.81 -->
+## [v16.2.81](https://github.com/chef/chef/tree/v16.2.81) (2020-07-06)
 
 #### Merged Pull Requests
-- update to powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin))
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#9992](https://github.com/chef/chef/pull/9992) ([ramereth](https://github.com/ramereth))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#9992](https://github.com/chef/chef/pull/9992) ([ramereth](https://github.com/ramereth)) <!-- 16.2.81 -->
 - update to powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.80 -->
 - Update windows_security_policy for better idempotency [#10064](https://github.com/chef/chef/pull/10064) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.79 -->
 - Bump train-core to 3.3.6 [#10104](https://github.com/chef/chef/pull/10104) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.78 -->
