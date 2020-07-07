@@ -147,22 +147,21 @@ class Chef
           value = new_resource.value
           type = new_resource.type || value_type(value)
 
-          case type
-          when "dict"
-            # creates a string of Key1 Value1 Key2 Value2...
-            value = value.map { |k, v| "\"#{k}\" \"#{v}\"" }.join(" ")
-          when "array"
-            value = value.join("' '")
-            value = "'#{value}'"
-          else
-            value = "'#{value}'"
-          end
+          value = case type
+                  when "dict"
+                    # creates an array of Key1 Value1 Key2 Value2...
+                    value.flatten.map { |x| "'#{x}'" }
+                  when "array"
+                    value.map { |x| "'#{x}'" }
+                  else
+                    "'#{value}'"
+                  end
 
           cmd = ["defaults", "write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
           cmd.prepend("sudo") if new_resource.sudo
           cmd << "-#{type}" if type
           cmd << value
-          cmd
+          cmd.flatten
         end
 
         def value_type(value)
