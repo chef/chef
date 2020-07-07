@@ -5,14 +5,13 @@ class Chef
     module DataHandler
       class OrganizationDataHandler < DataHandlerBase
         def normalize(organization, entry)
-          result = normalize_hash(organization, {
+          normalize_hash(organization, {
             "name" => entry.org,
             "full_name" => entry.org,
             "org_type" => "Business",
             "clientname" => "#{entry.org}-validator",
             "billing_plan" => "platform-free",
           })
-          result
         end
 
         def preserve_key?(key)

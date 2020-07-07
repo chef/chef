@@ -133,7 +133,7 @@ class Chef
     def to_h
       env_run_lists_without_default = @env_run_lists.dup
       env_run_lists_without_default.delete("_default")
-      result = {
+      {
         "name" => @name,
         "description" => @description,
         "json_class" => self.class.name,
@@ -149,7 +149,6 @@ class Chef
           accumulator
         end,
       }
-      result
     end
 
     alias_method :to_hash, :to_h

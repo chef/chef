@@ -369,8 +369,7 @@ class Chef
         revoked.add_extension(ext)
         crl.add_revoked(revoked)
 
-        crl = renew_x509_crl(crl, ca_private_key, info)
-        crl
+        renew_x509_crl(crl, ca_private_key, info)
       end
 
       # renew a X509 crl given

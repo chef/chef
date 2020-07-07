@@ -119,7 +119,7 @@ class Chef
     end
 
     def to_h
-      result = {
+      {
         "name" => @name,
         "description" => @description,
         "cookbook_versions" => @cookbook_versions,
@@ -128,7 +128,6 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
       }
-      result
     end
 
     alias_method :to_hash, :to_h
