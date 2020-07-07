@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.84 -->
-## [v16.2.84](https://github.com/chef/chef/tree/v16.2.84) (2020-07-07)
+<!-- latest_release 16.2.85 -->
+## [v16.2.85](https://github.com/chef/chef/tree/v16.2.85) (2020-07-07)
 
 #### Merged Pull Requests
-- Add spaces after attrs [#10124](https://github.com/chef/chef/pull/10124) ([tas50](https://github.com/tas50))
+- Avoid assigning variables before returning if we don&#39;t have to [#10123](https://github.com/chef/chef/pull/10123) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid assigning variables before returning if we don&#39;t have to [#10123](https://github.com/chef/chef/pull/10123) ([tas50](https://github.com/tas50)) <!-- 16.2.85 -->
 - Add spaces after attrs [#10124](https://github.com/chef/chef/pull/10124) ([tas50](https://github.com/tas50)) <!-- 16.2.84 -->
 - Fix warning message for cb / core resource conflict [#10117](https://github.com/chef/chef/pull/10117) ([tas50](https://github.com/tas50)) <!-- 16.2.83 -->
 - Switch back to a supported nokogiri release [#10114](https://github.com/chef/chef/pull/10114) ([tas50](https://github.com/tas50)) <!-- 16.2.82 -->
