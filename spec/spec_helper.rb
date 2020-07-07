@@ -24,10 +24,10 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
-$LOAD_PATH.unshift File.expand_path('..', __dir__)
+$LOAD_PATH.unshift File.expand_path("..", __dir__)
 
-$LOAD_PATH.unshift File.expand_path('../chef-config/lib', __dir__)
-$LOAD_PATH.unshift File.expand_path('../chef-utils/lib', __dir__)
+$LOAD_PATH.unshift File.expand_path("../chef-config/lib", __dir__)
+$LOAD_PATH.unshift File.expand_path("../chef-utils/lib", __dir__)
 
 require "rubygems"
 require "rspec/mocks"

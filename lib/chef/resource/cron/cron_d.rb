@@ -158,7 +158,7 @@ class Chef
 
           # @todo this is Chef 12 era cleanup. Someday we should remove it all
           template "/etc/cron.d/#{sanitized_name}" do
-            source ::File.expand_path('../support/cron.d.erb', __dir__)
+            source ::File.expand_path("../support/cron.d.erb", __dir__)
             local true
             mode new_resource.mode
             variables(

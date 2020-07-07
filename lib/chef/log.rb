@@ -47,7 +47,7 @@ class Chef
     def self.caller_location
       # Pick the first caller that is *not* part of the Chef gem, that's the
       # thing the user wrote. Or failing that, the most recent caller.
-      chef_gem_path = File.expand_path('..', __dir__)
+      chef_gem_path = File.expand_path("..", __dir__)
       caller(0..20).find { |c| !c.start_with?(chef_gem_path) } || caller(0..1)[0]
     end
 

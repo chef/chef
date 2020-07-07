@@ -12,7 +12,7 @@ require "webrick/https"
 
 $ssl = true
 
-CHEF_SPEC_DATA = File.expand_path('../data', __dir__)
+CHEF_SPEC_DATA = File.expand_path("../data", __dir__)
 cert_text = File.read(File.expand_path("ssl/chef-rspec.cert", CHEF_SPEC_DATA))
 cert = OpenSSL::X509::Certificate.new(cert_text)
 key_text = File.read(File.expand_path("ssl/chef-rspec.key", CHEF_SPEC_DATA))
