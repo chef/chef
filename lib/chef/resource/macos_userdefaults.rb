@@ -136,8 +136,8 @@ class Chef
 
       action_class do
         def defaults_write_cmd
-          cmd = ["defaults write '#{new_resource.domain}' '#{new_resource.key}' "]
-          cmd.unshift("sudo") if new_resource.sudo
+          cmd = ["defaults", "write", new_resource.domain, new_resource.key]
+          cmd.prepend("sudo") if new_resource.sudo
 
           value = new_resource.value
           type = !new_resource.type.empty? ? new_resource.type : value_type(value)
