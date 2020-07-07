@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require 'shellwords'
+require "shellwords"
 
 class Chef
   class Resource
@@ -109,15 +109,18 @@ class Chef
       load_current_value do |desired|
         coerced_value = coerce_booleans(desired.value)
 
-        state_cmd = ['/usr/bin/defaults', 'read', desired.domain, desired.key]
+        state_cmd = ["/usr/bin/defaults", "read", desired.domain, desired.key]
 
         state = if desired.user.nil?
                   shell_out(state_cmd)
                 else
-                  shell_out(cmd, user: desired.user)
+                  shell_out(state_cmd, user: desired.user)
                 end
 
-        current_value_does_not_exist! if state.error?
+        if state.error?
+          Chef::Log.debug "#load_current_value: #{state_cmd.join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
+          current_value_does_not_exist!
+        end
 
         value state.stdout.strip
       end
