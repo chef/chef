@@ -638,6 +638,7 @@ class Chef
     # Do NOT use this. It may be removed. It is for internal purposes only.
     # @api private
     attr_reader :resource_initializing
+
     def resource_initializing=(value)
       if value
         @resource_initializing = true
@@ -888,6 +889,7 @@ class Chef
     #   have.
     #
     attr_writer :allowed_actions
+
     def allowed_actions(value = NOT_PASSED)
       if value != NOT_PASSED
         self.allowed_actions = value

@@ -6,6 +6,7 @@ describe "Resource.load_current_value" do
   module Namer
     extend self
     attr_accessor :current_index
+
     def incrementing_value
       @incrementing_value += 1
       @incrementing_value
@@ -194,6 +195,7 @@ describe "simple load_current_value tests" do
   let(:resource_class) do
     Class.new(Chef::Resource) do
       attr_writer :index # this is our hacky global state
+
       def index; @index ||= 1; end
 
       property :myindex, Integer

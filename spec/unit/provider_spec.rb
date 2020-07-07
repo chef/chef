@@ -20,6 +20,7 @@ require "spec_helper"
 
 class NoWhyrunDemonstrator < Chef::Provider
   attr_reader :system_state_altered
+
   def whyrun_supported?
     false
   end

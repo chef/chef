@@ -21,6 +21,7 @@ RSpec.describe ChefUtils::DSL::Introspection do
   class IntrospectionTestClass
     include ChefUtils::DSL::Introspection
     attr_accessor :node
+
     def initialize(node)
       @node = node
     end

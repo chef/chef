@@ -41,6 +41,7 @@ module Shell
 
     attr_accessor :node, :compile, :recipe, :json_configuration
     attr_reader :node_attributes, :client
+
     def initialize
       @node_built = false
       formatter = Chef::Formatters.new(Chef::Config.formatter, STDOUT, STDERR)
@@ -75,6 +76,7 @@ module Shell
     end
 
     attr_writer :run_context
+
     def run_context
       @run_context ||= rebuild_context
     end

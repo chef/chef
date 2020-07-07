@@ -92,6 +92,7 @@ class Chef
           end
 
           attr_writer :write_pretty_json
+
           def write_pretty_json
             @write_pretty_json.nil? ? root.write_pretty_json : @write_pretty_json
           end
