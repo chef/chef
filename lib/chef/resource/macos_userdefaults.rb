@@ -16,6 +16,7 @@
 #
 
 require_relative "../resource"
+require 'shellwords'
 
 class Chef
   class Resource
@@ -112,10 +113,10 @@ class Chef
         state_cmd = ['/usr/bin/defaults', 'read', desired.domain, desired.key]
 
         state = if desired.user.nil?
-          shell_out(state_cmd)
-        else
-          shell_out(cmd, user: desired.user)
-        end
+                  shell_out(state_cmd)
+                else
+                  shell_out(cmd, user: desired.user)
+                end
 
         current_value_does_not_exist! if state.error?
 
