@@ -220,31 +220,44 @@ describe Chef::Provider::SystemdUnit do
       expect(current_resource.content).to eq(nil)
     end
 
-    it "loads the user unit content if the file exists and user is set" do
-      new_resource.user("joe")
-      allow(File).to receive(:exist?)
-        .with(unit_path_user)
-        .and_return(true)
-      allow(File).to receive(:read)
-        .with(unit_path_user)
-        .and_return(unit_content_string)
-      expect(File).to receive(:exist?)
-        .with(unit_path_user)
-      expect(File).to receive(:read)
-        .with(unit_path_user)
-      provider.load_current_resource
-      expect(current_resource.content).to eq(unit_content_string)
-    end
+    if windows?
+      it "fails when attempting to set the user on Windows" do
+        new_resource.user("joe")
+        allow(File).to receive(:exist?)
+          .with(unit_path_user)
+          .and_return(false)
+        expect(File).to_not receive(:read)
+          .with(unit_path_user)
 
-    it "does not load the user unit if the file does not exist and user is set" do
-      new_resource.user("joe")
-      allow(File).to receive(:exist?)
-        .with(unit_path_user)
-        .and_return(false)
-      expect(File).to_not receive(:read)
-        .with(unit_path_user)
-      provider.load_current_resource
-      expect(current_resource.content).to eq(nil)
+        expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::InvalidCommandOption)
+      end
+    else
+      it "loads the user unit content if the file exists and user is set" do
+        new_resource.user("joe")
+        allow(File).to receive(:exist?)
+          .with(unit_path_user)
+          .and_return(true)
+        allow(File).to receive(:read)
+          .with(unit_path_user)
+          .and_return(unit_content_string)
+        expect(File).to receive(:exist?)
+          .with(unit_path_user)
+        expect(File).to receive(:read)
+          .with(unit_path_user)
+        provider.load_current_resource
+        expect(current_resource.content).to eq(unit_content_string)
+      end
+
+      it "does not load the user unit if the file does not exist and user is set" do
+        new_resource.user("joe")
+        allow(File).to receive(:exist?)
+          .with(unit_path_user)
+          .and_return(false)
+        expect(File).to_not receive(:read)
+          .with(unit_path_user)
+        provider.load_current_resource
+        expect(current_resource.content).to eq(nil)
+      end
     end
   end
 
