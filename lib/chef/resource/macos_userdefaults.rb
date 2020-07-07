@@ -135,9 +135,9 @@ class Chef
           Chef::Log.debug("Updating defaults value by shelling out: #{cmd}")
 
           if new_resource.user.nil?
-            shell_out(cmd)
+            shell_out!(cmd)
           else
-            shell_out(cmd, user: new_resource.user)
+            shell_out!(cmd, user: new_resource.user)
           end
         end
       end
