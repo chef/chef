@@ -111,11 +111,11 @@ describe "Chef::Resource.property" do
 
   with_property ":Straße" do
     it "properties with UTF-8 in their name work" do
-      expect(resource.Straße).to eql(nil)
-      expect(resource.Straße "foo").to eql("foo")
-      expect(resource.Straße).to eql("foo")
-      expect(resource.Straße = "bar").to eql("bar")
-      expect(resource.Straße).to eql("bar")
+      expect(resource.Straße).to eql(nil) # rubocop: disable Naming/AsciiIdentifiers
+      expect(resource.Straße "foo").to eql("foo") # rubocop: disable Naming/AsciiIdentifiers
+      expect(resource.Straße).to eql("foo") # rubocop: disable Naming/AsciiIdentifiers
+      expect(resource.Straße = "bar").to eql("bar") # rubocop: disable Naming/AsciiIdentifiers
+      expect(resource.Straße).to eql("bar") # rubocop: disable Naming/AsciiIdentifiers
     end
   end
 

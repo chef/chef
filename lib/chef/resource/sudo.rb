@@ -172,7 +172,7 @@ class Chef
           end
         else
           declare_resource(:template, file_path) do
-            source ::File.expand_path("../support/sudoer.erb", __FILE__)
+            source ::File.expand_path("support/sudoer.erb", __dir__)
             local true
             mode "0440"
             variables sudoer:            (new_resource.groups + new_resource.users).join(","),

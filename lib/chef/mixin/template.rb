@@ -213,6 +213,7 @@ class Chef
 
       class TemplateError < RuntimeError
         attr_reader :original_exception, :context, :options
+
         SOURCE_CONTEXT_WINDOW = 2
 
         def initialize(original_exception, template, context, options)
