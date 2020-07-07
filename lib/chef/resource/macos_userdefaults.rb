@@ -85,7 +85,6 @@ class Chef
 
       property :type, String,
         description: "The value type of the preference key.",
-        default: "",
         desired_state: false
 
       property :user, String,
@@ -141,7 +140,7 @@ class Chef
           cmd.unshift("sudo") if new_resource.sudo
 
           value = new_resource.value
-          type = new_resource.type.empty? ? value_type(value) : new_resource.type
+          type = !new_resource.type.empty? ? new_resource.type : value_type(value)
           # creates a string of Key1 Value1 Key2 Value2...
           value = value.map { |k, v| "\"#{k}\" \"#{v}\"" }.join(" ") if type == "dict"
           if type == "array"
