@@ -144,17 +144,22 @@ class Chef
 
       action_class do
         def defaults_write_cmd
-          cmd = ["defaults", "write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
-          cmd.prepend("sudo") if new_resource.sudo
-
           value = new_resource.value
           type = new_resource.type || value_type(value)
-          # creates a string of Key1 Value1 Key2 Value2...
-          value = value.map { |k, v| "\"#{k}\" \"#{v}\"" }.join(" ") if type == "dict"
-          if type == "array"
+
+          case type
+          when "dict"
+            # creates a string of Key1 Value1 Key2 Value2...
+            value = value.map { |k, v| "\"#{k}\" \"#{v}\"" }.join(" ")
+          when "array"
             value = value.join("' '")
             value = "'#{value}'"
+          else
+            value = "'#{value}'"
           end
+
+          cmd = ["defaults", "write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
+          cmd.prepend("sudo") if new_resource.sudo
           cmd << "-#{type}" if type
           cmd << value
           cmd
