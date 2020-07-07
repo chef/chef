@@ -435,6 +435,7 @@ describe Chef::RunLock do
 
     class TestRunLock < Chef::RunLock
       attr_accessor :client_process
+
       def create_lock
         super
         client_process.fire_event("created lock")
