@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require "shellwords"
+require_relative "../dist"
 
 class Chef
   class Resource
@@ -131,8 +131,13 @@ class Chef
         converge_if_changed do
           # FIXME: this should use cmd directly as an array argument, but then the quoting
           # of individual args above needs to be removed as well.
-          execute defaults_write_cmd.join(" ") do
-            user new_resource.user unless new_resource.user.nil?
+          cmd = defaults_write_cmd
+          Chef::Log.debug("Updating defaults value by shelling out: #{cmd}")
+
+          if new_resource.user.nil?
+            shell_out(cmd)
+          else
+            shell_out(cmd, user: new_resource.user)
           end
         end
       end
