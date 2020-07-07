@@ -122,17 +122,44 @@ class Chef
           current_value_does_not_exist!
         end
 
-        value state.stdout.strip
+        # parse the output from the defaults command to ruby data type
+        # todo: This is a pretty basic implementation. PRs welcome ;)
+        case state.stdout[0]
+        when "{" # dict aka hash
+          # https://rubular.com/r/cBnFu1nttMdsXq
+          data = /^\s{2,}(.*)\s=\s(.*);/.match(state.stdout)
+          fail_if_unparsable(data, state.stdout)
+          value Hash[*data.captures]
+        when "(" # array
+          # https://rubular.com/r/TfYejXUJny11OG
+          data = /^\s{2,}(.*),?/.match(state.stdout)
+          fail_if_unparsable(data, state.stdout)
+          value data.captures
+        else # a string/int/float/bool
+          value state.stdout.strip
+        end
+      end
+
+      #
+      # If there were not matches raise a warning that we couldn't parse the output of the defaults
+      # CLI and return a nil current_resource by calling current_value_does_not_exist!
+      #
+      # @param [MatchData] match_data
+      # @param [String] stdout
+      #
+      def fail_if_unparsable(match_data, stdout)
+        return unless match_data.captures.empty?
+
+        Chef::Log.warn("Could not parse macos defaults CLI value data: #{stdout}.")
+        current_value_does_not_exist!
       end
 
       action :write do
         description "Write the value to the specified domain/key."
 
         converge_if_changed do
-          # FIXME: this should use cmd directly as an array argument, but then the quoting
-          # of individual args above needs to be removed as well.
           cmd = defaults_write_cmd
-          Chef::Log.debug("Updating defaults value by shelling out: #{cmd}")
+          Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
 
           if new_resource.user.nil?
             shell_out!(cmd)
