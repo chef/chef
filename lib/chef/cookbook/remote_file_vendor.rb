@@ -72,10 +72,8 @@ class Chef
           Chef::Log.trace("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record["checksum"]})")
         end
 
-        full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
-
         # return the filename, not the contents (second argument= false)
-        full_path_cache_filename
+        Chef::FileCache.load(cache_filename, false)
       end
 
       def validate_cached_copy(cache_filename)

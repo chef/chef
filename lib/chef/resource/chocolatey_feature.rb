@@ -89,8 +89,7 @@ class Chef
         # @param [String] action the name of the action to perform
         # @return [String] the choco feature command string
         def choco_cmd(action)
-          cmd = "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco feature #{action} --name #{new_resource.feature_name}"
-          cmd
+          "#{ENV["ALLUSERSPROFILE"]}\\chocolatey\\bin\\choco feature #{action} --name #{new_resource.feature_name}"
         end
       end
     end
