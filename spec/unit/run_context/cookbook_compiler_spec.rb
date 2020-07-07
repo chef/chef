@@ -175,7 +175,7 @@ describe Chef::RunContext::CookbookCompiler do
     describe "event dispatch" do
       let(:recipe) { "dependency1::default" }
       let(:recipe_path) do
-        File.expand_path("../../../data/run_context/cookbooks/dependency1/recipes/default.rb", __FILE__)
+        File.expand_path('../../data/run_context/cookbooks/dependency1/recipes/default.rb', __dir__)
       end
       before do
         node.run_list(recipe)

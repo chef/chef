@@ -106,7 +106,7 @@ class Chef
 
         r = with_run_context :root do
           find_resource(:template, "update ssh known hosts file #{new_resource.file_location}") do
-            source ::File.expand_path("../support/ssh_known_hosts.erb", __FILE__)
+            source ::File.expand_path('support/ssh_known_hosts.erb', __dir__)
             local true
             path new_resource.file_location
             owner new_resource.owner

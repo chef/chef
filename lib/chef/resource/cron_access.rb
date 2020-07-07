@@ -70,7 +70,7 @@ class Chef
 
         with_run_context :root do
           edit_resource(:template, allow_path) do |new_resource|
-            source ::File.expand_path("../support/cron_access.erb", __FILE__)
+            source ::File.expand_path('support/cron_access.erb', __dir__)
             local true
             mode "0600"
             variables["users"] ||= []
@@ -87,7 +87,7 @@ class Chef
 
         with_run_context :root do
           edit_resource(:template, deny_path) do |new_resource|
-            source ::File.expand_path("../support/cron_access.erb", __FILE__)
+            source ::File.expand_path('support/cron_access.erb', __dir__)
             local true
             mode "0600"
             variables["users"] ||= []

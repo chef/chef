@@ -1,4 +1,4 @@
-gemspec = eval(IO.read(File.expand_path("../chef.gemspec", __FILE__)))
+gemspec = eval(IO.read(File.expand_path('chef.gemspec', __dir__)))
 
 gemspec.platform = Gem::Platform.new(%w{universal mingw32})
 
