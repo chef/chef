@@ -58,6 +58,7 @@ describe Chef::Resource::WindowsPackage, "initialize" do
     expect { resource.installer_type :msi }.not_to raise_error
     expect { resource.installer_type :nsis }.not_to raise_error
     expect { resource.installer_type :wise }.not_to raise_error
+    expect { resource.installer_type :something_else_entirely }.to raise_error(Chef::Exceptions::ValidationFailed)
     expect { resource.installer_type "msi" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
