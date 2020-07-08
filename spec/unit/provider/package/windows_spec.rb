@@ -42,7 +42,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:cache_path) { 'c:\\cache\\' }
 
   before(:each) do
-    allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(true)
+    allow(::File).to receive(:exist?).with(new_resource.source).and_return(true)
   end
 
   describe "load_current_resource" do
@@ -66,7 +66,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "sets the version to be installed" do
         provider.load_current_resource
-        expect(provider.new_resource.version).to eql("2.0")
+        expect(new_resource.version).to eql("2.0")
       end
     end
 
@@ -234,7 +234,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
     end
 
     it "returns the resource's installer_type if it is set" do
-      provider.new_resource.installer_type(:nsis)
+      new_resource.installer_type(:nsis)
       expect(provider.installer_type).to eql(:nsis)
     end
 
@@ -275,7 +275,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "raises an error" do
         allow(::Kernel).to receive(:open).and_yield(StringIO.new(""))
-        provider.new_resource.installer_type(nil)
+        new_resource.installer_type(nil)
         expect { provider.installer_type }.to raise_error(Chef::Exceptions::CannotDetermineWindowsInstallerType)
       end
     end
@@ -400,7 +400,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "C:/a_missing_file.exe" }
       let(:installer_type) { nil }
       before do
-        allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(false)
+        allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
         provider.load_current_resource
       end
 
