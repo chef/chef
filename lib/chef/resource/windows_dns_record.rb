@@ -44,7 +44,8 @@ class Chef
 
       property :dns_server, String,
         description: "The name of the DNS server on which to create the record.",
-        default: "localhost"
+        default: "localhost",
+        introduced: "16.3"
 
       action :create do
         description "Creates and updates the DNS entry."
