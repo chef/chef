@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.86 -->
-## [v16.2.86](https://github.com/chef/chef/tree/v16.2.86) (2020-07-08)
+<!-- latest_release 16.2.87 -->
+## [v16.2.87](https://github.com/chef/chef/tree/v16.2.87) (2020-07-08)
 
 #### Merged Pull Requests
-- Fix `powershell_exec!` test. [#10126](https://github.com/chef/chef/pull/10126) ([phiggins](https://github.com/phiggins))
+- expand_path with __dir__ instead of __FILE__ [#10125](https://github.com/chef/chef/pull/10125) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- expand_path with __dir__ instead of __FILE__ [#10125](https://github.com/chef/chef/pull/10125) ([tas50](https://github.com/tas50)) <!-- 16.2.87 -->
 - Fix `powershell_exec!` test. [#10126](https://github.com/chef/chef/pull/10126) ([phiggins](https://github.com/phiggins)) <!-- 16.2.86 -->
 - Avoid assigning variables before returning if we don&#39;t have to [#10123](https://github.com/chef/chef/pull/10123) ([tas50](https://github.com/tas50)) <!-- 16.2.85 -->
 - Add spaces after attrs [#10124](https://github.com/chef/chef/pull/10124) ([tas50](https://github.com/tas50)) <!-- 16.2.84 -->
