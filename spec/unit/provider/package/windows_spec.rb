@@ -233,9 +233,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
     end
 
-    it "returns @installer_type if it is set" do
-      provider.new_resource.installer_type(:downeaster)
-      expect(provider.installer_type).to eql(:downeaster)
+    it "returns the resource's installer_type if it is set" do
+      provider.new_resource.installer_type(:nsis)
+      expect(provider.installer_type).to eql(:nsis)
     end
 
     it "sets installer_type to inno if the source contains inno" do
