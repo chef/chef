@@ -419,51 +419,23 @@ describe Chef::Provider::Package::Windows, :windows_only do
         Chef::Config[:why_run] = false
       end
     end
-  end
 
-  shared_context "valid checksum" do
-    context "checksum is valid" do
-      before do
-        allow(provider).to receive(:checksum).and_return("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
-      end
+    it "does not raise an error with a valid checksum" do
+      expect(Chef::Digester).to receive(:checksum_for_file).with(new_resource.source).and_return("abcdef1234567890")
+      expect(provider).to receive(:install_package)
 
-      it "does not raise the checksum mismatch exception" do
-        expect { provider.send(:validate_content!) }.to_not raise_error
-      end
-    end
-  end
+      new_resource.checksum("abcdef1234567890")
 
-  shared_context "invalid checksum" do
-    context "checksum is invalid" do
-      before do
-        allow(provider).to receive(:checksum).and_return("kiie30u3bbs92vsbhvgvklb2lasgh20ah")
-      end
-
-      it "raises the checksum mismatch exception" do
-        expect { provider.send(:validate_content!) }.to raise_error(
-          Chef::Exceptions::ChecksumMismatch
-        )
-      end
-    end
-  end
-
-  describe "validate_content!" do
-    before(:each) do
-      new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+      provider.run_action(:install)
     end
 
-    context "checksum is in lowercase" do
-      include_context "valid checksum"
-      include_context "invalid checksum"
-    end
+    it "raises an error with an invalid checksum" do
+      expect(Chef::Digester).to receive(:checksum_for_file).with(new_resource.source).and_return("abcdef1234567890")
+      expect(provider).not_to receive(:install_package)
 
-    context "checksum is in uppercase" do
-      before do
-        new_resource.checksum = new_resource.checksum.upcase
-      end
+      new_resource.checksum("ffffffffffffffff")
 
-      include_context "valid checksum"
-      include_context "invalid checksum"
+      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
   end
 end
