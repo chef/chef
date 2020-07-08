@@ -47,7 +47,7 @@ describe Chef::Mixin::PowershellExec, :windows_only do
     end
 
     it "raises an error if the command fails" do
-      expect(object.powershell_exec!("$PSVersionTable")).to be_kind_of(Chef::PowerShell::CommandFailed)
+      expect { object.powershell_exec!("this-should-error") }.to raise_error(Chef::PowerShell::CommandFailed)
     end
   end
 end
