@@ -30,16 +30,6 @@ class Chef
       # * @run_list - the run list for the node to bootstrap
       #
       class WindowsBootstrapContext < BootstrapContext
-        attr_accessor :config
-        attr_accessor :chef_config
-
-        def initialize(config, run_list, chef_config, secret = nil)
-          @config       = config
-          @run_list     = run_list
-          @chef_config  = chef_config
-          @secret       = secret
-          super(config, run_list, chef_config, secret)
-        end
 
         # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
         # this presumes Windows so we can avoid changing the method definitions
