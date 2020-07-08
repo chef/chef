@@ -67,16 +67,16 @@ class Chef
             validation_client_name "#{chef_config[:validation_client_name]}"
           CONFIG
 
-          unless chef_config[:file_cache_path].nil?
-            client_rb << "file_cache_path   \"#{chef_config[:file_cache_path]}\"\n"
+          if chef_config[:file_cache_path]
+            client_rb << %Q{file_cache_path   "#{chef_config[:file_cache_path]}"\n}
           end
 
-          unless chef_config[:file_backup_path].nil?
-            client_rb << "file_backup_path  \"#{chef_config[:file_backup_path]}\"\n"
+          if chef_config[:file_backup_path]
+            client_rb << %Q{file_backup_path  "#{chef_config[:file_backup_path]}"\n}
           end
 
-          unless chef_config[:chef_license].nil?
-            client_rb << "chef_license \"#{chef_config[:chef_license]}\"\n"
+          if chef_config[:chef_license]
+            client_rb << %Q{chef_license "#{chef_config[:chef_license]}"\n}
           end
 
           if config[:chef_node_name]
