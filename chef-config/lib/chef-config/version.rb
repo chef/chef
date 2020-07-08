@@ -14,6 +14,6 @@
 # limitations under the License.
 
 module ChefConfig
-  CHEFCONFIG_ROOT = File.expand_path("../..", __FILE__)
+  CHEFCONFIG_ROOT = File.expand_path('..', __dir__)
   VERSION = "16.2.86".freeze
 end
