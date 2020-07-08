@@ -20,14 +20,12 @@ require "spec_helper"
 require "chef/knife/core/windows_bootstrap_context"
 describe Chef::Knife::Core::WindowsBootstrapContext do
   let(:config) { {} }
-  let(:chef_config) { Chef::Config.save } # "dup" to a hash
+  let(:chef_config) { {} }
   let(:bootstrap_context) { Chef::Knife::Core::WindowsBootstrapContext.new(config, nil, chef_config, nil) }
 
   describe "fips" do
     context "when fips is set" do
-      before do
-        chef_config[:fips] = true
-      end
+      let(:chef_config) { { fips: true } }
 
       it "sets fips mode in the client.rb" do
         expect(bootstrap_context.config_content).to match(/fips true/)
@@ -35,9 +33,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     end
 
     context "when fips is not set" do
-      before do
-        chef_config[:fips] = false
-      end
+      let(:chef_config) { { fips: false } }
 
       it "sets fips mode in the client.rb" do
         expect(bootstrap_context.config_content).not_to match(/fips true/)
@@ -51,10 +47,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     let(:crt_files) { ::Dir.glob(::File.join(mock_cert_dir, "*.crt")) }
     let(:pem_files) { ::Dir.glob(::File.join(mock_cert_dir, "*.pem")) }
     let(:other_files) { ::Dir.glob(::File.join(mock_cert_dir, "*")) - crt_files - pem_files }
-
-    before do
-      bootstrap_context.instance_variable_set(:@chef_config, Mash.new(trusted_certs_dir: mock_cert_dir))
-    end
+    let(:chef_config) { { trusted_certs_dir: mock_cert_dir } }
 
     it "should echo every .crt file in the trusted_certs directory" do
       crt_files.each do |f|
@@ -82,12 +75,9 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   end
 
   describe "validation_key" do
-    before do
-      bootstrap_context.instance_variable_set(:@chef_config, Mash.new(validation_key: "C:\\chef\\key.pem"))
-    end
+    let(:chef_config) { { validation_key: "C:\\chef\\key.pem" } }
 
     it "should return false if validation_key does not exist" do
-      allow(::File).to receive(:expand_path).with("C:\\chef\\key.pem").and_call_original
       allow(::File).to receive(:exist?).and_return(false)
       expect(bootstrap_context.validation_key).to eq(false)
     end
@@ -96,50 +86,50 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   describe "#get_log_location" do
 
     context "when config_log_location value is nil" do
+      let(:chef_config) { { config_log_location: nil } }
       it "sets STDOUT in client.rb as default" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: nil))
         expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
       end
     end
 
     context "when config_log_location value is empty" do
+      let(:chef_config) { { config_log_location: "" } }
       it "sets STDOUT in client.rb as default" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: ""))
         expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
       end
     end
 
     context "when config_log_location value is STDOUT" do
+      let(:chef_config) { { config_log_location: STDOUT } }
       it "sets STDOUT in client.rb" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: STDOUT))
         expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
       end
     end
 
     context "when config_log_location value is STDERR" do
+      let(:chef_config) { { config_log_location: STDERR } }
       it "sets STDERR in client.rb" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: STDERR))
         expect(bootstrap_context.get_log_location).to eq("STDERR\n")
       end
     end
 
     context "when config_log_location value is path to a file" do
+      let(:chef_config) { { config_log_location: "C:\\chef\\chef.log" } }
       it "sets file path in client.rb" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: "C:\\chef\\chef.log"))
         expect(bootstrap_context.get_log_location).to eq("\"C:\\chef\\chef.log\"\n")
       end
     end
 
     context "when config_log_location value is :win_evt" do
+      let(:chef_config) { { config_log_location: :win_evt } }
       it "sets :win_evt in client.rb" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: :win_evt))
         expect(bootstrap_context.get_log_location).to eq(":win_evt\n")
       end
     end
 
     context "when config_log_location value is :syslog" do
+      let(:chef_config) { { config_log_location: :syslog } }
       it "raise error with message and exit" do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_location: :syslog))
         expect { bootstrap_context.get_log_location }.to raise_error("syslog is not supported for log_location on Windows OS\n")
       end
     end
@@ -147,14 +137,16 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   end
 
   describe "#config_content" do
-    before do
-      bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_level: :info,
+    let(:chef_config) do
+      {
+        config_log_level: :info,
         config_log_location: STDOUT,
         chef_server_url: "http://chef.example.com:4444",
         validation_client_name: "chef-validator-testing",
         file_cache_path: "c:/chef/cache",
         file_backup_path: "c:/chef/backup",
-        cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })))
+        cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })
+      }
     end
 
     it "generates the config file data" do
@@ -172,9 +164,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     end
 
     describe "when chef_license is set" do
-      before do
-        bootstrap_context.instance_variable_set(:@chef_config, Mash.new(chef_license: "accept-no-persist"))
-      end
+      let(:chef_config) { { chef_license: "accept-no-persist" } }
       it "sets chef_license in the generated config file" do
         expect(bootstrap_context.config_content).to include("chef_license \"accept-no-persist\"")
       end
