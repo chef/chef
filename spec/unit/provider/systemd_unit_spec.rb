@@ -220,18 +220,9 @@ describe Chef::Provider::SystemdUnit do
       expect(current_resource.content).to eq(nil)
     end
 
-    if windows?
-      it "fails when attempting to set the user on Windows" do
-        new_resource.user("joe")
-        allow(File).to receive(:exist?)
-          .with(unit_path_user)
-          .and_return(false)
-        expect(File).to_not receive(:read)
-          .with(unit_path_user)
-
-        expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::InvalidCommandOption)
-      end
-    else
+    # A password is required when specifying a user on Windows. Since systemd resources
+    # won't actually run on Windows, skip these tests rather than code a workaround.
+    unless windows?
       it "loads the user unit content if the file exists and user is set" do
         new_resource.user("joe")
         allow(File).to receive(:exist?)
