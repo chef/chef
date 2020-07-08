@@ -298,6 +298,10 @@ class Chef
             opts[:keepalive] = true
             opts[:keepalive_interval] = ssh_config[:keepalive_interval]
           end
+          # maintain support for legacy key types / ciphers / key exchange algorithms.
+          # most importantly this adds back support for DSS host keys
+          # See https://github.com/net-ssh/net-ssh/pull/709
+          opts[:append_all_supported_algorithms] = true
         end
       end
 
