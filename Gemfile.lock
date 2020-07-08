@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8028951abb141fef97a9b2ddc5e2120f63fbc16a
+  revision: 0a6530f2b7fdf225a7ca0ae54459cfce9b8d3b4c
   branch: master
   specs:
-    ohai (16.2.3)
+    ohai (16.2.4)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -78,7 +78,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
-      iso8601 (~> 0.12.1)
+      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (~> 1.0, >= 1.0.5)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -226,7 +226,7 @@ GEM
     inspec-core-bin (4.21.3)
       inspec-core (= 4.21.3)
     ipaddress (0.8.3)
-    iso8601 (0.12.3)
+    iso8601 (0.13.0)
     json (2.3.1)
     json_schemer (0.2.11)
       ecma-re-validator (~> 0.2)
