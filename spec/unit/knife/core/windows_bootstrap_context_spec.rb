@@ -143,9 +143,8 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         config_log_location: STDOUT,
         chef_server_url: "http://chef.example.com:4444",
         validation_client_name: "chef-validator-testing",
-        file_cache_path: "c:/chef/cache",
-        file_backup_path: "c:/chef/backup",
-        cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })
+        file_cache_path: "X:/my_cache_path/cache",
+        file_backup_path: "X:/my_cache_path/backup",
       }
     end
 
@@ -153,9 +152,8 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       expected = <<~EXPECTED
         echo.chef_server_url  "http://chef.example.com:4444"
         echo.validation_client_name "chef-validator-testing"
-        echo.file_cache_path   "C:/chef/cache"
-        echo.file_backup_path  "C:/chef/backup"
-        echo.cache_options     ^({:path =^> "C:/chef/cache/checksums", :skip_expires =^> true}^)
+        echo.file_cache_path   "X:/my_cache_path/cache"
+        echo.file_backup_path  "X:/my_cache_path/backup"
         echo.# Using default node name ^(fqdn^)
         echo.log_level :info
         echo.log_location       STDOUT
