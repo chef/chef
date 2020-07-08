@@ -20,24 +20,17 @@ require "spec_helper"
 require "chef/knife/core/windows_bootstrap_context"
 describe Chef::Knife::Core::WindowsBootstrapContext do
   let(:config) { {} }
-  let(:chef_config) { {} }
-  let(:bootstrap_context) { Chef::Knife::Core::WindowsBootstrapContext.new(config, nil, chef_config, nil) }
+  let(:bootstrap_context) { Chef::Knife::Core::WindowsBootstrapContext.new(config, nil, Chef::Config, nil) }
 
   describe "fips" do
-    context "when fips is set" do
-      let(:chef_config) { { fips: true } }
-
-      it "sets fips mode in the client.rb" do
-        expect(bootstrap_context.config_content).to match(/fips true/)
-      end
+    it "sets fips mode in the client.rb when fips is true" do
+      Chef::Config[:fips] = true
+      expect(bootstrap_context.config_content).to match(/fips true/)
     end
 
-    context "when fips is not set" do
-      let(:chef_config) { { fips: false } }
-
-      it "sets fips mode in the client.rb" do
-        expect(bootstrap_context.config_content).not_to match(/fips true/)
-      end
+    it "sets fips mode in the client.rb when fips is false" do
+      Chef::Config[:fips] = false
+      expect(bootstrap_context.config_content).not_to match(/fips true/)
     end
   end
 
@@ -47,7 +40,10 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
     let(:crt_files) { ::Dir.glob(::File.join(mock_cert_dir, "*.crt")) }
     let(:pem_files) { ::Dir.glob(::File.join(mock_cert_dir, "*.pem")) }
     let(:other_files) { ::Dir.glob(::File.join(mock_cert_dir, "*")) - crt_files - pem_files }
-    let(:chef_config) { { trusted_certs_dir: mock_cert_dir } }
+
+    before do
+      Chef::Config[:trusted_certs_dir] = mock_cert_dir
+    end
 
     it "should echo every .crt file in the trusted_certs directory" do
       crt_files.each do |f|
@@ -75,80 +71,59 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   end
 
   describe "validation_key" do
-    let(:chef_config) { { validation_key: "C:\\chef\\key.pem" } }
-
     it "should return false if validation_key does not exist" do
+      Chef::Config[:validation_key] = "C:\\chef\\key.pem"
       allow(::File).to receive(:exist?).and_return(false)
       expect(bootstrap_context.validation_key).to eq(false)
     end
   end
 
   describe "#get_log_location" do
-
-    context "when config_log_location value is nil" do
-      let(:chef_config) { { config_log_location: nil } }
-      it "sets STDOUT in client.rb as default" do
-        expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is nil" do
+      Chef::Config[:config_log_location] = nil
+      expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
     end
 
-    context "when config_log_location value is empty" do
-      let(:chef_config) { { config_log_location: "" } }
-      it "sets STDOUT in client.rb as default" do
-        expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is empty" do
+      Chef::Config[:config_log_location] = ""
+      expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
     end
 
-    context "when config_log_location value is STDOUT" do
-      let(:chef_config) { { config_log_location: STDOUT } }
-      it "sets STDOUT in client.rb" do
-        expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is STDOUT" do
+      Chef::Config[:config_log_location] = STDOUT
+      expect(bootstrap_context.get_log_location).to eq("STDOUT\n")
     end
 
-    context "when config_log_location value is STDERR" do
-      let(:chef_config) { { config_log_location: STDERR } }
-      it "sets STDERR in client.rb" do
-        expect(bootstrap_context.get_log_location).to eq("STDERR\n")
-      end
+    it "sets STDERR in client.rb as default when config_log_location value is STDERR" do
+      Chef::Config[:config_log_location] = STDERR
+      expect(bootstrap_context.get_log_location).to eq("STDERR\n")
     end
 
-    context "when config_log_location value is path to a file" do
-      let(:chef_config) { { config_log_location: "C:\\chef\\chef.log" } }
-      it "sets file path in client.rb" do
-        expect(bootstrap_context.get_log_location).to eq("\"C:\\chef\\chef.log\"\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is a path to a file" do
+      Chef::Config[:config_log_location] = "C:\\chef\\chef.log"
+      expect(bootstrap_context.get_log_location).to eq(%Q{"C:\\chef\\chef.log"\n})
     end
 
-    context "when config_log_location value is :win_evt" do
-      let(:chef_config) { { config_log_location: :win_evt } }
-      it "sets :win_evt in client.rb" do
-        expect(bootstrap_context.get_log_location).to eq(":win_evt\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is :win_evt" do
+      Chef::Config[:config_log_location] = :win_evt
+      expect(bootstrap_context.get_log_location).to eq(":win_evt\n")
     end
 
-    context "when config_log_location value is :syslog" do
-      let(:chef_config) { { config_log_location: :syslog } }
-      it "raise error with message and exit" do
-        expect { bootstrap_context.get_log_location }.to raise_error("syslog is not supported for log_location on Windows OS\n")
-      end
+    it "sets STDOUT in client.rb as default when config_log_location value is :syslog" do
+      Chef::Config[:config_log_location] = :syslog
+      expect { bootstrap_context.get_log_location }.to raise_error("syslog is not supported for log_location on Windows OS\n")
     end
-
   end
 
   describe "#config_content" do
-    let(:chef_config) do
-      {
-        config_log_level: :info,
-        config_log_location: STDOUT,
-        chef_server_url: "http://chef.example.com:4444",
-        validation_client_name: "chef-validator-testing",
-        file_cache_path: "X:/my_cache_path/cache",
-        file_backup_path: "X:/my_cache_path/backup",
-      }
-    end
-
     it "generates the config file data" do
+      Chef::Config[:config_log_level] = :info
+      Chef::Config[:config_log_location] = STDOUT
+      Chef::Config[:chef_server_url] = "http://chef.example.com:4444"
+      Chef::Config[:validation_client_name] = "chef-validator-testing"
+      Chef::Config[:file_cache_path] = "X:/my_cache_path/cache"
+      Chef::Config[:file_backup_path] = "X:/my_cache_path/backup"
+
       expected = <<~EXPECTED
         echo.chef_server_url  "http://chef.example.com:4444"
         echo.validation_client_name "chef-validator-testing"
@@ -158,14 +133,13 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         echo.log_level :info
         echo.log_location       STDOUT
       EXPECTED
+
       expect(bootstrap_context.config_content).to eq expected
     end
 
-    describe "when chef_license is set" do
-      let(:chef_config) { { chef_license: "accept-no-persist" } }
-      it "sets chef_license in the generated config file" do
-        expect(bootstrap_context.config_content).to include("chef_license \"accept-no-persist\"")
-      end
+    it "sets chef_license in the generated config file when chef_license is set" do
+      Chef::Config[:chef_license] = "accept-no-persist"
+      expect(bootstrap_context.config_content).to include("chef_license \"accept-no-persist\"")
     end
   end
 
