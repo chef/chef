@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.88 -->
-## [v16.2.88](https://github.com/chef/chef/tree/v16.2.88) (2020-07-08)
+<!-- latest_release 16.2.89 -->
+## [v16.2.89](https://github.com/chef/chef/tree/v16.2.89) (2020-07-08)
 
 #### Merged Pull Requests
-- Allow iso8601 gem version 0.13 [#10128](https://github.com/chef/chef/pull/10128) ([tas50](https://github.com/tas50))
+- Fix some windows package tests [#10129](https://github.com/chef/chef/pull/10129) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix some windows package tests [#10129](https://github.com/chef/chef/pull/10129) ([phiggins](https://github.com/phiggins)) <!-- 16.2.89 -->
 - Allow iso8601 gem version 0.13 [#10128](https://github.com/chef/chef/pull/10128) ([tas50](https://github.com/tas50)) <!-- 16.2.88 -->
 - expand_path with __dir__ instead of __FILE__ [#10125](https://github.com/chef/chef/pull/10125) ([tas50](https://github.com/tas50)) <!-- 16.2.87 -->
 - Fix `powershell_exec!` test. [#10126](https://github.com/chef/chef/pull/10126) ([phiggins](https://github.com/phiggins)) <!-- 16.2.86 -->
