@@ -96,13 +96,13 @@ module ChefConfig
     def self.c_chef_dir
       drive = windows_installation_drive || "C:"
       path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      Pathname.new(path).cleanpath.to_s.gsub("/", "\\")
     end
 
     def self.c_opscode_dir
       drive = windows_installation_drive || "C:"
       path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      Pathname.new(path).cleanpath.to_s.gsub("/", "\\")
     end
 
     # the drive where Chef is installed on a windows host. This is determined
