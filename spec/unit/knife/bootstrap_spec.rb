@@ -1861,7 +1861,6 @@ describe Chef::Knife::Bootstrap do
           let(:connection_protocol) { "ssh" }
 
           it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password" do
-            question_mock = double("question")
             expect(knife).to receive(:do_connect).and_raise(expected_error_password_prompt)
             expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
             expect(knife.ui).to receive(:ask).and_return("newpassword")
