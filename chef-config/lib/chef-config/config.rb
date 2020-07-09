@@ -197,12 +197,18 @@ module ChefConfig
     configurable(:daemonize).writes_value { |v| v }
 
     def self.expand_relative_paths(path)
-      unless path.nil?
-        if path.is_a?(String)
-          File.expand_path(path)
-        else
-          Array(path).map { |path| File.expand_path(path) }
-        end
+      case path
+      when nil
+        nil
+      # A gross hack to get ruby on Unix to recognize Windows paths like "C:\Windows".
+      # Don't call expand_path if the path starts with a single letter, a colon, then a slash.
+      # https://rubular.com/r/o12RuiRIV32blm
+      when %r{\A[a-zA-Z]:[\\\/]}
+        path
+      when String
+        File.expand_path(path)
+      else
+        Array(path).map { |path| expand_relative_paths(path) }
       end
     end
 
