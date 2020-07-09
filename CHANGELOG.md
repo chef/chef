@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.94 -->
-## [v16.2.94](https://github.com/chef/chef/tree/v16.2.94) (2020-07-08)
+<!-- latest_release 16.2.95 -->
+## [v16.2.95](https://github.com/chef/chef/tree/v16.2.95) (2020-07-09)
 
 #### Merged Pull Requests
-- Support legacy DSS host keys with knife-ssh [#10133](https://github.com/chef/chef/pull/10133) ([tas50](https://github.com/tas50))
+- Disable Naming/AsciiIdentifiers in our specs [#10139](https://github.com/chef/chef/pull/10139) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Disable Naming/AsciiIdentifiers in our specs [#10139](https://github.com/chef/chef/pull/10139) ([tas50](https://github.com/tas50)) <!-- 16.2.95 -->
 - Support legacy DSS host keys with knife-ssh [#10133](https://github.com/chef/chef/pull/10133) ([tas50](https://github.com/tas50)) <!-- 16.2.94 -->
 - Remove reference to deprecated option in test helper. [#10136](https://github.com/chef/chef/pull/10136) ([phiggins](https://github.com/phiggins)) <!-- 16.2.93 -->
 - Add introduced field to new propertyin windows_dns_record [#10132](https://github.com/chef/chef/pull/10132) ([tas50](https://github.com/tas50)) <!-- 16.2.92 -->
