@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8028951abb141fef97a9b2ddc5e2120f63fbc16a
+  revision: 0a6530f2b7fdf225a7ca0ae54459cfce9b8d3b4c
   branch: master
   specs:
-    ohai (16.2.3)
+    ohai (16.2.4)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -28,12 +28,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.2.80)
+    chef (16.2.96)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.80)
-      chef-utils (= 16.2.80)
+      chef-config (= 16.2.96)
+      chef-utils (= 16.2.96)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,12 +62,12 @@ PATH
       train-winrm (>= 0.2.5)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.2.80-universal-mingw32)
+    chef (16.2.96-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.2.80)
-      chef-utils (= 16.2.80)
+      chef-config (= 16.2.96)
+      chef-utils (= 16.2.96)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -78,7 +78,7 @@ PATH
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
-      iso8601 (~> 0.12.1)
+      iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (~> 1.0, >= 1.0.5)
       mixlib-archive (>= 0.4, < 2.0)
       mixlib-authentication (>= 2.1, < 4)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.2.80)
-      chef (= 16.2.80)
+    chef-bin (16.2.96)
+      chef (= 16.2.96)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.2.80)
+    chef-config (16.2.96)
       addressable
-      chef-utils (= 16.2.80)
+      chef-utils (= 16.2.96)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.2.80)
+    chef-utils (16.2.96)
 
 GEM
   remote: https://rubygems.org/
@@ -226,7 +226,7 @@ GEM
     inspec-core-bin (4.21.3)
       inspec-core (= 4.21.3)
     ipaddress (0.8.3)
-    iso8601 (0.12.2)
+    iso8601 (0.13.0)
     json (2.3.1)
     json_schemer (0.2.11)
       ecma-re-validator (~> 0.2)
@@ -240,9 +240,9 @@ GEM
       tty-box (~> 0.3)
       tty-prompt (~> 0.18)
     little-plugger (1.1.4)
-    logging (2.2.2)
+    logging (2.3.0)
       little-plugger (~> 1.1)
-      multi_json (~> 1.10)
+      multi_json (~> 1.14)
     method_source (1.0.0)
     mixlib-archive (1.0.5)
       mixlib-log

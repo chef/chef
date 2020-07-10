@@ -61,6 +61,7 @@ describe Chef::EventDispatch::Dispatcher do
       let(:event_sink) do
         Class.new(Chef::EventDispatch::Base) do
           attr_reader :synchronized_cookbook_args
+
           def synchronized_cookbook(cookbook_name)
             @synchronized_cookbook_args = [cookbook_name]
           end
@@ -79,6 +80,7 @@ describe Chef::EventDispatch::Dispatcher do
     let(:event_sink_1) do
       Class.new(Chef::EventDispatch::Base) do
         attr_reader :synchronized_cookbook_args
+
         def synchronized_cookbook(cookbook_name)
           @synchronized_cookbook_args = [cookbook_name]
         end
@@ -87,6 +89,7 @@ describe Chef::EventDispatch::Dispatcher do
     let(:event_sink_2) do
       Class.new(Chef::EventDispatch::Base) do
         attr_reader :synchronized_cookbook_args
+
         def synchronized_cookbook(cookbook_name, cookbook)
           @synchronized_cookbook_args = [cookbook_name, cookbook]
         end

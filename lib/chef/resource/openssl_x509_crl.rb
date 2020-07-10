@@ -113,8 +113,7 @@ class Chef
         end
 
         def ca_private_key
-          ca_private_key = ::OpenSSL::PKey.read ::File.read(new_resource.ca_key_file), new_resource.ca_key_pass
-          ca_private_key
+          ::OpenSSL::PKey.read ::File.read(new_resource.ca_key_file), new_resource.ca_key_pass
         end
 
         def crl

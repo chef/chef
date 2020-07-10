@@ -42,18 +42,34 @@ class Chef
         description: "The type of record to create, can be either ARecord, CNAME or PTR.",
         default: "ARecord", equal_to: %w{ARecord CNAME PTR}
 
+      property :dns_server, String,
+        description: "The name of the DNS server on which to create the record.",
+        default: "localhost",
+        introduced: "16.3"
+
       action :create do
         description "Creates and updates the DNS entry."
 
+        windows_feature "RSAT-DNS-Server" do
+          not_if new_resource.dns_server.casecmp?("localhost")
+        end
+
         powershell_package "xDnsServer" do
         end
+
         do_it "Present"
       end
 
       action :delete do
         description "Deletes a DNS entry."
+
+        windows_feature "RSAT-DNS-Server" do
+          not_if new_resource.dns_server.casecmp?("localhost")
+        end
+
         powershell_package "xDnsServer" do
         end
+
         do_it "Absent"
       end
 
@@ -67,6 +83,7 @@ class Chef
             property :Zone, new_resource.zone
             property :Type, new_resource.record_type
             property :Target, new_resource.target
+            property :DnsServer, new_resource.dns_server
           end
         end
       end

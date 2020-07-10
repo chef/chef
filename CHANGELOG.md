@@ -1,15 +1,31 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.80 -->
-## [v16.2.80](https://github.com/chef/chef/tree/v16.2.80) (2020-07-03)
+<!-- latest_release 16.2.96 -->
+## [v16.2.96](https://github.com/chef/chef/tree/v16.2.96) (2020-07-09)
 
 #### Merged Pull Requests
-- update to powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin))
+- Fix openssl config tests on Windows [#10138](https://github.com/chef/chef/pull/10138) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix openssl config tests on Windows [#10138](https://github.com/chef/chef/pull/10138) ([phiggins](https://github.com/phiggins)) <!-- 16.2.96 -->
+- Disable Naming/AsciiIdentifiers in our specs [#10139](https://github.com/chef/chef/pull/10139) ([tas50](https://github.com/tas50)) <!-- 16.2.95 -->
+- Support legacy DSS host keys with knife-ssh [#10133](https://github.com/chef/chef/pull/10133) ([tas50](https://github.com/tas50)) <!-- 16.2.94 -->
+- Remove reference to deprecated option in test helper. [#10136](https://github.com/chef/chef/pull/10136) ([phiggins](https://github.com/phiggins)) <!-- 16.2.93 -->
+- Add introduced field to new propertyin windows_dns_record [#10132](https://github.com/chef/chef/pull/10132) ([tas50](https://github.com/tas50)) <!-- 16.2.92 -->
+- Fix systemd unit test on Windows. [#10127](https://github.com/chef/chef/pull/10127) ([phiggins](https://github.com/phiggins)) <!-- 16.2.91 -->
+- windows_dns_record: add dns_server property with default of localhost [#10120](https://github.com/chef/chef/pull/10120) ([jeremyciak](https://github.com/jeremyciak)) <!-- 16.2.90 -->
+- Fix some windows package tests [#10129](https://github.com/chef/chef/pull/10129) ([phiggins](https://github.com/phiggins)) <!-- 16.2.89 -->
+- Allow iso8601 gem version 0.13 [#10128](https://github.com/chef/chef/pull/10128) ([tas50](https://github.com/tas50)) <!-- 16.2.88 -->
+- expand_path with __dir__ instead of __FILE__ [#10125](https://github.com/chef/chef/pull/10125) ([tas50](https://github.com/tas50)) <!-- 16.2.87 -->
+- Fix `powershell_exec!` test. [#10126](https://github.com/chef/chef/pull/10126) ([phiggins](https://github.com/phiggins)) <!-- 16.2.86 -->
+- Avoid assigning variables before returning if we don&#39;t have to [#10123](https://github.com/chef/chef/pull/10123) ([tas50](https://github.com/tas50)) <!-- 16.2.85 -->
+- Add spaces after attrs [#10124](https://github.com/chef/chef/pull/10124) ([tas50](https://github.com/tas50)) <!-- 16.2.84 -->
+- Fix warning message for cb / core resource conflict [#10117](https://github.com/chef/chef/pull/10117) ([tas50](https://github.com/tas50)) <!-- 16.2.83 -->
+- Switch back to a supported nokogiri release [#10114](https://github.com/chef/chef/pull/10114) ([tas50](https://github.com/tas50)) <!-- 16.2.82 -->
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#9992](https://github.com/chef/chef/pull/9992) ([ramereth](https://github.com/ramereth)) <!-- 16.2.81 -->
 - update to powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.80 -->
 - Update windows_security_policy for better idempotency [#10064](https://github.com/chef/chef/pull/10064) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.79 -->
 - Bump train-core to 3.3.6 [#10104](https://github.com/chef/chef/pull/10104) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.78 -->

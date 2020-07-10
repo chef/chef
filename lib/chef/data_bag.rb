@@ -59,12 +59,11 @@ class Chef
     end
 
     def to_h
-      result = {
+      {
         "name" => @name,
         "json_class" => self.class.name,
         "chef_type" => "data_bag",
       }
-      result
     end
 
     alias_method :to_hash, :to_h

@@ -206,12 +206,11 @@ class Chef
         end
 
         def request
-          request = if new_resource.csr_file.nil?
-                      gen_x509_request(subject, key)
-                    else
-                      OpenSSL::X509::Request.new ::File.read(new_resource.csr_file)
-                    end
-          request
+          if new_resource.csr_file.nil?
+            gen_x509_request(subject, key)
+          else
+            OpenSSL::X509::Request.new ::File.read(new_resource.csr_file)
+          end
         end
 
         def subject
@@ -227,12 +226,11 @@ class Chef
         end
 
         def ca_private_key
-          ca_private_key = if new_resource.csr_file.nil?
-                             key
-                           else
-                             OpenSSL::PKey.read ::File.read(new_resource.ca_key_file), new_resource.ca_key_pass
-                           end
-          ca_private_key
+          if new_resource.csr_file.nil?
+            key
+          else
+            OpenSSL::PKey.read ::File.read(new_resource.ca_key_file), new_resource.ca_key_pass
+          end
         end
 
         def ca_info
@@ -258,8 +256,7 @@ class Chef
         end
 
         def cert
-          cert = gen_x509_cert(request, extensions, ca_info, ca_private_key)
-          cert
+          gen_x509_cert(request, extensions, ca_info, ca_private_key)
         end
       end
     end

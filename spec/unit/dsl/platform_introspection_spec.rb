@@ -21,6 +21,7 @@ require "chef/dsl/platform_introspection"
 
 class LanguageTester
   attr_reader :node
+
   def initialize(node)
     @node = node
   end

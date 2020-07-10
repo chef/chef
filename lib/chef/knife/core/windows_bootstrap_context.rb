@@ -52,8 +52,7 @@ class Chef
         # will be interpreted by ruby later and do the right thing.
         def cleanpath(path)
           path = Pathname.new(path).cleanpath.to_s
-          path = path.gsub(File::SEPARATOR, '\\')
-          path
+          path.gsub(File::SEPARATOR, '\\')
         end
 
         def validation_key

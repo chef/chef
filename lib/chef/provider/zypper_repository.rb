@@ -41,7 +41,7 @@ class Chef
           if template_available?(new_resource.source)
             source new_resource.source
           else
-            source ::File.expand_path("../support/zypper_repo.erb", __FILE__)
+            source ::File.expand_path("support/zypper_repo.erb", __dir__)
             local true
           end
           sensitive new_resource.sensitive

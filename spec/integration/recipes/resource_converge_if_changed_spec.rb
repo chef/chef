@@ -6,6 +6,7 @@ describe "Resource::ActionClass#converge_if_changed" do
   module Namer
     extend self
     attr_accessor :current_index
+
     def incrementing_value
       @incrementing_value += 1
       @incrementing_value
@@ -30,6 +31,7 @@ describe "Resource::ActionClass#converge_if_changed" do
         property :state2, default: "default_state2"
         property :sensitive1, default: "default_dontprintme", sensitive: true
         attr_accessor :converged
+
         def initialize(*args)
           super
           @converged = 0

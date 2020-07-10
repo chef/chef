@@ -103,6 +103,7 @@ class Chef
         protected
 
         attr_writer :loaded_lwrps
+
         def loaded_lwrps
           @loaded_lwrps ||= {}
         end
