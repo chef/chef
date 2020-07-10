@@ -239,6 +239,28 @@ describe Chef::Resource::Git, requires_git: true do
     end
   end
 
+  context "when updating a branch that's already checked out out" do
+    it "checks out master, commits to the repo, and checks out the latest changes" do
+      git deploy_directory do
+        repository origin_repo
+        revision "master"
+        action :sync
+      end.should_be_updated
+
+      # We don't have a way to test a commit in the git bundle
+      # Revert to a previous commit in the same branch and make sure we can still sync.
+      shell_out!("git", "reset", "--hard", rev_foo, cwd: deploy_directory)
+
+      git deploy_directory do
+        repository origin_repo
+        revision "master"
+        action :sync
+      end.should_be_updated
+      expect_revision_to_be("HEAD", rev_head)
+      expect_branch_to_be("master")
+    end
+  end
+
   context "when dealing with a repo with a degenerate tag named 'HEAD'" do
     before do
       shell_out!("git", "tag", "-m\"degenerate tag\"", "HEAD", "ed181b3419b6f489bedab282348162a110d6d3a1", cwd: origin_repo)
