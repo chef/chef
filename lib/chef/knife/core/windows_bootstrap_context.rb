@@ -30,8 +30,6 @@ class Chef
       # * @run_list - the run list for the node to bootstrap
       #
       class WindowsBootstrapContext < BootstrapContext
-        attr_accessor :config
-        attr_accessor :chef_config
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
@@ -39,20 +37,6 @@ class Chef
           @chef_config  = chef_config
           @secret       = secret
           super(config, run_list, chef_config, secret)
-        end
-
-        # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
-        # this presumes Windows so we can avoid changing the method definitions
-        # across Chef, ChefConfig, and ChefUtils for the circumstance where
-        # the methods are being run for a system other than the one Ruby is
-        # executing on.
-        #
-        # We only need to cleanpath the paths that we are passing to cmd.exe,
-        # anything written to a configuration file or passed as an argument
-        # will be interpreted by ruby later and do the right thing.
-        def cleanpath(path)
-          path = Pathname.new(path).cleanpath.to_s
-          path.gsub(File::SEPARATOR, '\\')
         end
 
         def validation_key
@@ -75,9 +59,9 @@ class Chef
           client_rb = <<~CONFIG
             chef_server_url  "#{chef_config[:chef_server_url]}"
             validation_client_name "#{chef_config[:validation_client_name]}"
-            file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
-            file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
-            cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
+            file_cache_path   "c:/chef/cache"
+            file_backup_path  "c:/chef/backup"
+            cache_options     ({:path => "c:/chef/cache/checksums", :skip_expires => true})
           CONFIG
 
           unless chef_config[:chef_license].nil?
@@ -100,21 +84,21 @@ class Chef
 
           # We configure :verify_api_cert only when it's overridden on the CLI
           # or when specified in the knife config.
-          if !config[:node_verify_api_cert].nil? || config.key?(:verify_api_cert)
-            value = config[:node_verify_api_cert].nil? ? config[:verify_api_cert] : config[:node_verify_api_cert]
+          if !config[:node_verify_api_cert].nil? || chef_config.key?(:verify_api_cert)
+            value = config[:node_verify_api_cert].nil? ? chef_config[:verify_api_cert] : config[:node_verify_api_cert]
             client_rb << %Q{verify_api_cert #{value}\n}
           end
 
           # We configure :ssl_verify_mode only when it's overridden on the CLI
           # or when specified in the knife config.
-          if config[:node_ssl_verify_mode] || config.key?(:ssl_verify_mode)
+          if config[:node_ssl_verify_mode] || chef_config.key?(:ssl_verify_mode)
             value = case config[:node_ssl_verify_mode]
                     when "peer"
                       :verify_peer
                     when "none"
                       :verify_none
                     when nil
-                      config[:ssl_verify_mode]
+                      chef_config[:ssl_verify_mode]
                     else
                       nil
                     end
@@ -125,29 +109,29 @@ class Chef
           end
 
           if config[:ssl_verify_mode]
-            client_rb << %Q{ssl_verify_mode :#{config[:ssl_verify_mode]}\n}
+            client_rb << %Q{ssl_verify_mode :#{chef_config[:ssl_verify_mode]}\n}
           end
 
-          if config[:bootstrap_proxy]
+          if chef_config[:bootstrap_proxy]
             client_rb << "\n"
-            client_rb << %Q{http_proxy        "#{config[:bootstrap_proxy]}"\n}
-            client_rb << %Q{https_proxy       "#{config[:bootstrap_proxy]}"\n}
-            client_rb << %Q{no_proxy          "#{config[:bootstrap_no_proxy]}"\n} if config[:bootstrap_no_proxy]
+            client_rb << %Q{http_proxy        "#{chef_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{https_proxy       "#{chef_config[:bootstrap_proxy]}"\n}
+            client_rb << %Q{no_proxy          "#{chef_config[:bootstrap_no_proxy]}"\n} if chef_config[:bootstrap_no_proxy]
           end
 
-          if config[:bootstrap_no_proxy]
-            client_rb << %Q{no_proxy       "#{config[:bootstrap_no_proxy]}"\n}
+          if chef_config[:bootstrap_no_proxy]
+            client_rb << %Q{no_proxy       "#{chef_config[:bootstrap_no_proxy]}"\n}
           end
 
           if config[:secret]
-            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(true)}/encrypted_data_bag_secret"\n}
+            client_rb << %Q{encrypted_data_bag_secret "c:/chef/encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs_script.empty?
-            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(true)}/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "c:/chef/trusted_certs"\n}
           end
 
-          if chef_config[:fips]
+          if Chef::Config[:fips]
             client_rb << "fips true\n"
           end
 
@@ -174,8 +158,8 @@ class Chef
 
         def start_chef
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\bin;#{ChefConfig::Config.c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "#{Chef::Dist::CLIENT} -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
+          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin\;%PATH%\"\n"
+          start_chef << "chef-client -c c:/chef/client.rb -j c:/chef/first-boot.json#{bootstrap_environment_option}\n"
         end
 
         def win_wget
@@ -276,7 +260,7 @@ class Chef
         end
 
         def bootstrap_directory
-          cleanpath(ChefConfig::Config.etc_chef_dir(true))
+          "C:\\chef"
         end
 
         def local_download_path
@@ -286,15 +270,15 @@ class Chef
         # Build a URL to query www.chef.io that will redirect to the correct
         # Chef Infra msi download.
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
-          if config[:msi_url].nil? || config[:msi_url].empty?
+          if @config[:msi_url].nil? || @config[:msi_url].empty?
             url = "https://www.chef.io/chef/download?p=windows"
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
             url += "&DownloadContext=#{download_context}" unless download_context.nil?
-            url += "&channel=#{config[:channel]}"
+            url += "&channel=#{@config[:channel]}"
             url += "&v=#{version_to_install}"
           else
-            config[:msi_url]
+            @config[:msi_url]
           end
         end
 
@@ -371,7 +355,7 @@ class Chef
                     @echo Successfully created scheduled task to install #{Chef::Dist::PRODUCT}.
                     @schtasks /run /tn chefclientbootstraptask
                     @if ERRORLEVEL 1 (
-                        @echo ERROR: Failed to execute #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
+                        @echo ERROR: Failed to execut #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
                     ) else (
                         @echo Successfully started #{Chef::Dist::PRODUCT} installation scheduled task.
                         @echo Waiting for installation to complete -- this may take a few minutes...
