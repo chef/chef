@@ -70,16 +70,18 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
     end
 
-    context "when the source is a uri" do
-      let(:resource_source) { "https://foo.bar/calculator.msi" }
-
-      context "when the source has not been downloaded" do
+    context "when the source is not present it loads from cache" do
+      context "when the package is not installed" do
         before(:each) do
-          allow(provider).to receive(:downloadable_file_missing?).and_return(true)
+          allow(provider).to receive(:uri_scheme?).and_return(false)
+          allow(provider.package_provider).to receive(:get_product_property).and_return(nil)
+          allow(provider.package_provider).to receive(:get_installed_version).and_return(nil)
+          allow(provider.package_provider).to receive(:package_version).and_return(nil)
         end
-        it "sets the current version to unknown" do
+
+        it "sets the current version nil" do
           provider.load_current_resource
-          expect(provider.current_resource.version).to eql("unknown")
+          expect(provider.current_resource.version).to eql(nil)
         end
       end
 
@@ -312,7 +314,10 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "https://foo.bar/calculator.exe" }
 
       it "downloads the http resource" do
-        allow(File).to receive(:exist?).with('c:\cache\calculator.exe').and_return(false)
+        allow(provider).to receive(:uri_scheme?).and_return(true)
+        allow(provider).to receive(:installer_type).and_return(nil)
+        allow(File).to receive(:exist?).with("https\\foo.bar\\calculator.exe").and_return(false)
+        allow(provider).to receive(:compile_and_converge_action)
         expect(provider).to receive(:download_source_file)
         provider.run_action(:install)
       end
