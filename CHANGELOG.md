@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.97 -->
-## [v16.2.97](https://github.com/chef/chef/tree/v16.2.97) (2020-07-10)
+<!-- latest_release 16.2.98 -->
+## [v16.2.98](https://github.com/chef/chef/tree/v16.2.98) (2020-07-10)
 
 #### Merged Pull Requests
-- Fix git sync if the local branch already exist [#9998](https://github.com/chef/chef/pull/9998) ([lotooo](https://github.com/lotooo))
+- Fix spellcheck CI task [#10142](https://github.com/chef/chef/pull/10142) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix spellcheck CI task [#10142](https://github.com/chef/chef/pull/10142) ([phiggins](https://github.com/phiggins)) <!-- 16.2.98 -->
 - Fix git sync if the local branch already exist [#9998](https://github.com/chef/chef/pull/9998) ([lotooo](https://github.com/lotooo)) <!-- 16.2.97 -->
 - Fix openssl config tests on Windows [#10138](https://github.com/chef/chef/pull/10138) ([phiggins](https://github.com/phiggins)) <!-- 16.2.96 -->
 - Disable Naming/AsciiIdentifiers in our specs [#10139](https://github.com/chef/chef/pull/10139) ([tas50](https://github.com/tas50)) <!-- 16.2.95 -->
