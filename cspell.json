@@ -634,6 +634,7 @@
     "gettype",
     "gids",
     "Gilles",
+    "gitkeep",
     "glibc",
     "globalstate",
     "globbing",
@@ -1605,6 +1606,7 @@
     "rpmvercmp",
     "rquery",
     "rsakey",
+    "RSAT",
     "rspec",
     "rstrip",
     "rsync",
@@ -1659,6 +1661,7 @@
     "scutil",
     "secedit",
     "secoption",
+    "secopts",
     "secp",
     "securerandom",
     "SECURITYPOLICY",
@@ -2175,7 +2178,8 @@
     "zolo",
     "zombiejs",
     "Zuazo",
-    "Zygmuntowicz"
+    "Zygmuntowicz",
+    "zypp"
   ],
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.
