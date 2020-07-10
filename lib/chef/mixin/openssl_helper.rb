@@ -245,6 +245,7 @@ class Chef
       def gen_serial
         ::OpenSSL::BN.generate_prime(160)
       end
+
       # generate a Certificate given a X509 request
       # @param [OpenSSL::X509::Request] request X509 Certificate Request
       # @param [Array] extension Array of X509 Certificate Extension
