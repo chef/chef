@@ -1221,7 +1221,7 @@ describe "Recipe DSL methods" do
 
       it "utf-8 dsl names work" do
         recipe = converge do
-          Straße("blah") {}
+          Straße("blah") {} # rubocop: disable Naming/AsciiIdentifiers
         end
         expect(recipe.logged_warnings).to eq ""
         expect(BaseThingy.created_resource).to eq(UTF8Thingy)

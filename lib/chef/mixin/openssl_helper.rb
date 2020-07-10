@@ -282,7 +282,9 @@ class Chef
           ef.issuer_certificate = info["issuer"]
         end
         ef.subject_certificate = cert
-        ef.config = ::OpenSSL::Config.load(::OpenSSL::Config::DEFAULT_CONFIG_FILE)
+        if openssl_config = __openssl_config
+          ef.config = openssl_config
+        end
 
         cert.extensions = extension
         cert.add_extension ef.create_extension("subjectKeyIdentifier", "hash")
@@ -313,7 +315,9 @@ class Chef
         crl.last_update = Time.now
         crl.next_update = Time.now + 3600 * 24 * info["validity"]
 
-        ef.config = ::OpenSSL::Config.load(::OpenSSL::Config::DEFAULT_CONFIG_FILE)
+        if openssl_config = __openssl_config
+          ef.config = openssl_config
+        end
         ef.issuer_certificate = info["issuer"]
 
         crl.add_extension ::OpenSSL::X509::Extension.new("crlNumber", ::OpenSSL::ASN1::Integer(1))
@@ -369,8 +373,7 @@ class Chef
         revoked.add_extension(ext)
         crl.add_revoked(revoked)
 
-        crl = renew_x509_crl(crl, ca_private_key, info)
-        crl
+        renew_x509_crl(crl, ca_private_key, info)
       end
 
       # renew a X509 crl given
@@ -391,7 +394,9 @@ class Chef
         crl.next_update = crl.last_update + 3600 * 24 * info["validity"]
 
         ef = ::OpenSSL::X509::ExtensionFactory.new
-        ef.config = ::OpenSSL::Config.load(::OpenSSL::Config::DEFAULT_CONFIG_FILE)
+        if openssl_config = __openssl_config
+          ef.config = openssl_config
+        end
         ef.issuer_certificate = info["issuer"]
 
         crl.extensions = [ ::OpenSSL::X509::Extension.new("crlNumber",
@@ -421,6 +426,23 @@ class Chef
         end
 
         resp
+      end
+
+      private
+
+      def __openssl_config
+        path = if File.exist?(::OpenSSL::Config::DEFAULT_CONFIG_FILE)
+                 OpenSSL::Config::DEFAULT_CONFIG_FILE
+               else
+                 Dir[File.join(RbConfig::CONFIG["prefix"], "**", "openssl.cnf")].first
+               end
+
+        if File.exist?(path)
+          ::OpenSSL::Config.load(path)
+        else
+          Chef::Log.warn("Couldn't find OpenSSL config file")
+          nil
+        end
       end
     end
   end

@@ -9,12 +9,12 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
-gem "chef-utils", path: File.expand_path("../chef-utils", __FILE__) if File.exist?(File.expand_path("../chef-utils", __FILE__))
-gem "chef-config", path: File.expand_path("../chef-config", __FILE__) if File.exist?(File.expand_path("../chef-config", __FILE__))
+gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
+gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
-if File.exist?(File.expand_path("../chef-bin", __FILE__))
+if File.exist?(File.expand_path("chef-bin", __dir__))
   # bundling in a git checkout
-  gem "chef-bin", path: File.expand_path("../chef-bin", __FILE__)
+  gem "chef-bin", path: File.expand_path("chef-bin", __dir__)
 else
   # bundling in omnibus
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem

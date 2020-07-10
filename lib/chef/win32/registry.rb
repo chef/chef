@@ -341,7 +341,7 @@ class Chef
       end
 
       def get_type_from_num(val_type)
-        value = {
+        {
           3 => ::Win32::Registry::REG_BINARY,
           1 => ::Win32::Registry::REG_SZ,
           7 => ::Win32::Registry::REG_MULTI_SZ,
@@ -350,7 +350,6 @@ class Chef
           5 => ::Win32::Registry::REG_DWORD_BIG_ENDIAN,
           11 => ::Win32::Registry::REG_QWORD,
         }[val_type]
-        value
       end
 
       def create_missing(key_path)

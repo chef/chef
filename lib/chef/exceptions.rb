@@ -198,6 +198,7 @@ class Chef
     class MetadataNotFound < StandardError
       attr_reader :install_path
       attr_reader :cookbook_name
+
       def initialize(install_path, cookbook_name)
         @install_path = install_path
         @cookbook_name = cookbook_name
@@ -448,6 +449,7 @@ class Chef
     # to correctly populate the backtrace with the wrapped backtraces.
     class RunFailedWrappingError < RuntimeError
       attr_reader :wrapped_errors
+
       def initialize(*errors)
         errors = errors.select { |e| !e.nil? }
         output = "Found #{errors.size} errors, they are stored in the backtrace"
@@ -488,6 +490,7 @@ class Chef
 
     class MultipleDscResourcesFound < RuntimeError
       attr_reader :resources_found
+
       def initialize(resources_found)
         @resources_found = resources_found
         matches_info = @resources_found.each do |r|

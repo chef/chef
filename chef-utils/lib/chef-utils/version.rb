@@ -14,6 +14,6 @@
 # limitations under the License.
 
 module ChefUtils
-  CHEFUTILS_ROOT = File.expand_path("../..", __FILE__)
-  VERSION = "16.2.74".freeze
+  CHEFUTILS_ROOT = File.expand_path("..", __dir__)
+  VERSION = "16.2.96".freeze
 end

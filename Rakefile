@@ -18,7 +18,7 @@
 #
 
 # we need this to resolve files required by lib/chef/dist
-$LOAD_PATH.unshift(File.expand_path("../chef-config/lib", __FILE__))
+$LOAD_PATH.unshift(File.expand_path("chef-config/lib", __dir__))
 
 begin
   require_relative "tasks/rspec"

@@ -120,8 +120,7 @@ class Chef
         path  = Chef::Util::PathHelper.escape_glob_dir(cookbook_path)
         files = Dir[File.join(path, "**", "*.rb")]
         files = remove_ignored_files(files)
-        files = remove_uninteresting_ruby_files(files)
-        files
+        remove_uninteresting_ruby_files(files)
       end
 
       def untested_ruby_files

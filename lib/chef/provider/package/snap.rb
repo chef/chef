@@ -304,7 +304,7 @@ class Chef
             SNAP_OPTION
           end
 
-          multipart_form_data = <<~SNAP_S
+          <<~SNAP_S
             Host:
             Content-Type: multipart/form-data; boundary=#{snap_name}
             Content-Length: #{content_length}
@@ -320,7 +320,6 @@ class Chef
             <#{content_length} bytes of snap file data>
             --#{snap_name}
           SNAP_S
-          multipart_form_data
         end
 
         # Constructs json to post for snap changes
