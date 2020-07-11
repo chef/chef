@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.2.98 -->
-## [v16.2.98](https://github.com/chef/chef/tree/v16.2.98) (2020-07-10)
+<!-- latest_release 16.3.0 -->
+## [v16.3.0](https://github.com/chef/chef/tree/v16.3.0) (2020-07-11)
 
 #### Merged Pull Requests
-- Fix spellcheck CI task [#10142](https://github.com/chef/chef/pull/10142) ([phiggins](https://github.com/phiggins))
+- Minor chefstyle fixes in the spellcheck task [#10145](https://github.com/chef/chef/pull/10145) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Minor chefstyle fixes in the spellcheck task [#10145](https://github.com/chef/chef/pull/10145) ([tas50](https://github.com/tas50)) <!-- 16.3.0 -->
 - Fix spellcheck CI task [#10142](https://github.com/chef/chef/pull/10142) ([phiggins](https://github.com/phiggins)) <!-- 16.2.98 -->
 - Fix git sync if the local branch already exist [#9998](https://github.com/chef/chef/pull/9998) ([lotooo](https://github.com/lotooo)) <!-- 16.2.97 -->
 - Fix openssl config tests on Windows [#10138](https://github.com/chef/chef/pull/10138) ([phiggins](https://github.com/phiggins)) <!-- 16.2.96 -->
