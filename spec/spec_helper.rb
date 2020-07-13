@@ -116,6 +116,7 @@ RSpec.configure do |config|
   config.include(MockShellout::RSpec)
   config.filter_run focus: true
   config.filter_run_excluding external: true
+  config.raise_on_warning = true
 
   # Explicitly disable :should syntax
   # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.

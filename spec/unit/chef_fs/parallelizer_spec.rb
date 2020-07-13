@@ -405,7 +405,7 @@ describe Chef::ChefFS::Parallelizer do
         expect do
           b = enum.enum_for(:each)
           b.next
-        end.to raise_error
+        end.to raise_error(RuntimeError, "each() called on parallel enumerable twice simultaneously! Bad mojo")
       end
     end
   end
