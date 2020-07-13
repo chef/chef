@@ -17,7 +17,7 @@
 #
 
 require "chef/json_compat"
-require_relative "../../../spec_helper"
+require "spec_helper"
 
 describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   before(:all) do

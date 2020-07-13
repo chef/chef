@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative "../spec_helper"
+require "spec_helper"
 require "chef/scan_access_control"
 
 describe Chef::ScanAccessControl do
