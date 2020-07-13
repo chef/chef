@@ -231,27 +231,26 @@ class Chef
             if xml_contents.empty?
               Chef::Log.warn('Unable to properly parse and update C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml contents. Skipping file update.')
             else
-              declare_resource(:file, 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml') do
+              file 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml' do
                 content xml_contents
               end
             end
           end
 
-          # update via netdom
-          declare_resource(:powershell_script, "set hostname") do
-            code <<-EOH
-              $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
-              $sysInfo.Rename("#{new_resource.hostname}")
-            EOH
-            notifies :request_reboot, "reboot[setting hostname]"
-            not_if { Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname }
-          end
+          unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
+            converge_by "set hostname to #{new_resource.hostname}" do
+              powershell_out! <<~EOH
+                $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
+                $sysInfo.Rename("#{new_resource.hostname}")
+              EOH
+            end
 
-          # reboot because $windows
-          declare_resource(:reboot, "setting hostname") do
-            reason "#{Chef::Dist::PRODUCT} updated system hostname"
-            action :nothing
-            only_if { new_resource.windows_reboot }
+            # reboot because $windows
+            reboot "setting hostname" do
+              reason "#{Chef::Dist::PRODUCT} updated system hostname"
+              action :nothing
+              only_if { new_resource.windows_reboot }
+            end
           end
         end
       end
