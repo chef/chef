@@ -22,7 +22,7 @@ require "spec_helper"
 describe Chef::Provider::Package::Dnf::PythonHelper do
   let(:helper) { Chef::Provider::Package::Dnf::PythonHelper.instance }
 
-  it "propagates stacktraces on stderr from the forked subprocess" do
+  it "propagates stacktraces on stderr from the forked subprocess", :rhel do
     allow(helper).to receive(:dnf_command).and_return("ruby -e 'raise \"your hands in the air\"'")
     expect { helper.query(:whatprovides, "tcpdump") }.to raise_error(/your hands in the air/)
   end
