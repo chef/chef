@@ -68,3 +68,7 @@ locale "set system locale" do
 end
 
 include_recipe "::_ohai_hint"
+
+hostname "new-hostname" do
+  windows_reboot false
+end

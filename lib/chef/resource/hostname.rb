@@ -248,8 +248,8 @@ class Chef
             # reboot because $windows
             reboot "setting hostname" do
               reason "#{Chef::Dist::PRODUCT} updated system hostname"
-              action :nothing
               only_if { new_resource.windows_reboot }
+              action :request_reboot
             end
           end
         end
