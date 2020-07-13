@@ -117,6 +117,7 @@ RSpec.configure do |config|
   config.filter_run focus: true
   config.filter_run_excluding external: true
   config.raise_on_warning = true
+  config.raise_errors_for_deprecations!
 
   # Explicitly disable :should syntax
   # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.
