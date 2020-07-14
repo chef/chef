@@ -97,16 +97,17 @@ describe "knife cookbook upload", :workstation do
         expect { knife("cookbook upload x -o #{cb_dir}") }.to raise_error(Chef::Exceptions::MetadataNotValid)
       end
     end
-    
-    when_the_repository "have cookbooks at muliple paths" do
-      let(:cb_dir_first) do 
-        File.join(@repository_dir,"cookbooks")
-        .gsub(File::SEPARATOR,File::ALT_SEPARATOR || File::SEPARATOR)
+
+    when_the_repository "has cookbooks at multiple paths" do
+
+      let(:cb_dir_first) do
+        File.join(@repository_dir, "cookbooks")
+          .gsub(File::SEPARATOR, File::ALT_SEPARATOR || File::SEPARATOR)
       end
-      
+
       let(:cb_dir_second) do
-        File.join(@repository_dir,"test_cookbooks")
-        .gsub(File::SEPARATOR,File::ALT_SEPARATOR || File::SEPARATOR) 
+        File.join(@repository_dir, "test_cookbooks")
+          .gsub(File::SEPARATOR, File::ALT_SEPARATOR || File::SEPARATOR)
       end
 
       before(:each) do

@@ -36,9 +36,7 @@ class Chef
       option :cookbook_path,
         short: "-o 'PATH:PATH'",
         long: "--cookbook-path 'PATH:PATH'",
-        description: "A colon-separated path to look for cookbooks in.
-                      Colon seprated path has been deprecated for Windows machine.
-                      In windows please use semicolon-separated path(For ex: 'PATH;PATH').",
+        description: "A delimited path to search for cookbooks. On Unix the delimiter is ':', on Windows it is ';'.",
         proc: lambda { |o| o.split(File::PATH_SEPARATOR) }
 
       option :freeze,
