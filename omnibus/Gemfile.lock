@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 320d9350cdf39abdcc4c37d5bc2971b3c222a0a0
+  revision: 67f54efcae3ca08c7035b8835fd808f2d1c755de
   branch: master
   specs:
-    omnibus (7.0.14)
+    omnibus (7.0.15)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.339.0)
+    aws-partitions (1.341.0)
     aws-sdk-core (3.103.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -41,7 +41,7 @@ GEM
     aws-sdk-kms (1.36.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.73.0)
+    aws-sdk-s3 (1.74.0)
       aws-sdk-core (~> 3, >= 3.102.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -230,7 +230,7 @@ GEM
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.6.6)
-    multi_json (1.14.1)
+    multi_json (1.15.0)
     multipart-post (2.1.1)
     necromancer (0.5.1)
     net-scp (3.0.0)
@@ -295,7 +295,7 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.5.2)
+    test-kitchen (2.5.3)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (~> 1.0, >= 1.0.11)

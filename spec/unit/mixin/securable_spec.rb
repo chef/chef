@@ -1,4 +1,3 @@
-# encoding: UTF-8
 #
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.

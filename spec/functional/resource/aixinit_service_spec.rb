@@ -1,4 +1,3 @@
-# encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
 # Copyright:: Copyright (c) Chef Software Inc.
