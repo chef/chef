@@ -573,10 +573,41 @@ steps:
 
 - label: "Spellcheck"
   commands:
-    - ruby -rjson -e "JSON.parse(File.read('cspell.json'))" 2>/dev/null || (echo "Failed to parse config file 'cspell.json', skipping spellcheck" && exit 1)
     - npm install -g cspell
-    - cspell "**/*"
+    - rake -f tasks/spellcheck.rb spellcheck
   soft_fail: true
   expeditor:
     executor:
       docker:
+
+- label: ":habicat: Linux plan"
+  commands:
+    - sudo ./scripts/ci/install-hab.sh 'x86_64-linux'
+    - sudo ./scripts/ci/verify-plan.sh
+  timeout_in_minutes: 60
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":habicat: Linux plan (kernel2)"
+  commands:
+    - sudo ./scripts/ci/install-hab.sh 'x86_64-linux-kernel2'
+    - sudo ./scripts/ci/verify-plan.sh
+  timeout_in_minutes: 60
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":habicat: Windows plan"
+  commands:
+    - ./scripts/ci/verify-plan.ps1
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        single-use: true
+        shell: ["powershell", "-Command"]
