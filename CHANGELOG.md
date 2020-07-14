@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.4 -->
-## [v16.3.4](https://github.com/chef/chef/tree/v16.3.4) (2020-07-14)
+<!-- latest_release 16.3.5 -->
+## [v16.3.5](https://github.com/chef/chef/tree/v16.3.5) (2020-07-14)
 
 #### Merged Pull Requests
-- Fix extra quote in habitat test pipeline config [#10156](https://github.com/chef/chef/pull/10156) ([christopher-snapp](https://github.com/christopher-snapp))
+- Fix execute resource with integer user parameter. [#10157](https://github.com/chef/chef/pull/10157) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix execute resource with integer user parameter. [#10157](https://github.com/chef/chef/pull/10157) ([phiggins](https://github.com/phiggins)) <!-- 16.3.5 -->
 - Fix extra quote in habitat test pipeline config [#10156](https://github.com/chef/chef/pull/10156) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.3.4 -->
 - Test and Promote Habitat builds on Linux [#10102](https://github.com/chef/chef/pull/10102) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.3.3 -->
 - Fix two warnings in tests. [#10150](https://github.com/chef/chef/pull/10150) ([phiggins](https://github.com/phiggins)) <!-- 16.3.2 -->
