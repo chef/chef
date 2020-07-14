@@ -63,6 +63,16 @@ describe Chef::Resource::Execute do
         expect(identity[:user]).to eq("user")
       end
     end
+
+    context "when username is passed as an integer" do
+      let(:username) { 499 }
+
+      it "correctly parses the user and domain" do
+        identity = resource.qualify_user(username, password, domain)
+        expect(identity[:domain]).to eq(nil)
+        expect(identity[:user]).to eq(499)
+      end
+    end
   end
 
   shared_examples_for "it received valid credentials" do

@@ -630,11 +630,11 @@ class Chef
         end
 
         # if domain is provided in both username and domain
-        if specified_user && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
+        if specified_user.kind_of?(String) && ((specified_user.include? '\\') || (specified_user.include? "@")) && specified_domain
           raise ArgumentError, "The domain is provided twice. Username: `#{specified_user}`, Domain: `#{specified_domain}`. Please specify domain only once."
         end
 
-        if ! specified_user.nil? && specified_domain.nil?
+        if specified_user.kind_of?(String) && specified_domain.nil?
           # Splitting username of format: Domain\Username
           domain_and_user = user.split('\\')
 
