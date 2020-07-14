@@ -95,7 +95,8 @@ describe Chef::Cookbook::GemInstaller do
 
   it "skip metadata installation when Chef::Config[:skip_gem_metadata_installation] is set to true" do
     Chef::Config[:skip_gem_metadata_installation] = true
-    expect(gem_installer.install).to_not receive(:shell_out!)
+    expect(gem_installer).to_not receive(:shell_out!)
+    expect(gem_installer.install).to be_nil
   end
 
   it "install metadata when Chef::Config[:skip_gem_metadata_installation] is not true" do

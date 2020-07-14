@@ -124,6 +124,7 @@ RSpec.configure do |config|
   end
   config.mock_with :rspec do |c|
     c.syntax = :expect
+    c.allow_message_expectations_on_nil = false
   end
 
   # Only run these tests on platforms that are also chef workstations
