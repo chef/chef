@@ -22,12 +22,8 @@ require "spec_helper"
 describe Chef::Provider::Service::Windows, "load_current_resource" do
   include_context "Win32"
 
-  before(:all) do
-    Chef::ReservedNames::Win32::Security = Class.new unless windows?
-  end
-
-  after(:all) do
-    Chef::ReservedNames::Win32.send(:remove_const, :Security) unless windows?
+  before do
+    stub_const("Chef::ReservedNames::Win32::Security", Class.new) unless windows?
   end
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
