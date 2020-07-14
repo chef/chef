@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.3 -->
-## [v16.3.3](https://github.com/chef/chef/tree/v16.3.3) (2020-07-13)
+<!-- latest_release 16.3.4 -->
+## [v16.3.4](https://github.com/chef/chef/tree/v16.3.4) (2020-07-14)
 
 #### Merged Pull Requests
-- Test and Promote Habitat builds on Linux [#10102](https://github.com/chef/chef/pull/10102) ([christopher-snapp](https://github.com/christopher-snapp))
-- Fix two warnings in tests. [#10150](https://github.com/chef/chef/pull/10150) ([phiggins](https://github.com/phiggins))
+- Fix extra quote in habitat test pipeline config [#10156](https://github.com/chef/chef/pull/10156) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix extra quote in habitat test pipeline config [#10156](https://github.com/chef/chef/pull/10156) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.3.4 -->
 - Test and Promote Habitat builds on Linux [#10102](https://github.com/chef/chef/pull/10102) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.3.3 -->
 - Fix two warnings in tests. [#10150](https://github.com/chef/chef/pull/10150) ([phiggins](https://github.com/phiggins)) <!-- 16.3.2 -->
 - Don&#39;t run the dnf test that Windows doesn&#39;t like on Windows. [#10149](https://github.com/chef/chef/pull/10149) ([phiggins](https://github.com/phiggins)) <!-- 16.3.2 -->
