@@ -25,11 +25,9 @@ describe Chef::ChefFS::FileSystem::OperationFailedError do
 
     context "has a cause attribute and HTTP result code is 400" do
       it "include error cause" do
-        allow_message_expectations_on_nil
         response_body = '{"error":["Invalid key test in request body"]}'
-        allow(@response).to receive(:code).and_return("400")
-        allow(@response).to receive(:body).and_return(response_body)
-        exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
+        response = double(:response, code: "400", body: response_body)
+        exception = Net::HTTPClientException.new("(exception) unauthorized", response)
         expect do
           raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, exception), error_message
         end.to raise_error(Chef::ChefFS::FileSystem::OperationFailedError, "#{error_message} cause: #{response_body}")
