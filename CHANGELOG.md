@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Don&#39;t allow setting expectations on nil. [#10154](https://github.com/chef/chef/pull/10154) ([phiggins](https://github.com/phiggins))
 - Use rspec constant stubbing. [#10155](https://github.com/chef/chef/pull/10155) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t allow setting expectations on nil. [#10154](https://github.com/chef/chef/pull/10154) ([phiggins](https://github.com/phiggins)) <!-- 16.3.7 -->
 - Use rspec constant stubbing. [#10155](https://github.com/chef/chef/pull/10155) ([phiggins](https://github.com/phiggins)) <!-- 16.3.7 -->
 - Bump the server api version to 2 [#10140](https://github.com/chef/chef/pull/10140) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.7 -->
 - Fixed `knife cookbook upload -o` windows path issue [#10146](https://github.com/chef/chef/pull/10146) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.3.6 -->
