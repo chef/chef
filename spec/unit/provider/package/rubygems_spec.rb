@@ -104,6 +104,15 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   context "new default rubygems behavior" do
+    around do |example|
+      original_value = Gem.configuration.ssl_verify_mode
+      Gem.configuration.instance_variable_set("@ssl_verify_mode", OpenSSL::SSL::VERIFY_NONE)
+
+      example.run
+
+      Gem.configuration.instance_variable_set("@ssl_verify_mode", original_value)
+    end
+
     before do
       Chef::Config[:rubygems_cache_enabled] = false
 
