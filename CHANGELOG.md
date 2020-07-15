@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.12.24 -->
-## [v15.12.24](https://github.com/chef/chef/tree/v15.12.24) (2020-07-06)
+<!-- latest_release 15.13.0 -->
+## [v15.13.0](https://github.com/chef/chef/tree/v15.13.0) (2020-07-15)
 
 #### Merged Pull Requests
-- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth))
+- Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50)) <!-- 15.13.0 -->
 - Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth)) <!-- 15.12.24 -->
 - Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.12.23 -->
 <!-- release_rollup -->
