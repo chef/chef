@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.9 -->
-## [v16.3.9](https://github.com/chef/chef/tree/v16.3.9) (2020-07-15)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Remove smartos detection / support in our package scripts [#10161](https://github.com/chef/chef/pull/10161) ([tas50](https://github.com/tas50))
+- Workaround rubygems ssl test failure [#10160](https://github.com/chef/chef/pull/10160) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Workaround rubygems ssl test failure [#10160](https://github.com/chef/chef/pull/10160) ([phiggins](https://github.com/phiggins)) <!-- 16.3.9 -->
 - Remove smartos detection / support in our package scripts [#10161](https://github.com/chef/chef/pull/10161) ([tas50](https://github.com/tas50)) <!-- 16.3.9 -->
 - Update to Chefstyle 1.2 + some fixes [#10158](https://github.com/chef/chef/pull/10158) ([tas50](https://github.com/tas50)) <!-- 16.3.8 -->
 - Don&#39;t allow setting expectations on nil. [#10154](https://github.com/chef/chef/pull/10154) ([phiggins](https://github.com/phiggins)) <!-- 16.3.7 -->
