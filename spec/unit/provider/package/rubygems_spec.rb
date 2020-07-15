@@ -104,6 +104,10 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   context "new default rubygems behavior" do
+    # Workaround an SSL failure that came up connecting to "http://production.cf.rubygems.org"
+    # Gem::RemoteFetcher::FetchError:
+    #   SSL_connect returned=1 errno=0 state=error: certificate verify failed (certificate rejected) (https://production.cf.rubygems.org/api/v1/dependencies?gems=rspec)
+    #
     around do |example|
       original_value = Gem.configuration.ssl_verify_mode
       Gem.configuration.instance_variable_set("@ssl_verify_mode", OpenSSL::SSL::VERIFY_NONE)
