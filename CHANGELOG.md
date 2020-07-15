@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.0 -->
-## [v15.13.0](https://github.com/chef/chef/tree/v15.13.0) (2020-07-15)
+<!-- latest_release 15.13.1 -->
+## [v15.13.1](https://github.com/chef/chef/tree/v15.13.1) (2020-07-15)
 
 #### Merged Pull Requests
-- Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50))
+- Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50)) <!-- 15.13.1 -->
 - Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50)) <!-- 15.13.0 -->
 - Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth)) <!-- 15.12.24 -->
 - Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.12.23 -->
