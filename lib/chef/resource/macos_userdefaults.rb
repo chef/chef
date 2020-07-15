@@ -78,6 +78,11 @@ class Chef
         required: true,
         desired_state: false
 
+      property :current_host_level, [TrueClass, FalseClass],
+        description: "Set the key/value at current host level, saving plist files to `$HOME/Library/Preferences/ByHost/`.",
+        desired_state: false,
+        introduced: "16.3"
+
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
         description: "The value of the key. Note: When setting boolean values you can either specify 0/1 or you can pass true/false, 'true'/false', or 'yes'/'no' and we'll automatically convert these to the proper boolean values Apple expects.",
         coerce: proc { |v| coerce_booleans(v) },
@@ -109,7 +114,9 @@ class Chef
       load_current_value do |desired|
         coerced_value = coerce_booleans(desired.value)
 
-        state_cmd = ["/usr/bin/defaults", "read", desired.domain, desired.key]
+        state_cmd = ["/usr/bin/defaults"]
+        state_cmd << "-currentHost" if desired.current_host_level
+        state_cmd << ["read", "'#{desired.domain}'", "'#{desired.key}'"]
 
         state = if desired.user.nil?
                   shell_out(state_cmd)
@@ -184,10 +191,12 @@ class Chef
                     "'#{value}'"
                   end
 
-          cmd = ["defaults", "write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
-          cmd.prepend("sudo") if new_resource.sudo
+          cmd = ["defaults"]
+          cmd << "-currentHost" if new_resource.current_host_level
+          cmd << ["write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
           cmd << "-#{type}" if type
           cmd << value
+          cmd.prepend("sudo") if new_resource.sudo
           cmd.flatten
         end
 
