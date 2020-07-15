@@ -1,4 +1,3 @@
-# encoding: UTF-8
 #
 # Author:: Dheeraj Dubey (<dheeraj.dubey@msystechnologies.com>)
 # Copyright:: Copyright (c) Chef Software Inc.
