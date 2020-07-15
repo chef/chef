@@ -176,7 +176,7 @@ class Chef
 
           value = case type
                   when "dict"
-                    # creates an array of Key1 Value1 Key2 Value2...
+                    # creates an array of quoted values ["'Key1'", "'Value1'", "'Key2'", "'Value2'" ...]
                     value.flatten.map { |x| "'#{x}'" }
                   when "array"
                     value.map { |x| "'#{x}'" }
