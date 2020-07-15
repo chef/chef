@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.1 -->
-## [v15.13.1](https://github.com/chef/chef/tree/v15.13.1) (2020-07-15)
+<!-- latest_release 15.13.2 -->
+## [v15.13.2](https://github.com/chef/chef/tree/v15.13.2) (2020-07-15)
 
 #### Merged Pull Requests
-- Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50))
+- Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50)) <!-- 15.13.2 -->
 - Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50)) <!-- 15.13.1 -->
 - Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50)) <!-- 15.13.0 -->
 - Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth)) <!-- 15.12.24 -->
