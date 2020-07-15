@@ -75,6 +75,25 @@ class Chef
         Chef::Util::PathHelper.home(".chef", "plugin_manifest.json")
       end
 
+      def self.generate_hash
+        output = if plugin_manifest?
+                   plugin_manifest
+                 else
+                   { Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY => {} }
+                 end
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_paths"] = Chef::Knife.subcommand_files
+        output[Chef::Knife::SubcommandLoader::HashedCommandLoader::KEY]["plugins_by_category"] = Chef::Knife.subcommands_by_category
+        output
+      end
+
+      def self.write_hash(data)
+        plugin_manifest_dir = File.expand_path("..", plugin_manifest_path)
+        FileUtils.mkdir_p(plugin_manifest_dir) unless File.directory?(plugin_manifest_dir)
+        File.open(plugin_manifest_path, "w") do |f|
+          f.write(Chef::JSONCompat.to_json_pretty(data))
+        end
+      end
+
       def initialize(chef_config_dir)
         @chef_config_dir = chef_config_dir
       end
