@@ -104,19 +104,6 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   end
 
   context "new default rubygems behavior" do
-    # Workaround an SSL failure that came up connecting to "http://production.cf.rubygems.org"
-    # Gem::RemoteFetcher::FetchError:
-    #   SSL_connect returned=1 errno=0 state=error: certificate verify failed (certificate rejected) (https://production.cf.rubygems.org/api/v1/dependencies?gems=rspec)
-    #
-    around do |example|
-      original_value = Gem.configuration.ssl_verify_mode
-      Gem.configuration.instance_variable_set("@ssl_verify_mode", OpenSSL::SSL::VERIFY_NONE)
-
-      example.run
-
-      Gem.configuration.instance_variable_set("@ssl_verify_mode", original_value)
-    end
-
     before do
       Chef::Config[:rubygems_cache_enabled] = false
 
@@ -137,7 +124,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
     it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
       dep = Gem::Dependency.new("rspec", ">= 0")
-      expect(@gem_env.candidate_version_from_remote(dep, "http://production.cf.rubygems.org")).to be_kind_of(Gem::Version)
+      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems.org")).to be_kind_of(Gem::Version)
     end
   end
 
