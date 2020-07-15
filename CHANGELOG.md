@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.3 -->
-## [v15.13.3](https://github.com/chef/chef/tree/v15.13.3) (2020-07-15)
+<!-- latest_release 15.13.4 -->
+## [v15.13.4](https://github.com/chef/chef/tree/v15.13.4) (2020-07-15)
 
 #### Merged Pull Requests
-- Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50))
+- Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50)) <!-- 15.13.4 -->
 - Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50)) <!-- 15.13.3 -->
 - Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50)) <!-- 15.13.2 -->
 - Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50)) <!-- 15.13.1 -->
