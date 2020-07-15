@@ -6,6 +6,7 @@ describe "Resource.load_current_value" do
   module Namer
     extend self
     attr_accessor :current_index
+
     def incrementing_value
       @incrementing_value += 1
       @incrementing_value

@@ -322,6 +322,7 @@ class Chef
 
       class RemoteExecutionFailed < StandardError
         attr_reader :exit_status, :command, :hostname, :stdout, :stderr
+
         def initialize(hostname, command, result)
           @hostname = hostname
           @exit_status = result.exit_status

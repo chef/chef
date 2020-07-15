@@ -17,7 +17,7 @@
 #
 
 require "chef/json_compat"
-require File.expand_path("../../../../spec_helper", __FILE__)
+require File.expand_path("../../../spec_helper", __dir__)
 
 describe Chef::Util::Powershell::Cmdlet, :windows_powershell_dsc_only do
   before(:all) do

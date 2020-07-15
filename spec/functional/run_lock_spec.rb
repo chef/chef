@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path("../../spec_helper", __FILE__)
+require File.expand_path("../spec_helper", __dir__)
 require "chef/client"
 
 describe Chef::RunLock do
@@ -435,6 +435,7 @@ describe Chef::RunLock do
 
     class TestRunLock < Chef::RunLock
       attr_accessor :client_process
+
       def create_lock
         super
         client_process.fire_event("created lock")

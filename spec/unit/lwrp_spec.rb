@@ -140,7 +140,7 @@ describe "LWRP" do
     before do
       @tmpdir = Dir.mktmpdir("lwrp_test")
       @lwrp_path = File.join(@tmpdir, "foo.rb")
-      content = IO.read(File.expand_path("../../data/lwrp/resources/foo.rb", __FILE__))
+      content = IO.read(File.expand_path("../data/lwrp/resources/foo.rb", __dir__))
       IO.write(@lwrp_path, content)
       Chef::Resource::LWRPBase.build_from_file("lwrp", @lwrp_path, nil)
       @original_resource = Chef::ResourceResolver.resolve(:lwrp_foo)
@@ -152,7 +152,7 @@ describe "LWRP" do
 
     context "And the LWRP is asked to load again, this time with different code" do
       before do
-        content = IO.read(File.expand_path("../../data/lwrp_override/resources/foo.rb", __FILE__))
+        content = IO.read(File.expand_path("../data/lwrp_override/resources/foo.rb", __dir__))
         IO.write(@lwrp_path, content)
         Chef::Resource::LWRPBase.build_from_file("lwrp", @lwrp_path, nil)
       end
@@ -390,11 +390,11 @@ describe "LWRP" do
     end
 
     before(:each) do
-      Dir[File.expand_path(File.expand_path("../../data/lwrp/resources/*", __FILE__))].each do |file|
+      Dir[File.expand_path(File.expand_path("../data/lwrp/resources/*", __dir__))].each do |file|
         Chef::Resource::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
 
-      Dir[File.expand_path(File.expand_path("../../data/lwrp/providers/*", __FILE__))].each do |file|
+      Dir[File.expand_path(File.expand_path("../data/lwrp/providers/*", __dir__))].each do |file|
         Chef::Provider::LWRPBase.build_from_file(lwrp_cookbook_name, file, run_context)
       end
     end
