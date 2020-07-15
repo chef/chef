@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.3.12 -->
+## [v16.3.12](https://github.com/chef/chef/tree/v16.3.12) (2020-07-15)
 
 #### Merged Pull Requests
+- Create the windows_firewall_profile resource for use with enabling/disabling and configuring the Windows firewall Domain, Private, and Public profiles [#9994](https://github.com/chef/chef/pull/9994) ([chef-davin](https://github.com/chef-davin))
 - Avoid requiring spec_helper more than once [#10148](https://github.com/chef/chef/pull/10148) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Create the windows_firewall_profile resource for use with enabling/disabling and configuring the Windows firewall Domain, Private, and Public profiles [#9994](https://github.com/chef/chef/pull/9994) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.12 -->
 - Avoid requiring spec_helper more than once [#10148](https://github.com/chef/chef/pull/10148) ([phiggins](https://github.com/phiggins)) <!-- 16.3.11 -->
 - Bump omnibus-software to pull in the new cacerts [#10163](https://github.com/chef/chef/pull/10163) ([tas50](https://github.com/tas50)) <!-- 16.3.11 -->
 - Move the rehash methods into the subcommand loader [#10159](https://github.com/chef/chef/pull/10159) ([tas50](https://github.com/tas50)) <!-- 16.3.10 -->
