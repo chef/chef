@@ -93,3 +93,11 @@ ext/win32-eventlog/mkmf.log
 
 # our custom dictionary pulled from https://github.com/chef/chef_dictionary/
 chef_dictionary.txt
+
+# Terraform
+.terraform/
+.terraform.tfstate.lock.info
+*.tfstate
+*.tfstate.backup
+*_override.tf
+
