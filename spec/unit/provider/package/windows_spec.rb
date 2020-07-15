@@ -42,7 +42,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
   let(:cache_path) { 'c:\\cache\\' }
 
   before(:each) do
-    allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(true)
+    allow(::File).to receive(:exist?).with(new_resource.source).and_return(true)
   end
 
   describe "load_current_resource" do
@@ -66,20 +66,22 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "sets the version to be installed" do
         provider.load_current_resource
-        expect(provider.new_resource.version).to eql("2.0")
+        expect(new_resource.version).to eql("2.0")
       end
     end
 
-    context "when the source is a uri" do
-      let(:resource_source) { "https://foo.bar/calculator.msi" }
-
-      context "when the source has not been downloaded" do
+    context "when the source is not present it loads from cache" do
+      context "when the package is not installed" do
         before(:each) do
-          allow(provider).to receive(:downloadable_file_missing?).and_return(true)
+          allow(provider).to receive(:uri_scheme?).and_return(false)
+          allow(provider.package_provider).to receive(:get_product_property).and_return(nil)
+          allow(provider.package_provider).to receive(:get_installed_version).and_return(nil)
+          allow(provider.package_provider).to receive(:package_version).and_return(nil)
         end
-        it "sets the current version to unknown" do
+
+        it "sets the current version nil" do
           provider.load_current_resource
-          expect(provider.current_resource.version).to eql("unknown")
+          expect(provider.current_resource.version).to eql(nil)
         end
       end
 
@@ -233,9 +235,9 @@ describe Chef::Provider::Package::Windows, :windows_only do
       end
     end
 
-    it "returns @installer_type if it is set" do
-      provider.new_resource.installer_type(:downeaster)
-      expect(provider.installer_type).to eql(:downeaster)
+    it "returns the resource's installer_type if it is set" do
+      new_resource.installer_type(:nsis)
+      expect(provider.installer_type).to eql(:nsis)
     end
 
     it "sets installer_type to inno if the source contains inno" do
@@ -275,7 +277,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
 
       it "raises an error" do
         allow(::Kernel).to receive(:open).and_yield(StringIO.new(""))
-        provider.new_resource.installer_type(nil)
+        new_resource.installer_type(nil)
         expect { provider.installer_type }.to raise_error(Chef::Exceptions::CannotDetermineWindowsInstallerType)
       end
     end
@@ -312,7 +314,10 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "https://foo.bar/calculator.exe" }
 
       it "downloads the http resource" do
-        allow(File).to receive(:exist?).with('c:\cache\calculator.exe').and_return(false)
+        allow(provider).to receive(:uri_scheme?).and_return(true)
+        allow(provider).to receive(:installer_type).and_return(nil)
+        allow(File).to receive(:exist?).with("https\\foo.bar\\calculator.exe").and_return(false)
+        allow(provider).to receive(:compile_and_converge_action)
         expect(provider).to receive(:download_source_file)
         provider.run_action(:install)
       end
@@ -400,7 +405,7 @@ describe Chef::Provider::Package::Windows, :windows_only do
       let(:resource_source) { "C:/a_missing_file.exe" }
       let(:installer_type) { nil }
       before do
-        allow(::File).to receive(:exist?).with(provider.new_resource.source).and_return(false)
+        allow(::File).to receive(:exist?).with(new_resource.source).and_return(false)
         provider.load_current_resource
       end
 
@@ -414,51 +419,23 @@ describe Chef::Provider::Package::Windows, :windows_only do
         Chef::Config[:why_run] = false
       end
     end
-  end
 
-  shared_context "valid checksum" do
-    context "checksum is valid" do
-      before do
-        allow(provider).to receive(:checksum).and_return("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
-      end
+    it "does not raise an error with a valid checksum" do
+      expect(Chef::Digester).to receive(:checksum_for_file).with(new_resource.source).and_return("abcdef1234567890")
+      expect(provider).to receive(:install_package)
 
-      it "does not raise the checksum mismatch exception" do
-        expect { provider.send(:validate_content!) }.to_not raise_error
-      end
-    end
-  end
+      new_resource.checksum("abcdef1234567890")
 
-  shared_context "invalid checksum" do
-    context "checksum is invalid" do
-      before do
-        allow(provider).to receive(:checksum).and_return("kiie30u3bbs92vsbhvgvklb2lasgh20ah")
-      end
-
-      it "raises the checksum mismatch exception" do
-        expect { provider.send(:validate_content!) }.to raise_error(
-          Chef::Exceptions::ChecksumMismatch
-        )
-      end
-    end
-  end
-
-  describe "validate_content!" do
-    before(:each) do
-      new_resource.checksum("jiie00u3bbs92vsbhvgvklb2lasgh20ah")
+      provider.run_action(:install)
     end
 
-    context "checksum is in lowercase" do
-      include_context "valid checksum"
-      include_context "invalid checksum"
-    end
+    it "raises an error with an invalid checksum" do
+      expect(Chef::Digester).to receive(:checksum_for_file).with(new_resource.source).and_return("abcdef1234567890")
+      expect(provider).not_to receive(:install_package)
 
-    context "checksum is in uppercase" do
-      before do
-        new_resource.checksum = new_resource.checksum.upcase
-      end
+      new_resource.checksum("ffffffffffffffff")
 
-      include_context "valid checksum"
-      include_context "invalid checksum"
+      expect { provider.run_action(:install) }.to raise_error(Chef::Exceptions::Package)
     end
   end
 end

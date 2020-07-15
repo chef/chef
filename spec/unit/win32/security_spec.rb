@@ -81,9 +81,10 @@ describe "Chef::Win32::Security", :windows_only do
 
     context "when the user has admin privileges" do
       it "returns true" do
-        allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token)
-        token = Chef::ReservedNames::Win32::Security.open_current_process_token
+        token = double(:process_token)
         allow(token).to receive_message_chain(:handle, :handle)
+
+        allow(Chef::ReservedNames::Win32::Security).to receive(:open_current_process_token).and_return(token)
         allow(Chef::ReservedNames::Win32::Security).to receive(:get_token_information_elevation_type)
         allow(Chef::ReservedNames::Win32::Security).to receive(:GetTokenInformation).and_return(true)
         allow_any_instance_of(FFI::Buffer).to receive(:read_ulong).and_return(1)
@@ -128,7 +129,7 @@ describe "Chef::Win32::Security", :windows_only do
     context "when FFI::LastError.error result is not ERROR_INSUFFICIENT_BUFFER and not NO_ERROR" do
       it "raises Chef::ReservedNames::Win32::Error.raise! exception" do
         expect(FFI::LastError).to receive(:error).and_return(123).at_least(:once)
-        expect { security_class.lookup_account_name "system" }.to raise_error
+        expect { security_class.lookup_account_name "system" }.to raise_error(Chef::Exceptions::Win32APIError)
       end
     end
   end
