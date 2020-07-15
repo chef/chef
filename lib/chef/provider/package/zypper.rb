@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # Authors:: Adam Jacob (<adam@chef.io>)
 #           Ionuț Arțăriși (<iartarisi@suse.cz>)
