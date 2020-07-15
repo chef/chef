@@ -106,30 +106,25 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
   context "new default rubygems behavior" do
     before do
       Chef::Config[:rubygems_cache_enabled] = false
+
+      dep_installer = Gem::DependencyInstaller.new
+      expect(dep_installer).not_to receive(:find_gems_with_sources)
+      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
     end
 
     it "finds a matching gem candidate version on rubygems 2.0.0+" do
       dep = Gem::Dependency.new("rspec", ">= 0")
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
       expect(@gem_env.candidate_version_from_remote(dep)).to be_kind_of(Gem::Version)
     end
 
     it "gives the candidate version as nil if none is found" do
       dep = Gem::Dependency.new("lksdjflksdjflsdkfj", ">= 0")
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
       expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
       dep = Gem::Dependency.new("rspec", ">= 0")
-      dep_installer = Gem::DependencyInstaller.new
-      allow(@gem_env).to receive(:dependency_installer).and_return(dep_installer)
-      expect(dep_installer).not_to receive(:find_gems_with_sources).with(dep).and_call_original
-      expect(@gem_env.candidate_version_from_remote(dep, "http://production.cf.rubygems.org")).to be_kind_of(Gem::Version)
+      expect(@gem_env.candidate_version_from_remote(dep, "https://rubygems.org")).to be_kind_of(Gem::Version)
     end
   end
 
