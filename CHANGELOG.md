@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.3.13 -->
+## [v16.3.13](https://github.com/chef/chef/tree/v16.3.13) (2020-07-16)
 
 #### Merged Pull Requests
+- update changelog reference to pull request for windows_security_policy 32bit windows compatibility PR [#10169](https://github.com/chef/chef/pull/10169) ([chef-davin](https://github.com/chef-davin))
 - Don&#39;t allow tests to set an expectation without specific error type [#10153](https://github.com/chef/chef/pull/10153) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- update changelog reference to pull request for windows_security_policy 32bit windows compatibility PR [#10169](https://github.com/chef/chef/pull/10169) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.13 -->
 - Don&#39;t allow tests to set an expectation without specific error type [#10153](https://github.com/chef/chef/pull/10153) ([phiggins](https://github.com/phiggins)) <!-- 16.3.12 -->
 - Create the windows_firewall_profile resource for use with enabling/disabling and configuring the Windows firewall Domain, Private, and Public profiles [#9994](https://github.com/chef/chef/pull/9994) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.12 -->
 - Avoid requiring spec_helper more than once [#10148](https://github.com/chef/chef/pull/10148) ([phiggins](https://github.com/phiggins)) <!-- 16.3.11 -->
