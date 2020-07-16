@@ -43,15 +43,8 @@ describe Chef::Provider::Execute do
   before do
     allow(Chef::EventDispatch::EventsOutputStream).to receive(:new) { @live_stream }
     allow(ChefUtils).to receive(:windows?) { false }
-    @original_log_level = Chef::Log.level
     Chef::Log.level = :info
     allow(STDOUT).to receive(:tty?).and_return(false)
-  end
-
-  after do
-    Chef::Log.level = @original_log_level
-    Chef::Config[:always_stream_execute] = false
-    Chef::Config[:daemon] = false
   end
 
   describe "#initialize" do

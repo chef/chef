@@ -23,25 +23,21 @@ describe "Chef::Log::Syslog", unix_only: true do
 
   before do
     Chef::Log.init(MonoLogger.new(syslog))
-    @old_log_level = Chef::Log.level
     Chef::Log.level = :info
-    @old_loggers = Chef::Log.loggers
-    Chef::Log.use_log_devices([syslog])
-  end
-
-  after do
-    Chef::Log.level = @old_log_level
-    Chef::Log.use_log_devices(@old_loggers)
   end
 
   it "should send message with severity info to syslog." do
     expect(syslog).to receive(:add).with(1, "*** Chef 12.4.0.dev.0 ***", nil)
-    Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
+    expect {
+      Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
+    }.not_to output.to_stderr
   end
 
   it "should send message with severity warning to syslog." do
     expect(syslog).to receive(:add).with(2, "No config file found or specified on command line. Using command line options instead.", nil)
-    Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
+    expect {
+      Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
+    }.not_to output.to_stderr
   end
 
   it "should fallback into send message with severity info to syslog when wrong format." do
