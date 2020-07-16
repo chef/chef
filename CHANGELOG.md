@@ -47,7 +47,7 @@
 - Fix warning message for cb / core resource conflict [#10117](https://github.com/chef/chef/pull/10117) ([tas50](https://github.com/tas50)) <!-- 16.2.83 -->
 - Switch back to a supported nokogiri release [#10114](https://github.com/chef/chef/pull/10114) ([tas50](https://github.com/tas50)) <!-- 16.2.82 -->
 - Implement ENFORCE_LICENSE dist constant for knife bootstrap [#9992](https://github.com/chef/chef/pull/9992) ([ramereth](https://github.com/ramereth)) <!-- 16.2.81 -->
-- update to powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.80 -->
+- Update windows_security_policy to use powershell_out to be compatible with 32 bit windows [#10107](https://github.com/chef/chef/pull/10107) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.80 -->
 - Update windows_security_policy for better idempotency [#10064](https://github.com/chef/chef/pull/10064) ([chef-davin](https://github.com/chef-davin)) <!-- 16.2.79 -->
 - Bump train-core to 3.3.6 [#10104](https://github.com/chef/chef/pull/10104) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.2.78 -->
 - Use bash not execute in build_essential for better output [#10096](https://github.com/chef/chef/pull/10096) ([tas50](https://github.com/tas50)) <!-- 16.2.77 -->
