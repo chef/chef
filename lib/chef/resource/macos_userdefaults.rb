@@ -85,7 +85,6 @@ class Chef
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
         description: "The value of the key. Note: When setting boolean values you can either specify 0/1 or you can pass true/false, 'true'/false', or 'yes'/'no' and we'll automatically convert these to the proper boolean values Apple expects.",
-        coerce: proc { |v| coerce_booleans(v) },
         required: true
 
       property :type, String,
@@ -187,6 +186,8 @@ class Chef
                     value.flatten.map { |x| "'#{x}'" }
                   when "array"
                     value.map { |x| "'#{x}'" }
+                  when "bool"
+                    value
                   else
                     "'#{value}'"
                   end
