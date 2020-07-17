@@ -111,17 +111,15 @@ class Chef
       end
 
       load_current_value do |desired|
-        state_cmd = defaults_export_cmd(desired)
-
-        Chef::Log.debug "#load_current_value: shelling out \"#{state_cmd.join(" ")}\" to determine state"
+        Chef::Log.debug "#load_current_value: shelling out \"#{defaults_export_cmd(desired).join(" ")}\" to determine state"
         state = if desired.user.nil?
-                  shell_out(state_cmd)
+                  shell_out(defaults_export_cmd(desired))
                 else
-                  shell_out(state_cmd, user: desired.user)
+                  shell_out(defaults_export_cmd(desired), user: desired.user)
                 end
 
         if state.error? || state.stdout.empty?
-          Chef::Log.debug "#load_current_value: #{state_cmd.join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
+          Chef::Log.debug "#load_current_value: #{defaults_export_cmd(desired).join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
           current_value_does_not_exist!
         end
 
