@@ -78,8 +78,8 @@ class Chef
         required: true,
         desired_state: false
 
-      property :current_host_level, [TrueClass, FalseClass],
-        description: "Set the key/value at current host level, saving plist files to `$HOME/Library/Preferences/ByHost/`.",
+      property :host, String,
+        description: "Set either 'current' or a hostname to set the user default at the host level.",
         desired_state: false,
         introduced: "16.3"
 
@@ -111,53 +111,40 @@ class Chef
       end
 
       load_current_value do |desired|
-        coerced_value = coerce_booleans(desired.value)
+        state_cmd = defaults_export_cmd(desired)
 
-        state_cmd = ["/usr/bin/defaults"]
-        state_cmd << "-currentHost" if desired.current_host_level
-        state_cmd << ["read", "'#{desired.domain}'", "'#{desired.key}'"]
-
+        Chef::Log.debug "#load_current_value: shelling out \"#{state_cmd.join(" ")}\" to determine state"
         state = if desired.user.nil?
                   shell_out(state_cmd)
                 else
                   shell_out(state_cmd, user: desired.user)
                 end
 
-        if state.error?
+        if state.error? || state.stdout.empty?
           Chef::Log.debug "#load_current_value: #{state_cmd.join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
           current_value_does_not_exist!
         end
 
-        # parse the output from the defaults command to ruby data type
-        # todo: This is a pretty basic implementation. PRs welcome ;)
-        case state.stdout[0]
-        when "{" # dict aka hash
-          # https://rubular.com/r/cBnFu1nttMdsXq
-          data = /^\s{2,}(.*)\s=\s(.*);/.match(state.stdout)
-          fail_if_unparsable(data, state.stdout)
-          value Hash[*data.captures]
-        when "(" # array
-          # https://rubular.com/r/TfYejXUJny11OG
-          data = /^\s{2,}(.*),?/.match(state.stdout)
-          fail_if_unparsable(data, state.stdout)
-          value data.captures
-        else # a string/int/float/bool
-          value state.stdout.strip
-        end
+        plist_vals = ::Plist.parse_xml(state.stdout)
+        value plist_vals = ::Plist.parse_xml(state.stdout)[desired.key]
       end
 
       #
-      # If there were not matches raise a warning that we couldn't parse the output of the defaults
-      # CLI and return a nil current_resource by calling current_value_does_not_exist!
+      # The defaults command to export a domain
       #
-      # @param [MatchData] match_data
-      # @param [String] stdout
+      # @return [Array] defaults command
       #
-      def fail_if_unparsable(match_data, stdout)
-        return unless match_data.captures.empty?
+      def defaults_export_cmd(resource)
+        state_cmd = ["/usr/bin/defaults"]
 
-        Chef::Log.warn("Could not parse macos defaults CLI value data: #{stdout}.")
-        current_value_does_not_exist!
+        if resource.host == "current"
+          state_cmd << "-currentHost"
+        else
+          state_cmd << "-host" if resource.host == "current"
+        end
+
+        state_cmd << ["export", resource.domain, "-"]
+        state_cmd.flatten
       end
 
       action :write do
@@ -193,7 +180,11 @@ class Chef
                   end
 
           cmd = ["defaults"]
-          cmd << "-currentHost" if new_resource.current_host_level
+          if resource.host == "current"
+            cmd << "-currentHost"
+          else
+            cmd << "-host" if resource.host == "current"
+          end
           cmd << ["write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
           cmd << "-#{type}" if type
           cmd << value
