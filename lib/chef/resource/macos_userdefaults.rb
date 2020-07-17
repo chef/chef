@@ -85,7 +85,7 @@ class Chef
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
         description: "The value of the key. Note: When setting boolean values you can either specify 0/1 or you can pass true/false, 'true'/false', or 'yes'/'no' and we'll automatically convert these to the proper boolean values Apple expects.",
-        required: true
+        required: [:write]
 
       property :type, String,
         description: "The value type of the preference key.",
@@ -125,8 +125,7 @@ class Chef
           current_value_does_not_exist!
         end
 
-        plist_vals = ::Plist.parse_xml(state.stdout)
-        value plist_vals = ::Plist.parse_xml(state.stdout)[desired.key]
+        value ::Plist.parse_xml(state.stdout)
       end
 
       #
@@ -139,8 +138,8 @@ class Chef
 
         if resource.host == "current"
           state_cmd << "-currentHost"
-        else
-          state_cmd << "-host" if resource.host == "current"
+        elsif resource.host # they specified a non-nil value, which is a hostname
+          state_cmd << ["-host", resource.host]
         end
 
         state_cmd << ["export", resource.domain, "-"]
@@ -151,7 +150,7 @@ class Chef
         description "Write the value to the specified domain/key."
 
         converge_if_changed do
-          cmd = defaults_write_cmd
+          cmd = defaults_modify_cmd("write")
           Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
 
           if new_resource.user.nil?
@@ -162,34 +161,46 @@ class Chef
         end
       end
 
-      action_class do
-        def defaults_write_cmd
-          value = new_resource.value
-          type = new_resource.type || value_type(value)
+      action :delete do
+        description "Delete a key from a domain."
 
-          value = case type
-                  when "dict"
-                    # creates an array of quoted values ["'Key1'", "'Value1'", "'Key2'", "'Value2'" ...]
-                    value.flatten.map { |x| "'#{x}'" }
-                  when "array"
-                    value.map { |x| "'#{x}'" }
-                  when "bool"
-                    value
-                  else
-                    "'#{value}'"
-                  end
+        return unless current_resource.key # if it's not there there's nothing to remove
 
-          cmd = ["defaults"]
-          if resource.host == "current"
-            cmd << "-currentHost"
+        converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
+
+          cmd = defaults_modify_cmd("delete")
+          Chef::Log.debug("Removing defaults key by shelling out: #{cmd.join(" ")}")
+
+          if new_resource.user.nil?
+            shell_out!(cmd)
           else
-            cmd << "-host" if resource.host == "current"
+            shell_out!(cmd, user: new_resource.user)
           end
-          cmd << ["write", "'#{new_resource.domain}'", "'#{new_resource.key}'"]
-          cmd << "-#{type}" if type
-          cmd << value
+        end
+      end
+
+      action_class do
+        def defaults_modify_cmd(defaults_action)
+          cmd = ["defaults"]
+
+          if new_resource.host == "current"
+            state_cmd << "-currentHost"
+          elsif new_resource.host # they specified a non-nil value, which is a hostname
+            state_cmd << ["-host", new_resource.host]
+          end
+
+          cmd << [defaults_action, new_resource.domain, new_resource.key]
+          cmd << processed_value if defaults_action == "write"
           cmd.prepend("sudo") if new_resource.sudo
           cmd.flatten
+        end
+
+        def processed_value
+          type = new_resource.type || value_type(value)
+
+          # when dict this creates an array of values ["Key1", "Value1", "Key2", "Value2" ...]
+          cmd_vals = [ type == "dict" ? new_resource.value.flatten : new_resource.value ]
+          cmd_vals.prepend("-#{type}") if type
         end
 
         def value_type(value)
