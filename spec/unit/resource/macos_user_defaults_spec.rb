@@ -20,6 +20,7 @@ require "spec_helper"
 describe Chef::Resource::MacosUserDefaults do
 
   let(:resource) { Chef::Resource::MacosUserDefaults.new("foo") }
+  let(:provider) { resource.provider_for_action(:create) }
 
   it "has a resource name of :macos_userdefaults" do
     expect(resource.resource_name).to eql(:macos_userdefaults)
@@ -43,5 +44,26 @@ describe Chef::Resource::MacosUserDefaults do
 
   it "supports :write action" do
     expect { resource.action :write }.not_to raise_error
+  end
+
+  describe "#defaults_export_cmd" do
+    it "exports NSGlobalDomain if no domain is set" do
+      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "export", "NSGlobalDomain", "-"])
+    end
+
+    it "exports a provided domain" do
+      resource.domain "com.tim"
+      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "export", "com.tim", "-"])
+    end
+
+    it "sets -currentHost if host is 'current'" do
+      resource.host "current"
+      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "-currentHost", "export", "NSGlobalDomain", "-"])
+    end
+
+    it "sets -host 'tim-laptop if host is 'tim-laptop'" do
+      resource.host "tim-laptop"
+      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "-host", "tim-laptop", "export", "NSGlobalDomain", "-"])
+    end
   end
 end
