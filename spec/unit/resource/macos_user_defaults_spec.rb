@@ -25,6 +25,18 @@ describe Chef::Resource::MacosUserDefaults do
     expect(resource.resource_name).to eql(:macos_userdefaults)
   end
 
+  it "the domain property defaults to NSGlobalDomain" do
+    expect(resource.domain).to eql("NSGlobalDomain")
+  end
+
+  it "the host property defaults to nil" do
+    expect(resource.host).to be_nil
+  end
+
+  it "the sudo property defaults to false" do
+    expect(resource.sudo).to be false
+  end
+
   it "sets the default action as :write" do
     expect(resource.action).to eql([:write])
   end
