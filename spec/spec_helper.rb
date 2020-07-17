@@ -241,7 +241,7 @@ RSpec.configure do |config|
 
     Chef::Config.reset
 
-    Chef::Log.use_default_settings!
+    Chef::Log.setup!
 
     # By default, treat deprecation warnings as errors in tests.
     Chef::Config.treat_deprecation_warnings_as_errors(true)
