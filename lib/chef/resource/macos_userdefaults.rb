@@ -173,17 +173,22 @@ class Chef
           cmd = ["defaults"]
 
           if new_resource.host == "current"
-            state_cmd << "-currentHost"
+            state_cmd.concat(["-currentHost"])
           elsif new_resource.host # they specified a non-nil value, which is a hostname
-            state_cmd << ["-host", new_resource.host]
+            state_cmd.concat(["-host", new_resource.host])
           end
 
-          cmd << [defaults_action, new_resource.domain, new_resource.key]
-          cmd << processed_value if defaults_action == "write"
+          cmd.concat([defaults_action, new_resource.domain, new_resource.key])
+          cmd.concat(processed_value) if defaults_action == "write"
           cmd.prepend("sudo") if new_resource.sudo
-          cmd.flatten
+          cmd
         end
 
+        #
+        # convert the provided value into the format defaults expects
+        #
+        # @return [array] array of values starting with the type if applicable
+        #
         def processed_value
           type = new_resource.type || value_type(value)
 
@@ -192,6 +197,13 @@ class Chef
           cmd_vals.prepend("-#{type}") if type
         end
 
+        #
+        # convert ruby type to defaults type
+        #
+        # @param [Integer, Float, String, TrueClass, FalseClass, Hash, Array] value The value being set
+        #
+        # @return [string, nil] the type value used by defaults or nil if not applicable
+        #
         def value_type(value)
           case value
           when true, false
