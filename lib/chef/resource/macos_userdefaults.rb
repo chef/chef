@@ -126,13 +126,13 @@ class Chef
         state_cmd = ["/usr/bin/defaults"]
 
         if resource.host == "current"
-          state_cmd << "-currentHost"
+          state_cmd.concat(["-currentHost"])
         elsif resource.host # they specified a non-nil value, which is a hostname
-          state_cmd << ["-host", resource.host]
+          state_cmd.concat(["-host", resource.host])
         end
 
-        state_cmd << ["export", resource.domain, "-"]
-        state_cmd.flatten
+        state_cmd.concat(["export", resource.domain, "-"])
+        state_cmd
       end
 
       action :write do
