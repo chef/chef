@@ -17,6 +17,7 @@
 
 require_relative "../resource"
 require_relative "../dist"
+require "plist"
 
 class Chef
   class Resource
