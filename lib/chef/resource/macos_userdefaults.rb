@@ -114,7 +114,7 @@ class Chef
           current_value_does_not_exist!
         end
 
-        value ::Plist.parse_xml(state.stdout)
+        value ::Plist.parse_xml(state.stdout)[key]
       end
 
       #
@@ -190,11 +190,12 @@ class Chef
         # @return [array] array of values starting with the type if applicable
         #
         def processed_value
-          type = new_resource.type || value_type(value)
+          type = new_resource.type || value_type(new_resource.value)
 
           # when dict this creates an array of values ["Key1", "Value1", "Key2", "Value2" ...]
           cmd_vals = [ type == "dict" ? new_resource.value.flatten : new_resource.value ]
           cmd_vals.prepend("-#{type}") if type
+          cmd_vals
         end
 
         #
