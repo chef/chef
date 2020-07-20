@@ -172,7 +172,7 @@ class Chef
           # Fetch path of cmd.exe through environment variable comspec
           cmd_path = ENV["COMSPEC"]
 
-          "#{cmd_path} /c \'#{client_cmd}\'"
+          "#{cmd_path} /c \"#{client_cmd}\""
         end
 
         # Build command line to pass to cmd.exe
