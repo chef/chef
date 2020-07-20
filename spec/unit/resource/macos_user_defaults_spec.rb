@@ -20,7 +20,7 @@ require "spec_helper"
 describe Chef::Resource::MacosUserDefaults do
 
   let(:resource) { Chef::Resource::MacosUserDefaults.new("foo") }
-  let(:provider) { resource.provider_for_action(:create) }
+  let(:provider) { resource.provider_for_action(:write) }
 
   it "has a resource name of :macos_userdefaults" do
     expect(resource.resource_name).to eql(:macos_userdefaults)
@@ -64,6 +64,38 @@ describe Chef::Resource::MacosUserDefaults do
     it "sets -host 'tim-laptop if host is 'tim-laptop'" do
       resource.host "tim-laptop"
       expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "-host", "tim-laptop", "export", "NSGlobalDomain", "-"])
+    end
+  end
+
+  describe "#defaults_modify_cmd" do
+    # avoid needing to set these required values over and over. We'll overwrite them where necessary
+    before do
+      resource.key = "foo"
+      resource.value = "bar"
+    end
+
+    it "writes to NSGlobalDomain if domain isn't specified" do
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "bar"])
+    end
+
+    it "uses the domain property if set" do
+      resource.domain = "MyCustomDomain"
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "bar"])
+    end
+
+    it "sets host specific values using host property" do
+      resource.host = "tims_laptop"
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "bar"])
+    end
+
+    it "if host is set to :current it passes CurrentHost" do
+      resource.host = :current
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "bar"])
+    end
+
+    it "if host is set to :current it passes CurrentHost" do
+      resource.host = :current
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "bar"])
     end
   end
 end

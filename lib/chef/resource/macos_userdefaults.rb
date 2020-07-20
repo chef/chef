@@ -78,8 +78,8 @@ class Chef
         required: true,
         desired_state: false
 
-      property :host, String,
-        description: "Set either 'current' or a hostname to set the user default at the host level.",
+      property :host, [String, Symbol],
+        description: "Set either :current or a hostname to set the user default at the host level.",
         desired_state: false,
         introduced: "16.3"
 
@@ -169,12 +169,13 @@ class Chef
 
       action_class do
         def defaults_modify_cmd
-          cmd = ["defaults"]
+          puts "The current action is #{action}"
+          cmd = ["/usr/bin/defaults"]
 
-          if new_resource.host == "current"
-            state_cmd.concat(["-currentHost"])
+          if new_resource.host == :current
+            cmd.concat(["-currentHost"])
           elsif new_resource.host # they specified a non-nil value, which is a hostname
-            state_cmd.concat(["-host", new_resource.host])
+            cmd.concat(["-host", new_resource.host])
           end
 
           cmd.concat([action.to_s, new_resource.domain, new_resource.key])
