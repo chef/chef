@@ -25,7 +25,7 @@ macos_userdefaults "Set the dock size" do
   value "20"
 end
 
-macos_userdefaults "value with space" do
+macos_userdefaults "Value with space" do
   domain "/Library/Preferences/ManagedInstalls"
   key "LogFile"
   value "/Library/Managed Installs/Logs/ManagedSoftwareUpdate2.log"
