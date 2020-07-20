@@ -89,6 +89,7 @@ class Chef
 
       property :type, String,
         description: "The value type of the preference key.",
+        equal_to: ["bool", "string", 'int', 'float', 'array', 'dict']
         desired_state: false
 
       property :user, String,
