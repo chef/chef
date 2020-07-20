@@ -19,32 +19,40 @@
 
 require "spec_helper"
 
-describe Chef::Log::WinEvt do
+describe Chef::Log::WinEvt, :windows_only do
   let(:evtlog) { instance_double("Win32::EventLog") }
   let(:winevt) { Chef::Log::WinEvt.new(evtlog) }
   let(:app) { Chef::Application.new }
 
   before do
     Chef::Log.init(MonoLogger.new(winevt))
-    @old_log_level = Chef::Log.level
     Chef::Log.level = :info
-    @old_loggers = Chef::Log.loggers
-    Chef::Log.use_log_devices([winevt])
-  end
-
-  after do
-    Chef::Log.level = @old_log_level
-    Chef::Log.use_log_devices(@old_loggers)
   end
 
   it "should send message with severity info to Windows Event Log." do
-    expect(winevt).to receive(:add).with(1, "*** Chef 12.4.0.dev.0 ***", nil)
-    Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
+    expect(evtlog).to receive(:report_event).with(
+      event_type: ::Win32::EventLog::INFO_TYPE,
+      source: Chef::Log::WinEvt::SOURCE,
+      event_id: Chef::Log::WinEvt::INFO_EVENT_ID,
+      data: ["*** Chef 12.4.0.dev.0 ***"]
+    )
+
+    expect {
+      Chef::Log.info("*** Chef 12.4.0.dev.0 ***")
+    }.not_to output.to_stderr
   end
 
   it "should send message with severity warning to Windows Event Log." do
-    expect(winevt).to receive(:add).with(2, "No config file found or specified on command line. Using command line options instead.", nil)
-    Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
+    expect(evtlog).to receive(:report_event).with(
+      event_type: ::Win32::EventLog::WARN_TYPE,
+      source: Chef::Log::WinEvt::SOURCE,
+      event_id: Chef::Log::WinEvt::WARN_EVENT_ID,
+      data: ["No config file found or specified on command line. Using command line options instead."]
+    )
+
+    expect {
+      Chef::Log.warn("No config file found or specified on command line. Using command line options instead.")
+    }.not_to output.to_stderr
   end
 
   it "should fallback into send message with severity info to Windows Event Log when wrong format." do

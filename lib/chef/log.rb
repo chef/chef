@@ -28,8 +28,13 @@ class Chef
   class Log
     extend Mixlib::Log
 
+    def self.setup!
+      init(MonoLogger.new(STDOUT))
+      nil
+    end
+
     # Force initialization of the primary log device (@logger)
-    init(MonoLogger.new(STDOUT))
+    setup!
 
     class Formatter
       def self.show_time=(*args)

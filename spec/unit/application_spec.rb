@@ -22,7 +22,6 @@ describe Chef::Application do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     allow(@app).to receive(:trap)
     allow(Dir).to receive(:chdir).and_return(0)
