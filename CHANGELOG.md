@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.15 -->
-## [v16.3.15](https://github.com/chef/chef/tree/v16.3.15) (2020-07-20)
+<!-- latest_release 16.3.16 -->
+## [v16.3.16](https://github.com/chef/chef/tree/v16.3.16) (2020-07-20)
 
 #### Merged Pull Requests
-- Reset logger in test to avoid global state persisting. [#10170](https://github.com/chef/chef/pull/10170) ([phiggins](https://github.com/phiggins))
+- don&#39;t check list-profiles for already selected bad profile [#10162](https://github.com/chef/chef/pull/10162) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- don&#39;t check list-profiles for already selected bad profile [#10162](https://github.com/chef/chef/pull/10162) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.3.16 -->
 - Reset logger in test to avoid global state persisting. [#10170](https://github.com/chef/chef/pull/10170) ([phiggins](https://github.com/phiggins)) <!-- 16.3.15 -->
 - Replace single quotes with double [#10176](https://github.com/chef/chef/pull/10176) ([mattray](https://github.com/mattray)) <!-- 16.3.14 -->
 - update changelog reference to pull request for windows_security_policy 32bit windows compatibility PR [#10169](https://github.com/chef/chef/pull/10169) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.13 -->
