@@ -34,7 +34,7 @@ class Chef
         **Specify a global domain value**
 
         ```ruby
-        macos_userdefaults 'full keyboard access to all controls' do
+        macos_userdefaults 'Full keyboard access to all controls' do
           key 'AppleKeyboardUIMode'
           value '2'
         end
@@ -43,7 +43,7 @@ class Chef
         **Use an integer value**
 
         ```ruby
-        macos_userdefaults 'enable macOS firewall' do
+        macos_userdefaults 'Anable macOS firewall' do
           domain '/Library/Preferences/com.apple.alf'
           key 'globalstate'
           value '1'
@@ -54,7 +54,7 @@ class Chef
         **Use a boolean value**
 
         ```ruby
-        macos_userdefaults 'finder expanded save dialogs' do
+        macos_userdefaults 'Finder expanded save dialogs' do
           key 'NSNavPanelExpandedStateForSaveMode'
           value 'TRUE'
           type 'bool'
@@ -139,7 +139,7 @@ class Chef
         description "Write the value to the specified domain/key."
 
         converge_if_changed do
-          cmd = defaults_modify_cmd("write")
+          cmd = defaults_modify_cmd
           Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
 
           if new_resource.user.nil?
@@ -157,7 +157,7 @@ class Chef
 
         converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
 
-          cmd = defaults_modify_cmd("delete")
+          cmd = defaults_modify_cmd
           Chef::Log.debug("Removing defaults key by shelling out: #{cmd.join(" ")}")
 
           if new_resource.user.nil?
@@ -169,7 +169,7 @@ class Chef
       end
 
       action_class do
-        def defaults_modify_cmd(defaults_action)
+        def defaults_modify_cmd
           cmd = ["defaults"]
 
           if new_resource.host == "current"
@@ -178,8 +178,8 @@ class Chef
             state_cmd.concat(["-host", new_resource.host])
           end
 
-          cmd.concat([defaults_action, new_resource.domain, new_resource.key])
-          cmd.concat(processed_value) if defaults_action == "write"
+          cmd.concat([action.to_s, new_resource.domain, new_resource.key])
+          cmd.concat(processed_value) if action == :write
           cmd.prepend("sudo") if new_resource.sudo
           cmd
         end
