@@ -20,12 +20,10 @@ rubygems:
   - chef-bin
   - chef-utils
 
-docker_images:
-  - chef
-
 pipelines:
   - verify:
       public: true
+  - docker/build
   - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml

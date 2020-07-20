@@ -16,6 +16,9 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-bin/li
 sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-utils/lib/chef-utils/version.rb
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"$(cat VERSION)\")/" lib/chef/version.rb
 
+# Update the version for the dobi
+sed -i -r "s/^(\s*)VERSION: \".+\"/\1VERSION: \"$(cat VERSION)\"/" .expeditor/build.docker.yml
+
 # Update the version inside Gemfile.lock
 bundle update chef chef-config chef-utils --jobs=7 --conservative
 

@@ -1,0 +1,8 @@
+
+# Images
+
+image=chef:
+  image: '{env.IMAGE_REGISTRY}/chef'
+  context: .
+  tags:
+    - '{env.VERSION}'
