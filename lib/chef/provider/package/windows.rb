@@ -242,22 +242,27 @@ class Chef
         end
 
         def download_source_file
+          source_resource.run_action(:create)
+          logger.trace("#{new_resource} fetched source file to #{default_download_cache_path}")
+        end
+
+        def source_resource
           # It seems correct that this is a build_resource rather than declare_resource/DSL use since updating should not trigger a notification
           # unless the downloaded file is actually installed.  The case where the remote_file downloads the package but the package is already
           # installed on the target should not trigger a notification since the running state did not change.
-          build_resource(:remote_file, default_download_cache_path) do
+          @source_resource ||= build_resource(:remote_file, default_download_cache_path) do
             source(new_resource.source)
             cookbook_name = new_resource.cookbook_name
             checksum(new_resource.checksum)
             backup(false)
 
+            # since the source_resource can mutate here, we save off the @source_resource so we can inspect the actual state later
             if new_resource.remote_file_attributes
               new_resource.remote_file_attributes.each do |(k, v)|
                 send(k.to_sym, v)
               end
             end
-          end.run_action(:create)
-          logger.trace("#{new_resource} fetched source file to #{default_download_cache_path}")
+          end
         end
 
         def default_download_cache_path
@@ -271,7 +276,7 @@ class Chef
           if new_resource.source.nil?
             nil
           elsif uri_scheme?(new_resource.source)
-            default_download_cache_path
+            source_resource.path
           else
             new_source = Chef::Util::PathHelper.cleanpath(new_resource.source)
             ::File.exist?(new_source) ? new_source : nil
