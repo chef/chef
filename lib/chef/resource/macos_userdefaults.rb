@@ -114,7 +114,11 @@ class Chef
           current_value_does_not_exist!
         end
 
-        value ::Plist.parse_xml(state.stdout)[key]
+        plist_data = ::Plist.parse_xml(state.stdout)
+
+        current_value_does_not_exist! unless current_value_does_not_exist!.key?(key)
+
+        value plist_data[key]
       end
 
       #
