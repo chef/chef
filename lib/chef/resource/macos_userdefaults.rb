@@ -89,7 +89,7 @@ class Chef
 
       property :type, String,
         description: "The value type of the preference key.",
-        equal_to: ["bool", "string", 'int', 'float', 'array', 'dict']
+        equal_to: %w{bool string int float array dict},
         desired_state: false
 
       property :user, String,
@@ -169,8 +169,12 @@ class Chef
       end
 
       action_class do
+        #
+        # The command used to write or delete delete values from domains
+        #
+        # @return [Array] Array representation of defaults command to run
+        #
         def defaults_modify_cmd
-          puts "The current action is #{action}"
           cmd = ["/usr/bin/defaults"]
 
           if new_resource.host == :current
@@ -194,9 +198,35 @@ class Chef
           type = new_resource.type || value_type(new_resource.value)
 
           # when dict this creates an array of values ["Key1", "Value1", "Key2", "Value2" ...]
-          cmd_values = [ type == "dict" ? new_resource.value.flatten : new_resource.value ]
-          cmd_values.prepend("-#{type}") if type
+          cmd_values = ["-#{type}"]
+
+          case type
+          when "dict"
+            cmd_values.concat(new_resource.value.flatten)
+          when "array"
+            cmd_values.concat(new_resource.value)
+          when "bool"
+            cmd_values.concat(bool_to_defaults_bool(new_resource.value))
+          else
+            cmd_values.concat([new_resource.value])
+          end
+
           cmd_values
+        end
+
+        #
+        # defaults booleans on the CLI must be 'TRUE' or 'FALSE' so convert various inputs to that
+        #
+        # @param [String, Integer, Boolean] input <description>
+        #
+        # @return [String] TRUE or FALSE
+        #
+        def bool_to_defaults_bool(input)
+          return ["TRUE"] if [true, "TRUE", "1", "true", "YES", "yes"].include?(input)
+          return ["FALSE"] if [false, "FALSE", "0", "false", "NO", "no"].include?(input)
+
+          # make sure it's very clear bad input was given
+          raise ArgumentError, "#{input} cannot be converted to a boolean value for use with Apple's defaults command. Acceptable values are: 'TRUE', 'YES', 'true, 'yes', '0', true, 'FALSE', 'false', 'NO', 'no', 1, or false."
         end
 
         #
@@ -218,6 +248,8 @@ class Chef
             "dict"
           when Array
             "array"
+          when String
+            "string"
           end
         end
       end

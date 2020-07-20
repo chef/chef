@@ -75,27 +75,52 @@ describe Chef::Resource::MacosUserDefaults do
     end
 
     it "writes to NSGlobalDomain if domain isn't specified" do
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "bar"])
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
     it "uses the domain property if set" do
       resource.domain = "MyCustomDomain"
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "bar"])
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "-string", "bar"])
     end
 
     it "sets host specific values using host property" do
       resource.host = "tims_laptop"
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "bar"])
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
     it "if host is set to :current it passes CurrentHost" do
       resource.host = :current
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "bar"])
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
-    it "if host is set to :current it passes CurrentHost" do
-      resource.host = :current
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "bar"])
+    it "raises ArgumentError if bool is specified, but the value can't be made into a bool" do
+      resource.type "bool"
+      expect { provider.defaults_modify_cmd }.to raise_error(ArgumentError)
+    end
+
+    it "autodetects array type and passes individual values" do
+      resource.value = %w{one two three}
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-array", "one", "two", "three"])
+    end
+
+    it "autodetects string type and passes a single value" do
+      resource.value = "one"
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "one"])
+    end
+
+    it "autodetects integer type and passes a single value" do
+      resource.value = 1
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-int", 1])
+    end
+
+    it "autodetects boolean type from TrueClass value and passes a 'TRUE' string" do
+      resource.value = true
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "TRUE"])
+    end
+
+    it "autodetects boolean type from FalseClass value and passes a 'FALSE' string" do
+      resource.value = false
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "FALSE"])
     end
   end
 end
