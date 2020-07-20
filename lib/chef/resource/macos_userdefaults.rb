@@ -193,9 +193,9 @@ class Chef
           type = new_resource.type || value_type(new_resource.value)
 
           # when dict this creates an array of values ["Key1", "Value1", "Key2", "Value2" ...]
-          cmd_vals = [ type == "dict" ? new_resource.value.flatten : new_resource.value ]
-          cmd_vals.prepend("-#{type}") if type
-          cmd_vals
+          cmd_values = [ type == "dict" ? new_resource.value.flatten : new_resource.value ]
+          cmd_values.prepend("-#{type}") if type
+          cmd_values
         end
 
         #
