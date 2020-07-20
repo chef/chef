@@ -40,18 +40,17 @@ class Chef
         end
         ```
 
-        **Use an integer value**
+        **Setting a value on a specific domain**
 
         ```ruby
-        macos_userdefaults 'Anable macOS firewall' do
+        macos_userdefaults 'Enable macOS firewall' do
           domain '/Library/Preferences/com.apple.alf'
           key 'globalstate'
-          value '1'
-          type 'int'
+          value 1
         end
         ```
 
-        **Use a boolean value**
+        **Specifying the type of a key to skip automatic type detection**
 
         ```ruby
         macos_userdefaults 'Finder expanded save dialogs' do
