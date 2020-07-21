@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.18 -->
-## [v16.3.18](https://github.com/chef/chef/tree/v16.3.18) (2020-07-20)
+<!-- latest_release 16.3.19 -->
+## [v16.3.19](https://github.com/chef/chef/tree/v16.3.19) (2020-07-21)
 
 #### Merged Pull Requests
-- Update InSpec to 4.22 and mixlib-shellout to 3.1.1 [#10178](https://github.com/chef/chef/pull/10178) ([tas50](https://github.com/tas50))
+- Replace highline ui.ask password prompt with tty-prompt gem [#10131](https://github.com/chef/chef/pull/10131) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace highline ui.ask password prompt with tty-prompt gem [#10131](https://github.com/chef/chef/pull/10131) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.3.19 -->
 - Update InSpec to 4.22 and mixlib-shellout to 3.1.1 [#10178](https://github.com/chef/chef/pull/10178) ([tas50](https://github.com/tas50)) <!-- 16.3.18 -->
 - fix windows package for Chef-16 regression [#10177](https://github.com/chef/chef/pull/10177) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.17 -->
 - don&#39;t check list-profiles for already selected bad profile [#10162](https://github.com/chef/chef/pull/10162) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.3.16 -->
