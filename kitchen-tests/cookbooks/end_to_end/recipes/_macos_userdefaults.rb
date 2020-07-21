@@ -63,7 +63,7 @@ end
 # test that we can handle the 2nd client run with :delete
 macos_userdefaults "bogus key" do
   domain "/Library/Preferences/com.apple.alf"
-  key "globalstatenope"
+  key "GlobalStateNope"
   action :delete
 end
 
