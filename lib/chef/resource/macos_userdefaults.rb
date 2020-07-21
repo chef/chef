@@ -75,8 +75,7 @@ class Chef
 
       property :key, String,
         description: "The preference key.",
-        required: true,
-        desired_state: false
+        required: true
 
       property :host, [String, Symbol],
         description: "Set either :current or a hostname to set the user default at the host level.",
@@ -116,9 +115,14 @@ class Chef
 
         plist_data = ::Plist.parse_xml(state.stdout)
 
-        current_value_does_not_exist! unless current_value_does_not_exist!.key?(key)
+        # handle the situation where the key doesn't exist in the domain
+        if plist_data.key?(desired.key)
+          key desired.key
+        else
+          current_value_does_not_exist!
+        end
 
-        value plist_data[key]
+        value plist_data[desired.key]
       end
 
       #
