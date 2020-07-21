@@ -36,7 +36,7 @@ class Chef
         ```ruby
         macos_userdefaults 'Full keyboard access to all controls' do
           key 'AppleKeyboardUIMode'
-          value '2'
+          value 2
         end
         ```
 
@@ -161,7 +161,8 @@ class Chef
       action :delete do
         description "Delete a key from a domain."
 
-        return unless current_resource.key # if it's not there there's nothing to remove
+        # if it's not there there's nothing to remove
+        return unless current_resource
 
         converge_by("delete domain:#{new_resource.domain} key:#{new_resource.key}") do
 

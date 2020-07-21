@@ -41,7 +41,7 @@ macos_userdefaults "Bogus key with array value" do
   domain "/Library/Preferences/ManagedInstalls"
   type "array"
   key "LogFileArray"
-  value [ '/Library/Managed Installs/fake.log', '/Library/Managed Installs/also_fake.log']
+  value [ "/Library/Managed Installs/fake.log", "/Library/Managed Installs/also_fake.log"]
 end
 
 # test that we can set a dict
@@ -49,13 +49,27 @@ macos_userdefaults "Bogus key with dict value" do
   domain "/Library/Preferences/ManagedInstalls"
   type "dict"
   key "LogFileDict"
-  value "User": '/Library/Managed Installs/way_fake.log'
+  value "User": "/Library/Managed Installs/way_fake.log"
 end
 
 # test that we can set a bool
-macos_userdefaults 'Bogus key with boolean value' do
+macos_userdefaults "Bogus key with boolean value" do
   domain "/Library/Preferences/ManagedInstalls"
-  key 'LoggingIsTheThingToDoRight'
+  key "LoggingIsTheThingToDoRight"
   value "yes"
   type "bool"
+end
+
+# test that we can handle the 2nd client run with :delete
+macos_userdefaults "bogus key" do
+  domain "/Library/Preferences/com.apple.alf"
+  key "globalstatenope"
+  action :delete
+end
+
+# try to delete a key we known is there
+macos_userdefaults "delete a key" do
+  domain "/Library/Preferences/ManagedInstalls"
+  key "LoggingIsTheThingToDoRight"
+  action :delete
 end
