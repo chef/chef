@@ -103,11 +103,7 @@ class Chef
 
       load_current_value do |desired|
         Chef::Log.debug "#load_current_value: shelling out \"#{defaults_export_cmd(desired).join(" ")}\" to determine state"
-        state = if desired.user.nil?
-                  shell_out(defaults_export_cmd(desired))
-                else
-                  shell_out(defaults_export_cmd(desired), user: desired.user)
-                end
+        state = shell_out(defaults_export_cmd(desired), user: desired.user)
 
         if state.error? || state.stdout.empty?
           Chef::Log.debug "#load_current_value: #{defaults_export_cmd(desired).join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
@@ -151,11 +147,7 @@ class Chef
           cmd = defaults_modify_cmd
           Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
 
-          if new_resource.user.nil?
-            shell_out!(cmd)
-          else
-            shell_out!(cmd, user: new_resource.user)
-          end
+          shell_out!(cmd, user: new_resource.user)
         end
       end
 
@@ -170,11 +162,7 @@ class Chef
           cmd = defaults_modify_cmd
           Chef::Log.debug("Removing defaults key by shelling out: #{cmd.join(" ")}")
 
-          if new_resource.user.nil?
-            shell_out!(cmd)
-          else
-            shell_out!(cmd, user: new_resource.user)
-          end
+          shell_out!(cmd, user: new_resource.user)
         end
       end
 
