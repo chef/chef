@@ -83,7 +83,7 @@ class Chef
         introduced: "16.3"
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
-        description: "The value of the key. Note: When setting boolean values you can either specify 0/1 or you can pass true/false, 'true'/false', or 'yes'/'no' and we'll automatically convert these to the proper boolean values Apple expects.",
+        description: "The value of the key. Note: If you set the `type` property to `bool` we'll automatically try to convert various `String` forms of the Boolean true/false that Apple accepts in the defaults command: 0/1, 'TRUE'/'FALSE,' 'true'/false', 'YES'/'NO', or 'yes'/'no'.",
         required: [:write]
 
       property :type, String,
