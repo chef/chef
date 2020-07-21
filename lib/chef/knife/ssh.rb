@@ -388,7 +388,7 @@ class Chef
       end
 
       def prompt_for_password(prompt = "Enter your password: ")
-        ui.ask(prompt) { |q| q.echo = false }
+        ui.ask(prompt, echo: false)
       end
 
       # Present the prompt and read a single line from the console. It also
