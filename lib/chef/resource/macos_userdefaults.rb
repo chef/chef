@@ -84,7 +84,8 @@ class Chef
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
         description: "The value of the key. Note: If you set the `type` property to `bool` we'll automatically try to convert various `String` forms of the Boolean true/false that Apple accepts in the defaults command: 0/1, 'TRUE'/'FALSE,' 'true'/false', 'YES'/'NO', or 'yes'/'no'.",
-        required: [:write]
+        required: [:write],
+        coerce: proc { |v| v.is_a?(Hash) ? v.transform_keys(&:to_s) : v } # make sure keys are all strings for comparison
 
       property :type, String,
         description: "The value type of the preference key.",

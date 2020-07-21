@@ -30,6 +30,11 @@ describe Chef::Resource::MacosUserDefaults do
     expect(resource.domain).to eql("NSGlobalDomain")
   end
 
+  it "the value property coerces keys in hashes to symbols so we can compare them with plist data" do
+    resource.value "User": "/Library/Managed Installs/way_fake.log"
+    expect(resource.value).to eq({ "User" => "/Library/Managed Installs/way_fake.log" })
+  end
+
   it "the host property defaults to nil" do
     expect(resource.host).to be_nil
   end
