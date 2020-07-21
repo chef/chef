@@ -87,8 +87,7 @@ class Chef
         def updated_ec2_config_xml
           begin
             require "rexml/document" unless defined?(REXML::Document)
-            config_file = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'
-            config = REXML::Document.new(::File.read(config_file))
+            config = REXML::Document.new(::File.read(WINDOWS_EC2_CONFIG))
             # find an element named State with a sibling element whose value is Ec2SetComputerName
             REXML::XPath.each(config, "//Plugin/State[../Name/text() = 'Ec2SetComputerName']") do |element|
               element.text = "Disabled"
@@ -223,15 +222,17 @@ class Chef
           end
 
         else # windows
+          WINDOWS_EC2_CONFIG = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'.freeze
+
           raise "Windows hostnames cannot contain a period." if new_resource.hostname.match?(/\./)
 
           # suppress EC2 config service from setting our hostname
-          if ::File.exist?('C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml')
+          if ::File.exist?(WINDOWS_EC2_CONFIG)
             xml_contents = updated_ec2_config_xml
             if xml_contents.empty?
               Chef::Log.warn('Unable to properly parse and update C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml contents. Skipping file update.')
             else
-              file 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml' do
+              file WINDOWS_EC2_CONFIG do
                 content xml_contents
               end
             end
