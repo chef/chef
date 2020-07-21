@@ -122,5 +122,10 @@ describe Chef::Resource::MacosUserDefaults do
       resource.value = false
       expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "FALSE"])
     end
+
+    it "autodetects dict type from Hash value and flattens keys & values" do
+      resource.value = { "foo" => "bar" }
+      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-dict", "foo", "bar"])
+    end
   end
 end
