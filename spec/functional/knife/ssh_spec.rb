@@ -335,7 +335,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "should prompt the user for a password" do
-        expect(@knife.ui).to receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
+        expect(@knife.ui).to receive(:ask).with("Enter the password for user@ec2.public_hostname: ", echo: false).and_return("password")
         @knife.run
       end
     end
