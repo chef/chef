@@ -23,11 +23,11 @@ describe Chef::Resource::MacosUserDefaults do
   let(:provider) { resource.provider_for_action(:write) }
 
   it "has a resource name of :macos_userdefaults" do
-    expect(resource.resource_name).to eql(:macos_userdefaults)
+    expect(resource.resource_name).to eq(:macos_userdefaults)
   end
 
   it "the domain property defaults to NSGlobalDomain" do
-    expect(resource.domain).to eql("NSGlobalDomain")
+    expect(resource.domain).to eq("NSGlobalDomain")
   end
 
   it "the value property coerces keys in hashes to strings so we can compare them with plist data" do
@@ -44,7 +44,7 @@ describe Chef::Resource::MacosUserDefaults do
   end
 
   it "sets the default action as :write" do
-    expect(resource.action).to eql([:write])
+    expect(resource.action).to eq([:write])
   end
 
   it "supports :write action" do
@@ -53,22 +53,22 @@ describe Chef::Resource::MacosUserDefaults do
 
   describe "#defaults_export_cmd" do
     it "exports NSGlobalDomain if no domain is set" do
-      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "export", "NSGlobalDomain", "-"])
+      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "export", "NSGlobalDomain", "-"])
     end
 
     it "exports a provided domain" do
       resource.domain "com.tim"
-      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "export", "com.tim", "-"])
+      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "export", "com.tim", "-"])
     end
 
     it "sets -currentHost if host is 'current'" do
       resource.host "current"
-      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "-currentHost", "export", "NSGlobalDomain", "-"])
+      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "-currentHost", "export", "NSGlobalDomain", "-"])
     end
 
     it "sets -host 'tim-laptop if host is 'tim-laptop'" do
       resource.host "tim-laptop"
-      expect(provider.defaults_export_cmd(resource)).to eql(["/usr/bin/defaults", "-host", "tim-laptop", "export", "NSGlobalDomain", "-"])
+      expect(provider.defaults_export_cmd(resource)).to eq(["/usr/bin/defaults", "-host", "tim-laptop", "export", "NSGlobalDomain", "-"])
     end
   end
 
@@ -80,22 +80,22 @@ describe Chef::Resource::MacosUserDefaults do
     end
 
     it "writes to NSGlobalDomain if domain isn't specified" do
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "bar"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
     it "uses the domain property if set" do
       resource.domain = "MyCustomDomain"
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "-string", "bar"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "MyCustomDomain", "foo", "-string", "bar"])
     end
 
     it "sets host specific values using host property" do
       resource.host = "tims_laptop"
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "-string", "bar"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "-host", "tims_laptop", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
     it "if host is set to :current it passes CurrentHost" do
       resource.host = :current
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "-string", "bar"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "-currentHost", "write", "NSGlobalDomain", "foo", "-string", "bar"])
     end
 
     it "raises ArgumentError if bool is specified, but the value can't be made into a bool" do
@@ -105,32 +105,32 @@ describe Chef::Resource::MacosUserDefaults do
 
     it "autodetects array type and passes individual values" do
       resource.value = %w{one two three}
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-array", "one", "two", "three"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-array", "one", "two", "three"])
     end
 
     it "autodetects string type and passes a single value" do
       resource.value = "one"
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "one"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-string", "one"])
     end
 
     it "autodetects integer type and passes a single value" do
       resource.value = 1
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-int", 1])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-int", 1])
     end
 
     it "autodetects boolean type from TrueClass value and passes a 'TRUE' string" do
       resource.value = true
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "TRUE"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "TRUE"])
     end
 
     it "autodetects boolean type from FalseClass value and passes a 'FALSE' string" do
       resource.value = false
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "FALSE"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-bool", "FALSE"])
     end
 
     it "autodetects dict type from Hash value and flattens keys & values" do
       resource.value = { "foo" => "bar" }
-      expect(provider.defaults_modify_cmd).to eql(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-dict", "foo", "bar"])
+      expect(provider.defaults_modify_cmd).to eq(["/usr/bin/defaults", "write", "NSGlobalDomain", "foo", "-dict", "foo", "bar"])
     end
   end
 end
