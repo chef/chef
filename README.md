@@ -44,10 +44,6 @@ To learn more about our monthly feature releases and yearly major releases, see 
 
 We'd love to have your help developing Chef Infra. See our [Contributing Document](./CONTRIBUTING.md) for more information on getting started.
 
-## How to use [Dobi](https://dnephin.github.io/dobi/)
-
-For local development, uncomment the `.envrc` file and run `direnv reload`. Dobi will use those env variables for when you want to build the docker images locally. If you are already using `direnv` you can just add those env variables to whatever you are using or just export the env variables locally.
-
 ## License and Copyright
 
 Copyright 2008-2020, Chef Software, Inc.
