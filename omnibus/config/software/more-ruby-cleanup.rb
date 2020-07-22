@@ -46,42 +46,16 @@ build do
     target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
     files = %w{
       *-public_cert.pem
-      *.blurb
-      *Upgrade.md
-      .dockerignore
-      autotest
-      autotest/*
-      bench
-      benchmark
-      benchmarks
-      design_rationale.rb
-      doc
-      doc-api
-      Dockerfile*
-      docs
-      ed25519.png
       example
       examples
       ext
-      features
-      frozen_old_spec
-      Gemfile.devtools
       Gemfile.lock
-      INSTALL.txt
-      man
-      minitest
-      on_what.rb
       rakelib
       sample
       samples
-      samus.json
       site
-      test
-      tests
       vendor
       VERSION
-      website
-      yard-template
     }
 
     Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
