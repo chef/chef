@@ -17,6 +17,7 @@
 #
 
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module DSL
@@ -25,6 +26,7 @@ class Chef
     # #value_for_platform.
     module PlatformIntrospection
       include ChefUtils
+      include Chef::Mixin::ChefUtilsWiring
 
       # Implementation class for determining platform dependent values
       class PlatformDependentValue

@@ -25,8 +25,8 @@ require_relative "../dist"
 class Chef
   class Resource
     class Service < Chef::Resource
-      include ChefUtils::DSL::Service
-      extend ChefUtils::DSL::Service
+      include Chef::Platform::ServiceHelpers
+      extend Chef::Platform::ServiceHelpers
       unified_mode true
 
       provides :service, target_mode: true
