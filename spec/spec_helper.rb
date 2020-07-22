@@ -331,5 +331,9 @@ module WEBrick
   end
 end
 
+class Chef::Knife
+  include Opc
+end
+
 # Enough stuff needs json serialization that I'm just adding it here for equality asserts
 require "chef/json_compat"
