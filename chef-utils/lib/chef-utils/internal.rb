@@ -75,9 +75,9 @@ module ChefUtils
       end
     end
 
-    # This should be set to a Train::FIXME instance.  You should wire this up to nil for not using a train transport connection.
+    # This should be set to a Train::Plugins::Transport instance.  You should wire this up to nil for not using a train transport connection.
     #
-    # @return [Train::FIXME]
+    # @return [Train::Plugins::Transport]
     #
     # @api private
     #

@@ -17,6 +17,7 @@
 #
 
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module DSL
@@ -25,6 +26,7 @@ class Chef
     # #value_for_platform.
     module PlatformIntrospection
       include ChefUtils
+      include Chef::Mixin::ChefUtilsWiring
 
       # Implementation class for determining platform dependent values
       class PlatformDependentValue
@@ -258,13 +260,6 @@ class Chef
       # ^^^^^^ NOTE: PLEASE DO NOT CONTINUE TO ADD THESE KINDS OF PLATFORM_VERSION APIS WITHOUT ^^^^^^^
       # ^^^^^^ GOING THROUGH THE DESIGN REVIEW PROCESS AND ADDRESS THE EXISTING CHEF-SUGAR ONES ^^^^^^^
       # ^^^^^^ DO "THE HARD RIGHT THING" AND ADDRESS THE BROADER PROBLEM AND FIX IT ALL.        ^^^^^^^
-
-      private
-
-      # dependency injection, see: ChefUtils::Internal
-      def __transport_connection
-        Chef.run_context.transport_connection
-      end
     end
   end
 end

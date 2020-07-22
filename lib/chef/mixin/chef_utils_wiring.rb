@@ -1,5 +1,4 @@
 #--
-# Author:: Lamont Granquist <lamont@chef.io>
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -15,24 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef-utils/dsl/which" unless defined?(ChefUtils::DSL::Which)
-require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
-require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+require_relative "../log"
+require_relative "../config"
+require_relative "../chef_class"
 
 class Chef
   module Mixin
-    module Which
-      include ChefUtils::DSL::Which
-      include ChefUtils::DSL::PathSanity
-      include ChefUtilsWiring
-
+    # Common Dependency Injection wiring for ChefUtils-related modules
+    module ChefUtilsWiring
       private
 
-      # we dep-inject path sanity into this API for historical reasons
-      #
-      # @api private
-      def __extra_path
-        __sane_paths
+      def __config
+        Chef::Config
+      end
+
+      def __log
+        Chef::Log
+      end
+
+      def __transport_connection
+        Chef.run_context&.transport_connection
       end
     end
   end

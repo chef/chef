@@ -18,11 +18,13 @@
 
 require_relative "../chef_class"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
+require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   class Platform
     module ServiceHelpers
       include ChefUtils::DSL::Service
+      include Chef::Mixin::ChefUtilsWiring
 
       def service_resource_providers
         providers = []
@@ -47,20 +49,6 @@ class Chef
         configs << :etc_rcd if service_script_exist?(:etc_rcd, service_name)
 
         configs
-      end
-
-      private
-
-      def __config
-        Chef::Config
-      end
-
-      def __log
-        Chef::Log
-      end
-
-      def __transport_connection
-        Chef.run_context&.transport_connection
       end
 
       extend self

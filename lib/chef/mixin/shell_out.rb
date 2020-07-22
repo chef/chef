@@ -16,26 +16,13 @@
 # limitations under the License.
 
 require "mixlib/shellout/helper" unless defined?(Mixlib::ShellOut::Helper)
-require_relative "../log"
-require_relative "../config"
-require_relative "../chef_class"
+require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module Mixin
     module ShellOut
       include Mixlib::ShellOut::Helper
-
-      def __config
-        Chef::Config
-      end
-
-      def __log
-        Chef::Log
-      end
-
-      def __transport_connection
-        Chef.run_context&.transport_connection
-      end
+      include Chef::Mixin::ChefUtilsWiring
     end
   end
 end
