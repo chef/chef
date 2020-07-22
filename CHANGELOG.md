@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.22 -->
-## [v16.3.22](https://github.com/chef/chef/tree/v16.3.22) (2020-07-22)
+<!-- latest_release 16.3.23 -->
+## [v16.3.23](https://github.com/chef/chef/tree/v16.3.23) (2020-07-22)
 
 #### Merged Pull Requests
-- Extract shell_out helper method to chef-utils for reuse in ohai, etc [#10137](https://github.com/chef/chef/pull/10137) ([lamont-granquist](https://github.com/lamont-granquist))
+- Rework macos_userdefaults resource [#10118](https://github.com/chef/chef/pull/10118) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Rework macos_userdefaults resource [#10118](https://github.com/chef/chef/pull/10118) ([tas50](https://github.com/tas50)) <!-- 16.3.23 -->
 - Extract shell_out helper method to chef-utils for reuse in ohai, etc [#10137](https://github.com/chef/chef/pull/10137) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.22 -->
 - Remove cookbook uploader global state [#10185](https://github.com/chef/chef/pull/10185) ([phiggins](https://github.com/phiggins)) <!-- 16.3.21 -->
 - Update InSpec to 4.22.1 [#10183](https://github.com/chef/chef/pull/10183) ([tas50](https://github.com/tas50)) <!-- 16.3.20 -->
