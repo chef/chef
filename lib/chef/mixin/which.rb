@@ -22,6 +22,7 @@ class Chef
   module Mixin
     module Which
       include ChefUtils::DSL::Which
+      include ChefUtils::DSL::PathSanity
 
       private
 
@@ -29,7 +30,12 @@ class Chef
       #
       # @api private
       def __extra_path
-        ChefUtils::DSL::PathSanity.sane_paths
+        __sane_paths
+      end
+
+      # dependency injection, see: ChefUtils::Internal
+      def __transport_connection
+        Chef.run_context&.transport_connection
       end
     end
   end

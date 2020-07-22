@@ -17,38 +17,53 @@
 #
 
 require_relative "../chef_class"
-require "chef-utils" if defined?(ChefUtils::CANARY)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Platform
-    # @deprecated, use ChefUtils::DSL::Service instead (via the ChefUtils Universal DSL)
-    class ServiceHelpers
-      class << self
-        def service_resource_providers
-          providers = []
+    module ServiceHelpers
+      include ChefUtils::DSL::Service
 
-          providers << :debian if ChefUtils::DSL::Service.debianrcd?
-          providers << :invokercd if ChefUtils::DSL::Service.invokercd?
-          providers << :upstart if ChefUtils::DSL::Service.upstart?
-          providers << :insserv if ChefUtils::DSL::Service.insserv?
-          providers << :systemd if ChefUtils.systemd?
-          providers << :redhat if ChefUtils::DSL::Service.redhatrcd?
+      def service_resource_providers
+        providers = []
 
-          providers
-        end
+        providers << :debian if debianrcd?
+        providers << :invokercd if invokercd?
+        providers << :upstart if upstart?
+        providers << :insserv if insserv?
+        providers << :systemd if systemd?
+        providers << :redhat if redhatrcd?
 
-        def config_for_service(service_name)
-          configs = []
-
-          configs << :initd if ChefUtils::DSL::Service.service_script_exist?(:initd, service_name)
-          configs << :upstart if ChefUtils::DSL::Service.service_script_exist?(:upstart, service_name)
-          configs << :xinetd if ChefUtils::DSL::Service.service_script_exist?(:xinetd, service_name)
-          configs << :systemd if ChefUtils::DSL::Service.service_script_exist?(:systemd, service_name)
-          configs << :etc_rcd if ChefUtils::DSL::Service.service_script_exist?(:etc_rcd, service_name)
-
-          configs
-        end
+        providers
       end
+
+      def config_for_service(service_name)
+        configs = []
+
+        configs << :initd if service_script_exist?(:initd, service_name)
+        configs << :upstart if service_script_exist?(:upstart, service_name)
+        configs << :xinetd if service_script_exist?(:xinetd, service_name)
+        configs << :systemd if service_script_exist?(:systemd, service_name)
+        configs << :etc_rcd if service_script_exist?(:etc_rcd, service_name)
+
+        configs
+      end
+
+      private
+
+      def __config
+        Chef::Config
+      end
+
+      def __log
+        Chef::Log
+      end
+
+      def __transport_connection
+        Chef.run_context&.transport_connection
+      end
+
+      extend self
     end
   end
 end

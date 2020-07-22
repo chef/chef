@@ -25,6 +25,7 @@ module ChefUtils
     module Service
       include Internal
       include TrainHelpers
+      include Introspection
 
       # Returns if debian's old rc.d manager is installed (not necessarily the primary init system).
       #
@@ -97,8 +98,8 @@ module ChefUtils
           file_exist?("/etc/rc.d/#{script}")
         when :systemd
           file_exist?("/etc/init.d/#{script}") ||
-            ChefUtils::DSL::Introspection.has_systemd_service_unit?(script) ||
-            ChefUtils::DSL::Introspection.has_systemd_unit?(script)
+            has_systemd_service_unit?(script) ||
+            has_systemd_unit?(script)
         else
           raise ArgumentError, "type of service must be one of :initd, :upstart, :xinetd, :etc_rcd, or :systemd"
         end

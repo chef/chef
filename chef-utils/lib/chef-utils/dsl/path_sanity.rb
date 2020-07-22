@@ -30,27 +30,27 @@ module ChefUtils
         path_separator = ChefUtils.windows? ? ";" : ":"
         # ensure the Ruby and Gem bindirs are included for omnibus chef installs
         new_paths = env_path.split(path_separator)
-        [ ChefUtils::DSL::PathSanity.ruby_bindir, ChefUtils::DSL::PathSanity.gem_bindir ].compact.each do |path|
+        [ __ruby_bindir, __gem_bindir ].compact.each do |path|
           new_paths = [ path ] + new_paths unless new_paths.include?(path)
         end
-        ChefUtils::DSL::PathSanity.sane_paths.each do |path|
+        __sane_paths.each do |path|
           new_paths << path unless new_paths.include?(path)
         end
         new_paths.join(path_separator).encode("utf-8", invalid: :replace, undef: :replace)
       end
 
-      class << self
-        def sane_paths
-          ChefUtils.windows? ? %w{} : %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
-        end
+      private
 
-        def ruby_bindir
-          RbConfig::CONFIG["bindir"]
-        end
+      def __sane_paths
+        ChefUtils.windows? ? %w{} : %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
+      end
 
-        def gem_bindir
-          Gem.bindir
-        end
+      def __ruby_bindir
+        RbConfig::CONFIG["bindir"]
+      end
+
+      def __gem_bindir
+        Gem.bindir
       end
 
       extend self
