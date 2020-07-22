@@ -83,7 +83,7 @@ class Chef
         introduced: "16.3"
 
       property :value, [Integer, Float, String, TrueClass, FalseClass, Hash, Array],
-        description: "The value of the key. Note: If you set the `type` property to `bool` we'll automatically try to convert various `String` forms of the Boolean true/false that Apple accepts in the defaults command: 0/1, 'TRUE'/'FALSE,' 'true'/false', 'YES'/'NO', or 'yes'/'no'.",
+        description: "The value of the key. Note: With the `type` property set to `bool`, `String` forms of Boolean true/false values that Apple accepts in the defaults command will be coerced: 0/1, 'TRUE'/'FALSE,' 'true'/false', 'YES'/'NO', or 'yes'/'no'.",
         required: [:write],
         coerce: proc { |v| v.is_a?(Hash) ? v.transform_keys(&:to_s) : v } # make sure keys are all strings for comparison
 
