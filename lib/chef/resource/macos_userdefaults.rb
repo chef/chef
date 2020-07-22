@@ -224,7 +224,7 @@ class Chef
           return ["FALSE"] if [false, "FALSE", "0", "false", "NO", "no"].include?(input)
 
           # make sure it's very clear bad input was given
-          raise ArgumentError, "#{input} cannot be converted to a boolean value for use with Apple's defaults command. Acceptable values are: 'TRUE', 'YES', 'true, 'yes', '0', true, 'FALSE', 'false', 'NO', 'no', 1, or false."
+          raise ArgumentError, "#{input} cannot be converted to a boolean value for use with Apple's defaults command. Acceptable values are: 'TRUE', 'YES', 'true, 'yes', '0', true, 'FALSE', 'false', 'NO', 'no', '1', or false."
         end
 
         #
