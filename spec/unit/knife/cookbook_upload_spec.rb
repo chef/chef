@@ -40,7 +40,6 @@ describe Chef::Knife::CookbookUpload do
     allow(cookbook_loader).to receive(:load_cookbooks).and_return(cookbook_loader)
     allow(cookbook_loader).to receive(:compile_metadata).and_return(nil)
     allow(cookbook_loader).to receive(:freeze_versions).and_return(nil)
-    allow(cookbook_loader).to receive(:unlink!).and_return(nil)
     cookbook_loader
   end
 
@@ -60,7 +59,7 @@ describe Chef::Knife::CookbookUpload do
 
   before(:each) do
     allow(Chef::CookbookLoader).to receive(:new).and_return(cookbook_loader)
-    allow(Chef::CookbookLoader).to receive(:copy_to_tmp_dir_from_array).and_return(cookbook_loader)
+    allow(Chef::CookbookLoader).to receive(:copy_to_tmp_dir_from_array).and_yield(cookbook_loader)
   end
 
   describe "with --concurrency" do
@@ -70,7 +69,6 @@ describe Chef::Knife::CookbookUpload do
       test_cookbook = Chef::CookbookVersion.new("test_cookbook", "/tmp/blah")
       allow(cookbook_loader).to receive(:each).and_yield("test_cookbook", test_cookbook)
       allow(cookbook_loader).to receive(:cookbook_names).and_return(["test_cookbook"])
-      allow(cookbook_loader).to receive(:tmp_working_dir_path).and_return("/tmp/blah")
       expect(Chef::CookbookUploader).to receive(:new)
         .with( kind_of(Array), { force: nil, concurrency: 3 })
         .and_return(double("Chef::CookbookUploader", upload_cookbooks: true))
