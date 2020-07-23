@@ -50,9 +50,16 @@ The `git` resource will no longer fail if syncing a branch that already exists l
 
 ### macos_user_defaults
 
-The `macos_user_defaults` has received a ground up refactoring to improve idempotency, fix failures, and better support complex data types.
+The `macos_user_defaults` has received a ground-up refactoring with new actions, additional properties, and better overall reliability:
 
------->>>>> ADD MORE HERE <<<<<-------
+  - Improved idempotency by properly loading the current state of domains.
+  - Improved how we set `dict` and `array` type data.
+  - Improved logging to show the existing key/value pair that are being changed and improved the property state data we send to handlers and/or Chef Automate.
+  - Fixed a failure when setting keys or values that included a space.
+  - Replaced the existing non-functional `global` property with a new default for the `domain` property. To set a key/value on the `NSGlobalDomain` domain you can either set that value explicitly or just skip `domain` property entirely and Chef Infra Client will default to `NSGlobalDomain`. The existing property has been marked as deprecated and we will ship a Cookstyle rule to detect cookbooks using this property in the future.
+  - Fixed the type property to only accepts valid inputs. Previously typos or otherwise incorrect values would just be ignored, resulting in unexpected behavior. This may cause failures in your codebase if you previously used incorrect values, and we will be shipping a Cookstyle rule to detect and correct these values in the future.
+ - Added a new `delete` action to allow users to remove a key from a domain.
+ - Added a new host property that lets you set per-host values. If you set this to :current it sets the -currentHost flag.
 
 ### windows_dns_record
 
