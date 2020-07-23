@@ -16,7 +16,7 @@ Chef InSpec has been updated from 4.21.1 to 4.22.1. This new release includes th
 
 ### windows_firewall_profile
 
-The `windows_firewall_profile` allows you to `enable`, `disable`, or `configure` Windows Firewall profiles. For example you can now setup default actions and configure fules for a the `Public` profile using this single resource instead of managing your own PowerShell code in a `powershell_script` resource:
+The `windows_firewall_profile` allows you to `enable`, `disable`, or `configure` Windows Firewall profiles. For example you can now setup default actions and configure rules for the `Public` profile using this single resource instead of managing your own PowerShell code in a `powershell_script` resource:
 
 ```ruby
 windows_firewall_profile 'Public' do
