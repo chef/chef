@@ -30,8 +30,8 @@ class Chef
       windows_firewall_profile 'Private' do
         default_inbound_action 'Block'
         default_outbound_action 'Allow'
-        allow_inbound_rules 'True'
-        display_notification 'False'
+        allow_inbound_rules true
+        display_notification false
         action :enable
       end
       ```
@@ -42,8 +42,8 @@ class Chef
       windows_firewall_profile 'Public' do
         default_inbound_action 'Block'
         default_outbound_action 'Allow'
-        allow_inbound_rules 'False'
-        display_notification 'False'
+        allow_inbound_rules false
+        display_notification false
         action :enable
       end
       ```
