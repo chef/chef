@@ -67,7 +67,7 @@ The `windows_dns_record` resource includes a new optional property, `dns_server`
 
 ### windows_package
 
-A Chef Infra Client 16 regression within `windows_package` that prevented specifying `path` in the `remote_file_attributes` property has been resolved. Thanks for reporting this issue [@asvinours](https://github.com/asvinours/)
+A Chef Infra Client 16 regression within `windows_package` that prevented specifying `path` in the `remote_file_attributes` property has been resolved. Thanks for reporting this issue [@asvinours](https://github.com/asvinours/).
 
 ### windows_security_policy
 
