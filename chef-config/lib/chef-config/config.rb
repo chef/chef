@@ -968,7 +968,7 @@ module ChefConfig
     default :allowed_override_attributes, nil
 
     # An array of attributes you do not want to send over the
-    # wire when node data is saved 0
+    # wire when node data is saved
     # The default setting is nil, which collects all data.
     # NOTE: Setting to [] will still collect all data to save
     default :blocked_automatic_attributes, nil
