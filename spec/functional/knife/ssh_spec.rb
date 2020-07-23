@@ -36,17 +36,6 @@ describe Chef::Knife::Ssh do
     allow(Net::SSH).to receive(:configuration_for).and_return(ssh_config)
   end
 
-  # Force log level to info.
-  around do |ex|
-    old_level = Chef::Log.level
-    begin
-      Chef::Log.level = :info
-      ex.run
-    ensure
-      Chef::Log.level = old_level
-    end
-  end
-
   describe "identity file" do
     context "when knife[:ssh_identity_file] is set" do
       before do

@@ -243,6 +243,9 @@ RSpec.configure do |config|
 
     Chef::Log.setup!
 
+    Chef::Config[:log_level] = :fatal
+    Chef::Log.level(Chef::Config[:log_level])
+
     # By default, treat deprecation warnings as errors in tests.
     Chef::Config.treat_deprecation_warnings_as_errors(true)
 
