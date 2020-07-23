@@ -28,7 +28,7 @@ windows_firewall_profile 'Public' do
 end
 ```
 
-For a complete guide to all properties and additional examples see ------>>>>> ADD DOCS LINK WHEN WE HAVE IT <<<<<-------
+For a complete guide to all properties and additional examples see [windows_firewall_profile documentation](https://docs.chef.io/resources/windows_firewall_profile)
 
 ## Resource Updates
 
