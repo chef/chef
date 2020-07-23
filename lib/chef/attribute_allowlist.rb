@@ -4,7 +4,7 @@ require_relative "exceptions"
 class Chef
   class AttributeAllowlist
 
-    # filter takes two arguments - the data you want to filter, and an an array of
+    # filter takes two arguments - the data you want to filter, and an array of
     # keys you want included. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
