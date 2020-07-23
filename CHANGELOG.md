@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.25 -->
-## [v16.3.25](https://github.com/chef/chef/tree/v16.3.25) (2020-07-22)
+<!-- latest_release 16.3.26 -->
+## [v16.3.26](https://github.com/chef/chef/tree/v16.3.26) (2020-07-23)
 
 #### Merged Pull Requests
-- require mixlib-shellout 3.1.1+ and pull in new ohai [#10191](https://github.com/chef/chef/pull/10191) ([tas50](https://github.com/tas50))
+- Set log level to :fatal in test to prevent excess logging. [#10188](https://github.com/chef/chef/pull/10188) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Set log level to :fatal in test to prevent excess logging. [#10188](https://github.com/chef/chef/pull/10188) ([phiggins](https://github.com/phiggins)) <!-- 16.3.26 -->
 - require mixlib-shellout 3.1.1+ and pull in new ohai [#10191](https://github.com/chef/chef/pull/10191) ([tas50](https://github.com/tas50)) <!-- 16.3.25 -->
 - Move some Ruby omnibus cleanup to omnibus-software [#10189](https://github.com/chef/chef/pull/10189) ([tas50](https://github.com/tas50)) <!-- 16.3.24 -->
 - Rework macos_userdefaults resource [#10118](https://github.com/chef/chef/pull/10118) ([tas50](https://github.com/tas50)) <!-- 16.3.23 -->
