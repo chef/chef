@@ -63,7 +63,7 @@ The `macos_user_defaults` has received a ground-up refactoring with new actions,
 
 ### windows_dns_record
 
-The `windows_dns_record` resource includes a new optional property, `dns_server`, allowing you to make changes against remote servers. Thanks for this additional [@jeremyciak](https://github.com/jeremyciak/).
+The `windows_dns_record` resource includes a new optional property, `dns_server`, allowing you to make changes against remote servers. Thanks for this addition [@jeremyciak](https://github.com/jeremyciak/).
 
 ### windows_package
 
