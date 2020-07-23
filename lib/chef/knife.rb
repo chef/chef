@@ -20,10 +20,10 @@
 require "forwardable" unless defined?(Forwardable)
 require_relative "version"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
-require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
+require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
 require_relative "workstation_config_loader"
 require_relative "mixin/convert_to_class_name"
-require_relative "mixin/path_sanity"
+require_relative "mixin/default_paths"
 require_relative "knife/core/subcommand_loader"
 require_relative "knife/core/ui"
 require_relative "local_mode"
@@ -40,7 +40,7 @@ class Chef
     Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
-    include ChefUtils::DSL::PathSanity
+    include ChefUtils::DSL::DefaultPaths
     extend Chef::Mixin::ConvertToClassName
     extend Forwardable
 
@@ -484,7 +484,7 @@ class Chef
       unless respond_to?(:run)
         ui.error "You need to add a #run method to your knife command before you can use it"
       end
-      ENV["PATH"] = sanitized_path if Chef::Config[:enforce_path_sanity]
+      ENV["PATH"] = default_paths if Chef::Config[:enforce_default_paths] || Chef::Config[:enforce_path_sanity]
       maybe_setup_fips
       Chef::LocalMode.with_server_connectivity do
         run

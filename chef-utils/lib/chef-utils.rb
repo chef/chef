@@ -19,6 +19,7 @@ require_relative "chef-utils/dsl/architecture"
 require_relative "chef-utils/dsl/cloud"
 require_relative "chef-utils/dsl/introspection"
 require_relative "chef-utils/dsl/os"
+require_relative "chef-utils/dsl/default_paths"
 require_relative "chef-utils/dsl/path_sanity"
 require_relative "chef-utils/dsl/platform"
 require_relative "chef-utils/dsl/platform_family"
@@ -34,9 +35,9 @@ require_relative "chef-utils/mash"
 module ChefUtils
   include ChefUtils::DSL::Architecture
   include ChefUtils::DSL::Cloud
+  include ChefUtils::DSL::DefaultPaths
   include ChefUtils::DSL::Introspection
   include ChefUtils::DSL::OS
-  include ChefUtils::DSL::PathSanity
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::PlatformFamily
   include ChefUtils::DSL::PlatformVersion

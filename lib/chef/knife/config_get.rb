@@ -62,6 +62,7 @@ class Chef
           config_data.delete(:color)
           # Only keep these if true, false is much less important because it's the default.
           config_data.delete(:local_mode) unless config_data[:local_mode]
+          config_data.delete(:enforce_default_paths) unless config_data[:enforce_default_paths]
           config_data.delete(:enforce_path_sanity) unless config_data[:enforce_path_sanity]
         end
 

@@ -15,24 +15,18 @@
 # limitations under the License.
 #
 
-require_relative "default_paths"
-
-module ChefUtils
-  module DSL
-    module PathSanity
-      include ChefUtils::DSL::DefaultPaths
-
-      def sanitized_path(env = nil)
-        default_paths(env)
+class Chef
+  module Mixin
+    module DefaultPaths
+      def enforce_path_sanity(env = ENV)
+        enforce_default_paths(env)
       end
 
-      private
-
-      def __sane_paths
-        __default_paths
+      def enforce_default_paths(env = ENV)
+        if Chef::Config[:enforce_default_paths]
+          env["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths(env)
+        end
       end
-
-      extend self
     end
   end
 end
