@@ -1,5 +1,83 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.3
+
+## Chef InSpec 4.22.1
+
+Chef InSpec has been updated from 4.21.1 to 4.22.1. This new release includes the following improvements:
+
+- The `=` character is now allowed for command line inputs
+- `apt-cdrom` repositories are now skipped when parsing out the list of apt repositories
+- Faulty profiles are now reported instead of causing a crash
+- Errors are no longer logged to stdout with the `html2` reporter
+- macOS Big Sur is now correctly identified as macOS
+
+## New Resources
+
+### windows_firewall_profile
+
+The `windows_firewall_profile` allows you to `enable`, `disable`, or `configure` Windows Firewall profiles. For example you can now setup default actions and configure fules for a the `Public` profile using this single resource instead of managing your own PowerShell code in a `powershell_script` resource:
+
+```ruby
+windows_firewall_profile 'Public' do
+  default_inbound_action 'Block'
+  default_outbound_action 'Allow'
+  allow_inbound_rules 'False'
+  display_notification 'False'
+  action :enable
+end
+```
+
+For a complete guide to all properties and additional examples see ------>>>>> ADD DOCS LINK WHEN WE HAVE IT <<<<<-------
+
+## Resource Updates
+
+### build_essential
+
+Log output has been improved in the `build_essential` resource when running on macOS systems.
+
+### chef_client_scheduled_task
+
+The `chef_client_scheduled_task` resource no longer sets up the schedule task with invalid double quoting around the command to run. Thanks for reporting this issue [@tiobagio](https://github.com/tiobagio/).
+
+### execute
+
+The `user` property in the `execute` resource can now accept user IDs as Integers.
+
+### git
+
+The `git` resource will no longer fail if syncing a branch that already exists locally. Thanks for fixing this [@lotooo](https://github.com/lotooo/).
+
+### macos_user_defaults
+
+The `macos_user_defaults` has received a ground up refactoring to improve idempotency, fix failures, and better support complex data types.
+
+------>>>>> ADD MORE HERE <<<<<-------
+
+### windows_dns_record
+
+The `windows_dns_record` resource includes a new optional property, `dns_server`, allowing you to make changes against remote servers. Thanks for this additional [@jeremyciak](https://github.com/jeremyciak/).
+
+### windows_package
+
+A Chef Infra Client 16 regression within `windows_package` that prevented specifying `path` in the `remote_file_attributes` property has been resolved. Thanks for reporting this issue [@asvinours](https://github.com/asvinours/)
+
+### windows_security_policy
+
+The `windows_security_policy` resource has been refactored to improve idempotency and improve log output when changes are made. You'll now see more complete change information in logs and any handler consuming this data will also receive more detailed change information.
+
+## Knife Improvements
+
+- Ctrl-C can now be used to exit knife even when being prompted for input.
+- `knife bootstrap` will now properly error if attempting to bootstrap an AIX system using an account with an expired password.
+- `knife profile` commands will no longer error if an invalid profile was previously set.
+- The `-o` flag for `knife cookbook upload` can now be used on Windows systems.
+- `knife ssh` now once again accepts legacy DSS host keys although we highly recommend upgrading to a more secure key algorithm if possible.
+
+## Habitat Package Improvements
+
+Habitat packages for Windows, Linux and Linux2 are now built and tested against each pull request to Chef Infra Client. Additionally we've improved how these packages are built to reduce the size of the package, which reduces network utilization when using the Effortless deployment pattern.
+
 # What's New in 16.2.72
 
 - Habitat packages for Chef Infra Client 16 are now published with full support for the `powershell_exec` helper now added.
