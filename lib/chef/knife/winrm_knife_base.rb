@@ -284,7 +284,7 @@ class Chef
           end
 
           def get_password
-            @password ||= ui.ask("Enter your password: ") { |q| q.echo = false }
+            @password ||= ui.ask("Enter your password: ", echo: false)
           end
 
           def negotiate_auth?
