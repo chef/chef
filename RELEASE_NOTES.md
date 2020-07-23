@@ -73,6 +73,7 @@ The `windows_security_policy` resource has been refactored to improve idempotenc
 - `knife profile` commands will no longer error if an invalid profile was previously set.
 - The `-o` flag for `knife cookbook upload` can now be used on Windows systems.
 - `knife ssh` now once again accepts legacy DSS host keys although we highly recommend upgrading to a more secure key algorithm if possible.
+- Several changes were made to knife to that may prevent intermittent failures running cookbook commands
 
 ## Habitat Package Improvements
 
