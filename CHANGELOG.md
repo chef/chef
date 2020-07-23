@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.27 -->
-## [v16.3.27](https://github.com/chef/chef/tree/v16.3.27) (2020-07-23)
+<!-- latest_release 16.3.28 -->
+## [v16.3.28](https://github.com/chef/chef/tree/v16.3.28) (2020-07-23)
 
 #### Merged Pull Requests
-- Update the ruby-cleanup omnibus-software configs [#10195](https://github.com/chef/chef/pull/10195) ([tas50](https://github.com/tas50))
+- Update ruby cleanup omnibus software again [#10196](https://github.com/chef/chef/pull/10196) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update ruby cleanup omnibus software again [#10196](https://github.com/chef/chef/pull/10196) ([tas50](https://github.com/tas50)) <!-- 16.3.28 -->
 - Update the ruby-cleanup omnibus-software configs [#10195](https://github.com/chef/chef/pull/10195) ([tas50](https://github.com/tas50)) <!-- 16.3.27 -->
 - Set log level to :fatal in test to prevent excess logging. [#10188](https://github.com/chef/chef/pull/10188) ([phiggins](https://github.com/phiggins)) <!-- 16.3.26 -->
 - require mixlib-shellout 3.1.1+ and pull in new ohai [#10191](https://github.com/chef/chef/pull/10191) ([tas50](https://github.com/tas50)) <!-- 16.3.25 -->
