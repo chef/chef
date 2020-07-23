@@ -38,7 +38,7 @@ Log output has been improved in the `build_essential` resource when running on m
 
 ### chef_client_scheduled_task
 
-The `chef_client_scheduled_task` resource no longer sets up the schedule task with invalid double quoting around the command to run. Thanks for reporting this issue [@tiobagio](https://github.com/tiobagio/).
+The `chef_client_scheduled_task` resource no longer sets up the schedule task with invalid double quoting around the specified command. Thanks for reporting this issue [@tiobagio](https://github.com/tiobagio/).
 
 ### execute
 
