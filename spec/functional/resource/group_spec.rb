@@ -159,8 +159,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
         # excluded_members can only be used when append is set.  It is ignored otherwise.
         let(:excluded_members) { [] }
 
+        let(:expected_error_class) { windows? ? ArgumentError : Mixlib::ShellOut::ShellCommandFailed }
+
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error
+          expect { group_resource.run_action(tested_action) }.to raise_error(expected_error_class)
         end
       end
 
@@ -169,8 +171,10 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
           group_resource.append(true)
         end
 
+        let(:expected_error_class) { windows? ? Chef::Exceptions::Win32APIError : Mixlib::ShellOut::ShellCommandFailed }
+
         it "should raise an error" do
-          expect { group_resource.run_action(tested_action) }.to raise_error
+          expect { group_resource.run_action(tested_action) }.to raise_error(expected_error_class)
         end
       end
     end

@@ -17,11 +17,14 @@
 
 require "chef-utils/dsl/which" unless defined?(ChefUtils::DSL::Which)
 require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
+require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module Mixin
     module Which
       include ChefUtils::DSL::Which
+      include ChefUtils::DSL::PathSanity
+      include ChefUtilsWiring
 
       private
 
@@ -29,7 +32,7 @@ class Chef
       #
       # @api private
       def __extra_path
-        ChefUtils::DSL::PathSanity.sane_paths
+        __sane_paths
       end
     end
   end

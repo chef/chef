@@ -36,17 +36,6 @@ describe Chef::Knife::Ssh do
     allow(Net::SSH).to receive(:configuration_for).and_return(ssh_config)
   end
 
-  # Force log level to info.
-  around do |ex|
-    old_level = Chef::Log.level
-    begin
-      Chef::Log.level = :info
-      ex.run
-    ensure
-      Chef::Log.level = old_level
-    end
-  end
-
   describe "identity file" do
     context "when knife[:ssh_identity_file] is set" do
       before do
@@ -335,7 +324,7 @@ describe Chef::Knife::Ssh do
       end
 
       it "should prompt the user for a password" do
-        expect(@knife.ui).to receive(:ask).with("Enter the password for user@ec2.public_hostname: ").and_return("password")
+        expect(@knife.ui).to receive(:ask).with("Enter the password for user@ec2.public_hostname: ", echo: false).and_return("password")
         @knife.run
       end
     end

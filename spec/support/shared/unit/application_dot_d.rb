@@ -41,7 +41,6 @@ shared_examples_for "an application that loads a dot d" do
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("foo 0")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("bar 0")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/02-strings.rb").cleanpath.to_s).and_return("strings 0")
-      allow(app).to receive(:apply_config).with(anything, Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_call_original.ordered
       expect(app).to receive(:apply_config).with("foo 0", Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_call_original.ordered
       expect(app).to receive(:apply_config).with("bar 0", Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_call_original.ordered
       expect(app).to receive(:apply_config).with("strings 0", Pathname.new("#{client_d_dir}/02-strings.rb").cleanpath.to_s).and_call_original.ordered

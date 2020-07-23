@@ -34,10 +34,10 @@ class Chef
       banner "knife cookbook upload [COOKBOOKS...] (options)"
 
       option :cookbook_path,
-        short: "-o PATH:PATH",
-        long: "--cookbook-path PATH:PATH",
-        description: "A colon-separated path to look for cookbooks in.",
-        proc: lambda { |o| o.split(":") }
+        short: "-o 'PATH:PATH'",
+        long: "--cookbook-path 'PATH:PATH'",
+        description: "A delimited path to search for cookbooks. On Unix the delimiter is ':', on Windows it is ';'.",
+        proc: lambda { |o| o.split(File::PATH_SEPARATOR) }
 
       option :freeze,
         long: "--freeze",
@@ -107,8 +107,7 @@ class Chef
           cookbook_path = config[:cookbook_path].respond_to?(:join) ? config[:cookbook_path].join(", ") : config[:cookbook_path]
           ui.warn("Could not find any cookbooks in your cookbook path: '#{File.expand_path(cookbook_path)}'. Use --cookbook-path to specify the desired path.")
         else
-          begin
-            tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array(cookbooks)
+          Chef::CookbookLoader.copy_to_tmp_dir_from_array(cookbooks) do |tmp_cl|
             tmp_cl.load_cookbooks
             tmp_cl.compile_metadata
             tmp_cl.freeze_versions if config[:freeze]
@@ -127,7 +126,6 @@ class Chef
                   ui.error("Uploading of some of the cookbooks must be failed. Remove cookbook whose version is frozen from your cookbooks repo OR use --force option.")
                   upload_failures += 1
                 rescue SystemExit => e
-                  tmp_cl.unlink!
                   raise exit e.status
                 end
                 ui.info("Uploaded all cookbooks.") if upload_failures == 0
@@ -146,7 +144,6 @@ class Chef
                   ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
                   upload_failures += 1
                 rescue SystemExit => e
-                  tmp_cl.unlink!
                   raise exit e.status
                 end
               end
@@ -164,8 +161,6 @@ class Chef
             unless version_constraints_to_update.empty?
               update_version_constraints(version_constraints_to_update) if config[:environment]
             end
-          ensure
-            tmp_cl.unlink!
           end
         end
       end

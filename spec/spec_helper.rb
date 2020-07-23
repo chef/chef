@@ -116,6 +116,7 @@ RSpec.configure do |config|
   config.include(MockShellout::RSpec)
   config.filter_run focus: true
   config.filter_run_excluding external: true
+  config.raise_on_warning = true
 
   # Explicitly disable :should syntax
   # And set max_formatted_output_length to nil to prevent RSpec from doing truncation.
@@ -125,6 +126,7 @@ RSpec.configure do |config|
   end
   config.mock_with :rspec do |c|
     c.syntax = :expect
+    c.allow_message_expectations_on_nil = false
   end
 
   # Only run these tests on platforms that are also chef workstations
@@ -238,6 +240,11 @@ RSpec.configure do |config|
     Chef::ChefFS::FileSystemCache.instance.reset!
 
     Chef::Config.reset
+
+    Chef::Log.setup!
+
+    Chef::Config[:log_level] = :fatal
+    Chef::Log.level(Chef::Config[:log_level])
 
     # By default, treat deprecation warnings as errors in tests.
     Chef::Config.treat_deprecation_warnings_as_errors(true)

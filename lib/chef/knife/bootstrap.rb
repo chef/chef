@@ -630,9 +630,7 @@ class Chef
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:") do |q|
-              q.echo = false
-            end
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:", echo: false)
           end
 
           opts.merge! force_ssh_password_opts(password)
@@ -646,9 +644,7 @@ class Chef
             raise
           else
             ui.warn("Failed to authenticate #{opts[:user]} to #{server_name} - trying password auth")
-            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:") do |q|
-              q.echo = false
-            end
+            password = ui.ask("Enter password for #{opts[:user]}@#{server_name}:", echo: false)
           end
 
           opts.merge! force_winrm_password_opts(password)
@@ -681,9 +677,7 @@ class Chef
           retry
         elsif config[:use_sudo_password] && (e.reason == :sudo_password_required || e.reason == :bad_sudo_password) && limit < 3
           ui.warn("Failed to authenticate #{conn_options[:user]} to #{server_name} - #{e.message} \n sudo: #{limit} incorrect password attempt")
-          sudo_password = ui.ask("Enter sudo password for #{conn_options[:user]}@#{server_name}:") do |q|
-            q.echo = false
-          end
+          sudo_password = ui.ask("Enter sudo password for #{conn_options[:user]}@#{server_name}:", echo: false)
           limit += 1
           conn_options[:sudo_password] = sudo_password
 

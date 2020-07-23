@@ -366,7 +366,6 @@ shared_examples_for "a configured file resource" do
   include_context "diff disabled"
 
   before do
-    Chef::Log.level = :info
     Chef::Config[:ssl_verify_mode] = :verify_none
   end
 

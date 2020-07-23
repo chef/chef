@@ -76,8 +76,7 @@ class Chef
             raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook.name) unless cookbook.has_metadata_file?
 
             if cookbook
-              begin
-                tmp_cl = Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook])
+              Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook]) do |tmp_cl|
                 tmp_cl.load_cookbooks
                 tmp_cl.compile_metadata
                 tmp_cl.freeze_versions if options[:freeze]
@@ -91,9 +90,6 @@ class Chef
                 with_actual_cookbooks_dir(other.parent.file_path) do
                   uploader.upload_cookbooks
                 end
-
-              ensure
-                tmp_cl.unlink!
               end
             end
           end

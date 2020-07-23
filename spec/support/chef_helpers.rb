@@ -18,14 +18,6 @@ CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
 CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
 
-Chef::Config[:log_level] = :fatal
-Chef::Config[:persistent_queue] = false
-Chef::Config[:file_backup_path] = CHEF_SPEC_BACKUP_PATH
-
-Chef::Log.init(StringIO.new)
-Chef::Log.level(Chef::Config.log_level)
-Chef::Config.solo(false)
-
 def sha256_checksum(path)
   OpenSSL::Digest.hexdigest("SHA256", File.read(path))
 end

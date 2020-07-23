@@ -26,8 +26,9 @@ describe "knife config list-profiles", :workstation do
 
   let(:cmd_args) { [] }
   let(:knife_list_profiles) do
-    knife("config", "list-profiles", *cmd_args, instance_filter: proc {
-      # Clear the stub set up in KnifeSupport.
+    knife("config", "list-profiles", *cmd_args, instance_filter: lambda { |instance|
+      # Fake the failsafe check because this command doesn't actually process knife.rb.
+      $__KNIFE_INTEGRATION_FAILSAFE_CHECK << " ole"
       allow(File).to receive(:file?).and_call_original
     })
   end
@@ -136,6 +137,33 @@ describe "knife config list-profiles", :workstation do
       ----------------------------------------------------------------------------------#
        default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
       *prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
+       qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+    EOH
+  end
+
+  context "with a bad profile as an active profile" do
+    let(:cmd_args) { %w{--profile production} }
+    before { file(".chef/credentials", <<~EOH) }
+      [default]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+
+      [prod]
+      client_name = "testuser"
+      client_key = "testkey.pem"
+      chef_server_url = "https://example.com/organizations/prod"
+
+      [qa]
+      client_name = "qauser"
+      client_key = "~/src/qauser.pem"
+      chef_server_url = "https://example.com/organizations/testorg"
+    EOH
+    it { is_expected.to eq <<~EOH.delete("#") }
+       Profile  Client    Key                  Server                                   #
+       ---------------------------------------------------------------------------------#
+       default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+       prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
        qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
     EOH
   end

@@ -22,12 +22,10 @@ describe Chef::Application do
   before do
     @original_argv = ARGV.dup
     ARGV.clear
-    Chef::Log.logger = Logger.new(StringIO.new)
     @app = Chef::Application.new
     allow(@app).to receive(:trap)
     allow(Dir).to receive(:chdir).and_return(0)
     allow(@app).to receive(:reconfigure)
-    Chef::Log.init(STDERR)
   end
 
   after do
@@ -254,6 +252,10 @@ describe Chef::Application do
       end
 
       context "when log_level is not set" do
+        before do
+          Chef::Config.delete(:log_level)
+        end
+
         it_behaves_like "log_level_is_auto"
       end
 

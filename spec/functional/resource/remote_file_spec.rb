@@ -409,13 +409,7 @@ describe Chef::Resource::RemoteFile do
       it "should not create the file" do
         # This can legitimately raise either Errno::EADDRNOTAVAIL or Errno::ECONNREFUSED
         # in different Ruby versions.
-        old_value = RSpec::Expectations.configuration.on_potential_false_positives
-        RSpec::Expectations.configuration.on_potential_false_positives = :nothing
-        begin
-          expect { resource.run_action(:create) }.to raise_error
-        ensure
-          RSpec::Expectations.configuration.on_potential_false_positives = old_value
-        end
+        expect { resource.run_action(:create) }.to raise_error(SystemCallError)
 
         expect(File).not_to exist(path)
       end

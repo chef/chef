@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 320d9350cdf39abdcc4c37d5bc2971b3c222a0a0
+  revision: f8f202cdffe5a77aed4c4884f302a38be3eabc64
   branch: master
   specs:
-    omnibus (7.0.14)
+    omnibus (7.0.19)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: c40e056b40cfae3f93a02a9ccbd33a1cfa21ed4c
+  revision: 70b006114a9ed20899ef32fedb863ee517a37322
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.339.0)
-    aws-sdk-core (3.103.0)
+    aws-partitions (1.344.0)
+    aws-sdk-core (3.104.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -41,8 +41,8 @@ GEM
     aws-sdk-kms (1.36.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.73.0)
-      aws-sdk-core (~> 3, >= 3.102.1)
+    aws-sdk-s3 (1.75.0)
+      aws-sdk-core (~> 3, >= 3.104.1)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.1)
@@ -224,13 +224,15 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.8)
-    mixlib-shellout (3.0.9)
-    mixlib-shellout (3.0.9-universal-mingw32)
+    mixlib-shellout (3.1.1)
+      chef-utils
+    mixlib-shellout (3.1.1-universal-mingw32)
+      chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.6.6)
-    multi_json (1.14.1)
+    multi_json (1.15.0)
     multipart-post (2.1.1)
     necromancer (0.5.1)
     net-scp (3.0.0)
@@ -295,7 +297,7 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.5.2)
+    test-kitchen (2.5.3)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (~> 1.0, >= 1.0.11)
@@ -336,7 +338,7 @@ GEM
       tty-cursor (~> 0.7)
       tty-screen (~> 0.7)
       wisper (~> 2.0.0)
-    tty-screen (0.8.0)
+    tty-screen (0.8.1)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)

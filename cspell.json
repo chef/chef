@@ -302,6 +302,7 @@
     "cpio",
     "cpjones",
     "CPPFLAGS",
+    "Crae",
     "Cragun",
     "CREAT",
     "createhomedir",
@@ -634,6 +635,7 @@
     "gettype",
     "gids",
     "Gilles",
+    "gitkeep",
     "glibc",
     "globalstate",
     "globbing",
@@ -1605,6 +1607,7 @@
     "rpmvercmp",
     "rquery",
     "rsakey",
+    "RSAT",
     "rspec",
     "rstrip",
     "rsync",
@@ -1659,6 +1662,7 @@
     "scutil",
     "secedit",
     "secoption",
+    "secopts",
     "secp",
     "securerandom",
     "SECURITYPOLICY",
@@ -1985,6 +1989,8 @@
     "unformatter",
     "Unformatter",
     "unhold",
+    "unicast",
+    "Unicast",
     "unignored",
     "uninst",
     "unintuitive",
@@ -2175,7 +2181,8 @@
     "zolo",
     "zombiejs",
     "Zuazo",
-    "Zygmuntowicz"
+    "Zygmuntowicz",
+    "zypp"
   ],
   // flagWords - list of words to be always considered incorrect
   // This is useful for offensive words and common spelling errors.

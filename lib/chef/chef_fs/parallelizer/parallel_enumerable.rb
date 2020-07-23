@@ -145,7 +145,7 @@ class Chef
 
         def each_with_exceptions_unordered
           if @each_running
-            raise "each() called on parallel enumerable twice simultaneously!  Bad mojo"
+            raise "each() called on parallel enumerable twice simultaneously! Bad mojo"
           end
 
           @each_running = true

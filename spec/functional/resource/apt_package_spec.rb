@@ -1,4 +1,3 @@
-# encoding: UTF-8
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.

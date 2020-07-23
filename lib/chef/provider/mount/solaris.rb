@@ -1,4 +1,3 @@
-# Encoding: utf-8
 # Author:: Hugo Fichter
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Author:: Joshua Timberman (<joshua@chef.io>)

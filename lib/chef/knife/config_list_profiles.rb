@@ -32,6 +32,10 @@ class Chef
         description: "Ignore the current config.rb/knife.rb configuration.",
         default: false
 
+      def configure_chef
+        apply_computed_config
+      end
+
       def run
         credentials_data = self.class.config_loader.parse_credentials_file
         if credentials_data.nil? || credentials_data.empty?
@@ -72,7 +76,6 @@ class Chef
         # Try to reset the config.
         unless config[:ignore_knife_rb]
           Chef::Config.reset
-          Chef::WorkstationConfigLoader.new(config[:config_file], Chef::Log, profile: config[:profile]).load
           apply_computed_config
         end
 

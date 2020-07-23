@@ -1861,12 +1861,10 @@ describe Chef::Knife::Bootstrap do
           let(:connection_protocol) { "ssh" }
 
           it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password" do
-            question_mock = double("question")
             expect(knife).to receive(:do_connect).and_raise(expected_error_password_prompt)
             expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
-            expect(knife.ui).to receive(:ask).and_yield(question_mock).and_return("newpassword")
+            expect(knife.ui).to receive(:ask).and_return("newpassword")
             # Ensure that we set echo off to prevent showing password on the screen
-            expect(question_mock).to receive(:echo=).with false
             expect(knife).to receive(:do_connect) do |opts|
               expect(opts[:password]).to eq "newpassword"
             end
@@ -1878,12 +1876,10 @@ describe Chef::Knife::Bootstrap do
           let(:connection_protocol) { "winrm" }
 
           it "warns, prompts for password, then reconnects with a password-enabled configuration using the new password for" do
-            question_mock = double("question")
             expect(knife).to receive(:do_connect).and_raise(expected_error_password_prompt_winrm)
             expect(knife.ui).to receive(:warn).with(/Failed to auth.*/)
-            expect(knife.ui).to receive(:ask).and_yield(question_mock).and_return("newpassword")
+            expect(knife.ui).to receive(:ask).and_return("newpassword")
             # Ensure that we set echo off to prevent showing password on the screen
-            expect(question_mock).to receive(:echo=).with false
             expect(knife).to receive(:do_connect) do |opts|
               expect(opts[:password]).to eq "newpassword"
             end
