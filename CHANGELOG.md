@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.4 -->
-## [v15.13.4](https://github.com/chef/chef/tree/v15.13.4) (2020-07-15)
+<!-- latest_release 15.13.5 -->
+## [v15.13.5](https://github.com/chef/chef/tree/v15.13.5) (2020-07-23)
 
 #### Merged Pull Requests
-- Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50))
+- Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50)) <!-- 15.13.5 -->
 - Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50)) <!-- 15.13.4 -->
 - Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50)) <!-- 15.13.3 -->
 - Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50)) <!-- 15.13.2 -->
