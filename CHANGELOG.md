@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.29 -->
-## [v16.3.29](https://github.com/chef/chef/tree/v16.3.29) (2020-07-23)
+<!-- latest_release 16.3.30 -->
+## [v16.3.30](https://github.com/chef/chef/tree/v16.3.30) (2020-07-23)
 
 #### Merged Pull Requests
-- Fix chef-resource-inspector to handle classes in equal_to [#10197](https://github.com/chef/chef/pull/10197) ([tas50](https://github.com/tas50))
+- Update the examples to match the actual usage of the windows_firewall_profile resource. [#10198](https://github.com/chef/chef/pull/10198) ([chef-davin](https://github.com/chef-davin))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the examples to match the actual usage of the windows_firewall_profile resource. [#10198](https://github.com/chef/chef/pull/10198) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.30 -->
 - Fix chef-resource-inspector to handle classes in equal_to [#10197](https://github.com/chef/chef/pull/10197) ([tas50](https://github.com/tas50)) <!-- 16.3.29 -->
 - Update ruby cleanup omnibus software again [#10196](https://github.com/chef/chef/pull/10196) ([tas50](https://github.com/tas50)) <!-- 16.3.28 -->
 - Update the ruby-cleanup omnibus-software configs [#10195](https://github.com/chef/chef/pull/10195) ([tas50](https://github.com/tas50)) <!-- 16.3.27 -->
