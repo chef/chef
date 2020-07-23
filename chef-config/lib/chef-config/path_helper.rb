@@ -55,18 +55,24 @@ module ChefConfig
       end
     end
 
+    def self.path_separator_regex
+      @path_separator_regex ||=
+        begin
+          path_separator_regex = Regexp.escape(File::SEPARATOR)
+          unless path_separator == File::SEPARATOR
+            path_separator_regex << Regexp.escape(path_separator)
+          end
+          path_separator_regex
+        end
+    end
+
+    TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
+    LEADING_SLASHES_REGEX = /^[#{path_separator_regex}]+/.freeze
+
     def self.join(*args)
-      path_separator_regex = Regexp.escape(File::SEPARATOR)
-      unless path_separator == File::SEPARATOR
-        path_separator_regex << Regexp.escape(path_separator)
-      end
-
-      trailing_slashes = /[#{path_separator_regex}]+$/
-      leading_slashes = /^[#{path_separator_regex}]+/
-
       args.flatten.inject do |joined_path, component|
-        joined_path = joined_path.sub(trailing_slashes, "")
-        component = component.sub(leading_slashes, "")
+        joined_path = joined_path.sub(TRAILING_SLASHES_REGEX, "")
+        component = component.sub(LEADING_SLASHES_REGEX, "")
         joined_path + "#{path_separator}#{component}"
       end
     end
