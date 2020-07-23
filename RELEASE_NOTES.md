@@ -59,7 +59,7 @@ The `macos_user_defaults` has received a ground-up refactoring with new actions,
 - Replaced the existing non-functional `global` property with a new default for the `domain` property. To set a key/value pair on the `NSGlobalDomain` domain, you can either set that value explicitly or just skip `domain` property entirely and Chef Infra Client will default to `NSGlobalDomain`. The existing property has been marked as deprecated and we will ship a Cookstyle rule to detect cookbooks using this property in the future.
 - Fixed the `type` property to only accept valid inputs. Previously typos or otherwise incorrect values would just be ignored resulting in unexpected behavior. This may cause failures in your codebase if you previously used incorrect values. We will be shipping a Cookstyle rule to detect and correct these values in the future.
 - Added a new `delete` action to allow users to remove a key from a domain.
-- Added a new host property that lets you set per-host values. If you set this to :current it sets the -currentHost flag.
+- Added a new `host` property that lets you set per-host values. If you set this to `:current` it sets the -currentHost flag.
 
 ### windows_dns_record
 
