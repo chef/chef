@@ -51,7 +51,7 @@ class Chef
       option :cert_passphrase,
         short: "-cp PASSWORD",
         long: "--cert-passphrase PASSWORD",
-        description: "Password for certificate."
+        description: "Passphrase for certificate."
 
       def get_cert_passphrase
         print "Enter given certificate's passphrase (empty for no passphrase):"
