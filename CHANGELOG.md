@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.32 -->
-## [v16.3.32](https://github.com/chef/chef/tree/v16.3.32) (2020-07-24)
+<!-- latest_release 16.3.33 -->
+## [v16.3.33](https://github.com/chef/chef/tree/v16.3.33) (2020-07-24)
 
 #### Merged Pull Requests
-- Reduce path_helper allocations [#10200](https://github.com/chef/chef/pull/10200) ([lamont-granquist](https://github.com/lamont-granquist))
+- Rename Attribute Whitelist/Blacklist to Allowed/Blocked [#10199](https://github.com/chef/chef/pull/10199) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Rename Attribute Whitelist/Blacklist to Allowed/Blocked [#10199](https://github.com/chef/chef/pull/10199) ([tas50](https://github.com/tas50)) <!-- 16.3.33 -->
 - Reduce path_helper allocations [#10200](https://github.com/chef/chef/pull/10200) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.32 -->
 - Implement default_paths API [#10193](https://github.com/chef/chef/pull/10193) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.31 -->
 - Update the examples to match the actual usage of the windows_firewall_profile resource. [#10198](https://github.com/chef/chef/pull/10198) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.30 -->
