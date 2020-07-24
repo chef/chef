@@ -30,7 +30,6 @@ class Chef
         require_relative "windows_cert_install"
         require_relative "windows_listener_create"
         require_relative "winrm_session"
-        require "readline"
         require_relative "../search/query"
       end
 
