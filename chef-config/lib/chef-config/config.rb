@@ -313,11 +313,8 @@ module ChefConfig
     # Defaults to <chef_repo_path>/users.
     default(:user_path) { derive_path_from_chef_repo_path("users") }.writes_value { |path| expand_relative_paths(path) }
 
-    # DEPRECATED
+    # Turn on "path sanity" by default.
     default :enforce_path_sanity, false
-
-    # Enforce default paths by default for all APIs, not just the default internal shell_out
-    default :enforce_default_paths, false
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     default :formatter, "null"

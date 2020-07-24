@@ -20,7 +20,7 @@
 
 require_relative "config"
 require_relative "mixin/params_validate"
-require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
+require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
 require_relative "log"
 require_relative "deprecated"
 require_relative "server_api"
@@ -250,7 +250,7 @@ class Chef
         logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
         logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
-        ENV["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths if Chef::Config[:enforce_default_paths] || Chef::Config[:enforce_path_sanity]
+        ENV["PATH"] = ChefUtils::DSL::PathSanity.sanitized_path if Chef::Config[:enforce_path_sanity]
 
         if Chef::Config.target_mode?
           get_ohai_data_remotely
