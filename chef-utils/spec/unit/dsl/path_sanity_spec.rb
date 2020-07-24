@@ -17,9 +17,9 @@
 
 require "spec_helper"
 
-RSpec.describe ChefUtils::DSL::PathSanity do
-  class PathSanityTestClass
-    include ChefUtils::DSL::PathSanity
+RSpec.describe ChefUtils::DSL::DefaultPaths do
+  class DefaultPathsTestClass
+    include ChefUtils::DSL::DefaultPaths
   end
 
   before do
@@ -32,26 +32,26 @@ RSpec.describe ChefUtils::DSL::PathSanity do
       allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
-    let(:test_instance) { PathSanityTestClass.new }
+    let(:test_instance) { DefaultPathsTestClass.new }
 
     it "works with no path" do
       env = {}
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
     it "works with nil path" do
       env = { "PATH" => nil }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
     it "works with empty path" do
       env = { "PATH" => "" }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
     end
 
-    it "appends the sane_paths to the end of the path, preserving any that already exist, in the same order" do
+    it "appends the default_paths to the end of the path, preserving any that already exist, in the same order" do
       env = { "PATH" => "/bin:/opt/app/bin:/sbin" }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/bin:/opt/app/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir}:#{RbConfig::CONFIG["bindir"]}:/bin:/opt/app/bin:/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin")
     end
   end
 
@@ -60,26 +60,26 @@ RSpec.describe ChefUtils::DSL::PathSanity do
       allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
-    let(:test_instance) { PathSanityTestClass.new }
+    let(:test_instance) { DefaultPathsTestClass.new }
 
     it "works with no path" do
       env = {}
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
     end
 
     it "works with nil path" do
       env = { "PATH" => nil }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
     end
 
     it "works with empty path" do
       env = { "PATH" => "" }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]}")
     end
 
     it "prepends to an existing path" do
       env = { "PATH" => '%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\\' }
-      expect(test_instance.sanitized_path(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\")
+      expect(test_instance.default_paths(env)).to eql("#{Gem.bindir};#{RbConfig::CONFIG["bindir"]};%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\")
     end
   end
 end

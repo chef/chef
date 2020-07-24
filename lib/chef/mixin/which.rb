@@ -16,14 +16,14 @@
 # limitations under the License.
 
 require "chef-utils/dsl/which" unless defined?(ChefUtils::DSL::Which)
-require "chef-utils/dsl/path_sanity" unless defined?(ChefUtils::DSL::PathSanity)
+require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
 require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module Mixin
     module Which
       include ChefUtils::DSL::Which
-      include ChefUtils::DSL::PathSanity
+      include ChefUtils::DSL::DefaultPaths
       include ChefUtilsWiring
 
       private
@@ -31,8 +31,8 @@ class Chef
       # we dep-inject path sanity into this API for historical reasons
       #
       # @api private
-      def __extra_path
-        __sane_paths
+      def __extra_paths
+        __default_paths
       end
     end
   end
