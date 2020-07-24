@@ -202,8 +202,8 @@ class Chef
               user: resolve_winrm_user,
               password: config[:winrm_password],
               port: config[:winrm_port],
-              operation_timeout: resolve_winrm_session_timeout,
-              basic_auth_only: resolve_winrm_basic_auth,
+              operation_timeout: winrm_session_timeout_secs,
+              basic_auth_only: winrm_basic_auth?,
               disable_sspi: resolve_winrm_disable_sspi,
               transport: resolve_winrm_transport,
               no_ssl_peer_verification: no_ssl_peer_verification?,
@@ -228,7 +228,7 @@ class Chef
 
             # Prefixing with '.\' when using negotiate
             # to auth user against local machine domain
-            if resolve_winrm_basic_auth ||
+            if winrm_basic_auth? ||
                 resolve_winrm_transport == :kerberos ||
                 user.include?("\\") ||
                 user.include?("@")
@@ -238,12 +238,12 @@ class Chef
             end
           end
 
-          def resolve_winrm_session_timeout
+          def winrm_session_timeout_secs
             # 30 min (Default) OperationTimeout for long bootstraps fix for KNIFE_WINDOWS-8
             config[:session_timeout].to_i * 60 if config[:session_timeout]
           end
 
-          def resolve_winrm_basic_auth
+          def winrm_basic_auth?
             config[:winrm_authentication_protocol] == "basic"
           end
 
