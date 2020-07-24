@@ -65,14 +65,11 @@ class Chef
             @list = if config[:manual]
                       @name_args[0].split(" ")
                     else
-                      r = []
                       q = Chef::Search::Query.new
                       @action_nodes = q.search(:node, @name_args[0])[0]
-                      @action_nodes.each do |item|
-                        i = extract_nested_value(item, config[:attribute])
-                        r.push(i) unless i.nil?
-                      end
-                      r
+                      @action_nodes.map do |item|
+                        extract_nested_value(item, config[:attribute])
+                      end.compact
                     end
 
             if @list.length == 0
