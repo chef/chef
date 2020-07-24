@@ -55,16 +55,7 @@ module ChefConfig
       end
     end
 
-    def self.path_separator_regex
-      @path_separator_regex ||=
-        begin
-          path_separator_regex = Regexp.escape(File::SEPARATOR)
-          unless path_separator == File::SEPARATOR
-            path_separator_regex << Regexp.escape(path_separator)
-          end
-          path_separator_regex
-        end
-    end
+    path_seperator_regex = [Regexp.escape(File::SEPARATOR), Regexp.escape(path_separator)].uniq.join
 
     TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
     LEADING_SLASHES_REGEX = /^[#{path_separator_regex}]+/.freeze
