@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.35 -->
-## [v16.3.35](https://github.com/chef/chef/tree/v16.3.35) (2020-07-24)
+<!-- latest_release 16.3.36 -->
+## [v16.3.36](https://github.com/chef/chef/tree/v16.3.36) (2020-07-24)
 
 #### Merged Pull Requests
-- Bump Ohai to 16.3.0 [#10203](https://github.com/chef/chef/pull/10203) ([tas50](https://github.com/tas50))
+- Remove bad filter from git spec tests [#10204](https://github.com/chef/chef/pull/10204) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove bad filter from git spec tests [#10204](https://github.com/chef/chef/pull/10204) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.36 -->
 - Bump Ohai to 16.3.0 [#10203](https://github.com/chef/chef/pull/10203) ([tas50](https://github.com/tas50)) <!-- 16.3.35 -->
 - Fix default_paths patch [#10202](https://github.com/chef/chef/pull/10202) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.34 -->
 - Rename Attribute Whitelist/Blacklist to Allowed/Blocked [#10199](https://github.com/chef/chef/pull/10199) ([tas50](https://github.com/tas50)) <!-- 16.3.33 -->
