@@ -429,6 +429,7 @@ class Chef
       def do_selinux(recursive = false)
         if resource_updated? && Chef::Config[:enable_selinux_file_permission_fixup]
           if selinux_enabled?
+            puts "SELINUX ENABLED"
             converge_by("restore selinux security context") do
               restore_security_context(::File.realpath(new_resource.path), recursive)
             end

@@ -53,7 +53,9 @@ class Chef
           restorecon_flags << file_path
           Chef::Log.trace("Restoring selinux security content with #{restorecon_path}")
           shell_out!(restorecon_path, restorecon_flags)
+          puts "RESTORECON RAN FINE WTF?"
         else
+          puts "COULD NOT FIND RESTORECON!"
           Chef::Log.warn "Can not find 'restorecon' on the system. Skipping selinux security context restore."
         end
       end
@@ -72,16 +74,21 @@ class Chef
 
       def check_selinux_enabled?
         if selinuxenabled_path
+          puts "FOUND SELINUXENABLED PATH"
           cmd = shell_out!(selinuxenabled_path, returns: [0, 1])
           case cmd.exitstatus
           when 1
+            puts "SELINUXENABLED PATH FALSE"
             false
           when 0
+            puts "SELINUXENABLED PATH TRUE"
             true
           else
+            puts "SELINUXENABLED PATH WTF"
             raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
+          puts "NO SELINUXENABLED PATH"
           # We assume selinux is not enabled if selinux utils are not
           # installed.
           false
