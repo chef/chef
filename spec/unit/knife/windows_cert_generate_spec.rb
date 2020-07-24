@@ -55,7 +55,7 @@ describe Chef::Knife::WindowsCertGenerate do
       allow(@certgen).to receive(:generate_certificate)
       expect(@certgen.ui).to receive(:info).with("Generated Certificates:")
       expect(@certgen.ui).to receive(:info).with("- winrmcert.pfx - PKCS12 format key pair. Contains public and private keys, can be used with an SSL server.")
-      expect(@certgen.ui).to receive(:info).with("- winrmcert.b64 - Base64 encoded PKCS12 key pair. Contains public and private keys, used by some cloud provider API's to configure SSL servers.")
+      expect(@certgen.ui).to receive(:info).with("- winrmcert.b64 - Base64 encoded PKCS12 key pair. Contains public and private keys, used by some cloud provider APIs to configure SSL servers.")
       expect(@certgen.ui).to receive(:info).with("- winrmcert.pem - Base64 encoded public certificate only. Required by the client to connect to the server.")
       expect(@certgen.ui).to receive(:info).with("Certificate Thumbprint: TEST_THUMBPRINT")
     end
