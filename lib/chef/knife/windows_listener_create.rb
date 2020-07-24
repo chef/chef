@@ -62,47 +62,46 @@ class Chef
       def run
         STDOUT.sync = STDERR.sync = true
 
-        if Chef::Platform.windows?
-          begin
-            if config[:cert_install]
-              config[:cert_passphrase] = get_cert_passphrase unless config[:cert_passphrase]
-              result = `powershell.exe -Command " '#{config[:cert_passphrase]}' | certutil  -importPFX '#{config[:cert_install]}' AT_KEYEXCHANGE"`
-              if $?.exitstatus
-                ui.info "Certificate installed to Certificate Store"
-                result = `powershell.exe -Command " echo (Get-PfxCertificate #{config[:cert_install]}).thumbprint "`
-                ui.info "Certificate Thumbprint: #{result}"
-                config[:cert_thumbprint] = result.strip
-              else
-                ui.error "Error installing certificate to Certificate Store"
-                ui.error result
-                exit 1
-              end
-            end
+        return unless Chef::Platform.windows?
 
-            unless config[:cert_thumbprint]
-              ui.error "Please specify the --cert-thumbprint"
-              exit 1
-            end
-
-            result = `winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="#{config[:hostname]}";CertificateThumbprint="#{config[:cert_thumbprint]}";Port="#{config[:port]}"}`
-            Chef::Log.debug result
-
-            if $?.exitstatus == 0
-              ui.info "WinRM listener created with Port: #{config[:port]} and CertificateThumbprint: #{config[:cert_thumbprint]}"
+        begin
+          if config[:cert_install]
+            config[:cert_passphrase] = get_cert_passphrase unless config[:cert_passphrase]
+            result = `powershell.exe -Command " '#{config[:cert_passphrase]}' | certutil  -importPFX '#{config[:cert_install]}' AT_KEYEXCHANGE"`
+            if $?.exitstatus
+              ui.info "Certificate installed to Certificate Store"
+              result = `powershell.exe -Command " echo (Get-PfxCertificate #{config[:cert_install]}).thumbprint "`
+              ui.info "Certificate Thumbprint: #{result}"
+              config[:cert_thumbprint] = result.strip
             else
-              ui.error "Error creating WinRM listener. use -VV for more details."
+              ui.error "Error installing certificate to Certificate Store"
+              ui.error result
               exit 1
             end
-
-          rescue => e
-            puts "ERROR: + #{e}"
           end
-        else
-          ui.error "WinRM listener can be created on Windows system only"
-          exit 1
-        end
-      end
 
+          unless config[:cert_thumbprint]
+            ui.error "Please specify the --cert-thumbprint"
+            exit 1
+          end
+
+          result = `winrm create winrm/config/Listener?Address=*+Transport=HTTPS @{Hostname="#{config[:hostname]}";CertificateThumbprint="#{config[:cert_thumbprint]}";Port="#{config[:port]}"}`
+          Chef::Log.debug result
+
+          if $?.exitstatus == 0
+            ui.info "WinRM listener created with Port: #{config[:port]} and CertificateThumbprint: #{config[:cert_thumbprint]}"
+          else
+            ui.error "Error creating WinRM listener. use -VV for more details."
+            exit 1
+          end
+
+        rescue => e
+          puts "ERROR: + #{e}"
+        end
+        else
+        ui.error "WinRM listener can be created on Windows system only"
+        exit 1
+      end
     end
   end
 end

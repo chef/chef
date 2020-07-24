@@ -97,7 +97,7 @@ class Chef
         cert.add_extension(ef.create_extension("subjectKeyIdentifier", "hash", false))
         cert.add_extension(ef.create_extension("authorityKeyIdentifier", "keyid:always", false))
         cert.add_extension(ef.create_extension("extendedKeyUsage", "1.3.6.1.5.5.7.3.1", false))
-        cert.sign(rsa_key, OpenSSL::Digest::SHA1.new)
+        cert.sign(rsa_key, OpenSSL::Digest.new("SHA1"))
         @thumbprint = OpenSSL::Digest::SHA1.new(cert.to_der)
         cert
       end
