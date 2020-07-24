@@ -49,7 +49,7 @@ class Chef
               exit 1
             end
 
-            warn_no_ssl_peer_verification if resolve_no_ssl_peer_verification
+            warn_no_ssl_peer_verification if no_ssl_peer_verification?
           end
 
           # Overrides Chef::Knife#configure_session, as that code is tied to the SSH implementation
@@ -206,7 +206,7 @@ class Chef
               basic_auth_only: resolve_winrm_basic_auth,
               disable_sspi: resolve_winrm_disable_sspi,
               transport: resolve_winrm_transport,
-              no_ssl_peer_verification: resolve_no_ssl_peer_verification,
+              no_ssl_peer_verification: no_ssl_peer_verification?,
               ssl_peer_fingerprint: resolve_ssl_peer_fingerprint,
               shell: config[:winrm_shell],
               codepage: config[:winrm_codepage],
@@ -266,7 +266,7 @@ class Chef
             transport
           end
 
-          def resolve_no_ssl_peer_verification
+          def no_ssl_peer_verification?
             config[:ca_trust_file].nil? && config[:winrm_ssl_verify_mode] == :verify_none && resolve_winrm_transport == :ssl
           end
 
