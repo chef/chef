@@ -65,12 +65,11 @@ class Chef
       end
 
       def prompt_for_passphrase
-        passphrase = ""
         loop do
-          print "Passphrases do not match. Try again.\n" unless passphrase.empty?
           passphrase = ui.ask("Enter certificate passphrase (empty for no passphrase):", echo: false)
           confirm_passphrase = ui.ask("Confirm the passphrase:", echo: false)
           break if passphrase == confirm_passphrase
+          print "Passphrases do not match. Try again.\n" unless passphrase.empty?
         end
       end
 
