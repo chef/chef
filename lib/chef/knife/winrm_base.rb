@@ -97,7 +97,7 @@ class Chef
 
           option :ssl_peer_fingerprint,
             long: "--ssl-peer-fingerprint FINGERPRINT",
-            description: "ssl Cert Fingerprint to bypass normal cert chain checks"
+            description: "SSL Cert Fingerprint to bypass normal cert chain checks"
 
           option :winrm_authentication_protocol,
             long: "--winrm-authentication-protocol AUTHENTICATION_PROTOCOL",
@@ -112,7 +112,7 @@ class Chef
 
           option :winrm_codepage,
             long: "--winrm-codepage Codepage",
-            description: "The codepage to use for the winrm cmd shell",
+            description: "The codepage to use for the WinRM command shell",
             default: 65001
         end
       end
