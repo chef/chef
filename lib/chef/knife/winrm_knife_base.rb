@@ -199,7 +199,7 @@ class Chef
             config[:winrm_port] ||= ( config[:winrm_transport] == "ssl" ) ? "5986" : "5985"
 
             @session_opts = {
-              user: resolve_winrm_user,
+              user: winrm_user,
               password: config[:winrm_password],
               port: config[:winrm_port],
               operation_timeout: winrm_session_timeout_secs,
@@ -224,18 +224,16 @@ class Chef
             @session_opts[:ca_trust_path] = config[:ca_trust_file] if config[:ca_trust_file]
           end
 
-          def resolve_winrm_user
-            user = config[:winrm_user]
-
+          def winrm_user
             # Prefixing with '.\' when using negotiate
             # to auth user against local machine domain
             if winrm_basic_auth? ||
                 resolve_winrm_transport == :kerberos ||
-                user.include?("\\") ||
-                user.include?("@")
-              user
+                config[:winrm_user].include?("\\") ||
+                config[:winrm_user].include?("@")
+              config[:winrm_user]
             else
-              ".\\#{user}"
+              ".\\#{config[:winrm_user]}"
             end
           end
 
