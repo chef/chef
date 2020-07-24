@@ -212,7 +212,7 @@ class Chef
               codepage: config[:winrm_codepage],
             }
 
-            if @session_opts[:user] && (not @session_opts[:password])
+            if @session_opts[:user] && @session_opts[:password].nil?
               @session_opts[:password] = config[:winrm_password] = get_password
             end
 
