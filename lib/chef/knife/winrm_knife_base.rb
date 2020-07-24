@@ -188,8 +188,7 @@ class Chef
           def session_from_list
             @list.each do |item|
               Chef::Log.debug("Adding #{item}")
-              @session_opts[:host] = item
-              create_winrm_session(@session_opts)
+              create_winrm_session(@session_opts.merge(host: item))
             end
           end
 
