@@ -66,16 +66,12 @@ class Chef
 
       def prompt_for_passphrase
         passphrase = ""
-        begin
+        loop do
           print "Passphrases do not match. Try again.\n" unless passphrase.empty?
-          print "Enter certificate passphrase (empty for no passphrase):"
-          passphrase = STDIN.gets
-          return passphrase.strip if passphrase == "\n"
-
-          print "Enter same passphrase again:"
-          confirm_passphrase = STDIN.gets
-        end until passphrase == confirm_passphrase
-        passphrase.strip
+          passphrase = ui.ask("Enter certificate passphrase (empty for no passphrase):", echo: false)
+          confirm_passphrase = ui.ask("Confirm the passphrase:", echo: false)
+          break if passphrase == confirm_passphrase
+        end
       end
 
       def generate_certificate(rsa_key)
