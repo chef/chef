@@ -134,7 +134,7 @@ class Chef
           ui.info "- #{filename}.pem - Base64 encoded public certificate only. Required by the client to connect to the server."
           ui.info "Certificate Thumbprint: #{@thumbprint.to_s.upcase}"
         rescue => e
-          puts "ERROR: + #{e}"
+          ui.fatal!("Failed to generate certificates: #{e}")
         end
       end
 

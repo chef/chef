@@ -56,7 +56,7 @@ class Chef
           end
           Chef::Log.debug "#{result}"
         rescue => e
-          puts "ERROR: + #{e}"
+          ui.fatal!("Failed to add certificate to the Windows Certificate Store: #{e}")
         end
       end
     end

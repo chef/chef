@@ -98,7 +98,7 @@ class Chef
           end
 
         rescue => e
-          puts "ERROR: + #{e}"
+          ui.fatal!("Failed to create WinRM listener: #{e}")
         end
       end
     end
