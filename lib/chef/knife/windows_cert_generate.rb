@@ -125,8 +125,6 @@ class Chef
       end
 
       def run
-        STDOUT.sync = STDERR.sync = true
-
         # takes user specified first cli value as a destination file path for generated cert.
         file_path = @name_args.empty? ? config[:output_file].sub(/\.(\w+)$/, "") : @name_args.first
 
