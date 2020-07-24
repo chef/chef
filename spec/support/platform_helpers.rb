@@ -193,8 +193,6 @@ def supports_cloexec?
   Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
 end
 
-DEV_NULL = windows? ? "NUL" : "/dev/null"
-
 def selinux_enabled?
   # This code is currently copied from lib/chef/util/selinux to make
   # specs independent of product.
