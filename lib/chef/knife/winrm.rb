@@ -54,33 +54,6 @@ class Chef
           exit_status
         end
       end
-
-      private
-
-      # Present the prompt and read a single line from the console. It also
-      # detects ^D and returns "exit" in that case. Adds the input to the
-      # history, unless the input is empty. Loops repeatedly until a non-empty
-      # line is input.
-      def read_line
-        loop do
-          command = reader.readline("#{ui.color("knife-winrm>", :bold)} ", true)
-
-          if command.nil?
-            command = "exit"
-            puts(command)
-          else
-            command.strip!
-          end
-
-          unless command.empty?
-            return command
-          end
-        end
-      end
-
-      def reader
-        Readline
-      end
     end
   end
 end
