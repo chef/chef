@@ -34,8 +34,6 @@ class Chef
       end
 
       def run
-        STDOUT.sync = STDERR.sync = true
-
         unless ChefUtils.windows?
           ui.error "Certificate can be installed on Windows system only"
           exit 1
