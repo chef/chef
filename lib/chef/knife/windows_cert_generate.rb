@@ -69,6 +69,7 @@ class Chef
           passphrase = ui.ask("Enter certificate passphrase (empty for no passphrase):", echo: false)
           confirm_passphrase = ui.ask("Confirm the passphrase:", echo: false)
           break if passphrase == confirm_passphrase
+
           print "Passphrases do not match. Try again.\n" unless passphrase.empty?
         end
       end
@@ -99,8 +100,8 @@ class Chef
 
       def write_certificate_to_file(cert, file_path, rsa_key)
         File.open(file_path + ".pem", "wb") { |f| f.print cert.to_pem }
-        config[:cert_passphrase] = prompt_for_passphrase unless config[:cert_passphrase]
-        pfx = OpenSSL::PKCS12.create("#{config[:cert_passphrase]}", "winrmcert", rsa_key, cert)
+        passphrase = config[:cert_passphrase] || prompt_for_passphrase
+        pfx = OpenSSL::PKCS12.create("#{passphrase}", "winrmcert", rsa_key, cert)
         File.open(file_path + ".pfx", "wb") { |f| f.print pfx.to_der }
         File.open(file_path + ".b64", "wb") { |f| f.print Base64.strict_encode64(pfx.to_der) }
       end
@@ -128,7 +129,7 @@ class Chef
         file_path = @name_args.empty? ? config[:output_file].sub(/\.(\w+)$/, "") : @name_args.first
 
         # check if certs already exists at given file path
-        certificates_already_exist? file_path
+        certificates_already_exist?(file_path)
 
         begin
           filename = File.basename(file_path)
