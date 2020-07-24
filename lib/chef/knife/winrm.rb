@@ -47,7 +47,7 @@ class Chef
         STDOUT.sync = STDERR.sync = true
 
         configure_session
-        exit_status = execute_remote_command
+        exit_status = run_command(@name_args[1..-1].join(" "))
         if exit_status != 0
           exit exit_status
         else
@@ -55,46 +55,7 @@ class Chef
         end
       end
 
-      def execute_remote_command
-        case @name_args[1]
-        when "interactive"
-          interactive
-        else
-          run_command(@name_args[1..-1].join(" "))
-        end
-      end
-
       private
-
-      def interactive
-        puts "WARN: Deprecated functionality. This will not be supported in future knife-windows releases."
-        puts "Connected to #{ui.list(session.servers.collect { |s| ui.color(s.host, :cyan) }, :inline, " and ")}"
-        puts
-        puts "To run a command on a list of servers, do:"
-        puts "  on SERVER1 SERVER2 SERVER3; COMMAND"
-        puts "  Example: on latte foamy; echo foobar"
-        puts
-        puts "To exit interactive mode, use 'quit!'"
-        puts
-        loop do
-          command = read_line
-          case command
-          when "quit!"
-            puts "Bye!"
-            break
-          when /^on (.+?); (.+)$/
-            raw_list = $1.split(" ")
-            server_list = []
-            @winrm_sessions.each do |session_server|
-              server_list << session_server if raw_list.include?(session_server.host)
-            end
-            command = $2
-            relay_winrm_command(command, server_list)
-          else
-            relay_winrm_command(command)
-          end
-        end
-      end
 
       # Present the prompt and read a single line from the console. It also
       # detects ^D and returns "exit" in that case. Adds the input to the
