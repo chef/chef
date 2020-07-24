@@ -29,7 +29,7 @@ class Chef
       FAILED_NOT_BASIC_HINT ||= <<~EOS
         Hint: Make sure to prefix domain usernames with the correct domain name.
         Hint: Local user names should be prefixed with computer name or IP address.
-        EXAMPLE: my_domain\\user_namer
+        EXAMPLE: my_domain\\user_name
       EOS
 
       def self.included(includer)
