@@ -63,7 +63,10 @@ class Chef
       def run
         STDOUT.sync = STDERR.sync = true
 
-        return unless ChefUtils.windows?
+        unless ChefUtils.windows?
+          ui.error "WinRM listener can be created on Windows system only"
+          exit 1
+        end
 
         begin
           if config[:cert_install]
@@ -99,9 +102,6 @@ class Chef
         rescue => e
           puts "ERROR: + #{e}"
         end
-        else
-        ui.error "WinRM listener can be created on Windows system only"
-        exit 1
       end
     end
   end

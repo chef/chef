@@ -38,7 +38,10 @@ class Chef
       def run
         STDOUT.sync = STDERR.sync = true
 
-        return unless ChefUtils.windows?
+        unless ChefUtils.windows?
+          ui.error "Certificate can be installed on Windows system only"
+          exit 1
+        end
 
         if @name_args.empty?
           ui.error "Please specify the certificate path. e.g-  'knife windows cert install <path>"
@@ -59,9 +62,6 @@ class Chef
         rescue => e
           puts "ERROR: + #{e}"
         end
-        else
-        ui.error "Certificate can be installed on Windows system only"
-        exit 1
       end
     end
   end
