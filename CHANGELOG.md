@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.31 -->
-## [v16.3.31](https://github.com/chef/chef/tree/v16.3.31) (2020-07-24)
+<!-- latest_release 16.3.32 -->
+## [v16.3.32](https://github.com/chef/chef/tree/v16.3.32) (2020-07-24)
 
 #### Merged Pull Requests
-- Implement default_paths API [#10193](https://github.com/chef/chef/pull/10193) ([lamont-granquist](https://github.com/lamont-granquist))
+- Reduce path_helper allocations [#10200](https://github.com/chef/chef/pull/10200) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.2.73 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Reduce path_helper allocations [#10200](https://github.com/chef/chef/pull/10200) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.32 -->
 - Implement default_paths API [#10193](https://github.com/chef/chef/pull/10193) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.31 -->
 - Update the examples to match the actual usage of the windows_firewall_profile resource. [#10198](https://github.com/chef/chef/pull/10198) ([chef-davin](https://github.com/chef-davin)) <!-- 16.3.30 -->
 - Fix chef-resource-inspector to handle classes in equal_to [#10197](https://github.com/chef/chef/pull/10197) ([tas50](https://github.com/tas50)) <!-- 16.3.29 -->
