@@ -207,7 +207,7 @@ class Chef
               disable_sspi: resolve_winrm_disable_sspi,
               transport: resolve_winrm_transport,
               no_ssl_peer_verification: no_ssl_peer_verification?,
-              ssl_peer_fingerprint: resolve_ssl_peer_fingerprint,
+              ssl_peer_fingerprint: config[:ssl_peer_fingerprint],
               shell: config[:winrm_shell],
               codepage: config[:winrm_codepage],
             }
@@ -268,10 +268,6 @@ class Chef
 
           def no_ssl_peer_verification?
             config[:ca_trust_file].nil? && config[:winrm_ssl_verify_mode] == :verify_none && resolve_winrm_transport == :ssl
-          end
-
-          def resolve_ssl_peer_fingerprint
-            config[:ssl_peer_fingerprint]
           end
 
           def resolve_winrm_disable_sspi
