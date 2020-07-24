@@ -62,10 +62,9 @@ class Chef
           end
 
           def resolve_target_nodes
-            @list = case config[:manual]
-                    when true
+            @list = if config[:manual]
                       @name_args[0].split(" ")
-                    when false
+                    else
                       r = []
                       q = Chef::Search::Query.new
                       @action_nodes = q.search(:node, @name_args[0])[0]
