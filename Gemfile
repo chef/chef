@@ -22,6 +22,8 @@ end
 
 gem "cheffish", ">= 14"
 
+gem "mixlib-shellout", "= 3.1.1"
+
 gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 
 group(:omnibus_package) do

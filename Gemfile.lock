@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 17cdaa58cb90d29134c7af2604c38b5b45f22ef3
+  revision: 5a1bce1ca8bf3310f14632c28ed0f0e9b04ec2f9
   branch: master
   specs:
-    ohai (16.3.0)
+    ohai (16.3.1)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -255,9 +255,9 @@ GEM
     mixlib-config (3.0.6)
       tomlrb
     mixlib-log (3.0.8)
-    mixlib-shellout (3.1.2)
+    mixlib-shellout (3.1.1)
       chef-utils
-    mixlib-shellout (3.1.2-universal-mingw32)
+    mixlib-shellout (3.1.1-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
@@ -458,6 +458,7 @@ DEPENDENCIES
   fauxhai-ng
   inspec-core (~> 4.18)
   inspec-core-bin (~> 4.18)
+  mixlib-shellout (= 3.1.1)
   ohai!
   pry
   pry-byebug
