@@ -55,7 +55,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  context "on windows" do
+  context "on windows", :windows_only do
 
     before(:each) do
       allow(ChefUtils).to receive(:windows?).and_return(true)
@@ -103,7 +103,7 @@ RSpec.describe ChefConfig::PathHelper do
 
   end
 
-  context "on unix" do
+  context "on unix", :unix_only do
 
     before(:each) do
       allow(ChefUtils).to receive(:windows?).and_return(false)
