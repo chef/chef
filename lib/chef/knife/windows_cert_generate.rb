@@ -26,8 +26,8 @@ class Chef
       banner "knife windows cert generate FILE_PATH (options)"
 
       deps do
-        require "openssl"
-        require "socket"
+        require "openssl" unless defined?(OpenSSL)
+        require "socket" unless defined?(Socket)
       end
 
       option :hostname,

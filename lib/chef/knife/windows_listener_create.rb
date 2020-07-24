@@ -22,7 +22,7 @@ class Chef
     class WindowsListenerCreate < Knife
       deps do
         require "chef-utils" unless defined?(ChefUtils::CANARY)
-        require "openssl"
+        require "openssl" unless defined?(OpenSSL)
       end
 
       banner "knife windows listener create (options)"
