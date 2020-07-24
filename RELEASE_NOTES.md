@@ -1,5 +1,107 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.3
+
+## Renamed Client Configuration Options
+
+We took a hard look at many of the terms we've historically used throughout the Chef Infra Client configuration sub-system and came to the realization that we weren't living up to the words of our [Community Code of Conduct](https://community.chef.io/code-of-conduct/). From the code of conduct: "Be careful in the words that you choose. Be kind to others. Practice empathy". Terms such as blacklist and sanity don't meet that bar so we've chosen to rename these configuration options:
+
+- `automatic_attribute_blacklist` -> `blocked_automatic_attributes`
+- `default_attribute_blacklist` -> `blocked_default_attributes`
+- `normal_attribute_blacklist` -> `blocked_normal_attributes`
+- `override_attribute_blacklist` -> `blocked_override_attributes`
+- `automatic_attribute_whitelist` -> `allowed_automatic_attributes`
+- `default_attribute_whitelist` -> `allowed_default_attributes`
+- `normal_attribute_whitelist` -> ``allowed_normal_attributes``
+- `override_attribute_whitelist` -> `allowed_override_attributes`
+- `enforce_path_sanity` -> `enforce_default_paths`
+
+Existing configuration options will continue to function for now, but will raise a deprecation warning and will be removed entirely from a future release of Chef Infra Client.
+
+## Chef InSpec 4.22.1
+
+Chef InSpec has been updated from 4.21.1 to 4.22.1. This new release includes the following improvements:
+
+- The `=` character is now allowed for command line inputs
+- `apt-cdrom` repositories are now skipped when parsing out the list of apt repositories
+- Faulty profiles are now reported instead of causing a crash
+- Errors are no longer logged to stdout with the `html2` reporter
+- macOS Big Sur is now correctly identified as macOS
+
+## New Resources
+
+### windows_firewall_profile
+
+The `windows_firewall_profile` allows you to `enable`, `disable`, or `configure` Windows Firewall profiles. For example, you can now set up default actions and configure rules for the `Public` profile using this single resource instead of managing your own PowerShell code in a `powershell_script` resource:
+
+```ruby
+windows_firewall_profile 'Public' do
+  default_inbound_action 'Block'
+  default_outbound_action 'Allow'
+  allow_inbound_rules false
+  display_notification false
+  action :enable
+end
+```
+
+For a complete guide to all properties and additional examples, see the [windows_firewall_profile documentation](https://docs.chef.io/resources/windows_firewall_profile).
+
+## Resource Updates
+
+### build_essential
+
+Log output has been improved in the `build_essential` resource when running on macOS systems.
+
+### chef_client_scheduled_task
+
+The `chef_client_scheduled_task` resource no longer sets up the schedule task with invalid double quoting around the specified command. Thanks for reporting this issue [@tiobagio](https://github.com/tiobagio/).
+
+### execute
+
+The `user` property in the `execute` resource can now accept user IDs as Integers.
+
+### git
+
+The `git` resource will no longer fail if syncing a branch that already exists locally. Thanks for fixing this [@lotooo](https://github.com/lotooo/).
+
+### macos_user_defaults
+
+The `macos_user_defaults` has received a ground-up refactoring with new actions, additional properties, and better overall reliability:
+
+- Improved idempotency by properly loading the current state of domains.
+- Improved how we set `dict` and `array` type data.
+- Improved logging to show the existing key/value pair that is changed, and improved the property state data that the resource sends to handlers and/or Chef Automate.
+- Fixed a failure when setting keys or values that included a space.
+- Replaced the existing non-functional `global` property with a new default for the `domain` property. To set a key/value pair on the `NSGlobalDomain` domain, you can either set that value explicitly or just skip the `domain` property entirely and Chef Infra Client will default to `NSGlobalDomain`. The existing property has been marked as deprecated and we will ship a Cookstyle rule to detect cookbooks using this property in the future.
+- Fixed the `type` property to only accept valid inputs. Previously typos or otherwise incorrect values would just be ignored resulting in unexpected behavior. This may cause failures in your codebase if you previously used incorrect values. We will be shipping a Cookstyle rule to detect and correct these values in the future.
+- Added a new `delete` action to allow users to remove a key from a domain.
+- Added a new `host` property that lets you set per-host values. If you set this to `:current` it sets the -currentHost flag.
+
+### windows_dns_record
+
+The `windows_dns_record` resource includes a new optional property, `dns_server`, allowing you to make changes against remote servers. Thanks for this addition [@jeremyciak](https://github.com/jeremyciak/).
+
+### windows_package
+
+A Chef Infra Client 16 regression within `windows_package` that prevented specifying `path` in the `remote_file_attributes` property has been resolved. Thanks for reporting this issue [@asvinours](https://github.com/asvinours/).
+
+### windows_security_policy
+
+The `windows_security_policy` resource has been refactored to improve idempotency and improve log output when changes are made. You'll now see more complete change information in logs and any handler consuming this data will also receive more detailed change information.
+
+## Knife Improvements
+
+- Ctrl-C can now be used to exit knife even when being prompted for input.
+- `knife bootstrap` will now properly error if attempting to bootstrap an AIX system using an account with an expired password.
+- `knife profile` commands will no longer error if an invalid profile was previously set.
+- The `-o` flag for `knife cookbook upload` can now be used on Windows systems.
+- `knife ssh` now once again accepts legacy DSS host keys although we highly recommend upgrading to a more secure key algorithm if possible.
+- Several changes were made to knife to that may prevent intermittent failures running cookbook commands
+
+## Habitat Package Improvements
+
+Habitat packages for Windows, Linux and Linux2 are now built and tested against each pull request to Chef Infra Client. Additionally we've improved how these packages are built to reduce the size of the package, which reduces network utilization when using the Effortless deployment pattern.
+
 # What's New in 16.2.72
 
 - Habitat packages for Chef Infra Client 16 are now published with full support for the `powershell_exec` helper now added.
