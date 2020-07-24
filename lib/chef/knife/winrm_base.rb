@@ -90,8 +90,9 @@ class Chef
 
           option :winrm_ssl_verify_mode,
             long: "--winrm-ssl-verify-mode SSL_VERIFY_MODE",
-            description: "The WinRM peer verification mode. Valid choices are [verify_peer, verify_none]",
+            description: "The WinRM peer verification mode",
             default: :verify_peer,
+            in: %w{verify_peer verify_none},
             proc: Proc.new { |verify_mode| verify_mode.to_sym }
 
           option :ssl_peer_fingerprint,
@@ -100,7 +101,8 @@ class Chef
 
           option :winrm_authentication_protocol,
             long: "--winrm-authentication-protocol AUTHENTICATION_PROTOCOL",
-            description: "The authentication protocol used during WinRM communication. The supported protocols are #{WINRM_AUTH_PROTOCOL_LIST.join(",")}. Default is 'negotiate'.",
+            description: "The authentication protocol used during WinRM communication. Default is 'negotiate'.",
+            in: WINRM_AUTH_PROTOCOL_LIST,
             default: "negotiate"
 
           option :session_timeout,
