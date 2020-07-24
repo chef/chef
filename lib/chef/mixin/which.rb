@@ -28,7 +28,7 @@ class Chef
 
       private
 
-      # we dep-inject path sanity into this API for historical reasons
+      # we dep-inject default paths into this API for historical reasons
       #
       # @api private
       def __extra_paths
