@@ -59,7 +59,7 @@ class Chef
       option :cert_passphrase,
         short: "-cp PASSWORD",
         long: "--cert-passphrase PASSWORD",
-        description: "Password for certificate."
+        description: "Passphrase for certificate."
 
       def generate_keypair
         OpenSSL::PKey::RSA.new(config[:key_length].to_i)
