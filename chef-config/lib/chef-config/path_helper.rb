@@ -55,7 +55,7 @@ module ChefConfig
       end
     end
 
-    path_seperator_regex = [Regexp.escape(File::SEPARATOR), Regexp.escape(path_separator)].uniq.join
+    path_separator_regex = [Regexp.escape(File::SEPARATOR), Regexp.escape(path_separator)].uniq.join
 
     TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
     LEADING_SLASHES_REGEX = /^[#{path_separator_regex}]+/.freeze
