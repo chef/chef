@@ -212,8 +212,9 @@ class Chef
               codepage: config[:winrm_codepage],
             }
 
+            # if a username was set and no password set we need to prompt
             if @session_opts[:user] && @session_opts[:password].nil?
-              @session_opts[:password] = config[:winrm_password] = get_password
+              @session_opts[:password] = ui.ask("Enter your password: ", echo: false)
             end
 
             if @session_opts[:transport] == :kerberos
@@ -272,10 +273,6 @@ class Chef
 
           def resolve_winrm_disable_sspi
             resolve_winrm_transport != :negotiate
-          end
-
-          def get_password
-            @password ||= ui.ask("Enter your password: ", echo: false)
           end
 
           def negotiate_auth?
