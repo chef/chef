@@ -30,9 +30,7 @@ class Chef
         description: "Passphrase for certificate."
 
       def get_cert_passphrase
-        print "Enter given certificate's passphrase (empty for no passphrase):"
-        passphrase = STDIN.gets
-        passphrase.strip
+        config[:cert_passphrase] || ui.ask("Enter given certificate's passphrase (empty for no passphrase): ", echo: false)
       end
 
       def run
@@ -48,11 +46,11 @@ class Chef
           exit 1
         end
         file_path = @name_args.first
-        config[:cert_passphrase] = get_cert_passphrase unless config[:cert_passphrase]
+        cert_passphrase = get_cert_passphrase
 
         begin
           ui.info "Adding certificate to the Windows Certificate Store..."
-          result = `powershell.exe -Command " '#{config[:cert_passphrase]}' | certutil -importPFX '#{file_path}' AT_KEYEXCHANGE"`
+          result = `powershell.exe -Command " '#{cert_passphrase}' | certutil -importPFX '#{file_path}' AT_KEYEXCHANGE"`
           if $?.exitstatus == 0
             ui.info "Certificate added to Certificate Store"
           else

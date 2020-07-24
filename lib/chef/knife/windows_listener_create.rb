@@ -16,12 +16,12 @@
 #
 
 require_relative "../knife"
-require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Knife
     class WindowsListenerCreate < Knife
       deps do
+        require "chef-utils" unless defined?(ChefUtils::CANARY)
         require "openssl"
       end
 
@@ -55,9 +55,7 @@ class Chef
         description: "Passphrase for certificate."
 
       def get_cert_passphrase
-        print "Enter given certificate's passphrase (empty for no passphrase):"
-        passphrase = STDIN.gets
-        passphrase.strip
+        config[:cert_passphrase] || ui.ask("Enter given certificate's passphrase (empty for no passphrase): ", echo: false)
       end
 
       def run
@@ -70,8 +68,8 @@ class Chef
 
         begin
           if config[:cert_install]
-            config[:cert_passphrase] = get_cert_passphrase unless config[:cert_passphrase]
-            result = `powershell.exe -Command " '#{config[:cert_passphrase]}' | certutil  -importPFX '#{config[:cert_install]}' AT_KEYEXCHANGE"`
+            cert_passphrase = get_cert_passphrase
+            result = `powershell.exe -Command " '#{cert_passphrase}' | certutil  -importPFX '#{config[:cert_install]}' AT_KEYEXCHANGE"`
             if $?.exitstatus
               ui.info "Certificate installed to Certificate Store"
               result = `powershell.exe -Command " echo (Get-PfxCertificate #{config[:cert_install]}).thumbprint "`
