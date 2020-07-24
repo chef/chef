@@ -51,14 +51,16 @@ class Chef
 
           option :winrm_shell,
             long: "--winrm-shell SHELL",
-            description: "The WinRM shell type. Valid choices are [cmd, powershell, elevated]. 'elevated' runs powershell in a scheduled task",
+            description: "The WinRM shell type. If set to 'elevated' the command runs in PowerShell via a scheduled task",
             default: :cmd,
+            in: %w{cmd powershell elevated},
             proc: Proc.new { |shell| shell.to_sym }
 
           option :winrm_transport,
             short: "-w TRANSPORT",
             long: "--winrm-transport TRANSPORT",
-            description: "The WinRM transport type. Valid choices are [ssl, plaintext]",
+            description: "The WinRM transport type",
+            in: %w{ssl plaintext},
             default: "plaintext"
 
           option :winrm_port,
