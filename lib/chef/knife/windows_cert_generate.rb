@@ -107,15 +107,7 @@ class Chef
       end
 
       def certificates_already_exist?(file_path)
-        certs_exists = false
-        %w{pem pfx b64}.each do |extn|
-          unless Dir.glob("#{file_path}.*#{extn}").empty?
-            certs_exists = true
-            break
-          end
-        end
-
-        if certs_exists
+        unless Dir.glob("#{file_path}.*{pem,pfx,b64}").empty?
           begin
             confirm("Do you really want to overwrite existing certificates")
           rescue SystemExit # Need to handle this as confirming with N/n raises SystemExit exception
