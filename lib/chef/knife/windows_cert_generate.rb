@@ -47,13 +47,13 @@ class Chef
         short: "-k LENGTH",
         long: "--key-length LENGTH",
         description: "Specifies the key length of the certificate. The default is 2048",
-        default: "2048"
+        default: 2048
 
       option :cert_validity,
         short: "-cv MONTHS",
         long: "--cert-validity MONTHS",
         description: "Specifies how long the certificate will be valid. The default is 24 months",
-        default: "24"
+        default: 24
 
       option :cert_passphrase,
         short: "-cp PASSWORD",
