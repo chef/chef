@@ -46,19 +46,19 @@ class Chef
       option :key_length,
         short: "-k LENGTH",
         long: "--key-length LENGTH",
-        description: "Default is 2048",
+        description: "Specifies the key length of the certificate. The default is 2048",
         default: "2048"
 
       option :cert_validity,
         short: "-cv MONTHS",
         long: "--cert-validity MONTHS",
-        description: "Default is 24 months",
+        description: "Specifies how long the certificate will be valid. The default is 24 months",
         default: "24"
 
       option :cert_passphrase,
         short: "-cp PASSWORD",
         long: "--cert-passphrase PASSWORD",
-        description: "Passphrase for certificate."
+        description: "Specifies certificate's passphrase."
 
       def generate_keypair
         OpenSSL::PKey::RSA.new(config[:key_length].to_i)
@@ -67,7 +67,7 @@ class Chef
       def prompt_for_passphrase
         passphrase = ""
         begin
-          print "Passphrases do not match.  Try again.\n" unless passphrase.empty?
+          print "Passphrases do not match. Try again.\n" unless passphrase.empty?
           print "Enter certificate passphrase (empty for no passphrase):"
           passphrase = STDIN.gets
           return passphrase.strip if passphrase == "\n"
