@@ -16,6 +16,7 @@
 #
 
 require_relative "../knife"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Knife
@@ -37,7 +38,7 @@ class Chef
       def run
         STDOUT.sync = STDERR.sync = true
 
-        return unless Chef::Platform.windows?
+        return unless ChefUtils.windows?
 
         if @name_args.empty?
           ui.error "Please specify the certificate path. e.g-  'knife windows cert install <path>"

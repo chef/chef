@@ -16,6 +16,7 @@
 #
 
 require_relative "../knife"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Knife
@@ -62,7 +63,7 @@ class Chef
       def run
         STDOUT.sync = STDERR.sync = true
 
-        return unless Chef::Platform.windows?
+        return unless ChefUtils.windows?
 
         begin
           if config[:cert_install]
