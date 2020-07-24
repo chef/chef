@@ -11,13 +11,15 @@
 
 set -evx
 
-sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-config/lib/chef-config/version.rb
-sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-bin/lib/chef-bin/version.rb
-sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-utils/lib/chef-utils/version.rb
-sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"$(cat VERSION)\")/" lib/chef/version.rb
+VERSION=$(cat VERSION)
+
+sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-config/lib/chef-config/version.rb
+sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-bin/lib/chef-bin/version.rb
+sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"${VERSION}\"/" chef-utils/lib/chef-utils/version.rb
+sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"${VERSION}\")/" lib/chef/version.rb
 
 # Update the version for the dobi
-sed -i -r "s/^(\s*)VERSION: \".+\"/\1VERSION: \"$(cat VERSION)\"/" .expeditor/build.docker.yml
+sed -i -r "s/^(\s*)VERSION: \".+\"/\1VERSION: \"${VERSION}\"/" .expeditor/build.docker.yml
 
 # Update the version inside Gemfile.lock
 bundle update chef chef-config chef-utils --jobs=7 --conservative
