@@ -26,9 +26,6 @@ class Chef
       include Chef::Knife::WinrmCommandSharedFunctions
 
       deps do
-        require_relative "windows_cert_generate"
-        require_relative "windows_cert_install"
-        require_relative "windows_listener_create"
         require_relative "winrm_session"
         require_relative "../search/query"
       end
