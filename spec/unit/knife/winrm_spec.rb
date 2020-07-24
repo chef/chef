@@ -25,7 +25,7 @@ describe Chef::Knife::Winrm do
     Chef::Config.reset
   end
 
-  describe "#resolve_target_nodes" do
+  describe "#target_nodes" do
     before do
       @knife = Chef::Knife::Winrm.new
       @knife.config[:attribute] = "fqdn"
@@ -53,7 +53,7 @@ describe Chef::Knife::Winrm do
         expect(@knife.ui).to receive(:fatal).with(/does not have the required attribute/)
         expect(@knife).to receive(:exit).with(10)
         @knife.configure_chef
-        @knife.resolve_target_nodes
+        @knife.target_nodes
       end
     end
 
@@ -68,7 +68,7 @@ describe Chef::Knife::Winrm do
       it "uses the nested attributes (KNIFE-276)" do
         @knife.config[:attribute] = "ec2.public_hostname"
         @knife.configure_chef
-        @knife.resolve_target_nodes
+        @knife.target_nodes
       end
     end
   end

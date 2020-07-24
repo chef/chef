@@ -56,12 +56,12 @@ class Chef
           # Tracked by Issue # 3042 / https://github.com/chef/chef/issues/3042
           def configure_session
             validate_winrm_options!
-            resolve_session_options
-            resolve_target_nodes
+            session_options
+            target_nodes
             session_from_list
           end
 
-          def resolve_target_nodes
+          def target_nodes
             @list = if config[:manual]
                       @name_args[0].split(" ")
                     else
@@ -195,7 +195,7 @@ class Chef
             @winrm_sessions.push(session)
           end
 
-          def resolve_session_options
+          def session_options
             config[:winrm_port] ||= ( config[:winrm_transport] == "ssl" ) ? "5986" : "5985"
 
             @session_opts = {
@@ -204,8 +204,8 @@ class Chef
               port: config[:winrm_port],
               operation_timeout: winrm_session_timeout_secs,
               basic_auth_only: winrm_basic_auth?,
-              disable_sspi: resolve_winrm_disable_sspi,
-              transport: resolve_winrm_transport,
+              disable_sspi: winrm_disable_sspi,
+              transport: winrm_transport,
               no_ssl_peer_verification: no_ssl_peer_verification?,
               ssl_peer_fingerprint: config[:ssl_peer_fingerprint],
               shell: config[:winrm_shell],
@@ -218,7 +218,7 @@ class Chef
             end
 
             if @session_opts[:transport] == :kerberos
-              @session_opts.merge!(resolve_winrm_kerberos_options)
+              @session_opts.merge!(winrm_kerberos_options)
             end
 
             @session_opts[:ca_trust_path] = config[:ca_trust_file] if config[:ca_trust_file]
@@ -228,7 +228,7 @@ class Chef
             # Prefixing with '.\' when using negotiate
             # to auth user against local machine domain
             if winrm_basic_auth? ||
-                resolve_winrm_transport == :kerberos ||
+                winrm_transport == :kerberos ||
                 config[:winrm_user].include?("\\") ||
                 config[:winrm_user].include?("@")
               config[:winrm_user]
@@ -246,7 +246,7 @@ class Chef
             config[:winrm_authentication_protocol] == "basic"
           end
 
-          def resolve_winrm_kerberos_options
+          def winrm_kerberos_options
             kerberos_opts = {}
             kerberos_opts[:keytab] = config[:kerberos_keytab_file] if config[:kerberos_keytab_file]
             kerberos_opts[:realm] = config[:kerberos_realm] if config[:kerberos_realm]
@@ -254,7 +254,7 @@ class Chef
             kerberos_opts
           end
 
-          def resolve_winrm_transport
+          def winrm_transport
             transport = config[:winrm_transport].to_sym
             if config.any? { |k, v| k.to_s =~ /kerberos/ && !v.nil? }
               transport = :kerberos
@@ -266,11 +266,11 @@ class Chef
           end
 
           def no_ssl_peer_verification?
-            config[:ca_trust_file].nil? && config[:winrm_ssl_verify_mode] == :verify_none && resolve_winrm_transport == :ssl
+            config[:ca_trust_file].nil? && config[:winrm_ssl_verify_mode] == :verify_none && winrm_transport == :ssl
           end
 
-          def resolve_winrm_disable_sspi
-            resolve_winrm_transport != :negotiate
+          def winrm_disable_sspi
+            winrm_transport != :negotiate
           end
 
           def negotiate_auth?
