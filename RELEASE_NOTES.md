@@ -2,6 +2,22 @@ This file holds "in progress" release notes for the current release under develo
 
 # What's New in 16.3
 
+## Renamed Client Configuration Options
+
+We took a hard look at many of the terms we've historically used throughout the Chef Infra Client configuration sub-system and came to the realization that we weren't living up to the words of our [Community Code of Conduct](https://community.chef.io/code-of-conduct/). From the code of conduct: "Be careful in the words that you choose. Be kind to others. Practice empathy". Terms such as blacklist and sanity don't meet that bar so we've chosen to rename these configuration options:
+
+- `automatic_attribute_blacklist` -> `blocked_automatic_attributes`
+- `default_attribute_blacklist` -> `blocked_default_attributes`
+- `normal_attribute_blacklist` -> `blocked_normal_attributes`
+- `override_attribute_blacklist` -> `blocked_override_attributes`
+- `automatic_attribute_whitelist` -> `allowed_automatic_attributes`
+- `default_attribute_whitelist` -> `allowed_default_attributes`
+- `normal_attribute_whitelist` -> ``allowed_normal_attributes``
+- `override_attribute_whitelist` -> `allowed_override_attributes`
+- `enforce_path_sanity` -> `enforce_default_paths`
+
+Existing configuration options will continue to function for now, but will raise a deprecation warning and will be removed entirely from a future release of Chef Infra Client.
+
 ## Chef InSpec 4.22.1
 
 Chef InSpec has been updated from 4.21.1 to 4.22.1. This new release includes the following improvements:
