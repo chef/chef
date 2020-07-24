@@ -38,7 +38,6 @@ class Chef
         scheme = options[:transport] == :ssl ? "https" : "http"
         @endpoint = "#{scheme}://#{url}"
 
-        opts = {}
         opts = {
           user: @user,
           password: options[:password],
