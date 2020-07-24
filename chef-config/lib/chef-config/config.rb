@@ -962,23 +962,32 @@ module ChefConfig
     #
     default :no_lazy_load, true
 
-    # A whitelisted array of attributes you want sent over the wire when node
-    # data is saved. The default setting is nil, which collects all data. Setting
-    # to [] will not collect any data for save.
-    #
-    default :automatic_attribute_whitelist, nil
-    default :default_attribute_whitelist, nil
-    default :normal_attribute_whitelist, nil
-    default :override_attribute_whitelist, nil
+    # A array of attributes you want sent over the wire when node
+    # data is saved. The default setting is nil, which collects all data.
+    # NOTE: Setting to [] will not collect ANY data to save.
+    default :allowed_automatic_attributes, nil
+    default :allowed_default_attributes, nil
+    default :allowed_normal_attributes, nil
+    default :allowed_override_attributes, nil
 
-    # A blacklisted array of attributes you do not want to send over the
+    # An array of attributes you do not want to send over the
     # wire when node data is saved
-    # The default setting is nil, which collects all data. Setting to [] will
-    # still collect all data for save
+    # The default setting is nil, which collects all data.
+    # NOTE: Setting to [] will still collect all data to save
+    default :blocked_automatic_attributes, nil
+    default :blocked_default_attributes, nil
+    default :blocked_normal_attributes, nil
+    default :blocked_override_attributes, nil
+
+    # deprecated config options that will be removed in Chef Infra Client 17
     default :automatic_attribute_blacklist, nil
     default :default_attribute_blacklist, nil
     default :normal_attribute_blacklist, nil
     default :override_attribute_blacklist, nil
+    default :automatic_attribute_whitelist, nil
+    default :default_attribute_whitelist, nil
+    default :normal_attribute_whitelist, nil
+    default :override_attribute_whitelist, nil
 
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network

@@ -2,14 +2,14 @@
 require_relative "exceptions"
 
 class Chef
-  class Blacklist
+  class AttributeBlocklist
 
-    # filter takes two arguments - the data you want to filter, and a blacklisted array
+    # filter takes two arguments - the data you want to filter, and an array
     # of keys you want discarded. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
     #
-    # Blacklist.filter(
+    # AttributeBlocklist.filter(
     #   { "filesystem" => {
     #       "/dev/disk" => {
     #         "size" => "10mb"
@@ -27,17 +27,17 @@ class Chef
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
     # will exclude the eth0 and /dev/disk subtrees.
-    def self.filter(data, blacklist = nil)
-      return data if blacklist.nil?
+    def self.filter(data, blocklist = nil)
+      return data if blocklist.nil?
 
-      blacklist.each do |item|
+      blocklist.each do |item|
         Chef::Log.warn("Removing item #{item}")
         remove_data(data, item)
       end
       data
     end
 
-    # Walk the data according to the keys provided by the blacklisted item
+    # Walk the data according to the keys provided by the blocklisted item
     # to get a reference to the item that will be removed.
     def self.remove_data(data, item)
       parts = to_array(item)
@@ -45,7 +45,7 @@ class Chef
       item_ref = data
       parts[0..-2].each do |part|
         unless item_ref[part]
-          Chef::Log.warn("Could not find blacklist attribute #{item}.")
+          Chef::Log.warn("Could not find blocklist attribute #{item}.")
           return nil
         end
 
@@ -53,7 +53,7 @@ class Chef
       end
 
       unless item_ref.key?(parts[-1])
-        Chef::Log.warn("Could not find blacklist attribute #{item}.")
+        Chef::Log.warn("Could not find blocklist attribute #{item}.")
         return nil
       end
 
