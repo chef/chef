@@ -20,8 +20,8 @@ require "spec_helper"
 require "chef/knife/windows_cert_generate"
 
 describe Chef::Knife::WindowsCertGenerate do
-  before(:all) do
-    @certgen = Chef::Knife::WindowsCertGenerate.new(["-H", "something.mydomain.com"])
+  let(:certgen) do
+    Chef::Knife::WindowsCertGenerate.new(["-H", "something.mydomain.com"])
   end
 
   it "generates RSA key pair" do
