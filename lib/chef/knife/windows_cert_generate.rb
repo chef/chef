@@ -109,7 +109,7 @@ class Chef
       def certificates_already_exist?(file_path)
         unless Dir.glob("#{file_path}.*{pem,pfx,b64}").empty?
           begin
-            confirm("Do you really want to overwrite existing certificates")
+            confirm("Overwrite existing certificates?")
           rescue SystemExit # Need to handle this as confirming with N/n raises SystemExit exception
             exit!
           end
