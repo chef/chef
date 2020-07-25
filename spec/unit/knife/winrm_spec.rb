@@ -21,10 +21,6 @@ require_relative "../../../lib/chef/knife/winrm"
 require_relative "../../support/dummy_winrm_connection"
 
 describe Chef::Knife::Winrm do
-  before do
-    Chef::Config.reset
-  end
-
   describe "#target_nodes" do
     before do
       @knife = Chef::Knife::Winrm.new
