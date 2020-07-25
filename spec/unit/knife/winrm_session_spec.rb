@@ -25,12 +25,7 @@ describe Chef::Knife::WinrmSession do
   let(:options) { { transport: :plaintext } }
 
   before do
-    @original_config = Chef::Config.hash_dup
     allow(WinRM::Connection).to receive(:new).and_return(winrm_connection)
-  end
-
-  after do
-    Chef::Config.configuration = @original_config
   end
 
   subject { Chef::Knife::WinrmSession.new(options) }
