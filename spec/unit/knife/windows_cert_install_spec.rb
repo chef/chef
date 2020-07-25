@@ -29,7 +29,6 @@ describe Chef::Knife::WindowsCertInstall do
     it "installs certificate" do
       @certinstall.name_args = ["test-path"]
       @certinstall.config[:cert_passphrase] = "your-secret!"
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
       expect(@certinstall).to receive(:`).with("powershell.exe -Command \" 'your-secret!' | certutil -importPFX 'test-path' AT_KEYEXCHANGE\"")
       expect(@certinstall.ui).to receive(:info).with("Certificate added to Certificate Store")
       expect(@certinstall.ui).to receive(:info).with("Adding certificate to the Windows Certificate Store...")
