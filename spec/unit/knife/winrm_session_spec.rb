@@ -18,7 +18,7 @@
 
 require "spec_helper"
 require_relative "../../../lib/chef/knife/winrm"
-require_relative "dummy_winrm_connection"
+require_relative "../../support/dummy_winrm_connection"
 
 describe Chef::Knife::WinrmSession do
   let(:winrm_connection) { Dummy::Connection.new }
