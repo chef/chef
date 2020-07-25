@@ -213,7 +213,7 @@ describe Chef::Knife::Winrm do
         let(:protocol) { "negotiate" }
 
         before do
-          allow(Chef::Platform).to receive(:windows?).and_return(true)
+          allow(ChefUtils).to receive(:windows?).and_return(true)
         end
 
         it "defaults to negotiate when on a Windows host" do
@@ -226,7 +226,7 @@ describe Chef::Knife::Winrm do
 
       context "on non-windows workstations" do
         before do
-          allow(Chef::Platform).to receive(:windows?).and_return(false)
+          allow(ChefUtils).to receive(:windows?).and_return(false)
         end
 
         let(:winrm_command_http) { Chef::Knife::Winrm.new(["-m", "localhost", "-x", "testuser", "-P", "testpassword", "-w", "plaintext", "--winrm-authentication-protocol", "basic", "echo helloworld"]) }
@@ -422,7 +422,7 @@ describe Chef::Knife::Winrm do
     it "prints a hint on failure for negotiate authentication" do
       @winrm.config[:winrm_authentication_protocol] = "negotiate"
       @winrm.config[:winrm_transport] = "plaintext"
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
       allow(session).to receive(:relay_command).and_raise(WinRM::WinRMAuthorizationError.new)
       allow(@winrm.ui).to receive(:error)
       allow(@winrm.ui).to receive(:info)
@@ -448,7 +448,7 @@ describe Chef::Knife::Winrm do
 
       it "sets negotiate transport on windows for 'negotiate' authentication" do
         @winrm.config[:winrm_authentication_protocol] = "negotiate"
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
         allow(Chef::Knife::WinrmSession).to receive(:new) do |opts|
           expect(opts[:disable_sspi]).to be(false)
           expect(opts[:transport]).to be(:negotiate)
@@ -458,7 +458,7 @@ describe Chef::Knife::Winrm do
 
       it "sets negotiate transport on unix for 'negotiate' authentication" do
         @winrm.config[:winrm_authentication_protocol] = "negotiate"
-        allow(Chef::Platform).to receive(:windows?).and_return(false)
+        allow(ChefUtils).to receive(:windows?).and_return(false)
         allow(Chef::Knife::WinrmSession).to receive(:new) do |opts|
           expect(opts[:disable_sspi]).to be(false)
           expect(opts[:transport]).to be(:negotiate)
@@ -470,7 +470,7 @@ describe Chef::Knife::Winrm do
         @winrm.config[:winrm_authentication_protocol] = "basic"
         @winrm.config[:winrm_transport] = "ssl"
         @winrm.config[:winrm_port] = "5986"
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
         allow(Chef::Knife::WinrmSession).to receive(:new) do |opts|
           expect(opts[:port]).to be(@winrm.config[:winrm_port])
           expect(opts[:transport]).to be(:ssl)
@@ -482,7 +482,7 @@ describe Chef::Knife::Winrm do
 
       it "raises an error if value is other than [basic, negotiate, kerberos]" do
         @winrm.config[:winrm_authentication_protocol] = "invalid"
-        allow(Chef::Platform).to receive(:windows?).and_return(true)
+        allow(ChefUtils).to receive(:windows?).and_return(true)
         expect(@winrm.ui).to receive(:error)
         expect { @winrm.run }.to raise_error(SystemExit)
       end

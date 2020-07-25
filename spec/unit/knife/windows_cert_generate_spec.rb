@@ -24,17 +24,22 @@ describe Chef::Knife::WindowsCertGenerate do
     Chef::Knife::WindowsCertGenerate.new(["-H", "something.mydomain.com"])
   end
 
-  it "generates RSA key pair" do
-    @certgen.config[:key_length] = 2048
-    key = @certgen.generate_keypair
+  before do
+    # merge in default config values
+    certgen.merge_configs
+  end
+
+  it "generates RSA key pair using default length" do
+    key = certgen.generate_keypair
     expect(key).to be_instance_of OpenSSL::PKey::RSA
   end
 
   it "generates X509 certificate" do
-    @certgen.config[:domain] = "test.com"
-    @certgen.config[:cert_validity] = "24"
-    key = @certgen.generate_keypair
-    certificate = @certgen.generate_certificate key
+    certgen.merge_configs
+    certgen.config[:domain] = "test.com"
+    certgen.config[:cert_validity] = "24"
+    key = certgen.generate_keypair
+    certificate = certgen.generate_certificate key
     expect(certificate).to be_instance_of OpenSSL::X509::Certificate
   end
 
@@ -42,48 +47,48 @@ describe Chef::Knife::WindowsCertGenerate do
     expect(File).to receive(:open).exactly(3).times
     cert = double(OpenSSL::X509::Certificate.new)
     key = double(OpenSSL::PKey::RSA.new)
-    @certgen.config[:cert_passphrase] = "password"
+    certgen.config[:cert_passphrase] = "password"
     expect(OpenSSL::PKCS12).to receive(:create).with("password", "winrmcert", key, cert)
-    @certgen.write_certificate_to_file cert, "test", key
+    certgen.write_certificate_to_file cert, "test", key
   end
 
   context "when creating certificate files" do
     before do
-      @certgen.thumbprint = "TEST_THUMBPRINT"
+      certgen.thumbprint = "TEST_THUMBPRINT"
       allow(Dir).to receive(:glob).and_return([])
-      allow(@certgen).to receive(:generate_keypair)
-      allow(@certgen).to receive(:generate_certificate)
-      expect(@certgen.ui).to receive(:info).with("Generated Certificates:")
-      expect(@certgen.ui).to receive(:info).with("- winrmcert.pfx - PKCS12 format key pair. Contains public and private keys, can be used with an SSL server.")
-      expect(@certgen.ui).to receive(:info).with("- winrmcert.b64 - Base64 encoded PKCS12 key pair. Contains public and private keys, used by some cloud provider APIs to configure SSL servers.")
-      expect(@certgen.ui).to receive(:info).with("- winrmcert.pem - Base64 encoded public certificate only. Required by the client to connect to the server.")
-      expect(@certgen.ui).to receive(:info).with("Certificate Thumbprint: TEST_THUMBPRINT")
+      allow(certgen).to receive(:generate_keypair)
+      allow(certgen).to receive(:generate_certificate)
+      expect(certgen.ui).to receive(:info).with("Generated Certificates:")
+      expect(certgen.ui).to receive(:info).with("- winrmcert.pfx - PKCS12 format key pair. Contains public and private keys, can be used with an SSL server.")
+      expect(certgen.ui).to receive(:info).with("- winrmcert.b64 - Base64 encoded PKCS12 key pair. Contains public and private keys, used by some cloud provider APIs to configure SSL servers.")
+      expect(certgen.ui).to receive(:info).with("- winrmcert.pem - Base64 encoded public certificate only. Required by the client to connect to the server.")
+      expect(certgen.ui).to receive(:info).with("Certificate Thumbprint: TEST_THUMBPRINT")
     end
 
     it "writes out certificates" do
-      @certgen.config[:output_file] = "winrmcert"
+      certgen.config[:output_file] = "winrmcert"
 
-      expect(@certgen).to receive(:certificates_already_exist?).and_return(false)
-      expect(@certgen).to receive(:write_certificate_to_file)
-      @certgen.run
+      expect(certgen).to receive(:certificates_already_exist?).and_return(false)
+      expect(certgen).to receive(:write_certificate_to_file)
+      certgen.run
     end
 
     it "prompts when certificates already exist" do
       file_path = "winrmcert"
-      @certgen.config[:output_file] = file_path
+      certgen.config[:output_file] = file_path
 
       allow(Dir).to receive(:glob).and_return([file_path])
-      expect(@certgen).to receive(:confirm).with("Do you really want to overwrite existing certificates")
-      expect(@certgen).to receive(:write_certificate_to_file)
-      @certgen.run
+      expect(certgen).to receive(:confirm).with("Overwrite existing certificates?")
+      expect(certgen).to receive(:write_certificate_to_file)
+      certgen.run
     end
 
     it "creates certificate on specified file path" do
       file_path = "/tmp/winrmcert"
-      @certgen.name_args = [file_path]
+      certgen.name_args = [file_path]
 
-      expect(@certgen).to receive(:write_certificate_to_file) # FIXME: this should be testing that we get /tmp/winrmcert as the filename
-      @certgen.run
+      expect(certgen).to receive(:write_certificate_to_file) # FIXME: this should be testing that we get /tmp/winrmcert as the filename
+      certgen.run
     end
   end
 end

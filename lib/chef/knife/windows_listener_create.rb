@@ -59,8 +59,6 @@ class Chef
       end
 
       def run
-        STDOUT.sync = STDERR.sync = true
-
         unless ChefUtils.windows?
           ui.error "WinRM listener can be created on Windows system only"
           exit 1

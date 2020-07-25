@@ -20,31 +20,33 @@ require "spec_helper"
 require "chef/knife/windows_cert_install"
 
 describe Chef::Knife::WindowsCertInstall do
+  let(:certinstall) do
+    Chef::Knife::WindowsCertInstall.new
+  end
+
   context "on Windows" do
     before do
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
-      @certinstall = Chef::Knife::WindowsCertInstall.new
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     it "installs certificate" do
-      @certinstall.name_args = ["test-path"]
-      @certinstall.config[:cert_passphrase] = "your-secret!"
-      expect(@certinstall).to receive(:`).with("powershell.exe -Command \" 'your-secret!' | certutil -importPFX 'test-path' AT_KEYEXCHANGE\"")
-      expect(@certinstall.ui).to receive(:info).with("Certificate added to Certificate Store")
-      expect(@certinstall.ui).to receive(:info).with("Adding certificate to the Windows Certificate Store...")
-      @certinstall.run
+      certinstall.name_args = ["test-path"]
+      certinstall.config[:cert_passphrase] = "your-secret!"
+      expect(certinstall).to receive(:`).with("powershell.exe -Command \" 'your-secret!' | certutil -importPFX 'test-path' AT_KEYEXCHANGE\"")
+      expect(certinstall.ui).to receive(:info).with("Certificate added to Certificate Store")
+      expect(certinstall.ui).to receive(:info).with("Adding certificate to the Windows Certificate Store...")
+      certinstall.run
     end
   end
 
   context "not on Windows" do
     before do
-      allow(Chef::Platform).to receive(:windows?).and_return(false)
-      @certinstall = Chef::Knife::WindowsCertInstall.new
+      allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
     it "exits with an error" do
-      expect(@listener.ui).to receive(:error)
-      expect { @listener.run }.to raise_error(SystemExit)
+      expect(certinstall.ui).to receive(:error)
+      expect { certinstall.run }.to raise_error(SystemExit)
     end
   end
 end
