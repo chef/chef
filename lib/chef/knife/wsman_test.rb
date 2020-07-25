@@ -49,7 +49,6 @@ class Chef
         @winrm_sessions.each do |item|
           Chef::Log.debug("checking for WSMAN availability at #{item.endpoint}")
 
-          ssl_error = nil
           begin
             response = post_identity_request(item.endpoint)
             ui.msg "Connected successfully to #{item.host} at #{item.endpoint}."
