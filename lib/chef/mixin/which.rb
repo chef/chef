@@ -31,7 +31,7 @@ class Chef
       # we dep-inject default paths into this API for historical reasons
       #
       # @api private
-      def __extra_paths
+      def __extra_path
         __default_paths
       end
     end
