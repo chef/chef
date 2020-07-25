@@ -28,7 +28,7 @@ class Chef
             short: "-m",
             long: "--manual-list",
             boolean: true,
-            description: "QUERY is a space separated list of servers",
+            description: "A space separated list of servers",
             default: false
 
           option :attribute,
