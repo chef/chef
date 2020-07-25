@@ -48,7 +48,6 @@ class Chef
     class Diff
       # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
       # @todo: move coercion to UTF-8 into to_json
-      # @todo: replace shellout to diff -u with diff-lcs gem
 
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings

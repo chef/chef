@@ -175,7 +175,6 @@ RSpec.configure do |config|
   config.filter_run_excluding requires_root: true unless root?
   config.filter_run_excluding requires_root_or_running_windows: true unless root? || windows?
   config.filter_run_excluding requires_unprivileged_user: true if root?
-  config.filter_run_excluding uses_diff: true unless has_diff?
   config.filter_run_excluding openssl_gte_101: true unless openssl_gte_101?
   config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
