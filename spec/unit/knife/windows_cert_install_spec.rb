@@ -40,7 +40,7 @@ describe Chef::Knife::WindowsCertInstall do
   context "not on Windows" do
     before do
       allow(Chef::Platform).to receive(:windows?).and_return(false)
-      @listener = Chef::Knife::WindowsListenerCreate.new
+      @certinstall = Chef::Knife::WindowsCertInstall.new
     end
 
     it "exits with an error" do
