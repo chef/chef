@@ -23,10 +23,6 @@ describe Chef::Knife::WsmanTest do
   let(:http_client_mock) { HTTPClient.new }
   let(:ssl_policy) { double("DefaultSSLPolicy", set_custom_certs: nil) }
 
-  before(:all) do
-    Chef::Config.reset
-  end
-
   before(:each) do
     response_body = '<s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope"><s:Header/><s:Body><wsmid:IdentifyResponse xmlns:wsmid="http://schemas.dmtf.org/wbem/wsman/identity/1/wsmanidentity.xsd"><wsmid:ProtocolVersion>http://schemas.dmtf.org/wbem/wsman/1/wsman.xsd</wsmid:ProtocolVersion><wsmid:ProductVendor>Microsoft Corporation</wsmid:ProductVendor><wsmid:ProductVersion>OS: 0.0.0 SP: 0.0 Stack: 2.0</wsmid:ProductVersion></wsmid:IdentifyResponse></s:Body></s:Envelope>'
     http_response_mock = HTTP::Message.new_response(response_body)
