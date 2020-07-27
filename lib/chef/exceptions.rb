@@ -196,8 +196,7 @@ class Chef
 
     class MetadataNotValid < StandardError; end
     class MetadataNotFound < StandardError
-      attr_reader :install_path
-      attr_reader :cookbook_name
+      attr_reader :install_path, :cookbook_name
 
       def initialize(install_path, cookbook_name)
         @install_path = install_path
@@ -333,8 +332,7 @@ class Chef
       # run_list items referred to cookbooks that don't exist and/or
       # have no versions available.
       class InvalidRunListItems < StandardError
-        attr_reader :non_existent_cookbooks
-        attr_reader :cookbooks_with_no_matching_versions
+        attr_reader :non_existent_cookbooks, :cookbooks_with_no_matching_versions
 
         def initialize(message, non_existent_cookbooks, cookbooks_with_no_matching_versions)
           super(message)
@@ -360,8 +358,7 @@ class Chef
       # resolve the misconfiguration represented by this exception and
       # re-solve, you may get another exception
       class UnsatisfiableRunListItem < StandardError
-        attr_reader :run_list_item
-        attr_reader :non_existent_cookbooks, :most_constrained_cookbooks
+        attr_reader :run_list_item, :non_existent_cookbooks, :most_constrained_cookbooks
 
         # most_constrained_cookbooks: if I were to remove constraints
         # regarding these cookbooks, I would get a solution or move on

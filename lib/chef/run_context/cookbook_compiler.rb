@@ -29,9 +29,7 @@ class Chef
     # Implements the compile phase of the chef run by loading/eval-ing files
     # from cookbooks in the correct order and in the correct context.
     class CookbookCompiler
-      attr_reader :events
-      attr_reader :run_list_expansion
-      attr_reader :logger
+      attr_reader :events, :run_list_expansion, :logger
 
       def initialize(run_context, run_list_expansion, events)
         @run_context = run_context

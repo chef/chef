@@ -62,8 +62,7 @@ class Chef
     def_delegator :@ui, :edit_object
     def_delegator :@ui, :confirm
 
-    attr_accessor :name_args
-    attr_accessor :ui
+    attr_accessor :name_args, :ui
 
     # knife acl subcommands are grouped in this category using this constant to verify.
     OPSCODE_HOSTED_CHEF_ACCESS_CONTROL = %w{acl group user}.freeze

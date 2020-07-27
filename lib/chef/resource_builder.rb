@@ -20,15 +20,7 @@
 
 class Chef
   class ResourceBuilder
-    attr_reader :type
-    attr_reader :name
-    attr_reader :created_at
-    attr_reader :params
-    attr_reader :run_context
-    attr_reader :cookbook_name
-    attr_reader :recipe_name
-    attr_reader :enclosing_provider
-    attr_reader :resource
+    attr_reader :type, :name, :created_at, :params, :run_context, :cookbook_name, :recipe_name, :enclosing_provider, :resource
 
     # FIXME (ruby-2.1 syntax): most of these are mandatory
     def initialize(type: nil, name: nil, created_at: nil, params: nil, run_context: nil, cookbook_name: nil, recipe_name: nil, enclosing_provider: nil)

@@ -36,8 +36,7 @@ class Chef
 
       include Chef::Mixin::ShellOut
 
-      attr_accessor :config_template
-      attr_accessor :config_path
+      attr_accessor :config_template, :config_path
 
       # @api private
       # @return [String] the major.minor of the net-tools version as a string

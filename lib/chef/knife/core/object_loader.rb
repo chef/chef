@@ -25,8 +25,7 @@ class Chef
     module Core
       class ObjectLoader
 
-        attr_reader :ui
-        attr_reader :klass
+        attr_reader :ui, :klass
 
         class ObjectType
           FILE = 1

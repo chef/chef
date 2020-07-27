@@ -86,13 +86,7 @@ class Chef
             @cookbook_version = options[:cookbook_version] # Used in knife diff and download for server cookbook version
           end
 
-          attr_reader :chef_server_url
-          attr_reader :chef_username
-          attr_reader :chef_private_key
-          attr_reader :environment
-          attr_reader :repo_mode
-          attr_reader :cookbook_version
-          attr_reader :versioned_cookbooks
+          attr_reader :chef_server_url, :chef_username, :chef_private_key, :environment, :repo_mode, :cookbook_version, :versioned_cookbooks
 
           def fs_description
             "Chef server at #{chef_server_url} (user #{chef_username}), repo_mode = #{repo_mode}"

@@ -12,9 +12,7 @@ class Chef
       class RegistrationErrorInspector
         include APIErrorFormatting
 
-        attr_reader :exception
-        attr_reader :node_name
-        attr_reader :config
+        attr_reader :exception, :node_name, :config
 
         def initialize(node_name, exception, config)
           @node_name = node_name

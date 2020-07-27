@@ -159,9 +159,7 @@ class Chef
         end
       end
 
-      attr_reader :chef_config
-      attr_reader :cwd
-      attr_reader :cookbook_version
+      attr_reader :chef_config, :cwd, :cookbook_version
 
       def is_hosted?
         @chef_config[:chef_server_url] =~ %r{/+organizations/.+}

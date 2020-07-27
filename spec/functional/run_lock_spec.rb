@@ -326,9 +326,7 @@ describe Chef::RunLock do
       @read_from_tests, @write_to_process = IO.pipe
     end
 
-    attr_reader :example
-    attr_reader :name
-    attr_reader :pid
+    attr_reader :example, :name, :pid
 
     def last_event
       loop do
@@ -428,10 +426,7 @@ describe Chef::RunLock do
 
     private
 
-    attr_reader :read_from_process
-    attr_reader :write_to_tests
-    attr_reader :read_from_tests
-    attr_reader :write_to_process
+    attr_reader :read_from_process, :write_to_tests, :read_from_tests, :write_to_process
 
     class TestRunLock < Chef::RunLock
       attr_accessor :client_process

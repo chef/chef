@@ -65,8 +65,7 @@ class Chef
         description: "The URL of the Supermarket site.",
         default: "https://supermarket.chef.io"
 
-      attr_reader :cookbook_name
-      attr_reader :vendor_path
+      attr_reader :cookbook_name, :vendor_path
 
       def run
         if config[:cookbook_path]

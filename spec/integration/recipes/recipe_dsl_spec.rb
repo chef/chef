@@ -20,9 +20,8 @@ describe "Recipe DSL methods" do
         default_action :create
 
         class<<self
-          attr_accessor :created_name
-          attr_accessor :created_resource
-          attr_accessor :created_provider
+          attr_accessor :created_name, :created_resource, :created_provider
+
         end
 
         def provider

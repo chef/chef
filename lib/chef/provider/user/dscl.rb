@@ -45,9 +45,7 @@ class Chef
       # This provider only supports macOS versions 10.7 to 10.13
       class Dscl < Chef::Provider::User
 
-        attr_accessor :user_info
-        attr_accessor :authentication_authority
-        attr_accessor :password_shadow_conversion_algorithm
+        attr_accessor :user_info, :authentication_authority, :password_shadow_conversion_algorithm
 
         provides :dscl_user
         provides :user, os: "darwin", platform_version: "<= 10.13"

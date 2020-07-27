@@ -49,11 +49,7 @@ class Chef
       as_hash
     end
 
-    attr_reader :status
-    attr_reader :exception
-    attr_reader :error_descriptions
-    attr_reader :action_collection
-    attr_reader :rest_client
+    attr_reader :status, :exception, :error_descriptions, :action_collection, :rest_client
 
     PROTOCOL_VERSION = "0.1.0".freeze
 

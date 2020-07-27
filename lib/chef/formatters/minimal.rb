@@ -17,8 +17,7 @@ class Chef
       cli_name(:minimal)
       cli_name(:min)
 
-      attr_reader :updated_resources
-      attr_reader :updates_by_resource
+      attr_reader :updated_resources, :updates_by_resource
 
       def initialize(out, err)
         super

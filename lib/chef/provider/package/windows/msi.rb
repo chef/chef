@@ -35,9 +35,7 @@ class Chef
             @uninstall_entries = uninstall_entries
           end
 
-          attr_reader :new_resource
-          attr_reader :logger
-          attr_reader :uninstall_entries
+          attr_reader :new_resource, :logger, :uninstall_entries
 
           # From Chef::Provider::Package
           def expand_options(options)

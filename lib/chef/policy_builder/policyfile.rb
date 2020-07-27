@@ -75,12 +75,7 @@ class Chef
         end
       end
 
-      attr_reader :events
-      attr_reader :node
-      attr_reader :node_name
-      attr_reader :ohai_data
-      attr_reader :json_attribs
-      attr_reader :run_context
+      attr_reader :events, :node, :node_name, :ohai_data, :json_attribs, :run_context
 
       def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
         @node_name = node_name

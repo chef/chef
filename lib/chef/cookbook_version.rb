@@ -46,8 +46,7 @@ class Chef
 
     attr_reader :all_files
 
-    attr_accessor :root_paths
-    attr_accessor :name
+    attr_accessor :root_paths, :name
 
     # A Chef::Cookbook::Metadata object. It has a setter that fixes up the
     # metadata to add descriptions of the recipes contained in this

@@ -29,15 +29,11 @@ class Chef
 
     class ResourceUpdate
 
-      attr_accessor :type
-      attr_accessor :name
-      attr_accessor :duration # ms
-      attr_accessor :status
-      attr_accessor :initial_state
-      attr_accessor :final_state
-      attr_accessor :initial_properties
-      attr_accessor :final_properties
-      attr_accessor :event_data # e.g., a diff.
+      attr_accessor :type, :name, :duration, :status, :initial_state, :final_state, :initial_properties, :final_properties, :event_data
+
+       # ms
+
+       # e.g., a diff.
 
       def initial_state_from_resource(resource)
         @initial_properties = resource.to_hash

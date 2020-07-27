@@ -43,8 +43,7 @@ class Chef
           @pattern = pattern
         end
 
-        attr_reader :root
-        attr_reader :pattern
+        attr_reader :root, :pattern
 
         def each(&block)
           list_from(root, &block)
@@ -179,9 +178,7 @@ class Chef
           @b_root = b_root
         end
 
-        attr_reader :pattern
-        attr_reader :a_root
-        attr_reader :b_root
+        attr_reader :pattern, :a_root, :b_root
 
         def each
           # Make sure everything on the server is also on the filesystem, and diff

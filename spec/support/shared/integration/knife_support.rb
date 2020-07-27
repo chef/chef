@@ -128,9 +128,7 @@ module KnifeSupport
       @exit_code = exit_code
     end
 
-    attr_reader :stdout
-    attr_reader :stderr
-    attr_reader :exit_code
+    attr_reader :stdout, :stderr, :exit_code
 
     def should_fail(*args)
       expected = {}

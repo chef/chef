@@ -36,9 +36,7 @@ class Chef
   class RunLock
     include Chef::Mixin::CreatePath
 
-    attr_reader :runlock
-    attr_reader :mutex
-    attr_reader :runlock_file
+    attr_reader :runlock, :mutex, :runlock_file
 
     # Create a new instance of RunLock
     # === Arguments

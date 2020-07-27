@@ -880,8 +880,7 @@ class Chef
 
     private
 
-    attr_reader :override_runlist
-    attr_reader :specific_recipes
+    attr_reader :override_runlist, :specific_recipes
 
     def profiling_prereqs!
       require "ruby-prof"

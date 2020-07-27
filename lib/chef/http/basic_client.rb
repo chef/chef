@@ -31,9 +31,7 @@ class Chef
 
       HTTPS = "https".freeze
 
-      attr_reader :url
-      attr_reader :ssl_policy
-      attr_reader :keepalives
+      attr_reader :url, :ssl_policy, :keepalives
 
       # Instantiate a BasicClient.
       # === Arguments:

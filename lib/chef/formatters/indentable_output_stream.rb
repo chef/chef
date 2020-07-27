@@ -3,12 +3,9 @@ class Chef
     # Handles basic indentation and colorization tasks
     class IndentableOutputStream
 
-      attr_reader :out
-      attr_reader :err
-      attr_accessor :indent
-      attr_reader :line_started
-      attr_accessor :current_stream
-      attr_reader :semaphore
+      attr_reader :out, :err, :line_started, :semaphore
+
+      attr_accessor :indent, :current_stream
 
       def initialize(out, err)
         @out, @err = out, err

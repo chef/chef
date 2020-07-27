@@ -81,11 +81,7 @@ class Chef
       end
     end
 
-    attr_reader :action_records
-    attr_reader :pending_updates
-    attr_reader :run_context
-    attr_reader :consumers
-    attr_reader :events
+    attr_reader :action_records, :pending_updates, :run_context, :consumers, :events
 
     def initialize(events, run_context = nil, action_records = [])
       @action_records  = action_records

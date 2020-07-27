@@ -23,23 +23,11 @@
 # Chef run.
 class Chef::RunStatus
 
-  attr_reader :events
+  attr_reader :events, :run_context, :start_time, :end_time, :exception
 
-  attr_reader :run_context
+  attr_writer :run_context, :exception
 
-  attr_writer :run_context
-
-  attr_reader :start_time
-
-  attr_reader :end_time
-
-  attr_reader :exception
-
-  attr_writer :exception
-
-  attr_accessor :run_id
-
-  attr_accessor :node
+  attr_accessor :run_id, :node
 
   def initialize(node, events)
     @node = node

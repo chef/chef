@@ -84,13 +84,7 @@ class Chef
             @uninstall_string = RegistryUninstallEntry.read_registry_property(registry_data, uninstall_key)
           end
 
-          attr_reader :hive
-          attr_reader :key
-          attr_reader :display_name
-          attr_reader :display_version
-          attr_reader :uninstall_string
-          attr_reader :data
-          attr_reader :logger
+          attr_reader :hive, :key, :display_name, :display_version, :uninstall_string, :data, :logger
 
           UNINSTALL_SUBKEY = 'Software\Microsoft\Windows\CurrentVersion\Uninstall'.freeze
         end

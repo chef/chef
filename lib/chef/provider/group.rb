@@ -24,8 +24,7 @@ class Chef
   class Provider
     class Group < Chef::Provider
       include Chef::Mixin::ShellOut
-      attr_accessor :group_exists
-      attr_accessor :change_desc
+      attr_accessor :group_exists, :change_desc
 
       def initialize(new_resource, run_context)
         super

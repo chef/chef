@@ -28,10 +28,7 @@ class Chef
           @unconsumed_output = Queue.new
         end
 
-        attr_reader :parent_task_queue
-        attr_reader :input_enumerable
-        attr_reader :options
-        attr_reader :block
+        attr_reader :parent_task_queue, :input_enumerable, :options, :block
 
         def each
           each_with_input do |output, index, input, type|

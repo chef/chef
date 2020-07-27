@@ -38,10 +38,7 @@ class Chef
         new(:only_if, parent_resource, command, command_opts, &block)
       end
 
-      attr_reader :positivity
-      attr_reader :command
-      attr_reader :command_opts
-      attr_reader :block
+      attr_reader :positivity, :command, :command_opts, :block
 
       def initialize(positivity, parent_resource, command = nil, command_opts = {}, &block)
         @positivity = positivity

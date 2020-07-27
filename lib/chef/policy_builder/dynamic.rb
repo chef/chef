@@ -33,12 +33,7 @@ class Chef
 
       extend Forwardable
 
-      attr_reader :node
-      attr_reader :node_name
-      attr_reader :ohai_data
-      attr_reader :json_attribs
-      attr_reader :override_runlist
-      attr_reader :events
+      attr_reader :node, :node_name, :ohai_data, :json_attribs, :override_runlist, :events
 
       def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
         @implementation = nil

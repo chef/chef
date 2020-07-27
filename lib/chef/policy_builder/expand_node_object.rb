@@ -38,14 +38,7 @@ class Chef
     # not instantiated directly.
     class ExpandNodeObject
 
-      attr_reader :events
-      attr_reader :node
-      attr_reader :node_name
-      attr_reader :ohai_data
-      attr_reader :json_attribs
-      attr_reader :override_runlist
-      attr_reader :run_context
-      attr_reader :run_list_expansion
+      attr_reader :events, :node, :node_name, :ohai_data, :json_attribs, :override_runlist, :run_context, :run_list_expansion
 
       def initialize(node_name, ohai_data, json_attribs, override_runlist, events)
         @node_name = node_name

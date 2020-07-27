@@ -26,10 +26,7 @@ class Chef
 
       include Chef::Mixin::ShellOut
 
-      attr_reader :repo_path
-      attr_reader :default_branch
-      attr_reader :use_current_branch
-      attr_reader :ui
+      attr_reader :repo_path, :default_branch, :use_current_branch, :ui
 
       def initialize(repo_path, ui, opts = {})
         @repo_path = repo_path

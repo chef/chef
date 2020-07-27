@@ -14,11 +14,7 @@ require_relative "server_api"
 class Chef
   class CookbookUploader
 
-    attr_reader :cookbooks
-    attr_reader :path
-    attr_reader :opts
-    attr_reader :rest
-    attr_reader :concurrency
+    attr_reader :cookbooks, :path, :opts, :rest, :concurrency
 
     # Creates a new CookbookUploader.
     # ===Arguments:

@@ -30,12 +30,7 @@ class Chef
           include Chef::Mixin::Which
           include Chef::Mixin::ShellOut
 
-          attr_accessor :stdin
-          attr_accessor :stdout
-          attr_accessor :stderr
-          attr_accessor :inpipe
-          attr_accessor :outpipe
-          attr_accessor :wait_thr
+          attr_accessor :stdin, :stdout, :stderr, :inpipe, :outpipe, :wait_thr
 
           DNF_HELPER = ::File.expand_path(::File.join(::File.dirname(__FILE__), "dnf_helper.py")).freeze
 

@@ -14,8 +14,7 @@ class Chef
         events.stream_opened(self, options)
       end
 
-      attr_reader :options
-      attr_reader :events
+      attr_reader :options, :events
 
       def print(str)
         events.stream_output(self, str, options)

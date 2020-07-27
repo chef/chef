@@ -72,13 +72,11 @@ class Chef
       include Chef::Mixin::ShellOut
       include Chef::Mixin::Checksum
 
-      attr_reader :cookbook_path
+      attr_reader :cookbook_path, :chefignore
 
       # A PersistentSet object that tracks which files have already been
       # validated.
       attr_reader :validated_files
-
-      attr_reader :chefignore
 
       # Creates a new SyntaxCheck given the +cookbook_name+ and a +cookbook_path+.
       # If no +cookbook_path+ is given, +Chef::Config.cookbook_path+ is used.

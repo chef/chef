@@ -55,9 +55,7 @@ class Chef
 
       attr_reader :deployment_strategy
 
-      attr_accessor :needs_creating
-      attr_accessor :needs_unlinking
-      attr_accessor :managing_symlink
+      attr_accessor :needs_creating, :needs_unlinking, :managing_symlink
 
       def initialize(new_resource, run_context)
         @content_class ||= Chef::Provider::File::Content

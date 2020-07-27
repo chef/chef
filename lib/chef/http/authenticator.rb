@@ -26,12 +26,7 @@ class Chef
 
       DEFAULT_SERVER_API_VERSION = "2".freeze
 
-      attr_reader :signing_key_filename
-      attr_reader :raw_key
-      attr_reader :attr_names
-      attr_reader :auth_credentials
-      attr_reader :version_class
-      attr_reader :api_version
+      attr_reader :signing_key_filename, :raw_key, :attr_names, :auth_credentials, :version_class, :api_version
 
       attr_accessor :sign_request
 

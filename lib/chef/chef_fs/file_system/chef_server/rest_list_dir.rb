@@ -31,8 +31,7 @@ class Chef
             @data_handler = data_handler
           end
 
-          attr_reader :api_path
-          attr_reader :data_handler
+          attr_reader :api_path, :data_handler
 
           def can_have_child?(name, is_dir)
             !is_dir

@@ -46,9 +46,7 @@ class Chef
   #
   class ProviderResolver
 
-    attr_reader :node
-    attr_reader :resource
-    attr_reader :action
+    attr_reader :node, :resource, :action
 
     def initialize(node, resource, action)
       @node = node

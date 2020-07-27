@@ -27,8 +27,7 @@ class Chef
 
         include APIErrorFormatting
 
-        attr_reader :exception
-        attr_reader :node
+        attr_reader :exception, :node
 
         def initialize(node, exception)
           @node, @exception = node, exception

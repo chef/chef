@@ -9,8 +9,7 @@ class Chef
           @levels = levels
         end
 
-        attr_reader :enum
-        attr_reader :levels
+        attr_reader :enum, :levels
 
         def each(&block)
           enum.each do |value|

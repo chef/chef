@@ -80,9 +80,7 @@ class Chef
 
           attr_accessor :write_pretty_json
 
-          attr_reader :root_paths
-          attr_reader :child_paths
-          attr_reader :versioned_cookbooks
+          attr_reader :root_paths, :child_paths, :versioned_cookbooks
 
           CHILDREN = %w{org.json invitations.json members.json}.freeze
 

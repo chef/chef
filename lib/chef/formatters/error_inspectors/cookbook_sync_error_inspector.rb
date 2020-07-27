@@ -32,8 +32,7 @@ class Chef
 
         include APIErrorFormatting
 
-        attr_reader :exception
-        attr_reader :cookbooks
+        attr_reader :exception, :cookbooks
 
         def initialize(cookbooks, exception)
           @cookbooks, @exception = cookbooks, exception

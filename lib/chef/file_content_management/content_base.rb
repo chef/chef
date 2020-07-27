@@ -20,10 +20,7 @@ class Chef
   class FileContentManagement
     class ContentBase
 
-      attr_reader :run_context
-      attr_reader :new_resource
-      attr_reader :current_resource
-      attr_reader :logger
+      attr_reader :run_context, :new_resource, :current_resource, :logger
 
       def initialize(new_resource, current_resource, run_context, logger = Chef::Log.with_child)
         @new_resource = new_resource

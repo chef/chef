@@ -51,8 +51,7 @@ class Chef::EncryptedDataBagItem
     end
 
     class Version1Encryptor
-      attr_reader :key
-      attr_reader :plaintext_data
+      attr_reader :key, :plaintext_data
 
       include Chef::EncryptedDataBagItem::Assertions
 

@@ -23,8 +23,7 @@ class Chef
     module ErrorInspectors
       class CookbookResolveErrorInspector
 
-        attr_reader :exception
-        attr_reader :expanded_run_list
+        attr_reader :exception, :expanded_run_list
 
         include APIErrorFormatting
 

@@ -26,8 +26,7 @@ class Chef
     # Middleware that takes an HTTP response, parses it as JSON if possible.
     class JSONOutput
 
-      attr_accessor :raw_output
-      attr_accessor :inflate_json_class
+      attr_accessor :raw_output, :inflate_json_class
 
       def initialize(opts = {})
         @raw_output = opts[:raw_output]

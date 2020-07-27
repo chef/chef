@@ -25,8 +25,7 @@ class Chef
       # tries to find the code responsible for the error.
       class CompileErrorInspector
 
-        attr_reader :path
-        attr_reader :exception
+        attr_reader :path, :exception
 
         def initialize(path, exception)
           @path, @exception = path, exception

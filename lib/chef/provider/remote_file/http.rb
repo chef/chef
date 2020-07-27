@@ -28,10 +28,7 @@ class Chef
 
       class HTTP
 
-        attr_reader :uri
-        attr_reader :new_resource
-        attr_reader :current_resource
-        attr_reader :logger
+        attr_reader :uri, :new_resource, :current_resource, :logger
 
         # Parse the uri into instance variables
         def initialize(uri, new_resource, current_resource, logger = Chef::Log.with_child)

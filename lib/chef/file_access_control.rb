@@ -34,10 +34,7 @@ class Chef
       include FileAccessControl::Unix
     end
 
-    attr_reader :current_resource
-    attr_reader :resource
-    attr_reader :provider
-    attr_reader :file
+    attr_reader :current_resource, :resource, :provider, :file
 
     # FileAccessControl objects set the owner, group and mode of +file+ to
     # the values specified by +resource+. +file+ is completely independent

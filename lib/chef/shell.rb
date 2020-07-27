@@ -42,8 +42,8 @@ module Shell
   LEADERS[Chef::Node]   = ":attributes"
 
   class << self
-    attr_accessor :options
-    attr_accessor :env
+    attr_accessor :options, :env
+
     attr_writer   :editor
   end
 

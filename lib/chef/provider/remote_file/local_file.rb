@@ -26,8 +26,7 @@ class Chef
     class RemoteFile
       class LocalFile
 
-        attr_reader :uri
-        attr_reader :new_resource
+        attr_reader :uri, :new_resource
 
         def initialize(uri, new_resource, current_resource)
           @new_resource = new_resource

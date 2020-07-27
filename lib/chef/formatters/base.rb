@@ -67,9 +67,7 @@ class Chef
         Chef::Formatters.register(name, self)
       end
 
-      attr_reader :out
-      attr_reader :err
-      attr_reader :output
+      attr_reader :out, :err, :output
 
       def initialize(out, err)
         @output = IndentableOutputStream.new(out, err)

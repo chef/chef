@@ -24,8 +24,7 @@ require "etc" unless defined?(Etc)
 class Chef
   class Daemon
     class << self
-      attr_accessor :name
-      attr_accessor :runlock
+      attr_accessor :name, :runlock
 
       # Daemonize the current process, managing pidfiles and process uid/gid
       #

@@ -22,9 +22,7 @@ class Chef
 
         # helper class to assist in passing around name/version/arch triples
         class Version
-          attr_accessor :name
-          attr_accessor :version
-          attr_accessor :arch
+          attr_accessor :name, :version, :arch
 
           def initialize(name, version, arch)
             @name    = name

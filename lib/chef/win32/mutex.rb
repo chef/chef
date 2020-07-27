@@ -29,8 +29,7 @@ class Chef
         create_system_mutex
       end
 
-      attr_reader :handle
-      attr_reader :name
+      attr_reader :handle, :name
 
       #####################################################
       # Attempts to grab the mutex.

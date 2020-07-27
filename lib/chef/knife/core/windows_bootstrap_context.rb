@@ -30,8 +30,7 @@ class Chef
       # * @run_list - the run list for the node to bootstrap
       #
       class WindowsBootstrapContext < BootstrapContext
-        attr_accessor :config
-        attr_accessor :chef_config
+        attr_accessor :config, :chef_config
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config

@@ -35,16 +35,10 @@ class Chef
 
       UPLOADED_COOKBOOK_VERSION_FILE = ".uploaded-cookbook-version.json".freeze
 
-      attr_reader :cookbook_settings
-      attr_reader :frozen
-      attr_reader :uploaded_cookbook_version_file
-
-      attr_reader :cookbook_path
+      attr_reader :cookbook_settings, :frozen, :uploaded_cookbook_version_file, :cookbook_path, :metadata_error
 
       # The cookbook's name as inferred from its directory.
       attr_reader :inferred_cookbook_name
-
-      attr_reader :metadata_error
 
       def initialize(path, chefignore = nil)
         @cookbook_path = File.expand_path( path ) # cookbook_path from which this was loaded

@@ -40,8 +40,7 @@ class Chef
 
       include Chef::Mixin::Securable
 
-      attr_reader :inline_helper_blocks
-      attr_reader :inline_helper_modules
+      attr_reader :inline_helper_blocks, :inline_helper_modules
 
       def initialize(name, run_context = nil)
         super

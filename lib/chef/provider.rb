@@ -33,13 +33,9 @@ class Chef
     require_relative "mixin/why_run"
     require_relative "mixin/provides"
 
-    attr_accessor :new_resource
-    attr_accessor :current_resource
-    attr_accessor :after_resource
-    attr_accessor :run_context
+    attr_accessor :new_resource, :current_resource, :after_resource, :run_context
 
-    attr_reader :recipe_name
-    attr_reader :logger
+    attr_reader :recipe_name, :logger
 
     include Chef::Mixin::WhyRun
     extend Chef::Mixin::Provides

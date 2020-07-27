@@ -30,8 +30,7 @@ class Chef
           @type = type
         end
 
-        attr_reader :path
-        attr_reader :type
+        attr_reader :path, :type
 
         SecurityConst = Chef::ReservedNames::Win32::API::Security
 

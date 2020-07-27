@@ -109,14 +109,7 @@ class Chef
 
         protected
 
-        attr_reader :original_username
-        attr_reader :original_password
-        attr_reader :original_domain
-        attr_reader :authentication
-
-        attr_reader :token
-        attr_reader :session_opened
-        attr_reader :impersonating
+        attr_reader :original_username, :original_password, :original_domain, :authentication, :token, :session_opened, :impersonating
 
         def validate_session_open!
           unless session_opened

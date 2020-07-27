@@ -20,8 +20,7 @@ class Chef
     #   node.set_unless['foo'].keys is not legal now or ever
     #
     class Unchain
-      attr_accessor :__path__
-      attr_accessor :__method__
+      attr_accessor :__path__, :__method__
 
       def initialize(obj, method)
         @__path__        = []

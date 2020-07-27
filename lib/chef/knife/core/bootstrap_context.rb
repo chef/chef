@@ -32,9 +32,7 @@ class Chef
       #
       class BootstrapContext
 
-        attr_accessor :client_pem
-        attr_accessor :config
-        attr_accessor :chef_config
+        attr_accessor :client_pem, :config, :chef_config
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config

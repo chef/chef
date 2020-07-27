@@ -69,13 +69,7 @@ class Chef
       middlewares << middleware_class
     end
 
-    attr_reader :url
-    attr_reader :sign_on_redirect
-    attr_reader :redirect_limit
-
-    attr_reader :options
-
-    attr_reader :middlewares
+    attr_reader :url, :sign_on_redirect, :redirect_limit, :options, :middlewares
 
     # [Boolean] if we're doing keepalives or not
     attr_reader :keepalives

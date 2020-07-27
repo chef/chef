@@ -32,10 +32,9 @@ class Chef
     include ResourceCollectionSerialization
     extend Forwardable
 
-    attr_accessor :unified_mode
+    attr_accessor :unified_mode, :run_context
 
     attr_reader :resource_set, :resource_list
-    attr_accessor :run_context
 
     protected :resource_set, :resource_list
 

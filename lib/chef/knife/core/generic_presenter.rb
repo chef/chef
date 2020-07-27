@@ -51,8 +51,7 @@ class Chef
       # most kinds of objects that knife needs to display.
       class GenericPresenter
 
-        attr_reader :ui
-        attr_reader :config
+        attr_reader :ui, :config
 
         # Instantiates a new GenericPresenter. This is generally handled by the
         # Chef::Knife::UI object, though you need to match the signature of this

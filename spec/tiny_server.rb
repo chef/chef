@@ -44,9 +44,7 @@ module TinyServer
       @creator = caller.first
     end
 
-    attr_reader :options
-    attr_reader :creator
-    attr_reader :server
+    attr_reader :options, :creator, :server
 
     def start(timeout = 5)
       raise "Server already started!" if server

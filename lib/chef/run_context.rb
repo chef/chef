@@ -650,9 +650,7 @@ class Chef
 
     protected
 
-    attr_reader :cookbook_compiler
-    attr_reader :loaded_attributes_hash
-    attr_reader :loaded_recipes_hash
+    attr_reader :cookbook_compiler, :loaded_attributes_hash, :loaded_recipes_hash
 
     #
     # A child run context.  Delegates all root context calls to its parent.

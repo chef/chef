@@ -30,8 +30,7 @@ class Chef
             @recursive = recursive
           end
 
-          attr_reader :versions
-          attr_reader :children
+          attr_reader :versions, :children
 
           def add_child(child)
             @children << child

@@ -31,12 +31,7 @@ class Chef
 
       extend Forwardable
 
-      attr_reader :stdout
-      attr_reader :stderr
-      attr_reader :stdin
-      attr_reader :config
-
-      attr_reader :presenter
+      attr_reader :stdout, :stderr, :stdin, :config, :presenter
 
       def_delegator :@presenter, :format_list_for_display
       def_delegator :@presenter, :format_for_display

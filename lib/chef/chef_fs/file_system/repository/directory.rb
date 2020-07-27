@@ -25,10 +25,7 @@ class Chef
 
         class Directory
 
-          attr_reader :name
-          attr_reader :parent
-          attr_reader :path
-          attr_reader :file_path
+          attr_reader :name, :parent, :path, :file_path
 
           alias_method :display_path, :path
           alias_method :display_name, :name

@@ -22,8 +22,7 @@ class Chef
   class PowerShell
     extend FFI::Library
 
-    attr_reader :result
-    attr_reader :errors
+    attr_reader :result, :errors
 
     # Run a command under PowerShell via FFI
     # This implementation requires the managed dll and native wrapper to be in the library search

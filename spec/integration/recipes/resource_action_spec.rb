@@ -177,9 +177,8 @@ module ResourceActionSpec
         end
 
         class <<self
-          attr_accessor :ran_action
-          attr_accessor :succeeded
-          attr_accessor :ruby_block_converged
+          attr_accessor :ran_action, :succeeded, :ruby_block_converged
+
         end
 
         action :access_recipe_dsl do
@@ -281,8 +280,8 @@ module ResourceActionSpec
             @bar
           end
           class <<self
-            attr_accessor :load_current_resource_ran
-            attr_accessor :jackalope_ran
+            attr_accessor :load_current_resource_ran, :jackalope_ran
+
           end
           action :access_jackalope do
             ActionJackalope.jackalope_ran = :access_jackalope

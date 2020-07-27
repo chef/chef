@@ -37,8 +37,7 @@ class Chef
   # TODO: windows
   class ScanAccessControl
 
-    attr_reader :new_resource
-    attr_reader :current_resource
+    attr_reader :new_resource, :current_resource
 
     def initialize(new_resource, current_resource)
       @new_resource, @current_resource = new_resource, current_resource

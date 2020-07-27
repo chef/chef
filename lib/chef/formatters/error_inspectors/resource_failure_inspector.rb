@@ -23,9 +23,7 @@ class Chef
     module ErrorInspectors
       class ResourceFailureInspector
 
-        attr_reader :resource
-        attr_reader :action
-        attr_reader :exception
+        attr_reader :resource, :action, :exception
 
         def initialize(resource, action, exception)
           @resource = resource

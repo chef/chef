@@ -30,19 +30,11 @@ class Chef
     # fetching roles from a data source by defining +fetch_role+
     class RunListExpansion
 
-      attr_reader :run_list_items
+      attr_reader :run_list_items, :default_attrs, :override_attrs, :environment, :missing_roles_with_including_role, :all_missing_roles, :role_errors
 
       # A VersionedRecipeList of recipes. Populated only after #expand
       # is called.
       attr_reader :recipes
-
-      attr_reader :default_attrs
-
-      attr_reader :override_attrs
-
-      attr_reader :environment
-
-      attr_reader :missing_roles_with_including_role
 
       # The data source passed to the constructor. Not used in this class.
       # In subclasses, this is a Chef::ServerAPI object pre-configured
@@ -58,9 +50,6 @@ class Chef
       # Like run list trace but instead of saving the entries as strings it saves their objects
       # The to_json method uses this list to construct json.
       attr_reader :better_run_list_trace
-
-      attr_reader :all_missing_roles
-      attr_reader :role_errors
 
       def initialize(environment, run_list_items, source = nil)
         @environment = environment

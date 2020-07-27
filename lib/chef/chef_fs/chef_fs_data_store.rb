@@ -164,8 +164,7 @@ class Chef
         "Reading and writing data to #{chef_fs.fs_description}"
       end
 
-      attr_reader :chef_fs
-      attr_reader :repo_mode
+      attr_reader :chef_fs, :repo_mode
 
       def create_dir(path, name, *options)
         if use_memory_store?(path)

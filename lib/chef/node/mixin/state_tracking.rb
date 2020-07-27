@@ -19,10 +19,7 @@ class Chef
   class Node
     module Mixin
       module StateTracking
-        attr_reader :__path__
-        attr_reader :__root__
-        attr_reader :__node__
-        attr_reader :__precedence__
+        attr_reader :__path__, :__root__, :__node__, :__precedence__
 
         def initialize(data = nil, root = self, node = nil, precedence = nil)
           # __path__ and __root__ must be nil when we call super so it knows

@@ -30,12 +30,7 @@ class Chef
         # methods/if branches for each.
         class ChefRepositoryFileSystemCookbookEntry
 
-          attr_reader :name
-          attr_reader :parent
-          attr_reader :path
-          attr_reader :ruby_only
-          attr_reader :recursive
-          attr_reader :file_path
+          attr_reader :name, :parent, :path, :ruby_only, :recursive, :file_path
 
           alias_method :display_path, :path
           alias_method :display_name, :name

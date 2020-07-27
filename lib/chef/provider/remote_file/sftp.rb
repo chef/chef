@@ -27,9 +27,7 @@ class Chef
   class Provider
     class RemoteFile
       class SFTP
-        attr_reader :uri
-        attr_reader :new_resource
-        attr_reader :current_resource
+        attr_reader :uri, :new_resource, :current_resource
 
         def initialize(uri, new_resource, current_resource)
           @uri = uri

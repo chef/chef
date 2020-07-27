@@ -68,10 +68,7 @@ class Chef
       include Chef::Mixin::ParamsValidate
       include Chef::Mixin::FromFile
 
-      attr_reader :platforms
-      attr_reader :dependencies
-      attr_reader :providing
-      attr_reader :recipes
+      attr_reader :platforms, :dependencies, :providing, :recipes
 
       # @return [Array<Gem::Dependency>] Array of supported Chef versions
       attr_reader :chef_versions

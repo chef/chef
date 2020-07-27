@@ -37,9 +37,7 @@ class Chef
           end
         end
 
-        attr_reader :name
-        attr_reader :parent
-        attr_reader :path
+        attr_reader :name, :parent, :path
 
         alias_method :display_path, :path
         alias_method :display_name, :name

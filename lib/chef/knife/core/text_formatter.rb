@@ -21,8 +21,7 @@ class Chef
     module Core
       class TextFormatter
 
-        attr_reader :data
-        attr_reader :ui
+        attr_reader :data, :ui
 
         def initialize(data, ui)
           @ui = ui

@@ -70,8 +70,7 @@ class Chef::EncryptedDataBagItem
     class Version0Decryptor
       include Chef::EncryptedDataBagItem::Assertions
 
-      attr_reader :encrypted_data
-      attr_reader :key
+      attr_reader :encrypted_data, :key
 
       def initialize(encrypted_data, key)
         @encrypted_data = encrypted_data
@@ -115,8 +114,7 @@ class Chef::EncryptedDataBagItem
 
     class Version1Decryptor < Version0Decryptor
 
-      attr_reader :encrypted_data
-      attr_reader :key
+      attr_reader :encrypted_data, :key
 
       def initialize(encrypted_data, key)
         @encrypted_data = encrypted_data

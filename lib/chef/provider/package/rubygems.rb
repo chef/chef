@@ -375,8 +375,7 @@ class Chef
 
         end
 
-        attr_reader :gem_env
-        attr_reader :cleanup_gem_env
+        attr_reader :gem_env, :cleanup_gem_env
 
         provides :chef_gem
         provides :gem_package

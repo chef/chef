@@ -78,8 +78,8 @@ class Chef
           @operation = operation
         end
 
-        attr_reader :operation
-        attr_reader :entry
+        attr_reader :operation, :entry
+
       end
 
       class AlreadyExistsError < OperationFailedError; end

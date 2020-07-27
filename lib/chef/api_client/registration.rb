@@ -31,8 +31,7 @@ class Chef
     # a new client/node identity by borrowing the validator client identity
     # when creating a new client.
     class Registration
-      attr_reader :destination
-      attr_reader :name
+      attr_reader :destination, :name
 
       def initialize(name, destination, http_api: nil)
         @name                         = name
