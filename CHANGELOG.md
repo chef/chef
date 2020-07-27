@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.39 -->
-## [v16.3.39](https://github.com/chef/chef/tree/v16.3.39) (2020-07-27)
+<!-- latest_release 16.3.40 -->
+## [v16.3.40](https://github.com/chef/chef/tree/v16.3.40) (2020-07-27)
 
 #### Merged Pull Requests
-- Bump deps to current [#10210](https://github.com/chef/chef/pull/10210) ([tas50](https://github.com/tas50))
+- Mark a private method as private with yard [#10212](https://github.com/chef/chef/pull/10212) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Mark a private method as private with yard [#10212](https://github.com/chef/chef/pull/10212) ([tas50](https://github.com/tas50)) <!-- 16.3.40 -->
 - Bump deps to current [#10210](https://github.com/chef/chef/pull/10210) ([tas50](https://github.com/tas50)) <!-- 16.3.39 -->
 <!-- release_rollup -->
 
