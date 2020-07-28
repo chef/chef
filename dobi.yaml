@@ -13,6 +13,9 @@ image=chef:
   context: .
   tags:
     - '{env.VERSION}'
+  args:
+    VERSION: '{env.VERSION}'
+    CHANNEL: unstable
   annotations:
     tags:
       - expeditor:final-channel-tags={{major}},{{major}}.{{minor}}
