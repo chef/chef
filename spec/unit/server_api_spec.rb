@@ -123,4 +123,10 @@ describe Chef::ServerAPI do
       client.get("foo")
     end
   end
+
+  it "does not retry a 406 Not Acceptable" do
+    WebMock.disable_net_connect!
+    stub_request(:get, "http://chef.example.com:4000/foo").to_return(status: [406, "Not Acceptable"])
+    expect { client.get("foo") }.to raise_error(Net::HTTPServerException)
+  end
 end

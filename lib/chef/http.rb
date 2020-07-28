@@ -58,7 +58,6 @@ class Chef
           handler.handle_chunk(chunk)
         end
       end
-
     end
 
     def self.middlewares
@@ -471,7 +470,11 @@ class Chef
     end
 
     def version_retries
-      @version_retries ||= options[:version_class].possible_requests
+      @version_retries ||= if options[:version_class]
+                             options[:version_class].possible_requests
+                           else
+                             0
+                           end
     end
 
     # @api private
