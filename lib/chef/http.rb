@@ -428,7 +428,7 @@ class Chef
           response, request, return_value = yield
           # handle HTTP 50X Error
           if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
-            if http_retry_count - http_attempts + 1 > 0
+            if http_retry_count - http_attempts >= 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
               sleep(sleep_time)
@@ -438,7 +438,7 @@ class Chef
           return [response, request, return_value]
         end
       rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
@@ -446,21 +446,21 @@ class Chef
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue OpenSSL::SSL::SSLError => e
-        if (http_retry_count - http_attempts + 1 > 0) && !e.message.include?("certificate verify failed")
+        if (http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
           Chef::Log.error("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
