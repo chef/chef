@@ -154,7 +154,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -193,7 +193,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -249,7 +249,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -470,11 +470,7 @@ class Chef
     end
 
     def version_retries
-      @version_retries ||= if options[:version_class]
-                             options[:version_class].possible_requests
-                           else
-                             0
-                           end
+      @version_retries ||= options[:version_class]&.possible_requests || 1
     end
 
     # @api private
