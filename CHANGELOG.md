@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.43 -->
-## [v16.3.43](https://github.com/chef/chef/tree/v16.3.43) (2020-07-28)
+<!-- latest_release 16.3.44 -->
+## [v16.3.44](https://github.com/chef/chef/tree/v16.3.44) (2020-07-28)
 
 #### Merged Pull Requests
-- Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins))
+- Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.44 -->
 - Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins)) <!-- 16.3.43 -->
 - Define local test variables to avoid test load order bug. [#10214](https://github.com/chef/chef/pull/10214) ([phiggins](https://github.com/phiggins)) <!-- 16.3.42 -->
 - Use powershell_out vs. powershell_script in hostname [#10147](https://github.com/chef/chef/pull/10147) ([tas50](https://github.com/tas50)) <!-- 16.3.41 -->
