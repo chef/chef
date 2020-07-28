@@ -59,20 +59,22 @@ describe Chef::ServerAPI do
   end
 
   context "versioned apis" do
-    class VersionedClassV0
-      extend Chef::Mixin::VersionedAPI
-      minimum_api_version 0
-    end
+    let(:version_class) do
+      Class.new do
+        extend Chef::Mixin::VersionedAPIFactory
 
-    class VersionedClassV2
-      extend Chef::Mixin::VersionedAPI
-      minimum_api_version 2
-    end
+        version_class_v0 = Class.new do
+          extend Chef::Mixin::VersionedAPI
+          minimum_api_version 0
+        end
+        add_versioned_api_class version_class_v0
 
-    class VersionedClassVersions
-      extend Chef::Mixin::VersionedAPIFactory
-      add_versioned_api_class VersionedClassV0
-      add_versioned_api_class VersionedClassV2
+        version_class_v2 = Class.new do
+          extend Chef::Mixin::VersionedAPI
+          minimum_api_version 2
+        end
+        add_versioned_api_class version_class_v2
+      end
     end
 
     before do
@@ -80,7 +82,7 @@ describe Chef::ServerAPI do
     end
 
     let(:versioned_client) do
-      Chef::ServerAPI.new(url, version_class: VersionedClassVersions)
+      Chef::ServerAPI.new(url, version_class: version_class)
     end
 
     it "on protocol negotiation it posts the same message body without doubly-encoding the json string" do
