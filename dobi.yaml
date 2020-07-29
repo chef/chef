@@ -12,9 +12,9 @@ image=chef:
   image: '{env.IMAGE_REGISTRY}/chef'
   context: .
   tags:
-    - '{env.VERSION}'
+    - '{env.EXPEDITOR_VERSION}'
   args:
-    VERSION: '{env.VERSION}'
+    VERSION: '{env.EXPEDITOR_VERSION}'
     CHANNEL: unstable
   annotations:
     tags:
