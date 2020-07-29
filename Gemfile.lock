@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 5a1bce1ca8bf3310f14632c28ed0f0e9b04ec2f9
+  revision: 955a4a5685026f28d417d8977784a6ca89ff0279
   branch: master
   specs:
-    ohai (16.3.1)
+    ohai (16.3.2)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -28,12 +28,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.3.43)
+    chef (16.3.45)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.3.43)
-      chef-utils (= 16.3.43)
+      chef-config (= 16.3.45)
+      chef-utils (= 16.3.45)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -63,12 +63,12 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.3.43-universal-mingw32)
+    chef (16.3.45-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.3.43)
-      chef-utils (= 16.3.43)
+      chef-config (= 16.3.45)
+      chef-utils (= 16.3.45)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -114,15 +114,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.3.43)
-      chef (= 16.3.43)
+    chef-bin (16.3.45)
+      chef (= 16.3.45)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.3.43)
+    chef-config (16.3.45)
       addressable
-      chef-utils (= 16.3.43)
+      chef-utils (= 16.3.45)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -131,7 +131,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.3.43)
+    chef-utils (16.3.45)
 
 GEM
   remote: https://rubygems.org/
