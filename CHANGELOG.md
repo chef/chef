@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.46 -->
-## [v16.3.46](https://github.com/chef/chef/tree/v16.3.46) (2020-07-29)
+<!-- latest_release 16.3.47 -->
+## [v16.3.47](https://github.com/chef/chef/tree/v16.3.47) (2020-07-29)
 
 #### Merged Pull Requests
-- Add dobi-powered Docker build pipelines [#10180](https://github.com/chef/chef/pull/10180) ([nkierpiec](https://github.com/nkierpiec))
+- Introduce EXPEDITOR_VERSION for docker image tag [#10231](https://github.com/chef/chef/pull/10231) ([nkierpiec](https://github.com/nkierpiec))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Introduce EXPEDITOR_VERSION for docker image tag [#10231](https://github.com/chef/chef/pull/10231) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.3.47 -->
 - Add dobi-powered Docker build pipelines [#10180](https://github.com/chef/chef/pull/10180) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.3.46 -->
 <!-- release_rollup -->
 
