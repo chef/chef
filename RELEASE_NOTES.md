@@ -1,6 +1,12 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-# What's New in 16.3
+# What's New in 16.3.45
+
+- Resolved failures negotiating protocol versions with the Chef Infra Server.
+- Improved log output on Windows systems in the `hostname` resource.
+- Added support to the `archive_file` resource for `pzstd` compressed files.
+
+# What's New in 16.3.38
 
 ## Renamed Client Configuration Options
 
