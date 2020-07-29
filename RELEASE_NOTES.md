@@ -21,7 +21,7 @@ Chef InSpec has been updated from 4.20.6 to 4.22.1. This new release includes th
 
 ## New Deprecations
 
-Chef Infra Client will now report a deprecation error when it encounters resources that use `resource_name` without also using `provides`. Chef Infra Client 16.2 and later require `provides` to be used when assigning a name to a custom resource. In order to prepare for Chef Infra Client 16 make sure to include both `resource_name` and `provides` in resources when specifying a custom name.
+Chef Infra Client 16.2 and later require `provides` when assigning a name to a custom resource. In order to prepare for Chef Infra Client 16, make sure to include both `resource_name` and `provides` in resources when specifying a custom name.
 
 # What's New In 15.12
 
