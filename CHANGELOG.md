@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.7 -->
-## [v15.13.7](https://github.com/chef/chef/tree/v15.13.7) (2020-07-29)
+<!-- latest_release 15.13.8 -->
+## [v15.13.8](https://github.com/chef/chef/tree/v15.13.8) (2020-07-29)
 
 #### Merged Pull Requests
-- Update libarchive, liblzma, and nokogiri to the latest [#10222](https://github.com/chef/chef/pull/10222) ([tas50](https://github.com/tas50))
+- Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50)) <!-- 15.13.8 -->
 - Update libarchive, liblzma, and nokogiri to the latest [#10222](https://github.com/chef/chef/pull/10222) ([tas50](https://github.com/tas50)) <!-- 15.13.7 -->
 - Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50)) <!-- 15.13.6 -->
 - Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50)) <!-- 15.13.5 -->
