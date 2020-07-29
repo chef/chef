@@ -1,29 +1,27 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.8 -->
-## [v15.13.8](https://github.com/chef/chef/tree/v15.13.8) (2020-07-29)
-
-#### Merged Pull Requests
-- Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.12.22 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50)) <!-- 15.13.8 -->
-- Update libarchive, liblzma, and nokogiri to the latest [#10222](https://github.com/chef/chef/pull/10222) ([tas50](https://github.com/tas50)) <!-- 15.13.7 -->
-- Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50)) <!-- 15.13.6 -->
-- Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50)) <!-- 15.13.5 -->
-- Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50)) <!-- 15.13.4 -->
-- Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50)) <!-- 15.13.3 -->
-- Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50)) <!-- 15.13.2 -->
-- Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50)) <!-- 15.13.1 -->
-- Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50)) <!-- 15.13.0 -->
-- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth)) <!-- 15.12.24 -->
-- Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 15.12.23 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.13.8](https://github.com/chef/chef/tree/v15.13.8) (2020-07-29)
+
+#### Merged Pull Requests
+- Add resource_name_without_provides deprecation [#10090](https://github.com/chef/chef/pull/10090) ([lamont-granquist](https://github.com/lamont-granquist))
+- Implement ENFORCE_LICENSE dist constant for knife bootstrap [#10116](https://github.com/chef/chef/pull/10116) ([ramereth](https://github.com/ramereth))
+- Support legacy DSS host keys with knife-ssh [#10164](https://github.com/chef/chef/pull/10164) ([tas50](https://github.com/tas50))
+- Fix warning message for cb / core resource conflict [#10165](https://github.com/chef/chef/pull/10165) ([tas50](https://github.com/tas50))
+- Allow iso8601 gem version 0.13 &amp; bump all deps [#10166](https://github.com/chef/chef/pull/10166) ([tas50](https://github.com/tas50))
+- Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50))
+- Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50))
+- Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50))
+- Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50))
+- Update libarchive, liblzma, and nokogiri to the latest [#10222](https://github.com/chef/chef/pull/10222) ([tas50](https://github.com/tas50))
+- Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.12.22](https://github.com/chef/chef/tree/v15.12.22) (2020-06-26)
 
 #### Merged Pull Requests
@@ -50,7 +48,6 @@
 - Pull in misc docs / comment updates from master [#10054](https://github.com/chef/chef/pull/10054) ([tas50](https://github.com/tas50))
 - fix msu_package installation and extend the timeout to 60 minutes with a new property [#10056](https://github.com/chef/chef/pull/10056) ([tas50](https://github.com/tas50))
 - Update ffi-libarchive for windows fixes / pin the dep [#10071](https://github.com/chef/chef/pull/10071) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.11.8](https://github.com/chef/chef/tree/v15.11.8) (2020-06-01)
 
