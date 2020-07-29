@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.44 -->
-## [v16.3.44](https://github.com/chef/chef/tree/v16.3.44) (2020-07-28)
+<!-- latest_release 16.3.45 -->
+## [v16.3.45](https://github.com/chef/chef/tree/v16.3.45) (2020-07-29)
 
 #### Merged Pull Requests
-- Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50)) <!-- 16.3.45 -->
 - Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.44 -->
 - Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins)) <!-- 16.3.43 -->
 - Define local test variables to avoid test load order bug. [#10214](https://github.com/chef/chef/pull/10214) ([phiggins](https://github.com/phiggins)) <!-- 16.3.42 -->
