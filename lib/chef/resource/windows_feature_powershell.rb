@@ -182,6 +182,12 @@ class Chef
         # @return [void]
         def reload_cached_powershell_data
           Chef::Log.debug("Caching Windows features available via Get-WindowsFeature.")
+
+          #
+          # FIXME FIXME FIXME
+          # The node object should not be used for caching state like this and this is not a public API and may break.
+          # FIXME FIXME FIXME
+          #
           node.override["powershell_features_cache"] = Mash.new
           node.override["powershell_features_cache"]["enabled"] = []
           node.override["powershell_features_cache"]["disabled"] = []
