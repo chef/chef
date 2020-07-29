@@ -44,7 +44,29 @@ module IntegrationSupport
 
     def when_the_repository(desc, *tags, &block)
       context("when the chef repo #{desc}", *tags) do
-        include_context "with a chef repo"
+        before :each do
+          raise "Can only create one directory per test" if @repository_dir
+
+          @repository_dir = Dir.mktmpdir("chef_repo")
+          Chef::Config.chef_repo_path = @repository_dir
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
+            Chef::Config.delete("#{object_name}_path".to_sym)
+          end
+        end
+
+        after :each do
+          if @repository_dir
+            begin
+              # TODO: "force" actually means "silence all exceptions". this
+              # silences a weird permissions error on Windows that we should track
+              # down, but for now there's no reason for it to blow up our CI.
+              FileUtils.remove_entry_secure(@repository_dir, force = ChefUtils.windows?)
+            ensure
+              @repository_dir = nil
+            end
+          end
+          Dir.chdir(@old_cwd) if @old_cwd
+        end
 
         module_eval(&block)
       end
@@ -97,32 +119,5 @@ module IntegrationSupport
   def cwd(relative_path)
     @old_cwd = Dir.pwd
     Dir.chdir(path_to(relative_path))
-  end
-
-  RSpec.shared_context "with a chef repo" do
-    before :each do
-      raise "Can only create one directory per test" if @repository_dir
-
-      @repository_dir = Dir.mktmpdir("chef_repo")
-      Chef::Config.chef_repo_path = @repository_dir
-      %w{client cookbook data_bag environment node role user}.each do |object_name|
-        Chef::Config.delete("#{object_name}_path".to_sym)
-      end
-    end
-
-    after :each do
-      if @repository_dir
-        begin
-          # TODO: "force" actually means "silence all exceptions". this
-          # silences a weird permissions error on Windows that we should track
-          # down, but for now there's no reason for it to blow up our CI.
-          FileUtils.remove_entry_secure(@repository_dir, force = ChefUtils.windows?)
-        ensure
-          @repository_dir = nil
-        end
-      end
-      Dir.chdir(@old_cwd) if @old_cwd
-    end
-
   end
 end
