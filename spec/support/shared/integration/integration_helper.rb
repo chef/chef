@@ -49,13 +49,6 @@ module IntegrationSupport
         module_eval(&block)
       end
     end
-
-    def with_versioned_cookbooks(&block)
-      context("with versioned cookbooks") do
-        include_context "with versioned cookbooks"
-        module_eval(&block)
-      end
-    end
   end
 
   def api
@@ -131,11 +124,5 @@ module IntegrationSupport
       Dir.chdir(@old_cwd) if @old_cwd
     end
 
-  end
-
-  # Versioned cookbooks
-
-  RSpec.shared_context "with versioned cookbooks", versioned_cookbooks: true do
-    before(:each) { Chef::Config[:versioned_cookbooks] = true }
   end
 end
