@@ -1,25 +1,23 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.45 -->
-## [v16.3.45](https://github.com/chef/chef/tree/v16.3.45) (2020-07-29)
-
-#### Merged Pull Requests
-- Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.3.38 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50)) <!-- 16.3.45 -->
-- Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.44 -->
-- Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins)) <!-- 16.3.43 -->
-- Define local test variables to avoid test load order bug. [#10214](https://github.com/chef/chef/pull/10214) ([phiggins](https://github.com/phiggins)) <!-- 16.3.42 -->
-- Use powershell_out vs. powershell_script in hostname [#10147](https://github.com/chef/chef/pull/10147) ([tas50](https://github.com/tas50)) <!-- 16.3.41 -->
-- Mark a private method as private with yard [#10212](https://github.com/chef/chef/pull/10212) ([tas50](https://github.com/tas50)) <!-- 16.3.40 -->
-- Bump deps to current [#10210](https://github.com/chef/chef/pull/10210) ([tas50](https://github.com/tas50)) <!-- 16.3.39 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.3.45](https://github.com/chef/chef/tree/v16.3.45) (2020-07-29)
+
+#### Merged Pull Requests
+- Bump deps to current [#10210](https://github.com/chef/chef/pull/10210) ([tas50](https://github.com/tas50))
+- Mark a private method as private with yard [#10212](https://github.com/chef/chef/pull/10212) ([tas50](https://github.com/tas50))
+- Use powershell_out vs. powershell_script in hostname [#10147](https://github.com/chef/chef/pull/10147) ([tas50](https://github.com/tas50))
+- Define local test variables to avoid test load order bug. [#10214](https://github.com/chef/chef/pull/10214) ([phiggins](https://github.com/phiggins))
+- Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins))
+- Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.3.38](https://github.com/chef/chef/tree/v16.3.38) (2020-07-27)
 
 #### Merged Pull Requests
@@ -93,7 +91,6 @@
 - Remove bad filter from git spec tests [#10204](https://github.com/chef/chef/pull/10204) ([lamont-granquist](https://github.com/lamont-granquist))
 - fix el6 selinux [#10206](https://github.com/chef/chef/pull/10206) ([lamont-granquist](https://github.com/lamont-granquist))
 - Remove some test cruft around diffing [#10205](https://github.com/chef/chef/pull/10205) ([phiggins](https://github.com/phiggins))
-<!-- latest_stable_release -->
 
 ## [v16.2.73](https://github.com/chef/chef/tree/v16.2.73) (2020-07-01)
 
