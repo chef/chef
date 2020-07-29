@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.5 -->
-## [v15.13.5](https://github.com/chef/chef/tree/v15.13.5) (2020-07-23)
+<!-- latest_release 15.13.6 -->
+## [v15.13.6](https://github.com/chef/chef/tree/v15.13.6) (2020-07-29)
 
 #### Merged Pull Requests
-- Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50))
+- Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.12.22 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50)) <!-- 15.13.6 -->
 - Bump mixlib-shellout to 3.1.1 and inspec to 4.22.1 [#10184](https://github.com/chef/chef/pull/10184) ([tas50](https://github.com/tas50)) <!-- 15.13.5 -->
 - Backport various testing fixes from Infra Client 16 [#10168](https://github.com/chef/chef/pull/10168) ([tas50](https://github.com/tas50)) <!-- 15.13.4 -->
 - Apply chefstyle fixes from Infra Client 16 [#10167](https://github.com/chef/chef/pull/10167) ([tas50](https://github.com/tas50)) <!-- 15.13.3 -->
