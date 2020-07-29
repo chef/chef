@@ -120,10 +120,6 @@ module IntegrationSupport
     after :each do
       if @repository_dir
         begin
-          %w{client cookbook data_bag environment node role user}.each do |object_name|
-            Chef::Config.delete("#{object_name}_path".to_sym)
-          end
-          Chef::Config.delete(:chef_repo_path)
           # TODO: "force" actually means "silence all exceptions". this
           # silences a weird permissions error on Windows that we should track
           # down, but for now there's no reason for it to blow up our CI.
@@ -141,6 +137,5 @@ module IntegrationSupport
 
   RSpec.shared_context "with versioned cookbooks", versioned_cookbooks: true do
     before(:each) { Chef::Config[:versioned_cookbooks] = true }
-    after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
   end
 end
