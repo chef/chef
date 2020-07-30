@@ -50,4 +50,14 @@ describe Chef::Resource::WindowsFeaturePowershell do
     resource.feature_name "SNMP"
     expect(resource.feature_name).to eql(["snmp"])
   end
+
+  it "install a single feature" do
+    resource.feature_name "snmp"
+    expect { resource.action :install }.not_to raise_error
+  end
+
+  it "install multi feature" do
+    resource.feature_name "SNMP, DHCP"
+    expect { resource.action :install }.not_to raise_error
+  end
 end
