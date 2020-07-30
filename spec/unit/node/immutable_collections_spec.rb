@@ -73,7 +73,11 @@ shared_examples_for "Immutable#to_yaml" do
   end
 
   it "should create a YAML string with content" do
-    expect(copy).to eq(parsed_yaml)
+    # Roundtrip the test string through YAML to compensate for some changes in libyaml-0.2.5
+    # See: https://github.com/yaml/libyaml/pull/186
+    expected = YAML.dump(YAML.load(parsed_yaml))
+
+    expect(copy).to eq(expected)
   end
 end
 
@@ -241,7 +245,7 @@ describe Chef::Node::ImmutableArray do
 
   describe "to_yaml" do
     let(:copy) { @immutable_nested_array.to_yaml }
-    let(:parsed_yaml) { "---\n- level1\n- - foo\n  - bar\n  - baz\n  - 1\n  - 2\n  - 3\n  - \n  - true\n  - false\n  - - el\n    - 0\n    - \n- m: m\n" }
+    let(:parsed_yaml) { "---\n- level1\n- - foo\n  - bar\n  - baz\n  - 1\n  - 2\n  - 3\n  -\n  - true\n  - false\n  - - el\n    - 0\n    -\n- m: m\n" }
 
     include_examples "Immutable#to_yaml"
   end
