@@ -23,7 +23,7 @@ error_exit()
 
 is_darwin()
 {
-  uname -v | grep "^Darwin" 2>&1 >/dev/null
+  uname -a | grep "^Darwin" 2>&1 >/dev/null
 }
 
 if is_darwin; then
