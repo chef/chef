@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.49 -->
-## [v16.3.49](https://github.com/chef/chef/tree/v16.3.49) (2020-07-30)
+<!-- latest_release 16.3.50 -->
+## [v16.3.50](https://github.com/chef/chef/tree/v16.3.50) (2020-07-30)
 
 #### Merged Pull Requests
-- Update omnibus-software to slim our builds [#10234](https://github.com/chef/chef/pull/10234) ([tas50](https://github.com/tas50))
+- Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50)) <!-- 16.3.50 -->
 - Update omnibus-software to slim our builds [#10234](https://github.com/chef/chef/pull/10234) ([tas50](https://github.com/tas50)) <!-- 16.3.49 -->
 - Fix warning in test for redefined shared example group [#10232](https://github.com/chef/chef/pull/10232) ([phiggins](https://github.com/phiggins)) <!-- 16.3.48 -->
 - Introduce EXPEDITOR_VERSION for docker image tag [#10231](https://github.com/chef/chef/pull/10231) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.3.47 -->
