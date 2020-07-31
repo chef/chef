@@ -26,7 +26,7 @@ class Chef
     module WinrmCommandSharedFunctions
 
       FAILED_BASIC_HINT ||= "Hint: Please check winrm configuration 'winrm get winrm/config/service' AllowUnencrypted flag on remote server.".freeze
-      FAILED_NOT_BASIC_HINT ||= <<~EOS
+      FAILED_NOT_BASIC_HINT ||= <<~EOS.freeze
         Hint: Make sure to prefix domain usernames with the correct domain name.
         Hint: Local user names should be prefixed with computer name or IP address.
         EXAMPLE: my_domain\\user_name

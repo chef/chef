@@ -21,7 +21,7 @@ require "chef/knife/windows_cert_generate"
 
 describe Chef::Knife::WindowsCertGenerate do
   let(:certgen) do
-    Chef::Knife::WindowsCertGenerate.new(["-H", "something.mydomain.com"])
+    Chef::Knife::WindowsCertGenerate.new(["-H", "something.example.com"])
   end
 
   before do
@@ -30,7 +30,7 @@ describe Chef::Knife::WindowsCertGenerate do
   end
 
   it "generates RSA key pair using default length" do
-    key = certgen.generate_keypair
+    key = certgen.generate_key_pair
     expect(key).to be_instance_of OpenSSL::PKey::RSA
   end
 
@@ -38,7 +38,7 @@ describe Chef::Knife::WindowsCertGenerate do
     certgen.merge_configs
     certgen.config[:domain] = "test.com"
     certgen.config[:cert_validity] = "24"
-    key = certgen.generate_keypair
+    key = certgen.generate_key_pair
     certificate = certgen.generate_certificate key
     expect(certificate).to be_instance_of OpenSSL::X509::Certificate
   end
@@ -56,7 +56,7 @@ describe Chef::Knife::WindowsCertGenerate do
     before do
       certgen.thumbprint = "TEST_THUMBPRINT"
       allow(Dir).to receive(:glob).and_return([])
-      allow(certgen).to receive(:generate_keypair)
+      allow(certgen).to receive(:generate_key_pair)
       allow(certgen).to receive(:generate_certificate)
       expect(certgen.ui).to receive(:info).with("Generated Certificates:")
       expect(certgen.ui).to receive(:info).with("- winrmcert.pfx - PKCS12 format key pair. Contains public and private keys, can be used with an SSL server.")

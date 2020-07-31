@@ -34,7 +34,7 @@ class Chef
         short: "-H HOSTNAME",
         long: "--hostname HOSTNAME",
         description: "Use to specify the hostname for the listener.
-        For example, --hostname something.mydomain.com or *.mydomain.com.",
+        For example, --hostname something.example.com or *.example.com.",
         required: true
 
       option :output_file,
@@ -60,7 +60,7 @@ class Chef
         long: "--cert-passphrase PASSWORD",
         description: "Specifies certificate's passphrase."
 
-      def generate_keypair
+      def generate_key_pair
         OpenSSL::PKey::RSA.new(config[:key_length].to_i)
       end
 
@@ -125,7 +125,7 @@ class Chef
 
         begin
           filename = File.basename(file_path)
-          rsa_key = generate_keypair
+          rsa_key = generate_key_pair
           cert = generate_certificate rsa_key
           write_certificate_to_file cert, file_path, rsa_key
           ui.info "Generated Certificates:"

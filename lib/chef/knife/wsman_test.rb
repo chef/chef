@@ -39,12 +39,12 @@ class Chef
         @config[:winrm_password] = "cute_little_kittens"
 
         configure_session
-        verify_wsman_accessiblity_for_nodes
+        verify_wsman_accessibility_for_nodes
       end
 
       private
 
-      def verify_wsman_accessiblity_for_nodes
+      def verify_wsman_accessibility_for_nodes
         error_count = 0
         @winrm_sessions.each do |item|
           Chef::Log.debug("checking for WSMAN availability at #{item.endpoint}")
@@ -95,7 +95,7 @@ class Chef
         output_object.response_status_code = response.status_code unless response.nil?
 
         if response.nil? || response.status_code != 200
-          output_object.error_message = "No valid WSMan endoint listening at #{node.endpoint}."
+          output_object.error_message = "No valid WSMan endpoint listening at #{node.endpoint}."
         else
           doc = REXML::Document.new(response.body)
           output_object.protocol_version = search_xpath(doc, "//wsmid:ProtocolVersion")
