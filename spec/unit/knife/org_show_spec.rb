@@ -1,6 +1,6 @@
 #
 # Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 require "spec_helper"
 require "chef/org"
 
-describe Chef::Knife::OpcOrgShow do
+describe Chef::Knife::OrgShow do
 
   before :each do
-    @knife = Chef::Knife::OpcOrgShow.new
+    @knife = Chef::Knife::OrgShow.new
     @org_name = "foobar"
     @knife.name_args << @org_name
   end

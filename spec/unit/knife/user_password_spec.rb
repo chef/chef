@@ -1,6 +1,6 @@
 #
 # Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2014-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 require "spec_helper"
 require "chef/org"
 
-describe Chef::Knife::OpcUserPassword do
+describe Chef::Knife::UserPassword do
 
   before :each do
-    @knife = Chef::Knife::OpcUserPassword.new
+    @knife = Chef::Knife::UserPassword.new
     @user_name = "foobar"
     @password = "abc123"
     @user = double("Chef::User")

@@ -17,33 +17,18 @@
 #
 require_relative "../mixin/root_rest"
 
-module Opc
-  class OpcOrgEdit < Chef::Knife
-    category "CHEF ORGANIZATION MANAGEMENT"
-    banner "knife opc org edit ORG"
-
-    def run
-      org_name = @name_args[0]
-
-      if org_name.nil?
-        show_usage
-        ui.fatal("You must specify an organization name")
-        exit 1
-      end
+class Chef
+  class Knife
+    class OrgShow < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org show ORGNAME"
 
       include Chef::Mixin::RootRestv0
 
-      original_org = root_rest.get("organizations/#{org_name}")
-      edited_org = edit_data(original_org)
-
-      if original_org == edited_org
-        ui.msg("Organization unchanged, not saving.")
-        exit
+      def run
+        org_name = @name_args[0]
+        ui.output root_rest.get("organizations/#{org_name}")
       end
-
-      ui.msg edited_org
-      root_rest.put("organizations/#{org_name}", edited_org)
-      ui.msg("Saved #{org_name}.")
     end
   end
 end

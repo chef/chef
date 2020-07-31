@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,12 @@
 # limitations under the License.
 #
 
+require_relative "../mixin/root_rest"
 require_relative "../knife"
 
 class Chef
   class Knife
     class UserList < Knife
-
-      deps do
-        require_relative "../user_v1"
-      end
 
       banner "knife user list (options)"
 
@@ -33,8 +30,11 @@ class Chef
         long: "--with-uri",
         description: "Show corresponding URIs."
 
+      include Chef::Mixin::RootRestv0
+
       def run
-        output(format_list_for_display(Chef::UserV1.list))
+        results = root_rest.get("users")
+        output(format_list_for_display(results))
       end
 
     end

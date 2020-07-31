@@ -1,6 +1,6 @@
 #
 # Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2014-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 
 require "spec_helper"
 
-describe Chef::Knife::OpcOrgDelete do
+describe Chef::Knife::OrgDelete do
 
   before :each do
-    @knife = Chef::Knife::OpcOrgDelete.new
+    @knife = Chef::Knife::OrgDelete.new
     @org_name = "foobar"
     @knife.name_args << @org_name
   end

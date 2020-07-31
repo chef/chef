@@ -17,29 +17,31 @@
 #
 require_relative "../mixin/root_rest"
 
-module Opc
-  class OpcOrgList < Chef::Knife
-    category "CHEF ORGANIZATION MANAGEMENT"
-    banner "knife opc org list"
+class Chef
+  class Knife
+    class OrgList < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org list"
 
-    option :with_uri,
-      long: "--with-uri",
-      short: "-w",
-      description: "Show corresponding URIs"
+      option :with_uri,
+        long: "--with-uri",
+        short: "-w",
+        description: "Show corresponding URIs"
 
-    option :all_orgs,
-      long: "--all-orgs",
-      short: "-a",
-      description: "Show auto-generated hidden orgs in output"
+      option :all_orgs,
+        long: "--all-orgs",
+        short: "-a",
+        description: "Show auto-generated hidden orgs in output"
 
-    include Chef::Mixin::RootRestv0
+      include Chef::Mixin::RootRestv0
 
-    def run
-      results = root_rest.get("organizations")
-      unless config[:all_orgs]
-        results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
+      def run
+        results = root_rest.get("organizations")
+        unless config[:all_orgs]
+          results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
+        end
+        ui.output(ui.format_list_for_display(results))
       end
-      ui.output(ui.format_list_for_display(results))
     end
   end
 end
