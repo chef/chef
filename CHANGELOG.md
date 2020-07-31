@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.50 -->
-## [v16.3.50](https://github.com/chef/chef/tree/v16.3.50) (2020-07-30)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50))
+- Compensate for libyaml changes in yaml parsing test. [#10220](https://github.com/chef/chef/pull/10220) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Compensate for libyaml changes in yaml parsing test. [#10220](https://github.com/chef/chef/pull/10220) ([phiggins](https://github.com/phiggins)) <!-- 16.3.50 -->
 - Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50)) <!-- 16.3.50 -->
 - Update omnibus-software to slim our builds [#10234](https://github.com/chef/chef/pull/10234) ([tas50](https://github.com/tas50)) <!-- 16.3.49 -->
 - Fix warning in test for redefined shared example group [#10232](https://github.com/chef/chef/pull/10232) ([phiggins](https://github.com/phiggins)) <!-- 16.3.48 -->
