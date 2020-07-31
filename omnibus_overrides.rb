@@ -6,7 +6,7 @@
 override :rubygems, version: "3.1.2" # pin to what ships in the ruby version
 override :bundler, version: "2.1.4" # pin to what ships in the ruby version
 override "libarchive", version: "3.4.3"
-override "libffi", version: "3.2.1"
+override "libffi", version: "3.3"
 override "libiconv", version: "1.15"
 override "liblzma", version: "5.2.5"
 override "libtool", version: "2.4.2"
