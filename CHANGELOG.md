@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.52 -->
-## [v16.3.52](https://github.com/chef/chef/tree/v16.3.52) (2020-07-31)
+<!-- latest_release 16.3.53 -->
+## [v16.3.53](https://github.com/chef/chef/tree/v16.3.53) (2020-07-31)
 
 #### Merged Pull Requests
-- Fix install windows features when install state is removed [#9820](https://github.com/chef/chef/pull/9820) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update libffi to 3.3 [#10238](https://github.com/chef/chef/pull/10238) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update libffi to 3.3 [#10238](https://github.com/chef/chef/pull/10238) ([tas50](https://github.com/tas50)) <!-- 16.3.53 -->
 - Fix install windows features when install state is removed [#9820](https://github.com/chef/chef/pull/9820) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.3.52 -->
 - Bump omnibus-software to the latest [#10236](https://github.com/chef/chef/pull/10236) ([tas50](https://github.com/tas50)) <!-- 16.3.51 -->
 - Compensate for libyaml changes in yaml parsing test. [#10220](https://github.com/chef/chef/pull/10220) ([phiggins](https://github.com/phiggins)) <!-- 16.3.50 -->
