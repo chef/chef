@@ -45,11 +45,18 @@ build do
     # find the embedded ruby gems dir and clean it up for globbing
     target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
     files = %w{
+      .rspec-tm
+      .sitearchdir.time
       *-public_cert.pem
+      bootstrap.sh
+      diagrams
       example
       examples
       ext
       Gemfile.lock
+      java
+      patches
+      perf
       rakelib
       sample
       samples
@@ -58,7 +65,7 @@ build do
       VERSION
     }
 
-    Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
+    Dir.glob("#{target_dir}/*/{#{files.join(",")}}").each do |f|
       # chef stores the powershell dlls in the ext dir
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 
@@ -77,7 +84,7 @@ build do
       tasks
     }
 
-    Dir.glob(Dir.glob("#{target_dir}/*/{#{files.join(",")}}")).each do |f|
+    Dir.glob("#{target_dir}/*/{#{files.join(",")}}").each do |f|
       # don't delete these files if there's a non-empty bin dir in the same dir
       next if Dir.exist?(File.join(File.dirname(f), "bin")) && !Dir.empty?(File.join(File.dirname(f), "bin"))
 
@@ -90,12 +97,22 @@ build do
   end
 
   block "Removing spec dirs from non-Chef gems" do
-    Dir.glob(Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/spec".tr('\\', "/"))).each do |f|
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*/spec".tr('\\', "/")).each do |f|
       # if we're in a chef- gem then don't remove the specs
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
+    end
+  end
+
+  block "Remove empty gem dirs from Ruby's built-in gems" do
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*".tr('\\', "/")).each do |d|
+      # skip unless the dir is empty
+      next unless Dir.children(d).empty?
+
+      puts "Deleting empty gem dir: #{d}"
+      FileUtils.rm_rf(d)
     end
   end
 end
