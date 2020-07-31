@@ -24,7 +24,7 @@ class Chef
         # Rather than upgrade all of this code to move to v1, the goal is to remove the
         # need for this plugin.  See
         # https://github.com/chef/chef/issues/3517
-        @root_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "0" })
+        @root_rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root])
       end
     end
   end

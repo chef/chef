@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,30 +17,69 @@
 #
 
 require "spec_helper"
+require "chef/org"
 
 describe Chef::Knife::UserShow do
   let(:knife) { Chef::Knife::UserShow.new }
   let(:user_mock) { double("user_mock") }
-  let(:stdout) { StringIO.new }
 
-  before do
-    Chef::Knife::UserShow.load_deps
-    knife.name_args = [ "my_user" ]
-    allow(user_mock).to receive(:username).and_return("my_user")
-    allow(knife.ui).to receive(:stderr).and_return(stdout)
-    allow(knife.ui).to receive(:stdout).and_return(stdout)
+  let(:rest) do
+    Chef::Config[:chef_server_root] = "http://www.example.com"
+    root_rest = double("rest")
+    allow(Chef::ServerAPI).to receive(:new).and_return(root_rest)
   end
 
-  it "loads and displays the user" do
-    expect(Chef::UserV1).to receive(:load).with("my_user").and_return(user_mock)
-    expect(knife).to receive(:format_for_display).with(user_mock)
-    knife.run
+  describe "withot organisation argument" do
+    before do
+      knife.name_args = [ "my_user" ]
+      allow(user_mock).to receive(:username).and_return("my_user")
+    end
+
+    it "should load the user" do
+      allow(knife).to receive(:root_rest).and_return(rest)
+      expect(rest).to receive(:get).with("users/my_user")
+      knife.run
+    end
+
+    it "loads and displays the user" do
+      allow(knife).to receive(:root_rest).and_return(rest)
+      expect(rest).to receive(:get).with("users/my_user")
+      expect(knife).to receive(:format_for_display)
+      knife.run
+    end
+
+    it "prints usage and exits when a user name is not provided" do
+      knife.name_args = []
+      expect(knife).to receive(:show_usage)
+      expect(knife.ui).to receive(:fatal)
+      expect { knife.run }.to raise_error(SystemExit)
+    end
   end
 
-  it "prints usage and exits when a user name is not provided" do
-    knife.name_args = []
-    expect(knife).to receive(:show_usage)
-    expect(knife.ui).to receive(:fatal)
-    expect { knife.run }.to raise_error(SystemExit)
+  describe "with organisation argument" do
+    before :each do
+      @user_name = "foobar"
+      @org_name = "abc_org"
+      knife.name_args << @user_name << @org_name
+      @org = double("Chef::Org")
+      allow(Chef::Org).to receive(:new).and_return(@org)
+      @key = "You don't come into cooking to get rich - Ramsay"
+    end
+
+    let(:orgs) do
+      [@org]
+    end
+
+    it "should load the user with organisation" do
+
+      result = { "organizations" => [] }
+      knife.config[:with_orgs] = true
+
+      allow(knife).to receive(:root_rest).and_return(rest)
+      allow(@org).to receive(:[]).with("organization").and_return({ "name" => "test" })
+      expect(rest).to receive(:get).with("users/#{@user_name}").and_return(result)
+      expect(rest).to receive(:get).with("users/#{@user_name}/organizations").and_return(orgs)
+      knife.run
+    end
   end
 end

@@ -17,21 +17,19 @@
 #
 require_relative "../mixin/root_rest"
 
-module Opc
-  class OpcUserList < Chef::Knife
-    category "CHEF ORGANIZATION MANAGEMENT"
-    banner "knife opc user list"
+class Chef
+  class Knife
+    class OrgDelete < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org delete ORG_NAME"
 
-    option :with_uri,
-      long: "--with-uri",
-      short: "-w",
-      description: "Show corresponding URIs"
+      include Chef::Mixin::RootRestv0
 
-    include Chef::Mixin::RootRestv0
-
-    def run
-      results = root_rest.get("users")
-      ui.output(ui.format_list_for_display(results))
+      def run
+        org_name = @name_args[0]
+        ui.confirm "Do you want to delete the organization #{org_name}"
+        ui.output root_rest.delete("organizations/#{org_name}")
+      end
     end
   end
 end

@@ -14,7 +14,6 @@
 
 require "spec_helper"
 require "chef/org"
-require "chef/org/group_operations"
 
 describe Chef::Org do
   let(:org) { Chef::Org.new("myorg") }

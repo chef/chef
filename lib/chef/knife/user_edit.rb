@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,6 +28,18 @@ class Chef
 
       banner "knife user edit USER (options)"
 
+      option :input,
+        long: "--input FILENAME",
+        short: "-i FILENAME",
+        description: "Name of file to use for PUT or POST"
+
+      option :filename,
+        long: "--filename FILENAME",
+        short: "-f FILENAME",
+        description: "Write private key to FILENAME rather than STDOUT"
+
+      include Chef::Mixin::RootRestv0
+
       def run
         @user_name = @name_args[0]
 
@@ -40,12 +52,50 @@ class Chef
         original_user = Chef::UserV1.load(@user_name).to_hash
         edited_user = edit_hash(original_user)
         if original_user != edited_user
-          user = Chef::UserV1.from_hash(edited_user)
-          user.update
-          ui.msg("Saved #{user}.")
+          # user = Chef::UserV1.from_hash(edited_user)
+          result = root_rest.put("users/#{@user_name}", edited_user)
+          ui.msg("Saved #{@user_name}.")
+          unless result["private_key"].nil?
+            if config[:filename]
+              File.open(config[:filename], "w") do |f|
+                f.print(result["private_key"])
+              end
+            else
+              ui.msg result["private_key"]
+            end
+          end
         else
           ui.msg("User unchanged, not saving.")
         end
+      end
+    end
+
+    private
+
+    # Check the options for ex: input or filename
+    # Read Or Open file to update user information
+    # return updated user
+    def get_updated_user(original_user)
+      if config[:input]
+        edited_user = JSON.parse(IO.read(config[:input]))
+      elsif config[:filename]
+        file = config[:filename]
+        unless File.exist?(file) ? File.writable?(file) : File.writable?(File.dirname(file))
+          ui.fatal "File #{file} is not writable.  Check permissions."
+          exit 1
+        else
+          output = Chef::JSONCompat.to_json_pretty(original_user)
+          File.open(file, "w") do |f|
+            f.sync = true
+            f.puts output
+            f.close
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup/ for details." unless system("#{config[:editor]} #{f.path}")
+
+            edited_user = JSON.parse(IO.read(f.path))
+          end
+        end
+      else
+        edited_user = JSON.parse(edit_data(original_user, false))
       end
     end
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright 2011-2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 #
 
 require_relative "../knife"
+require_relative "../mixin/root_rest"
 
 class Chef
   class Knife
@@ -24,11 +25,13 @@ class Chef
 
       include Knife::Core::MultiAttributeReturnOption
 
-      deps do
-        require_relative "../user_v1"
-      end
-
       banner "knife user show USER (options)"
+
+      option :with_orgs,
+        long: "--with-orgs",
+        short: "-l"
+
+      include Chef::Mixin::RootRestv0
 
       def run
         @user_name = @name_args[0]
@@ -39,8 +42,12 @@ class Chef
           exit 1
         end
 
-        user = Chef::UserV1.load(@user_name)
-        output(format_for_display(user))
+        results = root_rest.get("users/#{@user_name}")
+        if config[:with_orgs]
+          orgs = root_rest.get("users/#{@user_name}/organizations")
+          results["organizations"] = orgs.map { |o| o["organization"]["name"] }
+        end
+        output(format_for_display(results))
       end
 
     end
