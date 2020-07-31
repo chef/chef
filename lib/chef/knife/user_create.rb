@@ -23,7 +23,7 @@ require_relative "../dist"
 
 class Chef
   class Knife
-    class UserCreate < Chef::Knife
+    class UserCreate < Knife
 
       include Chef::Mixin::RootRestv0
 

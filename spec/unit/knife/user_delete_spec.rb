@@ -116,10 +116,6 @@ describe Chef::Knife::UserDelete do
       end
 
     end
-    context "without --remove-from-admin-groups" do
-
-    end
-
   end
 
   context "#admin_group_memberships" do
