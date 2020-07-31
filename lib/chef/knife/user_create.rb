@@ -23,7 +23,7 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
-    class UserCreate < Chef::Knife
+    class UserCreate < Knife
 
       include Chef::Mixin::RootRestv0
 
