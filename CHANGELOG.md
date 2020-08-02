@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.55 -->
-## [v16.3.55](https://github.com/chef/chef/tree/v16.3.55) (2020-07-31)
+<!-- latest_release 16.3.56 -->
+## [v16.3.56](https://github.com/chef/chef/tree/v16.3.56) (2020-08-02)
 
 #### Merged Pull Requests
-- Cleanup more files from our package&#39;s gem installs [#10242](https://github.com/chef/chef/pull/10242) ([tas50](https://github.com/tas50))
+- Further slim down libxml2 [#10244](https://github.com/chef/chef/pull/10244) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Further slim down libxml2 [#10244](https://github.com/chef/chef/pull/10244) ([tas50](https://github.com/tas50)) <!-- 16.3.56 -->
 - Cleanup more files from our package&#39;s gem installs [#10242](https://github.com/chef/chef/pull/10242) ([tas50](https://github.com/tas50)) <!-- 16.3.55 -->
 - Remove debug code from libxml2 [#10241](https://github.com/chef/chef/pull/10241) ([tas50](https://github.com/tas50)) <!-- 16.3.54 -->
 - Update libffi to 3.3 [#10238](https://github.com/chef/chef/pull/10238) ([tas50](https://github.com/tas50)) <!-- 16.3.53 -->
