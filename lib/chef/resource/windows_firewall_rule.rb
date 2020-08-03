@@ -273,11 +273,11 @@ class Chef
           requirements.assert(:create) do |a|
             a.assertion do
               if new_resource.icmp_type.is_a?(Integer)
-                (0..255).include?(new_resource.icmp_type)
+                (0..255).cover?(new_resource.icmp_type)
               elsif new_resource.icmp_type.is_a?(String) && !new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
-                (0..255).include?(new_resource.icmp_type.to_i)
+                (0..255).cover?(new_resource.icmp_type.to_i)
               elsif new_resource.icmp_type.is_a?(String) && new_resource.icmp_type.include?(":") && new_resource.protocol.start_with?("ICMP")
-                new_resource.icmp_type.split(":").all? { |type| (0..255).include?(type.to_i) }
+                new_resource.icmp_type.split(":").all? { |type| (0..255).cover?(type.to_i) }
               else
                 true
               end
