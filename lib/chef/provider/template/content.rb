@@ -1,3 +1,4 @@
+# rubocop: disable Performance/InefficientHashSearch
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
