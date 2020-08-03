@@ -185,9 +185,9 @@ class Chef
             } else {return $false}
           CODE
           firewall_status = powershell_out(cmd).stdout
-          if firewall_status =~ /True/
+          if /True/.match?(firewall_status)
             true
-          elsif firewall_status =~ /False/
+          elsif /False/.match?(firewall_status)
             false
           end
         end
