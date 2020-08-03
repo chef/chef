@@ -562,7 +562,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         # Sets a value in user information hash using Chef attributes as keys.
         #
         def dscl_set(user_hash, key, value)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
 
           user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
           user_hash
@@ -572,7 +572,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         # Gets a value from user information hash using Chef attributes as keys.
         #
         def dscl_get(user_hash, key)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
 
           # DSCL values are set as arrays
           value = user_hash[DSCL_PROPERTY_MAP[key]]
