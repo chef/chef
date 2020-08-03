@@ -40,14 +40,7 @@ class Chef
           visitor = lambda do |obj|
             case obj
             when Hash
-              # If this is an Attribute object, we need to change class otherwise
-              # we get the immutable behavior. This could probably be fixed by
-              # using Hash#transform_values once we only support Ruby 2.4.
-              obj_class = obj.is_a?(Chef::Node::ImmutableMash) ? Mash : obj.class
-              # Avoid mutating hashes in the resource in case we're changing anything.
-              obj.each_with_object(obj_class.new) do |(key, value), memo|
-                memo[key] = visitor.call(value)
-              end
+              obj.transform_values { |value| visitor.call(value) }
             when Array
               # Avoid mutating arrays in the resource in case we're changing anything.
               obj.map { |value| visitor.call(value) }
