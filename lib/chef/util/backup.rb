@@ -87,7 +87,7 @@ class Chef
       end
 
       def sorted_backup_files
-        unsorted_backup_files.sort { |a, b| b <=> a }
+        unsorted_backup_files.sort.reverse # faster than sort { |a, b| b <=> a }
       end
     end
   end
