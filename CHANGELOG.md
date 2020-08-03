@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.57 -->
-## [v16.3.57](https://github.com/chef/chef/tree/v16.3.57) (2020-08-03)
+<!-- latest_release 16.3.58 -->
+## [v16.3.58](https://github.com/chef/chef/tree/v16.3.58) (2020-08-03)
 
 #### Merged Pull Requests
-- Use .match? when we don&#39;t need data from a regex match [#10248](https://github.com/chef/chef/pull/10248) ([tas50](https://github.com/tas50))
+- Convert osx_profile to custom resource [#10239](https://github.com/chef/chef/pull/10239) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert osx_profile to custom resource [#10239](https://github.com/chef/chef/pull/10239) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.58 -->
 - Use .match? when we don&#39;t need data from a regex match [#10248](https://github.com/chef/chef/pull/10248) ([tas50](https://github.com/tas50)) <!-- 16.3.57 -->
 - Further slim down libxml2 [#10244](https://github.com/chef/chef/pull/10244) ([tas50](https://github.com/tas50)) <!-- 16.3.56 -->
 - Cleanup more files from our package&#39;s gem installs [#10242](https://github.com/chef/chef/pull/10242) ([tas50](https://github.com/tas50)) <!-- 16.3.55 -->
