@@ -722,7 +722,7 @@ describe Chef::ProviderResolver do
           %w{mac_os_x mac_os_x_server} => {
             group: [ Chef::Resource::Group, Chef::Provider::Group::Dscl ],
             package: [ Chef::Resource::HomebrewPackage, Chef::Provider::Package::Homebrew ],
-            osx_profile: [ Chef::Resource::OsxProfile, Chef::Provider::OsxProfile],
+            osx_profile: [ Chef::Resource::OsxProfile],
             user: [ Chef::Resource::User::DsclUser, Chef::Provider::User::Dscl ],
 
             "mac_os_x" => {
