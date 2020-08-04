@@ -189,14 +189,12 @@ class Chef
       action_class do
         def key_file
           @key_file ||=
-            begin
-              if new_resource.key_file
-                new_resource.key_file
-              else
-                path, file = ::File.split(new_resource.path)
-                filename = ::File.basename(file, ::File.extname(file))
-                path + "/" + filename + ".key"
-              end
+            if new_resource.key_file
+              new_resource.key_file
+            else
+              path, file = ::File.split(new_resource.path)
+              filename = ::File.basename(file, ::File.extname(file))
+              path + "/" + filename + ".key"
             end
         end
 
