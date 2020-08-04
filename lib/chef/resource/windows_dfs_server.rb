@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDfsServer < Chef::Resource
+      unified_mode true
+
       provides :windows_dfs_server
 
       description "Use the **windows_dfs_server** resource to set system-wide DFS settings."

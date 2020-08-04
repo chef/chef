@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsShortcut < Chef::Resource
+      unified_mode true
+
       provides(:windows_shortcut) { true }
 
       description "Use the **windows_shortcut** resource to create shortcut files on Windows."

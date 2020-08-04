@@ -82,6 +82,9 @@ class Chef
                                  "User / Device Claims",
                                  "User Account Management",
                                 ].freeze
+
+      unified_mode true
+
       provides :windows_audit_policy
 
       description "Use the **windows_audit_policy** resource to configure system level and per-user Windows advanced audit policy settings."

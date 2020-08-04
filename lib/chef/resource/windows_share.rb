@@ -26,6 +26,8 @@ require_relative "../util/path_helper"
 class Chef
   class Resource
     class WindowsShare < Chef::Resource
+      unified_mode true
+
       provides :windows_share
 
       description "Use the **windows_share** resource to create, modify and remove Windows shares."
@@ -231,6 +233,8 @@ class Chef
       end
 
       action_class do
+        private
+
         def different_path?
           return false if current_resource.nil? # going from nil to something isn't different for our concerns
           return false if current_resource.path == Chef::Util::PathHelper.cleanpath(new_resource.path)

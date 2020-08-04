@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUac < Chef::Resource
+      unified_mode true
+
       provides :windows_uac
 
       description 'The *windows_uac* resource configures UAC on Windows hosts by setting registry keys at `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System`'
