@@ -224,7 +224,7 @@ class Chef
             csr_subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
             csr_subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
             csr_subject.add_entry("CN", new_resource.common_name)
-            csr_subject.add_entry("emailcsr_subject.address", new_resource.email) unless new_resource.email.nil?
+            csr_subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
           end
         end
 
