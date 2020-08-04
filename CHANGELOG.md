@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.6 -->
-## [v16.4.6](https://github.com/chef/chef/tree/v16.4.6) (2020-08-04)
+<!-- latest_release 16.4.7 -->
+## [v16.4.7](https://github.com/chef/chef/tree/v16.4.7) (2020-08-04)
 
 #### Merged Pull Requests
-- Remove more requires that come for free [#10258](https://github.com/chef/chef/pull/10258) ([tas50](https://github.com/tas50))
+- Convert windows custom resources to unified_mode [#10260](https://github.com/chef/chef/pull/10260) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert windows custom resources to unified_mode [#10260](https://github.com/chef/chef/pull/10260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.7 -->
 - Remove more requires that come for free [#10258](https://github.com/chef/chef/pull/10258) ([tas50](https://github.com/tas50)) <!-- 16.4.6 -->
 - added configuration options for chef-server [#10213](https://github.com/chef/chef/pull/10213) ([tehlers320](https://github.com/tehlers320)) <!-- 16.4.5 -->
 - Pull Ohai 16.4.2 into Chef Infra Client [#10259](https://github.com/chef/chef/pull/10259) ([tas50](https://github.com/tas50)) <!-- 16.4.4 -->
