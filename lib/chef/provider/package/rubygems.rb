@@ -188,7 +188,7 @@ class Chef
                 # Use the API that 'gem install' calls which does not pull down the rubygems universe
                 begin
                   rs = dependency_installer.resolve_dependencies gem_dependency.name, gem_dependency.requirement
-                  rs.specs.select { |s| s.name == gem_dependency.name }.first
+                  rs.specs.find { |s| s.name == gem_dependency.name }
                 rescue Gem::UnsatisfiableDependencyError
                   nil
                 end
