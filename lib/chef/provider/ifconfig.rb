@@ -17,7 +17,6 @@
 #
 
 require_relative "../log"
-require_relative "../mixin/shell_out"
 require_relative "../provider"
 require_relative "../resource/file"
 require_relative "../exceptions"
@@ -33,8 +32,6 @@ class Chef
     #   end
     class Ifconfig < Chef::Provider
       provides :ifconfig
-
-      include Chef::Mixin::ShellOut
 
       attr_accessor :config_template
       attr_accessor :config_path

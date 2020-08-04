@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/shell_out"
 require "rexml/document" unless defined?(REXML::Document)
 require "iso8601" if ChefUtils.windows?
 require_relative "../provider"
@@ -26,8 +25,6 @@ require "win32/taskscheduler" if ChefUtils.windows?
 class Chef
   class Provider
     class WindowsTask < Chef::Provider
-      include Chef::Mixin::ShellOut
-
       if ChefUtils.windows?
         include Win32
 
