@@ -24,6 +24,8 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      unified_mode true
+
       provides :openssl_ec_public_key
 
       description "Use the **openssl_ec_public_key** resource to generate elliptic curve (EC) public key files from a given EC private key."

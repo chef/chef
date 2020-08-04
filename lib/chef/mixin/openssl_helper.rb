@@ -412,7 +412,7 @@ class Chef
       # @param [string] cert_file path of the cert file or cert content
       # @param [integer] renew_before_expiry number of days before expiration
       # @return [true, false]
-      def cert_need_renewall?(cert_file, renew_before_expiry)
+      def cert_need_renewal?(cert_file, renew_before_expiry)
         resp = true
         cert_content = ::File.exist?(cert_file) ? File.read(cert_file) : cert_file
         begin
@@ -427,6 +427,8 @@ class Chef
 
         resp
       end
+
+      alias_method :cert_need_renewall?, :cert_need_renewal?
 
       private
 

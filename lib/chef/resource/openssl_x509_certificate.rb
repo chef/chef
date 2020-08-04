@@ -24,6 +24,8 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      unified_mode true
+
       provides :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 
@@ -161,7 +163,7 @@ class Chef
           content cert.to_pem
         end
 
-        if !new_resource.renew_before_expiry.nil? && cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry)
+        if !new_resource.renew_before_expiry.nil? && cert_need_renewal?(new_resource.path, new_resource.renew_before_expiry)
           file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
@@ -173,7 +175,7 @@ class Chef
         end
 
         if new_resource.csr_file.nil?
-          file new_resource.key_file do
+          file key_file do
             action :create_if_missing
             owner new_resource.owner unless new_resource.owner.nil?
             group new_resource.group unless new_resource.group.nil?
@@ -185,24 +187,25 @@ class Chef
       end
 
       action_class do
-        def generate_key_file
-          unless new_resource.key_file
-            path, file = ::File.split(new_resource.path)
-            filename = ::File.basename(file, ::File.extname(file))
-            new_resource.key_file path + "/" + filename + ".key"
-          end
-          new_resource.key_file
+        def key_file
+          @key_file ||=
+            if new_resource.key_file
+              new_resource.key_file
+            else
+              path, file = ::File.split(new_resource.path)
+              filename = ::File.basename(file, ::File.extname(file))
+              path + "/" + filename + ".key"
+            end
         end
 
         def key
-          @key ||= if priv_key_file_valid?(generate_key_file, new_resource.key_pass)
-                     OpenSSL::PKey.read ::File.read(generate_key_file), new_resource.key_pass
+          @key ||= if priv_key_file_valid?(key_file, new_resource.key_pass)
+                     OpenSSL::PKey.read ::File.read(key_file), new_resource.key_pass
                    elsif new_resource.key_type == "rsa"
                      gen_rsa_priv_key(new_resource.key_length)
                    else
                      gen_ec_priv_key(new_resource.key_curve)
                    end
-          @key
         end
 
         def request
@@ -214,15 +217,15 @@ class Chef
         end
 
         def subject
-          subject = OpenSSL::X509::Name.new
-          subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
-          subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
-          subject.add_entry("L", new_resource.city) unless new_resource.city.nil?
-          subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
-          subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
-          subject.add_entry("CN", new_resource.common_name)
-          subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
-          subject
+          OpenSSL::X509::Name.new.tap do |csr_subject|
+            csr_subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
+            csr_subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
+            csr_subject.add_entry("L", new_resource.city) unless new_resource.city.nil?
+            csr_subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
+            csr_subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
+            csr_subject.add_entry("CN", new_resource.common_name)
+            csr_subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
+          end
         end
 
         def ca_private_key
