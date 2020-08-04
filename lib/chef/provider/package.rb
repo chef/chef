@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/shell_out"
 require_relative "../mixin/subclass_directive"
 require_relative "../log"
 require_relative "../file_cache"
@@ -27,7 +26,6 @@ require "shellwords" unless defined?(Shellwords)
 class Chef
   class Provider
     class Package < Chef::Provider
-      include Chef::Mixin::ShellOut
       extend Chef::Mixin::SubclassDirective
 
       # subclasses declare this if they want all their arguments as arrays of packages and names
