@@ -39,15 +39,15 @@ class Chef
         errors = [ ]
 
         tempfile_dirnames.each do |tempfile_dirname|
-          begin
-            # preserving the file extension of the target filename should be considered a public API
-            tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
-            break
-          rescue SystemCallError => e
-            message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
-            Chef::Log.trace(message)
-            errors << message
-          end
+
+          # preserving the file extension of the target filename should be considered a public API
+          tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
+          break
+        rescue SystemCallError => e
+          message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
+          Chef::Log.trace(message)
+          errors << message
+
         end
 
         raise Chef::Exceptions::FileContentStagingError, errors if tf.nil?

@@ -125,12 +125,12 @@ describe "knife common options", :workstation do
 
     context "when the default port (8889) is already bound" do
       before :each do
-        begin
-          @server = ChefZero::Server.new(host: "localhost", port: 8889)
-          @server.start_background
-        rescue Errno::EADDRINUSE
-          # OK.  Don't care who has it in use, as long as *someone* does.
-        end
+
+        @server = ChefZero::Server.new(host: "localhost", port: 8889)
+        @server.start_background
+      rescue Errno::EADDRINUSE
+        # OK.  Don't care who has it in use, as long as *someone* does.
+
       end
       after :each do
         @server.stop if @server
@@ -144,12 +144,12 @@ describe "knife common options", :workstation do
 
     context "when port 9999 is already bound" do
       before :each do
-        begin
-          @server = ChefZero::Server.new(host: "localhost", port: 9999)
-          @server.start_background
-        rescue Errno::EADDRINUSE
-          # OK.  Don't care who has it in use, as long as *someone* does.
-        end
+
+        @server = ChefZero::Server.new(host: "localhost", port: 9999)
+        @server.start_background
+      rescue Errno::EADDRINUSE
+        # OK.  Don't care who has it in use, as long as *someone* does.
+
       end
       after :each do
         @server.stop if @server

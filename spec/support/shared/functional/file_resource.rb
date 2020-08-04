@@ -476,12 +476,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 
@@ -504,12 +504,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 
@@ -535,12 +535,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 

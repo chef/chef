@@ -96,21 +96,21 @@ class Chef
         found_any = false
         error = false
         results.each do |result|
-          begin
-            result.delete(config[:recurse])
-            deleted_any = true
-            found_any = true
-          rescue Chef::ChefFS::FileSystem::NotFoundError
-            # This is not an error unless *all* of them were not found
-          rescue Chef::ChefFS::FileSystem::MustDeleteRecursivelyError => e
-            ui.error "#{format_path_with_root(e.entry)} must be deleted recursively!  Pass -r to knife delete."
-            found_any = true
-            error = true
-          rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
-            ui.error "#{format_path_with_root(e.entry)} #{e.reason}."
-            found_any = true
-            error = true
-          end
+
+          result.delete(config[:recurse])
+          deleted_any = true
+          found_any = true
+        rescue Chef::ChefFS::FileSystem::NotFoundError
+          # This is not an error unless *all* of them were not found
+        rescue Chef::ChefFS::FileSystem::MustDeleteRecursivelyError => e
+          ui.error "#{format_path_with_root(e.entry)} must be deleted recursively!  Pass -r to knife delete."
+          found_any = true
+          error = true
+        rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
+          ui.error "#{format_path_with_root(e.entry)} #{e.reason}."
+          found_any = true
+          error = true
+
         end
         if deleted_any
           output("Deleted #{format_path(results[0])}")

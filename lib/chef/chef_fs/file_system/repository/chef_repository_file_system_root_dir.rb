@@ -109,23 +109,23 @@ class Chef
               child = root_dir.create_child(name, file_contents)
             else
               child_paths[name].each do |path|
-                begin
-                  ::FileUtils.mkdir_p(path)
-                  ::FileUtils.chmod(0700, path)
-                  if ChefUtils.windows?
-                    all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
-                    administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
-                    owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
-                    dacl = Chef::ReservedNames::Win32::Security::ACL.create([
-                      Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, all_mask),
-                      Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, all_mask),
-                    ])
-                    so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path)
-                    so.owner = owner
-                    so.set_dacl(dacl, false)
-                  end
-                rescue Errno::EEXIST
+
+                ::FileUtils.mkdir_p(path)
+                ::FileUtils.chmod(0700, path)
+                if ChefUtils.windows?
+                  all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
+                  administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
+                  owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
+                  dacl = Chef::ReservedNames::Win32::Security::ACL.create([
+                    Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, all_mask),
+                    Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, all_mask),
+                  ])
+                  so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path)
+                  so.owner = owner
+                  so.set_dacl(dacl, false)
                 end
+              rescue Errno::EEXIST
+
               end
               child = make_child_entry(name)
             end

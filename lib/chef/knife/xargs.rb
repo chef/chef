@@ -204,25 +204,25 @@ class Chef
         error = false
         # Create the temporary files
         tempfiles.each_pair do |tempfile, file|
-          begin
-            value = file[:file].read
-            file[:value] = value
-            tempfile.open
-            tempfile.write(value)
-            tempfile.close
-          rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
-            ui.error "#{format_path(e.entry)}: #{e.reason}."
-            error = true
-            tempfile.close!
-            tempfiles.delete(tempfile)
-            next
-          rescue Chef::ChefFS::FileSystem::NotFoundError => e
-            ui.error "#{format_path(e.entry)}: No such file or directory"
-            error = true
-            tempfile.close!
-            tempfiles.delete(tempfile)
-            next
-          end
+
+          value = file[:file].read
+          file[:value] = value
+          tempfile.open
+          tempfile.write(value)
+          tempfile.close
+        rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
+          ui.error "#{format_path(e.entry)}: #{e.reason}."
+          error = true
+          tempfile.close!
+          tempfiles.delete(tempfile)
+          next
+        rescue Chef::ChefFS::FileSystem::NotFoundError => e
+          ui.error "#{format_path(e.entry)}: No such file or directory"
+          error = true
+          tempfile.close!
+          tempfiles.delete(tempfile)
+          next
+
         end
 
         return error if error && tempfiles.size == 0

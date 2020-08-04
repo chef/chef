@@ -104,16 +104,16 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should render local files" do
-      begin
-        tf = Tempfile.new("partial")
-        tf.write "test"
-        tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
-        expect(output).to eq("before {test} after")
-      ensure
-        tf.close
-      end
+      tf = Tempfile.new("partial")
+      tf.write "test"
+      tf.rewind
+
+      output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
+      expect(output).to eq("before {test} after")
+    ensure
+      tf.close
+
     end
 
     it "should render partials from a different cookbook" do
@@ -124,16 +124,16 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should render using the source argument if provided" do
-      begin
-        tf = Tempfile.new("partial")
-        tf.write "test"
-        tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
-        expect(output).to eq("before {test} after")
-      ensure
-        tf.close
-      end
+      tf = Tempfile.new("partial")
+      tf.write "test"
+      tf.rewind
+
+      output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
+      expect(output).to eq("before {test} after")
+    ensure
+      tf.close
+
     end
 
     it "should pass the node to partials" do
@@ -195,11 +195,11 @@ describe Chef::Mixin::Template, "render_template" do
 
       describe "the raised TemplateError" do
         subject(:exception) do
-          begin
-            do_raise
-          rescue Chef::Mixin::Template::TemplateError => e
-            e
-          end
+
+          do_raise
+        rescue Chef::Mixin::Template::TemplateError => e
+          e
+
         end
 
         it "should contain template file and line numbers" do
@@ -274,11 +274,11 @@ describe Chef::Mixin::Template, "render_template" do
 
     describe "the raised TemplateError" do
       before :each do
-        begin
-          do_raise
-        rescue Chef::Mixin::Template::TemplateError => e
-          @exception = e
-        end
+
+        do_raise
+      rescue Chef::Mixin::Template::TemplateError => e
+        @exception = e
+
       end
 
       it "should have the original exception" do

@@ -707,16 +707,16 @@ class Chef
     #
     def converge(run_context)
       catch(:end_client_run_early) do
-        begin
-          events.converge_start(run_context)
-          logger.debug("Converging node #{node_name}")
-          @runner = Chef::Runner.new(run_context)
-          @runner.converge
-          events.converge_complete
-        rescue Exception => e
-          events.converge_failed(e)
-          raise e
-        end
+
+        events.converge_start(run_context)
+        logger.debug("Converging node #{node_name}")
+        @runner = Chef::Runner.new(run_context)
+        @runner.converge
+        events.converge_complete
+      rescue Exception => e
+        events.converge_failed(e)
+        raise e
+
       end
     end
 

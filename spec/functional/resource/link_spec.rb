@@ -55,13 +55,13 @@ describe Chef::Resource::Link do
   end
 
   after(:each) do
-    begin
-      cleanup_link(to) if File.exists?(to)
-      cleanup_link(target_file) if File.exists?(target_file)
-      cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
-    rescue
-      puts "Could not remove a file: #{$!}"
-    end
+
+    cleanup_link(to) if File.exists?(to)
+    cleanup_link(target_file) if File.exists?(target_file)
+    cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+  rescue
+    puts "Could not remove a file: #{$!}"
+
   end
 
   def user(user)

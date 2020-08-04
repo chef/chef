@@ -39,11 +39,11 @@ class Chef
 
           requirements.assert(:create, :manage, :modify) do |a|
             a.assertion do
-              begin
-                to_add(new_resource.members).all? { |member| Etc.getpwnam(member) }
-              rescue
-                false
-              end
+
+              to_add(new_resource.members).all? { |member| Etc.getpwnam(member) }
+            rescue
+              false
+
             end
             a.failure_message Chef::Exceptions::Group, "Could not add users #{to_add(new_resource.members).join(", ")} to #{new_resource.group_name}: one of these users does not exist"
             a.whyrun "Could not find one of these users: #{to_add(new_resource.members).join(", ")}. Assuming it will be created by a prior step"

@@ -26,11 +26,11 @@ describe "knife serve", :workstation do
   def with_knife_serve
     exception = nil
     t = Thread.new do
-      begin
-        knife("serve --chef-zero-port=8890")
-      rescue
-        exception = $!
-      end
+
+      knife("serve --chef-zero-port=8890")
+    rescue
+      exception = $!
+
     end
     begin
       Chef::Config.log_level = :debug

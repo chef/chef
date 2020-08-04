@@ -59,7 +59,7 @@ class Chef
       # Specifies the path of the location of the folder to share. The path must be fully qualified. Relative paths or paths that contain wildcard characters are not permitted.
       property :path, String,
         description: "The path of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created.",
-        coerce: proc { |p| p.tr('/', "\\") || p }
+        coerce: proc { |p| p.tr("/", "\\") || p }
 
       # Specifies an optional description of the SMB share. A description of the share is displayed by running the Get-SmbShare cmdlet. The description may not contain more than 256 characters.
       property :description, String,

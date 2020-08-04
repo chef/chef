@@ -106,16 +106,16 @@ class Chef
         # join them. otherwise, print out the old one.
         old_hunk = hunk = nil
         diff_data.each do |piece|
-          begin
-            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
-            file_length_difference = hunk.file_length_difference
-            next unless old_hunk
-            next if hunk.merge(old_hunk)
 
-            diff_str << old_hunk.diff(:unified) << "\n"
-          ensure
-            old_hunk = hunk
-          end
+          hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
+          file_length_difference = hunk.file_length_difference
+          next unless old_hunk
+          next if hunk.merge(old_hunk)
+
+          diff_str << old_hunk.diff(:unified) << "\n"
+        ensure
+          old_hunk = hunk
+
         end
         diff_str << old_hunk.diff(:unified) << "\n"
         diff_str

@@ -213,11 +213,11 @@ class Chef::Application::Apply < Chef::Application
     end
     runner = Chef::Runner.new(run_context)
     catch(:end_client_run_early) do
-      begin
-        runner.converge
-      ensure
-        @recipe_fh.close
-      end
+
+      runner.converge
+    ensure
+      @recipe_fh.close
+
     end
     Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end

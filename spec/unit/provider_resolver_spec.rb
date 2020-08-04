@@ -54,11 +54,11 @@ describe Chef::ProviderResolver do
 
     let(:provider_resolver) { Chef::ProviderResolver.new(node, resource, action) }
     let(:resolved_provider) do
-      begin
-        resource ? resource.provider_for_action(action).class : nil
-      rescue Chef::Exceptions::ProviderNotFound
-        nil
-      end
+
+      resource ? resource.provider_for_action(action).class : nil
+    rescue Chef::Exceptions::ProviderNotFound
+      nil
+
     end
 
     let(:service_name) { "test" }

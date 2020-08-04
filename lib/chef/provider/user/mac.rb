@@ -583,16 +583,16 @@ class Chef
           timeout = Time.now + 5
 
           loop do
-            begin
-              run_dscl("read", "/Users/#{new_resource.username}", "ShadowHashData")
-              break
-            rescue Chef::Exceptions::DsclCommandFailed => e
-              if Time.now < timeout
-                sleep 0.1
-              else
-                raise Chef::Exceptions::User, e.message
-              end
+
+            run_dscl("read", "/Users/#{new_resource.username}", "ShadowHashData")
+            break
+          rescue Chef::Exceptions::DsclCommandFailed => e
+            if Time.now < timeout
+              sleep 0.1
+            else
+              raise Chef::Exceptions::User, e.message
             end
+
           end
         end
 

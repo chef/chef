@@ -47,17 +47,17 @@ class Chef
             # ACL writes are fun.
             acls = data_handler.normalize(Chef::JSONCompat.parse(file_contents), self)
             PERMISSIONS.each do |permission|
-              begin
-                rest.put("#{api_path}/#{permission}", { permission => acls[permission] })
-              rescue Timeout::Error => e
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
-              rescue Net::HTTPClientException => e
-                if e.response.code == "404"
-                  raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-                else
-                  raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "HTTP error writing: #{e}")
-                end
+
+              rest.put("#{api_path}/#{permission}", { permission => acls[permission] })
+            rescue Timeout::Error => e
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
+            rescue Net::HTTPClientException => e
+              if e.response.code == "404"
+                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+              else
+                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "HTTP error writing: #{e}")
               end
+
             end
           end
         end
