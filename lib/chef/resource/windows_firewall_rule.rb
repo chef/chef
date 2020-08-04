@@ -24,6 +24,8 @@ require_relative "../json_compat"
 class Chef
   class Resource
     class WindowsFirewallRule < Chef::Resource
+      unified_mode true
+
       provides :windows_firewall_rule
 
       description "Use the **windows_firewall_rule** resource to create, change or remove Windows firewall rules."

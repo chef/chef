@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDnsRecord < Chef::Resource
+      unified_mode true
+
       provides :windows_dns_record
 
       description "The windows_dns_record resource creates a DNS record for the given domain."
@@ -54,10 +56,9 @@ class Chef
           not_if new_resource.dns_server.casecmp?("localhost")
         end
 
-        powershell_package "xDnsServer" do
-        end
+        powershell_package "xDnsServer"
 
-        do_it "Present"
+        run_dsc_resource "Present"
       end
 
       action :delete do
@@ -67,14 +68,16 @@ class Chef
           not_if new_resource.dns_server.casecmp?("localhost")
         end
 
-        powershell_package "xDnsServer" do
-        end
+        powershell_package "xDnsServer"
 
-        do_it "Absent"
+        run_dsc_resource "Absent"
       end
 
       action_class do
-        def do_it(ensure_prop)
+        private
+
+        # @api private
+        def run_dsc_resource(ensure_prop)
           dsc_resource "xDnsRecord #{new_resource.record_name}.#{new_resource.zone} #{ensure_prop}" do
             module_name "xDnsServer"
             resource :xDnsRecord

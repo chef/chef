@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUserPrivilege < Chef::Resource
+      unified_mode true
+
       privilege_opts = %w{SeTrustedCredManAccessPrivilege
                           SeNetworkLogonRight
                           SeTcbPrivilege

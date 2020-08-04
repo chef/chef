@@ -22,6 +22,8 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeatureDism < Chef::Resource
+      unified_mode true
+
       provides(:windows_feature_dism) { true }
 
       description "Use the **windows_feature_dism** resource to add, remove, or entirely delete Windows features and roles using DISM."
@@ -125,6 +127,8 @@ class Chef
       end
 
       action_class do
+        private
+
         # @return [Array] features the user has requested to install which need installation
         def features_to_install
           @install ||= begin
@@ -170,6 +174,12 @@ class Chef
           unavailable = (new_resource.feature_name - all_available)
           raise "The Windows feature#{"s" if unavailable.count > 1} #{unavailable.join(",")} #{unavailable.count > 1 ? "are" : "is"} not available on this version of Windows. Run 'dism /online /Get-Features' to see the list of available feature names." unless unavailable.empty?
         end
+
+        #
+        # FIXME FIXME FIXME
+        # The node object should not be used for caching state like this and this is not a public API and may break.
+        # FIXME FIXME FIXME
+        #
 
         # run dism.exe to get a list of all available features and their state
         # and save that to the node at node.override level.

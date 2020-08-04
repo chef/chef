@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsSecurityPolicy < Chef::Resource
+      unified_mode true
+
       provides :windows_security_policy
 
       # The valid policy_names options found here

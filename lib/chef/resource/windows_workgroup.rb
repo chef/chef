@@ -57,6 +57,7 @@ class Chef
 
       property :password, String,
         description: "The password for the local administrator user. Required if using the `user` property.",
+        sensitive: true,
         desired_state: false
 
       property :reboot, Symbol,
@@ -83,6 +84,7 @@ class Chef
       end
 
       # define this again so we can default it to true. Otherwise failures print the password
+      # FIXME: this should now be unnecessary with the password property itself marked sensitive?
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
 
