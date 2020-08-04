@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.3 -->
-## [v16.4.3](https://github.com/chef/chef/tree/v16.4.3) (2020-08-04)
+<!-- latest_release 16.4.4 -->
+## [v16.4.4](https://github.com/chef/chef/tree/v16.4.4) (2020-08-04)
 
 #### Merged Pull Requests
-- Use find instead of select.first [#10255](https://github.com/chef/chef/pull/10255) ([tas50](https://github.com/tas50))
+- Pull Ohai 16.4.2 into Chef Infra Client [#10259](https://github.com/chef/chef/pull/10259) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull Ohai 16.4.2 into Chef Infra Client [#10259](https://github.com/chef/chef/pull/10259) ([tas50](https://github.com/tas50)) <!-- 16.4.4 -->
 - Use find instead of select.first [#10255](https://github.com/chef/chef/pull/10255) ([tas50](https://github.com/tas50)) <!-- 16.4.3 -->
 - Fix second chef run hang for windows_font resource [#10257](https://github.com/chef/chef/pull/10257) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.4.2 -->
 - Remove unnecessary Mixin::ShellOut in providers [#10256](https://github.com/chef/chef/pull/10256) ([tas50](https://github.com/tas50)) <!-- 16.4.1 -->
