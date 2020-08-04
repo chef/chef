@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.64 -->
-## [v16.3.64](https://github.com/chef/chef/tree/v16.3.64) (2020-08-04)
+<!-- latest_release 16.3.65 -->
+## [v16.3.65](https://github.com/chef/chef/tree/v16.3.65) (2020-08-04)
 
 #### Merged Pull Requests
-- Use .count instead of .select{}.count [#10252](https://github.com/chef/chef/pull/10252) ([tas50](https://github.com/tas50))
+- Update RuboCop config to Ruby 2.6 [#10254](https://github.com/chef/chef/pull/10254) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update RuboCop config to Ruby 2.6 [#10254](https://github.com/chef/chef/pull/10254) ([tas50](https://github.com/tas50)) <!-- 16.3.65 -->
 - Use .count instead of .select{}.count [#10252](https://github.com/chef/chef/pull/10252) ([tas50](https://github.com/tas50)) <!-- 16.3.64 -->
 - apt_repository: Small code refactor in key_is_valid? method [#10253](https://github.com/chef/chef/pull/10253) ([phiggins](https://github.com/phiggins)) <!-- 16.3.63 -->
 - Use tr not gsub for string replacement [#10251](https://github.com/chef/chef/pull/10251) ([tas50](https://github.com/tas50)) <!-- 16.3.62 -->
