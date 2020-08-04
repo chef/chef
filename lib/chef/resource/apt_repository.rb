@@ -192,16 +192,7 @@ class Chef
         #
         # @return [Boolean] is the key valid or not
         def key_is_valid?(key)
-          valid = true
-
-          so = shell_out("apt-key", "list")
-          so.stdout.split(/\n/).map do |t|
-            if %r{^\/#{key}.*\[expired: .*\]$}.match?(t)
-              logger.debug "Found expired key: #{t}"
-              valid = false
-              break
-            end
-          end
+          valid = shell_out("apt-key", "list").stdout.each_line.none?(%r{^\/#{key}.*\[expired: .*\]$})
 
           logger.debug "key #{key} #{valid ? "is valid" : "is not valid"}"
           valid
