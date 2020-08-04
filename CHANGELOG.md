@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.3.62 -->
-## [v16.3.62](https://github.com/chef/chef/tree/v16.3.62) (2020-08-04)
+<!-- latest_release 16.3.63 -->
+## [v16.3.63](https://github.com/chef/chef/tree/v16.3.63) (2020-08-04)
 
 #### Merged Pull Requests
-- Use tr not gsub for string replacement [#10251](https://github.com/chef/chef/pull/10251) ([tas50](https://github.com/tas50))
+- apt_repository: Small code refactor in key_is_valid? method [#10253](https://github.com/chef/chef/pull/10253) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- apt_repository: Small code refactor in key_is_valid? method [#10253](https://github.com/chef/chef/pull/10253) ([phiggins](https://github.com/phiggins)) <!-- 16.3.63 -->
 - Use tr not gsub for string replacement [#10251](https://github.com/chef/chef/pull/10251) ([tas50](https://github.com/tas50)) <!-- 16.3.62 -->
 - Use .key? instead of keys.include [#10246](https://github.com/chef/chef/pull/10246) ([tas50](https://github.com/tas50)) <!-- 16.3.61 -->
 - Use sort.reverse instead of sort { |a, b| b &lt;=&gt; a } [#10247](https://github.com/chef/chef/pull/10247) ([tas50](https://github.com/tas50)) <!-- 16.3.60 -->
