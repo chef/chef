@@ -16,15 +16,12 @@
 #
 
 require_relative "../resource"
-require_relative "../mixin/powershell_out"
 require_relative "../dist"
 
 class Chef
   class Resource
     class WindowsWorkgroup < Chef::Resource
       provides :windows_workgroup
-
-      include Chef::Mixin::PowershellOut
 
       description "Use the **windows_workgroup** resource to join or change the workgroup of a Windows host."
       introduced "14.5"

@@ -19,8 +19,6 @@
 #
 
 require_relative "exceptions"
-require_relative "dsl/data_query"
-require_relative "dsl/registry_helper"
 require_relative "dsl/reboot_pending"
 require_relative "dsl/resources"
 require_relative "dsl/declare_resource"
@@ -53,8 +51,6 @@ class Chef
     #
 
     include Chef::DSL::DeclareResource
-    include Chef::DSL::DataQuery
-    include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
 
