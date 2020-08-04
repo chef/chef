@@ -525,12 +525,12 @@ class Chef
       def cssh
         cssh_cmd = nil
         %w{csshX cssh}.each do |cmd|
-          begin
-            # Unix and Mac only
-            cssh_cmd = shell_out!("which #{cmd}").stdout.strip
-            break
-          rescue Mixlib::ShellOut::ShellCommandFailed
-          end
+
+          # Unix and Mac only
+          cssh_cmd = shell_out!("which #{cmd}").stdout.strip
+          break
+        rescue Mixlib::ShellOut::ShellCommandFailed
+
         end
         raise Chef::Exceptions::Exec, "no command found for cssh" unless cssh_cmd
 

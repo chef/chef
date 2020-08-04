@@ -132,20 +132,20 @@ class Chef
               end
             else
               tmp_cl.each do |cookbook_name, cookbook|
-                begin
-                  upload([cookbook], justify_width)
-                  upload_ok += 1
-                rescue Exceptions::CookbookNotFoundInRepo => e
-                  upload_failures += 1
-                  ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
-                  Log.debug(e)
-                  upload_failures += 1
-                rescue Exceptions::CookbookFrozen
-                  ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
-                  upload_failures += 1
-                rescue SystemExit => e
-                  raise exit e.status
-                end
+
+                upload([cookbook], justify_width)
+                upload_ok += 1
+              rescue Exceptions::CookbookNotFoundInRepo => e
+                upload_failures += 1
+                ui.error("Could not find cookbook #{cookbook_name} in your cookbook path, skipping it")
+                Log.debug(e)
+                upload_failures += 1
+              rescue Exceptions::CookbookFrozen
+                ui.warn("Not updating version constraints for #{cookbook_name} in the environment as the cookbook is frozen.")
+                upload_failures += 1
+              rescue SystemExit => e
+                raise exit e.status
+
               end
 
               if upload_failures == 0
@@ -172,17 +172,17 @@ class Chef
           else
             upload_set = {}
             @name_args.each do |cookbook_name|
-              begin
-                unless upload_set.key?(cookbook_name)
-                  upload_set[cookbook_name] = cookbook_repo[cookbook_name]
-                  if config[:depends]
-                    upload_set[cookbook_name].metadata.dependencies.each_key { |dep| @name_args << dep }
-                  end
+
+              unless upload_set.key?(cookbook_name)
+                upload_set[cookbook_name] = cookbook_repo[cookbook_name]
+                if config[:depends]
+                  upload_set[cookbook_name].metadata.dependencies.each_key { |dep| @name_args << dep }
                 end
-              rescue Exceptions::CookbookNotFoundInRepo => e
-                ui.error(e.message)
-                Log.debug(e)
               end
+            rescue Exceptions::CookbookNotFoundInRepo => e
+              ui.error(e.message)
+              Log.debug(e)
+
             end
             upload_set
           end

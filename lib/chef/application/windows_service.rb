@@ -78,33 +78,33 @@ class Chef
         while running?
           # Grab the service_action_mutex to make a chef-client run
           @service_action_mutex.synchronize do
-            begin
-              Chef::Log.info("Next #{Chef::Dist::CLIENT} run will happen in #{timeout} seconds")
-              @service_signal.wait(@service_action_mutex, timeout)
 
-              # Continue only if service is RUNNING
-              next if state != RUNNING
+            Chef::Log.info("Next #{Chef::Dist::CLIENT} run will happen in #{timeout} seconds")
+            @service_signal.wait(@service_action_mutex, timeout)
 
-              # Reconfigure each time through to pick up any changes in the client file
-              Chef::Log.info("Reconfiguring with startup parameters")
-              reconfigure(startup_parameters)
-              timeout = Chef::Config[:interval]
+            # Continue only if service is RUNNING
+            next if state != RUNNING
 
-              # Honor splay sleep config
-              timeout += rand Chef::Config[:splay]
+            # Reconfigure each time through to pick up any changes in the client file
+            Chef::Log.info("Reconfiguring with startup parameters")
+            reconfigure(startup_parameters)
+            timeout = Chef::Config[:interval]
 
-              # run chef-client only if service is in RUNNING state
-              next if state != RUNNING
+            # Honor splay sleep config
+            timeout += rand Chef::Config[:splay]
 
-              Chef::Log.info("#{Chef::Dist::CLIENT} service is starting a #{Chef::Dist::CLIENT} run...")
-              run_chef_client
-            rescue SystemExit => e
-              # Do not raise any of the errors here in order to
-              # prevent service crash
-              Chef::Log.error("#{e.class}: #{e}")
-            rescue Exception => e
-              Chef::Log.error("#{e.class}: #{e}")
-            end
+            # run chef-client only if service is in RUNNING state
+            next if state != RUNNING
+
+            Chef::Log.info("#{Chef::Dist::CLIENT} service is starting a #{Chef::Dist::CLIENT} run...")
+            run_chef_client
+          rescue SystemExit => e
+            # Do not raise any of the errors here in order to
+            # prevent service crash
+            Chef::Log.error("#{e.class}: #{e}")
+          rescue Exception => e
+            Chef::Log.error("#{e.class}: #{e}")
+
           end
         end
 

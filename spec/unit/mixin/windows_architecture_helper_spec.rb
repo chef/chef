@@ -50,10 +50,10 @@ describe Chef::Mixin::WindowsArchitectureHelper do
 
   it "raises an error if an invalid architecture is passed to assert_valid_windows_architecture!" do
     @invalid_architectures.each do |architecture|
-      begin
-        expect(assert_valid_windows_architecture!(architecture)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
-      rescue Chef::Exceptions::Win32ArchitectureIncorrect
-      end
+
+      expect(assert_valid_windows_architecture!(architecture)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+    rescue Chef::Exceptions::Win32ArchitectureIncorrect
+
     end
   end
 

@@ -128,11 +128,11 @@ class Chef
       end
 
       load_current_value do
-        begin
-          value get_sysctl_value(key)
-        rescue
-          current_value_does_not_exist!
-        end
+
+        value get_sysctl_value(key)
+      rescue
+        current_value_does_not_exist!
+
       end
 
       action :apply do

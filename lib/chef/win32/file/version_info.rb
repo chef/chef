@@ -49,11 +49,11 @@ class Chef
           SpecialBuild
         }.each do |method|
           define_method method do
-            begin
-              get_version_info_string(method.to_s)
-            rescue Chef::Exceptions::Win32APIError
-              return nil
-            end
+
+            get_version_info_string(method.to_s)
+          rescue Chef::Exceptions::Win32APIError
+            return nil
+
           end
         end
 

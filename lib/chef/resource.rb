@@ -663,11 +663,11 @@ class Chef
 
       all_props = {}
       self.class.state_properties.map do |p|
-        begin
-          all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
-        rescue Chef::Exceptions::ValidationFailed
-          # This space left intentionally blank, the property was probably required or had an invalid default.
-        end
+
+        all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
+      rescue Chef::Exceptions::ValidationFailed
+        # This space left intentionally blank, the property was probably required or had an invalid default.
+
       end
 
       ivars = instance_variables.map(&:to_sym) - HIDDEN_IVARS

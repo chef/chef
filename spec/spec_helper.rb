@@ -297,11 +297,11 @@ RSpec.configure do |config|
 
   # Protect Rspec from accidental exit(0) causing rspec to terminate without error
   config.around(:example) do |ex|
-    begin
-      ex.run
-    rescue SystemExit => e
-      raise UnexpectedSystemExit.from(e)
-    end
+
+    ex.run
+  rescue SystemExit => e
+    raise UnexpectedSystemExit.from(e)
+
   end
 end
 

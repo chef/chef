@@ -1773,11 +1773,11 @@ describe Chef::Node do
           end
 
           let(:http_exception) do
-            begin
-              response.error!
-            rescue => e
-              e
-            end
+
+            response.error!
+          rescue => e
+            e
+
           end
 
           let(:trimmed_node) do

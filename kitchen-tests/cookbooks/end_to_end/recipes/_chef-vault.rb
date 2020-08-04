@@ -33,11 +33,11 @@ end
 
 ruby_block "load vault item" do
   block do
-    begin
-      chef_vault_item("creds", "super_secret_1")
-    rescue ChefVault::Exceptions::SecretDecryption
-      puts "Not authorized for this key!"
-    end
+
+    chef_vault_item("creds", "super_secret_1")
+  rescue ChefVault::Exceptions::SecretDecryption
+    puts "Not authorized for this key!"
+
   end
   action :run
 end

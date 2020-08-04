@@ -37,16 +37,16 @@ class Chef
               begin
                 ::Win32::Registry.open(hkey[0], UNINSTALL_SUBKEY, desired) do |reg|
                   reg.each_key do |key, _wtime|
-                    begin
-                      entry = reg.open(key, desired)
-                      display_name = read_registry_property(entry, "DisplayName")
-                      if display_name.to_s.rstrip == package_name
-                        quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
-                        entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
-                      end
-                    rescue ::Win32::Registry::Error => ex
-                      logger.trace("Registry error opening key '#{key}' on node #{desired}: #{ex}")
+
+                    entry = reg.open(key, desired)
+                    display_name = read_registry_property(entry, "DisplayName")
+                    if display_name.to_s.rstrip == package_name
+                      quiet_uninstall_string = RegistryUninstallEntry.read_registry_property(entry, "QuietUninstallString")
+                      entries.push(quiet_uninstall_string_key?(quiet_uninstall_string, hkey, key, entry))
                     end
+                  rescue ::Win32::Registry::Error => ex
+                    logger.trace("Registry error opening key '#{key}' on node #{desired}: #{ex}")
+
                   end
                 end
               rescue ::Win32::Registry::Error => ex

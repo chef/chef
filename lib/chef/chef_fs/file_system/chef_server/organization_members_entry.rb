@@ -43,15 +43,15 @@ class Chef
             desired_members = minimize_value(Chef::JSONCompat.parse(contents, create_additions: false))
             members = minimize_value(_read_json)
             (desired_members - members).each do |member|
-              begin
-                rest.post(api_path, "username" => member)
-              rescue Net::HTTPClientException => e
-                if %w{404 405}.include?(e.response.code)
-                  raise "Chef server at #{api_path} does not allow you to directly add members.  Please either upgrade your Chef server or move the users you want into invitations.json instead of members.json."
-                else
-                  raise
-                end
+
+              rest.post(api_path, "username" => member)
+            rescue Net::HTTPClientException => e
+              if %w{404 405}.include?(e.response.code)
+                raise "Chef server at #{api_path} does not allow you to directly add members.  Please either upgrade your Chef server or move the users you want into invitations.json instead of members.json."
+              else
+                raise
               end
+
             end
             (members - desired_members).each do |member|
               rest.delete(File.join(api_path, member))
