@@ -18,7 +18,6 @@
 
 require "spec_helper"
 require "chef/mixin/powershell_out"
-require "chef/mixin/shell_out"
 require "chef/mixin/windows_architecture_helper"
 require "support/shared/integration/integration_helper"
 
