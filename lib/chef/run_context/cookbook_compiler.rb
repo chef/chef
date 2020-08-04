@@ -325,7 +325,7 @@ class Chef
 
       def count_files_by_segment(segment, root_alias = nil)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
-          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select { |record| record[:name] == root_alias }.size : 0)
+          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).count { |record| record[:name] == root_alias } : 0)
         end
       end
 
