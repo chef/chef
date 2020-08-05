@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.8 -->
-## [v16.4.8](https://github.com/chef/chef/tree/v16.4.8) (2020-08-05)
+<!-- latest_release 16.4.9 -->
+## [v16.4.9](https://github.com/chef/chef/tree/v16.4.9) (2020-08-05)
 
 #### Merged Pull Requests
-- Remove lzma and bzip binaries from our builds [#10263](https://github.com/chef/chef/pull/10263) ([tas50](https://github.com/tas50))
+- Speed up our bundle installs by always running 3 jobs [#10264](https://github.com/chef/chef/pull/10264) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Speed up our bundle installs by always running 3 jobs [#10264](https://github.com/chef/chef/pull/10264) ([tas50](https://github.com/tas50)) <!-- 16.4.9 -->
 - Remove lzma and bzip binaries from our builds [#10263](https://github.com/chef/chef/pull/10263) ([tas50](https://github.com/tas50)) <!-- 16.4.8 -->
 - Convert windows custom resources to unified_mode [#10260](https://github.com/chef/chef/pull/10260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.7 -->
 - Remove more requires that come for free [#10258](https://github.com/chef/chef/pull/10258) ([tas50](https://github.com/tas50)) <!-- 16.4.6 -->
