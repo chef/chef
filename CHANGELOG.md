@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 15.13.9 -->
+## [v15.13.9](https://github.com/chef/chef/tree/v15.13.9) (2020-08-05)
+
+#### Merged Pull Requests
+- Backport dist configuration to chef15 [#10266](https://github.com/chef/chef/pull/10266) ([tehlers320](https://github.com/tehlers320))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=15.13.8 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Backport dist configuration to chef15 [#10266](https://github.com/chef/chef/pull/10266) ([tehlers320](https://github.com/tehlers320)) <!-- 15.13.9 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
