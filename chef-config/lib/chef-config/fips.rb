@@ -46,8 +46,8 @@ module ChefConfig
         false
       end
     else
-      fips_path = "/proc/sys/crypto/fips_enabled"
-      File.exist?(fips_path) && File.read(fips_path).chomp != "0"
+      require "openssl" unless defined?(OpenSSL)
+      OpenSSL::OPENSSL_FIPS
     end
   end
 end
