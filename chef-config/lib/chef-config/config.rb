@@ -76,8 +76,7 @@ module ChefConfig
 
     # On *nix, /etc/chef
     def self.etc_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.cleanpath(is_windows = ChefUtils.windows?)
     end
 
     # On *nix, /var/chef
@@ -95,14 +94,12 @@ module ChefConfig
     # On windows, C:/chef/
     def self.c_chef_dir
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
     end
 
     def self.c_opscode_dir
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
     end
 
     # the drive where Chef is installed on a windows host. This is determined

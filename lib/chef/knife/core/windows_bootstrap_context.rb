@@ -61,9 +61,9 @@ class Chef
           client_rb = <<~CONFIG
             chef_server_url  "#{chef_config[:chef_server_url]}"
             validation_client_name "#{chef_config[:validation_client_name]}"
-            file_cache_path   "c:/chef/cache"
-            file_backup_path  "c:/chef/backup"
-            cache_options     ({:path => "c:/chef/cache/checksums", :skip_expires => true})
+            file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
+            file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
+            cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
           CONFIG
 
           unless config[:chef_license].nil?

@@ -55,6 +55,10 @@ module ChefConfig
       end
     end
 
+    def self.file_separator(is_windows = ChefUtils.windows?)
+      path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+    end
+
     path_separator_regex = [Regexp.escape(File::SEPARATOR), Regexp.escape(path_separator)].uniq.join
 
     TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
@@ -137,13 +141,8 @@ module ChefConfig
     #
     # Generally, if the user isn't going to be seeing it, you should be
     # using Pathname#cleanpath instead of this function.
-    def self.cleanpath(path)
-      path = Pathname.new(path).cleanpath.to_s
-      # ensure all forward slashes are backslashes
-      if ChefUtils.windows?
-        path = path.gsub(File::SEPARATOR, path_separator)
-      end
-      path
+    def self.cleanpath(is_windows = ChefUtils.windows?)
+      file_separator(is_windows = ChefUtils.windows?)
     end
 
     def self.paths_eql?(path1, path2)
