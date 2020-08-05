@@ -46,8 +46,8 @@ namespace :spellcheck do
   end
 
   task :cspell_check do
-    require "chef-utils"
-    ChefUtils.which("cspell") || abort(<<~INSTALL_CSPELL)
+    require "bundler"
+    Bundler.which("cspell") || abort(<<~INSTALL_CSPELL)
           cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
           For more information: https://www.npmjs.com/package/cspell
     INSTALL_CSPELL
