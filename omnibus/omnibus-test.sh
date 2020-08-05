@@ -156,6 +156,6 @@ fi
 CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
-sudo -E bundle install
+sudo -E bundle install --jobs=3 --retry=3
 # FIXME: we need to add back unit and integration tests here.  we have no coverage of those on e.g. AIX
 sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional

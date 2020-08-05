@@ -30,7 +30,7 @@ begin
     %w{chef-utils chef-config}.each do |gem|
       Dir.chdir(gem) do
         Bundler.with_unbundled_env do
-          sh("bundle install")
+          sh("bundle install --jobs=3 --retry=3")
           sh("bundle exec rake spec")
         end
       end
