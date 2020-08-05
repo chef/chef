@@ -106,13 +106,22 @@ build do
     end
   end
 
-  block "Remove empty gem dirs from Ruby's built-in gems" do
-    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/*".tr('\\', "/")).each do |d|
-      # skip unless the dir is empty
-      next unless Dir.children(d).empty?
+  block "Remove extra unused binaries that are built with libraries we ship" do
+    %w{
+      xml2-config
+      xmlcatalog
+      xmllint
+      xslt-config
+      xsltproc
+    }.each do |f|
+      file_path = "#{install_dir}/embedded/bin/#{f}"
 
-      puts "Deleting empty gem dir: #{d}"
-      FileUtils.rm_rf(d)
+      if ::File.exist?(file_path)
+        puts "Deleting binary at #{file_path}"
+        FileUtils.rm_rf(file_path)
+      else
+        puts "Binary #{file_path} not found. Skipping."
+      end
     end
   end
 end
