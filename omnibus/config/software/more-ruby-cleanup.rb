@@ -118,7 +118,7 @@ build do
 
       if ::File.exist?(file_path)
         puts "Deleting binary at #{file_path}"
-        FileUtils.rm_rf(file_path)
+        FileUtils.rm_f(file_path)
       else
         puts "Binary #{file_path} not found. Skipping."
       end
