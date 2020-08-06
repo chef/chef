@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.4.13 -->
+## [v16.4.13](https://github.com/chef/chef/tree/v16.4.13) (2020-08-06)
 
 #### Merged Pull Requests
+- Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50))
 - Update spellcheck config with nice stuff from other repos. [#10261](https://github.com/chef/chef/pull/10261) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50)) <!-- 16.4.13 -->
 - Update spellcheck config with nice stuff from other repos. [#10261](https://github.com/chef/chef/pull/10261) ([phiggins](https://github.com/phiggins)) <!-- 16.4.12 -->
 - Combine attr_reader / attr_writer into attr_accessor [#10268](https://github.com/chef/chef/pull/10268) ([tas50](https://github.com/tas50)) <!-- 16.4.12 -->
 - Cleanup extra binaries from libxml2 and libxslt [#10265](https://github.com/chef/chef/pull/10265) ([tas50](https://github.com/tas50)) <!-- 16.4.11 -->
