@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,14 +19,20 @@
 require "spec_helper"
 require "chef/org"
 
+Chef::Knife::UserShow.load_deps
+
 describe Chef::Knife::UserShow do
   let(:knife) { Chef::Knife::UserShow.new }
   let(:user_mock) { double("user_mock") }
+  let(:chef_root_rest_v0) { double("Chef::ServerAPI") }
 
-  let(:rest) do
-    Chef::Config[:chef_server_root] = "http://www.example.com"
-    root_rest = double("rest")
-    allow(Chef::ServerAPI).to receive(:new).and_return(root_rest)
+  before :each do
+    @user_name = "foobar"
+    @password = "abc123"
+    @user = double("Chef::User")
+    allow(@user).to receive(:chef_root_rest_v0).and_return(chef_root_rest_v0)
+    allow(Chef::User).to receive(:new).and_return(@user)
+    @key = "You don't come into cooking to get rich - Ramsay"
   end
 
   describe "withot organisation argument" do
@@ -36,14 +42,14 @@ describe Chef::Knife::UserShow do
     end
 
     it "should load the user" do
-      allow(knife).to receive(:root_rest).and_return(rest)
-      expect(rest).to receive(:get).with("users/my_user")
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+      expect(@user.chef_root_rest_v0).to receive(:get).with("users/my_user")
       knife.run
     end
 
     it "loads and displays the user" do
-      allow(knife).to receive(:root_rest).and_return(rest)
-      expect(rest).to receive(:get).with("users/my_user")
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+      expect(@user.chef_root_rest_v0).to receive(:get).with("users/my_user")
       expect(knife).to receive(:format_for_display)
       knife.run
     end
@@ -75,10 +81,10 @@ describe Chef::Knife::UserShow do
       result = { "organizations" => [] }
       knife.config[:with_orgs] = true
 
-      allow(knife).to receive(:root_rest).and_return(rest)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
       allow(@org).to receive(:[]).with("organization").and_return({ "name" => "test" })
-      expect(rest).to receive(:get).with("users/#{@user_name}").and_return(result)
-      expect(rest).to receive(:get).with("users/#{@user_name}/organizations").and_return(orgs)
+      expect(@user.chef_root_rest_v0).to receive(:get).with("users/#{@user_name}").and_return(result)
+      expect(@user.chef_root_rest_v0).to receive(:get).with("users/#{@user_name}/organizations").and_return(orgs)
       knife.run
     end
   end

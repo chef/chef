@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../mixin/root_rest"
 
 class Chef
   class Knife
@@ -31,8 +30,6 @@ class Chef
           ui.fatal("You must specify an organization name")
           exit 1
         end
-
-        include Chef::Mixin::RootRestv0
 
         original_org = root_rest.get("organizations/#{org_name}")
         edited_org = edit_data(original_org)

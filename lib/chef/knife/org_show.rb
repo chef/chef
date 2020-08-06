@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../mixin/root_rest"
 
 class Chef
   class Knife
@@ -23,11 +22,14 @@ class Chef
       category "CHEF ORGANIZATION MANAGEMENT"
       banner "knife org show ORGNAME"
 
-      include Chef::Mixin::RootRestv0
+      deps do
+        require_relative "../org"
+      end
 
       def run
         org_name = @name_args[0]
-        ui.output root_rest.get("organizations/#{org_name}")
+        org = Chef::Org.from_hash({ "name" => org_name })
+        ui.output org.chef_rest.get("organizations/#{org_name}")
       end
     end
   end

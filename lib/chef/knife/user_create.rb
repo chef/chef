@@ -1,7 +1,7 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,12 @@
 # limitations under the License.
 #
 
-require_relative "../mixin/root_rest"
 require_relative "../knife"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
     class UserCreate < Knife
-
-      include Chef::Mixin::RootRestv0
 
       attr_accessor :user_field
 
@@ -122,13 +119,13 @@ class Chef
           end
         end
 
-        final_user = root_rest.post("users/", user_hash)
+        final_user = user.chef_root_rest_v0.post("users/", user_hash)
 
         if config[:orgname]
           request_body = { user: user.username }
-          response = root_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
+          response = user.chef_root_rest_v0.post("organizations/#{config[:orgname]}/association_requests", request_body)
           association_id = response["uri"].split("/").last
-          root_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
+          user.chef_root_rest_v0.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
         end
 
         ui.info("Created #{user}")

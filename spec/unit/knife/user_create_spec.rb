@@ -1,7 +1,7 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,11 +38,7 @@ describe Chef::Knife::UserCreate do
     allow(knife.ui).to receive(:warn)
   end
 
-  let(:rest) do
-    Chef::Config[:chef_server_root] = "http://www.example.com"
-    root_rest = double("rest")
-    allow(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
-  end
+  let(:chef_root_rest_v0) { double("Chef::ServerAPI") }
 
   context "when USERNAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
@@ -81,6 +77,8 @@ describe Chef::Knife::UserCreate do
 
     before :each do
       @user = double("Chef::User")
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+      allow(@user).to receive(:chef_root_rest_v0).and_return(chef_root_rest_v0)
       allow(Chef::User).to receive(:new).and_return(@user)
       @key = "You don't come into cooking to get rich - Ramsay"
       allow(@user).to receive(:[]).with("private_key").and_return(@key)
@@ -89,8 +87,7 @@ describe Chef::Knife::UserCreate do
     end
 
     it "creates an user" do
-      allow(knife).to receive(:root_rest).and_return(rest)
-      expect(rest).to receive(:post).and_return(@user)
+      expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
       knife.run
     end
   end
@@ -99,6 +96,7 @@ describe Chef::Knife::UserCreate do
     before do
       @user = double("Chef::User")
       allow(Chef::User).to receive(:new).and_return(@user)
+      allow(@user).to receive(:chef_root_rest_v0).and_return(chef_root_rest_v0)
       @key = "You don't come into cooking to get rich - Ramsay"
       allow(@user).to receive(:[]).with("private_key").and_return(@key)
       knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
@@ -110,8 +108,8 @@ describe Chef::Knife::UserCreate do
     end
 
     it "sets all the mandatory fields" do
-      allow(knife).to receive(:root_rest).and_return(rest)
-      expect(rest).to receive(:post).and_return(@user)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+      expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
       knife.run
       expect(knife.user.username).to eq("some_user")
       expect(knife.user.display_name).to eq("some_display_name")
@@ -125,6 +123,7 @@ describe Chef::Knife::UserCreate do
         knife.config[:user_key] = "some_key"
         knife.config[:prevent_keygen] = true
       end
+
       it "prints the usage" do
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
@@ -142,8 +141,8 @@ describe Chef::Knife::UserCreate do
       end
 
       it "does not set user.create_key" do
-        allow(knife).to receive(:root_rest).and_return(rest)
-        expect(rest).to receive(:post).and_return(@user)
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+        expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.create_key).to be_falsey
       end
@@ -151,8 +150,8 @@ describe Chef::Knife::UserCreate do
 
     context "when --prevent-keygen is not passed" do
       it "sets user.create_key to true" do
-        allow(knife).to receive(:root_rest).and_return(rest)
-        expect(rest).to receive(:post).and_return(@user)
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+        expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.create_key).to be_truthy
       end
@@ -166,8 +165,8 @@ describe Chef::Knife::UserCreate do
       end
 
       it "sets user.public_key" do
-        allow(knife).to receive(:root_rest).and_return(rest)
-        expect(rest).to receive(:post).and_return(@user)
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+        expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.public_key).to eq("some_key")
       end
@@ -175,8 +174,8 @@ describe Chef::Knife::UserCreate do
 
     context "when --user-key is not passed" do
       it "does not set user.public_key" do
-        allow(knife).to receive(:root_rest).and_return(rest)
-        expect(rest).to receive(:post).and_return(@user)
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+        expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.public_key).to be_nil
       end
@@ -188,14 +187,15 @@ describe Chef::Knife::UserCreate do
       before :each do
         @user = double("Chef::User")
         allow(Chef::User).to receive(:new).and_return(@user)
+        allow(@user).to receive(:chef_root_rest_v0).and_return(chef_root_rest_v0)
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "0" }).and_return(chef_root_rest_v0)
+        expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
         @key = "You don't come into cooking to get rich - Ramsay"
         allow(@user).to receive(:[]).with("private_key").and_return(@key)
         knife.name_args = name_args
       end
 
       it "creates an user" do
-        allow(knife).to receive(:root_rest).and_return(rest)
-        expect(rest).to receive(:post).and_return(@user)
         expect(knife.ui).to receive(:msg).with(@key)
         knife.run
       end
@@ -212,10 +212,8 @@ describe Chef::Knife::UserCreate do
         }
 
         it "creates an user, associates a user, and adds it to the admins group" do
-          allow(knife).to receive(:root_rest).and_return(rest)
-          expect(rest).to receive(:post).and_return(@user)
-          expect(rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
-          expect(rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
+          expect(@user.chef_root_rest_v0).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
+          expect(@user.chef_root_rest_v0).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
           knife.run
         end
       end
