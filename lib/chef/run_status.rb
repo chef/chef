@@ -25,17 +25,13 @@ class Chef::RunStatus
 
   attr_reader :events
 
-  attr_reader :run_context
-
-  attr_writer :run_context
+  attr_accessor :run_context
 
   attr_reader :start_time
 
   attr_reader :end_time
 
-  attr_reader :exception
-
-  attr_writer :exception
+  attr_accessor :exception
 
   attr_accessor :run_id
 
