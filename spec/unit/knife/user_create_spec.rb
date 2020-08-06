@@ -204,7 +204,6 @@ describe Chef::Knife::UserCreate do
         }
 
         it "creates an user, associates a user, and adds it to the admins group" do
-
           expect(root_rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
           expect(root_rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
           knife.run

@@ -24,6 +24,7 @@ class Chef
 
       def run
         org_name = @name_args[0]
+        org = Chef::Org.new(org_name)
         ui.confirm "Do you want to delete the organization #{org_name}"
         ui.output root_rest.delete("organizations/#{org_name}")
       end
