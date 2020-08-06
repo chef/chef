@@ -140,13 +140,11 @@ module ChefConfig
     end
 
     def working_directory
-      a = if ChefUtils.windows?
-            env["CD"]
-          else
-            env["PWD"]
-          end || Dir.pwd
-
-      a
+      if ChefUtils.windows?
+        env["CD"]
+      else
+        env["PWD"]
+      end || Dir.pwd
     end
 
     def apply_credentials(creds, profile)
