@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.11 -->
-## [v16.4.11](https://github.com/chef/chef/tree/v16.4.11) (2020-08-05)
+<!-- latest_release 16.4.12 -->
+## [v16.4.12](https://github.com/chef/chef/tree/v16.4.12) (2020-08-06)
 
 #### Merged Pull Requests
-- Cleanup extra binaries from libxml2 and libxslt [#10265](https://github.com/chef/chef/pull/10265) ([tas50](https://github.com/tas50))
+- Combine attr_reader / attr_writer into attr_accessor [#10268](https://github.com/chef/chef/pull/10268) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Combine attr_reader / attr_writer into attr_accessor [#10268](https://github.com/chef/chef/pull/10268) ([tas50](https://github.com/tas50)) <!-- 16.4.12 -->
 - Cleanup extra binaries from libxml2 and libxslt [#10265](https://github.com/chef/chef/pull/10265) ([tas50](https://github.com/tas50)) <!-- 16.4.11 -->
 - Bump InSpec/Train/omnibus-software [#10267](https://github.com/chef/chef/pull/10267) ([tas50](https://github.com/tas50)) <!-- 16.4.10 -->
 - Speed up our bundle installs by always running 3 jobs [#10264](https://github.com/chef/chef/pull/10264) ([tas50](https://github.com/tas50)) <!-- 16.4.9 -->
