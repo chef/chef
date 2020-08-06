@@ -1,5 +1,5 @@
 #
-# # Copyright:: Copyright 2014-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,8 @@
 
 require "spec_helper"
 require "chef/org"
+
+Chef::Knife::UserDelete.load_deps
 
 describe Chef::Knife::UserDelete do
   subject(:knife) { Chef::Knife::UserDelete.new }

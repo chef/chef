@@ -18,6 +18,8 @@
 
 require "spec_helper"
 
+Chef::Knife::UserList.load_deps
+
 describe Chef::Knife::UserList do
 
   let(:knife) { Chef::Knife::UserList.new }

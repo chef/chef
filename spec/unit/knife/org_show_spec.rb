@@ -1,6 +1,6 @@
 #
 # Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,27 +21,24 @@ require "chef/org"
 
 describe Chef::Knife::OrgShow do
 
+  let(:chef_rest) { double("Chef::ServerAPI") }
+
   before :each do
     @knife = Chef::Knife::OrgShow.new
     @org_name = "foobar"
     @knife.name_args << @org_name
-  end
-
-  let(:rest) do
-    Chef::Config[:chef_server_root] = "http://www.example.com"
-    root_rest = double("rest")
-    allow(Chef::ServerAPI).to receive(:new).and_return(root_rest)
+    @org = double("Chef::Org")
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(chef_rest)
+    allow(@org).to receive(:chef_rest).and_return(chef_rest)
   end
 
   it "should load the organisation" do
-    allow(@knife).to receive(:root_rest).and_return(rest)
-    expect(rest).to receive(:get).with("organizations/#{@org_name}")
+    expect(@org.chef_rest).to receive(:get).with("organizations/#{@org_name}")
     @knife.run
   end
 
   it "should pretty print the output organisation" do
-    allow(@knife).to receive(:root_rest).and_return(rest)
-    expect(rest).to receive(:get).with("organizations/#{@org_name}")
+    expect(@org.chef_rest).to receive(:get).with("organizations/#{@org_name}")
     expect(@knife.ui).to receive(:output)
     @knife.run
   end

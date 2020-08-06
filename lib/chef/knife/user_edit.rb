@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,8 +38,6 @@ class Chef
         short: "-f FILENAME",
         description: "Write private key to FILENAME rather than STDOUT"
 
-      include Chef::Mixin::RootRestv0
-
       def run
         @user_name = @name_args[0]
 
@@ -52,8 +50,7 @@ class Chef
         original_user = Chef::UserV1.load(@user_name).to_hash
         edited_user = edit_hash(original_user)
         if original_user != edited_user
-          # user = Chef::UserV1.from_hash(edited_user)
-          result = root_rest.put("users/#{@user_name}", edited_user)
+          result = Chef::UserV1.new.chef_root_rest_v0.put("users/#{@user_name}", edited_user)
           ui.msg("Saved #{@user_name}.")
           unless result["private_key"].nil?
             if config[:filename]

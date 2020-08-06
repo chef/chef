@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2011-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../mixin/root_rest"
 
 class Chef
   class Knife
@@ -33,10 +32,13 @@ class Chef
         short: "-a",
         description: "Show auto-generated hidden orgs in output"
 
-      include Chef::Mixin::RootRestv0
+      deps do
+        require_relative "../org"
+      end
 
       def run
-        results = root_rest.get("organizations")
+        org = Chef::Org.from_hash({})
+        results = org.chef_rest.get("organizations")
         unless config[:all_orgs]
           results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
         end

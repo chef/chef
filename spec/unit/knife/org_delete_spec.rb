@@ -1,6 +1,6 @@
 #
 # Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright 2014-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,25 +17,25 @@
 #
 
 require "spec_helper"
+require "chef/org"
 
 describe Chef::Knife::OrgDelete do
+
+  let(:chef_rest) { double("Chef::ServerAPI") }
 
   before :each do
     @knife = Chef::Knife::OrgDelete.new
     @org_name = "foobar"
+    @org_full_name = "secretsauce"
     @knife.name_args << @org_name
-  end
-
-  let(:rest) do
-    Chef::Config[:chef_server_root] = "http://www.example.com"
-    root_rest = double("rest")
-    allow(Chef::ServerAPI).to receive(:new).and_return(root_rest)
+    @org = double("Chef::Org")
   end
 
   it "should confirm that you want to delete and then delete organizations" do
-    allow(@knife).to receive(:root_rest).and_return(rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(chef_rest)
+    allow(@org).to receive(:chef_rest).and_return(chef_rest)
     expect(@knife.ui).to receive(:confirm).with("Do you want to delete the organization #{@org_name}")
-    expect(rest).to receive(:delete).with("organizations/#{@org_name}")
+    expect(@org.chef_rest).to receive(:delete).with("organizations/#{@org_name}")
     expect(@knife.ui).to receive(:output)
     @knife.run
   end

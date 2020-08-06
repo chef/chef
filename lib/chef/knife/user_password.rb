@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@getchef.com>)
-# Copyright:: Copyright 2014-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../mixin/root_rest"
 
 class Chef
   class Knife
@@ -27,7 +26,13 @@ class Chef
         short: "-e",
         description: "Enable external authentication for this user (such as LDAP)"
 
-      include Chef::Mixin::RootRestv0
+      deps do
+        require_relative "../user_v1"
+      end
+
+      def user
+        @user_field ||= Chef::UserV1.new
+      end
 
       def run
         # check that correct number of args was passed, should be either
@@ -50,18 +55,18 @@ class Chef
         # true or false, there is no way of knowing if the user is using ldap or not,
         # so we will update the user every time, instead of checking if we are actually
         # changing anything before we PUT.
-        user = root_rest.get("users/#{user_name}")
+        result = user.chef_root_rest_v0.get("users/#{user_name}")
 
-        user["password"] = password unless password.nil?
+        result["password"] = password unless password.nil?
 
         # if --enable-external-auth was passed, enable it, else disable it.
         # there is never a situation where we would want to enable ldap
         # AND change the password. changing the password means that the user
         # wants to disable ldap and put user in recover (if they are using ldap).
-        user["recovery_authentication_enabled"] = !config[:enable_external_auth]
+        result["recovery_authentication_enabled"] = !config[:enable_external_auth]
 
         begin
-          root_rest.put("users/#{user_name}", user)
+          user.chef_root_rest_v0.put("users/#{user_name}", result)
         rescue => e
           raise e
         end

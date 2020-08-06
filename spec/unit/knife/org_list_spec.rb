@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2014-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,11 @@
 #
 
 require "spec_helper"
+require "chef/org"
 
 describe Chef::Knife::OrgList do
+
+  let(:chef_rest) { double("Chef::ServerAPI") }
 
   let(:orgs) do
     {
@@ -28,10 +31,11 @@ describe Chef::Knife::OrgList do
   end
 
   before :each do
-    @rest = double("Chef::ServerAPI")
-    allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
-    allow(@rest).to receive(:get).with("organizations").and_return(orgs)
+    @org = double("Chef::Org")
     @knife = Chef::Knife::OrgList.new
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(chef_rest)
+    allow(@org).to receive(:chef_rest).and_return(chef_rest)
+    allow(@org.chef_rest).to receive(:get).with("organizations").and_return(orgs)
   end
 
   describe "with no arguments" do
