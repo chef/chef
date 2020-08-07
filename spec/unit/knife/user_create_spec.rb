@@ -88,6 +88,7 @@ describe Chef::Knife::UserCreate do
 
     it "creates an user" do
       expect(@user.chef_root_rest_v0).to receive(:post).and_return(@user)
+      expect(knife.ui).to receive(:ask).with("Please enter the user's password: ", echo: false).and_return("password")
       knife.run
     end
   end
