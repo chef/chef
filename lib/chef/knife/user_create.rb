@@ -65,6 +65,10 @@ class Chef
         Chef::UserV1.from_hash(hash).create
       end
 
+      def chef_rest
+        user.chef_root_rest_v0
+      end
+
       def run
         test_mandatory_field(@name_args[0], "username")
         user.username @name_args[0]
@@ -119,13 +123,13 @@ class Chef
           end
         end
 
-        final_user = user.chef_root_rest_v0.post("users/", user_hash)
+        final_user = chef_rest.post("users/", user_hash)
 
         if config[:orgname]
           request_body = { user: user.username }
-          response = user.chef_root_rest_v0.post("organizations/#{config[:orgname]}/association_requests", request_body)
+          response = chef_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
           association_id = response["uri"].split("/").last
-          user.chef_root_rest_v0.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
+          chef_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
         end
 
         ui.info("Created #{user}")
@@ -141,7 +145,7 @@ class Chef
       end
 
       def prompt_for_password
-        ui.ask("Please enter the user's password: ") { |q| q.echo = false }
+        ui.ask("Please enter the user's password: ", echo: false)
       end
     end
   end

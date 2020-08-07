@@ -1,6 +1,6 @@
 #
-# Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
-# Copyright:: Copyright 2014-2016 Chef Software, Inc.
+# Author:: Steven Danna
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
