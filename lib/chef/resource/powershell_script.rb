@@ -25,19 +25,7 @@ class Chef
       provides :powershell_script, os: "windows"
 
       property :flags, String,
-        description: "A string that is passed to the Windows PowerShell command",
-        default: lazy { default_flags },
-        coerce: proc { |input|
-          if input == default_flags
-            # Means there was no input provided,
-            # and should use defaults in this case
-            input
-          else
-            # The last occurrence of a flag would override its
-            # previous one at the time of command execution.
-            [default_flags, input].join(" ")
-          end
-        }
+        description: "A string that is passed to the Windows PowerShell command"
 
       property :convert_boolean_return, [true, false],
         default: false,
@@ -87,15 +75,6 @@ class Chef
       # same behavior.
       def self.get_default_attributes(opts)
         { convert_boolean_return: true }
-      end
-
-      # Options that will be passed to Windows PowerShell command
-      #
-      # @returns [String]
-      def default_flags
-        # Set InputFormat to None as PowerShell will hang if STDIN is redirected
-        # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-        "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None"
       end
     end
   end

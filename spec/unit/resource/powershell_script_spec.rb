@@ -130,24 +130,7 @@ describe Chef::Resource::PowershellScript do
     let(:resource_instance_name ) { @resource.command }
     let(:resource_name) { :powershell_script }
     let(:interpreter_file_name) { "powershell.exe" }
-    before do
-      allow(@resource).to receive(:default_flags).and_return(nil)
-    end
+
     it_behaves_like "a Windows script resource"
-  end
-
-  describe "#flags" do
-    let(:resource) { @resource }
-
-    it "appends user's flags to the defaults" do
-      flags = %q{-Lunch "tacos"}
-      resource.flags = flags
-
-      expect(resource.flags).to eq("#{resource.default_flags} #{flags}")
-    end
-
-    it "uses the defaults when user doesn't provide flags" do
-      expect(resource.flags).to eq(resource.default_flags)
-    end
   end
 end
