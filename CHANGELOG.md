@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.15 -->
-## [v16.4.15](https://github.com/chef/chef/tree/v16.4.15) (2020-08-07)
+<!-- latest_release 16.4.16 -->
+## [v16.4.16](https://github.com/chef/chef/tree/v16.4.16) (2020-08-07)
 
 #### Merged Pull Requests
-- powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins))
+- Mark deep_merge as private [#10277](https://github.com/chef/chef/pull/10277) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Mark deep_merge as private [#10277](https://github.com/chef/chef/pull/10277) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.16 -->
 - powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins)) <!-- 16.4.15 -->
 - chef_client_systemd_timer: Fix failures in the :remove action [#10273](https://github.com/chef/chef/pull/10273) ([tas50](https://github.com/tas50)) <!-- 16.4.14 -->
 - Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50)) <!-- 16.4.13 -->
