@@ -102,6 +102,10 @@ chef_client_systemd_timer "Run chef-client as a systemd timer" do
   only_if { systemd? }
 end
 
+chef_client_systemd_timer "a timer that does not exist" do
+  action :remove
+end
+
 locale "set system locale" do
   lang "en_US.UTF-8"
   only_if { debian? }
