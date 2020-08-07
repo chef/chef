@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.14 -->
-## [v16.4.14](https://github.com/chef/chef/tree/v16.4.14) (2020-08-07)
+<!-- latest_release 16.4.15 -->
+## [v16.4.15](https://github.com/chef/chef/tree/v16.4.15) (2020-08-07)
 
 #### Merged Pull Requests
-- chef_client_systemd_timer: Fix failures in the :remove action [#10273](https://github.com/chef/chef/pull/10273) ([tas50](https://github.com/tas50))
+- powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins)) <!-- 16.4.15 -->
 - chef_client_systemd_timer: Fix failures in the :remove action [#10273](https://github.com/chef/chef/pull/10273) ([tas50](https://github.com/tas50)) <!-- 16.4.14 -->
 - Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50)) <!-- 16.4.13 -->
 - Update spellcheck config with nice stuff from other repos. [#10261](https://github.com/chef/chef/pull/10261) ([phiggins](https://github.com/phiggins)) <!-- 16.4.12 -->
