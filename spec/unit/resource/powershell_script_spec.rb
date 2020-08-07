@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Resource::PowershellScript do
 
-  before(:each) do
+  let(:resource) do
     node = Chef::Node.new
 
     node.default["kernel"] = {}
@@ -29,26 +29,25 @@ describe Chef::Resource::PowershellScript do
 
     run_context = Chef::RunContext.new(node, nil, nil)
 
-    @resource = Chef::Resource::PowershellScript.new("powershell_unit_test", run_context)
+    Chef::Resource::PowershellScript.new("powershell_unit_test", run_context)
   end
 
   it "creates a new Chef::Resource::PowershellScript" do
-    expect(@resource).to be_a_kind_of(Chef::Resource::PowershellScript)
+    expect(resource).to be_a_kind_of(Chef::Resource::PowershellScript)
   end
 
   it "sets convert_boolean_return to false by default" do
-    expect(@resource.convert_boolean_return).to eq(false)
+    expect(resource.convert_boolean_return).to eq(false)
   end
 
   it "returns the value for convert_boolean_return that was set" do
-    @resource.convert_boolean_return true
-    expect(@resource.convert_boolean_return).to eq(true)
-    @resource.convert_boolean_return false
-    expect(@resource.convert_boolean_return).to eq(false)
+    resource.convert_boolean_return true
+    expect(resource.convert_boolean_return).to eq(true)
+    resource.convert_boolean_return false
+    expect(resource.convert_boolean_return).to eq(false)
   end
 
   context "when using guards" do
-    let(:resource) { @resource }
     before(:each) do
       allow(resource).to receive(:run_action)
       allow(resource).to receive(:updated).and_return(true)
@@ -126,8 +125,8 @@ describe Chef::Resource::PowershellScript do
   end
 
   context "as a script running in Windows-based scripting language" do
-    let(:resource_instance) { @resource }
-    let(:resource_instance_name ) { @resource.command }
+    let(:windows_script_resource) { resource }
+    let(:resource_instance_name ) { resource.command }
     let(:resource_name) { :powershell_script }
     let(:interpreter_file_name) { "powershell.exe" }
 
