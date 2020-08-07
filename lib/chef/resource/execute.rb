@@ -509,7 +509,6 @@ class Chef
       def initialize(name, run_context = nil)
         super
         @command = name
-        @backup = 5
         @default_guard_interpreter = :execute
         @is_guard_interpreter = false
       end
