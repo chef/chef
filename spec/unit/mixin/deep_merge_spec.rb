@@ -338,5 +338,23 @@ describe Chef::Mixin::DeepMerge do
       merge_with_hash = { "top_level_a" => 2, "top_level_b" => true }
       @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
     end
+
+    it "merges leaf Hashes by default" do
+      merge_ee_hash =   { "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" } } } }
+      merge_with_hash = { "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" } } } }
+
+      merged_result = @dm.hash_only_merge!(merge_ee_hash, merge_with_hash)
+
+      expect(merged_result).to eq({ "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo", "3_deep_b" => "bar" } } } })
+    end
+
+    it "overwrites leaf Hashes if requested" do
+      merge_ee_hash =   { "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_a" => "foo" } } } }
+      merge_with_hash = { "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" } } } }
+
+      merged_result = @dm.hash_only_merge!(merge_ee_hash, merge_with_hash, true)
+
+      expect(merged_result).to eq({ "top_level_a" => { "1_deep_a" => { "2_deep_a" => { "3_deep_b" => "bar" } } } })
+    end
   end
 end

@@ -101,12 +101,24 @@ class Chef
       # `merge_onto` is the object that will "lose" in case of conflict.
       # `merge_with` is the object whose values will replace `merge_onto`s
       # values when there is a conflict.
-      def hash_only_merge!(merge_onto, merge_with)
+      # `overwrite_leaves` is a boolean to control whether Hash leaf objects
+      # in `merge_onto` will be overwritten (if set to true) or merged (if
+      # set to false, which is the default).
+      def hash_only_merge!(merge_onto, merge_with, overwrite_leaves = false)
         # If there are two Hashes, recursively merge.
         if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
           merge_with.each do |key, merge_with_value|
+            is_leaf = false
+            if overwrite_leaves && merge_with_value.is_a?(Hash)
+              merge_with_value.each do |_k, v|
+                if v.is_a?(Hash)
+                  is_leaf = true
+                  break
+                end
+              end
+            end
             value =
-              if merge_onto.key?(key)
+              if merge_onto.key?(key) && !is_leaf
                 hash_only_merge(merge_onto[key], merge_with_value)
               else
                 merge_with_value
