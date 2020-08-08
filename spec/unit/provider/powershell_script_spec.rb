@@ -32,15 +32,16 @@ describe Chef::Provider::PowershellScript, "action_run" do
 
   describe "#command" do
     before(:each) do
-      allow(provider).to receive(:basepath).and_return("C:/Windows/system32")
+      allow(provider).to receive(:basepath).and_return("C:\\Windows\\system32")
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     it "includes the user's flags after the default flags when building the command" do
       new_resource.flags = "-InputFormat Fabulous"
-      provider.send(:script_file_path=, "C:/Temp/Script.ps1")
+      provider.send(:script_file_path=, "C:\\Temp\\Script.ps1")
 
       expected = <<~CMD.strip
-        "C:/Windows/system32/WindowsPowerShell/v1.0/powershell.exe" -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None -InputFormat Fabulous -File "C:/Temp/Script.ps1"
+        "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None -InputFormat Fabulous -File "C:\\Temp\\Script.ps1"
       CMD
 
       expect(provider.command).to eq(expected)
