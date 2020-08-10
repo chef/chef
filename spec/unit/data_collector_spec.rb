@@ -39,6 +39,7 @@ describe Chef::DataCollector do
   let(:new_resource) do
     new_resource = Chef::Resource::File.new("/tmp/a-file.txt")
     new_resource.checksum nil
+    new_resource.path
     new_resource
   end
 
@@ -780,6 +781,13 @@ describe Chef::DataCollector do
         let(:resource_record) do
           rec = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec["error_message"] = "imperial to metric conversion error"
+          rec["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           [ rec ]
         end
         let(:status) { "failure" }
@@ -808,6 +816,13 @@ describe Chef::DataCollector do
           rec = resource_record_for(new_resource, nil, nil, :create, "failed", "1234")
           rec["before"] = {}
           rec["error_message"] = "imperial to metric conversion error"
+          rec["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           [ rec ]
         end
         let(:status) { "failure" }
@@ -842,6 +857,13 @@ describe Chef::DataCollector do
         let(:resource_record) do
           rec1 = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec1["error_message"] = "imperial to metric conversion error"
+          rec1["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           rec2 = resource_record_for(unprocessed_resource, nil, nil, :nothing, "unprocessed", "")
           [ rec1, rec2 ]
         end

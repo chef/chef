@@ -133,7 +133,17 @@ class Chef
           end
 
           hash["conditional"] = action_record.conditional.to_text if action_record.status == :skipped
-          hash["error_message"] = action_record.exception.message unless action_record.exception.nil?
+
+          unless action_record.exception.nil?
+            hash["error_message"] = action_record.exception.message
+
+            hash["error"] = {
+              "class" => action_record.exception.class,
+              "message" => action_record.exception.message,
+              "backtrace" => action_record.exception.backtrace,
+              "description" => action_record.error_description,
+            }
+          end
 
           hash
         end
