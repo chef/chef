@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.4.17 -->
+## [v16.4.17](https://github.com/chef/chef/tree/v16.4.17) (2020-08-10)
 
 #### Merged Pull Requests
+- client-run per resource error detail [#10237](https://github.com/chef/chef/pull/10237) ([vsingh-msys](https://github.com/vsingh-msys))
 - Fix broken powershell_script test. [#10280](https://github.com/chef/chef/pull/10280) ([phiggins](https://github.com/phiggins))
 - Clean up some interdependencies in script resource tests. [#10279](https://github.com/chef/chef/pull/10279) ([phiggins](https://github.com/phiggins))
 - Remove an unnecessary shared_context from execute resource tests [#10278](https://github.com/chef/chef/pull/10278) ([phiggins](https://github.com/phiggins))
@@ -12,6 +13,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- client-run per resource error detail [#10237](https://github.com/chef/chef/pull/10237) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.4.17 -->
 - Fix broken powershell_script test. [#10280](https://github.com/chef/chef/pull/10280) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
 - Clean up some interdependencies in script resource tests. [#10279](https://github.com/chef/chef/pull/10279) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
 - Remove an unnecessary shared_context from execute resource tests [#10278](https://github.com/chef/chef/pull/10278) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
