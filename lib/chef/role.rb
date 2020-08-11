@@ -256,11 +256,11 @@ class Chef
 
         js_path, rb_path = js_files.first, rb_files.first
 
-        if js_path && File.exists?(js_path)
+        if js_path && File.exist?(js_path)
           # from_json returns object.class => json_class in the JSON.
           hsh = Chef::JSONCompat.parse(IO.read(js_path))
           return from_hash(hsh)
-        elsif rb_path && File.exists?(rb_path)
+        elsif rb_path && File.exist?(rb_path)
           role = Chef::Role.new
           role.name(name)
           role.from_file(rb_path)

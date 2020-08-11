@@ -480,7 +480,7 @@ class Chef
         template = bootstrap_template
 
         # Use the template directly if it's a path to an actual file
-        if File.exists?(template)
+        if File.exist?(template)
           Chef::Log.trace("Using the specified bootstrap template: #{File.dirname(template)}")
           return template
         end
@@ -495,7 +495,7 @@ class Chef
 
         template_file = Array(bootstrap_files).find do |bootstrap_template|
           Chef::Log.trace("Looking for bootstrap template in #{File.dirname(bootstrap_template)}")
-          File.exists?(bootstrap_template)
+          File.exist?(bootstrap_template)
         end
 
         unless template_file

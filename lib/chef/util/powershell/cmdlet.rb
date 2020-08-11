@@ -164,7 +164,7 @@ class Chef
           end
 
           def self.destroy(name)
-            proc { File.delete(name) if File.exists? name }
+            proc { File.delete(name) if File.exist? name }
           end
         end
       end

@@ -62,7 +62,7 @@ class Chef
       def generate_metadata(cookbook)
         Array(config[:cookbook_path]).reverse_each do |path|
           file = File.expand_path(File.join(path, cookbook, "metadata.rb"))
-          if File.exists?(file)
+          if File.exist?(file)
             generate_metadata_from_file(cookbook, file)
           else
             validate_metadata_json(path, cookbook)

@@ -73,7 +73,7 @@ class Chef
         manifest = cookbook.cookbook_manifest
 
         basedir = File.join(config[:download_directory], "#{@cookbook_name}-#{cookbook.version}")
-        if File.exists?(basedir)
+        if File.exist?(basedir)
           if config[:force]
             Chef::Log.trace("Deleting #{basedir}")
             FileUtils.rm_rf(basedir)

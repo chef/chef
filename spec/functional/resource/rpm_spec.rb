@@ -39,7 +39,7 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
     # mytest rpm package works in centos, redhat and in suse without any dependency issues.
     else
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(0)
-      ::File.exists?("/opt/mytest/mytest.sh") # The mytest rpm package contains the mytest.sh file
+      ::File.exist?("/opt/mytest/mytest.sh") # The mytest rpm package contains the mytest.sh file
     end
   end
 
@@ -48,7 +48,7 @@ describe Chef::Resource::RpmPackage, :requires_root, external: exclude_test do
       expect(shell_out("rpm -qa | grep dummy").exitstatus).to eq(1)
     else
       expect(shell_out("rpm -qa | grep mytest").exitstatus).to eq(1)
-      !::File.exists?("/opt/mytest/mytest.sh")
+      !::File.exist?("/opt/mytest/mytest.sh")
     end
   end
 

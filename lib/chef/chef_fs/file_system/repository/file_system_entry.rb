@@ -122,7 +122,7 @@ class Chef
           end
 
           def exists?
-            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+            File.exist?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
           end
 
           def read
