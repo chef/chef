@@ -22,7 +22,8 @@
 #
 
 require "tempfile" unless defined?(Tempfile)
-require "net/https"
+require "openssl" unless defined?(OpenSSL)
+require "net/http" unless defined?(Net::HTTP)
 require "uri" unless defined?(URI)
 require_relative "http/basic_client"
 require_relative "monkey_patches/net_http"
