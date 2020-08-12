@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e9aeb984211b41602d5c2a968ab1aa619d07f4b6
+  revision: 47bc4ba76f345902087c61df212f6a509511426f
   branch: master
   specs:
-    ohai (16.4.9)
+    ohai (16.4.10)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -148,7 +148,7 @@ GEM
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
-    chef-telemetry (1.0.8)
+    chef-telemetry (1.0.14)
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
