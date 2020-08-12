@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.4.19 -->
+## [v16.4.19](https://github.com/chef/chef/tree/v16.4.19) (2020-08-12)
 
 #### Merged Pull Requests
+- Bump Ohai to 16.4.9 [#10291](https://github.com/chef/chef/pull/10291) ([tas50](https://github.com/tas50))
 - Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99))
 - double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein))
 <!-- latest_release -->
@@ -11,6 +12,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump Ohai to 16.4.9 [#10291](https://github.com/chef/chef/pull/10291) ([tas50](https://github.com/tas50)) <!-- 16.4.19 -->
 - Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.4.18 -->
 - double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein)) <!-- 16.4.18 -->
 - Bump Ohai / Cheffish to the latest [#10281](https://github.com/chef/chef/pull/10281) ([tas50](https://github.com/tas50)) <!-- 16.4.18 -->
