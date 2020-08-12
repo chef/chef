@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.20 -->
-## [v16.4.20](https://github.com/chef/chef/tree/v16.4.20) (2020-08-12)
+<!-- latest_release 16.4.21 -->
+## [v16.4.21](https://github.com/chef/chef/tree/v16.4.21) (2020-08-12)
 
 #### Merged Pull Requests
-- Remove a duplicate require [#10293](https://github.com/chef/chef/pull/10293) ([tas50](https://github.com/tas50))
+- Use macos? helper in homebrew_update [#10290](https://github.com/chef/chef/pull/10290) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use macos? helper in homebrew_update [#10290](https://github.com/chef/chef/pull/10290) ([tas50](https://github.com/tas50)) <!-- 16.4.21 -->
 - Remove a duplicate require [#10293](https://github.com/chef/chef/pull/10293) ([tas50](https://github.com/tas50)) <!-- 16.4.20 -->
 - Bump Ohai to 16.4.9 [#10291](https://github.com/chef/chef/pull/10291) ([tas50](https://github.com/tas50)) <!-- 16.4.19 -->
 - Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.4.18 -->
