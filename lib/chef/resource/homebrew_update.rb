@@ -86,7 +86,7 @@ class Chef
       end
 
       action :periodic do
-        return unless mac_os_x?
+        return unless macos?
 
         unless brew_up_to_date?
           converge_by "update new lists of packages" do
@@ -96,7 +96,7 @@ class Chef
       end
 
       action :update do
-        return unless mac_os_x?
+        return unless macos?
 
         converge_by "force update new lists of packages" do
           do_update
