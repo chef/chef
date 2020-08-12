@@ -192,7 +192,7 @@ describe Chef::Application::Client, "reconfigure" do
 
       context "with an empty value" do
         it "should terminate with message" do
-          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option ""').and_raise("so ded")
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option ""', ChefConfig::ConfigurationError.new).and_raise("so ded")
           ARGV.replace(["--config-option", ""])
           expect { app.reconfigure }.to raise_error "so ded"
         end
@@ -200,7 +200,7 @@ describe Chef::Application::Client, "reconfigure" do
 
       context "with an invalid value" do
         it "should terminate with message" do
-          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option "asdf"').and_raise("so ded")
+          expect(Chef::Application).to receive(:fatal!).with('Unparsable config option "asdf"', ChefConfig::ConfigurationError.new).and_raise("so ded")
           ARGV.replace(["--config-option", "asdf"])
           expect { app.reconfigure }.to raise_error "so ded"
         end

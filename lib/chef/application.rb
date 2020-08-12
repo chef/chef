@@ -96,7 +96,11 @@ class Chef
     # Parse configuration (options and config file)
     def configure_chef
       parse_options
-      load_config_file
+      begin
+        load_config_file
+      rescue Exception => e
+        Chef::Application.fatal!(e.message, Chef::Exceptions::ConfigurationError.new)
+      end
       chef_config.export_proxies
       chef_config.init_openssl
       File.umask chef_config[:umask]
@@ -151,8 +155,6 @@ class Chef
 
     def apply_extra_config_options(extra_config_options)
       chef_config.apply_extra_config_options(extra_config_options)
-    rescue ChefConfig::UnparsableConfigOption => e
-      Chef::Application.fatal!(e.message)
     end
 
     # Set the specific recipes to Chef::Config if the recipes are valid
@@ -352,7 +354,8 @@ class Chef
       logger.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each { |line| logger.fatal("  " + line ) }
-      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
+      raise Chef::Exceptions::ConfigurationError.new("Aborting due to error in '#{config_file_path}': #{error}")
+      # Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", Chef::Exceptions::ConfigurationError.new(error))
     end
 
     # This is a hook for testing
