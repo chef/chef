@@ -152,19 +152,19 @@ def unix?
 end
 
 def linux?
-  !!(RUBY_PLATFORM =~ /linux/)
+  RUBY_PLATFORM.match?(/linux/)
 end
 
-def os_x?
-  !!(RUBY_PLATFORM =~ /darwin/)
+def macos?
+  RUBY_PLATFORM.match?(/darwin/)
 end
 
 def solaris?
-  !!(RUBY_PLATFORM =~ /solaris/)
+  RUBY_PLATFORM.match?(/solaris/)
 end
 
 def freebsd?
-  !!(RUBY_PLATFORM =~ /freebsd/)
+  RUBY_PLATFORM.match?(/freebsd/)
 end
 
 def intel_64bit?
@@ -200,7 +200,7 @@ def debian_family?
 end
 
 def aix?
-  !!(RUBY_PLATFORM =~ /aix/)
+  RUBY_PLATFORM.match?(/aix/)
 end
 
 def wpar?
