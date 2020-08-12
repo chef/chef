@@ -18,7 +18,7 @@
 
 require_relative "../chef_class"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
-require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+require_relative "../mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   class Platform

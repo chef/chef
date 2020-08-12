@@ -16,7 +16,7 @@
 # limitations under the License.
 
 require "mixlib/shellout/helper" unless defined?(Mixlib::ShellOut::Helper)
-require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+require_relative "chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module Mixin

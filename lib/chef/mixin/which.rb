@@ -17,7 +17,7 @@
 
 require "chef-utils/dsl/which" unless defined?(ChefUtils::DSL::Which)
 require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
-require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+require_relative "chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module Mixin

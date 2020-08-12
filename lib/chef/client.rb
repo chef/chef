@@ -54,7 +54,7 @@ require_relative "platform/rebooter"
 require_relative "mixin/deprecation"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
-require "rbconfig"
+require "rbconfig" unless defined?(RbConfig)
 require_relative "dist"
 require "forwardable" unless defined?(Forwardable)
 
