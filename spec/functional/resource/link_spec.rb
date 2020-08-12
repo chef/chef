@@ -403,7 +403,7 @@ describe Chef::Resource::Link do
           it "create errors out" do
             if windows?
               expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
-            elsif os_x? || solaris? || freebsd? || aix?
+            elsif macos? || solaris? || freebsd? || aix?
               expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
               expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
@@ -606,7 +606,7 @@ describe Chef::Resource::Link do
           it "errors out" do
             if windows?
               expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
-            elsif os_x? || solaris? || freebsd? || aix?
+            elsif macos? || solaris? || freebsd? || aix?
               expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
               expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
