@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99))
 - double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.4.18 -->
 - double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein)) <!-- 16.4.18 -->
 - Bump Ohai / Cheffish to the latest [#10281](https://github.com/chef/chef/pull/10281) ([tas50](https://github.com/tas50)) <!-- 16.4.18 -->
 - client-run per resource error detail [#10237](https://github.com/chef/chef/pull/10237) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.4.17 -->
