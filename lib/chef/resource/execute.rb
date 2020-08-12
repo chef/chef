@@ -164,7 +164,7 @@ class Chef
           command "command_to_run
             --option value
             --option value
-            --source \#{node[:name_of_node][:ipsec][:local][:subnet]}
+            --source #{node[:name_of_node][:ipsec][:local][:subnet]}
             -j test_rule"
 
           action :nothing
