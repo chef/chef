@@ -176,7 +176,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.2.0)
+    fauxhai-ng (8.3.0)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
