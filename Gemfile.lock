@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 47bc4ba76f345902087c61df212f6a509511426f
+  revision: 6d9bd5e5480f22035555a2adfbe69d171264e70e
   branch: master
   specs:
-    ohai (16.4.10)
+    ohai (16.4.11)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -152,14 +152,14 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.1)
-    chef-zero (15.0.0)
+    chef-vault (4.0.6)
+    chef-zero (15.0.1)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
-    cheffish (16.0.6)
+    cheffish (16.0.8)
       chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.3)
@@ -181,7 +181,7 @@ GEM
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
     ffi (1.13.1-x86-mingw32)
-    ffi-libarchive (1.0.3)
+    ffi-libarchive (1.0.4)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
@@ -245,18 +245,18 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.0.5)
+    mixlib-archive (1.0.6)
       mixlib-log
-    mixlib-archive (1.0.5-universal-mingw32)
+    mixlib-archive (1.0.6-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.6)
     mixlib-cli (2.1.6)
-    mixlib-config (3.0.6)
+    mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.8)
-    mixlib-shellout (3.1.2)
+    mixlib-shellout (3.1.4)
       chef-utils
-    mixlib-shellout (3.1.2-universal-mingw32)
+    mixlib-shellout (3.1.4-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)

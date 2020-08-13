@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 4b10d76f201a3c94447d40568ed3c1882983dc39
+  revision: 93208182830012d3e509ce0301edb6dd77464eed
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -156,8 +156,8 @@ GEM
       tomlrb (~> 1.2)
     chef-sugar (5.1.9)
     chef-utils (16.3.45)
-    chef-vault (4.0.1)
-    chef-zero (15.0.0)
+    chef-vault (4.0.6)
+    chef-zero (15.0.1)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -175,7 +175,7 @@ GEM
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
     ffi (1.13.1-x86-mingw32)
-    ffi-libarchive (1.0.3)
+    ffi-libarchive (1.0.4)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
@@ -212,22 +212,22 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     minitar (0.9)
-    mixlib-archive (1.0.5)
+    mixlib-archive (1.0.6)
       mixlib-log
-    mixlib-archive (1.0.5-universal-mingw32)
+    mixlib-archive (1.0.6-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.6)
     mixlib-cli (2.1.6)
-    mixlib-config (3.0.6)
+    mixlib-config (3.0.9)
       tomlrb
-    mixlib-install (3.12.1)
+    mixlib-install (3.12.3)
       mixlib-shellout
       mixlib-versioning
       thor
     mixlib-log (3.0.8)
-    mixlib-shellout (3.1.2)
+    mixlib-shellout (3.1.4)
       chef-utils
-    mixlib-shellout (3.1.2-universal-mingw32)
+    mixlib-shellout (3.1.4-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
@@ -294,10 +294,10 @@ GEM
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    test-kitchen (2.5.4)
+    test-kitchen (2.6.0)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
-      license-acceptance (~> 1.0, >= 1.0.11)
+      license-acceptance (>= 1.0.11, < 3.0)
       mixlib-install (~> 3.6)
       mixlib-shellout (>= 1.2, < 4.0)
       net-scp (>= 1.1, < 4.0)
