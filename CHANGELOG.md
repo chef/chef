@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.23 -->
-## [v16.4.23](https://github.com/chef/chef/tree/v16.4.23) (2020-08-13)
+<!-- latest_release 16.4.24 -->
+## [v16.4.24](https://github.com/chef/chef/tree/v16.4.24) (2020-08-13)
 
 #### Merged Pull Requests
-- Bump deps for require perf optimizations [#10296](https://github.com/chef/chef/pull/10296) ([tas50](https://github.com/tas50))
+- Optimize requires for non-omnibus installs [#10294](https://github.com/chef/chef/pull/10294) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Optimize requires for non-omnibus installs [#10294](https://github.com/chef/chef/pull/10294) ([tas50](https://github.com/tas50)) <!-- 16.4.24 -->
 - Bump deps for require perf optimizations [#10296](https://github.com/chef/chef/pull/10296) ([tas50](https://github.com/tas50)) <!-- 16.4.23 -->
 - Update chef-telemetry and ohai to the latest [#10295](https://github.com/chef/chef/pull/10295) ([tas50](https://github.com/tas50)) <!-- 16.4.22 -->
 - Use macos? helper in homebrew_update [#10290](https://github.com/chef/chef/pull/10290) ([tas50](https://github.com/tas50)) <!-- 16.4.21 -->
