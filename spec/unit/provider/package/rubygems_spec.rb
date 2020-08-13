@@ -387,8 +387,9 @@ describe Chef::Provider::Package::Rubygems do
   before(:each) do
     # We choose detect omnibus via RbConfig::CONFIG['bindir'] in Chef::Provider::Package::Rubygems.new
     allow(RbConfig::CONFIG).to receive(:[]).with("bindir").and_return(bindir)
-    # Rubygems uses this interally
+    # Rubygems uses these two interally
     allow(RbConfig::CONFIG).to receive(:[]).with("arch").and_call_original
+    allow(RbConfig::CONFIG).to receive(:[]).with("ruby_install_name").and_call_original
     allow(File).to receive(:executable?).and_return false
     allow(File).to receive(:executable?).with("#{bindir}/gem").and_return true
     # XXX: we can't stub the provider object directly here because referencing it will create it and that
@@ -467,6 +468,7 @@ describe Chef::Provider::Package::Rubygems do
       it "searches for a gem binary when running on Omnibus on Unix" do
         platform_mock :unix do
           allow(ENV).to receive(:[]).with("PATH").and_return("/usr/bin:/usr/sbin:/opt/chef/embedded/bin")
+          allow(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
           allow(File).to receive(:executable?).with("/usr/bin/gem").and_return(false)
           allow(File).to receive(:executable?).with("/usr/sbin/gem").and_return(true)
           allow(File).to receive(:executable?).with("/opt/chef/embedded/bin/gem").and_return(true) # should not get here
@@ -480,6 +482,7 @@ describe Chef::Provider::Package::Rubygems do
         it "searches for a gem binary when running on Omnibus on Windows" do
           platform_mock :windows do
             allow(ENV).to receive(:[]).with("PATH").and_return('C:\windows\system32;C:\windows;C:\Ruby186\bin')
+            allow(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
             allow(File).to receive(:executable?).with('C:\\windows\\system32/gem').and_return(false)
             allow(File).to receive(:executable?).with('C:\\windows/gem').and_return(false)
             allow(File).to receive(:executable?).with('C:\\Ruby186\\bin/gem').and_return(true)
