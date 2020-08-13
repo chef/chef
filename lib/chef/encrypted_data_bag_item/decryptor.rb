@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "yaml"
+require "yaml" unless defined?(YAML)
 require_relative "../json_compat"
 require "openssl" unless defined?(OpenSSL)
 require "base64"

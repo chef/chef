@@ -25,7 +25,7 @@ require_relative "log"
 require_relative "platform"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "tmpdir" unless defined?(Dir.mktmpdir)
-require "rbconfig"
+require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
 require_relative "dist"
 require "license_acceptance/acceptor"

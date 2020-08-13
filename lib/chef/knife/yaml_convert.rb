@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "yaml"
+require "yaml" unless defined?(YAML)
 require_relative "../knife"
 class Chef::Knife::YamlConvert < Chef::Knife
 
