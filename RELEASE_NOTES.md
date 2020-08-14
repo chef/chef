@@ -16,7 +16,7 @@ The various openssl_* resources were refactored to better report the changed sta
 
 The `osx_profile` has been refactored as a custom resource internally. This update also better reports the changed state of the resource to Automate or other handlers and no longer silently continues if the attempts to shellout fail.
 
-### powershell_package_source.rb
+### powershell_package_source
 
 The `powershell_package_source` resource no longer requires the `url` property to be set when using the `:unregister` action. Thanks for this fix [@kimbernator](https://github.com/kimbernator)
 
