@@ -55,15 +55,14 @@ module ChefConfig
       end
     end
 
-    path_separator_regex = [Regexp.escape(File::SEPARATOR), Regexp.escape(path_separator)].uniq.join
-
-    TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
-    LEADING_SLASHES_REGEX = /^[#{path_separator_regex}]+/.freeze
-
     def self.join(*args, windows: ChefUtils.windows?)
+      path_separator_regex = Regexp.escape(windows ? "#{File::SEPARATOR}#{BACKSLASH}" : File::SEPARATOR)
+      trailing_slashes_regex = /[#{path_separator_regex}]+$/.freeze
+      leading_slashes_regex = /^[#{path_separator_regex}]+/.freeze
+
       args.flatten.inject do |joined_path, component|
-        joined_path = joined_path.sub(TRAILING_SLASHES_REGEX, "")
-        component = component.sub(LEADING_SLASHES_REGEX, "")
+        joined_path = joined_path.sub(trailing_slashes_regex, "")
+        component = component.sub(leading_slashes_regex, "")
         joined_path + "#{path_separator(windows: windows)}#{component}"
       end
     end
@@ -126,17 +125,22 @@ module ChefConfig
       abs_path
     end
 
-    # This is the INVERSE of Pathname#cleanpath, it converts forward
-    # slashes to backslashes for Windows.  Since the Ruby API and the
-    # Windows APIs all consume forward slashes, this helper function
-    # should only be used for *DISPLAY* logic to send strings back
-    # to the user with backslashes.  Internally, filename paths should
-    # generally be stored with forward slashes for consistency.  It is
-    # not necessary or desired to blindly convert pathnames to have
-    # backslashes on Windows.
+    # The built in ruby Pathname#cleanpath method does not clean up forward slashes and
+    # backslashes.  This is a wrapper around that which does.  In general this is NOT
+    # recommended for internal use within ruby/chef since ruby does not care about forward slashes
+    # vs. backslashes, even on Windows.  Where this generally matters is when being rendered
+    # to the user, or being rendered into things like the windows PATH or to commands that
+    # are being executed.  In some cases it may be easier on windows to render paths to
+    # unix-style for being eventually eval'd by ruby in the future (templates being rendered
+    # with code to be consumed by ruby) where forcing unix-style forward slashes avoids the
+    # issue of needing to escape the backslashes in rendered strings.  This has a boolean
+    # operator to force windows-style or non-windows style operation, where the default is
+    # determined by the underlying node['platform'] value.
     #
-    # Generally, if the user isn't going to be seeing it, you should be
-    # using Pathname#cleanpath instead of this function.
+    # In general if you don't know if you need this routine, do not use it, best practice
+    # within chef/ruby itself is not to care.  Only use it to force windows or unix style
+    # when it really matters.
+    #
     def self.cleanpath(path, windows: ChefUtils.windows?)
       path = Pathname.new(path).cleanpath.to_s
       if windows
