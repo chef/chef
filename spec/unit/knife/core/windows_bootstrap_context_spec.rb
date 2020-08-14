@@ -149,12 +149,12 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
   describe "#config_content" do
     before do
       bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_level: :info,
-        config_log_location: STDOUT,
-        chef_server_url: "http://chef.example.com:4444",
-        validation_client_name: "chef-validator-testing",
-        file_cache_path: "c:/chef/cache",
-        file_backup_path: "c:/chef/backup",
-        cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })))
+                                                                      config_log_location: STDOUT,
+                                                                      chef_server_url: "http://chef.example.com:4444",
+                                                                      validation_client_name: "chef-validator-testing",
+                                                                      file_cache_path: "c:/chef/cache",
+                                                                      file_backup_path: "c:/chef/backup",
+                                                                      cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })))
     end
 
     it "generates the config file data" do
@@ -183,7 +183,12 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#start_chef" do
     it "returns the expected string" do
-      expect(bootstrap_context.start_chef).to match(/SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin;%PATH%"/)
+      expect(bootstrap_context.start_chef).to eq(
+        <<~EOH
+          SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin;%PATH%"
+          chef-client -c C:\\chef\\client.rb -j C:\\chef\\first-boot.json
+        EOH
+      )
     end
   end
 
