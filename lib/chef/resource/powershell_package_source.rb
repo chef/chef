@@ -34,7 +34,7 @@ class Chef
 
       property :url, String,
         description: "The url to the package source.",
-        required: true
+        required: [:register]
 
       property :trusted, [TrueClass, FalseClass],
         description: "Whether or not to trust packages from this source.",
