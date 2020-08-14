@@ -141,6 +141,10 @@ module ChefConfig
     # within chef/ruby itself is not to care.  Only use it to force windows or unix style
     # when it really matters.
     #
+    # @param path [String] the path to clean
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] cleaned path
+    #
     def self.cleanpath(path, windows: ChefUtils.windows?)
       path = Pathname.new(path).cleanpath.to_s
       if windows

@@ -74,30 +74,53 @@ module ChefConfig
       path
     end
 
-    # On *nix, /etc/chef
+    # On *nix, /etc/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
     def self.etc_chef_dir(windows: ChefUtils.windows?)
       path = windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
       PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, /var/chef
+    # On *nix, /var/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
     def self.var_chef_dir(windows: ChefUtils.windows?)
       path = windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
       PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, the root of /var/, used to test if we can create and write in /var/chef
+    # On *nix, /var, on Windows C:\
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
     def self.var_root_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : "/var"
+      path = windows ? "C:\\" : "/var"
       PathHelper.cleanpath(path, windows: windows)
     end
 
     # On windows, C:/chef/
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
     def self.c_chef_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
       PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
     end
 
+    # On windows, C:/opscode
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
     def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
       PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
@@ -107,7 +130,10 @@ module ChefConfig
     # either by the drive containing the current file or by the SYSTEMDRIVE ENV
     # variable
     #
+    # (should only be called in a windows-context)
+    #
     # @return [String] the drive letter
+    #
     def self.windows_installation_drive
       if ChefUtils.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]

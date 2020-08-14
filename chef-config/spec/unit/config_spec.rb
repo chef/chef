@@ -222,13 +222,70 @@ RSpec.describe ChefConfig::Config do
       ChefConfig::Config.add_formatter(:doc, "/var/log/formatter.log")
       expect(ChefConfig::Config.formatters).to eq([[:doc, "/var/log/formatter.log"]])
     end
+  end
 
+  describe "#var_chef_path" do
+    let (:dirname) { ChefConfig::Dist::DIR_SUFFIX }
+
+    context "on unix", :unix_only do
+      it "var_chef_dir is /var/chef" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("/var/#{dirname}")
+      end
+
+      it "var_root_dir is /var" do
+        expect(ChefConfig::Config.var_root_dir).to eql("/var")
+      end
+
+      it "etc_chef_dir is /etc/chef" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("/etc/#{dirname}")
+      end
+    end
+
+    context "on windows", :windows_only do
+      it "var_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("C:\\#{dirname}")
+      end
+
+      it "var_root_dir is C:\\" do
+        expect(ChefConfig::Config.var_root_dir).to eql("C:\\")
+      end
+
+      it "etc_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("C:\\#{dirname}")
+      end
+    end
+
+    context "when forced to unix" do
+      it "var_chef_dir is /var/chef" do
+        expect(ChefConfig::Config.var_chef_dir(windows: false)).to eql("/var/#{dirname}")
+      end
+
+      it "var_root_dir is /var" do
+        expect(ChefConfig::Config.var_root_dir(windows: false)).to eql("/var")
+      end
+
+      it "etc_chef_dir is /etc/chef" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
+      end
+    end
+
+    context "when forced to windows" do
+      it "var_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      end
+
+      it "var_root_dir is C:\\" do
+        expect(ChefConfig::Config.var_root_dir(windows: true)).to eql("C:\\")
+      end
+
+      it "etc_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      end
+    end
   end
 
   [ false, true ].each do |is_windows|
-
     context "On #{is_windows ? "Windows" : "Unix"}" do
-
       before :each do
         allow(ChefUtils).to receive(:windows?).and_return(is_windows)
       end
