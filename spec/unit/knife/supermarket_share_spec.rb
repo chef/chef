@@ -108,7 +108,7 @@ describe Chef::Knife::SupermarketShare do
       expect { @knife.run }.to raise_error(SystemExit)
     end
 
-    if File.exists?("/usr/bin/gnutar") || File.exists?("/bin/gnutar")
+    if File.exist?("/usr/bin/gnutar") || File.exist?("/bin/gnutar")
       it "should use gnutar to make a tarball of the cookbook" do
         expect(@knife).to receive(:shell_out!) do |args|
           expect(args.to_s).to match(/gnutar -czf/)

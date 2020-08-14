@@ -32,16 +32,16 @@ describe Chef::Provider::Service::Gentoo do
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
     @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out).and_return(@status)
-    allow(File).to receive(:exists?).with("/etc/init.d/chef").and_return(true)
-    allow(File).to receive(:exists?).with("/sbin/rc-update").and_return(true)
-    allow(File).to receive(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+    allow(File).to receive(:exist?).with("/etc/init.d/chef").and_return(true)
+    allow(File).to receive(:exist?).with("/sbin/rc-update").and_return(true)
+    allow(File).to receive(:exist?).with("/etc/runlevels/default/chef").and_return(false)
     allow(File).to receive(:readable?).with("/etc/runlevels/default/chef").and_return(false)
   end
   # new test: found_enabled state
   #
   describe "load_current_resource" do
     it "should raise Chef::Exceptions::Service if /sbin/rc-update does not exist" do
-      expect(File).to receive(:exists?).with("/sbin/rc-update").and_return(false)
+      expect(File).to receive(:exist?).with("/sbin/rc-update").and_return(false)
       @provider.define_resource_requirements
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
     end
@@ -65,7 +65,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file exists and is readable" do
           before do
-            allow(File).to receive(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            allow(File).to receive(:exist?).with("/etc/runlevels/default/chef").and_return(true)
             allow(File).to receive(:readable?).with("/etc/runlevels/default/chef").and_return(true)
           end
           it "should set enabled to true" do
@@ -76,7 +76,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file exists but is not readable" do
           before do
-            allow(File).to receive(:exists?).with("/etc/runlevels/default/chef").and_return(true)
+            allow(File).to receive(:exist?).with("/etc/runlevels/default/chef").and_return(true)
             allow(File).to receive(:readable?).with("/etc/runlevels/default/chef").and_return(false)
           end
 
@@ -88,7 +88,7 @@ describe Chef::Provider::Service::Gentoo do
 
         describe "and the file does not exist" do
           before do
-            allow(File).to receive(:exists?).with("/etc/runlevels/default/chef").and_return(false)
+            allow(File).to receive(:exist?).with("/etc/runlevels/default/chef").and_return(false)
             allow(File).to receive(:readable?).with("/etc/runlevels/default/chef").and_return("foobarbaz")
           end
 
