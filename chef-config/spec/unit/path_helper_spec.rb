@@ -232,14 +232,14 @@ RSpec.describe ChefConfig::PathHelper do
 
   describe "paths_eql?" do
     it "returns true if the paths are the same" do
-      allow(path_helper).to receive(:canonical_path).with("bandit").and_return("c:/bandit/bandit")
-      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
       expect(path_helper.paths_eql?("bandit", "../bandit/bandit")).to be_truthy
     end
 
     it "returns false if the paths are different" do
-      allow(path_helper).to receive(:canonical_path).with("bandit").and_return("c:/Bo/Bandit")
-      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("bandit", windows: ChefUtils.windows?).and_return("c:/Bo/Bandit")
+      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
       expect(path_helper.paths_eql?("bandit", "../bandit/bandit")).to be_falsey
     end
   end
@@ -259,8 +259,6 @@ RSpec.describe ChefConfig::PathHelper do
                        else
                          "this/\\*path/\\[needs\\]/escaping\\?"
                        end
-        expect(path_helper).to receive(:join).with(*args).and_call_original
-        expect(path_helper).to receive(:cleanpath).and_call_original
         expect(path_helper.escape_glob(*args)).to eq(escaped_path)
       end
     end

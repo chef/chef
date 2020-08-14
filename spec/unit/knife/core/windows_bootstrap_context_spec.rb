@@ -165,7 +165,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
         echo.file_backup_path  "C:/chef/backup"
         echo.cache_options     ^({:path =^> "C:/chef/cache/checksums", :skip_expires =^> true}^)
         echo.# Using default node name ^(fqdn^)
-        echo.log_level :info
+        echo.log_level        :auto
         echo.log_location       STDOUT
       EXPECTED
       expect(bootstrap_context.config_content).to eq expected
@@ -183,7 +183,7 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#start_chef" do
     it "returns the expected string" do
-      expect(bootstrap_context.start_chef).to match(%r{SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\/opscode\/chef\\bin;C:\/opscode\/chef\\embedded\\bin\;%PATH%\"\n})
+      expect(bootstrap_context.start_chef).to match(/SET "PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;C:\\opscode\\chef\\bin;C:\\opscode\\chef\\embedded\\bin;%PATH%"/)
     end
   end
 

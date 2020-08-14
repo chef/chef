@@ -26,14 +26,14 @@ module ChefConfig
     # Maximum characters in a standard Windows path (260 including drive letter and NUL)
     WIN_MAX_PATH = 259
 
-    def self.dirname(path)
-      if ChefUtils.windows?
+    def self.dirname(path, windows: ChefUtils.windows?)
+      if windows
         # Find the first slash, not counting trailing slashes
         end_slash = path.size
         loop do
-          slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]/, end_slash - 1)
+          slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator(windows: windows))}]/, end_slash - 1)
           if !slash
-            return end_slash == path.size ? "." : path_separator
+            return end_slash == path.size ? "." : path_separator(windows: windows)
           elsif slash == end_slash - 1
             end_slash = slash
           else
@@ -47,9 +47,9 @@ module ChefConfig
 
     BACKSLASH = '\\'.freeze
 
-    def self.path_separator
-      if ChefUtils.windows?
-        File::ALT_SEPARATOR || BACKSLASH
+    def self.path_separator(windows: ChefUtils.windows?)
+      if windows
+        BACKSLASH
       else
         File::SEPARATOR
       end
@@ -60,16 +60,16 @@ module ChefConfig
     TRAILING_SLASHES_REGEX = /[#{path_separator_regex}]+$/.freeze
     LEADING_SLASHES_REGEX = /^[#{path_separator_regex}]+/.freeze
 
-    def self.join(*args)
+    def self.join(*args, windows: ChefUtils.windows?)
       args.flatten.inject do |joined_path, component|
         joined_path = joined_path.sub(TRAILING_SLASHES_REGEX, "")
         component = component.sub(LEADING_SLASHES_REGEX, "")
-        joined_path + "#{path_separator}#{component}"
+        joined_path + "#{path_separator(windows: windows)}#{component}"
       end
     end
 
-    def self.validate_path(path)
-      if ChefUtils.windows?
+    def self.validate_path(path, windows: ChefUtils.windows?)
+      if windows
         unless printable?(path)
           msg = "Path '#{path}' contains non-printable characters. Check that backslashes are escaped with another backslash (e.g. C:\\\\Windows) in double-quoted strings."
           ChefConfig.logger.error(msg)
@@ -108,14 +108,14 @@ module ChefConfig
     end
 
     # Produces a comparable path.
-    def self.canonical_path(path, add_prefix = true)
+    def self.canonical_path(path, add_prefix = true, windows: ChefUtils.windows?)
       # First remove extra separators and resolve any relative paths
       abs_path = File.absolute_path(path)
 
-      if ChefUtils.windows?
+      if windows
         # Add the \\?\ API prefix on Windows unless add_prefix is false
         # Downcase on Windows where paths are still case-insensitive
-        abs_path.gsub!(::File::SEPARATOR, path_separator)
+        abs_path.gsub!(::File::SEPARATOR, path_separator(windows: windows))
         if add_prefix && abs_path !~ /^\\\\?\\/
           abs_path.insert(0, "\\\\?\\")
         end
@@ -137,25 +137,25 @@ module ChefConfig
     #
     # Generally, if the user isn't going to be seeing it, you should be
     # using Pathname#cleanpath instead of this function.
-    def self.cleanpath(path)
+    def self.cleanpath(path, windows: ChefUtils.windows?)
       path = Pathname.new(path).cleanpath.to_s
       # ensure all forward slashes are backslashes
-      if ChefUtils.windows?
-        path = path.gsub(File::SEPARATOR, path_separator)
+      if windows
+        path = path.gsub(File::SEPARATOR, path_separator(windows: windows))
       end
       path
     end
 
-    def self.paths_eql?(path1, path2)
-      canonical_path(path1) == canonical_path(path2)
+    def self.paths_eql?(path1, path2, windows: ChefUtils.windows?)
+      canonical_path(path1, windows: windows) == canonical_path(path2, windows: windows)
     end
 
     # @deprecated this method is deprecated. Please use escape_glob_dirs
     # Paths which may contain glob-reserved characters need
     # to be escaped before globbing can be done.
     # http://stackoverflow.com/questions/14127343
-    def self.escape_glob(*parts)
-      path = cleanpath(join(*parts))
+    def self.escape_glob(*parts, windows: ChefUtils.windows?)
+      path = cleanpath(join(*parts, windows: windows), windows: windows)
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
@@ -166,8 +166,8 @@ module ChefConfig
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
-    def self.relative_path_from(from, to)
-      Pathname.new(cleanpath(to)).relative_path_from(Pathname.new(cleanpath(from)))
+    def self.relative_path_from(from, to, windows: ChefUtils.windows?)
+      Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
     end
 
     # Set the project-specific home directory environment variable.
@@ -213,11 +213,11 @@ module ChefConfig
     #
     # The return is a list of all the returned values from each block invocation or a list of paths
     # if no block is provided.
-    def self.all_homes(*args)
+    def self.all_homes(*args, windows: ChefUtils.windows?)
       paths = []
       paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
       paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
-      if ChefUtils.windows?
+      if windows
         # By default, Ruby uses the the following environment variables to determine Dir.home:
         # HOME
         # HOMEDRIVE HOMEPATH
@@ -246,7 +246,7 @@ module ChefConfig
       # Note: Maybe this is a bad idea on some unixy systems where \ might be a valid character depending on
       # the particular brand of kool-aid you consume.  This code assumes that \ and / are both
       # path separators on any system being used.
-      paths = paths.map { |home_path| home_path.gsub(path_separator, ::File::SEPARATOR) if home_path }
+      paths = paths.map { |home_path| home_path.gsub(path_separator(windows: windows), ::File::SEPARATOR) if home_path }
 
       # Filter out duplicate paths and paths that don't exist.
       valid_paths = paths.select { |home_path| home_path && Dir.exist?(home_path.force_encoding("utf-8")) }
