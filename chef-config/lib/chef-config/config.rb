@@ -60,15 +60,15 @@ module ChefConfig
     #   platform_specific_path("/etc/chef/client.pem") #=> "C:\\chef\\client.pem"
     # @param path [String] The unix path to convert to a platform specific path
     # @return [String] a platform specific path
-    def self.platform_specific_path(path, windows: ChefUtils.windows?)
-      path = PathHelper.cleanpath(path, windows: windows)
-      if windows
+    def self.platform_specific_path(path)
+      path = PathHelper.cleanpath(path)
+      if ChefUtils.windows?
         # turns \etc\chef\client.rb and \var\chef\client.rb into C:/chef/client.rb
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
         drive = windows_installation_drive
         if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(drive, path.split('\\', 3)[2], windows: windows)
+          path = PathHelper.join(drive, path.split('\\', 3)[2])
         end
       end
       path
@@ -76,28 +76,28 @@ module ChefConfig
 
     # On *nix, /etc/chef
     def self.etc_chef_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+      windows ? c_chef_dir : File.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
     end
 
     # On *nix, /var/chef
     def self.var_chef_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
+      windows ? c_chef_dir : File.join("/var", ChefConfig::Dist::DIR_SUFFIX)
     end
 
     # On *nix, the root of /var/, used to test if we can create and write in /var/chef
-    def self.var_root_dir(windows: ChefUtils.windows?)
-      path = windows ? c_chef_dir : "/var"
+    def self.var_root_dir
+      windows ? c_chef_dir : "/var"
     end
 
     # On windows, C:/chef/
-    def self.c_chef_dir
+    def self.c_chef_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
+      File.join(drive, ChefConfig::Dist::DIR_SUFFIX)
     end
 
-    def self.c_opscode_dir
+    def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
+      File.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
     end
 
     # the drive where Chef is installed on a windows host. This is determined
