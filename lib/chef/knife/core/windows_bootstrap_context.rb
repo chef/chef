@@ -58,6 +58,15 @@ class Chef
         end
 
         def config_content
+          # The windows: true / windows: false in the block that follows is more than a bit weird.  The way to read this is that we need
+          # the e.g. var_chef_dir to be rendered for the windows value ("C:\chef"), but then we are rendering into a file to be read by
+          # ruby, so we don't actually care about forward-vs-backslashes and by rendering into unix we avoid having to deal with the
+          # double-backwhacking of everything.  So we expect to see:
+          #
+          # file_cache_path "C:/chef"
+          #
+          # Which is mildly odd, but should be entirely correct as far as ruby cares.
+          #
           client_rb = <<~CONFIG
             chef_server_url  "#{chef_config[:chef_server_url]}"
             validation_client_name "#{chef_config[:validation_client_name]}"
