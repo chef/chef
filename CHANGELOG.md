@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.25 -->
-## [v16.4.25](https://github.com/chef/chef/tree/v16.4.25) (2020-08-14)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Update Fauxhai to 8.3 [#10297](https://github.com/chef/chef/pull/10297) ([tas50](https://github.com/tas50))
+- Update Omnibus kitchen config with public boxes [#10292](https://github.com/chef/chef/pull/10292) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Omnibus kitchen config with public boxes [#10292](https://github.com/chef/chef/pull/10292) ([tas50](https://github.com/tas50)) <!-- 16.4.25 -->
 - Update Fauxhai to 8.3 [#10297](https://github.com/chef/chef/pull/10297) ([tas50](https://github.com/tas50)) <!-- 16.4.25 -->
 - Optimize requires for non-omnibus installs [#10294](https://github.com/chef/chef/pull/10294) ([tas50](https://github.com/tas50)) <!-- 16.4.24 -->
 - Bump deps for require perf optimizations [#10296](https://github.com/chef/chef/pull/10296) ([tas50](https://github.com/tas50)) <!-- 16.4.23 -->
