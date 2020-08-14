@@ -362,7 +362,11 @@ class Chef
         subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        open_session(subsession, command)
+        begin
+          open_session(subsession, command)
+        rescue => e
+          open_session(subsession, command, true)
+        end
       end
 
       def open_session(subsession, command, pty = false)
@@ -390,7 +394,6 @@ class Chef
 
               ch.on_request "exit-status" do |ichannel, data|
                 exit_status = [exit_status, data.read_long].max
-                exit_status = open_session(subsession, command, true) if exit_status != 0 && stderr.include?("sudo: sorry, you must have a tty to run sudo")
               end
             end
           end
