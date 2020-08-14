@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.27 -->
-## [v16.4.27](https://github.com/chef/chef/tree/v16.4.27) (2020-08-14)
+<!-- latest_release 16.4.28 -->
+## [v16.4.28](https://github.com/chef/chef/tree/v16.4.28) (2020-08-14)
 
 #### Merged Pull Requests
-- Fix File.exist throughout the codebase [#10284](https://github.com/chef/chef/pull/10284) ([tas50](https://github.com/tas50))
+- Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50)) <!-- 16.4.28 -->
 - Fix File.exist throughout the codebase [#10284](https://github.com/chef/chef/pull/10284) ([tas50](https://github.com/tas50)) <!-- 16.4.27 -->
 - Minor tweaks to the platform checks in the specs [#10289](https://github.com/chef/chef/pull/10289) ([tas50](https://github.com/tas50)) <!-- 16.4.26 -->
 - Update Omnibus kitchen config with public boxes [#10292](https://github.com/chef/chef/pull/10292) ([tas50](https://github.com/tas50)) <!-- 16.4.25 -->
