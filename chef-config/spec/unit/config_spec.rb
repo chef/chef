@@ -430,8 +430,8 @@ RSpec.describe ChefConfig::Config do
 
         describe "ChefConfig::Config[:cache_path]" do
           let(:target_mode_host) { "fluffy.kittens.org" }
-          let(:target_mode_primary_cache_path) { "#{primary_cache_path}/#{target_mode_host}" }
-          let(:target_mode_secondary_cache_path) { "#{secondary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_primary_cache_path) { ChefUtils.windows? ? "#{primary_cache_path}\\#{target_mode_host}" : "#{primary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_secondary_cache_path) { ChefUtils.windows? ? "#{secondary_cache_path}\\#{target_mode_host}" : "#{secondary_cache_path}/#{target_mode_host}" }
 
           before do
             if is_windows

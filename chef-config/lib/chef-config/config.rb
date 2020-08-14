@@ -76,28 +76,31 @@ module ChefConfig
 
     # On *nix, /etc/chef
     def self.etc_chef_dir(windows: ChefUtils.windows?)
-      windows ? c_chef_dir : File.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
+      path = windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
     # On *nix, /var/chef
     def self.var_chef_dir(windows: ChefUtils.windows?)
-      windows ? c_chef_dir : File.join("/var", ChefConfig::Dist::DIR_SUFFIX)
+      path = windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
     # On *nix, the root of /var/, used to test if we can create and write in /var/chef
-    def self.var_root_dir
-      windows ? c_chef_dir : "/var"
+    def self.var_root_dir(windows: ChefUtils.windows?)
+      path = windows ? c_chef_dir : "/var"
+      PathHelper.cleanpath(path, windows: windows)
     end
 
     # On windows, C:/chef/
     def self.c_chef_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      File.join(drive, ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
     end
 
     def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      File.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
+      PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
     end
 
     # the drive where Chef is installed on a windows host. This is determined
@@ -337,11 +340,11 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ChefConfig::Dist::USER_CONF_DIR)
-          secondary_cache_path = target_mode? ? "#{secondary_cache_path}/#{target_mode.host}" : secondary_cache_path
+          secondary_cache_path = target_mode? ? PathHelper.join(secondary_cache_path, target_mode.host) : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
-          target_mode? ? "#{primary_cache_path}/#{target_mode.host}" : primary_cache_path
+          target_mode? ? PathHelper.join(primary_cache_path, target_mode.host) : primary_cache_path
         end
       end
     end

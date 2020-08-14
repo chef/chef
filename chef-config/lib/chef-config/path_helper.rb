@@ -139,11 +139,13 @@ module ChefConfig
     # using Pathname#cleanpath instead of this function.
     def self.cleanpath(path, windows: ChefUtils.windows?)
       path = Pathname.new(path).cleanpath.to_s
-      # ensure all forward slashes are backslashes
       if windows
-        path = path.gsub(File::SEPARATOR, path_separator(windows: windows))
+        # ensure all forward slashes are backslashes
+        path.gsub(File::SEPARATOR, path_separator(windows: windows))
+      else
+        # ensure all backslashes are forward slashes
+        path.gsub(BACKSLASH, File::SEPARATOR)
       end
-      path
     end
 
     def self.paths_eql?(path1, path2, windows: ChefUtils.windows?)

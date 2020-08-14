@@ -248,7 +248,7 @@ RSpec.describe ChefConfig::PathHelper do
     it "escapes characters reserved by glob" do
       path = "C:\\this\\*path\\[needs]\\escaping?"
       escaped_path = "C:\\\\this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
-      expect(path_helper.escape_glob(path)).to eq(escaped_path)
+      expect(path_helper.escape_glob(path, windows: true)).to eq(escaped_path)
     end
 
     context "when given more than one argument" do
