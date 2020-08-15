@@ -124,4 +124,14 @@ build do
       end
     end
   end
+
+  block "Remove deprecated fauxhai dumps we don't need for running chef-utils specs" do
+    require "json"
+    Dir.glob("#{install_dir}/embedded/lib/ruby/gems/*/gems/fauxhai*/lib/fauxhai/platforms/**/*.json") do |file_path|
+      if JSON.parse(File.read(file_path))["deprecated"]
+        puts "Deleted deprecated Fauxhai definition at #{file_path}"
+        FileUtils.rm_f(file_path)
+      end
+    end
+  end
 end
