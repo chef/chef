@@ -148,13 +148,17 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
 
   describe "#config_content" do
     before do
-      bootstrap_context.instance_variable_set(:@chef_config, Mash.new(config_log_level: :info,
-                                                                      config_log_location: STDOUT,
-                                                                      chef_server_url: "http://chef.example.com:4444",
-                                                                      validation_client_name: "chef-validator-testing",
-                                                                      file_cache_path: "c:/chef/cache",
-                                                                      file_backup_path: "c:/chef/backup",
-                                                                      cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })))
+      bootstrap_context.instance_variable_set(
+        :@chef_config, Mash.new(
+          config_log_level: :info,
+          config_log_location: STDOUT,
+          chef_server_url: "http://chef.example.com:4444",
+          validation_client_name: "chef-validator-testing",
+          file_cache_path: "c:/chef/cache",
+          file_backup_path: "c:/chef/backup",
+          cache_options: ({ path: "c:/chef/cache/checksums", skip_expires: true })
+        )
+      )
     end
 
     it "generates the config file data" do
