@@ -18,7 +18,7 @@ The `osx_profile` has been refactored as a custom resource internally. This upda
 
 ### powershell_package_source
 
-The `powershell_package_source` resource no longer requires the `url` property to be set when using the `:unregister` action. Thanks for this fix [@kimbernator](https://github.com/kimbernator)
+The `powershell_package_source` resource no longer requires the `url` property to be set when using the `:unregister` action. Thanks for this fix [@kimbernator](https://github.com/kimbernator)!
 
 ### powershell_script
 
