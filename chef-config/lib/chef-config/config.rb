@@ -74,42 +74,66 @@ module ChefConfig
       path
     end
 
-    # On *nix, /etc/chef
-    def self.etc_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+    # On *nix, /etc/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.etc_chef_dir(windows: ChefUtils.windows?)
+      path = windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, /var/chef
-    def self.var_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+    # On *nix, /var/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.var_chef_dir(windows: ChefUtils.windows?)
+      path = windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, the root of /var/, used to test if we can create and write in /var/chef
-    def self.var_root_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : "/var"
-      PathHelper.cleanpath(path)
+    # On *nix, /var, on Windows C:\
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.var_root_dir(windows: ChefUtils.windows?)
+      path = windows ? "C:\\" : "/var"
+      PathHelper.cleanpath(path, windows: windows)
     end
 
     # On windows, C:/chef/
-    def self.c_chef_dir
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
+    def self.c_chef_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
     end
 
-    def self.c_opscode_dir
+    # On windows, C:/opscode
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
+    def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX, windows: windows)
     end
 
     # the drive where Chef is installed on a windows host. This is determined
     # either by the drive containing the current file or by the SYSTEMDRIVE ENV
     # variable
     #
+    # (should only be called in a windows-context)
+    #
     # @return [String] the drive letter
+    #
     def self.windows_installation_drive
       if ChefUtils.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]
@@ -342,11 +366,11 @@ module ChefConfig
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
           secondary_cache_path = PathHelper.join(user_home, ChefConfig::Dist::USER_CONF_DIR)
-          secondary_cache_path = target_mode? ? "#{secondary_cache_path}/#{target_mode.host}" : secondary_cache_path
+          secondary_cache_path = target_mode? ? PathHelper.join(secondary_cache_path, target_mode.host) : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
-          target_mode? ? "#{primary_cache_path}/#{target_mode.host}" : primary_cache_path
+          target_mode? ? PathHelper.join(primary_cache_path, target_mode.host) : primary_cache_path
         end
       end
     end

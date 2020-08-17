@@ -41,20 +41,6 @@ class Chef
           super(config, run_list, chef_config, secret)
         end
 
-        # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
-        # this presumes Windows so we can avoid changing the method definitions
-        # across Chef, ChefConfig, and ChefUtils for the circumstance where
-        # the methods are being run for a system other than the one Ruby is
-        # executing on.
-        #
-        # We only need to cleanpath the paths that we are passing to cmd.exe,
-        # anything written to a configuration file or passed as an argument
-        # will be interpreted by ruby later and do the right thing.
-        def cleanpath(path)
-          path = Pathname.new(path).cleanpath.to_s
-          path.gsub(File::SEPARATOR, '\\')
-        end
-
         def validation_key
           if File.exist?(File.expand_path(chef_config[:validation_key]))
             IO.read(File.expand_path(chef_config[:validation_key]))
@@ -72,12 +58,21 @@ class Chef
         end
 
         def config_content
+          # The windows: true / windows: false in the block that follows is more than a bit weird.  The way to read this is that we need
+          # the e.g. var_chef_dir to be rendered for the windows value ("C:\chef"), but then we are rendering into a file to be read by
+          # ruby, so we don't actually care about forward-vs-backslashes and by rendering into unix we avoid having to deal with the
+          # double-backwhacking of everything.  So we expect to see:
+          #
+          # file_cache_path "C:/chef"
+          #
+          # Which is mildly odd, but should be entirely correct as far as ruby cares.
+          #
           client_rb = <<~CONFIG
             chef_server_url  "#{chef_config[:chef_server_url]}"
             validation_client_name "#{chef_config[:validation_client_name]}"
-            file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
-            file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
-            cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
+            file_cache_path   "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: true))}\\\\cache"
+            file_backup_path  "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: true))}\\\\backup"
+            cache_options     ({:path => "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.etc_chef_dir(windows: true))}\\\\cache\\\\checksums", :skip_expires => true})
           CONFIG
 
           unless chef_config[:chef_license].nil?
@@ -90,8 +85,8 @@ class Chef
             client_rb << "# Using default node name (fqdn)\n"
           end
 
-          if chef_config[:config_log_level]
-            client_rb << %Q{log_level :#{chef_config[:config_log_level]}\n}
+          if config[:config_log_level]
+            client_rb << %Q{log_level :#{config[:config_log_level]}\n}
           else
             client_rb << "log_level        :auto\n"
           end
@@ -140,11 +135,11 @@ class Chef
           end
 
           if config[:secret]
-            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(true)}/encrypted_data_bag_secret"\n}
+            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(windows: true)}/encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs_script.empty?
-            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(true)}/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(windows: true)}/trusted_certs"\n}
           end
 
           if chef_config[:fips]
@@ -173,9 +168,14 @@ class Chef
         end
 
         def start_chef
+          c_opscode_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.c_opscode_dir, windows: true)
+          client_rb = clean_etc_chef_file("client.rb")
+          first_boot = clean_etc_chef_file("first-boot.json")
+
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\bin;#{ChefConfig::Config.c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "#{Chef::Dist::CLIENT} -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
+
+          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
+          start_chef << "#{Chef::Dist::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option}\n"
         end
 
         def win_wget
@@ -275,8 +275,16 @@ class Chef
           install_command('"') + "\n" + fallback_install_task_command
         end
 
+        def clean_etc_chef_file(path)
+          ChefConfig::PathHelper.cleanpath(etc_chef_file(path), windows: true)
+        end
+
+        def etc_chef_file(path)
+          "#{bootstrap_directory}/#{path}"
+        end
+
         def bootstrap_directory
-          cleanpath(ChefConfig::Config.etc_chef_dir(true))
+          ChefConfig::Config.etc_chef_dir(windows: true)
         end
 
         def local_download_path
