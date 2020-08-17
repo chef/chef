@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 93208182830012d3e509ce0301edb6dd77464eed
+  revision: 379f9c7fe65e867af2b69b28b2ced739526f9842
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.355.0)
+    aws-partitions (1.356.0)
     aws-sdk-core (3.104.3)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -154,7 +154,7 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-sugar (5.1.9)
+    chef-sugar (5.1.11)
     chef-utils (16.3.45)
     chef-vault (4.0.6)
     chef-zero (15.0.1)
@@ -179,7 +179,7 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
-    ffi-yajl (2.3.3)
+    ffi-yajl (2.3.4)
       libyajl2 (~> 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.0)
@@ -249,7 +249,7 @@ GEM
     octokit (4.18.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.3.2)
+    ohai (16.4.11)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -260,7 +260,6 @@ GEM
       mixlib-log (>= 2.0.1, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       plist (~> 3.1)
-      systemu (~> 2.6.4)
       wmi-lite (~> 1.0)
     pastel (0.8.0)
       tty-color (~> 0.5)
@@ -293,7 +292,6 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    systemu (2.6.5)
     test-kitchen (2.6.0)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
@@ -356,7 +354,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (2.1.5)
+    win32-service (2.1.6)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
