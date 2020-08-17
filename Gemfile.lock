@@ -175,7 +175,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.3.0)
+    fauxhai-ng (8.3.1)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
@@ -354,7 +354,7 @@ GEM
     tins (1.25.0)
       sync
     tomlrb (1.2.9)
-    train-core (3.3.13)
+    train-core (3.3.16)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
