@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.29 -->
-## [v16.4.29](https://github.com/chef/chef/tree/v16.4.29) (2020-08-14)
+<!-- latest_release 16.4.30 -->
+## [v16.4.30](https://github.com/chef/chef/tree/v16.4.30) (2020-08-17)
 
 #### Merged Pull Requests
-- do not require source when removing powershell package source [#10301](https://github.com/chef/chef/pull/10301) ([kimbernator](https://github.com/kimbernator))
+- Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.4.30 -->
 - do not require source when removing powershell package source [#10301](https://github.com/chef/chef/pull/10301) ([kimbernator](https://github.com/kimbernator)) <!-- 16.4.29 -->
 - Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50)) <!-- 16.4.28 -->
 - Fix File.exist throughout the codebase [#10284](https://github.com/chef/chef/pull/10284) ([tas50](https://github.com/tas50)) <!-- 16.4.27 -->
