@@ -156,6 +156,26 @@ module ChefConfig
       end
     end
 
+    # This is not just escaping for something like use in Regexps, or in globs.  For the former
+    # just use Regexp.escape.  For the latter, use escape_glob_dir below.
+    #
+    # This is escaping where the path to be rendered is being put into a ruby file which will
+    # later be read back by ruby (or something similar) so we need quadruple backslashes.
+    #
+    # In order to print:
+    #
+    #   file_cache_path "C:\\chef"
+    #
+    # We need to convert "C:\chef" to "C:\\\\chef" to interpolate into a string which is rendered
+    # into the output file with that line in it.
+    #
+    # @param path [String] the path to escape
+    # @return [String] the escaped path
+    #
+    def self.escapepath(path)
+      path.gsub(BACKSLASH, BACKSLASH * 4)
+    end
+
     def self.paths_eql?(path1, path2, windows: ChefUtils.windows?)
       canonical_path(path1, windows: windows) == canonical_path(path2, windows: windows)
     end
