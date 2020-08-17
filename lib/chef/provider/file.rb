@@ -335,7 +335,7 @@ class Chef
 
       def do_validate_content
         if new_resource.checksum && tempfile && ( new_resource.checksum != tempfile_checksum )
-          raise Chef::Exceptions::ChecksumMismatch.new(short_cksum_ellipsis(new_resource.checksum), short_cksum_ellipsis(tempfile_checksum))
+          raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
 
         if tempfile

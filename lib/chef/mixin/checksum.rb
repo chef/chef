@@ -31,10 +31,6 @@ class Chef
 
         checksum.slice(0, 6)
       end
-
-      def short_cksum_ellipsis(checksum)
-        short_cksum(checksum) + "..."
-      end
     end
   end
 end
