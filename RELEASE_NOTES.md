@@ -14,7 +14,7 @@ The various openssl_* resources were refactored to better report the changed sta
 
 ### osx_profile
 
-The `osx_profile` has been refactored as a custom resource internally. This update also better reports the changed state of the resource to Automate or other handlers and no longer silently continues if the attempts to shellout fail.
+The `osx_profile` resource has been refactored as a custom resource internally. This update also better reports the changed state of the resource to Automate or other handlers and no longer silently continues if the attempts to shellout fail.
 
 ### powershell_package_source
 
