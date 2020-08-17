@@ -26,7 +26,7 @@ The `powershell_script` resource has been refactored to better report the change
 
 ### windows_feature
 
-The `windows_feature` resource has been updated to allow installing features that have been removed if a source location is provided. Thanks for for reporting this [@stefanwb](https://github.com/stefanwb)
+The `windows_feature` resource has been updated to allow installing features that have been removed if a source location is provided. Thanks for reporting this [@stefanwb](https://github.com/stefanwb)!
 
 ### windows_font
 
