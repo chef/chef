@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.32 -->
-## [v16.4.32](https://github.com/chef/chef/tree/v16.4.32) (2020-08-17)
+<!-- latest_release 16.4.33 -->
+## [v16.4.33](https://github.com/chef/chef/tree/v16.4.33) (2020-08-17)
 
 #### Merged Pull Requests
-- Use net/http and openssl instead of net/https [#10283](https://github.com/chef/chef/pull/10283) ([tas50](https://github.com/tas50))
+- Remove the unused win32-dir dependency [#10308](https://github.com/chef/chef/pull/10308) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the unused win32-dir dependency [#10308](https://github.com/chef/chef/pull/10308) ([tas50](https://github.com/tas50)) <!-- 16.4.33 -->
 - Use net/http and openssl instead of net/https [#10283](https://github.com/chef/chef/pull/10283) ([tas50](https://github.com/tas50)) <!-- 16.4.32 -->
 - Delete deprecated Fauxhai definitions [#10305](https://github.com/chef/chef/pull/10305) ([tas50](https://github.com/tas50)) <!-- 16.4.31 -->
 - Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.4.30 -->
