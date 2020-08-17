@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ### chef_client_systemd_timer
 
-The `chef_client_systemd_timer` has been updated to prevent failures running the `:remove` action.
+The `chef_client_systemd_timer` resource has been updated to prevent failures running the `:remove` action.
 
 ### openssl resource
 
