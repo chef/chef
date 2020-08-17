@@ -30,7 +30,7 @@ The `windows_feature` resource has been updated to allow installing features tha
 
 ### windows_font
 
-The `windows_font` resource will no longer fail if a font has already been installed on newer releases of Windows. Thanks for for reporting this [@bmiller08](https://github.com/bmiller08)
+The `windows_font` resource will no longer fail if a font has already been installed on newer releases of Windows. Thanks for reporting this [@bmiller08](https://github.com/bmiller08)!
 
 ### windows_workgroup
 
