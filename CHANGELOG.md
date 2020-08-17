@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.30 -->
-## [v16.4.30](https://github.com/chef/chef/tree/v16.4.30) (2020-08-17)
+<!-- latest_release 16.4.31 -->
+## [v16.4.31](https://github.com/chef/chef/tree/v16.4.31) (2020-08-17)
 
 #### Merged Pull Requests
-- Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- Delete deprecated Fauxhai definitions [#10305](https://github.com/chef/chef/pull/10305) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.3.45 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Delete deprecated Fauxhai definitions [#10305](https://github.com/chef/chef/pull/10305) ([tas50](https://github.com/tas50)) <!-- 16.4.31 -->
 - Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.4.30 -->
 - do not require source when removing powershell package source [#10301](https://github.com/chef/chef/pull/10301) ([kimbernator](https://github.com/kimbernator)) <!-- 16.4.29 -->
 - Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50)) <!-- 16.4.28 -->
