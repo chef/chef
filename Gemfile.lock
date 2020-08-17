@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 6d9bd5e5480f22035555a2adfbe69d171264e70e
+  revision: a61bba8887723c7c7dc7e0211a31af9dc6e84b2b
   branch: master
   specs:
     ohai (16.4.11)
@@ -100,7 +100,6 @@ PATH
       uuidtools (~> 2.1.5)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)
-      win32-dir (~> 0.5.0)
       win32-event (~> 0.6.1)
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
@@ -185,7 +184,7 @@ GEM
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.3)
       ffi
-    ffi-yajl (2.3.3)
+    ffi-yajl (2.3.4)
       libyajl2 (~> 1.2)
     fuzzyurl (0.9.0)
     gssapi (1.3.0)
@@ -398,8 +397,6 @@ GEM
     win32-certstore (0.4.0)
       ffi
       mixlib-shellout
-    win32-dir (0.5.1)
-      ffi (>= 1.0.0)
     win32-event (0.6.3)
       win32-ipc (>= 0.6.0)
     win32-eventlog (0.6.3)
@@ -412,7 +409,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.8.3)
       ffi (>= 1.0.0)
-    win32-service (2.1.5)
+    win32-service (2.1.6)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
