@@ -44,7 +44,7 @@ The included `cacerts` bundle in Chef Infra Client has been updated to the 7-22-
 
 ### Reduced Dependencies
 
-We've audited the included dependencies that we ship with Chef Infra Client to reduce the 3rd party code we ship. We've removed many of the embededded binaries that shipped with the client in the past, but we not directly used. We've also reduced the feature set built into many of the libraries we depend on, and removed several Ruby gem dependencies that were no longer necessary. This reduces the future potential for CVEs in the product and reduces package size at the same time.
+We've audited the included dependencies that we ship with Chef Infra Client to reduce the 3rd party code we ship. We've removed many of the embededded binaries that shipped with the client in the past, but were not directly used. We've also reduced the feature set built into many of the libraries that we depend on, and removed several Ruby gem dependencies that were no longer necessary. This reduces the future potential for CVEs in the product and reduces package size at the same time.
 
 # What's New in 16.3.45
 
