@@ -149,7 +149,10 @@ class Chef
                   group "root"
                   mode "0644"
                   action :create
-                  content %{ZONE="#{new_resource.timezone}"\nUTC="true"\n}
+                  content <<~CONTENT
+                    ZONE="#{new_resource.timezone}"
+                    UTC="true"
+                  CONTENT
                 end
 
                 execute "tzdata-update" do
