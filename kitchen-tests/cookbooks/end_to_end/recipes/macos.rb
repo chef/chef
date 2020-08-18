@@ -19,7 +19,7 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-timezone "GMT"
+timezone "America/Los_Angeles"
 
 include_recipe "ntp"
 
