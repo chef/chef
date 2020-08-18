@@ -39,6 +39,12 @@ describe Chef::DataCollector do
   let(:new_resource) do
     new_resource = Chef::Resource::File.new("/tmp/a-file.txt")
     new_resource.checksum nil
+    # This next line is a hack to work around the fact that the name property will not have been autovivified yet
+    # in these unit tests which breaks some assumptions.  Really the Formatters::ErrorMapper.resource_failed and
+    # related APIs need to properly walk and get properties on the resource rather than walking through instance
+    # variables, but the ErrorMappers probably pre-date the conversion to properties.  But this next line is necesary
+    # to populate the name_property instance variable (which will happen naturally during the course of running the
+    # provider, so I don't think this is a user-visibile bug).
     new_resource.path
     new_resource
   end
