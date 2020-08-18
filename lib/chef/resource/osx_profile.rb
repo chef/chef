@@ -81,7 +81,7 @@ class Chef
 
         def check_resource_semantics!
           if mac? && node["platform_version"] =~ ">= 11.0"
-            raise "The osx_profile resource is not available on macOS Big Sur or above due to the removal of apple support for CLI installation of profiles"
+            raise "The osx_profile resource is not available on macOS Big Sur or above due to the removal of Apple support for CLI installation of profiles"
           end
 
           if action == :remove
