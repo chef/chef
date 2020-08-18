@@ -122,43 +122,50 @@ class Chef
       action :set do
         description "Set the timezone."
 
-        converge_if_changed(:timezone) do
-          # Modern SUSE, Amazon, Fedora, RHEL, Ubuntu & Debian
-          if systemd?
-            # make sure we have the tzdata files
-            package suse? ? "timezone" : "tzdata"
-
-            shell_out!(["/usr/bin/timedatectl", "--no-ask-password", "set-timezone", new_resource.timezone])
-          else
-            case node["platform_family"]
-            # Old version of RHEL < 7 and Amazon 201X
-            when "rhel", "amazon"
-              # make sure we have the tzdata files
-              package "tzdata"
-
-              file "/etc/sysconfig/clock" do
-                owner "root"
-                group "root"
-                mode "0644"
-                action :create
-                content %{ZONE="#{new_resource.timezone}"\nUTC="true"\n}
-              end
-
-              execute "tzdata-update" do
-                command "/usr/sbin/tzdata-update"
-                action :nothing
-                only_if { ::File.executable?("/usr/sbin/tzdata-update") }
-                subscribes :run, "file[/etc/sysconfig/clock]", :immediately
-              end
-
-              link "/etc/localtime" do
-                to "/usr/share/zoneinfo/#{new_resource.timezone}"
-                not_if { ::File.executable?("/usr/sbin/tzdata-update") }
-              end
-            when "mac_os_x"
-              shell_out!(["sudo", "systemsetup", "-settimezone", new_resource.timezone])
-            when "windows"
+        # we have to check windows first since the value isn't case sensitive here
+        if windows?
+          unless current_windows_tz.casecmp?(new_resource.timezone)
+            converge_by("setting timezone to '#{new_resource.timezone}'") do
               shell_out!(["tzutil", "/s", new_resource.timezone])
+            end
+          end
+        else # linux / macos
+          converge_if_changed(:timezone) do
+            # Modern SUSE, Amazon, Fedora, RHEL, Ubuntu & Debian
+            if systemd?
+              # make sure we have the tzdata files
+              package suse? ? "timezone" : "tzdata"
+
+              shell_out!(["/usr/bin/timedatectl", "--no-ask-password", "set-timezone", new_resource.timezone])
+            else
+              case node["platform_family"]
+              # Old version of RHEL < 7 and Amazon 201X
+              when "rhel", "amazon"
+                # make sure we have the tzdata files
+                package "tzdata"
+
+                file "/etc/sysconfig/clock" do
+                  owner "root"
+                  group "root"
+                  mode "0644"
+                  action :create
+                  content %{ZONE="#{new_resource.timezone}"\nUTC="true"\n}
+                end
+
+                execute "tzdata-update" do
+                  command "/usr/sbin/tzdata-update"
+                  action :nothing
+                  only_if { ::File.executable?("/usr/sbin/tzdata-update") }
+                  subscribes :run, "file[/etc/sysconfig/clock]", :immediately
+                end
+
+                link "/etc/localtime" do
+                  to "/usr/share/zoneinfo/#{new_resource.timezone}"
+                  not_if { ::File.executable?("/usr/sbin/tzdata-update") }
+                end
+              when "mac_os_x"
+                shell_out!(["sudo", "systemsetup", "-settimezone", new_resource.timezone])
+              end
             end
           end
         end
