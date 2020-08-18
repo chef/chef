@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.4.39 -->
+## [v16.4.39](https://github.com/chef/chef/tree/v16.4.39) (2020-08-18)
+
+#### Merged Pull Requests
+- Refactor the timezone resource to properly load the current timezone [#10323](https://github.com/chef/chef/pull/10323) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.4.38 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Refactor the timezone resource to properly load the current timezone [#10323](https://github.com/chef/chef/pull/10323) ([tas50](https://github.com/tas50)) <!-- 16.4.39 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
