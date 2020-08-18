@@ -19,7 +19,6 @@
 require_relative "../resource"
 require_relative "../log"
 require_relative "../resource/file"
-require "uuidtools"
 require "plist"
 
 class Chef
@@ -200,6 +199,8 @@ class Chef
         end
 
         def config_uuid(profile)
+          # Moving this require here since it significantly impacts startup time
+          require "uuidtools"
           # Make a UUID of the profile contents and return as string
           UUIDTools::UUID.sha1_create(
             UUIDTools::UUID_DNS_NAMESPACE,

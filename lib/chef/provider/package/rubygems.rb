@@ -35,7 +35,6 @@ require "rubygems/spec_fetcher"
 require "rubygems/platform"
 require "rubygems/package"
 require "rubygems/dependency_installer"
-require "rubygems/uninstaller"
 require "rubygems/specification"
 
 class Chef
@@ -244,6 +243,8 @@ class Chef
           end
 
           def uninstaller(gem_name, opts = {})
+            # Moving this require here since it significantly impacts startup time
+            require "rubygems/uninstaller"
             Gem::Uninstaller.new(gem_name, DEFAULT_UNINSTALLER_OPTS.merge(opts))
           end
 

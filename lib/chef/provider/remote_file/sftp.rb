@@ -19,7 +19,6 @@
 require "uri" unless defined?(URI)
 require "cgi" unless defined?(CGI)
 require "tempfile" unless defined?(Tempfile)
-require "net/sftp"
 require_relative "../remote_file"
 require_relative "../../file_content_management/tempfile"
 
@@ -58,6 +57,8 @@ class Chef
         private
 
         def sftp
+          # Moving this require here since it significantly impacts startup time
+          require "net/sftp"
           host = port ? "#{hostname}:#{port}" : hostname
           @sftp ||= Net::SFTP.start(host, user, password: pass)
         end
