@@ -62,18 +62,18 @@ systemd-timesyncd.service active: yes
     expect { resource.action :unset }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  describe "#current_darwin_tz?" do
+  describe "#current_macos_tz?" do
     context "with admin privs" do
       it "returns the TZ" do
         expect(resource).to receive(:shell_out!).and_return(shellout_systemsetup)
-        expect(resource.current_darwin_tz).to eql("UTC")
+        expect(resource.current_macos_tz).to eql("UTC")
       end
     end
 
     context "without admin privs" do
       it "returns the TZ" do
         expect(resource).to receive(:shell_out!).and_return(shellout_systemsetup_fail)
-        expect { resource.current_darwin_tz }.to raise_error(RuntimeError, "The timezone resource requires administrative privileges to run on macOS hosts!")
+        expect { resource.current_macos_tz }.to raise_error(RuntimeError, "The timezone resource requires administrative privileges to run on macOS hosts!")
       end
     end
   end

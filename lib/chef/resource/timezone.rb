@@ -60,7 +60,7 @@ class Chef
       #
       # @since 14.7
       # @return [String] TZ database value
-      def current_darwin_tz
+      def current_macos_tz
         tz_shellout = shell_out!(["systemsetup", "-gettimezone"])
         if /You need administrator access/.match?(tz_shellout.stdout)
           raise "The timezone resource requires administrative privileges to run on macOS hosts!"
@@ -112,7 +112,7 @@ class Chef
           when "rhel", "amazon"
             timezone current_rhel_tz
           when "mac_os_x"
-            timezone current_darwin_tz
+            timezone current_macos_tz
           when "windows"
             timezone current_windows_tz
           end
