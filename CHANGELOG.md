@@ -1,84 +1,81 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.35 -->
-## [v16.4.35](https://github.com/chef/chef/tree/v16.4.35) (2020-08-18)
-
-#### Merged Pull Requests
-- Update train to 3.3.16 [#10309](https://github.com/chef/chef/pull/10309) ([tas50](https://github.com/tas50))
-- Add 16.4 release notes [#10304](https://github.com/chef/chef/pull/10304) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.3.45 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update train to 3.3.16 [#10309](https://github.com/chef/chef/pull/10309) ([tas50](https://github.com/tas50)) <!-- 16.4.35 -->
-- Add 16.4 release notes [#10304](https://github.com/chef/chef/pull/10304) ([tas50](https://github.com/tas50)) <!-- 16.4.34 -->
-- Fix bootstrapping windows-from-linux [#10298](https://github.com/chef/chef/pull/10298) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.34 -->
-- Remove the unused win32-dir dependency [#10308](https://github.com/chef/chef/pull/10308) ([tas50](https://github.com/tas50)) <!-- 16.4.33 -->
-- Use net/http and openssl instead of net/https [#10283](https://github.com/chef/chef/pull/10283) ([tas50](https://github.com/tas50)) <!-- 16.4.32 -->
-- Delete deprecated Fauxhai definitions [#10305](https://github.com/chef/chef/pull/10305) ([tas50](https://github.com/tas50)) <!-- 16.4.31 -->
-- Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.4.30 -->
-- do not require source when removing powershell package source [#10301](https://github.com/chef/chef/pull/10301) ([kimbernator](https://github.com/kimbernator)) <!-- 16.4.29 -->
-- Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50)) <!-- 16.4.28 -->
-- Fix File.exist throughout the codebase [#10284](https://github.com/chef/chef/pull/10284) ([tas50](https://github.com/tas50)) <!-- 16.4.27 -->
-- Minor tweaks to the platform checks in the specs [#10289](https://github.com/chef/chef/pull/10289) ([tas50](https://github.com/tas50)) <!-- 16.4.26 -->
-- Update Omnibus kitchen config with public boxes [#10292](https://github.com/chef/chef/pull/10292) ([tas50](https://github.com/tas50)) <!-- 16.4.25 -->
-- Update Fauxhai to 8.3 [#10297](https://github.com/chef/chef/pull/10297) ([tas50](https://github.com/tas50)) <!-- 16.4.25 -->
-- Optimize requires for non-omnibus installs [#10294](https://github.com/chef/chef/pull/10294) ([tas50](https://github.com/tas50)) <!-- 16.4.24 -->
-- Bump deps for require perf optimizations [#10296](https://github.com/chef/chef/pull/10296) ([tas50](https://github.com/tas50)) <!-- 16.4.23 -->
-- Update chef-telemetry and ohai to the latest [#10295](https://github.com/chef/chef/pull/10295) ([tas50](https://github.com/tas50)) <!-- 16.4.22 -->
-- Use macos? helper in homebrew_update [#10290](https://github.com/chef/chef/pull/10290) ([tas50](https://github.com/tas50)) <!-- 16.4.21 -->
-- Remove a duplicate require [#10293](https://github.com/chef/chef/pull/10293) ([tas50](https://github.com/tas50)) <!-- 16.4.20 -->
-- Bump Ohai to 16.4.9 [#10291](https://github.com/chef/chef/pull/10291) ([tas50](https://github.com/tas50)) <!-- 16.4.19 -->
-- Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.4.18 -->
-- double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein)) <!-- 16.4.18 -->
-- Bump Ohai / Cheffish to the latest [#10281](https://github.com/chef/chef/pull/10281) ([tas50](https://github.com/tas50)) <!-- 16.4.18 -->
-- client-run per resource error detail [#10237](https://github.com/chef/chef/pull/10237) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.4.17 -->
-- Fix broken powershell_script test. [#10280](https://github.com/chef/chef/pull/10280) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
-- Clean up some interdependencies in script resource tests. [#10279](https://github.com/chef/chef/pull/10279) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
-- Remove an unnecessary shared_context from execute resource tests [#10278](https://github.com/chef/chef/pull/10278) ([phiggins](https://github.com/phiggins)) <!-- 16.4.16 -->
-- Mark deep_merge as private [#10277](https://github.com/chef/chef/pull/10277) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.16 -->
-- powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins)) <!-- 16.4.15 -->
-- chef_client_systemd_timer: Fix failures in the :remove action [#10273](https://github.com/chef/chef/pull/10273) ([tas50](https://github.com/tas50)) <!-- 16.4.14 -->
-- Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50)) <!-- 16.4.13 -->
-- Update spellcheck config with nice stuff from other repos. [#10261](https://github.com/chef/chef/pull/10261) ([phiggins](https://github.com/phiggins)) <!-- 16.4.12 -->
-- Combine attr_reader / attr_writer into attr_accessor [#10268](https://github.com/chef/chef/pull/10268) ([tas50](https://github.com/tas50)) <!-- 16.4.12 -->
-- Cleanup extra binaries from libxml2 and libxslt [#10265](https://github.com/chef/chef/pull/10265) ([tas50](https://github.com/tas50)) <!-- 16.4.11 -->
-- Bump InSpec/Train/omnibus-software [#10267](https://github.com/chef/chef/pull/10267) ([tas50](https://github.com/tas50)) <!-- 16.4.10 -->
-- Speed up our bundle installs by always running 3 jobs [#10264](https://github.com/chef/chef/pull/10264) ([tas50](https://github.com/tas50)) <!-- 16.4.9 -->
-- Remove lzma and bzip binaries from our builds [#10263](https://github.com/chef/chef/pull/10263) ([tas50](https://github.com/tas50)) <!-- 16.4.8 -->
-- Convert windows custom resources to unified_mode [#10260](https://github.com/chef/chef/pull/10260) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.7 -->
-- Remove more requires that come for free [#10258](https://github.com/chef/chef/pull/10258) ([tas50](https://github.com/tas50)) <!-- 16.4.6 -->
-- added configuration options for chef-server [#10213](https://github.com/chef/chef/pull/10213) ([tehlers320](https://github.com/tehlers320)) <!-- 16.4.5 -->
-- Pull Ohai 16.4.2 into Chef Infra Client [#10259](https://github.com/chef/chef/pull/10259) ([tas50](https://github.com/tas50)) <!-- 16.4.4 -->
-- Use find instead of select.first [#10255](https://github.com/chef/chef/pull/10255) ([tas50](https://github.com/tas50)) <!-- 16.4.3 -->
-- Fix second chef run hang for windows_font resource [#10257](https://github.com/chef/chef/pull/10257) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.4.2 -->
-- Remove unnecessary Mixin::ShellOut in providers [#10256](https://github.com/chef/chef/pull/10256) ([tas50](https://github.com/tas50)) <!-- 16.4.1 -->
-- Convert openssl resources to unified_mode [#10249](https://github.com/chef/chef/pull/10249) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.0 -->
-- Update RuboCop config to Ruby 2.6 [#10254](https://github.com/chef/chef/pull/10254) ([tas50](https://github.com/tas50)) <!-- 16.3.65 -->
-- Use .count instead of .select{}.count [#10252](https://github.com/chef/chef/pull/10252) ([tas50](https://github.com/tas50)) <!-- 16.3.64 -->
-- apt_repository: Small code refactor in key_is_valid? method [#10253](https://github.com/chef/chef/pull/10253) ([phiggins](https://github.com/phiggins)) <!-- 16.3.63 -->
-- Use tr not gsub for string replacement [#10251](https://github.com/chef/chef/pull/10251) ([tas50](https://github.com/tas50)) <!-- 16.3.62 -->
-- Use .key? instead of keys.include [#10246](https://github.com/chef/chef/pull/10246) ([tas50](https://github.com/tas50)) <!-- 16.3.61 -->
-- Use sort.reverse instead of sort { |a, b| b &lt;=&gt; a } [#10247](https://github.com/chef/chef/pull/10247) ([tas50](https://github.com/tas50)) <!-- 16.3.60 -->
-- Resolve Performance/RangeInclude warnings [#10245](https://github.com/chef/chef/pull/10245) ([tas50](https://github.com/tas50)) <!-- 16.3.59 -->
-- Convert osx_profile to custom resource [#10239](https://github.com/chef/chef/pull/10239) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.3.58 -->
-- Use .match? when we don&#39;t need data from a regex match [#10248](https://github.com/chef/chef/pull/10248) ([tas50](https://github.com/tas50)) <!-- 16.3.57 -->
-- Further slim down libxml2 [#10244](https://github.com/chef/chef/pull/10244) ([tas50](https://github.com/tas50)) <!-- 16.3.56 -->
-- Cleanup more files from our package&#39;s gem installs [#10242](https://github.com/chef/chef/pull/10242) ([tas50](https://github.com/tas50)) <!-- 16.3.55 -->
-- Remove debug code from libxml2 [#10241](https://github.com/chef/chef/pull/10241) ([tas50](https://github.com/tas50)) <!-- 16.3.54 -->
-- Update libffi to 3.3 [#10238](https://github.com/chef/chef/pull/10238) ([tas50](https://github.com/tas50)) <!-- 16.3.53 -->
-- Fix install windows features when install state is removed [#9820](https://github.com/chef/chef/pull/9820) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.3.52 -->
-- Bump omnibus-software to the latest [#10236](https://github.com/chef/chef/pull/10236) ([tas50](https://github.com/tas50)) <!-- 16.3.51 -->
-- Compensate for libyaml changes in yaml parsing test. [#10220](https://github.com/chef/chef/pull/10220) ([phiggins](https://github.com/phiggins)) <!-- 16.3.50 -->
-- Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50)) <!-- 16.3.50 -->
-- Update omnibus-software to slim our builds [#10234](https://github.com/chef/chef/pull/10234) ([tas50](https://github.com/tas50)) <!-- 16.3.49 -->
-- Fix warning in test for redefined shared example group [#10232](https://github.com/chef/chef/pull/10232) ([phiggins](https://github.com/phiggins)) <!-- 16.3.48 -->
-- Introduce EXPEDITOR_VERSION for docker image tag [#10231](https://github.com/chef/chef/pull/10231) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.3.47 -->
-- Add dobi-powered Docker build pipelines [#10180](https://github.com/chef/chef/pull/10180) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.3.46 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.4.35](https://github.com/chef/chef/tree/v16.4.35) (2020-08-18)
+
+#### Merged Pull Requests
+- Add dobi-powered Docker build pipelines [#10180](https://github.com/chef/chef/pull/10180) ([nkierpiec](https://github.com/nkierpiec))
+- Introduce EXPEDITOR_VERSION for docker image tag [#10231](https://github.com/chef/chef/pull/10231) ([nkierpiec](https://github.com/nkierpiec))
+- Fix warning in test for redefined shared example group [#10232](https://github.com/chef/chef/pull/10232) ([phiggins](https://github.com/phiggins))
+- Update omnibus-software to slim our builds [#10234](https://github.com/chef/chef/pull/10234) ([tas50](https://github.com/tas50))
+- Make sure darwin is always detected [#10235](https://github.com/chef/chef/pull/10235) ([tas50](https://github.com/tas50))
+- Compensate for libyaml changes in yaml parsing test. [#10220](https://github.com/chef/chef/pull/10220) ([phiggins](https://github.com/phiggins))
+- Bump omnibus-software to the latest [#10236](https://github.com/chef/chef/pull/10236) ([tas50](https://github.com/tas50))
+- Fix install windows features when install state is removed [#9820](https://github.com/chef/chef/pull/9820) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update libffi to 3.3 [#10238](https://github.com/chef/chef/pull/10238) ([tas50](https://github.com/tas50))
+- Remove debug code from libxml2 [#10241](https://github.com/chef/chef/pull/10241) ([tas50](https://github.com/tas50))
+- Cleanup more files from our package&#39;s gem installs [#10242](https://github.com/chef/chef/pull/10242) ([tas50](https://github.com/tas50))
+- Further slim down libxml2 [#10244](https://github.com/chef/chef/pull/10244) ([tas50](https://github.com/tas50))
+- Use .match? when we don&#39;t need data from a regex match [#10248](https://github.com/chef/chef/pull/10248) ([tas50](https://github.com/tas50))
+- Convert osx_profile to custom resource [#10239](https://github.com/chef/chef/pull/10239) ([lamont-granquist](https://github.com/lamont-granquist))
+- Resolve Performance/RangeInclude warnings [#10245](https://github.com/chef/chef/pull/10245) ([tas50](https://github.com/tas50))
+- Use sort.reverse instead of sort { |a, b| b &lt;=&gt; a } [#10247](https://github.com/chef/chef/pull/10247) ([tas50](https://github.com/tas50))
+- Use .key? instead of keys.include [#10246](https://github.com/chef/chef/pull/10246) ([tas50](https://github.com/tas50))
+- Use tr not gsub for string replacement [#10251](https://github.com/chef/chef/pull/10251) ([tas50](https://github.com/tas50))
+- apt_repository: Small code refactor in key_is_valid? method [#10253](https://github.com/chef/chef/pull/10253) ([phiggins](https://github.com/phiggins))
+- Use .count instead of .select{}.count [#10252](https://github.com/chef/chef/pull/10252) ([tas50](https://github.com/tas50))
+- Update RuboCop config to Ruby 2.6 [#10254](https://github.com/chef/chef/pull/10254) ([tas50](https://github.com/tas50))
+- Convert openssl resources to unified_mode [#10249](https://github.com/chef/chef/pull/10249) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove unnecessary Mixin::ShellOut in providers [#10256](https://github.com/chef/chef/pull/10256) ([tas50](https://github.com/tas50))
+- Fix second chef run hang for windows_font resource [#10257](https://github.com/chef/chef/pull/10257) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Use find instead of select.first [#10255](https://github.com/chef/chef/pull/10255) ([tas50](https://github.com/tas50))
+- Pull Ohai 16.4.2 into Chef Infra Client [#10259](https://github.com/chef/chef/pull/10259) ([tas50](https://github.com/tas50))
+- added configuration options for chef-server [#10213](https://github.com/chef/chef/pull/10213) ([tehlers320](https://github.com/tehlers320))
+- Remove more requires that come for free [#10258](https://github.com/chef/chef/pull/10258) ([tas50](https://github.com/tas50))
+- Convert windows custom resources to unified_mode [#10260](https://github.com/chef/chef/pull/10260) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove lzma and bzip binaries from our builds [#10263](https://github.com/chef/chef/pull/10263) ([tas50](https://github.com/tas50))
+- Speed up our bundle installs by always running 3 jobs [#10264](https://github.com/chef/chef/pull/10264) ([tas50](https://github.com/tas50))
+- Bump InSpec/Train/omnibus-software [#10267](https://github.com/chef/chef/pull/10267) ([tas50](https://github.com/tas50))
+- Cleanup extra binaries from libxml2 and libxslt [#10265](https://github.com/chef/chef/pull/10265) ([tas50](https://github.com/tas50))
+- Combine attr_reader / attr_writer into attr_accessor [#10268](https://github.com/chef/chef/pull/10268) ([tas50](https://github.com/tas50))
+- Update spellcheck config with nice stuff from other repos. [#10261](https://github.com/chef/chef/pull/10261) ([phiggins](https://github.com/phiggins))
+- Resolve Style/RedundantAssignment warnings [#10269](https://github.com/chef/chef/pull/10269) ([tas50](https://github.com/tas50))
+- chef_client_systemd_timer: Fix failures in the :remove action [#10273](https://github.com/chef/chef/pull/10273) ([tas50](https://github.com/tas50))
+- powershell_script: Use native properties and don&#39;t coerce user provided flags with powershell defaults [#10274](https://github.com/chef/chef/pull/10274) ([phiggins](https://github.com/phiggins))
+- Mark deep_merge as private [#10277](https://github.com/chef/chef/pull/10277) ([lamont-granquist](https://github.com/lamont-granquist))
+- Remove an unnecessary shared_context from execute resource tests [#10278](https://github.com/chef/chef/pull/10278) ([phiggins](https://github.com/phiggins))
+- Clean up some interdependencies in script resource tests. [#10279](https://github.com/chef/chef/pull/10279) ([phiggins](https://github.com/phiggins))
+- Fix broken powershell_script test. [#10280](https://github.com/chef/chef/pull/10280) ([phiggins](https://github.com/phiggins))
+- client-run per resource error detail [#10237](https://github.com/chef/chef/pull/10237) ([vsingh-msys](https://github.com/vsingh-msys))
+- Bump Ohai / Cheffish to the latest [#10281](https://github.com/chef/chef/pull/10281) ([tas50](https://github.com/tas50))
+- double quotes in example for string interpolation [#10288](https://github.com/chef/chef/pull/10288) ([karlamrhein](https://github.com/karlamrhein))
+- Renew an expired SSL Certificate [#10286](https://github.com/chef/chef/pull/10286) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Bump Ohai to 16.4.9 [#10291](https://github.com/chef/chef/pull/10291) ([tas50](https://github.com/tas50))
+- Remove a duplicate require [#10293](https://github.com/chef/chef/pull/10293) ([tas50](https://github.com/tas50))
+- Use macos? helper in homebrew_update [#10290](https://github.com/chef/chef/pull/10290) ([tas50](https://github.com/tas50))
+- Update chef-telemetry and ohai to the latest [#10295](https://github.com/chef/chef/pull/10295) ([tas50](https://github.com/tas50))
+- Bump deps for require perf optimizations [#10296](https://github.com/chef/chef/pull/10296) ([tas50](https://github.com/tas50))
+- Optimize requires for non-omnibus installs [#10294](https://github.com/chef/chef/pull/10294) ([tas50](https://github.com/tas50))
+- Update Fauxhai to 8.3 [#10297](https://github.com/chef/chef/pull/10297) ([tas50](https://github.com/tas50))
+- Update Omnibus kitchen config with public boxes [#10292](https://github.com/chef/chef/pull/10292) ([tas50](https://github.com/tas50))
+- Minor tweaks to the platform checks in the specs [#10289](https://github.com/chef/chef/pull/10289) ([tas50](https://github.com/tas50))
+- Fix File.exist throughout the codebase [#10284](https://github.com/chef/chef/pull/10284) ([tas50](https://github.com/tas50))
+- Convert the functional tests over to macos? as well [#10303](https://github.com/chef/chef/pull/10303) ([tas50](https://github.com/tas50))
+- do not require source when removing powershell package source [#10301](https://github.com/chef/chef/pull/10301) ([kimbernator](https://github.com/kimbernator))
+- Change output to clearly show checksums are displayed incompletely [#10300](https://github.com/chef/chef/pull/10300) ([tecracer-theinen](https://github.com/tecracer-theinen))
+- Delete deprecated Fauxhai definitions [#10305](https://github.com/chef/chef/pull/10305) ([tas50](https://github.com/tas50))
+- Use net/http and openssl instead of net/https [#10283](https://github.com/chef/chef/pull/10283) ([tas50](https://github.com/tas50))
+- Remove the unused win32-dir dependency [#10308](https://github.com/chef/chef/pull/10308) ([tas50](https://github.com/tas50))
+- Fix bootstrapping windows-from-linux [#10298](https://github.com/chef/chef/pull/10298) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add 16.4 release notes [#10304](https://github.com/chef/chef/pull/10304) ([tas50](https://github.com/tas50))
+- Update train to 3.3.16 [#10309](https://github.com/chef/chef/pull/10309) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.3.45](https://github.com/chef/chef/tree/v16.3.45) (2020-07-29)
 
 #### Merged Pull Requests
@@ -89,7 +86,6 @@
 - Fix NoMethodError when server returns a 406. [#10216](https://github.com/chef/chef/pull/10216) ([phiggins](https://github.com/phiggins))
 - Fix protocol negotiation for unversioned objects [#10218](https://github.com/chef/chef/pull/10218) ([lamont-granquist](https://github.com/lamont-granquist))
 - Update libarchive, liblzma, and nokogiri to the latest [#10221](https://github.com/chef/chef/pull/10221) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.3.38](https://github.com/chef/chef/tree/v16.3.38) (2020-07-27)
 
