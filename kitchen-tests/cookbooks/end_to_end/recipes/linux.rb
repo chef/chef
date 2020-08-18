@@ -23,7 +23,7 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-timezone "UTC"
+timezone "America/Los_Angeles"
 
 include_recipe "::_yum" if platform_family?("rhel")
 
