@@ -23,7 +23,7 @@ powershell_script "sensitive sleep" do
   sensitive true
 end
 
-timezone "UTC"
+timezone "Pacific Standard time"
 
 include_recipe "ntp"
 
