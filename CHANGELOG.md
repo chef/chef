@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.13 -->
-## [v15.13.13](https://github.com/chef/chef/tree/v15.13.13) (2020-08-18)
+<!-- latest_release 15.13.14 -->
+## [v15.13.14](https://github.com/chef/chef/tree/v15.13.14) (2020-08-18)
 
 #### Merged Pull Requests
-- Convert File.exists to File.exist in many places [#10312](https://github.com/chef/chef/pull/10312) ([tas50](https://github.com/tas50))
+- Fix install windows features when install state is removed  [#10315](https://github.com/chef/chef/pull/10315) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.13.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix install windows features when install state is removed  [#10315](https://github.com/chef/chef/pull/10315) ([tas50](https://github.com/tas50)) <!-- 15.13.14 -->
 - Convert File.exists to File.exist in many places [#10312](https://github.com/chef/chef/pull/10312) ([tas50](https://github.com/tas50)) <!-- 15.13.13 -->
 - Make sure darwin is always detected [#10313](https://github.com/chef/chef/pull/10313) ([tas50](https://github.com/tas50)) <!-- 15.13.12 -->
 - Use net/http and openssl instead of net/https [#10314](https://github.com/chef/chef/pull/10314) ([tas50](https://github.com/tas50)) <!-- 15.13.11 -->
