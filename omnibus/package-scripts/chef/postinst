@@ -101,4 +101,10 @@ chown -Rh 0:0 $INSTALLER_DIR
 
 echo "Thank you for installing Chef Infra Client! For help getting started visit https://learn.chef.io"
 
+cloud_config_file="/Library/Managed Preferences/io.chef.chef_client.plist"
+if is_darwin && test -f "$cloud_config_file"; then
+  echo "Cloud config found, running chef client"
+  /opt/chef/bin/chef-client --chef-license accept-silent
+fi
+
 exit 0

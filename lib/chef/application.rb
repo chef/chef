@@ -19,6 +19,7 @@
 require "pp" unless defined?(PP)
 require "socket" unless defined?(Socket)
 require_relative "config"
+require "chef-config/mixin/chef_cloud"
 require_relative "exceptions"
 require_relative "local_mode"
 require_relative "log"
@@ -136,6 +137,10 @@ class Chef
 
       if config[:config_file].nil?
         logger.warn("No config file found or specified on command line. Using command line options instead.")
+      elsif ChefConfig::Mixin::ChefCloud.cloud_config?
+        logger.warn("*****************************************")
+        logger.warn("Found Chef Cloud configuration. Overriding local values from cloud.")
+        logger.warn("*****************************************")
       elsif config_fetcher.config_missing?
         logger.warn("*****************************************")
         logger.warn("Did not find config file: #{config[:config_file]}. Using command line options instead.")

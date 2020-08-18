@@ -22,6 +22,7 @@ require_relative "../mixin/shell_out"
 require_relative "../config_fetcher"
 require_relative "../dist"
 require_relative "../daemon"
+require "chef-config/mixin/chef_cloud"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
 require "mixlib/archive" unless defined?(Mixlib::Archive)
@@ -39,6 +40,7 @@ require "mixlib/archive" unless defined?(Mixlib::Archive)
 #
 class Chef::Application::Base < Chef::Application
   include Chef::Mixin::ShellOut
+  include ChefConfig::Mixin::ChefCloud
   include ChefConfig::Mixin::DotD
   include LicenseAcceptance::CLIFlags::MixlibCLI
 

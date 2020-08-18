@@ -157,12 +157,12 @@ class Chef
       end
 
       def http_api
-        @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
-          {
-            api_version: "0",
-            client_name: Chef::Config[:validation_client_name],
-            signing_key_filename: Chef::Config[:validation_key],
-          })
+        options = {}
+        options[:api_version] = "0"
+        options[:client_name] = Chef::Config[:validation_client_name]
+        options[:raw_key] = Chef::Config[:validation_key_contents]
+        options[:signing_key_filename] = Chef::Config[:validation_key] unless options[:raw_key]
+        @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], options)
       end
 
       # Whether or not to generate keys locally and post the public key to the

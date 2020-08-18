@@ -156,6 +156,9 @@ class Chef::Application::Client < Chef::Application::Base
 
     # Load all config files in client.d
     load_dot_d(Chef::Config[:client_d_dir]) if Chef::Config[:client_d_dir]
+
+    # Load cloud config if present
+    load_cloud_config
   end
 
   def configure_logging
