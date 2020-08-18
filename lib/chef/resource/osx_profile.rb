@@ -253,7 +253,7 @@ class Chef
 
         def query_installed_profiles
           Tempfile.open("allprofiles.plist") do |tempfile|
-            shell_out!( "/usr/bin/profiles", "-P", "-o", tempfile.path )
+            shell_out( "/usr/bin/profiles", "-P", "-o", tempfile.path )
             ::Plist.parse_xml(tempfile)
           end
         end

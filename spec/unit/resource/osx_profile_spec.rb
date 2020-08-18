@@ -155,7 +155,7 @@ describe Chef::Resource::OsxProfile do
       resource.profile_name profile_name
       allow(provider).to receive(:get_installed_profiles).and_call_original
       allow(provider).to receive(:read_plist).and_return(all_profiles)
-      expect(provider).to receive(:shell_out_compacted!).with("/usr/bin/profiles", "-P", "-o", kind_of(String))
+      expect(provider).to receive(:shell_out_compacted).with("/usr/bin/profiles", "-P", "-o", kind_of(String))
       provider.load_current_resource
     end
 
