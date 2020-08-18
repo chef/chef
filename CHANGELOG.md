@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.37 -->
-## [v16.4.37](https://github.com/chef/chef/tree/v16.4.37) (2020-08-18)
+<!-- latest_release 16.4.38 -->
+## [v16.4.38](https://github.com/chef/chef/tree/v16.4.38) (2020-08-18)
 
 #### Merged Pull Requests
-- Further improve osx_profile error message and add a test [#10320](https://github.com/chef/chef/pull/10320) ([tas50](https://github.com/tas50))
+- Fix removing non-existent profile with osx_profile [#10324](https://github.com/chef/chef/pull/10324) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix removing non-existent profile with osx_profile [#10324](https://github.com/chef/chef/pull/10324) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.4.38 -->
 - Further improve osx_profile error message and add a test [#10320](https://github.com/chef/chef/pull/10320) ([tas50](https://github.com/tas50)) <!-- 16.4.37 -->
 - Fix typo and macOS version evaluation logic in `osx_profile` resource [#10319](https://github.com/chef/chef/pull/10319) ([ChefAustin](https://github.com/ChefAustin)) <!-- 16.4.36 -->
 <!-- release_rollup -->
