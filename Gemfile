@@ -87,7 +87,7 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   instance_eval do
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
-    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder", Dir.pwd) + "/*.dll")
+    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder", File.dirname(__FILE__)) + "/*.dll")
     FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end
