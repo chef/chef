@@ -20,9 +20,13 @@ require "spec_helper"
 describe Chef::Resource::Timezone do
   let(:resource) { Chef::Resource::Timezone.new("fakey_fakerton") }
 
+  let(:shellout_tzutil) do
+    double("shell_out!", stdout: "UTC\n", exitstatus: 0, error?: false)
+  end
+
   # note: This weird indention is correct
   let(:shellout_timedatectl) do
-    double("shell_out", exitstatus: 0, error?: false, stdout: <<-OUTPUT)
+    double("shell_out!", exitstatus: 0, error?: false, stdout: <<-OUTPUT)
     Local time: Tue 2020-08-18 20:55:05 UTC
     Universal time: Tue 2020-08-18 20:55:05 UTC
           RTC time: Tue 2020-08-18 20:55:05
@@ -34,11 +38,11 @@ systemd-timesyncd.service active: yes
   end
 
   let(:shellout_systemsetup_fail) do
-    double("shell_out", stdout: "You need administrator access to run this tool... exiting!", exitstatus: 0, error?: false) # yes it's a non-error exit
+    double("shell_out!", stdout: "You need administrator access to run this tool... exiting!", exitstatus: 0, error?: false) # yes it's a non-error exit
   end
 
   let(:shellout_systemsetup) do
-    double("shell_out", stdout: "Time Zone: UTC", exitstatus: 0, error?: false)
+    double("shell_out!", stdout: "Time Zone: UTC", exitstatus: 0, error?: false)
   end
 
   it "sets resource name as :timezone" do
@@ -78,6 +82,13 @@ systemd-timesyncd.service active: yes
     it "returns the TZ" do
       expect(resource).to receive(:shell_out!).and_return(shellout_timedatectl)
       expect(resource.current_systemd_tz).to eql("Etc/UTC")
+    end
+  end
+
+  describe "#current_windows_tz?" do
+    it "returns the TZ" do
+      expect(resource).to receive(:shell_out!).and_return(shellout_tzutil)
+      expect(resource.current_windows_tz).to eql("UTC")
     end
   end
 end
