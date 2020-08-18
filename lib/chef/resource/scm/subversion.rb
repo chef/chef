@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef-utils"
+require "chef-utils/dist"
 
 class Chef
   class Resource

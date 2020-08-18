@@ -367,7 +367,7 @@ module ChefConfig
         # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = PathHelper.join(user_home, ChefConfig::Dist::USER_CONF_DIR)
+          secondary_cache_path = PathHelper.join(user_home, ChefUtils::Dist::Infra::USER_CONF_DIR)
           secondary_cache_path = target_mode? ? PathHelper.join(secondary_cache_path, target_mode.host) : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
