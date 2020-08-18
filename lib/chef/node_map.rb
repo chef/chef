@@ -36,7 +36,7 @@
 # XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
 #
 
-require_relative "dist"
+require "chef-utils/dist"
 
 class Chef
   class NodeMap
@@ -86,7 +86,7 @@ class Chef
                         else
                           klass.superclass.to_s
                         end
-        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: Chef::Dist::PRODUCT } )
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: ChefUtils::Dist::Infra::PRODUCT } )
       end
 
       # The map is sorted in order of preference already; we just need to find

@@ -153,7 +153,7 @@ class Chef::Application::Client < Chef::Application::Base
       if config[:local_mode]
         config[:config_file] = Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
-        config[:config_file] = "#{ChefConfig::Config.etc_chef_dir}/client.rb"
+        config[:config_file] = Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/client.rb")
       end
     end
 

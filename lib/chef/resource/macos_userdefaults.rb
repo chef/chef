@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist"
 autoload :Plist, "plist"
 
 class Chef
@@ -97,7 +97,7 @@ class Chef
         desired_state: false
 
       property :sudo, [TrueClass, FalseClass],
-        description: "Set to true if the setting you wish to modify requires privileged access. This requires passwordless sudo for the '/usr/bin/defaults' command to be setup for the user running #{Chef::Dist::PRODUCT}.",
+        description: "Set to true if the setting you wish to modify requires privileged access. This requires passwordless sudo for the '/usr/bin/defaults' command to be setup for the user running #{ChefUtils::Dist::Infra::PRODUCT}.",
         default: false,
         desired_state: false
 
