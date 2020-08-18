@@ -61,7 +61,7 @@ class Chef
       # @since 14.7
       # @return [String] TZ database value
       def current_darwin_tz
-        tz_shellout = shell_out!("systemsetup -gettimezone")
+        tz_shellout = shell_out!(["systemsetup", "-gettimezone"])
         if /You need administrator access/.match?(tz_shellout.stdout)
           raise "The timezone resource requires administrative privileges to run on macOS hosts!"
         else
@@ -85,7 +85,7 @@ class Chef
       # @since 16.5
       # @return [String] timezone id
       def current_systemd_tz
-        tz_shellout = shell_out!("/usr/bin/timedatectl status")
+        tz_shellout = shell_out!(["/usr/bin/timedatectl", "status"])
         raise "There was an error running the timedatectl command" if tz_shellout.exitstatus == 1
 
         # https://rubular.com/r/eV68MX9XXbyG4k
@@ -128,7 +128,7 @@ class Chef
             # make sure we have the tzdata files
             package suse? ? "timezone" : "tzdata"
 
-            shell_out!("/usr/bin/timedatectl --no-ask-password set-timezone #{new_resource.timezone}")
+            shell_out!(["/usr/bin/timedatectl", "--no-ask-password", "set-timezone", new_resource.timezone])
           else
             case node["platform_family"]
             # Old version of RHEL < 7 and Amazon 201X
@@ -156,9 +156,9 @@ class Chef
                 not_if { ::File.executable?("/usr/sbin/tzdata-update") }
               end
             when "mac_os_x"
-              shell_out!("sudo systemsetup -settimezone #{new_resource.timezone}")
+              shell_out!(["sudo", "systemsetup", "-settimezone", new_resource.timezone])
             when "windows"
-              shell_out!("tzutil /s \"#{new_resource.timezone}\"")
+              shell_out!(["tzutil", "/s", new_resource.timezone])
             end
           end
         end
