@@ -540,7 +540,7 @@ class Chef
       end
 
       def run
-        check_license if ChefConfig::Dist::ENFORCE_LICENSE
+        check_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
 
         plugin_setup!
         validate_name_args!
