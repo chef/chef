@@ -91,4 +91,12 @@ systemd-timesyncd.service active: yes
       expect(resource.current_windows_tz).to eql("UTC")
     end
   end
+
+  describe "#current_rhel_tz?" do
+    it "returns the TZ" do
+      allow(File).to receive(:exist?).with("/etc/sysconfig/clock").and_return true
+      expect(File).to receive(:read).with("/etc/sysconfig/clock").and_return 'ZONE="UTC"'
+      expect(resource.current_rhel_tz).to eql("UTC")
+    end
+  end
 end
