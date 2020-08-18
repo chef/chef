@@ -21,7 +21,7 @@ describe Chef::Resource::Timezone do
   let(:resource) { Chef::Resource::Timezone.new("fakey_fakerton") }
 
   let(:shellout_tzutil) do
-    double("shell_out!", stdout: "UTC\n", exitstatus: 0, error?: false)
+    double("shell_out", stdout: "UTC\n", exitstatus: 0, error?: false)
   end
 
   # note: This weird indention is correct
@@ -87,7 +87,7 @@ systemd-timesyncd.service active: yes
 
   describe "#current_windows_tz?" do
     it "returns the TZ" do
-      expect(resource).to receive(:shell_out!).and_return(shellout_tzutil)
+      expect(resource).to receive(:shell_out).and_return(shellout_tzutil)
       expect(resource.current_windows_tz).to eql("UTC")
     end
   end

@@ -74,7 +74,7 @@ class Chef
       # @since 14.7
       # @return [String] timezone id
       def current_windows_tz
-        tz_shellout = shell_out!("tzutil /g")
+        tz_shellout = shell_out("tzutil /g")
         raise "There was an error running the tzutil command" if tz_shellout.exitstatus == 1
 
         tz_shellout.stdout.strip
