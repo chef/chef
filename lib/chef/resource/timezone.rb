@@ -75,7 +75,7 @@ class Chef
       # @return [String] timezone id
       def current_windows_tz
         tz_shellout = shell_out("tzutil /g")
-        raise "There was an error running the tzutil command" if tz_shellout.exitstatus == 1
+        raise "There was an error running the tzutil command" if tz_shellout.error?
 
         tz_shellout.stdout.strip
       end
@@ -85,8 +85,8 @@ class Chef
       # @since 16.5
       # @return [String] timezone id
       def current_systemd_tz
-        tz_shellout = shell_out!(["/usr/bin/timedatectl", "status"])
-        raise "There was an error running the timedatectl command" if tz_shellout.exitstatus == 1
+        tz_shellout = shell_out(["/usr/bin/timedatectl", "status"])
+        raise "There was an error running the timedatectl command" if tz_shellout.error?
 
         # https://rubular.com/r/eV68MX9XXbyG4k
         /Time zone: (.*) \(.*/.match(tz_shellout.stdout)[1]

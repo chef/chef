@@ -26,7 +26,7 @@ describe Chef::Resource::Timezone do
 
   # note: This weird indention is correct
   let(:shellout_timedatectl) do
-    double("shell_out!", exitstatus: 0, error?: false, stdout: <<-OUTPUT)
+    double("shell_out", exitstatus: 0, error?: false, stdout: <<-OUTPUT)
     Local time: Tue 2020-08-18 20:55:05 UTC
     Universal time: Tue 2020-08-18 20:55:05 UTC
           RTC time: Tue 2020-08-18 20:55:05
@@ -80,7 +80,7 @@ systemd-timesyncd.service active: yes
 
   describe "#current_systemd_tz?" do
     it "returns the TZ" do
-      expect(resource).to receive(:shell_out!).and_return(shellout_timedatectl)
+      expect(resource).to receive(:shell_out).and_return(shellout_timedatectl)
       expect(resource.current_systemd_tz).to eql("Etc/UTC")
     end
   end
