@@ -161,7 +161,7 @@ class Chef
           # members.json and org.json may be found.
           #
           def root_dir
-            existing_paths = root_paths.select { |path| File.exists?(path) }
+            existing_paths = root_paths.select { |path| File.exist?(path) }
             if existing_paths.size > 0
               MultiplexedDir.new(existing_paths.map do |path|
                 dir = FileSystemEntry.new(name, parent, path)
@@ -184,7 +184,7 @@ class Chef
               return root_dir.child(name)
             end
 
-            paths = (child_paths[name] || []).select { |path| File.exists?(path) }
+            paths = (child_paths[name] || []).select { |path| File.exist?(path) }
             if paths.size == 0
               return NonexistentFSObject.new(name, self)
             end

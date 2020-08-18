@@ -53,7 +53,7 @@ class Chef
             paths = manifest[KEY]["plugins_paths"][command]
             if paths && paths.is_a?(Array)
               # It is only an error if all the paths don't exist
-              if paths.all? { |sc| !File.exists?(sc) }
+              if paths.all? { |sc| !File.exist?(sc) }
                 errors[command] = paths
               end
             end
@@ -77,7 +77,7 @@ class Chef
             false
           else
             paths.each do |sc|
-              if File.exists?(sc)
+              if File.exist?(sc)
                 Kernel.load sc
               else
                 return false

@@ -64,7 +64,7 @@ class Chef
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exists?(file)
+        unless File.exist?(file)
           Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path

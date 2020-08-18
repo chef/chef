@@ -206,7 +206,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       before(:each) do
-        expect(File).to receive(:exists?).with(bootstrap_template).and_return(false)
+        expect(File).to receive(:exist?).with(bootstrap_template).and_return(false)
       end
 
       context "when file is available everywhere" do
@@ -215,7 +215,7 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(true)
         end
 
         it "should load the template from built-in templates" do
@@ -229,8 +229,8 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(true)
 
           it "should load the template from chef_config_dir" do
             knife.find_template.should eq(chef_config_dir_template_path)
@@ -244,9 +244,9 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(env_home_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(env_home_template_path).and_return(true)
         end
 
         it "should load the template from chef_config_dir" do
@@ -260,10 +260,10 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(env_home_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(gem_files_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(env_home_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(gem_files_template_path).and_return(true)
         end
 
         it "should load the template from Gem files" do
@@ -277,9 +277,9 @@ describe Chef::Knife::Bootstrap do
           configure_gem_files
           allow(Chef::Util::PathHelper).to receive(:home).with(".chef", "bootstrap", "example.erb").and_return(nil)
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(gem_files_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(gem_files_template_path).and_return(true)
         end
 
         it "should load the template from Gem files" do
