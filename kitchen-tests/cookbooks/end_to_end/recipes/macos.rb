@@ -56,6 +56,11 @@ include_recipe "git"
   end
 end
 
+osx_profile 'Remove screensaver profile' do
+  identifier 'com.company.screensaver'
+  action :remove
+end
+
 build_essential
 
 launchd "io.chef.testing.fake" do
