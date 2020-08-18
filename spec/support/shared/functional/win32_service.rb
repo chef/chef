@@ -30,7 +30,7 @@ shared_context "using Win32::Service" do
     end
 
     # Delete the test_service_file if it exists
-    if File.exists?(test_service_file)
+    if File.exist?(test_service_file)
       File.delete(test_service_file)
     end
   end

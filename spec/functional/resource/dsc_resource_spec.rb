@@ -62,7 +62,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
       end
 
       after do
-        File.delete(tmp_file_name) if File.exists? tmp_file_name
+        File.delete(tmp_file_name) if File.exist? tmp_file_name
       end
 
       it "converges the resource if it is not converged" do

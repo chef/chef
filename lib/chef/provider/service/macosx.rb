@@ -84,7 +84,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?(@plist.to_s) }
+            a.assertion { ::File.exist?(@plist.to_s) }
             a.failure_message Chef::Exceptions::Service,
               "Could not find plist for #{@new_resource}"
           end
@@ -215,7 +215,7 @@ class Chef
           return nil if @plist.nil?
 
           # Plist must exist by this point
-          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exists?(@plist)
+          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exist?(@plist)
 
           # Most services have the same internal label as the name of the
           # plist file. However, there is no rule saying that *has* to be

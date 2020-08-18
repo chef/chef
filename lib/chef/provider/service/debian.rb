@@ -45,7 +45,7 @@ class Chef
           shared_resource_requirements
           requirements.assert(:all_actions) do |a|
             update_rcd = "/usr/sbin/update-rc.d"
-            a.assertion { ::File.exists? update_rcd }
+            a.assertion { ::File.exist? update_rcd }
             a.failure_message Chef::Exceptions::Service, "#{update_rcd} does not exist!"
             # no whyrun recovery - this is a base system component of debian
             # distros and must be present
