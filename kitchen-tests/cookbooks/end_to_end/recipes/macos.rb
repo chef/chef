@@ -56,8 +56,8 @@ include_recipe "git"
   end
 end
 
-osx_profile 'Remove screensaver profile' do
-  identifier 'com.company.screensaver'
+osx_profile "Remove screensaver profile" do
+  identifier "com.company.screensaver"
   action :remove
 end
 
