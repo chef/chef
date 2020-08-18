@@ -15,5 +15,5 @@
 
 module ChefUtils
   CHEFUTILS_ROOT = File.expand_path("..", __dir__)
-  VERSION = "15.13.15".freeze
+  VERSION = "15.13.16".freeze
 end
