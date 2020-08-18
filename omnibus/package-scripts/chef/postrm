@@ -12,7 +12,7 @@ is_smartos() {
 }
 
 is_darwin() {
-  uname -v | grep "^Darwin" 2>&1 >/dev/null
+  uname -a | grep "^Darwin" 2>&1 >/dev/null
 }
 
 is_suse() {
