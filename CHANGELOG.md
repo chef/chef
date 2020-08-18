@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.11 -->
-## [v15.13.11](https://github.com/chef/chef/tree/v15.13.11) (2020-08-18)
+<!-- latest_release 15.13.12 -->
+## [v15.13.12](https://github.com/chef/chef/tree/v15.13.12) (2020-08-18)
 
 #### Merged Pull Requests
-- Use net/http and openssl instead of net/https [#10314](https://github.com/chef/chef/pull/10314) ([tas50](https://github.com/tas50))
+- Make sure darwin is always detected [#10313](https://github.com/chef/chef/pull/10313) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.13.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Make sure darwin is always detected [#10313](https://github.com/chef/chef/pull/10313) ([tas50](https://github.com/tas50)) <!-- 15.13.12 -->
 - Use net/http and openssl instead of net/https [#10314](https://github.com/chef/chef/pull/10314) ([tas50](https://github.com/tas50)) <!-- 15.13.11 -->
 - Update all deps to current [#10311](https://github.com/chef/chef/pull/10311) ([tas50](https://github.com/tas50)) <!-- 15.13.10 -->
 - Backport dist configuration to chef15 [#10266](https://github.com/chef/chef/pull/10266) ([tehlers320](https://github.com/tehlers320)) <!-- 15.13.9 -->
