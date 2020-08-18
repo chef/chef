@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.4.36 -->
+## [v16.4.36](https://github.com/chef/chef/tree/v16.4.36) (2020-08-18)
+
+#### Merged Pull Requests
+- Fix typo and macOS version evaluation logic in `osx_profile` resource [#10319](https://github.com/chef/chef/pull/10319) ([ChefAustin](https://github.com/ChefAustin))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.4.35 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Fix typo and macOS version evaluation logic in `osx_profile` resource [#10319](https://github.com/chef/chef/pull/10319) ([ChefAustin](https://github.com/ChefAustin)) <!-- 16.4.36 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
