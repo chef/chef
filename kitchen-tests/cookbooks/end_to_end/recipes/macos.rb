@@ -41,6 +41,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
+include_recipe "::_chef_client_trusted_certificate"
 
 include_recipe "git"
 
