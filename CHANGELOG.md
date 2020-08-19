@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.39 -->
-## [v16.4.39](https://github.com/chef/chef/tree/v16.4.39) (2020-08-18)
+<!-- latest_release 16.4.40 -->
+## [v16.4.40](https://github.com/chef/chef/tree/v16.4.40) (2020-08-19)
 
 #### Merged Pull Requests
-- Refactor the timezone resource to properly load the current timezone [#10323](https://github.com/chef/chef/pull/10323) ([tas50](https://github.com/tas50))
+- Add missing requires for knife configure command [#10329](https://github.com/chef/chef/pull/10329) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add missing requires for knife configure command [#10329](https://github.com/chef/chef/pull/10329) ([tas50](https://github.com/tas50)) <!-- 16.4.40 -->
 - Refactor the timezone resource to properly load the current timezone [#10323](https://github.com/chef/chef/pull/10323) ([tas50](https://github.com/tas50)) <!-- 16.4.39 -->
 <!-- release_rollup -->
 
