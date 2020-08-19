@@ -43,12 +43,12 @@ describe Chef::Resource::ChefClientTrustedCertificate do
   describe "#cert_path" do
     it "appends .pem to new_resource.cert_name value" do
       resource.cert_name "something"
-      expect(provider.cert_path).to match(/trusted_certs\/something.pem$/)
+      expect(provider.cert_path).to match(%r{trusted_certs/something.pem$})
     end
 
     it "does not append .pem if cert_name already ends in .pem" do
       resource.cert_name "something.pem"
-      expect(provider.cert_path).to match(/trusted_certs\/something.pem$/)
+      expect(provider.cert_path).to match(%r{trusted_certs/something.pem$})
     end
   end
 end
