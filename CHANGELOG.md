@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.4.40 -->
-## [v16.4.40](https://github.com/chef/chef/tree/v16.4.40) (2020-08-19)
+<!-- latest_release 16.4.41 -->
+## [v16.4.41](https://github.com/chef/chef/tree/v16.4.41) (2020-08-19)
 
 #### Merged Pull Requests
-- Add missing requires for knife configure command [#10329](https://github.com/chef/chef/pull/10329) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.4.11 to resolve Windows IP detection [#10327](https://github.com/chef/chef/pull/10327) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.38 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.4.11 to resolve Windows IP detection [#10327](https://github.com/chef/chef/pull/10327) ([tas50](https://github.com/tas50)) <!-- 16.4.41 -->
 - Add missing requires for knife configure command [#10329](https://github.com/chef/chef/pull/10329) ([tas50](https://github.com/tas50)) <!-- 16.4.40 -->
 - Refactor the timezone resource to properly load the current timezone [#10323](https://github.com/chef/chef/pull/10323) ([tas50](https://github.com/tas50)) <!-- 16.4.39 -->
 <!-- release_rollup -->
