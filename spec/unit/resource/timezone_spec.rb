@@ -62,7 +62,7 @@ systemd-timesyncd.service active: yes
     expect { resource.action :unset }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
-  describe "#current_macos_tz?" do
+  describe "#current_macos_tz" do
     context "with admin privs" do
       it "returns the TZ" do
         expect(resource).to receive(:shell_out!).and_return(shellout_systemsetup)
@@ -78,21 +78,21 @@ systemd-timesyncd.service active: yes
     end
   end
 
-  describe "#current_systemd_tz?" do
+  describe "#current_systemd_tz" do
     it "returns the TZ" do
       expect(resource).to receive(:shell_out).and_return(shellout_timedatectl)
       expect(resource.current_systemd_tz).to eql("Etc/UTC")
     end
   end
 
-  describe "#current_windows_tz?" do
+  describe "#current_windows_tz" do
     it "returns the TZ" do
       expect(resource).to receive(:shell_out).and_return(shellout_tzutil)
       expect(resource.current_windows_tz).to eql("UTC")
     end
   end
 
-  describe "#current_rhel_tz?" do
+  describe "#current_rhel_tz" do
     it "returns the TZ" do
       allow(File).to receive(:exist?).with("/etc/sysconfig/clock").and_return true
       expect(File).to receive(:read).with("/etc/sysconfig/clock").and_return 'ZONE="UTC"'
