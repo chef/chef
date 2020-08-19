@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.5.0 -->
+## [v16.5.0](https://github.com/chef/chef/tree/v16.5.0) (2020-08-19)
+
+#### Merged Pull Requests
+- Add new chef_client_trusted_certificate resource [#10331](https://github.com/chef/chef/pull/10331) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.4.41 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Add new chef_client_trusted_certificate resource [#10331](https://github.com/chef/chef/pull/10331) ([tas50](https://github.com/tas50)) <!-- 16.5.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
