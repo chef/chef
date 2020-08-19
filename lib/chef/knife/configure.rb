@@ -27,6 +27,8 @@ class Chef
 
       deps do
         require_relative "../util/path_helper"
+        require_relative "client_create"
+        require_relative "user_create"
         require "ohai" unless defined?(Ohai::System)
         Chef::Knife::ClientCreate.load_deps
         Chef::Knife::UserCreate.load_deps
