@@ -58,17 +58,17 @@ end
 def windows_2012r2?
   return false unless windows?
 
-  (host_version && host_version.start_with?("6.3"))
+  (win32_os_version && win32_os_version.start_with?("6.3"))
 end
 
 def windows_gte_10?
   return false unless windows?
 
-  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(host_version))
+  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(win32_os_version))
 end
 
-def host_version
-  @host_version ||= begin
+def win32_os_version
+  @win32_os_version ||= begin
     wmi = WmiLite::Wmi.new
     host = wmi.first_of("Win32_OperatingSystem")
     host["version"]

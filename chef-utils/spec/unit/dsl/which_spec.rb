@@ -30,6 +30,7 @@ RSpec.describe ChefUtils::DSL::Which do
       it description do
         # stub the ENV['PATH']
         expect(ENV).to receive(:[]).with("PATH").and_return(path)
+        expect(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
 
         # most files should not be found
         allow(File).to receive(:executable?).and_return(false)
@@ -109,6 +110,7 @@ RSpec.describe ChefUtils::DSL::Which do
       it description do
         # stub the ENV['PATH']
         expect(ENV).to receive(:[]).with("PATH").and_return(path)
+        expect(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
 
         # most files should not be found
         allow(File).to receive(:executable?).and_return(false)

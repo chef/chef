@@ -242,6 +242,8 @@ RSpec.configure do |config|
 
     Chef::Log.setup!
 
+    Chef::ServerAPIVersions.instance.reset!
+
     Chef::Config[:log_level] = :fatal
     Chef::Log.level(Chef::Config[:log_level])
 
