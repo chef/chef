@@ -97,5 +97,11 @@ If ($lastexitcode -ne 0) { Exit $lastexitcode }
 # display env vars
 dir env:
 
+# disable proxies
+$regKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+Set-ItemProperty -path $regKey ProxyEnable -value 0 -ErrorAction Stop
+Set-ItemProperty -path $regKey ProxyServer -value "" -ErrorAction Stop
+Set-ItemProperty -path $regKey AutoConfigURL -Value "" -ErrorAction Stop
+
 bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile --tag ~choco_installed
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
