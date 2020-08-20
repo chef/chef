@@ -94,5 +94,8 @@ winrm quickconfig -quiet
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
+# display env vars
+dir env:
+
 bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile --tag ~choco_installed
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
