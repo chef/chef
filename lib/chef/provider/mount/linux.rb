@@ -1,5 +1,5 @@
 #
-# Author:: Joshua Timberman (<joshua@chef.io>)
+# Author:: Antima Gupta (<agupta@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -25,12 +25,14 @@ class Chef
 
         provides :mount, os: "linux"
 
+        # Check to see if the volume is mounted.
+        # "findmnt" outputs the mount points with volume.
+        # Convert the mount_point of the resource to a real path in case it
+        # contains symlinks in its parents dirs.
+
         def mounted?
           mounted = false
 
-          # "mount" outputs the mount points as real paths. Convert
-          # the mount_point of the resource to a real path in case it
-          # contains symlinks in its parents dirs.
           real_mount_point = if ::File.exists? @new_resource.mount_point
                                ::File.realpath(@new_resource.mount_point)
                              else
