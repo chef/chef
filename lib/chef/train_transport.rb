@@ -101,17 +101,21 @@ class Chef
       # Load the target_mode config context from Chef::Config, and place any valid settings into the train configuration
       tm_config = Chef::Config.target_mode
       protocol = tm_config.protocol
-      train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
+      train_config = tm_config.to_hash
+
       Chef::Log.trace("Using target mode options from #{Chef::Dist::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
       # Load the credentials file, and place any valid settings into the train configuration
       credentials = load_credentials(tm_config.host)
       if credentials
-        valid_settings = credentials.select { |k| Train.options(protocol).key?(k) }
-        valid_settings[:enable_password] = credentials[:enable_password] if credentials.key?(:enable_password)
-        train_config.merge!(valid_settings)
-        Chef::Log.trace("Using target mode options from credentials file: #{valid_settings.keys.join(", ")}") if valid_settings
+        train_config.merge!(credentials)
+
+        protocol = credentials[:protocol] if credentials.key?(:protocol)
+
+        Chef::Log.trace("Using target mode options from credentials file: #{credentials.keys.join(", ")}")
       end
+
+      train_config = train_config.to_hash.select { |k| Train.options(protocol).key?(k) }
 
       train_config[:logger] = logger
 
