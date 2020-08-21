@@ -23,6 +23,7 @@ class Chef
   class Knife
     class ConfigGet < Knife
       banner "knife config get [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
+      category "deprecated"
 
       option :all,
         short: "-a",
@@ -37,6 +38,8 @@ class Chef
         default: false
 
       def run
+        Chef::Log.warn("knife config get has been deprecated in favor of knife config show. This will removed in marjor release verison!")
+
         if config[:format] == "summary" && !config[:raw]
           # If using the default, human-readable output, also show which config files are being loaded.
           # Some of this is a bit hacky since it duplicates

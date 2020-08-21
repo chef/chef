@@ -21,6 +21,7 @@ class Chef
   class Knife
     class ConfigListProfiles < Knife
       banner "knife config list-profiles (options)"
+      category "deprecated"
 
       deps do
         require_relative "../workstation_config_loader"
@@ -37,6 +38,8 @@ class Chef
       end
 
       def run
+        Chef::Log.warn("knife config list-profiles has been deprecated in favor of knife config list. This will removed in marjor release verison!")
+
         credentials_data = self.class.config_loader.parse_credentials_file
         if credentials_data.nil? || credentials_data.empty?
           # Should this just show the ambient knife.rb config as "default" instead?

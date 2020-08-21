@@ -21,6 +21,7 @@ class Chef
   class Knife
     class ConfigGetProfile < Knife
       banner "knife config get-profile"
+      category "deprecated"
 
       # Disable normal config loading since this shouldn't fail if the profile
       # doesn't exist of the config is otherwise corrupted.
@@ -29,6 +30,8 @@ class Chef
       end
 
       def run
+        Chef::Log.warn("knife config get-profiles has been deprecated in favor of knife config use. This will removed in marjor release verison!")
+
         ui.msg(self.class.config_loader.credentials_profile(config[:profile]))
       end
 
