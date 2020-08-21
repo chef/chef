@@ -94,5 +94,26 @@ winrm quickconfig -quiet
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile --tag ~choco_installed
-If ($lastexitcode -ne 0) { Exit $lastexitcode }
+# buildkite changes the casing of the Path variable to PATH
+# It is not clear how or where that happens, but it breaks the choco
+# tests. Removing the PATH and resetting it with the expected casing
+$p = $env:PATH
+$env:PATH = $null
+$env:Path = $p
+
+# Running the specs separately fixes an edgecase on 2012R2-i386 where the desktop heap's
+# allocated limit is hit and any test's attempt to create a new process is met with
+# exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
+# desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
+$exit = 0
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile ./spec/unit
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile ./spec/functional
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile ./spec/integration
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+Exit $exit
