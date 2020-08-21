@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 66d31133c14ab890ac57ec411d657824934661ef
+  revision: 654df0481f3c35c027a9afc313c74583f3d4112f
   branch: master
   specs:
     ohai (16.4.12)
@@ -151,8 +151,8 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.6)
-    chef-zero (15.0.1)
+    chef-vault (4.0.11)
+    chef-zero (15.0.2)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -244,15 +244,15 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.0.6)
+    mixlib-archive (1.0.7)
       mixlib-log
-    mixlib-archive (1.0.6-universal-mingw32)
+    mixlib-archive (1.0.7-universal-mingw32)
       mixlib-log
-    mixlib-authentication (3.0.6)
-    mixlib-cli (2.1.6)
+    mixlib-authentication (3.0.7)
+    mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-log (3.0.8)
+    mixlib-log (3.0.9)
     mixlib-shellout (3.1.4)
       chef-utils
     mixlib-shellout (3.1.4-universal-mingw32)
