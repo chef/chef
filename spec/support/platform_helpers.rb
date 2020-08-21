@@ -95,23 +95,10 @@ def windows_user_right?(right)
   Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
-def mac_osx_1014?
-  if mac_osx?
+def macos_1014?
+  if macos?
     ver = Chef::Version.new(ohai[:platform_version])
     return ver.major == 10 && ver.minor == 14
-  end
-
-  false
-end
-
-def mac_osx?
-  if File.exist? "/usr/bin/sw_vers"
-    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
-    result.stdout.each_line do |line|
-      if /^ProductName:\sMac OS X.*$/.match?(line)
-        return true
-      end
-    end
   end
 
   false
