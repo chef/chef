@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.2 -->
-## [v16.5.2](https://github.com/chef/chef/tree/v16.5.2) (2020-08-21)
+<!-- latest_release 16.5.3 -->
+## [v16.5.3](https://github.com/chef/chef/tree/v16.5.3) (2020-08-21)
 
 #### Merged Pull Requests
-- Simplify macos detection in specs to include big sur [#10335](https://github.com/chef/chef/pull/10335) ([tas50](https://github.com/tas50))
+- New exit code to signal chef-client exits due to configuration errors [#10302](https://github.com/chef/chef/pull/10302) ([NaomiReeves](https://github.com/NaomiReeves))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- New exit code to signal chef-client exits due to configuration errors [#10302](https://github.com/chef/chef/pull/10302) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 16.5.3 -->
 - Simplify macos detection in specs to include big sur [#10335](https://github.com/chef/chef/pull/10335) ([tas50](https://github.com/tas50)) <!-- 16.5.2 -->
 - Add new chef_client_trusted_certificate resource [#10331](https://github.com/chef/chef/pull/10331) ([tas50](https://github.com/tas50)) <!-- 16.5.0 -->
 <!-- release_rollup -->
