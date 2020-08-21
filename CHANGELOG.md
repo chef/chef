@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.5 -->
-## [v16.5.5](https://github.com/chef/chef/tree/v16.5.5) (2020-08-21)
+<!-- latest_release 16.5.6 -->
+## [v16.5.6](https://github.com/chef/chef/tree/v16.5.6) (2020-08-21)
 
 #### Merged Pull Requests
-- fix chocolatey and x86 windows omnibus builds [#10339](https://github.com/chef/chef/pull/10339) ([mwrock](https://github.com/mwrock))
+- Avoid knife ssh freeze on windows [#9482](https://github.com/chef/chef/pull/9482) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid knife ssh freeze on windows [#9482](https://github.com/chef/chef/pull/9482) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.5.6 -->
 - fix chocolatey and x86 windows omnibus builds [#10339](https://github.com/chef/chef/pull/10339) ([mwrock](https://github.com/mwrock)) <!-- 16.5.5 -->
 - Bump all deps to the latest for the require optimizations [#10337](https://github.com/chef/chef/pull/10337) ([tas50](https://github.com/tas50)) <!-- 16.5.4 -->
 - New exit code to signal chef-client exits due to configuration errors [#10302](https://github.com/chef/chef/pull/10302) ([NaomiReeves](https://github.com/NaomiReeves)) <!-- 16.5.3 -->
