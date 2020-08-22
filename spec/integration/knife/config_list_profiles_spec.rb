@@ -82,9 +82,9 @@ describe "knife config list-profiles", :workstation do
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
-         Profile  Client    Key                  Server                                   #
-        ----------------------------------------------------------------------------------#
-        *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
+         Profile  Client    Key                  Server                                    #
+        \e[32m--------------------------------------------------------------------------------\e[0m#
+        *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
       EOH
     end
 
@@ -106,11 +106,11 @@ describe "knife config list-profiles", :workstation do
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
-         Profile  Client    Key                  Server                                   #
-        ----------------------------------------------------------------------------------#
-        *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
-         prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
-         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+         Profile  Client    Key                  Server                                    #
+        \e[32m--------------------------------------------------------------------------------\e[0m#
+        *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
+         prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
+         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
       EOH
     end
 
@@ -133,11 +133,11 @@ describe "knife config list-profiles", :workstation do
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
-         Profile  Client    Key                  Server                                   #
-        ----------------------------------------------------------------------------------#
-         default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
-        *prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
-         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+         Profile  Client    Key                  Server                                    #
+        \e[32m--------------------------------------------------------------------------------\e[0m#
+         default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
+        *prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
+         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
       EOH
     end
 
@@ -160,11 +160,11 @@ describe "knife config list-profiles", :workstation do
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
-         Profile  Client    Key                  Server                                   #
-         ---------------------------------------------------------------------------------#
-         default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg#
-         prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod   #
-         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg#
+         Profile  Client    Key                  Server                                    #
+        \e[32m--------------------------------------------------------------------------------\e[0m#
+         default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
+         prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
+         qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
       EOH
     end
 
@@ -173,7 +173,7 @@ describe "knife config list-profiles", :workstation do
         [default]
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
-      it { is_expected.to match %r{^*default .*? https://example.com/organizations/testorg$} }
+      it { is_expected.to match %r{^*default .*? https://example.com/organizations/testorg} }
     end
 
     context "with -i" do
@@ -183,9 +183,9 @@ describe "knife config list-profiles", :workstation do
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
-         Profile  Client  Key  Server                                   #
-        ----------------------------------------------------------------#
-        *default               https://example.com/organizations/testorg#
+         Profile  Client  Key  Server                                    #
+        \e[32m--------------------------------------------------------------\e[0m#
+        *default               https://example.com/organizations/testorg #
       EOH
     end
 

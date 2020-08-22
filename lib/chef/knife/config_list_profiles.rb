@@ -93,7 +93,7 @@ class Chef
 
       private
 
-      def render_table(profiles, padding: 2)
+      def render_table(profiles, padding: 1)
         rows = []
         # Render the data to a 2D array that will be used for the table.
         profiles.each do |profile|
@@ -126,8 +126,7 @@ class Chef
         else
           table.render do |renderer|
             renderer.border do
-              mid          "-"
-              mid_mid      " "
+              mid   "-"
               style :green
             end
             renderer.padding = [0, padding, 0, 0] # pad right with 2 characters
