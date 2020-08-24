@@ -100,7 +100,7 @@ class Chef
           # Replace the home dir in the client key path with ~.
           profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, "~") if profile[:client_key]
           profile[:profile] = "#{profile[:active] ? "*" : " "}#{profile[:profile]}"
-          rows << profile.values_at(:profile, :client_name, :client_key, :server_url).map(&:to_s)
+          rows << profile.values_at(:profile, :client_name, :client_key, :server_url)
         end
 
         table = TTY::Table.new(header: TABLE_HEADER, rows: rows)
