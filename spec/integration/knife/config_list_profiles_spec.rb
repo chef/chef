@@ -57,6 +57,7 @@ describe "knife config list-profiles", :workstation do
       Dir.chdir(path_to("repo"))
       ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
       ENV["HOME"] = path_to(".")
+      allow(TTY::Screen).to receive(:width).and_return(200)
     end
 
     # NOTE: The funky formatting with # at the end of the line of some of the
