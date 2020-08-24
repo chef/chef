@@ -3,7 +3,6 @@ require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
 require "chef/mixin/powershell_out"
-require "chef/version_class"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -100,14 +99,12 @@ def windows_user_right?(right)
   Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
+def macos_1013?
+  macos? && Gem::Requirement.new("~> 10.13.0").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
+end
 
-def macos_1014?
-  if macos?
-    ver = Chef::Version.new(ohai[:platform_version])
-    return ver.major == 10 && ver.minor == 14
-  end
-
-  false
+def macos_gte_1014?
+  macos? && Gem::Requirement.new(">= 10.14").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
 end
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
@@ -119,8 +116,6 @@ end
 def windows32?
   windows? && !windows64?
 end
-
-# def jruby?
 
 def unix?
   !windows?
