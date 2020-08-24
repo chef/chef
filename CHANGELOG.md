@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.7 -->
-## [v16.5.7](https://github.com/chef/chef/tree/v16.5.7) (2020-08-24)
+<!-- latest_release 16.5.8 -->
+## [v16.5.8](https://github.com/chef/chef/tree/v16.5.8) (2020-08-24)
 
 #### Merged Pull Requests
-- Start building S390x packages again [#10338](https://github.com/chef/chef/pull/10338) ([btm](https://github.com/btm))
+- separate omnibus rspec path from options [#10343](https://github.com/chef/chef/pull/10343) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- separate omnibus rspec path from options [#10343](https://github.com/chef/chef/pull/10343) ([mwrock](https://github.com/mwrock)) <!-- 16.5.8 -->
 - Start building S390x packages again [#10338](https://github.com/chef/chef/pull/10338) ([btm](https://github.com/btm)) <!-- 16.5.7 -->
 - Avoid knife ssh freeze on windows [#9482](https://github.com/chef/chef/pull/9482) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.5.6 -->
 - fix chocolatey and x86 windows omnibus builds [#10339](https://github.com/chef/chef/pull/10339) ([mwrock](https://github.com/mwrock)) <!-- 16.5.5 -->
