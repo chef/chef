@@ -43,6 +43,11 @@ include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
 include_recipe "::_chef_client_trusted_certificate"
 
+chef_client_launchd "Every 30 mins Infra Client run" do
+  interval 30
+  action :enable
+end
+
 include_recipe "git"
 
 # test various archive formats in the archive_file resource
