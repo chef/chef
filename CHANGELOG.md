@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.12 -->
-## [v16.5.12](https://github.com/chef/chef/tree/v16.5.12) (2020-08-25)
+<!-- latest_release 16.5.13 -->
+## [v16.5.13](https://github.com/chef/chef/tree/v16.5.13) (2020-08-25)
 
 #### Merged Pull Requests
-- Fix dll copying in Gemfile to remove Dir.pwd [#10325](https://github.com/chef/chef/pull/10325) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix some CI failures [#10347](https://github.com/chef/chef/pull/10347) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix some CI failures [#10347](https://github.com/chef/chef/pull/10347) ([phiggins](https://github.com/phiggins)) <!-- 16.5.13 -->
 - Fix dll copying in Gemfile to remove Dir.pwd [#10325](https://github.com/chef/chef/pull/10325) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.12 -->
 - knife config list-profiles UI with tty-table [#10341](https://github.com/chef/chef/pull/10341) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.11 -->
 - make &#39;knife config&#39; options shorter/easier [#10346](https://github.com/chef/chef/pull/10346) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.10 -->
