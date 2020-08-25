@@ -23,8 +23,12 @@ class Chef
       banner "knife config list-profiles (options)"
       category "deprecated"
 
+      TABLE_HEADER = [" Profile", "Client", "Key", "Server"].freeze
+
       deps do
         require_relative "../workstation_config_loader"
+        require "tty-screen" unless defined?(TTY::Screen)
+        require "tty-table" unless defined?(TTY::Table)
       end
 
       option :ignore_knife_rb,
@@ -93,36 +97,45 @@ class Chef
 
       private
 
-      def render_table(profiles, padding: 2)
-        # Replace the home dir in the client key path with ~.
-        profiles.each do |profile|
-          profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, "~") if profile[:client_key]
-        end
+      def render_table(profiles, padding: 1)
+        rows = []
         # Render the data to a 2D array that will be used for the table.
-        table_data = [["", "Profile", "Client", "Key", "Server"]] + profiles.map do |profile|
-          [profile[:active] ? "*" : ""] + profile.values_at(:profile, :client_name, :client_key, :server_url).map(&:to_s)
+        profiles.each do |profile|
+          # Replace the home dir in the client key path with ~.
+          profile[:client_key] = profile[:client_key].to_s.gsub(/^#{Regexp.escape(Dir.home)}/, "~") if profile[:client_key]
+          profile[:profile] = "#{profile[:active] ? "*" : " "}#{profile[:profile]}"
+          rows << profile.values_at(:profile, :client_name, :client_key, :server_url)
         end
-        # Compute column widths.
-        column_widths = Array.new(table_data.first.length) do |i|
-          table_data.map { |row| row[i].length + padding }.max
+
+        table = TTY::Table.new(header: TABLE_HEADER, rows: rows)
+
+        # Rotate the table to vertical if the screen width is less than table width.
+        if table.width > TTY::Screen.width
+          table.orientation = :vertical
+          table.rotate
+          # Add a new line after each profile record.
+          table.render do |renderer|
+            renderer.border do
+              separator ->(row) { (row + 1) % TABLE_HEADER.size == 0 }
+            end
+            # Remove the leading space added of the first column.
+            renderer.filter = Proc.new do |val, row_index, col_index|
+              if col_index == 1 || (row_index) % TABLE_HEADER.size == 0
+                val.strip
+              else
+                val
+              end
+            end
+          end
+        else
+          table.render do |renderer|
+            renderer.border do
+              mid   "-"
+              style :green
+            end
+            renderer.padding = [0, padding, 0, 0] # pad right with 2 characters
+          end
         end
-        # Special case, the first col gets no padding (because indicator) and last
-        # get no padding because last.
-        column_widths[0] -= padding
-        column_widths[-1] -= padding
-        # Build the format string for each row.
-        format_string = column_widths.map { |w| "%-#{w}.#{w}s" }.join("")
-        format_string << "\n"
-        # Print the header row and a separator.
-        table = ui.color(format_string % table_data.first, :green)
-        table << "-" * column_widths.sum
-        table << "\n"
-        # Print the rest of the table.
-        table_data.drop(1).each do |row|
-          table << format_string % row
-        end
-        # Trim the last newline because ui.output adds one.
-        table.chomp!
       end
 
     end
