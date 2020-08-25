@@ -82,7 +82,7 @@ class Chef
 
       property :environment, Hash,
         default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
+        description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
       property :nice, Integer,
         description: "The process priority to run the #{Chef::Dist::CLIENT} process at.",
