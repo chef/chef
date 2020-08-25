@@ -19,7 +19,7 @@
 require "yaml" unless defined?(YAML)
 require_relative "../json_compat"
 require "openssl" unless defined?(OpenSSL)
-require "base64"
+require "base64" unless defined?(Base64)
 require "digest/sha2" unless defined?(Digest::SHA2)
 require_relative "../encrypted_data_bag_item"
 require_relative "unsupported_encrypted_data_bag_item_format"

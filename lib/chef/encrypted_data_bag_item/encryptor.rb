@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "base64"
+require "base64" unless defined?(Base64)
 require "digest/sha2" unless defined?(Digest::SHA2)
 require "openssl" unless defined?(OpenSSL)
 require "ffi_yajl" unless defined?(FFI_Yajl)

@@ -20,7 +20,7 @@ require_relative "error"
 require_relative "api/memory"
 require_relative "api/crypto"
 require_relative "unicode"
-require "digest"
+require "digest" unless defined?(Digest)
 
 class Chef
   module ReservedNames::Win32

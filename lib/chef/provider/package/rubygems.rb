@@ -33,7 +33,7 @@ require "rubygems/version"
 require "rubygems/dependency"
 require "rubygems/spec_fetcher"
 require "rubygems/platform"
-require "rubygems/package"
+require "rubygems/package" unless defined?(Gem::Package)
 require "rubygems/dependency_installer"
 require "rubygems/uninstaller"
 require "rubygems/specification"

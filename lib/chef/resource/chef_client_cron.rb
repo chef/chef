@@ -17,7 +17,7 @@
 require_relative "../resource"
 require_relative "../dist"
 require_relative "helpers/cron_validations"
-require "digest/md5"
+require "digest/md5" unless defined?(Digest::MD5)
 
 class Chef
   class Resource
