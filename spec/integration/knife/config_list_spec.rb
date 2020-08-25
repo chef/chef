@@ -40,7 +40,7 @@ describe "knife config list", :workstation do
       old_wd = Dir.pwd
       # Clear these out because they are cached permanently.
       ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
-      Chef::Knife::ConfigListProfiles.reset_config_loader!
+      Chef::Knife::ConfigList.reset_config_loader!
       begin
         ex.run
       ensure

@@ -21,7 +21,6 @@ class Chef
   class Knife
     class ConfigList < Knife
       banner "knife config list (options)"
-      category "deprecated"
 
       TABLE_HEADER = [" Profile", "Client", "Key", "Server"].freeze
 
