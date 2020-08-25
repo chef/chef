@@ -26,6 +26,7 @@ class Chef
 
       deps do
         require_relative "../workstation_config_loader"
+        require "tty-screen" unless defined?(TTY::Screen)
         require "tty-table" unless defined?(TTY::Table)
       end
 
