@@ -110,7 +110,7 @@ class Chef
           environment_variables new_resource.environment unless new_resource.environment.empty?
           nice new_resource.nice
           low_priority_io true
-          action %i{create enable}
+          action :enable
         end
       end
 
