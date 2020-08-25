@@ -6,6 +6,7 @@ export HAB_ORIGIN='ci'
 export PLAN='chef-infra-client'
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
+export HAB_NONINTERACTIVE="true"
 
 # print error message followed by usage and exit
 error () {
