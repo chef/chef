@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.10 -->
-## [v16.5.10](https://github.com/chef/chef/tree/v16.5.10) (2020-08-25)
+<!-- latest_release 16.5.11 -->
+## [v16.5.11](https://github.com/chef/chef/tree/v16.5.11) (2020-08-25)
 
 #### Merged Pull Requests
-- make &#39;knife config&#39; options shorter/easier [#10346](https://github.com/chef/chef/pull/10346) ([vsingh-msys](https://github.com/vsingh-msys))
+- knife config list-profiles UI with tty-table [#10341](https://github.com/chef/chef/pull/10341) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- knife config list-profiles UI with tty-table [#10341](https://github.com/chef/chef/pull/10341) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.11 -->
 - make &#39;knife config&#39; options shorter/easier [#10346](https://github.com/chef/chef/pull/10346) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.10 -->
 - Add macOS 11.0 (Big Sur) packages [#10332](https://github.com/chef/chef/pull/10332) ([tas50](https://github.com/tas50)) <!-- 16.5.9 -->
 - separate omnibus rspec path from options [#10343](https://github.com/chef/chef/pull/10343) ([mwrock](https://github.com/mwrock)) <!-- 16.5.8 -->
