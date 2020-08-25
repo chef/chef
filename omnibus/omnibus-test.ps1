@@ -101,7 +101,7 @@ $p = $env:PATH
 $env:PATH = $null
 $env:Path = $p
 
-# Running the specs separately fixes an edgecase on 2012R2-i386 where the desktop heap's
+# Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
 # allocated limit is hit and any test's attempt to create a new process is met with
 # exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
 # desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)

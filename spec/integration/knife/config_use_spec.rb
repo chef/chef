@@ -17,7 +17,7 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
-describe "knife config use-profile", :workstation do
+describe "knife config use", :workstation do
   include IntegrationSupport
   include KnifeSupport
 
@@ -26,15 +26,15 @@ describe "knife config use-profile", :workstation do
   let(:cmd_args) { [] }
 
   when_the_repository("has a custom env") do
-    let(:knife_use_profile) do
-      knife("config", "use-profile", *cmd_args, instance_filter: lambda { |instance|
+    let(:knife_use) do
+      knife("config", "use", *cmd_args, instance_filter: lambda { |instance|
         # Fake the failsafe check because this command doesn't actually process knife.rb.
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK << " ole"
         allow(File).to receive(:file?).and_call_original
       })
     end
 
-    subject { knife_use_profile.stdout }
+    subject { knife_use.stdout }
 
     around do |ex|
       # Store and reset the value of some env vars.
@@ -67,11 +67,6 @@ describe "knife config use-profile", :workstation do
       ENV["HOME"] = path_to(".")
     end
 
-    context "with no argument" do
-      subject { knife_use_profile.stderr }
-      it { is_expected.to eq "FATAL: You must specify a profile\n" }
-    end
-
     context "with an argument" do
       let(:cmd_args) { %w{production} }
       before { file(".chef/credentials", <<~EOH) }
@@ -88,14 +83,14 @@ describe "knife config use-profile", :workstation do
 
     context "with no credentials file" do
       let(:cmd_args) { %w{production} }
-      subject { knife_use_profile.stderr }
+      subject { knife_use.stderr }
       it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
     end
 
     context "with an empty credentials file" do
       let(:cmd_args) { %w{production} }
       before { file(".chef/credentials", "") }
-      subject { knife_use_profile.stderr }
+      subject { knife_use.stderr }
       it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
     end
 
@@ -107,7 +102,7 @@ describe "knife config use-profile", :workstation do
         client_key = "testkey.pem"
         chef_server_url = "https://example.com/organizations/testorg"
       EOH
-      subject { knife_use_profile }
+      subject { knife_use }
       it { expect { subject }.to raise_error ChefConfig::ConfigurationError, "Profile staging doesn't exist. Please add it to #{path_to(".chef/credentials")} and if it is profile with DNS name check that you are not missing single quotes around it as per docs https://docs.chef.io/workstation/knife_setup/#knife-profiles." }
     end
 
