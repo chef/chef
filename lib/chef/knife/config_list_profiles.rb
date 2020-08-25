@@ -38,7 +38,7 @@ class Chef
       end
 
       def run
-        Chef::Log.warn("knife config list-profiles has been deprecated in favor of knife config list. This will removed in marjor release verison!")
+        Chef::Log.warn("knife config list-profiles has been deprecated in favor of knife config list. This will be removed in the major release version!")
 
         credentials_data = self.class.config_loader.parse_credentials_file
         if credentials_data.nil? || credentials_data.empty?

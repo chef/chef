@@ -38,7 +38,7 @@ class Chef
         default: false
 
       def run
-        Chef::Log.warn("knife config get has been deprecated in favor of knife config show. This will removed in marjor release verison!")
+        Chef::Log.warn("knife config get has been deprecated in favor of knife config show. This will be removed in the major release version!")
 
         if config[:format] == "summary" && !config[:raw]
           # If using the default, human-readable output, also show which config files are being loaded.

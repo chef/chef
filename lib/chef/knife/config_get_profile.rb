@@ -30,7 +30,7 @@ class Chef
       end
 
       def run
-        Chef::Log.warn("knife config get-profiles has been deprecated in favor of knife config use. This will removed in marjor release verison!")
+        Chef::Log.warn("knife config get-profiles has been deprecated in favor of knife config use. This will be removed in the major release version!")
 
         ui.msg(self.class.config_loader.credentials_profile(config[:profile]))
       end
