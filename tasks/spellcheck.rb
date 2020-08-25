@@ -46,8 +46,13 @@ namespace :spellcheck do
   end
 
   task :cspell_check do
-    require "bundler"
-    Bundler.which("cspell") || abort(<<~INSTALL_CSPELL)
+    cspell_version = begin
+                       `cspell --version`
+                     rescue
+                       nil
+                     end
+
+    cspell_version.is_a?(String) || abort(<<~INSTALL_CSPELL)
           cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
           For more information: https://www.npmjs.com/package/cspell
     INSTALL_CSPELL
