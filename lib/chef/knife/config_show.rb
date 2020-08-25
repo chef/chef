@@ -1,7 +1,6 @@
 #
-# Author:: Joshua Timberman <opensource@housepub.org>
-# Copyright:: Copyright (c) 2012, Joshua Timberman
-# Copyright:: Copyright (c) 2018, Noah Kantrowitz
+# Author:: Vivek Singh (<vsingh@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,9 +20,8 @@ require_relative "../knife"
 
 class Chef
   class Knife
-    class ConfigGet < Knife
-      banner "knife config get [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
-      category "deprecated"
+    class ConfigShow < Knife
+      banner "knife config show [OPTION...] (options)\nDisplays the value of Chef::Config[OPTION] (or all config values)"
 
       option :all,
         short: "-a",
@@ -38,8 +36,6 @@ class Chef
         default: false
 
       def run
-        Chef::Log.warn("knife config get has been deprecated in favor of knife config show. This will be removed in the major release version!")
-
         if config[:format] == "summary" && !config[:raw]
           # If using the default, human-readable output, also show which config files are being loaded.
           # Some of this is a bit hacky since it duplicates

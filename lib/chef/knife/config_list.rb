@@ -1,5 +1,6 @@
 #
-# Copyright:: Copyright (c) 2018, Noah Kantrowitz
+# Author:: Vivek Singh (<vsingh@chef.io>)
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,9 +20,8 @@ require_relative "../knife"
 
 class Chef
   class Knife
-    class ConfigListProfiles < Knife
-      banner "knife config list-profiles (options)"
-      category "deprecated"
+    class ConfigList < Knife
+      banner "knife config list (options)"
 
       deps do
         require_relative "../workstation_config_loader"
@@ -38,8 +38,6 @@ class Chef
       end
 
       def run
-        Chef::Log.warn("knife config list-profiles has been deprecated in favor of knife config list. This will be removed in the major release version!")
-
         credentials_data = self.class.config_loader.parse_credentials_file
         if credentials_data.nil? || credentials_data.empty?
           # Should this just show the ambient knife.rb config as "default" instead?
