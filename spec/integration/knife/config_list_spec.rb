@@ -17,7 +17,7 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
-describe "knife config list-profiles", :workstation do
+describe "knife config list", :workstation do
   include IntegrationSupport
   include KnifeSupport
 
@@ -25,14 +25,14 @@ describe "knife config list-profiles", :workstation do
 
   when_the_repository("has a custom env") do
     let(:cmd_args) { [] }
-    let(:knife_list_profiles) do
-      knife("config", "list-profiles", *cmd_args, instance_filter: lambda { |instance|
+    let(:knife_list) do
+      knife("config", "list", *cmd_args, instance_filter: lambda { |instance|
         # Fake the failsafe check because this command doesn't actually process knife.rb.
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK << " ole"
         allow(File).to receive(:file?).and_call_original
       })
     end
-    subject { knife_list_profiles.stdout }
+    subject { knife_list.stdout }
 
     around do |ex|
       # Store and reset the value of some env vars.
@@ -65,13 +65,13 @@ describe "knife config list-profiles", :workstation do
     # substantial trailing whitespace in most cases which many editors "helpfully" remove.
 
     context "with no credentials file" do
-      subject { knife_list_profiles.stderr }
+      subject { knife_list.stderr }
       it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
     end
 
     context "with an empty credentials file" do
       before { file(".chef/credentials", "") }
-      subject { knife_list_profiles.stderr }
+      subject { knife_list.stderr }
       it { is_expected.to eq "FATAL: No profiles found, #{path_to(".chef/credentials")} does not exist or is empty\n" }
     end
 
