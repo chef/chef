@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 66d31133c14ab890ac57ec411d657824934661ef
+  revision: 654df0481f3c35c027a9afc313c74583f3d4112f
   branch: master
   specs:
     ohai (16.4.12)
@@ -27,12 +27,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.5.2)
+    chef (16.5.8)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.5.2)
-      chef-utils (= 16.5.2)
+      chef-config (= 16.5.8)
+      chef-utils (= 16.5.8)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,12 +62,12 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       uuidtools (~> 2.1.5)
-    chef (16.5.2-universal-mingw32)
+    chef (16.5.8-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
       bundler (>= 1.10)
-      chef-config (= 16.5.2)
-      chef-utils (= 16.5.2)
+      chef-config (= 16.5.8)
+      chef-utils (= 16.5.8)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -112,15 +112,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.5.2)
-      chef (= 16.5.2)
+    chef-bin (16.5.8)
+      chef (= 16.5.8)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.5.2)
+    chef-config (16.5.8)
       addressable
-      chef-utils (= 16.5.2)
+      chef-utils (= 16.5.8)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -129,7 +129,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.5.2)
+    chef-utils (16.5.8)
 
 GEM
   remote: https://rubygems.org/
@@ -151,8 +151,8 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.6)
-    chef-zero (15.0.1)
+    chef-vault (4.0.11)
+    chef-zero (15.0.2)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -244,15 +244,15 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.0.6)
+    mixlib-archive (1.0.7)
       mixlib-log
-    mixlib-archive (1.0.6-universal-mingw32)
+    mixlib-archive (1.0.7-universal-mingw32)
       mixlib-log
-    mixlib-authentication (3.0.6)
-    mixlib-cli (2.1.6)
+    mixlib-authentication (3.0.7)
+    mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-log (3.0.8)
+    mixlib-log (3.0.9)
     mixlib-shellout (3.1.4)
       chef-utils
     mixlib-shellout (3.1.4-universal-mingw32)
@@ -394,7 +394,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.4.0)
+    win32-certstore (0.4.1)
       ffi
       mixlib-shellout
     win32-event (0.6.3)
