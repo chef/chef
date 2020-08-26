@@ -590,9 +590,6 @@ steps:
       linux:
         privileged: true
         single-use: true
-        environment:
-          - HAB_NONINTERACTIVE=true
-
 
 - label: ":habicat: Linux plan (kernel2)"
   commands:
@@ -604,8 +601,6 @@ steps:
       linux:
         privileged: true
         single-use: true
-        environment:
-          - HAB_NONINTERACTIVE=true
 
 - label: ":habicat: Windows plan"
   commands:
@@ -616,5 +611,3 @@ steps:
         privileged: true
         single-use: true
         shell: ["powershell", "-Command"]
-        environment:
-          - HAB_NONINTERACTIVE=true
