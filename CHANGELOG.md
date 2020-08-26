@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.20 -->
-## [v16.5.20](https://github.com/chef/chef/tree/v16.5.20) (2020-08-26)
+<!-- latest_release 16.5.21 -->
+## [v16.5.21](https://github.com/chef/chef/tree/v16.5.21) (2020-08-26)
 
 #### Merged Pull Requests
-- Add back nice functionality to chef_client_cron [#10358](https://github.com/chef/chef/pull/10358) ([tas50](https://github.com/tas50))
+- Improve input handling and validation in chef_client_launchd [#10357](https://github.com/chef/chef/pull/10357) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve input handling and validation in chef_client_launchd [#10357](https://github.com/chef/chef/pull/10357) ([tas50](https://github.com/tas50)) <!-- 16.5.21 -->
 - Add back nice functionality to chef_client_cron [#10358](https://github.com/chef/chef/pull/10358) ([tas50](https://github.com/tas50)) <!-- 16.5.20 -->
 - Validate nice values in the launchd resource [#10359](https://github.com/chef/chef/pull/10359) ([tas50](https://github.com/tas50)) <!-- 16.5.19 -->
 - more config specs cleanup &amp; remove deprecated from knife config list [#10351](https://github.com/chef/chef/pull/10351) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.18 -->
