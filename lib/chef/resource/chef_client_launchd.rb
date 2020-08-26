@@ -52,8 +52,10 @@ class Chef
         description: "The working directory to run the #{Chef::Dist::PRODUCT} from.",
         default: "/var/root"
 
-      property :interval, Integer,
+      property :interval, [Integer, String],
         description: "Time in minutes between #{Chef::Dist::PRODUCT} executions.",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         default: 30
 
       property :accept_chef_license, [true, false],
@@ -84,9 +86,10 @@ class Chef
         default: lazy { {} },
         description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
-      property :nice, Integer,
-        description: "The process priority to run the #{Chef::Dist::CLIENT} process at.",
-        default: 0
+      property :nice, [Integer, String],
+        description: "The process priority to run the #{Chef::Dist::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
 
       property :low_priority_io, [true, false],
         description: "Run the #{Chef::Dist::CLIENT} process with low priority disk IO",
