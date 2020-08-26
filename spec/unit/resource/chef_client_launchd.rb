@@ -38,6 +38,28 @@ describe Chef::Resource::ChefClientLaunchd do
     expect { resource.action :disable }.not_to raise_error
   end
 
+  it "raises an error if interval is not a positive number" do
+    expect { resource.interval("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "coerces interval to an Integer" do
+    resource.interval "10"
+    expect(resource.interval).to eql(10)
+  end
+
+  it "raises an error if nice is less than -20" do
+    expect { resource.nice(-21) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "raises an error if nice is greater than 19" do
+    expect { resource.nice(20) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "coerces nice to an Integer" do
+    resource.nice "10"
+    expect(resource.nice).to eql(10)
+  end
+
   describe "#all_daemon_options" do
     it "returns log and config flags if by default" do
       expect(provider.all_daemon_options).to eql(
