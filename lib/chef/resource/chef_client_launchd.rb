@@ -75,16 +75,16 @@ class Chef
         default: "client.log"
 
       property :chef_binary_path, String,
-        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}",
-        description: "The path to the #{Chef::Dist::CLIENT} binary."
+        description: "The path to the #{Chef::Dist::CLIENT} binary.",
+        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}"
 
       property :daemon_options, Array,
-      default: lazy { [] },
-      description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
+        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
+        default: lazy { [] }
 
       property :environment, Hash,
-        default: lazy { {} },
-        description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
+        description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
+        default: lazy { {} }
 
       property :nice, [Integer, String],
         description: "The process priority to run the #{Chef::Dist::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
@@ -99,7 +99,7 @@ class Chef
         unless ::Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
             owner new_resource.user
-            mode "0640"
+            mode "0750"
             recursive true
           end
         end
