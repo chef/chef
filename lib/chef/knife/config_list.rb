@@ -22,7 +22,7 @@ class Chef
     class ConfigList < Knife
       banner "knife config list (options)"
 
-      TABLE_HEADER = [" Profile", "Client", "Key", "Server"].freeze unless const_defined?(:TABLE_HEADER)
+      TABLE_HEADER ||= [" Profile", "Client", "Key", "Server"].freeze
 
       deps do
         require_relative "../workstation_config_loader"
