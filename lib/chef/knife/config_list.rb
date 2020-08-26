@@ -127,8 +127,7 @@ class Chef
         else
           table.render do |renderer|
             renderer.border do
-              mid   "-"
-              style :green
+              mid "-"
             end
             renderer.padding = [0, padding, 0, 0] # pad right with 2 characters
           end
