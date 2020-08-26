@@ -16,25 +16,22 @@
 #
 
 require_relative "../knife"
+require_relative "./config_use"
 
 class Chef
   class Knife
-    class ConfigGetProfile < Knife
+    class ConfigGetProfile < ConfigUse
+
+      # Handle the subclassing (knife doesn't do this :()
+      dependency_loaders.concat(superclass.dependency_loaders)
+
       banner "knife config get-profile"
       category "deprecated"
 
-      # Disable normal config loading since this shouldn't fail if the profile
-      # doesn't exist of the config is otherwise corrupted.
-      def configure_chef
-        apply_computed_config
-      end
-
       def run
         Chef::Log.warn("knife config get-profiles has been deprecated in favor of knife config use. This will be removed in the major release version!")
-
-        ui.msg(self.class.config_loader.credentials_profile(config[:profile]))
+        super
       end
-
     end
   end
 end
