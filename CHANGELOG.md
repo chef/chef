@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.16 -->
-## [v16.5.16](https://github.com/chef/chef/tree/v16.5.16) (2020-08-26)
+<!-- latest_release 16.5.17 -->
+## [v16.5.17](https://github.com/chef/chef/tree/v16.5.17) (2020-08-26)
 
 #### Merged Pull Requests
-- Fix habitat test script [#10350](https://github.com/chef/chef/pull/10350) ([phiggins](https://github.com/phiggins))
+- Update Ohai to 16.4.13 [#10353](https://github.com/chef/chef/pull/10353) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.4.13 [#10353](https://github.com/chef/chef/pull/10353) ([tas50](https://github.com/tas50)) <!-- 16.5.17 -->
 - Fix habitat test script [#10350](https://github.com/chef/chef/pull/10350) ([phiggins](https://github.com/phiggins)) <!-- 16.5.16 -->
 - Add initial take at chef_client_launchd [#10348](https://github.com/chef/chef/pull/10348) ([tas50](https://github.com/tas50)) <!-- 16.5.15 -->
 - Bump deps and resolve new Chefstyle warnings [#10349](https://github.com/chef/chef/pull/10349) ([tas50](https://github.com/tas50)) <!-- 16.5.14 -->
