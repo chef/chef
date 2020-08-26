@@ -17,7 +17,7 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
-describe "knife config get", :workstation do
+describe "knife config show", :workstation do
   include IntegrationSupport
   include KnifeSupport
 
@@ -27,7 +27,7 @@ describe "knife config get", :workstation do
 
   when_the_repository("has a custom env") do
     subject do
-      cmd = knife("config", "get", *cmd_args, instance_filter: lambda { |instance|
+      cmd = knife("config", "show", *cmd_args, instance_filter: lambda { |instance|
         # Clear the stub set up in KnifeSupport.
         allow(File).to receive(:file?).and_call_original
         # Lies, damn lies, and config files. We need to allow normal config loading
@@ -47,7 +47,7 @@ describe "knife config get", :workstation do
       ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
       # Clear these out because they are cached permanently.
       ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
-      Chef::Knife::ConfigGet.reset_config_loader!
+      Chef::Knife::ConfigShow.reset_config_loader!
       begin
         ex.run
       ensure

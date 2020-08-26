@@ -40,7 +40,7 @@ describe "knife config list", :workstation do
       old_wd = Dir.pwd
       # Clear these out because they are cached permanently.
       ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
-      Chef::Knife::ConfigListProfiles.reset_config_loader!
+      Chef::Knife::ConfigList.reset_config_loader!
       begin
         ex.run
       ensure
@@ -84,7 +84,7 @@ describe "knife config list", :workstation do
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
          Profile  Client    Key                  Server                                    #
-        \e[32m--------------------------------------------------------------------------------\e[0m#
+        --------------------------------------------------------------------------------#
         *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
       EOH
     end
@@ -108,7 +108,7 @@ describe "knife config list", :workstation do
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
          Profile  Client    Key                  Server                                    #
-        \e[32m--------------------------------------------------------------------------------\e[0m#
+        --------------------------------------------------------------------------------#
         *default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
          prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
          qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
@@ -135,7 +135,7 @@ describe "knife config list", :workstation do
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
          Profile  Client    Key                  Server                                    #
-        \e[32m--------------------------------------------------------------------------------\e[0m#
+        --------------------------------------------------------------------------------#
          default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
         *prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
          qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
@@ -162,7 +162,7 @@ describe "knife config list", :workstation do
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
          Profile  Client    Key                  Server                                    #
-        \e[32m--------------------------------------------------------------------------------\e[0m#
+        --------------------------------------------------------------------------------#
          default  testuser  ~/.chef/testkey.pem  https://example.com/organizations/testorg #
          prod     testuser  ~/.chef/testkey.pem  https://example.com/organizations/prod    #
          qa       qauser    ~/src/qauser.pem     https://example.com/organizations/testorg #
@@ -185,7 +185,7 @@ describe "knife config list", :workstation do
       EOH
       it { is_expected.to eq <<~EOH.delete("#") }
          Profile  Client  Key  Server                                    #
-        \e[32m--------------------------------------------------------------\e[0m#
+        --------------------------------------------------------------#
         *default               https://example.com/organizations/testorg #
       EOH
     end

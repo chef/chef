@@ -45,7 +45,7 @@ describe "knife config use", :workstation do
       ChefConfig::PathHelper.per_tool_home_environment = "KNIFE_HOME"
       # Clear these out because they are cached permanently.
       ChefConfig::PathHelper.class_exec { remove_class_variable(:@@home_dir) }
-      Chef::Knife::ConfigUseProfile.reset_config_loader!
+      Chef::Knife::ConfigUse.reset_config_loader!
       begin
         ex.run
       ensure
@@ -65,6 +65,54 @@ describe "knife config use", :workstation do
       Dir.chdir(path_to("repo"))
       ENV[ChefUtils.windows? ? "CD" : "PWD"] = Dir.pwd
       ENV["HOME"] = path_to(".")
+    end
+
+    context "with no argument" do
+      context "with no configuration" do
+        it { is_expected.to eq "default\n" }
+      end
+
+      context "with --profile" do
+        let(:cmd_args) { %w{--profile production} }
+        it { is_expected.to eq "production\n" }
+      end
+
+      context "with an environment variable" do
+        around do |ex|
+          old_chef_profile = ENV["CHEF_PROFILE"]
+          begin
+            ENV["CHEF_PROFILE"] = "staging"
+            ex.run
+          ensure
+            ENV["CHEF_PROFILE"] = old_chef_profile
+          end
+        end
+
+        it { is_expected.to eq "staging\n" }
+      end
+
+      context "with a context file" do
+        before { file(".chef/context", "development\n") }
+        it { is_expected.to eq "development\n" }
+      end
+
+      context "with a context file under $CHEF_HOME" do
+        before do
+          file("chefhome/.chef/context", "other\n")
+          ENV["CHEF_HOME"] = path_to("chefhome")
+        end
+
+        it { is_expected.to eq "other\n" }
+      end
+
+      context "with a context file under $KNIFE_HOME" do
+        before do
+          file("knifehome/.chef/context", "other\n")
+          ENV["KNIFE_HOME"] = path_to("knifehome")
+        end
+
+        it { is_expected.to eq "other\n" }
+      end
     end
 
     context "with an argument" do

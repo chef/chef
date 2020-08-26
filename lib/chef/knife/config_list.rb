@@ -21,9 +21,8 @@ class Chef
   class Knife
     class ConfigList < Knife
       banner "knife config list (options)"
-      category "deprecated"
 
-      TABLE_HEADER = [" Profile", "Client", "Key", "Server"].freeze
+      TABLE_HEADER ||= [" Profile", "Client", "Key", "Server"].freeze
 
       deps do
         require_relative "../workstation_config_loader"
@@ -128,8 +127,7 @@ class Chef
         else
           table.render do |renderer|
             renderer.border do
-              mid   "-"
-              style :green
+              mid "-"
             end
             renderer.padding = [0, padding, 0, 0] # pad right with 2 characters
           end
