@@ -38,6 +38,19 @@ describe Chef::Resource::ChefClientCron do
     expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
+  it "raises an error if nice is less than -20" do
+    expect { resource.nice(-21) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "raises an error if nice is greater than 19" do
+    expect { resource.nice(20) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "coerces nice to an Integer" do
+    resource.nice "10"
+    expect(resource.nice).to eql(10)
+  end
+
   it "builds a default value for chef_binary_path dist values" do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
@@ -129,6 +142,14 @@ describe Chef::Resource::ChefClientCron do
       resource.accept_chef_license true
       expect(provider.cron_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} --chef-license accept -L /var/log/chef/client.log"
+      )
+    end
+
+    it "uses nice if set" do
+      allow(provider).to receive(:which).with("nice").and_return("/usr/bin/nice")
+      resource.nice(-15)
+      expect(provider.cron_command).to eql(
+        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c /etc/chef/client.rb -L /var/log/chef/client.log"
       )
     end
   end

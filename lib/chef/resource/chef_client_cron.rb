@@ -138,6 +138,12 @@ class Chef
         default: lazy { {} },
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
+      property :nice, [Integer, String],
+        description: "The process priority to run the #{Chef::Dist::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
+        introduced: "16.5",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
+
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless ::Dir.exist?(new_resource.log_directory)
@@ -190,6 +196,7 @@ class Chef
         def cron_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
+          cmd << "#{which("nice")} -n #{new_resource.nice} " if new_resource.nice
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
           cmd << "-c #{::File.join(new_resource.config_directory, "client.rb")} "
