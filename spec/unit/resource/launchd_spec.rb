@@ -37,4 +37,12 @@ describe Chef::Resource::Launchd do
     expect { resource.action :enable }.not_to raise_error
     expect { resource.action :restart }.not_to raise_error
   end
+
+  it "raises an error if nice is less than -20" do
+    expect { resource.nice(-21) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "raises an error if nice is greater than 19" do
+    expect { resource.nice(20) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
 end
