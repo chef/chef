@@ -149,7 +149,7 @@ describe Chef::Resource::ChefClientCron do
       allow(provider).to receive(:which).with("nice").and_return("/usr/bin/nice")
       resource.nice(-15)
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c /etc/chef/client.rb -L /var/log/chef/client.log"
+        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
       )
     end
   end
