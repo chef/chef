@@ -91,28 +91,28 @@ describe Chef::Resource::ChefClientLaunchd do
 
     it "creates a valid command if using all default properties" do
       expect(provider.client_command).to eql(
-        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/Library/Logs/Chef/client.log"]
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /Library/Logs/Chef/client.log"
       )
     end
 
     it "adds custom daemon options from daemon_options property" do
       resource.daemon_options %w{foo bar}
       expect(provider.client_command).to eql(
-        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "foo", "bar", "-c", root_path, "-L", "/Library/Logs/Chef/client.log"]
+        "/bin/sleep 123; /opt/chef/bin/chef-client foo bar -c #{root_path} -L /Library/Logs/Chef/client.log"
       )
     end
 
     it "adds license acceptance flags if the property is set" do
       resource.accept_chef_license true
       expect(provider.client_command).to eql(
-        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/Library/Logs/Chef/client.log", "--chef-license", "accept"]
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /Library/Logs/Chef/client.log --chef-license accept"
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
       expect(provider.client_command).to eql(
-        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", "/etc/some_other_dir/client.rb", "-L", "/Library/Logs/Chef/client.log"]
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /Library/Logs/Chef/client.log"
       )
     end
 
@@ -120,7 +120,7 @@ describe Chef::Resource::ChefClientLaunchd do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
       expect(provider.client_command).to eql(
-        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/var/log/my-chef/my-client.log"]
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/my-chef/my-client.log"
       )
     end
   end

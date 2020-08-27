@@ -114,7 +114,7 @@ class Chef
           username new_resource.user
           working_directory new_resource.working_directory
           start_interval new_resource.interval * 60
-          program_arguments client_command
+          program_arguments ["/bin/bash", "-c", client_command]
           environment_variables new_resource.environment unless new_resource.environment.empty?
           nice new_resource.nice
           low_priority_io true
@@ -146,19 +146,16 @@ class Chef
         #
         # random sleep time + chef-client + daemon option properties + license acceptance
         #
-        # @return [Array]
+        # @return [String]
         #
         def client_command
-          cmd = ["/bin/sleep",
-                 "#{splay_sleep_time(new_resource.splay)};",
-                 new_resource.chef_binary_path] +
-            new_resource.daemon_options +
-            ["-c",
-            ::File.join(new_resource.config_directory, "client.rb"),
-            "-L",
-            ::File.join(new_resource.log_directory, new_resource.log_file_name),
-            ]
-          cmd.append("--chef-license", "accept") if new_resource.accept_chef_license
+          cmd = ""
+          cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)};"
+          cmd << " #{new_resource.chef_binary_path}"
+          cmd << " #{new_resource.daemon_options.join(" ")}" unless new_resource.daemon_options.empty?
+          cmd << " -c #{::File.join(new_resource.config_directory, "client.rb")}"
+          cmd << " -L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          cmd << " --chef-license accept" if new_resource.accept_chef_license
           cmd
         end
       end
