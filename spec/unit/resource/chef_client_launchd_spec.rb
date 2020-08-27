@@ -29,13 +29,22 @@ describe Chef::Resource::ChefClientLaunchd do
     expect(resource.action).to eql([:enable])
   end
 
-  it "builds a default value for chef_binary_path dist values" do
-    expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
-  end
-
   it "supports :enable and :disable actions" do
     expect { resource.action :enable }.not_to raise_error
     expect { resource.action :disable }.not_to raise_error
+  end
+
+  it "coerces splay to an Integer" do
+    resource.splay "10"
+    expect(resource.splay).to eql(10)
+  end
+
+  it "raises an error if splay is not a positive number" do
+    expect { resource.splay("-10") }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "builds a default value for chef_binary_path dist values" do
+    expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
 
   it "raises an error if interval is not a positive number" do
@@ -60,39 +69,58 @@ describe Chef::Resource::ChefClientLaunchd do
     expect(resource.nice).to eql(10)
   end
 
-  describe "#all_daemon_options" do
-    it "returns log and config flags if by default" do
-      expect(provider.all_daemon_options).to eql(
-        ["-L", "/Library/Logs/Chef/client.log", "-c", "/etc/chef/client.rb"]
+  describe "#splay_sleep_time" do
+    it "uses shard_seed attribute if present" do
+      node.automatic_attrs[:shard_seed] = "73399073"
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+    end
+
+    it "uses a hex conversion of a md5 hash of the splay if present" do
+      node.automatic_attrs[:shard_seed] = nil
+      allow(node).to receive(:name).and_return("test_node")
+      expect(provider.splay_sleep_time(300)).to satisfy { |v| v >= 0 && v <= 300 }
+    end
+  end
+
+  describe "#client_command" do
+    before do
+      allow(provider).to receive(:splay_sleep_time).and_return("123")
+    end
+
+    let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
+
+    it "creates a valid command if using all default properties" do
+      expect(provider.client_command).to eql(
+        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/Library/Logs/Chef/client.log"]
       )
     end
 
-    it "appends to any passed daemon options" do
+    it "adds custom daemon options from daemon_options property" do
       resource.daemon_options %w{foo bar}
-      expect(provider.all_daemon_options).to eql(
-        ["foo", "bar", "-L", "/Library/Logs/Chef/client.log", "-c", "/etc/chef/client.rb"]
+      expect(provider.client_command).to eql(
+        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "foo", "bar", "-c", root_path, "-L", "/Library/Logs/Chef/client.log"]
       )
     end
 
     it "adds license acceptance flags if the property is set" do
       resource.accept_chef_license true
-      expect(provider.all_daemon_options).to eql(
-        ["-L", "/Library/Logs/Chef/client.log", "-c", "/etc/chef/client.rb", "--chef-license", "accept"]
+      expect(provider.client_command).to eql(
+        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/Library/Logs/Chef/client.log", "--chef-license", "accept"]
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
-      expect(provider.all_daemon_options).to eql(
-        ["-L", "/Library/Logs/Chef/client.log", "-c", "/etc/some_other_dir/client.rb"]
+      expect(provider.client_command).to eql(
+        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", "/etc/some_other_dir/client.rb", "-L", "/Library/Logs/Chef/client.log"]
       )
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
-      expect(provider.all_daemon_options).to eql(
-        ["-L", "/var/log/my-chef/my-client.log", "-c", "/etc/chef/client.rb"]
+      expect(provider.client_command).to eql(
+        ["/bin/sleep", "123;", "/opt/chef/bin/chef-client", "-c", root_path, "-L", "/var/log/my-chef/my-client.log"]
       )
     end
   end
