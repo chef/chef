@@ -70,8 +70,9 @@ class Chef
         description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
         default: "System", sensitive: true
 
-      property :password, String, sensitive: true,
-        description: "The password for the user that #{Chef::Dist::PRODUCT} runs as."
+      property :password, String,
+        description: "The password for the user that #{Chef::Dist::PRODUCT} runs as.",
+        sensitive: true
 
       property :frequency, String,
         description: "Frequency with which to run the task.",
@@ -175,9 +176,11 @@ class Chef
           "#{cmd_path} /c \"#{client_cmd}\""
         end
 
+        #
         # Build command line to pass to cmd.exe
         #
         # @return [String]
+        #
         def client_cmd
           cmd = new_resource.chef_binary_path.dup
           cmd << " -L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
