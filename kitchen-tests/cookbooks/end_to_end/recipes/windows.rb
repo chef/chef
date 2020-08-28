@@ -79,8 +79,11 @@ users_manage "create sysadmin" do
   action [:create]
 end
 
-include_recipe "chef-client::delete_validation"
-include_recipe "chef-client::config"
+chef_client_config "Create chef-client's client.rb" do
+  chef_server_url "https://localhost"
+  chef_license "accept"
+end
+
 include_recipe "::_chef_client_trusted_certificate"
 
 include_recipe "git"

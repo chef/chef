@@ -39,9 +39,12 @@ end
 
 ssh_known_hosts_entry "github.com"
 
-include_recipe "chef-client::delete_validation"
-include_recipe "chef-client::config"
 include_recipe "::_chef_client_trusted_certificate"
+
+chef_client_config "Create chef-client's client.rb" do
+  chef_server_url "https://localhost"
+  chef_license "accept"
+end
 
 chef_client_launchd "Every 30 mins Infra Client run" do
   interval 30
