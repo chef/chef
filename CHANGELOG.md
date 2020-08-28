@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.24 -->
-## [v16.5.24](https://github.com/chef/chef/tree/v16.5.24) (2020-08-28)
+<!-- latest_release 16.5.25 -->
+## [v16.5.25](https://github.com/chef/chef/tree/v16.5.25) (2020-08-28)
 
 #### Merged Pull Requests
--  Fixed mount Resource for bind mounts is not idempotent. [#10171](https://github.com/chef/chef/pull/10171) ([antima-gupta](https://github.com/antima-gupta))
+- More updates to the chef_client_* resources [#10362](https://github.com/chef/chef/pull/10362) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More updates to the chef_client_* resources [#10362](https://github.com/chef/chef/pull/10362) ([tas50](https://github.com/tas50)) <!-- 16.5.25 -->
 -  Fixed mount Resource for bind mounts is not idempotent. [#10171](https://github.com/chef/chef/pull/10171) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.5.24 -->
 - Update InSpec to 4.22.22 [#10363](https://github.com/chef/chef/pull/10363) ([tas50](https://github.com/tas50)) <!-- 16.5.23 -->
 - chef_client_launchd: reorder properties and fix log permissions [#10361](https://github.com/chef/chef/pull/10361) ([tas50](https://github.com/tas50)) <!-- 16.5.22 -->
