@@ -164,7 +164,7 @@ class Chef
           mailto      new_resource.mailto if new_resource.mailto
           user        new_resource.user
           comment     new_resource.comment if new_resource.comment
-          command     cron_command
+          command     client_command
         end
       end
 
@@ -193,7 +193,7 @@ class Chef
         #
         # @return [String]
         #
-        def cron_command
+        def client_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
           cmd << "#{which("nice")} -n #{new_resource.nice} " if new_resource.nice
