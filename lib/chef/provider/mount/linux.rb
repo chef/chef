@@ -41,12 +41,15 @@ class Chef
 
           shell_out!("findmnt -rn").stdout.each_line do |line|
             case line
+            # Permalink for device already mounted to mount point for : https://rubular.com/r/L0RNnD4gf2DJGl
             when /\A#{Regexp.escape(real_mount_point)}\s+#{device_mount_regex}\s/
               mounted = true
               logger.trace("Special device #{device_logstring} mounted as #{real_mount_point}")
+            # Permalink for multiple devices mounted to the same mount point(i.e. '/proc') https://rubular.com/r/a356yzspU7N9TY
             when %r{\A#{Regexp.escape(real_mount_point)}\s+([/\w])+\s}
               mounted = false
               logger.trace("Special device #{$~[1]} mounted as #{real_mount_point}")
+            # Permalink for bind device mounted to an existing mount point: https://rubular.com/r/QAE0ilL3sm3Ldz
             when %r{\A#{Regexp.escape(real_mount_point)}\s+([/\w])+\[#{device_mount_regex}\]\s}
               mounted = true
               logger.trace("Bind device #{device_logstring} mounted as #{real_mount_point}")

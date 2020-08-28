@@ -1,5 +1,4 @@
 require "spec_helper"
-require "ostruct"
 
 describe Chef::Provider::Mount::Linux do
 
