@@ -119,6 +119,7 @@ require_relative "provider/mount/mount"
 require_relative "provider/mount/aix"
 require_relative "provider/mount/solaris"
 require_relative "provider/mount/windows"
+require_relative "provider/mount/linux"
 
 require_relative "provider/remote_file/ftp"
 require_relative "provider/remote_file/sftp"
