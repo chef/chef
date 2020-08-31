@@ -27,7 +27,7 @@ require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "tmpdir" unless defined?(Dir.mktmpdir)
 require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
-require "chef-utils"
+require "chef-utils" unless defined?(ChefUtils)
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
 end

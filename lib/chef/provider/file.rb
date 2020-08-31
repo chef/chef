@@ -31,7 +31,7 @@ require_relative "../util/backup"
 require_relative "../util/diff"
 require_relative "../util/selinux"
 require_relative "../file_content_management/deploy"
-require "chef-utils"
+require "chef-utils" unless defined?(ChefUtils)
 
 # The Tao of File Providers:
 #  - the content provider must always return a tempfile that we can delete/mv
