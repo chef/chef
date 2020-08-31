@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef-utils"
+require "chef-utils" unless defined?(ChefUtils)
 require_relative "config"
 require_relative "monkey_patches/webrick-utils" if ChefUtils.windows?
 
