@@ -21,6 +21,7 @@ require "forwardable" unless defined?(Forwardable)
 require_relative "version"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "workstation_config_loader"
 require_relative "mixin/convert_to_class_name"
 require_relative "mixin/default_paths"
@@ -32,7 +33,6 @@ require_relative "http/authenticator"
 require_relative "http/http_request"
 require_relative "http"
 require "pp" unless defined?(PP)
-require "chef-utils"
 
 class Chef
   class Knife

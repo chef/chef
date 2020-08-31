@@ -20,7 +20,7 @@ require_relative "../log"
 require_relative "../config"
 require_relative "../mixin/shell_out"
 require_relative "../config_fetcher"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"

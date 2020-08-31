@@ -24,7 +24,7 @@ require_relative "../run_context"
 require_relative "../config"
 require_relative "../node"
 require_relative "../server_api"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module PolicyBuilder

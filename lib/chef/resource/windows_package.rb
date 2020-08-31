@@ -20,7 +20,7 @@ require_relative "../mixin/uris"
 require_relative "package"
 require_relative "../provider/package/windows"
 require_relative "../win32/error" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

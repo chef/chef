@@ -17,7 +17,7 @@
 #
 
 require_relative "../../http/authenticator"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "timeout" unless defined?(Timeout)
 
 class Chef

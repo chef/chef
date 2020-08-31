@@ -18,7 +18,7 @@
 # limitations under the License.
 
 require "chef-config/exceptions"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "constants"
 
 class Chef

@@ -25,7 +25,7 @@ require_relative "mixin/params_validate"
 require_relative "mixin/from_file"
 require_relative "version_constraint"
 require_relative "server_api"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Environment

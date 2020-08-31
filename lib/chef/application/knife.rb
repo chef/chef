@@ -22,7 +22,7 @@ require "ohai/config"
 module Net
   autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
 end
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef::Application::Knife < Chef::Application
 

@@ -21,7 +21,7 @@
 $:.unshift(File.join(__dir__, "..", "lib"))
 require "chef"
 require "chef/application/windows_service_manager"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 if Chef::Platform.windows?
   chef_client_service = {

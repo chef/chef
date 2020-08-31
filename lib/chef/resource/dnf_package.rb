@@ -18,7 +18,7 @@
 require_relative "package"
 require_relative "../mixin/which"
 require_relative "../mixin/shell_out"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
