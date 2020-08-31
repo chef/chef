@@ -36,7 +36,7 @@ autoload :URI, "uri"
 autoload :Addressable, "addressable/uri"
 autoload :OpenSSL, "openssl"
 autoload :YAML, "yaml"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 module ChefConfig
 
