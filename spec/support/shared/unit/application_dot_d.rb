@@ -38,7 +38,7 @@ shared_examples_for "an application that loads a dot d" do
     end
 
     it "loads the configuration in order" do
-      etc_chef_client_rb = Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/client.rb")
+      etc_chef_client_rb = Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/client.rb")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("foo 0")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("bar 0")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/02-strings.rb").cleanpath.to_s).and_return("strings 0")
