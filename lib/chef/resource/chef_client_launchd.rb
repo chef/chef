@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class ChefClientLaunchd < Chef::Resource
@@ -23,37 +23,37 @@ class Chef
 
       provides :chef_client_launchd
 
-      description "Use the **chef_client_launchd** resource to configure the #{Chef::Dist::PRODUCT} to run on a schedule."
+      description "Use the **chef_client_launchd** resource to configure the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule."
       introduced "16.5"
       examples <<~DOC
-        **Set the #{Chef::Dist::PRODUCT} to run on a schedule**:
+        **Set the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule**:
 
         ```ruby
-        chef_client_launchd 'Setup the #{Chef::Dist::PRODUCT} to run every 30 minutes' do
+        chef_client_launchd 'Setup the #{ChefUtils::Dist::Infra::PRODUCT} to run every 30 minutes' do
           interval 30
           action :enable
         end
         ```
 
-        **Disable the #{Chef::Dist::PRODUCT} running on a schedule**:
+        **Disable the #{ChefUtils::Dist::Infra::PRODUCT} running on a schedule**:
 
         ```ruby
-        chef_client_launchd 'Prevent the #{Chef::Dist::PRODUCT} from running on a schedule' do
+        chef_client_launchd 'Prevent the #{ChefUtils::Dist::Infra::PRODUCT} from running on a schedule' do
           action :disable
         end
         ```
       DOC
 
       property :user, String,
-        description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
+        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         default: "root"
 
       property :working_directory, String,
-        description: "The working directory to run the #{Chef::Dist::PRODUCT} from.",
+        description: "The working directory to run the #{ChefUtils::Dist::Infra::PRODUCT} from.",
         default: "/var/root"
 
       property :interval, [Integer, String],
-        description: "Time in minutes between #{Chef::Dist::PRODUCT} executions.",
+        description: "Time in minutes between #{ChefUtils::Dist::Infra::PRODUCT} executions.",
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
         default: 30
@@ -62,7 +62,7 @@ class Chef
         default: 300,
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
-        description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
+        description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time."
 
       property :accept_chef_license, [true, false],
         description: "Accept the Chef Online Master License and Services Agreement. See <https://www.chef.io/online-master-agreement/>",
@@ -70,7 +70,7 @@ class Chef
 
       property :config_directory, String,
         description: "The path of the config directory.",
-        default: Chef::Dist::CONF_DIR
+        default: ChefConfig::Config.etc_chef_dir
 
       property :log_directory, String,
         description: "The path of the directory to create the log file in.",
@@ -81,11 +81,11 @@ class Chef
         default: "client.log"
 
       property :chef_binary_path, String,
-        description: "The path to the #{Chef::Dist::CLIENT} binary.",
-        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}"
+        description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
+        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
 
       property :daemon_options, Array,
-        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
+        description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
         default: lazy { [] }
 
       property :environment, Hash,
@@ -93,12 +93,12 @@ class Chef
         default: lazy { {} }
 
       property :nice, [Integer, String],
-        description: "The process priority to run the #{Chef::Dist::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
+        description: "The process priority to run the #{ChefUtils::Dist::Infra::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
 
       property :low_priority_io, [true, false],
-        description: "Run the #{Chef::Dist::CLIENT} process with low priority disk IO",
+        description: "Run the #{ChefUtils::Dist::Infra::CLIENT} process with low priority disk IO",
         default: true
 
       action :enable do
