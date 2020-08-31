@@ -17,7 +17,7 @@ require_relative "../client"
 require_relative "../util/threaded_job_queue"
 require_relative "../server_api"
 require "singleton" unless defined?(Singleton)
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
 

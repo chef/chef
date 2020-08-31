@@ -17,7 +17,7 @@
 #
 
 require_relative "../resource"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "iniparse"
 
 class Chef

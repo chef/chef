@@ -21,7 +21,7 @@
 require_relative "file"
 require_relative "../provider/cookbook_file"
 require_relative "../mixin/securable"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

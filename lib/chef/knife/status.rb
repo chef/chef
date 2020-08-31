@@ -19,7 +19,7 @@
 require_relative "../knife"
 require_relative "core/status_presenter"
 require_relative "core/node_presenter"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife

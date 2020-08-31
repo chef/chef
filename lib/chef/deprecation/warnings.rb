@@ -21,7 +21,7 @@ class Chef
     module Warnings
 
       require_relative "../version"
-      require "chef-utils/dist"
+      require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
       def add_deprecation_warnings_for(method_names)
         method_names.each do |name|

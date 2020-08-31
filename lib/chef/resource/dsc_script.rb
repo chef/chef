@@ -19,7 +19,7 @@
 require_relative "../resource"
 require_relative "../exceptions"
 require_relative "../dsl/powershell"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

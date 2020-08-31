@@ -28,7 +28,7 @@ module Mixlib
     autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
   end
 end
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader

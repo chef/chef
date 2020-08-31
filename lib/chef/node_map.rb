@@ -36,7 +36,7 @@
 # XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
 #
 
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class NodeMap

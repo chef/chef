@@ -21,7 +21,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 end
 require_relative "../config"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Application

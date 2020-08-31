@@ -25,7 +25,7 @@ autoload :CGI, "cgi"
 module Net
   autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
 end
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined

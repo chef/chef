@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require_relative "data_bag_secret_options"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"

@@ -17,7 +17,7 @@
 
 require "chef-config/mixin/credentials"
 autoload :Train, "train"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class TrainTransport

@@ -18,7 +18,7 @@
 # limitations under the License.
 
 require_relative "../resource"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

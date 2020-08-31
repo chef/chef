@@ -20,7 +20,7 @@
 require "chef-utils/dsl/service" unless defined?(ChefUtils::DSL::Service)
 require_relative "../resource"
 require "shellwords" unless defined?(Shellwords)
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

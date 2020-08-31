@@ -23,7 +23,7 @@ module Win32
   autoload :Certstore, "win32-certstore" if Chef::Platform.windows?
 end
 autoload :OpenSSL, "openssl"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource

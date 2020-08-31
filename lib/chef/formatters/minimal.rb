@@ -1,5 +1,5 @@
 require_relative "base"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
 

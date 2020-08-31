@@ -17,7 +17,7 @@
 
 autoload :Tomlrb, "tomlrb"
 require_relative "../path_helper"
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 module ChefConfig
   module Mixin

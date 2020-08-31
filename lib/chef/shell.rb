@@ -24,7 +24,7 @@ require "singleton" unless defined?(Singleton)
 require "pp" unless defined?(PP)
 require "etc" unless defined?(Etc)
 require "mixlib/cli" unless defined?(Mixlib::CLI)
-require "chef-utils/dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 require_relative "../chef"
 require_relative "version"
