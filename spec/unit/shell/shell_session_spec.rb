@@ -18,32 +18,10 @@
 require "spec_helper"
 require "ostruct"
 
-class TestableShellSession < Shell::ShellSession
-
-  def rebuild_node
-    nil
-  end
-
-  def rebuild_collection
-    nil
-  end
-
-  def loading
-    nil
-  end
-
-  def loading_complete
-    nil
-  end
-
-end
-
 describe Shell::ShellSession do
-
   it "is a singleton object" do
     expect(Shell::ShellSession).to include(Singleton)
   end
-
 end
 
 describe Shell::ClientSession do

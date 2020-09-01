@@ -19,14 +19,57 @@
 require "spec_helper"
 
 describe Shell::Extensions do
+  let(:test_shell_session) do
+    Class.new(Shell::ShellSession) do
+      def rebuild_node
+        nil
+      end
+
+      def rebuild_collection
+        nil
+      end
+
+      def loading
+        nil
+      end
+
+      def loading_complete
+        nil
+      end
+    end
+  end
+
+  let(:test_job_manager) do
+    Class.new do
+      attr_accessor :jobs
+    end
+  end
+
+  let(:object_test_harness) do
+    Proc.new do
+      extend Shell::Extensions::ObjectCoreExtensions
+
+      def conf=(new_conf)
+        @conf = new_conf
+      end
+
+      def conf
+        @conf
+      end
+
+      desc "rspecin'"
+      def rspec_method; end
+    end
+  end
+
   describe "extending object for top level methods" do
 
     before do
-      @shell_client = TestableShellSession.instance
+      @shell_client = test_shell_session.instance
       allow(Shell).to receive(:session).and_return(@shell_client)
-      @job_manager = TestJobManager.new
+      @job_manager = test_job_manager.new
       @root_context = Object.new
-      @root_context.instance_eval(&ObjectTestHarness)
+      @root_context.instance_eval(&object_test_harness)
       Shell::Extensions.extend_context_object(@root_context)
       @root_context.conf = double("irbconf")
     end
