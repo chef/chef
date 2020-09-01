@@ -161,7 +161,7 @@ describe Shell::SoloLegacySession do
 
   before do
     Chef::Config[:shell_config] = { override_runlist: [Chef::RunList::RunListItem.new("shell::override")] }
-    Chef::Config[:shell_solo] = nil
+    Chef::Config[:solo_legacy_shell] = true
     session.node = node
     session.json_configuration = json_attribs
     session.run_context = run_context
