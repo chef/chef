@@ -30,9 +30,6 @@ require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider
-    require_relative "mixin/why_run"
-    require_relative "mixin/provides"
-
     attr_accessor :new_resource
     attr_accessor :current_resource
     attr_accessor :after_resource
@@ -455,6 +452,5 @@ end
 
 # Requiring things at the bottom breaks cycles
 require_relative "chef_class"
-require_relative "mixin/why_run"
 require_relative "resource_collection"
 require_relative "runner"
