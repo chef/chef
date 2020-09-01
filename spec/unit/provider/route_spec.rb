@@ -230,8 +230,6 @@ describe Chef::Provider::Route do
         @provider.generate_config
       end
 
-    end
-    %w{ rhel fedora amazon }.each do |platform_family|
       it "should write a default route file on #{platform_family} platform family" do
         @node.automatic_attrs[:platform_family] = platform_family
 
