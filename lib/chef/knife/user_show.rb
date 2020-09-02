@@ -30,14 +30,6 @@ class Chef
         long: "--with-orgs",
         short: "-l"
 
-      deps do
-        require_relative "../user_v1"
-      end
-
-      def user
-        @user_field ||= Chef::UserV1.new
-      end
-
       def run
         @user_name = @name_args[0]
 
@@ -47,9 +39,9 @@ class Chef
           exit 1
         end
 
-        results = user.chef_root_rest_v0.get("users/#{@user_name}")
+        results = root_rest.get("users/#{@user_name}")
         if config[:with_orgs]
-          orgs = user.chef_root_rest_v0.get("users/#{@user_name}/organizations")
+          orgs = root_rest.get("users/#{@user_name}/organizations")
           results["organizations"] = orgs.map { |o| o["organization"]["name"] }
         end
         output(format_for_display(results))

@@ -26,14 +26,6 @@ class Chef
         short: "-e",
         description: "Enable external authentication for this user (such as LDAP)"
 
-      deps do
-        require_relative "../user_v1"
-      end
-
-      def user
-        @user_field ||= Chef::UserV1.new
-      end
-
       def run
         # check that correct number of args was passed, should be either
         # USERNAME PASSWORD or USERNAME --enable-external-auth
@@ -55,7 +47,7 @@ class Chef
         # true or false, there is no way of knowing if the user is using ldap or not,
         # so we will update the user every time, instead of checking if we are actually
         # changing anything before we PUT.
-        result = user.chef_root_rest_v0.get("users/#{user_name}")
+        result = root_rest.get("users/#{user_name}")
 
         result["password"] = password unless password.nil?
 
@@ -66,7 +58,7 @@ class Chef
         result["recovery_authentication_enabled"] = !config[:enable_external_auth]
 
         begin
-          user.chef_root_rest_v0.put("users/#{user_name}", result)
+          root_rest.put("users/#{user_name}", result)
         rescue => e
           raise e
         end

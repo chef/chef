@@ -32,13 +32,8 @@ class Chef
         short: "-a",
         description: "Show auto-generated hidden orgs in output"
 
-      deps do
-        require_relative "../org"
-      end
-
       def run
-        org = Chef::Org.from_hash({})
-        results = org.chef_rest.get("organizations")
+        results = root_rest.get("organizations")
         unless config[:all_orgs]
           results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
         end
