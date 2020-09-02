@@ -54,6 +54,10 @@ class Chef
     #
     attr_reader :run_context
 
+
+
+    attr_reader :bootstrap_context
+
     # Register an event handler with user specified block
     #
     # @return[Chef::EventDispatch::Base] handler object
@@ -162,6 +166,17 @@ class Chef
       @run_context = run_context
     end
 
+
+    #
+    # Sets the bootstrap_context object
+    #
+    # @param bootstrap_context [Chef::BootstrapContext]
+    #
+    # @api private
+    def set_bootstrap_context(bootstrap_context)
+      @bootstrap_context = bootstrap_context
+    end
+
     #
     # Resets the internal state
     #
@@ -173,6 +188,7 @@ class Chef
       @resource_priority_map = nil
       @provider_handler_map = nil
       @resource_handler_map = nil
+      @bootstrap_context = nil
     end
 
     # @api private

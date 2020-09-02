@@ -522,7 +522,7 @@ class Chef
             Knife::Core::WindowsBootstrapContext.new(config, config[:run_list], Chef::Config, secret)
           else
             require_relative "core/bootstrap_context"
-            Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret)
+            Knife::Core::BootstrapContext.new(config, config[:run_list], Chef::Config, secret, connection.connection)
           end
       end
 
@@ -554,6 +554,7 @@ class Chef
         plugin_create_instance!
         $stdout.sync = true
         connect!
+        set_bootstrap_context
         register_client
 
         content = render_template
@@ -562,6 +563,10 @@ class Chef
         plugin_finalize
       ensure
         connection.del_file!(bootstrap_path) if connection && bootstrap_path
+      end
+
+      def set_bootstrap_context
+        Chef.set_bootstrap_context(bootstrap_context)
       end
 
       def register_client

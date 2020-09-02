@@ -35,12 +35,14 @@ class Chef
         attr_accessor :client_pem
         attr_accessor :config
         attr_accessor :chef_config
+        attr_accessor :transport_connection
 
-        def initialize(config, run_list, chef_config, secret = nil)
-          @config       = config
-          @run_list     = run_list
-          @chef_config  = chef_config
-          @secret       = secret
+        def initialize(config, run_list, chef_config, secret = nil, transport_connection = nil)
+          @config               = config
+          @run_list             = run_list
+          @chef_config          = chef_config
+          @secret               = secret
+          @transport_connection = transport_connection
         end
 
         def bootstrap_environment

@@ -57,6 +57,14 @@ module ChefUtils
         end
       end
 
+      def home
+        if __transport_connection
+          __transport_connection.run_command("echo $HOME").stdout&.strip
+        else
+          ENV["$HOME"]
+        end
+      end
+
       extend self
     end
   end

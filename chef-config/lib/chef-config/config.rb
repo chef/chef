@@ -379,7 +379,7 @@ module ChefConfig
     #
     # @param path [String]
     def self.path_accessible?(path)
-      File.exist?(path) && File.readable?(path) && File.writable?(path)
+      ChefUtils.file_exist?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)
@@ -920,7 +920,7 @@ module ChefConfig
     end
 
     # returns a platform specific path to the user home dir if set, otherwise default to current directory.
-    default( :user_home ) { PathHelper.home || Dir.pwd }
+    default( :user_home ) { ChefUtils.home || PathHelper.home || Dir.pwd }
 
     # Enable file permission fixup for selinux. Fixup will be done
     # only if selinux is enabled in the system.

@@ -85,6 +85,8 @@ module ChefUtils
       # Software consumers MUST override this method with their own implementation.  The default behavior here is subject to change.
       return Chef.run_context.transport_connection if defined?(Chef) && Chef.respond_to?(:run_context) && Chef&.run_context&.transport_connection
 
+      return Chef.bootstrap_context.transport_connection if defined?(Chef) && Chef.respond_to?(:bootstrap_context) && Chef&.bootstrap_context&.transport_connection
+
       nil
     end
 
