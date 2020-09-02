@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.16 -->
-## [v15.13.16](https://github.com/chef/chef/tree/v15.13.16) (2020-08-18)
+<!-- latest_release 15.13.17 -->
+## [v15.13.17](https://github.com/chef/chef/tree/v15.13.17) (2020-09-02)
 
 #### Merged Pull Requests
-- Use powershell_out vs. powershell_script in hostname [#10317](https://github.com/chef/chef/pull/10317) ([tas50](https://github.com/tas50))
+- Pin Chefstyle + bump all other deps [#10375](https://github.com/chef/chef/pull/10375) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.13.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin Chefstyle + bump all other deps [#10375](https://github.com/chef/chef/pull/10375) ([tas50](https://github.com/tas50)) <!-- 15.13.17 -->
 - Use powershell_out vs. powershell_script in hostname [#10317](https://github.com/chef/chef/pull/10317) ([tas50](https://github.com/tas50)) <!-- 15.13.16 -->
 - Fix second chef run hang for windows_font resource [#10316](https://github.com/chef/chef/pull/10316) ([tas50](https://github.com/tas50)) <!-- 15.13.15 -->
 - Fix install windows features when install state is removed  [#10315](https://github.com/chef/chef/pull/10315) ([tas50](https://github.com/tas50)) <!-- 15.13.14 -->
