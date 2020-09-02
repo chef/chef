@@ -279,10 +279,10 @@ describe Chef::Knife::Ssh do
   end
 
   describe "#ssh_command" do
-    let(:execution_channel) { double(:execution_channel, on_data: nil) }
+    let(:execution_channel) { double(:execution_channel, on_data: nil, on_extended_data: nil) }
     let(:session_channel) { double(:session_channel, request_pty: nil) }
 
-    let(:execution_channel2) { double(:execution_channel, on_data: nil) }
+    let(:execution_channel2) { double(:execution_channel, on_data: nil, on_extended_data: nil) }
     let(:session_channel2) { double(:session_channel, request_pty: nil) }
 
     let(:session) { double(:session, loop: nil) }

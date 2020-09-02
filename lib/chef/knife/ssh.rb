@@ -362,11 +362,21 @@ class Chef
         subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
+        begin
+          open_session(subsession, command)
+        rescue => e
+          open_session(subsession, command, true)
+        end
+      end
+
+      def open_session(subsession, command, pty = false)
+        stderr = ""
+        exit_status = 0
         subsession.open_channel do |chan|
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            chan.request_pty
+            chan.request_pty if pty
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
 
@@ -377,6 +387,11 @@ class Chef
                   ichannel.send_data("#{get_password}\n")
                 end
               end
+
+              ch.on_extended_data do |_, _type, data|
+                stderr += data
+              end
+
               ch.on_request "exit-status" do |ichannel, data|
                 exit_status = [exit_status, data.read_long].max
               end
