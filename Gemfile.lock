@@ -1,12 +1,4 @@
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 560b01fae7fea3e5ffc98deef9488838ea3780e2
-  branch: master
-  specs:
-    chefstyle (1.2.1)
-      rubocop (= 0.89.1)
-
-GIT
   remote: https://github.com/chef/ohai.git
   revision: 0b01c1b4cb15e9b60337e5a29e93af1ad502027b
   branch: 15-stable
@@ -146,7 +138,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.6)
+    chef-vault (4.0.11)
     chef-zero (14.0.17)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 4.0)
@@ -156,6 +148,8 @@ GEM
     cheffish (14.0.13)
       chef-zero (~> 14.0)
       net-ssh
+    chefstyle (1.2.1)
+      rubocop (= 0.89.1)
     coderay (1.1.3)
     concurrent-ruby (1.1.7)
     crack (0.4.3)
@@ -190,15 +184,13 @@ GEM
     hashdiff (1.0.1)
     hashie (3.6.0)
     highline (1.7.10)
-    htmlentities (4.3.4)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.22.8)
+    inspec-core (4.22.22)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0)
       hashie (~> 3.4)
-      htmlentities (~> 4.3)
       json_schemer (>= 0.2.1, < 0.2.12)
       license-acceptance (>= 0.2.13, < 2.0)
       method_source (>= 0.8, < 2.0)
@@ -212,14 +204,13 @@ GEM
       rubyzip (~> 1.2, >= 1.2.2)
       semverse (~> 3.0)
       sslshake (~> 1.2)
-      term-ansicolor (~> 1.7)
       thor (>= 0.20, < 2.0)
       tomlrb (~> 1.2.0)
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.22.8)
-      inspec-core (= 4.22.8)
+    inspec-core-bin (4.22.22)
+      inspec-core (= 4.22.22)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.3.1)
@@ -239,15 +230,15 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.0.6)
+    mixlib-archive (1.0.7)
       mixlib-log
-    mixlib-archive (1.0.6-universal-mingw32)
+    mixlib-archive (1.0.7-universal-mingw32)
       mixlib-log
-    mixlib-authentication (3.0.6)
-    mixlib-cli (2.1.6)
+    mixlib-authentication (3.0.7)
+    mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-log (3.0.8)
+    mixlib-log (3.0.9)
     mixlib-shellout (3.1.4)
       chef-utils
     mixlib-shellout (3.1.4-universal-mingw32)
@@ -289,7 +280,7 @@ GEM
     pry-stack_explorer (0.4.12)
       binding_of_caller (~> 0.7)
       pry (~> 0.13)
-    public_suffix (4.0.5)
+    public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
     rake (12.3.3)
@@ -341,14 +332,9 @@ GEM
       unicode_utils (~> 1.4)
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
-    sync (0.5.0)
     syslog-logger (1.6.8)
     systemu (2.6.5)
-    term-ansicolor (1.7.1)
-      tins (~> 1.0)
     thor (1.0.1)
-    tins (1.25.0)
-      sync
     tomlrb (1.2.9)
     train-core (3.3.16)
       addressable (~> 2.5)
@@ -390,7 +376,7 @@ GEM
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.4.0)
+    win32-certstore (0.4.1)
       ffi
       mixlib-shellout
     win32-dir (0.5.1)
@@ -446,7 +432,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (~> 14)
-  chefstyle!
+  chefstyle (= 1.2.1)
   ed25519
   fauxhai-ng
   inspec-core (~> 4.18)
