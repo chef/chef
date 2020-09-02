@@ -24,7 +24,6 @@ class Chef
 
       deps do
         require_relative "../org"
-        require_relative "../user_v1"
       end
 
       banner "knife user delete USER (options)"
@@ -40,10 +39,6 @@ class Chef
         description: "If the user is a member of any org admin groups, attempt to remove from those groups. Ignored if --no-disassociate-user is set."
 
       attr_reader :username
-
-      def user
-        @user_field ||= Chef::UserV1.new
-      end
 
       def run
         @username = @name_args[0]
@@ -87,7 +82,7 @@ class Chef
       end
 
       def org_memberships(username)
-        org_data = user.chef_root_rest_v0.get("users/#{username}/organizations")
+        org_data = root_rest.get("users/#{username}/organizations")
         org_data.map { |org| Chef::Org.new(org["organization"]["name"]) }
       end
 
@@ -114,7 +109,7 @@ class Chef
 
       def delete_user(username)
         ui.stderr.puts "Deleting user #{username}."
-        user.chef_root_rest_v0.delete("users/#{username}")
+        root_rest.delete("users/#{username}")
       end
 
       # Error message that says how to removed from org

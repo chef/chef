@@ -21,7 +21,7 @@ require "chef/org"
 
 describe Chef::Knife::OrgDelete do
 
-  let(:chef_rest) { double("Chef::ServerAPI") }
+  let(:root_rest) { double("Chef::ServerAPI") }
 
   before :each do
     @knife = Chef::Knife::OrgDelete.new
@@ -32,10 +32,9 @@ describe Chef::Knife::OrgDelete do
   end
 
   it "should confirm that you want to delete and then delete organizations" do
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(chef_rest)
-    allow(@org).to receive(:chef_rest).and_return(chef_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "2" }).and_return(root_rest)
     expect(@knife.ui).to receive(:confirm).with("Do you want to delete the organization #{@org_name}")
-    expect(@org.chef_rest).to receive(:delete).with("organizations/#{@org_name}")
+    expect(root_rest).to receive(:delete).with("organizations/#{@org_name}")
     expect(@knife.ui).to receive(:output)
     @knife.run
   end

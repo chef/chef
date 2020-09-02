@@ -22,10 +22,6 @@ class Chef
       category "CHEF ORGANIZATION MANAGEMENT"
       banner "knife org edit ORG"
 
-      deps do
-        require_relative "../org"
-      end
-
       def run
         org_name = @name_args[0]
 
@@ -35,8 +31,7 @@ class Chef
           exit 1
         end
 
-        chef_rest = Chef::Org.from_hash({ "name" => org_name }).chef_rest
-        original_org = chef_rest.get("organizations/#{org_name}")
+        original_org = root_rest.get("organizations/#{org_name}")
         edited_org = edit_hash(original_org)
 
         if original_org == edited_org
@@ -45,7 +40,7 @@ class Chef
         end
 
         ui.msg edited_org
-        chef_rest.put("organizations/#{org_name}", edited_org)
+        root_rest.put("organizations/#{org_name}", edited_org)
         ui.msg("Saved #{org_name}.")
       end
     end

@@ -22,15 +22,10 @@ class Chef
       category "CHEF ORGANIZATION MANAGEMENT"
       banner "knife org delete ORG_NAME"
 
-      deps do
-        require_relative "../org"
-      end
-
       def run
         org_name = @name_args[0]
-        org = Chef::Org.new(org_name)
         ui.confirm "Do you want to delete the organization #{org_name}"
-        ui.output org.chef_rest.delete("organizations/#{org_name}")
+        ui.output root_rest.delete("organizations/#{org_name}")
       end
     end
   end

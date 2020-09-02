@@ -62,6 +62,8 @@ class Chef
           org.add_user_to_group("admins", config[:association_user])
           org.add_user_to_group("billing-admins", config[:association_user])
         end
+
+        ui.info("Created #{org_name}")
       end
     end
   end

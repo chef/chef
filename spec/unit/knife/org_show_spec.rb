@@ -21,24 +21,24 @@ require "chef/org"
 
 describe Chef::Knife::OrgShow do
 
-  let(:chef_rest) { double("Chef::ServerAPI") }
+  let(:root_rest) { double("Chef::ServerAPI") }
 
   before :each do
     @knife = Chef::Knife::OrgShow.new
     @org_name = "foobar"
     @knife.name_args << @org_name
     @org = double("Chef::Org")
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(chef_rest)
-    allow(@org).to receive(:chef_rest).and_return(chef_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "2" }).and_return(root_rest)
+    allow(@org).to receive(:root_rest).and_return(root_rest)
   end
 
   it "should load the organisation" do
-    expect(@org.chef_rest).to receive(:get).with("organizations/#{@org_name}")
+    expect(root_rest).to receive(:get).with("organizations/#{@org_name}")
     @knife.run
   end
 
   it "should pretty print the output organisation" do
-    expect(@org.chef_rest).to receive(:get).with("organizations/#{@org_name}")
+    expect(root_rest).to receive(:get).with("organizations/#{@org_name}")
     expect(@knife.ui).to receive(:output)
     @knife.run
   end

@@ -661,5 +661,12 @@ class Chef
       end
       Chef::Config.init_openssl
     end
+
+    def root_rest
+      @root_rest ||= begin
+        require_relative "server_api"
+        Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "2" })
+      end
+    end
   end
 end

@@ -22,10 +22,6 @@ class Chef
   class Knife
     class UserEdit < Knife
 
-      deps do
-        require_relative "../user_v1"
-      end
-
       banner "knife user edit USER (options)"
 
       option :input,
@@ -46,11 +42,10 @@ class Chef
           ui.fatal("You must specify a user name")
           exit 1
         end
-
-        original_user = Chef::UserV1.load(@user_name).to_hash
-        edited_user = edit_hash(original_user)
+        original_user = root_rest.get("users/#{@user_name}")
+        edited_user = get_updated_user(original_user)
         if original_user != edited_user
-          result = Chef::UserV1.new.chef_root_rest_v0.put("users/#{@user_name}", edited_user)
+          result = root_rest.put("users/#{@user_name}", edited_user)
           ui.msg("Saved #{@user_name}.")
           unless result["private_key"].nil?
             if config[:filename]

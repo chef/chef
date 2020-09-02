@@ -22,14 +22,9 @@ class Chef
       category "CHEF ORGANIZATION MANAGEMENT"
       banner "knife org show ORGNAME"
 
-      deps do
-        require_relative "../org"
-      end
-
       def run
         org_name = @name_args[0]
-        org = Chef::Org.from_hash({ "name" => org_name })
-        ui.output org.chef_rest.get("organizations/#{org_name}")
+        ui.output root_rest.get("organizations/#{org_name}")
       end
     end
   end

@@ -1,5 +1,4 @@
 #
-# Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -27,7 +26,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require_relative "../user_v1"
+        require_relative "../user"
       end
 
       option :file,
@@ -58,15 +57,7 @@ class Chef
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 
       def user
-        @user_field ||= Chef::UserV1.new
-      end
-
-      def create_user_from_hash(hash)
-        Chef::UserV1.from_hash(hash).create
-      end
-
-      def chef_rest
-        user.chef_root_rest_v0
+        @user_field ||= Chef::User.new
       end
 
       def run
@@ -123,16 +114,16 @@ class Chef
           end
         end
 
-        final_user = chef_rest.post("users/", user_hash)
+        final_user = root_rest.post("users/", user_hash)
 
         if config[:orgname]
           request_body = { user: user.username }
-          response = chef_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
+          response = root_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
           association_id = response["uri"].split("/").last
-          chef_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
+          root_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
         end
 
-        ui.info("Created #{user}")
+        ui.info("Created #{user.username}")
         if final_user["private_key"]
           if config[:file]
             File.open(config[:file], "w") do |f|

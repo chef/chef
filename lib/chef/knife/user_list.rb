@@ -29,19 +29,10 @@ class Chef
         long: "--with-uri",
         description: "Show corresponding URIs."
 
-      deps do
-        require_relative "../user_v1"
-      end
-
-      def user
-        @user_field ||= Chef::UserV1.new
-      end
-
       def run
-        results = user.chef_root_rest_v0.get("users")
+        results = root_rest.get("users")
         output(format_list_for_display(results))
       end
-
     end
   end
 end
