@@ -69,7 +69,6 @@ class Chef
           # A rubygems specification object containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses
-          # For rubygems >= 1.8.0
           #
           # @return [Gem::Specification]
           #
@@ -104,10 +103,8 @@ class Chef
               # This isn't sorting before returning because the only code that
               # uses this method calls `max_by` so it doesn't need to be sorted.
               stubs
-            elsif rubygems_version >= Gem::Version.new("1.8.0")
+            else # >= rubygems 1.8 behavior
               gem_specification.find_all_by_name(gem_dep.name, gem_dep.requirement)
-            else
-              gem_source_index.search(gem_dep)
             end
           end
 
