@@ -71,8 +71,7 @@ group(:development, :test) do
 end
 
 group(:chefstyle) do
-  # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
+  gem "chefstyle", "1.2.1" # pinned so we don't have to fixup 2 branches for new rules
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
