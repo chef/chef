@@ -98,6 +98,12 @@ class Chef
         description: "A Hash containing additional arbitrary environment variables under which the systemd timer will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
         default: lazy { {} }
 
+      property :cpu_quota, [Integer, String],
+        description: "The systemd CPUQuota to run the #{Chef::Dist::CLIENT} process with. This is a percentage value of the total CPU time available on the system.",
+        introduced: "16.5",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between 1 and 100" => proc { |v| v > 0 && v <= 100 } }
+
       action :add do
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
@@ -171,6 +177,7 @@ class Chef
           }
 
           unit["Service"]["ConditionACPower"] = "true" unless new_resource.run_on_battery
+          unit["Service"]["CPUQuota"] = new_resource.cpu_quota if new_resource.cpu_quota
           unit["Service"]["Environment"] = new_resource.environment.collect { |k, v| "\"#{k}=#{v}\"" } unless new_resource.environment.empty?
           unit
         end
