@@ -80,6 +80,11 @@ class Chef
         description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
         default: :immediate
 
+      property :reboot_delay, Integer,
+        description: "The amount of time (in minutes) to delay a reboot request.",
+        default: 0,
+        introduced: "16.5"
+
       property :new_hostname, String,
         description: "Specifies a new hostname for the computer in the new domain.",
         introduced: "14.5"
@@ -116,6 +121,7 @@ class Chef
             unless new_resource.reboot == :never
               reboot "Reboot to join domain #{new_resource.domain_name}" do
                 action clarify_reboot(new_resource.reboot)
+                delay_mins new_resource.reboot_delay
                 reason "Reboot to join domain #{new_resource.domain_name}"
               end
             end
@@ -149,6 +155,7 @@ class Chef
             unless new_resource.reboot == :never
               reboot "Reboot to leave domain #{new_resource.domain_name}" do
                 action clarify_reboot(new_resource.reboot)
+                delay_mins new_resource.reboot_delay
                 reason "Reboot to leave domain #{new_resource.domain_name}"
               end
             end
