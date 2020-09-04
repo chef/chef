@@ -75,14 +75,7 @@ class Chef
       # @api private
       #
       def deep_merge!(source, dest)
-        # if dest doesn't exist, then simply copy source to it
-        if dest.nil?
-          dest = source; return dest
-        end
-
         case source
-        when nil
-          dest
         when Hash
           if dest.is_a?(Hash)
             source.each do |src_key, src_value|
@@ -147,11 +140,6 @@ class Chef
             end
           end
           merge_onto
-
-        # If merge_with is nil, don't replace merge_onto
-        elsif merge_with.nil?
-          merge_onto
-
         # In all other cases, replace merge_onto with merge_with
         else
           merge_with
