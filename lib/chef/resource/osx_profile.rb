@@ -80,10 +80,6 @@ class Chef
         end
 
         def check_resource_semantics!
-          if mac? && node["platform_version"] =~ ">= 11.0"
-            raise "The osx_profile resource is not available on macOS Big Sur or above due to Apple's removal of support for CLI profile installation"
-          end
-
           if action == :remove
             if new_profile_identifier
               if invalid_profile_name?(new_profile_identifier)
@@ -97,6 +93,11 @@ class Chef
           end
 
           if action == :install
+            # we only do this check for the install action so that profiles can still be removed on macOS 11+
+            if mac? && node["platform_version"] =~ ">= 11.0"
+              raise "The osx_profile resource is not available on macOS Big Sur or above due to Apple's removal of support for CLI profile installation"
+            end
+
             if new_profile_hash.is_a?(Hash) && !new_profile_hash.include?("PayloadIdentifier")
               raise "The specified profile does not seem to be valid"
             end
