@@ -100,6 +100,7 @@ end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
   interval "1hr"
+  cpu_quota 50
   only_if { systemd? }
 end
 
