@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.30 -->
-## [v16.5.30](https://github.com/chef/chef/tree/v16.5.30) (2020-09-04)
+<!-- latest_release 16.5.31 -->
+## [v16.5.31](https://github.com/chef/chef/tree/v16.5.31) (2020-09-04)
 
 #### Merged Pull Requests
-- Fix nil deep_merging [#10382](https://github.com/chef/chef/pull/10382) ([lamont-granquist](https://github.com/lamont-granquist))
+- Add a :reboot_delay property to the windows_ad_join resource [#10388](https://github.com/chef/chef/pull/10388) ([chef-davin](https://github.com/chef-davin))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a :reboot_delay property to the windows_ad_join resource [#10388](https://github.com/chef/chef/pull/10388) ([chef-davin](https://github.com/chef-davin)) <!-- 16.5.31 -->
 - Fix nil deep_merging [#10382](https://github.com/chef/chef/pull/10382) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.30 -->
 - Allow removing profiles in osx_profile on Big Sur [#10386](https://github.com/chef/chef/pull/10386) ([tas50](https://github.com/tas50)) <!-- 16.5.29 -->
 - Update all deps to current [#10385](https://github.com/chef/chef/pull/10385) ([tas50](https://github.com/tas50)) <!-- 16.5.28 -->
