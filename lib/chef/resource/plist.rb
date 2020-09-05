@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 require_relative "../resource"
-require "plist"
+autoload :Plist, "plist"
 
 class Chef
   class Resource

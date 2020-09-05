@@ -20,9 +20,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "uri" unless defined?(URI)
-require "cgi" unless defined?(CGI)
-require "net/http" unless defined?(Net::HTTP)
+autoload :URI, "uri"
+autoload :CGI, "cgi"
+module Net
+  autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
+end
 require_relative "../dist"
 
 # To load faster, we only want ohai's version string.

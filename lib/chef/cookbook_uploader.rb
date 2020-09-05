@@ -1,5 +1,5 @@
 
-require "set" unless defined?(Set)
+autoload :Set, "set"
 require_relative "exceptions"
 require_relative "knife/cookbook_metadata"
 require_relative "digester"

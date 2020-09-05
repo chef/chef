@@ -16,10 +16,12 @@
 # limitations under the License.
 #
 
-require "uri" unless defined?(URI)
-require "cgi" unless defined?(CGI)
-require "tempfile" unless defined?(Tempfile)
-require "net/sftp"
+autoload :URI, "uri"
+autoload :CGI, "cgi"
+autoload :Tempfile, "tempfile"
+module Net
+  autoload :SFTP, "net/sftp"
+end
 require_relative "../remote_file"
 require_relative "../../file_content_management/tempfile"
 

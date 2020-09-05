@@ -7,16 +7,16 @@ end
 
 require "net/http" unless defined?(Net::HTTP)
 module Net
-  class HTTPError
+  class HTTPError < Net::ProtocolError
     include ChefNetHTTPExceptionExtensions
   end
-  class HTTPRetriableError
+  class HTTPRetriableError < Net::ProtoRetriableError
     include ChefNetHTTPExceptionExtensions
   end
-  class HTTPClientException
+  class HTTPClientException < Net::ProtoServerError
     include ChefNetHTTPExceptionExtensions
   end
-  class HTTPFatalError
+  class HTTPFatalError < Net::ProtoFatalError
     include ChefNetHTTPExceptionExtensions
   end
 end

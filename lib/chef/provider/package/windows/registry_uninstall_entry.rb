@@ -17,7 +17,9 @@
 # limitations under the License.
 #
 
-require "win32/registry" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+module Win32
+  autoload :Registry, File.expand_path("../../../monkey_patches/win32/registry", __dir__) if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+end
 
 class Chef
   class Provider

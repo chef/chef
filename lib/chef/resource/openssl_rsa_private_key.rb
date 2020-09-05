@@ -65,10 +65,12 @@ class Chef
         description: "The desired passphrase for the key."
 
       property :key_cipher, String,
-        equal_to: OpenSSL::Cipher.ciphers,
-        validation_message: "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options.",
         description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
-        default: "des3"
+        default: lazy { "des3" },
+        callbacks: {
+          "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options." =>
+            proc { |v| OpenSSL::Cipher.ciphers.include?(v) },
+        }
 
       property :owner, [String, Integer],
         description: "The owner applied to all files created by the resource."

@@ -19,8 +19,10 @@
 
 require_relative "../util/path_helper"
 require_relative "../resource"
-require "win32-certstore" if Chef::Platform.windows?
-require "openssl" unless defined?(OpenSSL)
+module Win32
+  autoload :Certstore, "win32-certstore" if Chef::Platform.windows?
+end
+autoload :OpenSSL, "openssl"
 require_relative "../dist"
 
 class Chef

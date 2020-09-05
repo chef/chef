@@ -45,6 +45,9 @@
 
 require "chef_zero/server"
 require_relative "../dist"
+module Net
+  autoload :HTTPResponse, File.expand_path("../monkey_patches/net_http", __dir__)
+end
 
 class Chef
   class HTTP

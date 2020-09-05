@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require "plist"
+autoload :Plist, "plist"
 
 class Chef
   class Resource

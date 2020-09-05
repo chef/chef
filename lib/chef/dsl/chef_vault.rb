@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef-vault"
+autoload :ChefVault, "chef-vault"
 require_relative "data_query"
 
 class Chef

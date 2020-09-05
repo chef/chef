@@ -28,7 +28,7 @@ require_relative "event_dispatch/events_output_stream"
 require_relative "train_transport"
 require_relative "exceptions"
 require "forwardable" unless defined?(Forwardable)
-require "set" unless defined?(Set)
+autoload :Set, "set"
 
 class Chef
 

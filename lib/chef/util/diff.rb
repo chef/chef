@@ -40,9 +40,6 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
-require "diff/lcs"
-require "diff/lcs/hunk"
-
 class Chef
   class Util
     class Diff
@@ -86,6 +83,9 @@ class Chef
       # produces a unified-output-format diff with 3 lines of context
       # ChefFS uses udiff() directly
       def udiff(old_file, new_file)
+        require "diff/lcs"
+        require "diff/lcs/hunk"
+
         diff_str = ""
         file_length_difference = 0
 

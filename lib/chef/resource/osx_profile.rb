@@ -19,8 +19,8 @@
 require_relative "../resource"
 require_relative "../log"
 require_relative "../resource/file"
-require "uuidtools"
-require "plist"
+autoload :UUIDTools, "uuidtools"
+autoload :Plist, "plist"
 
 class Chef
   class Resource

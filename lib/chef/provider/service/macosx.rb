@@ -18,7 +18,7 @@
 #
 
 require "etc" unless defined?(Etc)
-require "rexml/document" unless defined?(REXML::Document)
+autoload :REXML, "rexml/document"
 require_relative "../../resource/service"
 require_relative "../../resource/macosx_service"
 require_relative "simple"

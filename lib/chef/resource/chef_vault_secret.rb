@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require "chef-vault"
+autoload :ChefVault, "chef-vault"
 
 class Chef
   class Resource

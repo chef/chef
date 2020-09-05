@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "tempfile" unless defined?(Tempfile)
-require "erubis" unless defined?(Erubis)
+autoload :Tempfile, "tempfile"
+autoload :Erubis, "erubis"
 
 class Chef
   module Mixin

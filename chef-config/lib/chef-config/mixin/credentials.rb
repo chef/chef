@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "tomlrb"
+autoload :Tomlrb, "tomlrb"
 require_relative "../path_helper"
 
 module ChefConfig

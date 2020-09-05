@@ -22,11 +22,13 @@
 #
 
 require "tempfile" unless defined?(Tempfile)
-require "openssl" unless defined?(OpenSSL)
-require "net/http" unless defined?(Net::HTTP)
-require "uri" unless defined?(URI)
+autoload :OpenSSL, "openssl"
+autoload :URI, "uri"
+module Net
+  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
+  autoload :HTTPClientException, File.expand_path("monkey_patches/net_http", __dir__)
+end
 require_relative "http/basic_client"
-require_relative "monkey_patches/net_http"
 require_relative "config"
 require_relative "platform/query_helpers"
 require_relative "exceptions"

@@ -19,7 +19,9 @@ require_relative "../knife"
 require_relative "../application"
 require "mixlib/log"
 require "ohai/config"
-require "chef/monkey_patches/net_http.rb"
+module Net
+  autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
+end
 require_relative "../dist"
 
 class Chef::Application::Knife < Chef::Application

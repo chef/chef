@@ -28,7 +28,9 @@ require "tmpdir" unless defined?(Dir.mktmpdir)
 require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
 require_relative "dist"
-require "license_acceptance/acceptor"
+module LicenseAcceptance
+  autoload :Acceptor, "license_acceptance/acceptor"
+end
 
 class Chef
   class Application

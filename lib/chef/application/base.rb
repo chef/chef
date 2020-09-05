@@ -24,7 +24,9 @@ require_relative "../dist"
 require_relative "../daemon"
 require "chef-config/mixin/dot_d"
 require "license_acceptance/cli_flags/mixlib_cli"
-require "mixlib/archive" unless defined?(Mixlib::Archive)
+module Mixlib
+  autoload :Archive, "mixlib/archive"
+end
 
 # This is a temporary class being used as a part of an effort to reduce duplication
 # between Chef::Application::Client and Chef::Application::Solo.
@@ -360,6 +362,7 @@ class Chef::Application::Base < Chef::Application
   end
 
   def fetch_recipe_tarball(url, path)
+    require "open-uri" unless defined?(OpenURI)
     Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     if File.exist?(url)
       FileUtils.cp(url, path)

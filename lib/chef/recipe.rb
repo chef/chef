@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "yaml" unless defined?(YAML)
+autoload :YAML, "yaml"
 require_relative "dsl/recipe"
 require_relative "mixin/from_file"
 require_relative "mixin/deprecation"

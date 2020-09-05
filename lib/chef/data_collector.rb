@@ -21,7 +21,7 @@
 require_relative "server_api"
 require_relative "http/simple_json"
 require_relative "event_dispatch/base"
-require "set" unless defined?(Set)
+autoload :Set, "set"
 require_relative "data_collector/run_end_message"
 require_relative "data_collector/run_start_message"
 require_relative "data_collector/config_validation"

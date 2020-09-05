@@ -22,7 +22,7 @@ require_relative "../../mixin/shell_out"
 require_relative "../../mixin/which"
 require_relative "../user"
 require_relative "../../resource/user/mac_user"
-require "plist"
+autoload :Plist, "plist"
 
 class Chef
   class Provider

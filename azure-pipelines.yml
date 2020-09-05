@@ -82,6 +82,8 @@ jobs:
         bundle config set without 'omnibus_package docgen ruby_prof'
         bundle install --jobs=3 --retry=3 --path=vendor/bundle
         gem install berkshelf --no-doc
+        $env:RUBYOPT="-W0"
         berks vendor cookbooks
+        $env:RUBYOPT="-W1"
         chef-client -z -o end_to_end --chef-license accept-no-persist
       displayName: 'Run end_to_end::default recipe'

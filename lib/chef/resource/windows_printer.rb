@@ -24,7 +24,7 @@ class Chef
     class WindowsPrinter < Chef::Resource
       unified_mode true
 
-      require "resolv"
+      autoload :Resolv, "resolv"
 
       provides(:windows_printer) { true }
 
@@ -78,8 +78,10 @@ class Chef
 
       property :ipv4_address, String,
         description: "The IPv4 address of the printer, such as `10.4.64.23`",
-        validation_message: "The ipv4_address property must be in the IPv4 format of `WWW.XXX.YYY.ZZZ`",
-        regex: Resolv::IPv4::Regex
+        callbacks: {
+          "The ipv4_address property must be in the IPv4 format of `WWW.XXX.YYY.ZZZ`" =>
+            proc { |v| v.match(Resolv::IPv4::Regex) },
+        }
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 

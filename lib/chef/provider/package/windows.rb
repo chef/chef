@@ -21,7 +21,7 @@ require_relative "../../resource/windows_package"
 require_relative "../package"
 require_relative "../../util/path_helper"
 require_relative "../../mixin/checksum"
-require "cgi" unless defined?(CGI)
+autoload :CGI, "cgi"
 
 class Chef
   class Provider
@@ -33,7 +33,7 @@ class Chef
         provides :package, os: "windows"
         provides :windows_package
 
-        require "chef/provider/package/windows/registry_uninstall_entry.rb"
+        autoload :RegistryUninstallEntry, ::File.expand_path("windows/registry_uninstall_entry.rb", __dir__)
 
         def define_resource_requirements
           if new_resource.checksum

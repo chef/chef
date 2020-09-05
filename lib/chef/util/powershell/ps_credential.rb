@@ -18,24 +18,28 @@
 
 require_relative "../../win32/crypto" if ChefUtils.windows?
 
-class Chef::Util::Powershell
-  class PSCredential
-    def initialize(username, password)
-      @username = username
-      @password = password
-    end
+class Chef
+  class Util
+    class Powershell
+      class PSCredential
+        def initialize(username, password)
+          @username = username
+          @password = password
+        end
 
-    def to_psobject
-      "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
-    end
+        def to_psobject
+          "New-Object System.Management.Automation.PSCredential('#{@username}',('#{encrypt(@password)}' | ConvertTo-SecureString))"
+        end
 
-    alias to_s to_psobject
-    alias to_text to_psobject
+        alias to_s to_psobject
+        alias to_text to_psobject
 
-    private
+        private
 
-    def encrypt(str)
-      Chef::ReservedNames::Win32::Crypto.encrypt(str)
+        def encrypt(str)
+          Chef::ReservedNames::Win32::Crypto.encrypt(str)
+        end
+      end
     end
   end
 end
