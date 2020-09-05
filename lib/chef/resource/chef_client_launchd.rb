@@ -133,6 +133,10 @@ class Chef
           action :enable
         end
 
+        # We want to make sure that after we update the chef-client launchd config that we don't move on to another recipe
+        # before the restarter daemon can do its thing. This sleep avoids killing the client while it's doing something like
+        # installing a package, which could be problematic. It also makes it a bit more clear in the log that the killed process
+        # was intentional.
         chef_sleep "Sleep before client restart" do
           seconds 10
           action :nothing
