@@ -110,7 +110,7 @@ class Chef
           end
         end
 
-        launchd "com.chef.chef-client" do
+        launchd "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}" do
           username new_resource.user
           working_directory new_resource.working_directory
           start_interval new_resource.interval * 60
@@ -118,13 +118,30 @@ class Chef
           environment_variables new_resource.environment unless new_resource.environment.empty?
           nice new_resource.nice
           low_priority_io true
+          notifies :sleep, "chef_sleep[Sleep before client restart]", :immediately
           action :enable
+        end
+
+        launchd "com.#{Chef::Dist::SHORT}.restarter" do
+          username "root"
+          watch_paths ["/Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+          standard_out_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          standard_error_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          program_arguments ["/bin/bash",
+                             "-c",
+                             "echo; echo #{Chef::Dist::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+          action :enable
+        end
+
+        chef_sleep "Sleep before client restart" do
+          seconds 10
+          action :nothing
         end
       end
 
       action :disable do
-        service "chef-client" do
-          service_name "com.chef.chef-client"
+        service "#{Chef::Dist::CLIENT}" do
+          service_name "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}"
           action :disable
         end
       end
