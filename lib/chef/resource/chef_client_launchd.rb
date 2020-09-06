@@ -119,7 +119,7 @@ class Chef
           nice new_resource.nice
           low_priority_io true
           notifies :sleep, "chef_sleep[Sleep before client restart]", :immediately
-          action :enable
+          action :create # create only creates the file. No service restart triggering
         end
 
         # Launchd doesn't have the concept of a reload aka restart. Instead to update a daemon config you have
@@ -135,7 +135,7 @@ class Chef
           program_arguments ["/bin/bash",
                              "-c",
                              "echo; echo #{Chef::Dist::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
-          action :enable
+          action :enable # enable creates the plist & triggers service restarts on change
         end
 
         # We want to make sure that after we update the chef-client launchd config that we don't move on to another recipe
@@ -149,8 +149,12 @@ class Chef
       end
 
       action :disable do
-        service "#{Chef::Dist::CLIENT}" do
+        service "#{Chef::Dist::PRODUCT}" do
           service_name "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}"
+          action :disable
+        end
+
+        service "com.#{Chef::Dist::SHORT}.restarter" do
           action :disable
         end
       end
