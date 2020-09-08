@@ -507,11 +507,12 @@ Chef::Config[:data_collector][:token] = "mytoken"
 
 This works for chef-clients, which are configured to hit a Chef server, but use a custom non-Chef-Automate endpoint for reporting, or for chef-solo/zero users.
 
-XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { uri: [ "https://chef.acme.local/myendpoint.html" ] }` method, which will behave differently, particularly on non-chef-solo use cases. 
+XXX: There is also the `Chef::Config[:data_collector][:output_locations] = { urls: [ "https://chef.acme.local/myendpoint.html" ] }` method, which will behave differently, particularly on non-chef-solo use cases.
 In that case, the Data Collector `server_url` will still be automatically derived from the `chef_server_url` and the Data Collector will attempt to contact that endpoint. 
 But with the token being supplied, the Data Collector will use that token and will not use Chef Server authentication. 
 Thus, the server should 403 back.
-Also, if `raise_on_failure` is left to the default of `false`, then the Data Collector will simply drop that failure and continue without raising, which will appear to work, and output will be send to the configured `output_locations`. 
+Also, if `raise_on_failure` is left to the default of `false`, then the Data Collector will simply drop that failure and continue without raising, which will appear to work, and output will be send to the configured `output_locations`.
+
 Note that the presence of a token flips all external URIs to using the token. So it is **not** possible to use this feature to talk to both a Chef Automate endpoint and a custom URI reporting endpoint.
 This would seem to be the most useful of an incredibly marginally useful feature and it does not work. 
 But given how hopelessly complicated this is, the recommendation is to use the `server_url` and to avoid using any `url` options in the `output_locations` since that feature is fairly poorly designed at this point in time.
