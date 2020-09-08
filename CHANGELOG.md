@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.34 -->
-## [v16.5.34](https://github.com/chef/chef/tree/v16.5.34) (2020-09-08)
+<!-- latest_release 16.5.35 -->
+## [v16.5.35](https://github.com/chef/chef/tree/v16.5.35) (2020-09-08)
 
 #### Merged Pull Requests
-- Resolve RuboCop Style/RedundantInterpolation warnings [#10394](https://github.com/chef/chef/pull/10394) ([tas50](https://github.com/tas50))
+- [data-collector] improved output_locations validation &amp; bug fixes [#10393](https://github.com/chef/chef/pull/10393) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [data-collector] improved output_locations validation &amp; bug fixes [#10393](https://github.com/chef/chef/pull/10393) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.35 -->
 - Resolve RuboCop Style/RedundantInterpolation warnings [#10394](https://github.com/chef/chef/pull/10394) ([tas50](https://github.com/tas50)) <!-- 16.5.34 -->
 - chef_client_launchd: create a launchd daemon to handle the client restart [#10390](https://github.com/chef/chef/pull/10390) ([tas50](https://github.com/tas50)) <!-- 16.5.33 -->
 - Add --logfile to chef-apply command [#10389](https://github.com/chef/chef/pull/10389) ([tas50](https://github.com/tas50)) <!-- 16.5.32 -->
