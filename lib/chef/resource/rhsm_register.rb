@@ -121,24 +121,30 @@ class Chef
       end
 
       action_class do
+        #
+        # @return [Symbol] dnf_package or yum_package depending on OS release
+        #
         def package_resource
           node["platform_version"].to_i >= 8 ? :dnf_package : :yum_package
         end
 
+        #
+        # @return [Boolean] is katello-ca-consumer installed
+        #
         def registered_with_rhsm?
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("subscription-manager status", env: { LANG: "en_US" })
-          cmd.run_command
-          !cmd.stdout.match(/Overall Status: Unknown/)
+          @registered ||= !shell_out("subscription-manager status").stdout.include?("Overall Status: Unknown")
         end
 
+        #
+        # @return [Boolean] is katello-ca-consumer installed
+        #
         def katello_cert_rpm_installed?
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("rpm -qa | grep katello-ca-consumer")
-          cmd.run_command
-          !cmd.stdout.match(/katello-ca-consumer/).nil?
+          shell_out("rpm -qa | grep katello-ca-consumer").stdout.include?("katello-ca-consumer")
         end
 
+        #
+        # @return [String] The URI to fetch katello-ca-consumer-latest.noarch.rpm from
+        #
         def ca_consumer_package_source
           protocol = new_resource.https_for_ca_consumer ? "https" : "http"
           "#{protocol}://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
