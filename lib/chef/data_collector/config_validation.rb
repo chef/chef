@@ -89,7 +89,7 @@ class Chef
                            "Please upgrade #{Chef::Dist::SERVER_PRODUCT} to 12.11 or later and remove the token from your config file " \
                            "to use key based authentication instead")
             true
-          when Chef::Config[:data_collector][:output_locations]
+          when Chef::Config[:data_collector][:output_locations] && !valid_hash_with_keys?(Chef::Config[:data_collector][:output_locations], :urls)
             # we can run fine to a file without a token, even in solo mode.
             unless valid_hash_with_keys?(Chef::Config[:data_collector][:output_locations], :files)
               raise Chef::Exceptions::ConfigurationError,
