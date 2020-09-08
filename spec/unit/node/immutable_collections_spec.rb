@@ -130,7 +130,7 @@ describe Chef::Node::ImmutableMash do
   end
 
   %w{to_h to_hash dup}.each do |immutable_meth|
-    describe "#{immutable_meth}" do
+    describe immutable_meth do
       include_examples "ImmutableMash module", description
     end
   end
@@ -238,7 +238,7 @@ describe Chef::Node::ImmutableArray do
   end
 
   %w{to_a to_array dup}.each do |immutable_meth|
-    describe "#{immutable_meth}" do
+    describe immutable_meth do
       include_examples "ImmutableArray module", description
     end
   end

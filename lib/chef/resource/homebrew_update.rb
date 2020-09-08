@@ -62,8 +62,8 @@ class Chef
         #
         # @return [Boolean]
         def brew_up_to_date?
-          ::File.exist?("#{BREW_STAMP}") &&
-            ::File.mtime("#{BREW_STAMP}") > Time.now - new_resource.frequency
+          ::File.exist?(BREW_STAMP) &&
+            ::File.mtime(BREW_STAMP) > Time.now - new_resource.frequency
         end
 
         def do_update
@@ -71,7 +71,7 @@ class Chef
             recursive true
           end
 
-          file "#{BREW_STAMP}" do
+          file BREW_STAMP do
             content "BREW::Update::Post-Invoke-Success\n"
             action :create_if_missing
           end

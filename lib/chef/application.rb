@@ -317,7 +317,7 @@ class Chef
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
 
-        client_solo = chef_config[:solo] ? "#{Chef::Dist::SOLOEXEC}" : "#{Chef::Dist::CLIENT}"
+        client_solo = chef_config[:solo] ? Chef::Dist::SOLOEXEC : Chef::Dist::CLIENT
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
           logger.trace "Forked instance now converging"
