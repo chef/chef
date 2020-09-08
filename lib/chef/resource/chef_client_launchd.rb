@@ -110,7 +110,7 @@ class Chef
           end
         end
 
-        launchd "com.chef.chef-client" do
+        launchd "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}" do
           username new_resource.user
           working_directory new_resource.working_directory
           start_interval new_resource.interval * 60
@@ -118,13 +118,43 @@ class Chef
           environment_variables new_resource.environment unless new_resource.environment.empty?
           nice new_resource.nice
           low_priority_io true
-          action :enable
+          notifies :sleep, "chef_sleep[Sleep before client restart]", :immediately
+          action :create # create only creates the file. No service restart triggering
+        end
+
+        # Launchd doesn't have the concept of a reload aka restart. Instead to update a daemon config you have
+        # to unload it and then reload the new plist. That's usually fine, but not if chef-client is trying
+        # to restart itself. If the chef-client process uses launchd or macosx_service resources to restart itself
+        # we'll end up with a stopped service that will never get started back up. Instead we use this daemon
+        # that triggers when the chef-client plist file is updated, and handles the restart outside the run.
+        launchd "com.#{Chef::Dist::SHORT}.restarter" do
+          username "root"
+          watch_paths ["/Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+          standard_out_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          standard_error_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          program_arguments ["/bin/bash",
+                             "-c",
+                             "echo; echo #{Chef::Dist::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+          action :enable # enable creates the plist & triggers service restarts on change
+        end
+
+        # We want to make sure that after we update the chef-client launchd config that we don't move on to another recipe
+        # before the restarter daemon can do its thing. This sleep avoids killing the client while it's doing something like
+        # installing a package, which could be problematic. It also makes it a bit more clear in the log that the killed process
+        # was intentional.
+        chef_sleep "Sleep before client restart" do
+          seconds 10
+          action :nothing
         end
       end
 
       action :disable do
-        service "chef-client" do
-          service_name "com.chef.chef-client"
+        service "#{Chef::Dist::PRODUCT}" do
+          service_name "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}"
+          action :disable
+        end
+
+        service "com.#{Chef::Dist::SHORT}.restarter" do
           action :disable
         end
       end
