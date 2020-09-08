@@ -139,7 +139,7 @@ class Chef
         # @return [Boolean] is katello-ca-consumer installed
         #
         def katello_cert_rpm_installed?
-          shell_out("rpm -qa | grep katello-ca-consumer").stdout.include?("katello-ca-consumer")
+          shell_out("rpm -qa").stdout.include?("katello-ca-consumer")
         end
 
         #
