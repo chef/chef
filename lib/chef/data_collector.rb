@@ -75,8 +75,6 @@ class Chef
       # (see EventDispatch::Base#run_start)
       #
       def run_start(chef_version, run_status)
-        Chef::DataCollector::ConfigValidation.validate_server_url!
-        Chef::DataCollector::ConfigValidation.validate_output_locations!
         events.unregister(self) unless Chef::DataCollector::ConfigValidation.should_be_enabled?
         @run_status = run_status
       end
@@ -117,6 +115,9 @@ class Chef
       # (see EventDispatch::Base#run_started)
       #
       def run_started(run_status)
+        Chef::DataCollector::ConfigValidation.validate_server_url!
+        Chef::DataCollector::ConfigValidation.validate_output_locations!
+
         send_run_start
       end
 
