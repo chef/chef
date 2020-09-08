@@ -75,6 +75,8 @@ class Chef
       # (see EventDispatch::Base#run_start)
       #
       def run_start(chef_version, run_status)
+        Chef::DataCollector::ConfigValidation.validate_server_url!
+        Chef::DataCollector::ConfigValidation.validate_output_locations!
         events.unregister(self) unless Chef::DataCollector::ConfigValidation.should_be_enabled?
         @run_status = run_status
       end
@@ -115,9 +117,6 @@ class Chef
       # (see EventDispatch::Base#run_started)
       #
       def run_started(run_status)
-        Chef::DataCollector::ConfigValidation.validate_server_url!
-        Chef::DataCollector::ConfigValidation.validate_output_locations!
-
         send_run_start
       end
 
@@ -210,10 +209,10 @@ class Chef
       # @param message [Hash] message to send
       #
       def send_to_output_locations(message)
-        return unless Chef::Config[:data_collector][:output_locations]
+        Chef::DataCollector::ConfigValidation.validate_output_locations!
 
         Chef::Config[:data_collector][:output_locations].each do |type, locations|
-          locations.each do |location|
+          Array(locations).each do |location|
             send_to_file_location(location, message) if type == :files
             send_to_http_location(location, message) if type == :urls
           end
@@ -226,7 +225,7 @@ class Chef
       # @param message [Hash] the message to render as JSON
       #
       def send_to_file_location(file_name, message)
-        File.open(file_name, "a") do |fh|
+        File.open(File.expand_path(file_name), "a") do |fh|
           fh.puts Chef::JSONCompat.to_json(message, validate_utf8: false)
         end
       end

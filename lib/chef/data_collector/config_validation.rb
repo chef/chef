@@ -46,14 +46,14 @@ class Chef
           return unless output_locations
 
           # but deliberately setting an empty output_location we consider to be an error (XXX: but should we?)
-          if output_locations.empty?
+          unless valid_hash_with_keys?(output_locations, :urls, :files)
             raise Chef::Exceptions::ConfigurationError,
               "Chef::Config[:data_collector][:output_locations] is empty. Please supply an hash of valid URLs and / or local file paths."
           end
 
           # loop through all the types and locations and validate each one-by-one
           output_locations.each do |type, locations|
-            locations.each do |location|
+            Array(locations).each do |location|
               validate_url!(location) if type == :urls
               validate_file!(location) if type == :files
             end
@@ -105,7 +105,7 @@ class Chef
 
         # validate an output_location file
         def validate_file!(file)
-          open(file, "a") {}
+          File.open(File.expand_path(file), "a") {}
         rescue Errno::ENOENT
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
@@ -125,6 +125,17 @@ class Chef
             "Chef::Config[:data_collector][:output_locations][:urls] contains the url #{url} which is not valid."
         end
 
+        # Validate a non-empty hash that includes either of keys of both.
+        #
+        # @param hash [Hash] the hash contains data collector output_locations.
+        # @param keys [Array] the multiple keys as arguments array.
+        # @return [Boolean] true if the hash contains either of keys or both.
+        #
+        def valid_hash_with_keys?(hash, *keys)
+          return false if hash.empty? || !hash.is_a?(Hash)
+
+          keys.any? { |k| hash.key?(k) }
+        end
       end
     end
   end
