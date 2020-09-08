@@ -129,7 +129,7 @@ class Chef
         end
 
         #
-        # @return [Boolean] is katello-ca-consumer installed
+        # @return [Boolean] is the node registered with RHSM
         #
         def registered_with_rhsm?
           @registered ||= !shell_out("subscription-manager status").stdout.include?("Overall Status: Unknown")
