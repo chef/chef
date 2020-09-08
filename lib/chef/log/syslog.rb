@@ -33,7 +33,7 @@ class Chef
 
       attr_accessor :sync, :formatter
 
-      def initialize(program_name = "#{Chef::Dist::CLIENT}", facility = ::Syslog::LOG_DAEMON, logopts = nil)
+      def initialize(program_name = Chef::Dist::CLIENT, facility = ::Syslog::LOG_DAEMON, logopts = nil)
         super
         return if defined? ::Logger::Syslog::SYSLOG
 

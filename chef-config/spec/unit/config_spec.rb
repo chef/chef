@@ -170,7 +170,7 @@ RSpec.describe ChefConfig::Config do
           apply_config
           expect(described_class[:data_bag_path]).to eq("#{current_directory}/data_bags")
           expect(described_class[:cookbook_path]).to eq("#{current_directory}/cookbooks")
-          expect(described_class[:chef_repo_path]).to eq("#{current_directory}")
+          expect(described_class[:chef_repo_path]).to eq(current_directory)
         end
       end
 

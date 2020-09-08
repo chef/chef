@@ -130,8 +130,8 @@ class Chef
         launchd "com.#{Chef::Dist::SHORT}.restarter" do
           username "root"
           watch_paths ["/Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
-          standard_out_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
-          standard_error_path "#{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+          standard_out_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
+          standard_error_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
           program_arguments ["/bin/bash",
                              "-c",
                              "echo; echo #{Chef::Dist::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
@@ -149,7 +149,7 @@ class Chef
       end
 
       action :disable do
-        service "#{Chef::Dist::PRODUCT}" do
+        service Chef::Dist::PRODUCT do
           service_name "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}"
           action :disable
         end

@@ -133,7 +133,7 @@ class Chef
         # @return [String]
         #
         def chef_client_cmd
-          cmd = "#{new_resource.chef_binary_path}"
+          cmd = new_resource.chef_binary_path.dup
           cmd << " #{new_resource.daemon_options.join(" ")}" unless new_resource.daemon_options.empty?
           cmd << " --chef-license accept" if new_resource.accept_chef_license
           cmd << " -c #{::File.join(new_resource.config_directory, "client.rb")}"

@@ -113,7 +113,7 @@ class Chef
         # @return [void]
         def target(id, page = nil)
           @deprecation_id = id
-          @doc_page = page || "#{deprecation_key}"
+          @doc_page = page || deprecation_key.to_s
         end
       end
     end
