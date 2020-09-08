@@ -209,6 +209,7 @@ class Chef
       # @param message [Hash] message to send
       #
       def send_to_output_locations(message)
+        return unless Chef::Config[:data_collector][:output_locations]
         Chef::DataCollector::ConfigValidation.validate_output_locations!
 
         Chef::Config[:data_collector][:output_locations].each do |type, locations|
