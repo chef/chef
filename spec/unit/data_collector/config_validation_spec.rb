@@ -179,22 +179,29 @@ describe Chef::DataCollector::ConfigValidation do
       expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
     end
 
-    it "with valid files options" do
-      allow(File).to receive(:open).and_return(true)
-      Chef::Config[:data_collector][:output_locations] = { files: ["/tmp/client-runs.txt"] }
-      expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
-    end
+    context "output_locations contains files" do
+      let(:file_path) { "/tmp/client-runs.txt" }
 
-    it "with valid files & URLs options" do
-      allow(File).to receive(:open).and_return(true)
-      Chef::Config[:data_collector][:output_locations] = { urls: ["https://www.esa.local/ariane5/data-collector"], files: ["/tmp/client-runs.txt"] }
-      expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
-    end
+      before(:each) do
+        allow(File).to receive(:exist?).with(file_path).and_return(true)
+        allow(File).to receive(:readable?).with(file_path).and_return(true)
+        allow(File).to receive(:writable?).with(file_path).and_return(true)
+      end
 
-    it "with valid files options & String location value" do
-      allow(File).to receive(:open).and_return(true)
-      Chef::Config[:data_collector][:output_locations] = { files: "/tmp/client-runs.txt" }
-      expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
+      it "with valid files options" do
+        Chef::Config[:data_collector][:output_locations] = { files: [file_path] }
+        expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
+      end
+
+      it "with valid files & URLs options" do
+        Chef::Config[:data_collector][:output_locations] = { urls: ["https://www.esa.local/ariane5/data-collector"], files: [file_path] }
+        expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
+      end
+
+      it "with valid files options & String location value" do
+        Chef::Config[:data_collector][:output_locations] = { files: file_path }
+        expect { Chef::DataCollector::ConfigValidation.validate_output_locations! }.not_to raise_error
+      end
     end
   end
 end

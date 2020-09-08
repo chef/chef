@@ -110,16 +110,10 @@ class Chef
 
         # validate an output_location file
         def validate_file!(file)
-          File.open(File.expand_path(file), "a") {}
-        rescue Errno::ENOENT
+          return true if Chef::Config.path_accessible?(File.expand_path(file))
+
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
-        rescue Errno::EACCES
-          raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannot be written to by Chef."
-        rescue Exception => e
-          raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is invalid: #{e.message}."
         end
 
         # validate an output_location url
@@ -130,16 +124,14 @@ class Chef
             "Chef::Config[:data_collector][:output_locations][:urls] contains the url #{url} which is not valid."
         end
 
-        # Validate a non-empty hash that includes either of keys of both.
+        # Validate the hash contains at least one of the given keys.
         #
-        # @param hash [Hash] the hash contains data collector output_locations.
-        # @param keys [Array] the multiple keys as arguments array.
-        # @return [Boolean] true if the hash contains either of keys or both.
+        # @param hash [Hash] the hash to be validated.
+        # @param keys [Array] an array of keys to check existence of in the hash.
+        # @return [Boolean] true if the hash contains any of the given keys.
         #
         def valid_hash_with_keys?(hash, *keys)
-          return false if hash.empty? || !hash.is_a?(Hash)
-
-          keys.any? { |k| hash.key?(k) }
+          hash.is_a?(Hash) && keys.any? { |k| hash.key?(k) }
         end
       end
     end
