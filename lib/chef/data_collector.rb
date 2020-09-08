@@ -211,8 +211,8 @@ class Chef
       #
       def send_to_output_locations(message)
         return unless Chef::Config[:data_collector][:output_locations]
-        Chef::DataCollector::ConfigValidation.validate_output_locations!
 
+        Chef::DataCollector::ConfigValidation.validate_output_locations!
         Chef::Config[:data_collector][:output_locations].each do |type, locations|
           Array(locations).each do |location|
             send_to_file_location(location, message) if type == :files
