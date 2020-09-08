@@ -19,7 +19,7 @@
 
 require_relative "../log"
 require_relative "../provider"
-require "ipaddr" unless defined?(IPAddr)
+autoload :IPAddr, "ipaddr"
 
 class Chef
   class Provider

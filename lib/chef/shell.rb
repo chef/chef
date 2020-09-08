@@ -15,6 +15,11 @@
 # limitations under the License.
 #
 
+module Mixlib
+  module Authentication
+    autoload :Log, "mixlib/authentication"
+  end
+end
 require "singleton" unless defined?(Singleton)
 require "pp" unless defined?(PP)
 require "etc" unless defined?(Etc)

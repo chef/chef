@@ -18,6 +18,7 @@
 
 require_relative "../../http/authenticator"
 require_relative "../../dist"
+require "timeout" unless defined?(Timeout)
 
 class Chef
   module Formatters

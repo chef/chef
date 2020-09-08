@@ -20,8 +20,8 @@
 # limitations under the License.
 
 require "mixlib/config" unless defined?(Mixlib::Config)
-require "pathname" unless defined?(Pathname)
-require "chef-utils" unless defined?(ChefUtils::CANARY)
+autoload :Pathname, "pathname"
+autoload :ChefUtils, "chef-utils"
 
 require_relative "fips"
 require_relative "logger"
@@ -29,11 +29,13 @@ require_relative "windows"
 require_relative "path_helper"
 require_relative "mixin/fuzzy_hostname_matcher"
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
-require "uri" unless defined?(URI)
-require "addressable/uri" unless defined?(Addressable::URI)
-require "openssl" unless defined?(OpenSSL)
-require "yaml"
+module Mixlib
+  autoload :ShellOut, "mixlib/shellout"
+end
+autoload :URI, "uri"
+autoload :Addressable, "addressable/uri"
+autoload :OpenSSL, "openssl"
+autoload :YAML, "yaml"
 require_relative "dist"
 
 module ChefConfig
@@ -1102,13 +1104,6 @@ module ChefConfig
       export_no_proxy(no_proxy) if key?(:no_proxy) && no_proxy
     end
 
-    # Character classes for Addressable
-    # See https://www.ietf.org/rfc/rfc3986.txt 3.2.1
-    # The user part may not have a : in it
-    USER = Addressable::URI::CharacterClasses::UNRESERVED + Addressable::URI::CharacterClasses::SUB_DELIMS
-    # The password part may have any valid USERINFO characters
-    PASSWORD = USER + "\\:"
-
     # Builds a proxy uri and exports it to the appropriate environment variables. Examples:
     #   http://username:password@hostname:port
     #   https://username@hostname:port
@@ -1120,15 +1115,22 @@ module ChefConfig
     #   pass = password
     # @api private
     def self.export_proxy(scheme, path, user, pass)
+      # Character classes for Addressable
+      # See https://www.ietf.org/rfc/rfc3986.txt 3.2.1
+      # The user part may not have a : in it
+      user_class = Addressable::URI::CharacterClasses::UNRESERVED + Addressable::URI::CharacterClasses::SUB_DELIMS
+      # The password part may have any valid USERINFO characters
+      password_class = user_class + "\\:"
+
       path = "#{scheme}://#{path}" unless path.include?("://")
       # URI.split returns the following parts:
       # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
       uri = Addressable::URI.encode(path, Addressable::URI)
 
       if user && !user.empty?
-        userinfo = Addressable::URI.encode_component(user, USER)
+        userinfo = Addressable::URI.encode_component(user, user_class)
         if pass
-          userinfo << ":#{Addressable::URI.encode_component(pass, PASSWORD)}"
+          userinfo << ":#{Addressable::URI.encode_component(pass, password_class)}"
         end
         uri.userinfo = userinfo
       end

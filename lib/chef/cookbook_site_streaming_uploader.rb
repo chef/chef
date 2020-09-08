@@ -18,10 +18,16 @@
 # limitations under the License.
 #
 
-require "uri" unless defined?(URI)
-require "net/http" unless defined?(Net::HTTP)
-require "mixlib/authentication/signedheaderauth"
-require "openssl" unless defined?(OpenSSL)
+autoload :URI, "uri"
+module Net
+  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
+end
+autoload :OpenSSL, "openssl"
+module Mixlib
+  module Authentication
+    autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
+  end
+end
 require_relative "dist"
 
 class Chef

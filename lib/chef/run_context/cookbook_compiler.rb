@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "set" unless defined?(Set)
+autoload :Set, "set"
 require_relative "../log"
 require_relative "../recipe"
 require_relative "../resource/lwrp_base"

@@ -20,8 +20,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "uri" unless defined?(URI)
-require "net/http" unless defined?(Net::HTTP)
+autoload :URI, "uri"
+module Net
+  autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
+end
 require_relative "ssl_policies"
 require_relative "http_request"
 

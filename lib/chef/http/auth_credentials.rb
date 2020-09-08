@@ -21,7 +21,11 @@
 # limitations under the License.
 #
 require_relative "../log"
-require "mixlib/authentication/signedheaderauth"
+module Mixlib
+  module Authentication
+    autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
+  end
+end
 
 class Chef
   class HTTP

@@ -36,7 +36,7 @@ require_relative "resource/resource_notification"
 require_relative "provider_resolver"
 require_relative "resource_resolver"
 require_relative "provider"
-require "set" unless defined?(Set)
+autoload :Set, "set"
 
 require_relative "mixin/deprecation"
 require_relative "mixin/properties"

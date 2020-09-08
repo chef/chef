@@ -18,8 +18,8 @@
 # limitations under the License.
 #
 
-require "openssl" unless defined?(OpenSSL)
-require "digest" unless defined?(Digest)
+autoload :OpenSSL, "openssl"
+autoload :Digest, "digest"
 require "singleton" unless defined?(Singleton)
 
 class Chef

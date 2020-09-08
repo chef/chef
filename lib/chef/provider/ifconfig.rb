@@ -20,7 +20,7 @@ require_relative "../log"
 require_relative "../provider"
 require_relative "../resource/file"
 require_relative "../exceptions"
-require "erb" unless defined?(Erb)
+autoload :ERB, "erb"
 
 class Chef
   class Provider

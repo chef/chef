@@ -16,7 +16,7 @@
 #
 
 require "chef-config/mixin/credentials"
-require "train"
+autoload :Train, "train"
 require_relative "dist"
 
 class Chef

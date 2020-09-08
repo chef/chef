@@ -20,7 +20,12 @@
 require_relative "base"
 require_relative "../handler/error_report"
 require_relative "../workstation_config_loader"
-require "uri" unless defined?(URI)
+autoload :URI, "uri"
+module Mixlib
+  module Authentication
+    autoload :Log, "mixlib/authentication"
+  end
+end
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #

@@ -24,7 +24,7 @@ class Chef
     class WindowsPrinterPort < Chef::Resource
       unified_mode true
 
-      require "resolv"
+      autoload :Resolv, "resolv"
 
       provides(:windows_printer_port) { true }
 
@@ -61,9 +61,11 @@ class Chef
 
       property :ipv4_address, String,
         name_property: true,
-        regex: Resolv::IPv4::Regex,
-        validation_message: "The ipv4_address property must be in the format of WWW.XXX.YYY.ZZZ!",
-        description: "An optional property for the IPv4 address of the printer if it differs from the resource block's name."
+        description: "An optional property for the IPv4 address of the printer if it differs from the resource block's name.",
+        callbacks: {
+          "The ipv4_address property must be in the format of WWW.XXX.YYY.ZZZ!" =>
+            proc { |v| v.match(Resolv::IPv4::Regex) },
+        }
 
       property :port_name, String,
         description: "The port name."

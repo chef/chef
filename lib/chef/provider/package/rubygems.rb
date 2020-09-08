@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "uri" unless defined?(URI)
+autoload :URI, "uri"
 require_relative "../package"
 require_relative "../../resource/package"
 require_relative "../../mixin/get_source_from_package"
@@ -25,30 +25,33 @@ require_relative "../../mixin/which"
 require_relative "../../dist"
 
 # Class methods on Gem are defined in rubygems
-require "rubygems" unless defined?(Gem)
+autoload :Gem, "rubygems"
 # Ruby 1.9's gem_prelude can interact poorly with loading the full rubygems
 # explicitly like this. Make sure rubygems/specification is always last in this
 # list
-require "rubygems/version"
-require "rubygems/dependency"
-require "rubygems/spec_fetcher"
-require "rubygems/platform"
-require "rubygems/package" unless defined?(Gem::Package)
-require "rubygems/dependency_installer"
-require "rubygems/uninstaller"
-require "rubygems/specification"
+Gem.autoload :Version, "rubygems/version"
+Gem.autoload :Dependency, "rubygems/dependency"
+Gem.autoload :SpecFetcher, "rubygems/spec_fetcher"
+Gem.autoload :Platform, "rubygems/platform"
+Gem.autoload :Package, "rubygems/package"
+Gem.autoload :DependencyInstaller, "rubygems/dependency_installer"
+Gem.autoload :Uninstaller, "rubygems/uninstaller"
+Gem.autoload :Specification, "rubygems/specification"
 
 class Chef
   class Provider
     class Package
       class Rubygems < Chef::Provider::Package
         class GemEnvironment
-          # HACK: trigger gem config load early. Otherwise it can get lazy
-          # loaded during operations where we've set Gem.sources to an
-          # alternate value and overwrite it with the defaults.
-          Gem.configuration
-
           DEFAULT_UNINSTALLER_OPTS = { ignore: true, executables: true }.freeze
+
+          def initialize(*args)
+            super
+            # HACK: trigger gem config load early. Otherwise it can get lazy
+            # loaded during operations where we've set Gem.sources to an
+            # alternate value and overwrite it with the defaults.
+            Gem.configuration
+          end
 
           # The paths where rubygems should search for installed gems.
           # Implemented by subclasses.

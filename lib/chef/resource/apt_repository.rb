@@ -19,7 +19,7 @@
 require_relative "../resource"
 require_relative "../http/simple"
 require "tmpdir" unless defined?(Dir.mktmpdir)
-require "addressable" unless defined?(Addressable)
+autoload :Addressable, "addressable"
 
 class Chef
   class Resource
