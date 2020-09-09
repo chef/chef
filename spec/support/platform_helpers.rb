@@ -26,11 +26,11 @@ class DependencyProc < Proc
 end
 
 def ruby_64bit?
-  !!(RbConfig::CONFIG["host_cpu"] =~ /x86_64/)
+  RbConfig::CONFIG["host_cpu"].include?("x86_64")
 end
 
 def ruby_32bit?
-  !!(RbConfig::CONFIG["host_cpu"] =~ /i686/)
+  RbConfig::CONFIG["host_cpu"].include?("i686")
 end
 
 def windows?
@@ -117,19 +117,19 @@ def unix?
 end
 
 def linux?
-  RUBY_PLATFORM.match?(/linux/)
+  RUBY_PLATFORM.include?("linux")
 end
 
 def macos?
-  RUBY_PLATFORM.match?(/darwin/)
+  RUBY_PLATFORM.include?("darwin")
 end
 
 def solaris?
-  RUBY_PLATFORM.match?(/solaris/)
+  RUBY_PLATFORM.include?("solaris")
 end
 
 def freebsd?
-  RUBY_PLATFORM.match?(/freebsd/)
+  RUBY_PLATFORM.include?("freebsd")
 end
 
 def intel_64bit?
@@ -165,7 +165,7 @@ def debian_family?
 end
 
 def aix?
-  RUBY_PLATFORM.match?(/aix/)
+  RUBY_PLATFORM.include?("aix")
 end
 
 def wpar?
@@ -199,8 +199,7 @@ def selinux_enabled?
 end
 
 def suse?
-  ::File.exist?("/etc/SuSE-release") ||
-    ( ::File.exist?("/etc/os-release") && /sles|suse/.match?(File.read("/etc/os-release")) )
+  !!(ohai[:platform_family] == "suse")
 end
 
 def root?

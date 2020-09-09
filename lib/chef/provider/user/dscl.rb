@@ -587,7 +587,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
           result = shell_out("dscl", ".", "-#{args[0]}", args[1..-1])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
-          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if /No such key: /.match?(result.stdout)
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout.include?("No such key: ")
 
           result.stdout
         end
