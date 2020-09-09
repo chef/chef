@@ -21,6 +21,7 @@ To expand upon later:
 - Resolved knife ssh freezing on Windows nodes
 - launched: Improved validation for the values allowed in the nice property
 - windows_ad_join: added reboot_delay property
+- openssl to 1.0.2w
 
 # What's New in 16.4
 
