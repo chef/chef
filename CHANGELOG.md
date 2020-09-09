@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.40 -->
-## [v16.5.40](https://github.com/chef/chef/tree/v16.5.40) (2020-09-09)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2w [#10402](https://github.com/chef/chef/pull/10402) ([tas50](https://github.com/tas50))
+- Remove a redundant spec loop [#10370](https://github.com/chef/chef/pull/10370) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove a redundant spec loop [#10370](https://github.com/chef/chef/pull/10370) ([tas50](https://github.com/tas50)) <!-- 16.5.40 -->
 - Update openssl to 1.0.2w [#10402](https://github.com/chef/chef/pull/10402) ([tas50](https://github.com/tas50)) <!-- 16.5.40 -->
 - Update Ohai to 16.5 [#10399](https://github.com/chef/chef/pull/10399) ([tas50](https://github.com/tas50)) <!-- 16.5.39 -->
 - Mock File.expand_path to fix window C:/ dir appended in absolute path [#10398](https://github.com/chef/chef/pull/10398) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.38 -->
