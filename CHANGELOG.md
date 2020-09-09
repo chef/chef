@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.5.41 -->
+## [v16.5.41](https://github.com/chef/chef/tree/v16.5.41) (2020-09-09)
 
 #### Merged Pull Requests
+- Add Patents link to chef infra &amp; solo client [#10400](https://github.com/chef/chef/pull/10400) ([vsingh-msys](https://github.com/vsingh-msys))
 - Remove a redundant spec loop [#10370](https://github.com/chef/chef/pull/10370) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Patents link to chef infra &amp; solo client [#10400](https://github.com/chef/chef/pull/10400) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.41 -->
 - Remove a redundant spec loop [#10370](https://github.com/chef/chef/pull/10370) ([tas50](https://github.com/tas50)) <!-- 16.5.40 -->
 - Update openssl to 1.0.2w [#10402](https://github.com/chef/chef/pull/10402) ([tas50](https://github.com/tas50)) <!-- 16.5.40 -->
 - Update Ohai to 16.5 [#10399](https://github.com/chef/chef/pull/10399) ([tas50](https://github.com/tas50)) <!-- 16.5.39 -->
