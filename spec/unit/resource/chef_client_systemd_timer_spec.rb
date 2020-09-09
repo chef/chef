@@ -35,8 +35,8 @@ describe Chef::Resource::ChefClientSystemdTimer do
 
   it "validates the cpu_quota property input" do
     expect { resource.cpu_quota(0) }.to raise_error(Chef::Exceptions::ValidationFailed)
-    expect { resource.cpu_quota(101) }.to raise_error(Chef::Exceptions::ValidationFailed)
     expect { resource.cpu_quota(50) }.not_to raise_error
+    expect { resource.cpu_quota(101) }.not_to raise_error
   end
 
   it "builds a default value for chef_binary_path dist values" do
