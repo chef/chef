@@ -216,6 +216,15 @@ class Chef::Application::Knife < Chef::Application
     rescue OptionParser::InvalidOption => e
       puts "#{e}\n"
     end
+
+    if want_help?
+      puts "#{Chef::Dist::PRODUCT}: #{Chef::VERSION}"
+      puts
+      puts "Docs: #{Chef::Dist::KNIFE_DOCS}"
+      puts "Patents: #{Chef::Dist::PATENTS}"
+      puts
+    end
+
     puts opt_parser
     puts
     Chef::Knife.list_commands
