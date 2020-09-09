@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.36 -->
-## [v16.5.36](https://github.com/chef/chef/tree/v16.5.36) (2020-09-08)
+<!-- latest_release 16.5.37 -->
+## [v16.5.37](https://github.com/chef/chef/tree/v16.5.37) (2020-09-09)
 
 #### Merged Pull Requests
-- Improve cli boot performance by prefering autoload over requires [#10383](https://github.com/chef/chef/pull/10383) ([mwrock](https://github.com/mwrock))
+- rhsm_register: Avoid potentially checking if we need to register twice [#10395](https://github.com/chef/chef/pull/10395) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- rhsm_register: Avoid potentially checking if we need to register twice [#10395](https://github.com/chef/chef/pull/10395) ([tas50](https://github.com/tas50)) <!-- 16.5.37 -->
 - Improve cli boot performance by prefering autoload over requires [#10383](https://github.com/chef/chef/pull/10383) ([mwrock](https://github.com/mwrock)) <!-- 16.5.36 -->
 - [data-collector] improved output_locations validation &amp; bug fixes [#10393](https://github.com/chef/chef/pull/10393) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.35 -->
 - Resolve RuboCop Style/RedundantInterpolation warnings [#10394](https://github.com/chef/chef/pull/10394) ([tas50](https://github.com/tas50)) <!-- 16.5.34 -->
