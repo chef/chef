@@ -1,5 +1,27 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# UNRELEASED
+
+
+To expand upon later:
+
+- Improved ohai information gathering on on-English systems
+- Performance improvements (provide some benchmarks)
+- Package data in ohai for macOS
+- rhsm_register: reduced load on the Satellite server
+- new chef_client_launchd resource
+- osx_profile lets you remove profiles on macOS 11
+- chef_client_cron: Added nice property
+- Improved output in knife config list-profiles and new shorter knife config commands
+- New packages: macOS 11, s390x RHEL 7, s390x SLES 12
+- New chef_client_trusted_certificate
+- New exit code 43 when the client config has errors. Thanks @NaomiReeves
+- Mount: Improved idempotency on Linux hosts
+- chef_client_systemd_timer: Add cpu_quote property
+- Resolved knife ssh freezing on Windows nodes
+- launched: Improved validation for the values allowed in the nice property
+- windows_ad_join: added reboot_delay property
+
 # What's New in 16.4
 
 ## Resource Updates
