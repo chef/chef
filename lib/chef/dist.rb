@@ -26,6 +26,12 @@ class Chef
     # product website address
     WEBSITE = "https://chef.io".freeze
 
+    # product patents page
+    PATENTS = "https://www.chef.io/patents".freeze
+
+    # knife documentation page
+    KNIFE_DOCS = "https://docs.chef.io/workstation/knife/".freeze
+
     # Chef-Zero's product name
     ZERO = "Chef Infra Zero".freeze
 

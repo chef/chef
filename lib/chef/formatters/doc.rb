@@ -42,6 +42,7 @@ class Chef
 
       def run_start(version, run_status)
         puts_line "Starting #{Chef::Dist::PRODUCT}, version #{version}"
+        puts_line "Patents: #{Chef::Dist::PATENTS}"
         puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
