@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.43 -->
-## [v16.5.43](https://github.com/chef/chef/tree/v16.5.43) (2020-09-09)
+<!-- latest_release 16.5.44 -->
+## [v16.5.44](https://github.com/chef/chef/tree/v16.5.44) (2020-09-09)
 
 #### Merged Pull Requests
-- Enable s390x RHEL8 and SLES15 platforms [#10376](https://github.com/chef/chef/pull/10376) ([jaymalasinha](https://github.com/jaymalasinha))
+- Allow for license-acceptance 2.0 gem [#10406](https://github.com/chef/chef/pull/10406) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Allow for license-acceptance 2.0 gem [#10406](https://github.com/chef/chef/pull/10406) ([tas50](https://github.com/tas50)) <!-- 16.5.44 -->
 - Enable s390x RHEL8 and SLES15 platforms [#10376](https://github.com/chef/chef/pull/10376) ([jaymalasinha](https://github.com/jaymalasinha)) <!-- 16.5.43 -->
 - autoload license_acceptance/acceptor in knife loading [#10405](https://github.com/chef/chef/pull/10405) ([mwrock](https://github.com/mwrock)) <!-- 16.5.42 -->
 - Add Patents link to chef infra &amp; solo client [#10400](https://github.com/chef/chef/pull/10400) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.41 -->
