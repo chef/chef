@@ -74,7 +74,7 @@ describe Chef::Resource::Service, :requires_root, :opensuse do
 
   before(:all) do
     File.delete("/etc/init.d/inittest") if File.exist?("/etc/init.d/inittest")
-    FileUtils.cp((File.join(File.dirname(__FILE__), "/../assets/inittest")).to_s, "/etc/init.d/inittest")
+    FileUtils.cp((File.join(__dir__, "/../assets/inittest")).to_s, "/etc/init.d/inittest")
     FileUtils.chmod(0755, "/etc/init.d/inittest")
   end
 

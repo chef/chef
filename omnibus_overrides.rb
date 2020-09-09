@@ -29,5 +29,5 @@ override "zlib", version: "1.2.11"
 # is in master, which won't match what's in the Gemfile.lock and used by the chef
 # definition. This pin will ensure that ohai and chef-client commands use the
 # same (released) version of ohai.
-gemfile_lock = File.join(File.expand_path(File.dirname(__FILE__)), "Gemfile.lock")
+gemfile_lock = File.join(File.expand_path(__dir__), "Gemfile.lock")
 override "ohai", version: "#{::File.readlines(gemfile_lock).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; "v" + $1}" # rubocop: disable Layout/SpaceInsideStringInterpolation

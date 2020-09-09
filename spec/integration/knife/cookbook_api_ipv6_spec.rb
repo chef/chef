@@ -62,7 +62,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
       Dir.mktmpdir
     end
 
-    let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+    let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
     let(:knife) { "ruby '#{chef_dir}/knife'" }
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }

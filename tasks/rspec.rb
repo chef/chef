@@ -20,7 +20,7 @@
 require "rubygems"
 require "rake"
 
-CHEF_ROOT = File.join(File.dirname(__FILE__), "..")
+CHEF_ROOT = File.join(__dir__, "..")
 
 begin
   require "rspec/core/rake_task"

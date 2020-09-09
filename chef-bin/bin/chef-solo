@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$:.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+$:.unshift(File.join(__dir__, "..", "lib"))
 require "chef/application/solo"
 
 Chef::Application::Solo.new.run(enforce_license: true)

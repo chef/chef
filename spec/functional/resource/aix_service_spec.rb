@@ -89,7 +89,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   describe "When service is a subsystem" do
     before(:all) do
-      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      script_dir = File.join(__dir__, "/../assets/")
       shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q")
     end
 
@@ -117,7 +117,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   # Cannot run this test on a WPAR
   describe "When service is a group", :not_wpar do
     before(:all) do
-      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      script_dir = File.join(__dir__, "/../assets/")
       shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q -G ctestgrp")
     end
 

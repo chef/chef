@@ -169,7 +169,7 @@ describe "LWRP" do
   describe "Lightweight Chef::Resource" do
 
     before do
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources", "*"))].each do |file|
+      Dir[File.expand_path(File.join(__dir__, "..", "data", "lwrp", "resources", "*"))].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, nil)
       end
     end
@@ -211,7 +211,7 @@ describe "LWRP" do
       node.normal[:penguin_name] = "jackass"
       run_context = Chef::RunContext.new(node, Chef::CookbookCollection.new, @events)
 
-      Dir[File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
+      Dir[File.expand_path(File.join(__dir__, "..", "data", "lwrp", "resources_with_default_attributes", "*"))].each do |file|
         Chef::Resource::LWRPBase.build_from_file("lwrp", file, run_context)
       end
 
@@ -654,7 +654,7 @@ describe "LWRP" do
     end
 
     let(:run_context) do
-      cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+      cookbook_repo = File.expand_path(File.join(__dir__, "..", "data", "cookbooks"))
       cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
       cookbook_loader.load_cookbooks
       cookbook_collection = Chef::CookbookCollection.new(cookbook_loader)
