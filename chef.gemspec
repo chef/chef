@@ -1,4 +1,4 @@
-$:.unshift(__dir__ + "/lib")
+$:.unshift(File.dirname(__FILE__) + "/lib")
 require "chef/version"
 
 Gem::Specification.new do |s|
