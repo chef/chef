@@ -186,6 +186,7 @@ describe Chef::DataCollector::ConfigValidation do
         allow(File).to receive(:exist?).with(file_path).and_return(true)
         allow(File).to receive(:readable?).with(file_path).and_return(true)
         allow(File).to receive(:writable?).with(file_path).and_return(true)
+        allow(File).to receive(:expand_path).with(file_path).and_return(file_path)
       end
 
       it "with valid files options" do
