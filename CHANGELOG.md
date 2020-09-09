@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.5.39 -->
+## [v16.5.39](https://github.com/chef/chef/tree/v16.5.39) (2020-09-09)
 
 #### Merged Pull Requests
+- Update Ohai to 16.5 [#10399](https://github.com/chef/chef/pull/10399) ([tas50](https://github.com/tas50))
 - Mock File.expand_path to fix window C:/ dir appended in absolute path [#10398](https://github.com/chef/chef/pull/10398) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.5 [#10399](https://github.com/chef/chef/pull/10399) ([tas50](https://github.com/tas50)) <!-- 16.5.39 -->
 - Mock File.expand_path to fix window C:/ dir appended in absolute path [#10398](https://github.com/chef/chef/pull/10398) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.38 -->
 - Use include? to example strings when we don&#39;t need a regex [#10396](https://github.com/chef/chef/pull/10396) ([tas50](https://github.com/tas50)) <!-- 16.5.38 -->
 - rhsm_register: Avoid potentially checking if we need to register twice [#10395](https://github.com/chef/chef/pull/10395) ([tas50](https://github.com/tas50)) <!-- 16.5.37 -->
