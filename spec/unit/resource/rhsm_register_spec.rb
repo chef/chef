@@ -41,23 +41,34 @@ describe Chef::Resource::RhsmRegister do
   end
 
   describe "#katello_cert_rpm_installed?" do
-    let(:cmd) { double("cmd") }
-
-    before do
-      allow(Mixlib::ShellOut).to receive(:new).and_return(cmd)
-      allow(cmd).to receive(:run_command)
-    end
-
     context "when the output contains katello-ca-consumer" do
+      let(:with_katello) { double("shell_out", stdout: <<~RPM) }
+        libevent-2.0.21-4.el7.x86_64
+        gettext-libs-0.19.8.1-3.el7.x86_64
+        yum-metadata-parser-1.1.4-10.el7.x86_64
+        pyliblzma-0.5.3-11.el7.x86_64
+        python-IPy-0.75-6.el7.noarch
+        grubby-8.28-26.el7.x86_64
+        fipscheck-lib-1.4.1-6.el7.x86_64
+        centos-logos-70.0.6-3.el7.centos.noarch
+        nss-tools-3.44.0-7.el7_7.x86_64
+        katello-ca-consumer-somehostname-1.0-1.el7.x86_64
+        rpm-4.11.3-43.el7.x86_64
+        gpgme-1.3.2-5.el7.x86_64
+        libnfsidmap-0.25-19.el7.x86_64
+      RPM
+
       it "returns true" do
-        allow(cmd).to receive(:stdout).and_return("katello-ca-consumer-somehostname-1.0-1")
+        allow(provider).to receive(:shell_out).and_return(with_katello)
         expect(provider.katello_cert_rpm_installed?).to eq(true)
       end
     end
 
     context "when the output does not contain katello-ca-consumer" do
+      let(:without_katello) { double("shell_out", stdout: "") }
+
       it "returns false" do
-        allow(cmd).to receive(:stdout).and_return("katello-agent-but-not-the-ca")
+        allow(provider).to receive(:shell_out).and_return(without_katello)
         expect(provider.katello_cert_rpm_installed?).to eq(false)
       end
     end
@@ -204,23 +215,20 @@ describe Chef::Resource::RhsmRegister do
   end
 
   describe "#registered_with_rhsm?" do
-    let(:cmd) { double("cmd") }
-
-    before do
-      allow(Mixlib::ShellOut).to receive(:new).and_return(cmd)
-      allow(cmd).to receive(:run_command)
-    end
-
     context "when the status is Unknown" do
+      let(:unknown_status) { double("shell_out", stdout: "Overall Status: Unknown") }
+
       it "returns false" do
-        allow(cmd).to receive(:stdout).and_return("Overall Status: Unknown")
+        allow(provider).to receive(:shell_out).and_return(unknown_status)
         expect(provider.registered_with_rhsm?).to eq(false)
       end
     end
 
     context "when the status is anything else" do
+      let(:known_status) { double("shell_out", stdout: "Overall Status: Insufficient") }
+
       it "returns true" do
-        allow(cmd).to receive(:stdout).and_return("Overall Status: Insufficient")
+        allow(provider).to receive(:shell_out).and_return(known_status)
         expect(provider.registered_with_rhsm?).to eq(true)
       end
     end
