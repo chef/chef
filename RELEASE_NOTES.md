@@ -70,7 +70,7 @@ The `chef_client_cron` resource has been updated with a new `nice` property that
 
 ### chef_client_systemd_timer
 
-The `chef_client_systemd_timer` resource has been updated with a new `cpu_quota` property that allows you to control the systemd `CPUQuota` value for the chef-client process. This allows you to ensure chef-client execution doesn't adversely impact performance on your systems.
+The `chef_client_systemd_timer` resource has been updated with a new `cpu_quota` property that allows you to control the systemd `CPUQuota` value for the `chef-client` process. This allows you to ensure `chef-client` execution doesn't adversely impact performance on your systems.
 
 ### osx_profile
 
