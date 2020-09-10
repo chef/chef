@@ -100,6 +100,22 @@ describe Chef::Resource::RhsmRegister do
         end
       end
 
+      context "when a system_name is provided" do
+        it "returns a command containing the system name" do
+          allow(resource).to receive(:organization).and_return("myorg")
+          allow(resource).to receive(:system_name).and_return("myname")
+          expect(provider.register_command).to match("--name=myname")
+        end
+      end
+
+      context "when a system_name is not provided" do
+        it "returns a command containing the system name" do
+          allow(resource).to receive(:organization).and_return("myorg")
+          allow(resource).to receive(:system_name).and_return(nil)
+          expect(provider.register_command).not_to match("--name")
+        end
+      end
+
       context "when auto_attach is true" do
         it "does not return a command with --auto-attach since it is not supported with activation keys" do
           allow(resource).to receive(:organization).and_return("myorg")
@@ -132,6 +148,20 @@ describe Chef::Resource::RhsmRegister do
           allow(resource).to receive(:auto_attach).and_return(false)
 
           expect(provider.register_command).not_to match("--auto-attach")
+        end
+      end
+
+      context "when a system_name is provided" do
+        it "returns a command containing the system name" do
+          allow(resource).to receive(:system_name).and_return("myname")
+          expect(provider.register_command).to match("--name=myname")
+        end
+      end
+
+      context "when a system_name is not provided" do
+        it "returns a command containing the system name" do
+          allow(resource).to receive(:system_name).and_return(nil)
+          expect(provider.register_command).not_to match("--name")
         end
       end
 

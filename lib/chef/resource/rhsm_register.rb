@@ -47,6 +47,10 @@ class Chef
       property :password, String,
         description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
 
+      property :system_name, String,
+        description: "The name of the system to register, defaults to the hostname.",
+        introduced: "16.5"
+
       property :auto_attach,
         [TrueClass, FalseClass],
         description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
@@ -159,6 +163,7 @@ class Chef
 
               command << new_resource.activation_key.map { |key| "--activationkey=#{Shellwords.shellescape(key)}" }
               command << "--org=#{Shellwords.shellescape(new_resource.organization)}"
+              command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
               command << "--force" if new_resource.force
 
               return command.join(" ")
@@ -171,6 +176,7 @@ class Chef
             command << "--username=#{Shellwords.shellescape(new_resource.username)}"
             command << "--password=#{Shellwords.shellescape(new_resource.password)}"
             command << "--environment=#{Shellwords.shellescape(new_resource.environment)}" if using_satellite_host?
+            command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
             command << "--auto-attach" if new_resource.auto_attach
             command << "--force" if new_resource.force
 
