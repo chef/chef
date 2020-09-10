@@ -604,7 +604,7 @@ class Chef
         bootstrap_run_command(cmd)
       end
 
-      # Actual bootstrap command to perform on the node.
+      # Actual bootstrap command to be run on the node.
       # Handles recursive calls if su USER failed to authenticate.
       def bootstrap_run_command(cmd)
         r = connection.run_command(cmd) do |data|
