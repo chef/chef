@@ -82,7 +82,7 @@ The `launchd` resource has been updated to better validate inputs to the `nice` 
 
 ### mount
 
-The `mount` resource on Linux has new improved idempotency in some scenarios by switching to `findmnt` to determine the current state of the system. Thanks for reporting this issue [@pollosp](https://github.com/pollosp)
+The `mount` resource on Linux has new improved idempotency in some scenarios by switching to `findmnt` to determine the current state of the system. Thanks for reporting this issue [@pollosp](https://github.com/pollosp)!
 
 ### rhsm_register
 
