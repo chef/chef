@@ -108,7 +108,7 @@ The `windows_firewall_profile` resource was updated to prevent NilClass errors f
 
 ## Security
 
-OpenSSL has been updated to 1.0.2w, which includes a fix for [CVE-2020-1968](https://cve.mitre.org/cgi-bin/cvename.cgi?name=2020-1968)
+OpenSSL has been updated to 1.0.2w which includes a fix for [CVE-2020-1968](https://cve.mitre.org/cgi-bin/cvename.cgi?name=2020-1968).
 
 # What's New in 16.4
 
