@@ -32,6 +32,16 @@ windows_security_policy "EnableGuestAccount" do
   secvalue "1"
 end
 
+windows_firewall_profile "Domain" do
+  default_inbound_action "Allow"
+  default_outbound_action "Allow"
+  action :enable
+end
+
+windows_firewall_profile "Public" do
+  action :disable
+end
+
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
