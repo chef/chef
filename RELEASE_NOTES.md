@@ -74,7 +74,7 @@ The `chef_client_systemd_timer` resource has been updated with a new `cpu_quota`
 
 ### osx_profile
 
-The `osx_profile` resource will now allow you to remove profiles from macOS 11 (Big Sur) systems. Due to security changes in macOS 11, it is no longer possible to locally install profiles, but this will allow you to cleanup existing profiles left over after an upgrade from an earlier macOS release. Thanks for reporting this issue [@chilcote](https://github.com/chilcote)
+The `osx_profile` resource will now allow you to remove profiles from macOS 11 (Big Sur) systems. Due to security changes in macOS 11, it is no longer possible to locally install profiles, but this will allow you to cleanup existing profiles left over after an upgrade from an earlier macOS release. Thanks for reporting this issue [@chilcote](https://github.com/chilcote)!
 
 ### launchd
 
