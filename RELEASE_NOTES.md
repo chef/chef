@@ -92,6 +92,10 @@ The `rhsm_register` resource has been updated to reduce the load on the RedHat S
 
 The `windows_ad_join` resource has been updated with a new `reboot_delay` property, which allows you to control the delay time before restarting systems.
 
+### windows_firewall_profile
+
+The `windows_firewall_profile` was updated to prevent NilClass errors loading the firewall state.
+
 ## Ohai Improvements
 
 - Ohai now uses the same underlying code for shelling out to external commands as Chef Infra Client. This may resolve issues determining state on some non-English systems.
