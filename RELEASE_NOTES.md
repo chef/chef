@@ -66,7 +66,7 @@ end
 
 ### chef_client_cron
 
-The `chef_client_cron` resource has been updated with a new `nice` property that allows you to set the nice level for the `chef-client` process. Nice level changes only apply to the `chef-client` process and not any subprocesses like `ohai` or system utility calls. If you need to ensure that the `chef-client` process does not negatively impact system performance we highly recommend instead using the `cpu_quota` property in the `chef_client_systemd_timer` resource, which applies to all child processes.
+The `chef_client_cron` resource has been updated with a new `nice` property that allows you to set the nice level for the `chef-client` process. Nice level changes only apply to the `chef-client` process and not any subprocesses like `ohai` or system utility calls. If you need to ensure that the `chef-client` process does not negatively impact system performance, we highly recommend instead using the `cpu_quota` property in the `chef_client_systemd_timer` resource which applies to all child processes.
 
 ### chef_client_systemd_timer
 
