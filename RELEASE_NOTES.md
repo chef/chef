@@ -94,7 +94,7 @@ The `windows_ad_join` resource has been updated with a new `reboot_delay` proper
 
 ### windows_firewall_profile
 
-The `windows_firewall_profile` was updated to prevent NilClass errors loading the firewall state.
+The `windows_firewall_profile` resource was updated to prevent NilClass errors from loading the firewall state.
 
 ## Ohai Improvements
 
