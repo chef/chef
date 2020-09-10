@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.13.20 -->
-## [v15.13.20](https://github.com/chef/chef/tree/v15.13.20) (2020-09-10)
+<!-- latest_release 15.13.21 -->
+## [v15.13.21](https://github.com/chef/chef/tree/v15.13.21) (2020-09-10)
 
 #### Merged Pull Requests
-- Update openssl to 1.0.2w and bump other deps to current [#10415](https://github.com/chef/chef/pull/10415) ([tas50](https://github.com/tas50))
+- Add SLES 15 S390x builds [#10417](https://github.com/chef/chef/pull/10417) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.13.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add SLES 15 S390x builds [#10417](https://github.com/chef/chef/pull/10417) ([tas50](https://github.com/tas50)) <!-- 15.13.21 -->
 - Update openssl to 1.0.2w and bump other deps to current [#10415](https://github.com/chef/chef/pull/10415) ([tas50](https://github.com/tas50)) <!-- 15.13.20 -->
 - Simplify macos platform detection in the specs + add macOS Big Sur testers [#10378](https://github.com/chef/chef/pull/10378) ([tas50](https://github.com/tas50)) <!-- 15.13.19 -->
 - Avoid knife ssh freeze on windows [#10377](https://github.com/chef/chef/pull/10377) ([tas50](https://github.com/tas50)) <!-- 15.13.18 -->
