@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: e55d20a73bf8641c5fd009d90747ee9ad05192f1
+  revision: 0d5f81dc0515357d571e9210031b3fa0edab0903
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.363.0)
+    aws-partitions (1.366.0)
     aws-sdk-core (3.105.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -176,7 +176,7 @@ GEM
     ffi (1.13.1-x86-mingw32)
     ffi-libarchive (1.0.4)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.3)
+    ffi-win32-extensions (1.0.4)
       ffi
     ffi-yajl (2.3.4)
       libyajl2 (~> 1.2)
@@ -224,9 +224,9 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.4)
+    mixlib-shellout (3.1.6)
       chef-utils
-    mixlib-shellout (3.1.4-universal-mingw32)
+    mixlib-shellout (3.1.6-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
@@ -248,7 +248,7 @@ GEM
     octokit (4.18.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.4.12)
+    ohai (16.5.0)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -291,7 +291,7 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    test-kitchen (2.6.0)
+    test-kitchen (2.7.0)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (>= 1.0.11, < 3.0)

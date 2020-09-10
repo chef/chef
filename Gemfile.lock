@@ -171,7 +171,7 @@ GEM
     ffi (1.13.1-x86-mingw32)
     ffi-libarchive (1.0.4)
       ffi (~> 1.0)
-    ffi-win32-extensions (1.0.3)
+    ffi-win32-extensions (1.0.4)
       ffi
     ffi-yajl (2.3.4)
       libyajl2 (~> 1.2)
@@ -239,9 +239,9 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.4)
+    mixlib-shellout (3.1.6)
       chef-utils
-    mixlib-shellout (3.1.4-universal-mingw32)
+    mixlib-shellout (3.1.6-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
