@@ -42,6 +42,7 @@ builder-to-testers-map:
     - mac_os_x-11.0-x86_64
   sles-12-s390x:
     - sles-12-s390x
+    - sles-15-s390x
   sles-12-x86_64:
     - sles-12-x86_64
     - sles-15-x86_64
