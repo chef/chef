@@ -95,7 +95,7 @@ The `windows_ad_join` resource has been updated with a new `reboot_delay` proper
 ## Ohai Improvements
 
 - Ohai now uses the same underlying code for shelling out to external commands as Chef Infra Client. This may resolve issues determining state on some non-English systems.
-- The `Package` plugin has been updated to gather package installation information on macOS hosts.
+- The `Packages` plugin has been updated to gather package installation information on macOS hosts.
 
 ## Platform Packages
 
@@ -4286,7 +4286,7 @@ Sample data now available under azure:
 
 ### Package Plugin Supports Arch Linux
 
-The Package plugin has been updated to include package information on Arch Linux systems.
+The Packages plugin has been updated to include package information on Arch Linux systems.
 
 # What's New in 13.3:
 
