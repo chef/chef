@@ -9,7 +9,7 @@ We continue to reduce the size of the Chef Infra Client install and optimize the
 ## CLI Improvements
 
 - The client license acceptance logic has been improved to provide helpful error messages when an incorrect value is passed and to accept license values in any text case.
-- A new `chef-client` process exit code of 43 has been added to signal that an invalid configuration was specified. Thanks [@NaomiReeves](https://github.com/NaomiReeves)
+- A new `chef-client` process exit code of 43 has been added to signal that an invalid configuration was specified. Thanks [@NaomiReeves](https://github.com/NaomiReeves)!
 - The `knife ssh` command no longer hangs when connecting to Windows nodes over SSH
 - The `knife config` commands have been renamed to make them shorter and table output has been improved:
   - knife config get-profile -> knife config use
