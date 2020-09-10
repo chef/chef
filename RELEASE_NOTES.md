@@ -86,7 +86,7 @@ The `mount` resource on Linux has new improved idempotency in some scenarios by 
 
 ### rhsm_register
 
-The `rhsm_register` resource has been updated to reduce the load on the RedHat Satellite server when checking if a system is already registered. Thanks for reporting this issue [@donwlewis](https://github.com/donwlewis). A new `system_name` property has also been added to allow you to register a name other than the system's hostname. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/).
+The `rhsm_register` resource has been updated to reduce the load on the RedHat Satellite server when checking if a system is already registered. Thanks for reporting this issue [@donwlewis](https://github.com/donwlewis)! A new `system_name` property has also been added to allow you to register a name other than the system's hostname. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/)!
 
 ### windows_ad_join
 
