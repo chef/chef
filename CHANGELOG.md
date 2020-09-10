@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.49 -->
-## [v16.5.49](https://github.com/chef/chef/tree/v16.5.49) (2020-09-10)
+<!-- latest_release 16.5.50 -->
+## [v16.5.50](https://github.com/chef/chef/tree/v16.5.50) (2020-09-10)
 
 #### Merged Pull Requests
-- Remove debug puts from snap_package [#10409](https://github.com/chef/chef/pull/10409) ([tas50](https://github.com/tas50))
+- Add system_name property to rhsm_register resource [#10413](https://github.com/chef/chef/pull/10413) ([jasonwbarnett](https://github.com/jasonwbarnett))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add system_name property to rhsm_register resource [#10413](https://github.com/chef/chef/pull/10413) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.5.50 -->
 - Remove debug puts from snap_package [#10409](https://github.com/chef/chef/pull/10409) ([tas50](https://github.com/tas50)) <!-- 16.5.49 -->
 - Update the windows_firewall_profile resource to fix NoMethodError [#10412](https://github.com/chef/chef/pull/10412) ([chef-davin](https://github.com/chef-davin)) <!-- 16.5.48 -->
 - Add an ohai timing test to find busted DNS on CI testers [#10371](https://github.com/chef/chef/pull/10371) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.47 -->
