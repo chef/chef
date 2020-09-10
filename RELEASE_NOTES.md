@@ -103,7 +103,7 @@ The `windows_firewall_profile` resource was updated to prevent NilClass errors f
 
 ## Platform Packages
 
-- We are once again building Chef Infra Client packages for RHEL 7 / SLES 12 on the S390x architecture. In addition to these packages we've also added S390x packages for RHEL 8 / SLES 15.
+- We are once again building Chef Infra Client packages for RHEL 7 / SLES 12 on the S390x architecture. In addition to these packages, we've also added S390x packages for RHEL 8 / SLES 15.
 - We now produce packages for Apple's upcoming macOS 11 Big Sur release.
 
 ## Security
