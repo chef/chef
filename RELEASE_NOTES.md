@@ -98,7 +98,7 @@ The `windows_firewall_profile` resource was updated to prevent NilClass errors f
 
 ## Ohai Improvements
 
-- Ohai now uses the same underlying code for shelling out to external commands as Chef Infra Client. This may resolve issues determining state on some non-English systems.
+- Ohai now uses the same underlying code for shelling out to external commands as Chef Infra Client. This may resolve issues from determining the state on some non-English systems.
 - The `Packages` plugin has been updated to gather package installation information on macOS hosts.
 
 ## Platform Packages
