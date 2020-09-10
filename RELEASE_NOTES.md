@@ -90,7 +90,7 @@ The `rhsm_register` resource has been updated to reduce the load on the RedHat S
 
 ### windows_ad_join
 
-The `windows_ad_join` resource has been updated with a new `reboot_delay` property, which allows you to control the delay time before restarting systems.
+The `windows_ad_join` resource has been updated with a new `reboot_delay` property which allows you to control the delay time before restarting systems.
 
 ### windows_firewall_profile
 
