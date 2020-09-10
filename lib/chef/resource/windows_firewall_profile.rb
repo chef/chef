@@ -161,24 +161,6 @@ class Chef
           cmd
         end
 
-        def load_firewall_state(profile_name)
-          <<-EOH
-            Remove-TypeData System.Array # workaround for PS bug here: https://bit.ly/2SRMQ8M
-            $#{profile_name} = Get-NetFirewallProfile -Profile #{profile_name}
-            ([PSCustomObject]@{
-              default_inbound_action = $#{profile_name}.DefaultInboundAction.ToString()
-              default_outbound_action = $#{profile_name}.DefaultOutboundAction.ToString()
-              allow_inbound_rules = $#{profile_name}.AllowInboundRules.ToString()
-              allow_local_firewall_rules = $#{profile_name}.AllowLocalFirewallRules.ToString()
-              allow_local_ipsec_rules = $#{profile_name}.AllowLocalIPsecRules.ToString()
-              allow_user_apps = $#{profile_name}.AllowUserApps.ToString()
-              allow_user_ports = $#{profile_name}.AllowUserPorts.ToString()
-              allow_unicast_response = $#{profile_name}.AllowUnicastResponseToMulticast.ToString()
-              display_notification = $#{profile_name}.NotifyOnListen.ToString()
-            }) | ConvertTo-Json
-          EOH
-        end
-
         def firewall_enabled?(profile_name)
           cmd = <<~CODE
             $#{profile_name} = Get-NetFirewallProfile -Profile #{profile_name}
@@ -193,6 +175,28 @@ class Chef
             false
           end
         end
+      end
+
+      private
+
+      # build the command to load the current resource
+      # @return [String] current firewall state
+      def load_firewall_state(profile_name)
+        <<-EOH
+          Remove-TypeData System.Array # workaround for PS bug here: https://bit.ly/2SRMQ8M
+          $#{profile_name} = Get-NetFirewallProfile -Profile #{profile_name}
+          ([PSCustomObject]@{
+            default_inbound_action = $#{profile_name}.DefaultInboundAction.ToString()
+            default_outbound_action = $#{profile_name}.DefaultOutboundAction.ToString()
+            allow_inbound_rules = $#{profile_name}.AllowInboundRules.ToString()
+            allow_local_firewall_rules = $#{profile_name}.AllowLocalFirewallRules.ToString()
+            allow_local_ipsec_rules = $#{profile_name}.AllowLocalIPsecRules.ToString()
+            allow_user_apps = $#{profile_name}.AllowUserApps.ToString()
+            allow_user_ports = $#{profile_name}.AllowUserPorts.ToString()
+            allow_unicast_response = $#{profile_name}.AllowUnicastResponseToMulticast.ToString()
+            display_notification = $#{profile_name}.NotifyOnListen.ToString()
+          }) | ConvertTo-Json
+        EOH
       end
     end
   end
