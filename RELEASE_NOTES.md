@@ -32,7 +32,7 @@ end
 
 ### chef_client_trusted_certificate
 
-The `chef_client_trusted_certificate` resource allows you to add a certificate to Chef Infra Client's trusted certificate directory. The resource handles platform specific locations and creates the trusted certificates directory if it doesn't already exist. Once a certificate is added, it will be used by the client itself to communicate with the Chef Infra Server and by resources such as `remote_file`.
+The `chef_client_trusted_certificate` resource allows you to add a certificate to Chef Infra Client's trusted certificate directory. The resource handles platform-specific locations and creates the trusted certificates directory if it doesn't already exist. Once a certificate is added, it will be used by the client itself to communicate with the Chef Infra Server and by resources such as `remote_file`.
 
 ```ruby
 chef_client_trusted_certificate 'self-signed.badssl.com' do
