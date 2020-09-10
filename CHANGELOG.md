@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.50 -->
-## [v16.5.50](https://github.com/chef/chef/tree/v16.5.50) (2020-09-10)
+<!-- latest_release 16.5.51 -->
+## [v16.5.51](https://github.com/chef/chef/tree/v16.5.51) (2020-09-10)
 
 #### Merged Pull Requests
-- Add system_name property to rhsm_register resource [#10413](https://github.com/chef/chef/pull/10413) ([jasonwbarnett](https://github.com/jasonwbarnett))
+- Update sysctl resource description to match reality [#10416](https://github.com/chef/chef/pull/10416) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update sysctl resource description to match reality [#10416](https://github.com/chef/chef/pull/10416) ([tas50](https://github.com/tas50)) <!-- 16.5.51 -->
 - Add system_name property to rhsm_register resource [#10413](https://github.com/chef/chef/pull/10413) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 16.5.50 -->
 - Remove debug puts from snap_package [#10409](https://github.com/chef/chef/pull/10409) ([tas50](https://github.com/tas50)) <!-- 16.5.49 -->
 - Update the windows_firewall_profile resource to fix NoMethodError [#10412](https://github.com/chef/chef/pull/10412) ([chef-davin](https://github.com/chef-davin)) <!-- 16.5.48 -->
