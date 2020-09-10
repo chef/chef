@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.46 -->
-## [v16.5.46](https://github.com/chef/chef/tree/v16.5.46) (2020-09-10)
+<!-- latest_release 16.5.47 -->
+## [v16.5.47](https://github.com/chef/chef/tree/v16.5.47) (2020-09-10)
 
 #### Merged Pull Requests
-- Use __dir__ instead of getting the dir of __FILE__ [#10401](https://github.com/chef/chef/pull/10401) ([tas50](https://github.com/tas50))
+- Add an ohai timing test to find busted DNS on CI testers [#10371](https://github.com/chef/chef/pull/10371) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add an ohai timing test to find busted DNS on CI testers [#10371](https://github.com/chef/chef/pull/10371) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.47 -->
 - Use __dir__ instead of getting the dir of __FILE__ [#10401](https://github.com/chef/chef/pull/10401) ([tas50](https://github.com/tas50)) <!-- 16.5.46 -->
 - Allow cpu_quota values &gt; 100 [#10408](https://github.com/chef/chef/pull/10408) ([tas50](https://github.com/tas50)) <!-- 16.5.45 -->
 - Allow for license-acceptance 2.0 gem [#10406](https://github.com/chef/chef/pull/10406) ([tas50](https://github.com/tas50)) <!-- 16.5.44 -->
