@@ -7,5 +7,5 @@ ohai[:disabled_plugins] << "solaris2::cpu" << "solaris2::dmi" << "solaris2::file
 ohai[:disabled_plugins] << "solaris2::virtualization" << "solaris2::zpools"
 ohai[:disabled_plugins] << "c" << "php" << "mono" << "groovy" << "lua" << "erlang"
 ohai[:disabled_plugins] << "kernel" << "linux::filesystem" << "ruby"
-chef_repo_path File.dirname(__FILE__)
+chef_repo_path __dir__
 cookbook_path  "#{chef_repo_path}/cookbooks"

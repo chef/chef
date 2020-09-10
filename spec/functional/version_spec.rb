@@ -23,7 +23,7 @@ require "chef/dist"
 
 describe "Chef Versions", :executables do
   include Chef::Mixin::ShellOut
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..") }
+  let(:chef_dir) { File.join(__dir__, "..", "..") }
 
   binaries = [ Chef::Dist::CLIENT, "chef-shell", "chef-apply", "knife", Chef::Dist::SOLOEXEC ]
 

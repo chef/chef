@@ -33,7 +33,7 @@ shared_examples_for "an application that loads a dot d" do
     # make sure that we are correctly globbing.
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-        File.join(File.dirname(__FILE__), "../../../data/client.d_00")
+        File.join(__dir__, "../../../data/client.d_00")
       )
     end
 
@@ -53,7 +53,7 @@ shared_examples_for "an application that loads a dot d" do
   context "when client_d_dir is set to a directory without configuration" do
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-        File.join(File.dirname(__FILE__), "../../data/client.d_01")
+        File.join(__dir__, "../../data/client.d_01")
       )
     end
 
@@ -71,7 +71,7 @@ shared_examples_for "an application that loads a dot d" do
     # foo.rb as a directory should be ignored
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-        File.join(File.dirname(__FILE__), "../../data/client.d_02")
+        File.join(__dir__, "../../data/client.d_02")
       )
     end
 

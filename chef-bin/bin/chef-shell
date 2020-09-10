@@ -24,7 +24,7 @@ require "irb"
 require "irb/completion"
 require "irb/ext/save-history"
 
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 
 require "chef/shell"
 

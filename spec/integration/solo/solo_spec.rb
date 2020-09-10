@@ -12,7 +12,7 @@ describe Chef::Dist::SOLOEXEC do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
   let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
 
@@ -183,7 +183,7 @@ describe Chef::Dist::SOLOEXEC do
       # run_lock gets stuck we can discover it.
       expect do
         Timeout.timeout(120) do
-          chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
+          chef_dir = File.join(__dir__, "..", "..", "..")
 
           threads = []
 

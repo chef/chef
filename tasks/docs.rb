@@ -5,7 +5,7 @@ namespace :docs_site do
   task :resources do
     Encoding.default_external = Encoding::UTF_8
 
-    $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "lib")))
+    $:.unshift(File.expand_path(File.join(__dir__, "lib")))
 
     require "chef/resource_inspector"
     require "fileutils"

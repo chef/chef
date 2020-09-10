@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
-CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
+CHEF_SPEC_DATA = File.expand_path(__dir__ + "/../data/")
+CHEF_SPEC_ASSETS = File.expand_path(__dir__ + "/../functional/assets/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
 
 def sha256_checksum(path)
