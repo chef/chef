@@ -1738,7 +1738,7 @@ describe Chef::Knife::Bootstrap do
 
   describe "#perform_bootstrap" do
     let(:exit_status) { 0 }
-    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message") }
+    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message", stdout: "") }
 
     before do
       allow(connection).to receive(:hostname).and_return "testhost"
