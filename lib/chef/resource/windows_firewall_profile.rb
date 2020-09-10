@@ -19,8 +19,6 @@
 class Chef
   class Resource
     class WindowsFirewallProfile < Chef::Resource
-      unified_mode true
-
       provides :windows_firewall_profile
       description "Use the **windows_firewall_profile** resource to enable, disable, and configure the Windows firewall."
       introduced "16.3"
