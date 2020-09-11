@@ -23,52 +23,6 @@ class Chef
     class WindowsUserPrivilege < Chef::Resource
       unified_mode true
 
-      privilege_opts = %w{ SeAssignPrimaryTokenPrivilege
-                           SeAuditPrivilege
-                           SeBackupPrivilege
-                           SeBatchLogonRight
-                           SeChangeNotifyPrivilege
-                           SeCreateGlobalPrivilege
-                           SeCreatePagefilePrivilege
-                           SeCreatePermanentPrivilege
-                           SeCreateSymbolicLinkPrivilege
-                           SeCreateTokenPrivilege
-                           SeDebugPrivilege
-                           SeDenyBatchLogonRight
-                           SeDenyInteractiveLogonRight
-                           SeDenyNetworkLogonRight
-                           SeDenyRemoteInteractiveLogonRight
-                           SeDenyServiceLogonRight
-                           SeEnableDelegationPrivilege
-                           SeImpersonatePrivilege
-                           SeIncreaseBasePriorityPrivilege
-                           SeIncreaseQuotaPrivilege
-                           SeIncreaseWorkingSetPrivilege
-                           SeInteractiveLogonRight
-                           SeLoadDriverPrivilege
-                           SeLockMemoryPrivilege
-                           SeMachineAccountPrivilege
-                           SeManageVolumePrivilege
-                           SeNetworkLogonRight
-                           SeProfileSingleProcessPrivilege
-                           SeRelabelPrivilege
-                           SeRemoteInteractiveLogonRight
-                           SeRemoteShutdownPrivilege
-                           SeRestorePrivilege
-                           SeSecurityPrivilege
-                           SeServiceLogonRight
-                           SeShutdownPrivilege
-                           SeSyncAgentPrivilege
-                           SeSystemEnvironmentPrivilege
-                           SeSystemProfilePrivilege
-                           SeSystemtimePrivilege
-                           SeTakeOwnershipPrivilege
-                           SeTcbPrivilege
-                           SeTimeZonePrivilege
-                           SeTrustedCredManAccessPrivilege
-                           SeUndockPrivilege
-                          }
-
       provides :windows_user_privilege
       description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
 
@@ -125,6 +79,52 @@ class Chef
       ```
       DOC
 
+      PRIVILEGE_OPTS = %w{ SeAssignPrimaryTokenPrivilege
+                           SeAuditPrivilege
+                           SeBackupPrivilege
+                           SeBatchLogonRight
+                           SeChangeNotifyPrivilege
+                           SeCreateGlobalPrivilege
+                           SeCreatePagefilePrivilege
+                           SeCreatePermanentPrivilege
+                           SeCreateSymbolicLinkPrivilege
+                           SeCreateTokenPrivilege
+                           SeDebugPrivilege
+                           SeDenyBatchLogonRight
+                           SeDenyInteractiveLogonRight
+                           SeDenyNetworkLogonRight
+                           SeDenyRemoteInteractiveLogonRight
+                           SeDenyServiceLogonRight
+                           SeEnableDelegationPrivilege
+                           SeImpersonatePrivilege
+                           SeIncreaseBasePriorityPrivilege
+                           SeIncreaseQuotaPrivilege
+                           SeIncreaseWorkingSetPrivilege
+                           SeInteractiveLogonRight
+                           SeLoadDriverPrivilege
+                           SeLockMemoryPrivilege
+                           SeMachineAccountPrivilege
+                           SeManageVolumePrivilege
+                           SeNetworkLogonRight
+                           SeProfileSingleProcessPrivilege
+                           SeRelabelPrivilege
+                           SeRemoteInteractiveLogonRight
+                           SeRemoteShutdownPrivilege
+                           SeRestorePrivilege
+                           SeSecurityPrivilege
+                           SeServiceLogonRight
+                           SeShutdownPrivilege
+                           SeSyncAgentPrivilege
+                           SeSystemEnvironmentPrivilege
+                           SeSystemProfilePrivilege
+                           SeSystemtimePrivilege
+                           SeTakeOwnershipPrivilege
+                           SeTcbPrivilege
+                           SeTimeZonePrivilege
+                           SeTrustedCredManAccessPrivilege
+                           SeUndockPrivilege
+                          }.freeze
+
       property :principal, String,
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
         name_property: true
@@ -137,14 +137,14 @@ class Chef
         required: true,
         coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
         callbacks: {
-          "Option privilege must include any of the: #{privilege_opts}" => lambda { |n|
+          "Option privilege must include any of the: #{PRIVILEGE_OPTS}" => lambda { |n|
             if n.is_a?(String)
               these_options = Array[n]
             else
               these_options = n
             end
 
-            if (these_options - privilege_opts).empty?
+            if (these_options - PRIVILEGE_OPTS).empty?
               true
             else
               false
