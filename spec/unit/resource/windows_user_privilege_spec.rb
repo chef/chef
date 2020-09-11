@@ -24,7 +24,27 @@ describe Chef::Resource::WindowsUserPrivilege do
     expect(resource.resource_name).to eql(:windows_user_privilege)
   end
 
+  it "the principal property is the name_property" do
+    expect(resource.principal).to eql("fakey_fakerton")
+  end
+
+  it "the principal privilege property coerces to an array" do
+    resource.privilege "SeDenyRemoteInteractiveLogonRight"
+    expect(resource.privilege).to eql(["SeDenyRemoteInteractiveLogonRight"])
+  end
+
+  it "the principal privilege validates inputs against the allowed list of privs" do
+    expect { resource.privilege "invalidPriv" }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
   it "sets the default action as :add" do
     expect(resource.action).to eql([:add])
+  end
+
+  it "supports :add, :set, :clear, :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :set }.not_to raise_error
+    expect { resource.action :clear }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 end

@@ -133,23 +133,11 @@ class Chef
         description: "An optional property to set the privilege for given users. Use only with set action."
 
       property :privilege, [Array, String],
-        description: "Privilege to set for users.",
+        description: "One or more privileges to set for users.",
         required: true,
-        coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
+        coerce: proc { |v| Array[v] },
         callbacks: {
-          "Option privilege must include any of the: #{PRIVILEGE_OPTS}" => lambda { |n|
-            if n.is_a?(String)
-              these_options = Array[n]
-            else
-              these_options = n
-            end
-
-            if (these_options - PRIVILEGE_OPTS).empty?
-              true
-            else
-              false
-            end
-          },
+          "Option privilege must include any of the: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
         }
 
       load_current_value do |new_resource|
