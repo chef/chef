@@ -136,7 +136,21 @@ class Chef
         description: "Privilege to set for users.",
         required: true,
         coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
-        callbacks: { "Option privilege must include any of the: #{privilege_opts}" => proc { |n| (Array(n) - privilege_opts).empty? } }
+        callbacks: {
+          "Option privilege must include any of the: #{privilege_opts}" => lambda { |n|
+            if n.is_a?(String)
+              these_options = Array[n]
+            else
+              these_options = n
+            end
+
+            if (these_options - privilege_opts).empty?
+              true
+            else
+              false
+            end
+          },
+        }
 
       load_current_value do |new_resource|
         if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))
