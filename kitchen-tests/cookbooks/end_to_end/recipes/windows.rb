@@ -39,7 +39,7 @@ windows_firewall_profile "Domain" do
 end
 
 windows_user_privilege "BUILTIN\\Administrators" do
-  privilege %w(SeAssignPrimaryTokenPrivilege SeIncreaseQuotaPrivilege)
+  privilege %w{SeAssignPrimaryTokenPrivilege SeIncreaseQuotaPrivilege}
   action :add
 end
 
