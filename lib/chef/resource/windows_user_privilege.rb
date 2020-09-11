@@ -138,7 +138,7 @@ class Chef
         required: true,
         coerce: proc { |v| Array(v) },
         callbacks: {
-          "Option privilege must include any of the: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
+          "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
         }
 
       load_current_value do |new_resource|
