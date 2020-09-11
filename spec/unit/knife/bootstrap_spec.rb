@@ -1738,7 +1738,8 @@ describe Chef::Knife::Bootstrap do
 
   describe "#perform_bootstrap" do
     let(:exit_status) { 0 }
-    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message", stdout: "") }
+    let(:stdout) { "" }
+    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message", stdout: stdout) }
 
     before do
       allow(connection).to receive(:hostname).and_return "testhost"
@@ -1757,6 +1758,7 @@ describe Chef::Knife::Bootstrap do
       expect(knife.ui).to receive(:msg).with(/testhost/)
       knife.perform_bootstrap("/path.sh")
     end
+
     context "when the remote command fails" do
       let(:exit_status) { 1 }
       it "shows an error and exits" do
@@ -1765,6 +1767,28 @@ describe Chef::Knife::Bootstrap do
           .with("/path.sh")
           .and_return("sh /path.sh")
         expect(connection).to receive(:run_command).with("sh /path.sh").and_return result_mock
+        expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
+      end
+    end
+
+    context "when the remote command failed due to su auth error" do
+      let(:exit_status) { 1 }
+      let(:stdout) { "su: Authentication failure" }
+      let(:connection_obj) { double("connection", transport_options: {}) }
+      let(:result_mock2) { double("result", exit_status: 1, stderr: "A message", stdout: "") }
+      it "shows an error and exits" do
+        allow(connection).to receive(:connection).and_return(connection_obj)
+        expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
+        expect(knife).to receive(:bootstrap_command)
+          .with("/path.sh")
+          .and_return("su - USER -c 'sh /path.sh'")
+        expect(connection)
+          .to receive(:run_command)
+          .with("su - USER -c 'sh /path.sh'")
+          .and_yield("output here")
+          .and_return result_mock
+        expect(knife.ui).to receive(:ask).and_return("password").twice
+        expect(connection).to receive(:run_command).with("su - USER -c 'sh /path.sh'").and_return(result_mock, result_mock2)
         expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
       end
     end
@@ -1976,7 +2000,25 @@ describe Chef::Knife::Bootstrap do
     context "under Linux" do
       let(:linux_test) { true }
       it "prefixes the command to run under sh" do
-        expect(knife.bootstrap_command("bootstrap")).to eq "sh bootstrap"
+        expect(knife.bootstrap_command("bootstrap.sh")).to eq "sh bootstrap.sh"
+      end
+
+      context "with --su-user option" do
+        let(:connection_obj) { double("connection", transport_options: {}) }
+        before do
+          knife.config[:su_user] = "root"
+          allow(connection).to receive(:connection).and_return(connection_obj)
+        end
+        it "prefixes the command to run using su -USER -c" do
+          expect(knife.bootstrap_command("bootstrap.sh")).to eq "su - #{knife.config[:su_user]} -c 'sh bootstrap.sh'"
+          expect(connection_obj.transport_options.key?(:pty)).to eq true
+        end
+
+        it "sudo appended if --sudo option enabled" do
+          knife.config[:use_sudo] = true
+          expect(knife.bootstrap_command("bootstrap.sh")).to eq "sudo su - #{knife.config[:su_user]} -c 'sh bootstrap.sh'"
+          expect(connection_obj.transport_options.key?(:pty)).to eq true
+        end
       end
     end
   end
