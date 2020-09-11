@@ -41,9 +41,6 @@ class Chef
 
       @chef_client = nil
       @chef_client_json = nil
-
-      # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
-      # from failing due to permissions when launched as a less privileged user.
     end
 
     # Configure mixlib-cli to always separate defaults from user-supplied CLI options
