@@ -123,7 +123,8 @@ include_recipe "::_cron"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests"
-include_recipe "::_mount"
+# TODO: Is this breaking the azure pipelines CI?
+#include_recipe "::_mount"
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue
