@@ -1,32 +1,30 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.14.0 -->
-## [v15.14.0](https://github.com/chef/chef/tree/v15.14.0) (2020-09-11)
-
-#### Merged Pull Requests
-- Add Chef Infra Client 15.14 release notes [#10419](https://github.com/chef/chef/pull/10419) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.13.8 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Add Chef Infra Client 15.14 release notes [#10419](https://github.com/chef/chef/pull/10419) ([tas50](https://github.com/tas50)) <!-- 15.14.0 -->
-- Add SLES 15 S390x builds [#10417](https://github.com/chef/chef/pull/10417) ([tas50](https://github.com/tas50)) <!-- 15.13.21 -->
-- Update openssl to 1.0.2w and bump other deps to current [#10415](https://github.com/chef/chef/pull/10415) ([tas50](https://github.com/tas50)) <!-- 15.13.20 -->
-- Simplify macos platform detection in the specs + add macOS Big Sur testers [#10378](https://github.com/chef/chef/pull/10378) ([tas50](https://github.com/tas50)) <!-- 15.13.19 -->
-- Avoid knife ssh freeze on windows [#10377](https://github.com/chef/chef/pull/10377) ([tas50](https://github.com/tas50)) <!-- 15.13.18 -->
-- Pin Chefstyle + bump all other deps [#10375](https://github.com/chef/chef/pull/10375) ([tas50](https://github.com/tas50)) <!-- 15.13.17 -->
-- Use powershell_out vs. powershell_script in hostname [#10317](https://github.com/chef/chef/pull/10317) ([tas50](https://github.com/tas50)) <!-- 15.13.16 -->
-- Fix second chef run hang for windows_font resource [#10316](https://github.com/chef/chef/pull/10316) ([tas50](https://github.com/tas50)) <!-- 15.13.15 -->
-- Fix install windows features when install state is removed  [#10315](https://github.com/chef/chef/pull/10315) ([tas50](https://github.com/tas50)) <!-- 15.13.14 -->
-- Convert File.exists to File.exist in many places [#10312](https://github.com/chef/chef/pull/10312) ([tas50](https://github.com/tas50)) <!-- 15.13.13 -->
-- Make sure darwin is always detected [#10313](https://github.com/chef/chef/pull/10313) ([tas50](https://github.com/tas50)) <!-- 15.13.12 -->
-- Use net/http and openssl instead of net/https [#10314](https://github.com/chef/chef/pull/10314) ([tas50](https://github.com/tas50)) <!-- 15.13.11 -->
-- Update all deps to current [#10311](https://github.com/chef/chef/pull/10311) ([tas50](https://github.com/tas50)) <!-- 15.13.10 -->
-- Backport dist configuration to chef15 [#10266](https://github.com/chef/chef/pull/10266) ([tehlers320](https://github.com/tehlers320)) <!-- 15.13.9 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.14.0](https://github.com/chef/chef/tree/v15.14.0) (2020-09-11)
+
+#### Merged Pull Requests
+- Backport dist configuration to chef15 [#10266](https://github.com/chef/chef/pull/10266) ([tehlers320](https://github.com/tehlers320))
+- Update all deps to current [#10311](https://github.com/chef/chef/pull/10311) ([tas50](https://github.com/tas50))
+- Use net/http and openssl instead of net/https [#10314](https://github.com/chef/chef/pull/10314) ([tas50](https://github.com/tas50))
+- Make sure darwin is always detected [#10313](https://github.com/chef/chef/pull/10313) ([tas50](https://github.com/tas50))
+- Convert File.exists to File.exist in many places [#10312](https://github.com/chef/chef/pull/10312) ([tas50](https://github.com/tas50))
+- Fix install windows features when install state is removed  [#10315](https://github.com/chef/chef/pull/10315) ([tas50](https://github.com/tas50))
+- Fix second chef run hang for windows_font resource [#10316](https://github.com/chef/chef/pull/10316) ([tas50](https://github.com/tas50))
+- Use powershell_out vs. powershell_script in hostname [#10317](https://github.com/chef/chef/pull/10317) ([tas50](https://github.com/tas50))
+- Pin Chefstyle + bump all other deps [#10375](https://github.com/chef/chef/pull/10375) ([tas50](https://github.com/tas50))
+- Avoid knife ssh freeze on windows [#10377](https://github.com/chef/chef/pull/10377) ([tas50](https://github.com/tas50))
+- Simplify macos platform detection in the specs + add macOS Big Sur testers [#10378](https://github.com/chef/chef/pull/10378) ([tas50](https://github.com/tas50))
+- Update openssl to 1.0.2w and bump other deps to current [#10415](https://github.com/chef/chef/pull/10415) ([tas50](https://github.com/tas50))
+- Add SLES 15 S390x builds [#10417](https://github.com/chef/chef/pull/10417) ([tas50](https://github.com/tas50))
+- Add Chef Infra Client 15.14 release notes [#10419](https://github.com/chef/chef/pull/10419) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.13.8](https://github.com/chef/chef/tree/v15.13.8) (2020-07-29)
 
 #### Merged Pull Requests
@@ -41,7 +39,6 @@
 - Update mixlib-shellout to 3.1.2 [#10219](https://github.com/chef/chef/pull/10219) ([tas50](https://github.com/tas50))
 - Update libarchive, liblzma, and nokogiri to the latest [#10222](https://github.com/chef/chef/pull/10222) ([tas50](https://github.com/tas50))
 - Bump omnibus-software to the latest [#10223](https://github.com/chef/chef/pull/10223) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.12.22](https://github.com/chef/chef/tree/v15.12.22) (2020-06-26)
 
