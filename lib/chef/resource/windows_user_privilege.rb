@@ -129,13 +129,14 @@ class Chef
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
         name_property: true
 
-      property :users, Array,
-        description: "An optional property to set the privilege for given users. Use only with set action."
+      property :users, [Array, String],
+        description: "An optional property to set the privilege for given users. Use only with set action.",
+        coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
         description: "One or more privileges to set for users.",
         required: true,
-        coerce: proc { |v| Array[v] },
+        coerce: proc { |v| Array(v) },
         callbacks: {
           "Option privilege must include any of the: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
         }

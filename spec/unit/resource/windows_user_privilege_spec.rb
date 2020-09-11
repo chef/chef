@@ -28,12 +28,17 @@ describe Chef::Resource::WindowsUserPrivilege do
     expect(resource.principal).to eql("fakey_fakerton")
   end
 
-  it "the principal privilege property coerces to an array" do
+  it "the users property coerces to an array" do
+    resource.users "Administrator"
+    expect(resource.users).to eql(["Administrator"])
+  end
+
+  it "the privilege property coerces to an array" do
     resource.privilege "SeDenyRemoteInteractiveLogonRight"
     expect(resource.privilege).to eql(["SeDenyRemoteInteractiveLogonRight"])
   end
 
-  it "the principal privilege validates inputs against the allowed list of privs" do
+  it "the privilege property validates inputs against the allowed list of privs" do
     expect { resource.privilege "invalidPriv" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
