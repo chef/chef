@@ -18,3 +18,18 @@ mount "/mnt" do
   options %w{bind rw}
   action %i{ mount enable }
 end
+
+mount "/proc" do
+  device "proc"
+  action %i{ disable unmount }
+end
+
+mount "/mnt" do
+  device "/tmp"
+  action %i{ disable unmount }
+end
+
+mount "/mnt" do
+  device "/etc"
+  action %i{ disable unmount }
+end
