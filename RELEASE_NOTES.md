@@ -1,5 +1,48 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New In 15.14
+
+## Chef InSpec 4.22.22
+
+Chef InSpec has been updated from 4.22.1 to 4.22.22. This new release includes the following improvements:
+
+- Fix mysql_session stdout, stderr and exit_status parameters. Thanks [@ramereth](https://github.com/ramereth)!
+- Add new windows_firewall and windows_firewall_rule resources. Thanks [@tecracer-theinen](https://github.com/tecracer-theinen)!
+
+## Fixes and Improvements
+
+- The `knife ssh` command no longer hangs when connecting to Windows nodes over SSH.
+- Resolved several failures that could occur in the included chef-vault gem.
+
+## Resource Updates
+
+### hostname
+
+The `hostname` resource has been updated to improve logging on Windows systems.
+
+### windows_feature
+
+The `windows_feature` resource has been updated to allow installing features that have been removed if a source location is provided. Thanks for reporting this [@stefanwb](https://github.com/stefanwb)!
+
+### windows_font
+
+The `windows_font` resource will no longer fail on newer releases of Windows if a font is already installed. Thanks for reporting this [@bmiller08](https://github.com/bmiller08)!
+
+## Platform Packages
+
+- We are once again building Chef Infra Client packages for RHEL 7 / SLES 12 on the S390x architecture. In addition to these packages, we've also added S390x packages for SLES 15.
+- We now produce packages for Apple's upcoming macOS 11 Big Sur release.
+
+## Security
+
+### OpenSSL
+
+OpenSSL has been updated to 1.0.2w which includes a fix for [CVE-2020-1968](https://cve.mitre.org/cgi-bin/cvename.cgi?name=2020-1968).
+
+### CA Root Certificates
+
+The included `cacerts` bundle in Chef Infra Client has been updated to the 7-22-2020 release. This new release removes 4 legacy root certificates and adds 4 additional root certificates.
+
 # What's New In 15.13
 
 ## Chef InSpec 4.22.1
