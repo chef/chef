@@ -98,7 +98,7 @@ The `windows_firewall_profile` resource was updated to prevent NilClass errors f
 
 ### Windows securable resources
 
-All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the template, file, remote_file, cookbook_file, directory, and remote_directory resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-strings).
+All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the `template`, `file`, `remote_file`, `cookbook_file`, `directory`, and `remote_directory` resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-strings).
 
 ## Ohai Improvements
 
