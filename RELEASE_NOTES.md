@@ -96,6 +96,10 @@ The `windows_ad_join` resource has been updated with a new `reboot_delay` proper
 
 The `windows_firewall_profile` resource was updated to prevent NilClass errors from loading the firewall state.
 
+### Windows securable resources
+
+All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the template, file, remote_file, cookbook_file, directory, and remote_directory resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-strings).
+
 ## Ohai Improvements
 
 - Ohai now uses the same underlying code for shelling out to external commands as Chef Infra Client. This may resolve issues from determining the state on some non-English systems.
