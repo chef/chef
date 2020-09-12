@@ -38,11 +38,6 @@ windows_firewall_profile "Domain" do
   action :enable
 end
 
-windows_user_privilege "BUILTIN\\Administrators" do
-  privilege %w{SeAssignPrimaryTokenPrivilege SeIncreaseQuotaPrivilege}
-  action :add
-end
-
 windows_firewall_profile "Public" do
   action :disable
 end
