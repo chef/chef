@@ -221,7 +221,7 @@ class Chef::Application::Knife < Chef::Application
       puts "#{Chef::Dist::PRODUCT}: #{Chef::VERSION}"
       puts
       puts "Docs: #{Chef::Dist::KNIFE_DOCS}"
-      puts "Patents: #{Chef::Dist::PATENTS}"
+      puts "Patents: #{ChefUtils::Dist::Org::PATENTS}"
       puts
     end
 

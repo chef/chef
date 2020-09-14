@@ -56,6 +56,9 @@ module ChefUtils
 
       # Enable forcing Chef EULA
       ENFORCE_LICENSE = true
+
+      # product patents page
+      PATENTS = "https://www.chef.io/patents".freeze
     end
 
     class Server
