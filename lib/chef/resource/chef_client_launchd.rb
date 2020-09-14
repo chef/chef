@@ -110,7 +110,7 @@ class Chef
           end
         end
 
-        launchd "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}" do
+        launchd "com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}" do
           username new_resource.user
           working_directory new_resource.working_directory
           start_interval new_resource.interval * 60
@@ -127,14 +127,14 @@ class Chef
         # to restart itself. If the chef-client process uses launchd or macosx_service resources to restart itself
         # we'll end up with a stopped service that will never get started back up. Instead we use this daemon
         # that triggers when the chef-client plist file is updated, and handles the restart outside the run.
-        launchd "com.#{Chef::Dist::SHORT}.restarter" do
+        launchd "com.#{ChefUtils::Dist::Infra::SHORT}.restarter" do
           username "root"
-          watch_paths ["/Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+          watch_paths ["/Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
           standard_out_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
           standard_error_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
           program_arguments ["/bin/bash",
                              "-c",
-                             "echo; echo #{Chef::Dist::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}.plist"]
+                             "echo; echo #{ChefUtils::Dist::Infra::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
           action :enable # enable creates the plist & triggers service restarts on change
         end
 
@@ -149,12 +149,12 @@ class Chef
       end
 
       action :disable do
-        service Chef::Dist::PRODUCT do
-          service_name "com.#{Chef::Dist::SHORT}.#{Chef::Dist::CLIENT}"
+        service ChefUtils::Dist::Infra::PRODUCT do
+          service_name "com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}"
           action :disable
         end
 
-        service "com.#{Chef::Dist::SHORT}.restarter" do
+        service "com.#{ChefUtils::Dist::Infra::SHORT}.restarter" do
           action :disable
         end
       end
