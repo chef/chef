@@ -365,9 +365,9 @@ module Shell
       elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF))
         File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF)
       elsif config[:solo_legacy_shell]
-        "#{ChefConfig::Config.etc_chef_dir}/solo.rb"
+        Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/solo.rb")
       elsif config[:client]
-        "#{ChefConfig::Config.etc_chef_dir}/client.rb"
+        Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/client.rb")
       elsif config[:solo_shell]
         Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
