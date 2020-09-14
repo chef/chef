@@ -77,8 +77,8 @@ class Chef
       credentials_file =
         if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
           tm_config.credentials_file
-        elsif File.exist?("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
-          "#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"
+        elsif File.exist?(Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"))
+          Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
         else
           super
         end

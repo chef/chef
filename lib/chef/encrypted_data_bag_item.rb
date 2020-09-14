@@ -130,7 +130,7 @@ class Chef::EncryptedDataBagItem
     require "open-uri" unless defined?(OpenURI)
     path ||= Chef::Config[:encrypted_data_bag_secret]
     unless path
-      raise ArgumentError, "No secret specified and no secret found at #{ChefConfig::Config.etc_chef_dir + "/encrypted_data_bag_secret"}"
+      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(ChefConfig::Config.etc_chef_dir) + "/encrypted_data_bag_secret"}"
     end
 
     secret = case path
