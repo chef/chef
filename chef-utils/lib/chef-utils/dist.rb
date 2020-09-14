@@ -59,6 +59,9 @@ module ChefUtils
 
       # product patents page
       PATENTS = "https://www.chef.io/patents".freeze
+
+      # knife documentation page
+      KNIFE_DOCS = "https://docs.chef.io/workstation/knife/".freeze
     end
 
     class Server

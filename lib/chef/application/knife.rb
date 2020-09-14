@@ -220,7 +220,7 @@ class Chef::Application::Knife < Chef::Application
     if want_help?
       puts "#{Chef::Dist::PRODUCT}: #{Chef::VERSION}"
       puts
-      puts "Docs: #{Chef::Dist::KNIFE_DOCS}"
+      puts "Docs: #{ChefUtils::Dist::Org::KNIFE_DOCS}"
       puts "Patents: #{ChefUtils::Dist::Org::PATENTS}"
       puts
     end
