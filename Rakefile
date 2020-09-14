@@ -26,7 +26,7 @@ begin
   require_relative "tasks/announce"
   require_relative "tasks/docs"
   require_relative "tasks/spellcheck"
-  require_relative "chef-utils/lib/chef-utils/dist"
+  require_relative "chef-utils/lib/chef-utils/dist" unless defined?(ChefUtils::Dist)
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
 end
