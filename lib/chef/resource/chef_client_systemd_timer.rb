@@ -99,7 +99,7 @@ class Chef
         default: lazy { {} }
 
       property :cpu_quota, [Integer, String],
-        description: "The systemd CPUQuota to run the #{Chef::Dist::CLIENT} process with. This is a percentage value of the total CPU time available on the system. If the system has more than 1 core this may be a value greater than 100.",
+        description: "The systemd CPUQuota to run the #{ChefUtils::Dist::Infra::CLIENT} process with. This is a percentage value of the total CPU time available on the system. If the system has more than 1 core this may be a value greater than 100.",
         introduced: "16.5",
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
