@@ -190,13 +190,7 @@ namespace :docs_site do
 
       properties["properties_resources_common_windows_security"] = true if %w{cookbook_file file template remote_file directory}.include?(name)
 
-      properties["properties_shortcode"] =
-        case name
-        when "ohai"
-          "resource_ohai_properties.md"
-        when "log"
-          "resource_log_properties.md"
-        end
+      properties["properties_shortcode"] = "resource_log_properties.md" if name == "log"
 
       properties["ps_credential_helper"] = true if name == "dsc_script"
 
