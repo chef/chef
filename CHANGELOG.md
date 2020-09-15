@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.54 -->
-## [v16.5.54](https://github.com/chef/chef/tree/v16.5.54) (2020-09-15)
+<!-- latest_release 16.5.55 -->
+## [v16.5.55](https://github.com/chef/chef/tree/v16.5.55) (2020-09-15)
 
 #### Merged Pull Requests
-- Remove the Ubuntu azure pipeline test [#10434](https://github.com/chef/chef/pull/10434) ([tas50](https://github.com/tas50))
+- Move dist implementation into chef-utils [#9834](https://github.com/chef/chef/pull/9834) ([bobchaos](https://github.com/bobchaos))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move dist implementation into chef-utils [#9834](https://github.com/chef/chef/pull/9834) ([bobchaos](https://github.com/bobchaos)) <!-- 16.5.55 -->
 - Remove the Ubuntu azure pipeline test [#10434](https://github.com/chef/chef/pull/10434) ([tas50](https://github.com/tas50)) <!-- 16.5.54 -->
 - Update the validation of the privilege property on the windows_user_privilege resource [#10422](https://github.com/chef/chef/pull/10422) ([tas50](https://github.com/tas50)) <!-- 16.5.53 -->
 - allow the use of SIDs in windows securable resources [#10423](https://github.com/chef/chef/pull/10423) ([mwrock](https://github.com/mwrock)) <!-- 16.5.52 -->
