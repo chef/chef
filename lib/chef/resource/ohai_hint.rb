@@ -26,6 +26,39 @@ class Chef
 
       description "Use the **ohai_hint** resource to aid in configuration detection by passing hint data to Ohai."
       introduced "14.0"
+      examples <<~DOC
+      **Create a hint file**
+
+      ```ruby
+      ohai_hint 'example' do
+        content Hash[:a, 'test_content']
+      end
+      ```
+
+      **Create a hint file with a name that does not match the resource name**
+
+      ```ruby
+      ohai_hint 'example' do
+        hint_name 'custom'
+      end
+      ```
+
+      **Create a hint file that is not loaded at compile time**
+
+      ```ruby
+      ohai_hint 'example' do
+        compile_time false
+      end
+      ```
+
+      **Delete a hint file**
+
+      ```ruby
+      ohai-hint 'example' do
+        action :delete
+      end
+      ```
+      DOC
 
       property :hint_name, String,
         description: "An optional property to set the hint name if it differs from the resource block's name.",
