@@ -57,7 +57,7 @@ class Chef
         plugin 'etc'
       end
 
-      user 'daemonuser' do
+      user 'daemon_user' do
         home '/dev/null'
         shell '/sbin/nologin'
         system true
@@ -67,8 +67,8 @@ class Chef
       ruby_block 'just an example' do
         block do
           # These variables will now have the new values
-          puts node['etc']['passwd']['daemonuser']['uid']
-          puts node['etc']['passwd']['daemonuser']['gid']
+          puts node['etc']['passwd']['daemon_user']['uid']
+          puts node['etc']['passwd']['daemon_user']['gid']
         end
       end
       ```
