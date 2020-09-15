@@ -29,7 +29,7 @@ class Chef
 
       provides :ohai
 
-      description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{ChefUtils::Dist::Infra::CLIENT} run."
+      description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{ChefUtils::Dist::Infra::PRODUCT} run."
 
       examples <<~DOC
       Reload All Ohai Plugins
@@ -40,11 +40,11 @@ class Chef
       end
       ```
 
-      Reload A Single Ohai Plugins
+      Reload A Single Ohai Plugin
 
       ```ruby
       ohai 'reload' do
-        plugin 'cloud'
+        plugin 'ipaddress'
         action :reload
       end
       ```
@@ -75,7 +75,7 @@ class Chef
       DOC
 
       property :plugin, String,
-        description: "The name of an Ohai plugin to be reloaded. If this property is not specified, #{ChefUtils::Dist::Infra::PRODUCT} will reload all plugins."
+        description: "Specific Ohai attribute data to reload. This property behaves similar to specifying attributes when running Ohai on the command line and takes the attribute that you wish to reload instead of the actual plugin name. For instance you you can pass `ipaddress` to reload `node['ipaddress']` even though that data comes from the `Network` plugin. If this property is not specified, #{ChefUtils::Dist::Infra::PRODUCT} will reload all plugins."
 
       def load_current_resource
         true
