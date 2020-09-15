@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.53 -->
-## [v16.5.53](https://github.com/chef/chef/tree/v16.5.53) (2020-09-12)
+<!-- latest_release 16.5.54 -->
+## [v16.5.54](https://github.com/chef/chef/tree/v16.5.54) (2020-09-15)
 
 #### Merged Pull Requests
-- Update the validation of the privilege property on the windows_user_privilege resource [#10422](https://github.com/chef/chef/pull/10422) ([tas50](https://github.com/tas50))
+- Remove the Ubuntu azure pipeline test [#10434](https://github.com/chef/chef/pull/10434) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the Ubuntu azure pipeline test [#10434](https://github.com/chef/chef/pull/10434) ([tas50](https://github.com/tas50)) <!-- 16.5.54 -->
 - Update the validation of the privilege property on the windows_user_privilege resource [#10422](https://github.com/chef/chef/pull/10422) ([tas50](https://github.com/tas50)) <!-- 16.5.53 -->
 - allow the use of SIDs in windows securable resources [#10423](https://github.com/chef/chef/pull/10423) ([mwrock](https://github.com/mwrock)) <!-- 16.5.52 -->
 - Update sysctl resource description to match reality [#10416](https://github.com/chef/chef/pull/10416) ([tas50](https://github.com/tas50)) <!-- 16.5.51 -->
