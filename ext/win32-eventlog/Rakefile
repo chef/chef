@@ -2,7 +2,7 @@ require "rubygems"
 require "rake"
 require "mkmf"
 require "erb"
-require_relative "../../chef-utils/lib/chef-utils/dist"
+require "chef-utils/dist"
 
 desc "Building event log dll"
 
