@@ -17,7 +17,7 @@
 #
 
 require_relative "package"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -135,7 +135,7 @@ class Chef
         coerce: proc { |x| x.is_a?(Array) ? x.to_a : x }
 
       property :flush_cache, Hash,
-        description: "Flush the in-memory cache before or after a Yum operation that installs, upgrades, or removes a package. Accepts a Hash in the form: { :before => true/false, :after => true/false } or an Array in the form [ :before, :after ].\nYum automatically synchronizes remote metadata to a local cache. The #{Chef::Dist::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{Chef::Dist::CLIENT} run. The in-memory cache allows packages to be installed during the #{Chef::Dist::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{Chef::Dist::CLIENT} run is in-progress.",
+        description: "Flush the in-memory cache before or after a Yum operation that installs, upgrades, or removes a package. Accepts a Hash in the form: { :before => true/false, :after => true/false } or an Array in the form [ :before, :after ].\nYum automatically synchronizes remote metadata to a local cache. The #{ChefUtils::Dist::Infra::CLIENT} creates a copy of the local cache, and then stores it in-memory during the #{ChefUtils::Dist::Infra::CLIENT} run. The in-memory cache allows packages to be installed during the #{ChefUtils::Dist::Infra::CLIENT} run without the need to continue synchronizing the remote metadata to the local cache while the #{ChefUtils::Dist::Infra::CLIENT} run is in-progress.",
         default: { before: false, after: false },
         coerce: proc { |v|
           if v.is_a?(Hash)

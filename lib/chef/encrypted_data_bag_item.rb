@@ -20,7 +20,6 @@ require_relative "config"
 Chef.autoload :DataBagItem, File.expand_path("data_bag_item", __dir__)
 require_relative "encrypted_data_bag_item/decryptor"
 require_relative "encrypted_data_bag_item/encryptor"
-require_relative "dist"
 
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
@@ -131,7 +130,7 @@ class Chef::EncryptedDataBagItem
     require "open-uri" unless defined?(OpenURI)
     path ||= Chef::Config[:encrypted_data_bag_secret]
     unless path
-      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(Chef::Dist::CONF_DIR + "/encrypted_data_bag_secret")}"
+      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(ChefConfig::Config.etc_chef_dir) + "/encrypted_data_bag_secret"}"
     end
 
     secret = case path

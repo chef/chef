@@ -17,7 +17,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -26,7 +26,7 @@ class Chef
 
       provides :breakpoint, target_mode: true
 
-      description "Use the **breakpoint** resource to add breakpoints to recipes. Run the #{Chef::Dist::SHELL} in #{Chef::Dist::PRODUCT} mode, and then use those breakpoints to debug recipes. Breakpoints are ignored by the #{Chef::Dist::CLIENT} during an actual #{Chef::Dist::CLIENT} run. That said, breakpoints are typically used to debug recipes only when running them in a non-production environment, after which they are removed from those recipes before the parent cookbook is uploaded to the Chef server."
+      description "Use the **breakpoint** resource to add breakpoints to recipes. Run the #{ChefUtils::Dist::Infra::SHELL} in #{ChefUtils::Dist::Infra::PRODUCT} mode, and then use those breakpoints to debug recipes. Breakpoints are ignored by the #{ChefUtils::Dist::Infra::CLIENT} during an actual #{ChefUtils::Dist::Infra::CLIENT} run. That said, breakpoints are typically used to debug recipes only when running them in a non-production environment, after which they are removed from those recipes before the parent cookbook is uploaded to the Chef server."
       introduced "12.0"
 
       default_action :break

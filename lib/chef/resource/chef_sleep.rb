@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -24,7 +24,7 @@ class Chef
 
       unified_mode true
 
-      description "Use the **chef_sleep** resource to pause (sleep) for a number of seconds during a #{Chef::Dist::PRODUCT} run. Only use this resource when a command or service exits successfully but is not ready for the next step in a recipe."
+      description "Use the **chef_sleep** resource to pause (sleep) for a number of seconds during a #{ChefUtils::Dist::Infra::PRODUCT} run. Only use this resource when a command or service exits successfully but is not ready for the next step in a recipe."
       introduced "15.5"
       examples <<~DOC
         **Sleep for 10 seconds**:

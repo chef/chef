@@ -28,7 +28,7 @@ module Mixlib
     autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
   end
 end
-require_relative "dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
@@ -43,7 +43,7 @@ class Chef
     class << self
 
       def create_build_dir(cookbook)
-        tmp_cookbook_path = Tempfile.new("#{Chef::Dist::SHORT}-#{cookbook.name}-build")
+        tmp_cookbook_path = Tempfile.new("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
         tmp_cookbook_path.close
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)

@@ -21,7 +21,7 @@ if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 end
 require_relative "../config"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Application
@@ -41,18 +41,18 @@ class Chef
         short: "-a ACTION",
         long: "--action ACTION",
         default: "status",
-        description: "Action to carry out on #{Chef::Dist::SHORT}-service (install, uninstall, status, start, stop, pause, or resume)."
+        description: "Action to carry out on #{ChefUtils::Dist::Infra::SHORT}-service (install, uninstall, status, start, stop, pause, or resume)."
 
       option :config_file,
         short: "-c CONFIG",
         long: "--config CONFIG",
         default: "#{ChefConfig::Config.c_chef_dir}/client.rb",
-        description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
+        description: "The configuration file to use for #{ChefUtils::Dist::Infra::PRODUCT} runs."
 
       option :log_location,
         short: "-L LOGLOCATION",
         long: "--logfile LOGLOCATION",
-        description: "Set the log file location for #{Chef::Dist::SHORT}-service."
+        description: "Set the log file location for #{ChefUtils::Dist::Infra::SHORT}-service."
 
       option :help,
         short: "-h",
@@ -66,9 +66,9 @@ class Chef
       option :version,
         short: "-v",
         long: "--version",
-        description: "Show #{Chef::Dist::PRODUCT} version.",
+        description: "Show #{ChefUtils::Dist::Infra::PRODUCT} version.",
         boolean: true,
-        proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
+        proc: lambda { |v| puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{::Chef::VERSION}" },
         exit: 0
 
       def initialize(service_options)

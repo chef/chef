@@ -17,7 +17,7 @@
 #
 
 require_relative "../knife"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef::Knife::Exec < Chef::Knife
 
@@ -30,7 +30,7 @@ class Chef::Knife::Exec < Chef::Knife
   option :exec,
     short: "-E CODE",
     long: "--exec CODE",
-    description: "A string of #{Chef::Dist::PRODUCT} code to execute."
+    description: "A string of #{ChefUtils::Dist::Infra::PRODUCT} code to execute."
 
   option :script_path,
     short: "-p PATH:PATH",

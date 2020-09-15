@@ -19,7 +19,7 @@
 require_relative "../resource"
 require_relative "../exceptions"
 require_relative "../dsl/powershell"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -29,7 +29,7 @@ class Chef
       unified_mode true
       provides :dsc_script
 
-      description "Many DSC resources are comparable to built-in #{Chef::Dist::PRODUCT} resources. For example, both DSC and #{Chef::Dist::PRODUCT} have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a resource in #{Chef::Dist::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{Chef::Dist::PRODUCT} recipe."
+      description "Many DSC resources are comparable to built-in #{ChefUtils::Dist::Infra::PRODUCT} resources. For example, both DSC and #{ChefUtils::Dist::Infra::PRODUCT} have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a resource in #{ChefUtils::Dist::Infra::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{ChefUtils::Dist::Infra::PRODUCT} recipe."
 
       default_action :run
 

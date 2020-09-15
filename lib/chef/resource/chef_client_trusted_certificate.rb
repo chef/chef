@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -24,7 +24,7 @@ class Chef
 
       provides :chef_client_trusted_certificate
 
-      description "Use the **chef_client_trusted_certificate** resource to add certificates to #{Chef::Dist::PRODUCT}'s trusted certificate directory. This allows the #{Chef::Dist::PRODUCT} to communicate with internal encrypted resources without errors."
+      description "Use the **chef_client_trusted_certificate** resource to add certificates to #{ChefUtils::Dist::Infra::PRODUCT}'s trusted certificate directory. This allows the #{ChefUtils::Dist::Infra::PRODUCT} to communicate with internal encrypted resources without errors."
       introduced "16.5"
       examples <<~DOC
       **Trust a self signed certificate**:

@@ -21,6 +21,7 @@ require "forwardable" unless defined?(Forwardable)
 require_relative "version"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "workstation_config_loader"
 require_relative "mixin/convert_to_class_name"
 require_relative "mixin/default_paths"
@@ -32,12 +33,11 @@ require_relative "http/authenticator"
 require_relative "http/http_request"
 require_relative "http"
 require "pp" unless defined?(PP)
-require_relative "dist"
 
 class Chef
   class Knife
 
-    Chef::HTTP::HTTPRequest.user_agent = "#{Chef::Dist::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
+    Chef::HTTP::HTTPRequest.user_agent = "#{ChefUtils::Dist::Infra::PRODUCT} Knife#{Chef::HTTP::HTTPRequest::UA_COMMON}"
 
     include Mixlib::CLI
     include ChefUtils::DSL::DefaultPaths
@@ -282,7 +282,7 @@ class Chef
         elsif category_commands = guess_category(args)
           list_commands(category_commands)
         elsif OFFICIAL_PLUGINS.include?(args[0]) # command was an uninstalled official chef knife plugin
-          ui.info("Use `#{Chef::Dist::EXEC} gem install knife-#{args[0]}` to install the plugin into Chef Workstation")
+          ui.info("Use `#{ChefUtils::Dist::Infra::EXEC} gem install knife-#{args[0]}` to install the plugin into Chef Workstation")
         else
           list_commands
         end
@@ -564,7 +564,7 @@ class Chef
         ui.error "The API version that Knife is using is not supported by the server you sent this request to."
         ui.info "The request that Knife sent was using API version #{client_api_version}."
         ui.info "The server you sent the request to supports a min API version of #{min_server_version} and a max API version of #{max_server_version}."
-        ui.info "Please either update your #{Chef::Dist::PRODUCT} or the server to be a compatible set."
+        ui.info "Please either update your #{ChefUtils::Dist::Infra::PRODUCT} or the server to be a compatible set."
       else
         ui.error response.message
         ui.info "Response: #{format_rest_error(response)}"

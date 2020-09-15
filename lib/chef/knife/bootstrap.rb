@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require_relative "data_bag_secret_options"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
@@ -146,7 +146,7 @@ class Chef
       # client.rb content via chef-full/bootstrap_context
       option :bootstrap_version,
         long: "--bootstrap-version VERSION",
-        description: "The version of #{Chef::Dist::PRODUCT} to install."
+        description: "The version of #{ChefUtils::Dist::Infra::PRODUCT} to install."
 
       option :channel,
         long: "--channel CHANNEL",
@@ -178,7 +178,7 @@ class Chef
       option :bootstrap_template,
         short: "-t TEMPLATE",
         long: "--bootstrap-template TEMPLATE",
-        description: "Bootstrap #{Chef::Dist::PRODUCT} using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
+        description: "Bootstrap #{ChefUtils::Dist::Infra::PRODUCT} using a built-in or custom template. Set to the full path of an erb template or use one of the built-in templates."
 
       # client.rb content via bootstrap_context
       option :node_ssl_verify_mode,
@@ -196,7 +196,7 @@ class Chef
       # bootstrap_context - client.rb
       option :node_verify_api_cert,
         long: "--[no-]node-verify-api-cert",
-        description: "Verify the SSL cert for HTTPS requests to the #{Chef::Dist::SERVER_PRODUCT} API.",
+        description: "Verify the SSL cert for HTTPS requests to the #{ChefUtils::Dist::Server::PRODUCT} API.",
         boolean: true
 
       # runtime - sudo settings (train handles sudo)
@@ -254,14 +254,14 @@ class Chef
       option :first_boot_attributes,
         short: "-j JSON_ATTRIBS",
         long: "--json-attributes",
-        description: "A JSON string to be added to the first run of #{Chef::Dist::CLIENT}.",
+        description: "A JSON string to be added to the first run of #{ChefUtils::Dist::Infra::CLIENT}.",
         proc: lambda { |o| Chef::JSONCompat.parse(o) },
         default: nil
 
       # bootstrap template
       option :first_boot_attributes_from_file,
         long: "--json-attribute-file FILE",
-        description: "A JSON file to be used to the first run of #{Chef::Dist::CLIENT}.",
+        description: "A JSON file to be used to the first run of #{ChefUtils::Dist::Infra::CLIENT}.",
         proc: lambda { |o| Chef::JSONCompat.parse(File.read(o)) },
         default: nil
 
@@ -292,28 +292,28 @@ class Chef
       option :msi_url, # Windows target only
         short: "-m URL",
         long: "--msi-url URL",
-        description: "Location of the #{Chef::Dist::PRODUCT} MSI. The default templates will prefer to download from this location. The MSI will be downloaded from #{Chef::Dist::WEBSITE} if not provided (Windows).",
+        description: "Location of the #{ChefUtils::Dist::Infra::PRODUCT} MSI. The default templates will prefer to download from this location. The MSI will be downloaded from #{ChefUtils::Dist::Org::WEBSITE} if not provided (Windows).",
         default: ""
 
       # bootstrap override: Do this instead of our own setup.sh from omnitruck. Causes bootstrap_url to be ignored.
       option :bootstrap_install_command,
         long: "--bootstrap-install-command COMMANDS",
-        description: "Custom command to install #{Chef::Dist::PRODUCT}."
+        description: "Custom command to install #{ChefUtils::Dist::Infra::PRODUCT}."
 
       # bootstrap template: Run this command first in the bootstrap script
       option :bootstrap_preinstall_command,
         long: "--bootstrap-preinstall-command COMMANDS",
-        description: "Custom commands to run before installing #{Chef::Dist::PRODUCT}."
+        description: "Custom commands to run before installing #{ChefUtils::Dist::Infra::PRODUCT}."
 
       # bootstrap template
       option :bootstrap_wget_options,
         long: "--bootstrap-wget-options OPTIONS",
-        description: "Add options to wget when installing #{Chef::Dist::PRODUCT}."
+        description: "Add options to wget when installing #{ChefUtils::Dist::Infra::PRODUCT}."
 
       # bootstrap template
       option :bootstrap_curl_options,
         long: "--bootstrap-curl-options OPTIONS",
-        description: "Add options to curl when install #{Chef::Dist::PRODUCT}."
+        description: "Add options to curl when install #{ChefUtils::Dist::Infra::PRODUCT}."
 
       # chef_vault_handler
       option :bootstrap_vault_file,
@@ -540,7 +540,7 @@ class Chef
       end
 
       def run
-        check_license if ChefConfig::Dist::ENFORCE_LICENSE
+        check_license if ChefUtils::Dist::Org::ENFORCE_LICENSE
 
         plugin_setup!
         validate_name_args!

@@ -17,7 +17,7 @@
 
 require "chef-config/mixin/credentials"
 autoload :Train, "train"
-require_relative "dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class TrainTransport
@@ -77,8 +77,8 @@ class Chef
       credentials_file =
         if tm_config.credentials_file && File.exist?(tm_config.credentials_file)
           tm_config.credentials_file
-        elsif File.exist?(Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/#{profile}/credentials"))
-          Chef::Config.platform_specific_path("#{Chef::Dist::CONF_DIR}/#{profile}/credentials")
+        elsif File.exist?(Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials"))
+          Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/#{profile}/credentials")
         else
           super
         end
@@ -102,7 +102,7 @@ class Chef
       tm_config = Chef::Config.target_mode
       protocol = tm_config.protocol
       train_config = tm_config.to_hash.select { |k| Train.options(protocol).key?(k) }
-      Chef::Log.trace("Using target mode options from #{Chef::Dist::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
+      Chef::Log.trace("Using target mode options from #{ChefUtils::Dist::Infra::PRODUCT} config file: #{train_config.keys.join(", ")}") if train_config
 
       # Load the credentials file, and place any valid settings into the train configuration
       credentials = load_credentials(tm_config.host)

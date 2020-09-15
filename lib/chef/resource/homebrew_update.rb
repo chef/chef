@@ -19,7 +19,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -38,7 +38,7 @@ class Chef
           action :periodic
         end
         ```
-        **Update the Homebrew repository at the start of a #{Chef::Dist::PRODUCT} run**:
+        **Update the Homebrew repository at the start of a #{ChefUtils::Dist::Infra::PRODUCT} run**:
         ```ruby
         homebrew_update 'update'
         ```

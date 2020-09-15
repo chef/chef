@@ -17,7 +17,7 @@
 #
 
 require_relative "../knife"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
@@ -190,7 +190,7 @@ class Chef
           #{ui.color("TO FIX THIS ERROR:", :bold)}
 
           If the server you are connecting to uses a self-signed certificate, you must
-          configure #{Chef::Dist::PRODUCT} to trust that server's certificate.
+          configure #{ChefUtils::Dist::Infra::PRODUCT} to trust that server's certificate.
 
           By default, the certificate is stored in the following location on the host
           where your chef-server runs:
@@ -234,7 +234,7 @@ class Chef
       end
 
       def debug_chef_ssl_config
-        ui.err "#{Chef::Dist::PRODUCT} SSL Configuration:"
+        ui.err "#{ChefUtils::Dist::Infra::PRODUCT} SSL Configuration:"
         ui.err "* ssl_ca_path: #{configuration.ssl_ca_path.inspect}"
         ui.err "* ssl_ca_file: #{configuration.ssl_ca_file.inspect}"
         ui.err "* trusted_certs_dir: #{configuration.trusted_certs_dir.inspect}"

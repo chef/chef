@@ -27,7 +27,7 @@ require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "tmpdir" unless defined?(Dir.mktmpdir)
 require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
-require_relative "dist"
+require "chef-utils" unless defined?(ChefUtils)
 module LicenseAcceptance
   autoload :Acceptor, "license_acceptance/acceptor"
 end
@@ -307,7 +307,7 @@ class Chef
     end
 
     def fork_chef_client
-      logger.info "Forking #{Chef::Dist::PRODUCT} instance to converge..."
+      logger.info "Forking #{ChefUtils::Dist::Infra::PRODUCT} instance to converge..."
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
@@ -316,7 +316,7 @@ class Chef
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
 
-        client_solo = chef_config[:solo] ? Chef::Dist::SOLOEXEC : Chef::Dist::CLIENT
+        client_solo = chef_config[:solo] ? ChefUtils::Dist::Solo::EXEC : ChefUtils::Dist::Infra::CLIENT
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
           logger.trace "Forked instance now converging"
@@ -328,7 +328,7 @@ class Chef
           exit 0
         end
       end
-      logger.trace "Fork successful. Waiting for new #{Chef::Dist::CLIENT} pid: #{pid}"
+      logger.trace "Fork successful. Waiting for new #{ChefUtils::Dist::Infra::CLIENT} pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
       logger.trace "Forked instance successfully reaped (pid: #{pid})"
@@ -340,9 +340,9 @@ class Chef
       return true if status.success?
 
       message = if status.signaled?
-                  "#{Chef::Dist::PRODUCT} run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+                  "#{ChefUtils::Dist::Infra::PRODUCT} run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
                 else
-                  "#{Chef::Dist::PRODUCT} run process exited unsuccessfully (exit code #{status.exitstatus})"
+                  "#{ChefUtils::Dist::Infra::PRODUCT} run process exited unsuccessfully (exit code #{status.exitstatus})"
                 end
       raise Exceptions::ChildConvergeError, message
     end
@@ -375,8 +375,8 @@ class Chef
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
-        Chef::FileCache.store("#{Chef::Dist::SHORT}-stacktrace.out", chef_stacktrace_out)
-        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{Chef::Dist::SHORT}-stacktrace.out", false)}")
+        Chef::FileCache.store("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", chef_stacktrace_out)
+        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", false)}")
         logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
         if Chef::Config[:always_dump_stacktrace]
           logger.fatal(message)

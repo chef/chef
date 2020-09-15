@@ -20,7 +20,7 @@
 
 require_relative "file"
 require_relative "../mixin/securable"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -69,7 +69,7 @@ class Chef
 
       property :local, [ TrueClass, FalseClass ],
         default: false, desired_state: false,
-        description: "Load a template from a local path. By default, the #{Chef::Dist::CLIENT} loads templates from a cookbook's /templates directory. When this property is set to true, use the source property to specify the path to a template on the local node."
+        description: "Load a template from a local path. By default, the #{ChefUtils::Dist::Infra::CLIENT} loads templates from a cookbook's /templates directory. When this property is set to true, use the source property to specify the path to a template on the local node."
 
       # Declares a helper method to be defined in the template context when
       # rendering.
