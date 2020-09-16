@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.59 -->
-## [v16.5.59](https://github.com/chef/chef/tree/v16.5.59) (2020-09-16)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Resolve Lint/RedundantRequireStatement &amp; Style/RedundantCondition warnings [#10437](https://github.com/chef/chef/pull/10437) ([tas50](https://github.com/tas50))
+- Speed up a openssl helper specs [#10438](https://github.com/chef/chef/pull/10438) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Speed up a openssl helper specs [#10438](https://github.com/chef/chef/pull/10438) ([tas50](https://github.com/tas50)) <!-- 16.5.59 -->
 - Resolve Lint/RedundantRequireStatement &amp; Style/RedundantCondition warnings [#10437](https://github.com/chef/chef/pull/10437) ([tas50](https://github.com/tas50)) <!-- 16.5.59 -->
 - More resource documentation improvements [#10435](https://github.com/chef/chef/pull/10435) ([tas50](https://github.com/tas50)) <!-- 16.5.58 -->
 - Move TrainTransport to ChefConfig [#10436](https://github.com/chef/chef/pull/10436) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.57 -->
