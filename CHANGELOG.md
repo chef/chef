@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.5.60 -->
+## [v16.5.60](https://github.com/chef/chef/tree/v16.5.60) (2020-09-16)
 
 #### Merged Pull Requests
+- Resolve Style/RedundantSort warnings [#10439](https://github.com/chef/chef/pull/10439) ([tas50](https://github.com/tas50))
 - Speed up a openssl helper specs [#10438](https://github.com/chef/chef/pull/10438) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Resolve Style/RedundantSort warnings [#10439](https://github.com/chef/chef/pull/10439) ([tas50](https://github.com/tas50)) <!-- 16.5.60 -->
 - Speed up a openssl helper specs [#10438](https://github.com/chef/chef/pull/10438) ([tas50](https://github.com/tas50)) <!-- 16.5.59 -->
 - Resolve Lint/RedundantRequireStatement &amp; Style/RedundantCondition warnings [#10437](https://github.com/chef/chef/pull/10437) ([tas50](https://github.com/tas50)) <!-- 16.5.59 -->
 - More resource documentation improvements [#10435](https://github.com/chef/chef/pull/10435) ([tas50](https://github.com/tas50)) <!-- 16.5.58 -->
