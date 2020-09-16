@@ -54,7 +54,7 @@ class Chef
       **Delete a hint file**
 
       ```ruby
-      ohai-hint 'example' do
+      ohai_hint 'example' do
         action :delete
       end
       ```
