@@ -77,7 +77,7 @@ class Chef
         class CookbookVersionsHandler < Chef::Handler
           def report
             cookbooks = run_context.cookbook_collection
-            Chef::Log.info('Cookbooks and versions run: #{cookbooks.keys.map {|x| cookbooks[x].name.to_s + ' ' + cookbooks[x].version} }')
+            Chef::Log.info('Cookbooks and versions run: #{cookbooks.map {|x| x.name.to_s + ' ' + x.version }}')
           end
         end
       end
