@@ -130,7 +130,7 @@ module ChefConfig
         raise e
       rescue Train::PluginLoadError
         logger.error("Invalid target mode protocol: #{protocol}")
-        exit(false)
+        exit(1)
       end
 
       def config
