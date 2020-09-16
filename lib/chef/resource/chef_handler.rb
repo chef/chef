@@ -120,7 +120,7 @@ class Chef
       exception_handlers << Chef::Handler::JsonFile.new(path: '/var/chef/reports')
       ```
 
-      By using the chef_handler resource in a recipe, similar to the following:
+      By using the `chef_handler` resource in a recipe, similar to the following:
 
       ```ruby
       chef_handler 'Chef::Handler::JsonFile' do
