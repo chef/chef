@@ -169,11 +169,7 @@ class Chef
             next unless resource.is_a? Chef::Resource::Route
 
             # default to eth0
-            dev = if resource.device
-                    resource.device
-                  else
-                    "eth0"
-                  end
+            dev = resource.device || "eth0"
 
             conf[dev] = "" if conf[dev].nil?
             case @action

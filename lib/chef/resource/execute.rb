@@ -587,7 +587,7 @@ class Chef
           ancestor_attributes = superclass.guard_inherited_attributes
         end
 
-        ancestor_attributes.concat(@class_inherited_attributes ? @class_inherited_attributes : []).uniq
+        ancestor_attributes.concat(@class_inherited_attributes || []).uniq
       end
 
       # post resource creation validation

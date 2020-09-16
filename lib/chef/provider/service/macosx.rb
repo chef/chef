@@ -47,7 +47,7 @@ class Chef
           @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
-          @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
+          @plist = @new_resource.plist || find_service_plist
           @service_label = find_service_label
           # LaunchAgents should be loaded as the console user.
           @console_user = @plist ? @plist.include?("LaunchAgents") : false

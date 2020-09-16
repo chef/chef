@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "thread"
-
 class Chef
   class Util
     # A simple threaded job queue

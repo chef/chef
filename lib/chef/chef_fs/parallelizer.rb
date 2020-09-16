@@ -1,4 +1,3 @@
-require "thread"
 require_relative "parallelizer/parallel_enumerable"
 
 class Chef
