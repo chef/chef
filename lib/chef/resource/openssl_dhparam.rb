@@ -27,15 +27,37 @@ class Chef
 
       provides(:openssl_dhparam) { true }
 
-      description "Use the **openssl_dhparam** resource to generate `dhparam.pem` files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."
+      description "Use the **openssl_dhparam** resource to generate `dhparam.pem` files. If a valid `dhparam.pem` file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid `dhparam.pem` file, it will be overwritten."
       introduced "14.0"
       examples <<~DOC
-        Create a 1024bit dhparam file
+        **Create a dhparam file**
 
         ```ruby
-        openssl_dhparam '/etc/ssl_files/dhparam.pem' do
-          key_length 1024
-          action :create
+        openssl_dhparam '/etc/httpd/ssl/dhparam.pem'
+        ```
+
+        **Create a dhparam file with a specific key length**
+
+        ```ruby
+        openssl_dhparam '/etc/httpd/ssl/dhparam.pem' do
+          key_length 4096
+        end
+        ```
+
+        **Create a dhparam file with specific user/group ownership**
+
+        ```ruby
+        openssl_dhparam '/etc/httpd/ssl/dhparam.pem' do
+          owner 'www-data'
+          group 'www-data'
+        end
+        ```
+
+        **Manually specify the dhparam file path**
+
+        ```ruby
+        openssl_dhparam 'httpd_dhparam' do
+          path '/etc/httpd/ssl/dhparam.pem'
         end
         ```
       DOC
