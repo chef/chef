@@ -50,8 +50,7 @@ class Chef
           # in which case we'll just start with the highest version and see what happens
           ServerAPIVersions.instance.min_server_version.nil? || (version >= ServerAPIVersions.instance.min_server_version && version <= ServerAPIVersions.instance.send(type))
         end
-          .sort { |a, b| a.send(:minimum_api_version) <=> b.send(:minimum_api_version) }
-          .last
+          .max { |a, b| a.send(:minimum_api_version) <=> b.send(:minimum_api_version) }
       end
 
       def def_versioned_delegator(method)
