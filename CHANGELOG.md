@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.57 -->
-## [v16.5.57](https://github.com/chef/chef/tree/v16.5.57) (2020-09-16)
+<!-- latest_release 16.5.58 -->
+## [v16.5.58](https://github.com/chef/chef/tree/v16.5.58) (2020-09-16)
 
 #### Merged Pull Requests
-- Move TrainTransport to ChefConfig [#10436](https://github.com/chef/chef/pull/10436) ([lamont-granquist](https://github.com/lamont-granquist))
+- More resource documentation improvements [#10435](https://github.com/chef/chef/pull/10435) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- More resource documentation improvements [#10435](https://github.com/chef/chef/pull/10435) ([tas50](https://github.com/tas50)) <!-- 16.5.58 -->
 - Move TrainTransport to ChefConfig [#10436](https://github.com/chef/chef/pull/10436) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.5.57 -->
 - Add examples to the ohai resource [#10432](https://github.com/chef/chef/pull/10432) ([tas50](https://github.com/tas50)) <!-- 16.5.56 -->
 - Move dist implementation into chef-utils [#9834](https://github.com/chef/chef/pull/9834) ([bobchaos](https://github.com/bobchaos)) <!-- 16.5.55 -->
