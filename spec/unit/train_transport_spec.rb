@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::TrainTransport do
-  let(:transport) { Chef::TrainTransport.new(Chef::Log) }a
+  let(:transport) { Chef::TrainTransport.new(Chef::Log) }
 
   describe "load_credentials" do
     let(:good_credentials) { { "switch.cisco.com" => { "user" => "cisco", "password" => "cisco", "enable_password" => "secret" } } }
