@@ -122,7 +122,7 @@ class Chef
     end
 
     def to_s
-      "cookbook: #{cookbook_name ? cookbook_name : "(none)"}, recipe: #{recipe_name ? recipe_name : "(none)"} "
+      "cookbook: #{cookbook_name || "(none)"}, recipe: #{recipe_name || "(none)"} "
     end
 
     def inspect

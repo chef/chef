@@ -231,11 +231,7 @@ class Chef
           @part_no += 1
           @part_offset = 0
           next_part = read(how_much_next_part)
-          result = current_part + if next_part
-                                    next_part
-                                  else
-                                    ""
-                                  end
+          result = current_part + (next_part || "")
         else
           @part_offset += how_much_current_part
           result = current_part
