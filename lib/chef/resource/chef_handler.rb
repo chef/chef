@@ -75,7 +75,6 @@ class Chef
 
       module Chef
         class CookbookVersionsHandler < Chef::Handler
-
           def report
             cookbooks = run_context.cookbook_collection
             Chef::Log.info('Cookbooks and versions run: #{cookbooks.keys.map {|x| cookbooks[x].name.to_s + ' ' + cookbooks[x].version} }')
@@ -89,16 +88,14 @@ class Chef
       The following recipe is added to the run-list for every node on which a list of cookbooks and versions will be generated as report output after every Chef Infra Client run.
 
       ```ruby
-      include_recipe 'chef_handler'
-
-      cookbook_file "/etc/chef/cookbook_versions.rb" do
+      cookbook_file '/etc/chef/cookbook_versions.rb' do
         source 'cookbook_versions.rb'
         action :create
       end
 
       chef_handler 'Chef::CookbookVersionsHandler' do
-        source "/etc/chef/cookbook_versions.rb"
-        supports :report => true
+        source '/etc/chef/cookbook_versions.rb'
+        type report: true
         action :enable
       end
       ```
@@ -119,8 +116,8 @@ class Chef
 
       ```ruby
       require 'chef/handler/json_file'
-      report_handlers << Chef::Handler::JsonFile.new(:path => '/var/chef/reports')
-      exception_handlers << Chef::Handler::JsonFile.new(:path => '/var/chef/reports')
+      report_handlers << Chef::Handler::JsonFile.new(path: '/var/chef/reports')
+      exception_handlers << Chef::Handler::JsonFile.new(path: '/var/chef/reports')
       ```
 
       By using the chef_handler resource in a recipe, similar to the following:
@@ -128,7 +125,7 @@ class Chef
       ```ruby
       chef_handler 'Chef::Handler::JsonFile' do
         source 'chef/handler/json_file'
-        arguments :path => '/var/chef/reports'
+        arguments path: '/var/chef/reports'
         action :enable
       end
       ```
@@ -146,9 +143,9 @@ class Chef
       Register the JsonFile handler
 
       ```ruby
-      chef_handler "Chef::Handler::JsonFile" do
-        source "chef/handler/json_file"
-        arguments :path => '/var/chef/reports'
+      chef_handler 'Chef::Handler::JsonFile' do
+        source 'chef/handler/json_file'
+        arguments path: '/var/chef/reports'
         action :enable
       end
       ```
