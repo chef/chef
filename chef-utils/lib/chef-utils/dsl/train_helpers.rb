@@ -25,8 +25,13 @@ module ChefUtils
       #
       # FIXME: generally these helpers all use the pattern of checking for target_mode?
       # and then if it is we use train.  That approach should likely be flipped so that
-      # even when we're running without target mode we still use inspec in its local
-      # mode.
+      # even when we're running without target mode we still use train in its local
+      # mode.  A prerequisite for that will be better CI testing of train against
+      # chef-client though, and ensuring that the APIs are entirely compatible.  This
+      # will be particularly problematic for shell_out APIs and eventual file-creating
+      # APIs which are unlikely to be as sophisticated as the exiting code in chef-client
+      # for locally shelling out and creating files, and just dropping inspec local mode
+      # into chef-client would break the world.
       #
 
       # Train wrapper around File.exist? to make it local mode aware.
@@ -55,6 +60,24 @@ module ChefUtils
         else
           File.open(*args, &block)
         end
+      end
+
+      # Alias to easily convert IO.read / File.read to file_read
+      def file_read(path)
+        file_open(path).read
+      end
+
+      def file_directory?(path)
+        if __transport_connection
+          __transport_connection.file(filename).directory?
+        else
+          File.directory?(path)
+        end
+      end
+
+      # Alias to easily convert Dir.exist to dir_exist
+      def dir_exist?(path)
+        file_directory?(path)
       end
 
       extend self

@@ -85,17 +85,17 @@ module ChefConfig
       # @return [void]
       def load_credentials(profile = nil)
         profile = credentials_profile(profile)
-        config = parse_credentials_file
-        return if config.nil? # No credentials, nothing to do here.
+        cred_config = parse_credentials_file
+        return if cred_config.nil? # No credentials, nothing to do here.
 
-        if config[profile].nil?
+        if cred_config[profile].nil?
           # Unknown profile name. For "default" just silently ignore, otherwise
           # raise an error.
           return if profile == "default"
 
           raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{credentials_file_path}."
         end
-        apply_credentials(config[profile], profile)
+        apply_credentials(cred_config[profile], profile)
       end
     end
   end
