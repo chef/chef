@@ -96,6 +96,10 @@ The `windows_ad_join` resource has been updated with a new `reboot_delay` proper
 
 The `windows_firewall_profile` resource was updated to prevent NilClass errors from loading the firewall state.
 
+### windows_user_privilege
+
+The `windows_user_privilege` resource has been updated to better validate the `privilege` property and to allow the `users` property to accept String values. Thanks for reporting this issue [@jeremyciak](https://github.com/jeremyciak)!
+
 ### Windows securable resources
 
 All Windows securable resources now support using SID in addition to user or group name when specifying `owner`, `group`, or `rights` principal. These resources include the `template`, `file`, `remote_file`, `cookbook_file`, `directory`, and `remote_directory` resources. When using a SID, you may use either the standard string representation of a SID (S-R-I-S-S) or one of the [SDDL string constants](https://docs.microsoft.com/en-us/windows/win32/secauthz/sid-strings).
