@@ -627,7 +627,7 @@ class Chef
     # @return [Train::Plugins::Transport] The child class for our train transport.
     #
     def transport
-      @transport ||= Chef::TrainTransport.build_transport(logger)
+      @transport ||= Chef::TrainTransport.new(logger).build_transport
     end
 
     # Remote connection object from Train
