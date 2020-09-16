@@ -25,7 +25,7 @@ class Chef
 
       provides(:chef_handler) { true }
 
-      description "Use the **chef_handler** resource to enable handlers during a #{ChefUtils::Dist::Infra::PRODUCT} run. The resource allows arguments to be passed to #{ChefUtils::Dist::Infra::PRODUCT}, which then applies the conditions defined by the custom handler to the node attribute data collected during a #{ChefUtils::Dist::Infra::PRODUCT} run, and then processes the handler based on that data.\nThe **chef_handler** resource is typically defined early in a node’s run-list (often being the first item). This ensures that all of the handlers will be available for the entire #{ChefUtils::Dist::Infra::PRODUCT} run."
+      description "Use the **chef_handler** resource to enable handlers during a #{ChefUtils::Dist::Infra::PRODUCT} run. The resource allows arguments to be passed to #{ChefUtils::Dist::Infra::PRODUCT}, which then applies the conditions defined by the custom handler to the node attribute data collected during a #{ChefUtils::Dist::Infra::PRODUCT} run, and then processes the handler based on that data.\nThe **chef_handler** resource is typically defined early in a node's run-list (often being the first item). This ensures that all of the handlers will be available for the entire #{ChefUtils::Dist::Infra::PRODUCT} run."
       introduced "14.0"
       examples <<~'DOC'
       **Enable the 'MyHandler' handler**
