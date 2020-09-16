@@ -86,32 +86,32 @@ class Chef
         description: "The permission mode applied to all files created by the resource."
 
       property :country, String,
-        description: "Value for the C certificate field."
+        description: "Value for the `C` certificate field."
 
       property :state, String,
-        description: "Value for the ST certificate field."
+        description: "Value for the `ST` certificate field."
 
       property :city, String,
-        description: "Value for the L certificate field."
+        description: "Value for the `L` certificate field."
 
       property :org, String,
-        description: "Value for the O certificate field."
+        description: "Value for the `O` certificate field."
 
       property :org_unit, String,
-        description: "Value for the OU certificate field."
+        description: "Value for the `OU` certificate field."
 
       property :common_name, String,
-        description: "Value for the CN certificate field."
+        description: "Value for the `CN` certificate field."
 
       property :email, String,
-        description: "Value for the email certificate field."
+        description: "Value for the `email` certificate field."
 
       property :extensions, Hash,
-        description: "Hash of X509 Extensions entries, in format { 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }.",
+        description: "Hash of X509 Extensions entries, in format `{ 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }`.",
         default: lazy { {} }
 
       property :subject_alt_name, Array,
-        description: "Array of Subject Alternative Name entries, in format DNS:example.com or IP:1.2.3.4.",
+        description: "Array of Subject Alternative Name entries, in format `DNS:example.com` or `IP:1.2.3.4`.",
         default: lazy { [] }
 
       property :key_file, String,
@@ -122,7 +122,7 @@ class Chef
 
       property :key_type, String,
         equal_to: %w{rsa ec},
-        description: "The desired type of the generated key (rsa or ec).",
+        description: "The desired type of the generated key.",
         default: "rsa"
 
       property :key_length, Integer,
@@ -131,18 +131,18 @@ class Chef
         default: 2048
 
       property :key_curve, String,
-        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options.",
+        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run `openssl ecparam -list_curves` to see available options.",
         equal_to: %w{secp384r1 secp521r1 prime256v1},
         default: "prime256v1"
 
       property :csr_file, String,
-        description: "The path to a X509 Certificate Request (CSR) on the filesystem. If the csr_file property is specified, the resource will attempt to source a CSR from this location. If no CSR file is found, the resource will generate a Self-Signed Certificate and the certificate fields must be specified (common_name at last)."
+        description: "The path to a X509 Certificate Request (CSR) on the filesystem. If the `csr_file` property is specified, the resource will attempt to source a CSR from this location. If no CSR file is found, the resource will generate a Self-Signed Certificate and the certificate fields must be specified (common_name at last)."
 
       property :ca_cert_file, String,
-        description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the certificate will be signed with them."
+        description: "The path to the CA X509 Certificate on the filesystem. If the `ca_cert_file` property is specified, the `ca_key_file` property must also be specified, the certificate will be signed with them."
 
       property :ca_key_file, String,
-        description: "The path to the CA private key on the filesystem. If the ca_key_file property is specified, the 'ca_cert_file' property must also be specified, the certificate will be signed with them."
+        description: "The path to the CA private key on the filesystem. If the `ca_key_file` property is specified, the `ca_cert_file` property must also be specified, the certificate will be signed with them."
 
       property :ca_key_pass, String,
         description: "The passphrase for CA private key's passphrase."

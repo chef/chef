@@ -25,8 +25,152 @@ class Chef
 
       provides(:chef_handler) { true }
 
-      description "Use the **chef_handler** resource to install or uninstall reporting/exception handlers."
+      description "Use the **chef_handler** resource to enable handlers during a #{ChefUtils::Dist::Infra::PRODUCT} run. The resource allows arguments to be passed to #{ChefUtils::Dist::Infra::PRODUCT}, which then applies the conditions defined by the custom handler to the node attribute data collected during a #{ChefUtils::Dist::Infra::PRODUCT} run, and then processes the handler based on that data.\nThe **chef_handler** resource is typically defined early in a node's run-list (often being the first item). This ensures that all of the handlers will be available for the entire #{ChefUtils::Dist::Infra::PRODUCT} run."
       introduced "14.0"
+      examples <<~'DOC'
+      **Enable the 'MyHandler' handler**
+
+      The following example shows how to enable a fictional 'MyHandler' handler which is located on disk at `/etc/chef/my_handler.rb`. The handler will be configured to run with Chef Infra Client and will be passed values to the handler's initializer method:
+
+      ```ruby
+      chef_handler 'MyHandler' do
+        source '/etc/chef/my_handler.rb' # the file should already be at this path
+        arguments path: '/var/chef/reports'
+        action :enable
+      end
+      ```
+
+      **Enable handlers during the compile phase**
+
+      ```ruby
+      chef_handler 'Chef::Handler::JsonFile' do
+        source 'chef/handler/json_file'
+        arguments path: '/var/chef/reports'
+        action :enable
+        compile_time true
+      end
+      ```
+
+      **Handle only exceptions**
+
+      ```ruby
+      chef_handler 'Chef::Handler::JsonFile' do
+        source 'chef/handler/json_file'
+        arguments path: '/var/chef/reports'
+        type exception: true
+        action :enable
+      end
+      ```
+
+      **Cookbook Versions (a custom handler)**
+
+      [@juliandunn](https://github.com/juliandunn) created a custom report handler that logs all of the cookbooks and cookbook versions that were used during a Chef Infra Client run, and then reports after the run is complete. This handler requires the chef_handler resource (which is available from the chef_handler cookbook).
+
+      cookbook_versions.rb:
+
+      The following custom handler defines how cookbooks and cookbook versions that are used during a Chef Infra Client run will be compiled into a report using the `Chef::Log` class in Chef Infra Client:
+
+      ```ruby
+      require 'chef/log'
+
+      module Chef
+        class CookbookVersionsHandler < Chef::Handler
+          def report
+            cookbooks = run_context.cookbook_collection
+            Chef::Log.info('Cookbooks and versions run: #{cookbooks.map {|x| x.name.to_s + ' ' + x.version }}')
+          end
+        end
+      end
+      ```
+
+      default.rb:
+
+      The following recipe is added to the run-list for every node on which a list of cookbooks and versions will be generated as report output after every Chef Infra Client run.
+
+      ```ruby
+      cookbook_file '/etc/chef/cookbook_versions.rb' do
+        source 'cookbook_versions.rb'
+        action :create
+      end
+
+      chef_handler 'Chef::CookbookVersionsHandler' do
+        source '/etc/chef/cookbook_versions.rb'
+        type report: true
+        action :enable
+      end
+      ```
+
+      This recipe will generate report output similar to the following:
+
+      [2013-11-26T03:11:06+00:00] INFO: Chef Infra Client Run complete in 0.300029878 seconds
+      [2013-11-26T03:11:06+00:00] INFO: Running report handlers
+      [2013-11-26T03:11:06+00:00] INFO: Cookbooks and versions run: ["cookbook_versions_handler 1.0.0"]
+      [2013-11-26T03:11:06+00:00] INFO: Report handlers complete
+      ```
+
+      **JsonFile Handler**
+
+      The json_file handler is available from the `chef_handler` cookbook and can be used with exceptions and reports. It serializes run status data to a JSON file. This handler may be enabled in one of the following ways.
+
+      By adding the following lines of Ruby code to either the client.rb file or the solo.rb file, depending on how Chef Infra Client is being run:
+
+      ```ruby
+      require 'chef/handler/json_file'
+      report_handlers << Chef::Handler::JsonFile.new(path: '/var/chef/reports')
+      exception_handlers << Chef::Handler::JsonFile.new(path: '/var/chef/reports')
+      ```
+
+      By using the `chef_handler` resource in a recipe, similar to the following:
+
+      ```ruby
+      chef_handler 'Chef::Handler::JsonFile' do
+        source 'chef/handler/json_file'
+        arguments path: '/var/chef/reports'
+        action :enable
+      end
+      ```
+
+      After it has run, the run status data can be loaded and inspected via Interactive Ruby (IRb):
+
+      ```
+      irb(main):002:0> require 'json' => true
+      irb(main):003:0> require 'chef' => true
+      irb(main):004:0> r = JSON.parse(IO.read('/var/chef/reports/chef-run-report-20110322060731.json')) => ... output truncated
+      irb(main):005:0> r.keys => ['end_time', 'node', 'updated_resources', 'exception', 'all_resources', 'success', 'elapsed_time', 'start_time', 'backtrace']
+      irb(main):006:0> r['elapsed_time'] => 0.00246
+      ```
+
+      Register the JsonFile handler
+
+      ```ruby
+      chef_handler 'Chef::Handler::JsonFile' do
+        source 'chef/handler/json_file'
+        arguments path: '/var/chef/reports'
+        action :enable
+      end
+      ```
+
+      **ErrorReport Handler**
+
+      The error_report handler is built into Chef Infra Client and can be used for both exceptions and reports. It serializes error report data to a JSON file. This handler may be enabled in one of the following ways.
+
+      By adding the following lines of Ruby code to either the client.rb file or the solo.rb file, depending on how Chef Infra Client is being run:
+
+      ```ruby
+      require 'chef/handler/error_report'
+      report_handlers << Chef::Handler::ErrorReport.new
+      exception_handlers << Chef::Handler::ErrorReport.new
+      ```
+
+      By using the `chef_handler` resource in a recipe, similar to the following:
+
+      ```ruby
+      chef_handler 'Chef::Handler::ErrorReport' do
+        source 'chef/handler/error_report'
+        action :enable
+      end
+      ```
+      DOC
 
       property :class_name, String,
         description: "The name of the handler class. This can be module name-spaced.",

@@ -29,6 +29,35 @@ class Chef
 
       description "Use the **cab_package** resource to install or remove Microsoft Windows cabinet (.cab) packages."
       introduced "12.15"
+      examples <<~'DOC'
+      **Using local path in source**
+
+      ```ruby
+      cab_package 'Install .NET 3.5 sp1 via KB958488' do
+        source 'C:\Users\xyz\AppData\Local\Temp\Windows6.1-KB958488-x64.cab'
+        action :install
+      end
+
+      cab_package 'Remove .NET 3.5 sp1 via KB958488' do
+        source 'C:\Users\xyz\AppData\Local\Temp\Windows6.1-KB958488-x64.cab'
+        action :remove
+      end
+      ```
+
+      **Using URL in source**
+
+      ```ruby
+      cab_package 'Install .NET 3.5 sp1 via KB958488' do
+        source 'https://s3.amazonaws.com/my_bucket/Windows6.1-KB958488-x64.cab'
+        action :install
+      end
+
+      cab_package 'Remove .NET 3.5 sp1 via KB958488' do
+        source 'https://s3.amazonaws.com/my_bucket/Temp\Windows6.1-KB958488-x64.cab'
+        action :remove
+      end
+      ```
+      DOC
 
       allowed_actions :install, :remove
 

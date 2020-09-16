@@ -68,6 +68,7 @@ class Chef
       property :key_cipher, String,
         description: "The designed cipher to use when generating your key. Run `openssl list-cipher-algorithms` to see available options.",
         default: lazy { "des3" },
+        default_description: "des3",
         callbacks: {
           "key_cipher must be a cipher known to openssl. Run `openssl list-cipher-algorithms` to see available options." =>
             proc { |v| OpenSSL::Cipher.ciphers.include?(v) },

@@ -63,7 +63,7 @@ class Chef
         end
         ```
 
-        Install MySQL for Chef
+        **Install MySQL gem into #{ChefUtils::Dist::Infra::PRODUCT}***
         ```ruby
         apt_update
 
