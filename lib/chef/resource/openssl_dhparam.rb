@@ -27,7 +27,7 @@ class Chef
 
       provides(:openssl_dhparam) { true }
 
-      description "Use the **openssl_dhparam** resource to generate dhparam.pem files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."
+      description "Use the **openssl_dhparam** resource to generate `dhparam.pem` files. If a valid dhparam.pem file is found at the specified location, no new file will be created. If a file is found at the specified location but it is not a valid dhparam file, it will be overwritten."
       introduced "14.0"
       examples <<~DOC
         Create a 1024bit dhparam file

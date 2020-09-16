@@ -64,7 +64,7 @@ class Chef
 
       **Cookbook Versions (a custom handler)**
 
-      juliandunn created a custom report handler that logs all of the cookbooks and cookbook versions that were used during a Chef Infra Client run, and then reports after the run is complete. This handler requires the chef_handler resource (which is available from the chef_handler cookbook).
+      [@juliandunn](https://github.com/juliandunn) created a custom report handler that logs all of the cookbooks and cookbook versions that were used during a Chef Infra Client run, and then reports after the run is complete. This handler requires the chef_handler resource (which is available from the chef_handler cookbook).
 
       cookbook_versions.rb:
 
