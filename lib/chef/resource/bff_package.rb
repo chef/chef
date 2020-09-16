@@ -28,7 +28,7 @@ class Chef
       description "Use the **bff_package** resource to manage packages for the AIX platform using the installp utility. When a package is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources."
       introduced "12.0"
       examples <<~DOC
-      The **bff_package** resource is the default package provider on the AIX platform. The base **package** resource may be used, and then when the platform is AIX, Chef Infra Client will identify the correct package provider. The following examples show how to install part of the IBM XL C/C++ compiler.
+      The **bff_package** resource is the default package provider on the AIX platform. The base **package** resource may be used, and then when the platform is AIX, #{ChefUtils::Dist::Infra::PRODUCT} will identify the correct package provider. The following examples show how to install part of the IBM XL C/C++ compiler.
 
       **Installing using the base package resource**
 
