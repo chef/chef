@@ -30,8 +30,72 @@ class Chef
       provides :osx_profile
       provides :osx_config_profile
 
-      description "Use the **osx_profile** resource to manage configuration profiles (.mobileconfig files) on the macOS platform. The osx_profile resource installs profiles by using the uuidgen library to generate a unique ProfileUUID, and then using the profiles command to install the profile on the system."
+      description "Use the **osx_profile** resource to manage configuration profiles (`.mobileconfig` files) on the macOS platform. The **osx_profile** resource installs profiles by using the uuidgen library to generate a unique `ProfileUUID`, and then using the `profiles` command to install the profile on the system."
       introduced "12.7"
+      examples <<~DOC
+      **Install a profile from a cookbook file**
+
+      ```ruby
+      osx_profile 'com.company.screensaver.mobileconfig'
+      ```
+
+      **Install profile from a hash**
+
+      ```ruby
+      profile_hash = {
+        'PayloadIdentifier' => 'com.company.screensaver',
+        'PayloadRemovalDisallowed' => false,
+        'PayloadScope' => 'System',
+        'PayloadType' => 'Configuration',
+        'PayloadUUID' => '1781fbec-3325-565f-9022-8aa28135c3cc',
+        'PayloadOrganization' => 'Chef',
+        'PayloadVersion' => 1,
+        'PayloadDisplayName' => 'Screensaver Settings',
+        'PayloadContent'=> [
+          {
+            'PayloadType' => 'com.apple.ManagedClient.preferences',
+            'PayloadVersion' => 1,
+            'PayloadIdentifier' => 'com.company.screensaver',
+            'PayloadUUID' => '73fc30e0-1e57-0131-c32d-000c2944c108',
+            'PayloadEnabled' => true,
+            'PayloadDisplayName' => 'com.apple.screensaver',
+            'PayloadContent' => {
+              'com.apple.screensaver' => {
+                'Forced' => [
+                  {
+                    'mcx_preference_settings' => {
+                      'idleTime' => 0,
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+
+      osx_profile 'Install screensaver profile' do
+        profile profile_hash
+      end
+      ```
+
+      **Remove profile using identifier in resource name**
+
+      ```ruby
+      osx_profile 'com.company.screensaver' do
+        action :remove
+      end
+      ```
+
+      **Remove profile by identifier and user friendly resource name**
+
+      ```ruby
+      osx_profile 'Remove screensaver profile' do
+        identifier 'com.company.screensaver'
+        action :remove
+      end
+      ```
+      DOC
 
       property :profile_name, String,
         description: "Use to specify the name of the profile, if different from the name of the resource block.",
@@ -41,7 +105,7 @@ class Chef
         description: "Use to specify a profile. This may be the name of a profile contained in a cookbook or a Hash that contains the contents of the profile."
 
       property :identifier, String,
-        description: "Use to specify the identifier for the profile, such as com.company.screensaver."
+        description: "Use to specify the identifier for the profile, such as `com.company.screensaver`."
 
       # this is not a property it is necessary for the tempfile this resource uses to work (FIXME: this is terrible)
       #
