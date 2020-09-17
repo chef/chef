@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 4b1c0d1419f6da3b0009341c7ac29d4d914611a0
+  revision: 1fe8123d8f783bf6855a0fe3424b471e5654f7d7
   branch: master
   specs:
     chefstyle (1.3.4)
