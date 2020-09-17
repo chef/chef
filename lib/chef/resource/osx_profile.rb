@@ -317,10 +317,9 @@ class Chef
         end
 
         def query_installed_profiles
-          Tempfile.open("allprofiles.plist") do |tempfile|
-            shell_out( "/usr/bin/profiles", "-P", "-o", tempfile.path )
-            ::Plist.parse_xml(tempfile)
-          end
+          logger.trace("Running /usr/bin/profiles -P -o stdout-xml to determine profile state")
+          so = shell_out( "/usr/bin/profiles", "-P", "-o", "stdout-xml" )
+          ::Plist.parse_xml(so.stdout)
         end
 
         def profile_installed?
