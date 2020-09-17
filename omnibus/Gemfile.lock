@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 0d5f81dc0515357d571e9210031b3fa0edab0903
+  revision: 0e0686b82299ca2ddc6b9251319e4309142c4b7d
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,16 +32,16 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.366.0)
-    aws-sdk-core (3.105.0)
+    aws-partitions (1.371.0)
+    aws-sdk-core (3.107.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
       jmespath (~> 1.0)
-    aws-sdk-kms (1.37.0)
+    aws-sdk-kms (1.38.0)
       aws-sdk-core (~> 3, >= 3.99.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.79.1)
+    aws-sdk-s3 (1.81.0)
       aws-sdk-core (~> 3, >= 3.104.3)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
@@ -224,9 +224,9 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.4)
+    mixlib-shellout (3.1.6)
       chef-utils
-    mixlib-shellout (3.1.4-universal-mingw32)
+    mixlib-shellout (3.1.6-universal-mingw32)
       chef-utils
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
@@ -291,7 +291,7 @@ GEM
     strings-ansi (0.2.0)
     structured_warnings (0.4.0)
     syslog-logger (1.6.8)
-    test-kitchen (2.7.0)
+    test-kitchen (2.7.1)
       bcrypt_pbkdf (~> 1.0)
       ed25519 (~> 1.2)
       license-acceptance (>= 1.0.11, < 3.0)
@@ -308,7 +308,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.3.16)
+    train-core (3.3.21)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -366,11 +366,11 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0, >= 0.6.1)
-    winrm-elevated (1.2.1)
+    winrm-elevated (1.2.2)
       erubi (~> 1.8)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
-    winrm-fs (1.3.4)
+    winrm-fs (1.3.5)
       erubi (~> 1.8)
       logging (>= 1.6.1, < 3.0)
       rubyzip (~> 2.0)
