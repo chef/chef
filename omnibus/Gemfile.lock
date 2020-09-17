@@ -202,7 +202,7 @@ GEM
       tomlrb (~> 1.2)
       tty-box (~> 0.3)
       tty-prompt (~> 0.18)
-    license_scout (1.1.9)
+    license_scout (1.1.10)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
