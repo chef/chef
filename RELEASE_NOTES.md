@@ -16,6 +16,15 @@ We continue to reduce the size of the Chef Infra Client install and optimize the
   - knife config use-profile [NAME] -> knife config use [NAME]
   - knife config list-profiles -> knife config list
   - knife config get -> knife config show
+  
+## Chef InSpec 4.23.4
+
+Chef InSpec has been updated from 4.22.1 to 4.23.4. This new release includes the following improvements:
+
+- A new mechanism marks inputs as sensitive: true and replaces their values with "***".
+- Use the --no-diff CLI option to suppress diff output for textual tests.
+- Control the order of controls in output, but not execution order, with the --sort_results_by=none|control|file|random CLI option.
+- Disable caching of inputs with a cache_inputs: true setting.
 
 ## New Resources
 
