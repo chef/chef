@@ -72,10 +72,6 @@ The `chef_client_cron` resource has been updated with a new `nice` property that
 
 The `chef_client_systemd_timer` resource has been updated with a new `cpu_quota` property that allows you to control the systemd `CPUQuota` value for the `chef-client` process. This allows you to ensure `chef-client` execution doesn't adversely impact performance on your systems.
 
-### osx_profile
-
-The `osx_profile` resource will now allow you to remove profiles from macOS 11 (Big Sur) systems. Due to security changes in macOS 11, it is no longer possible to locally install profiles, but this will allow you to cleanup existing profiles left over after an upgrade from an earlier macOS release. Thanks for reporting this issue [@chilcote](https://github.com/chilcote)!
-
 ### launchd
 
 The `launchd` resource has been updated to better validate inputs to the `nice` property so we can make sure these are acceptable nice values.
@@ -83,6 +79,10 @@ The `launchd` resource has been updated to better validate inputs to the `nice` 
 ### mount
 
 The `mount` resource on Linux has new improved idempotency in some scenarios by switching to `findmnt` to determine the current state of the system. Thanks for reporting this issue [@pollosp](https://github.com/pollosp)!
+
+### osx_profile
+
+The `osx_profile` resource will now allow you to remove profiles from macOS 11 (Big Sur) systems. Due to security changes in macOS 11, it is no longer possible to locally install profiles, but this will allow you to cleanup existing profiles left over after an upgrade from an earlier macOS release. The resource has been updated to resolve a regression introduced in Chef Infra Client 16.4 that caused the resource to attempt to update profiles on each converge. Thanks for reporting these issues [@chilcote](https://github.com/chilcote)!
 
 ### rhsm_register
 
