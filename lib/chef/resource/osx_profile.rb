@@ -308,12 +308,12 @@ class Chef
         #
 
         def get_installed_profiles(update = nil)
+          logger.trace("Saving profile data to node.run_state")
           if update
             node.run_state[:config_profiles] = query_installed_profiles
           else
             node.run_state[:config_profiles] ||= query_installed_profiles
           end
-          logger.trace("Saved profiles to run_state")
         end
 
         def query_installed_profiles
