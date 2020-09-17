@@ -1752,7 +1752,7 @@ describe Chef::Knife::Bootstrap do
       expect(connection)
         .to receive(:run_command)
         .with("sh /path.sh")
-        .and_yield("output here")
+        .and_yield("output here", nil)
         .and_return result_mock
 
       expect(knife.ui).to receive(:msg).with(/testhost/)
@@ -1785,7 +1785,7 @@ describe Chef::Knife::Bootstrap do
         expect(connection)
           .to receive(:run_command)
           .with("su - USER -c 'sh /path.sh'")
-          .and_yield("output here")
+          .and_yield("output here", nil)
           .and_return result_mock
         expect(knife.ui).to receive(:ask).and_return("password").twice
         expect(connection).to receive(:run_command).with("su - USER -c 'sh /path.sh'").and_return(result_mock, result_mock2)

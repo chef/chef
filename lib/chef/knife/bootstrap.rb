@@ -605,20 +605,20 @@ class Chef
 
       # Actual bootstrap command to be run on the node.
       # Handles recursive calls if su USER failed to authenticate.
-      def bootstrap_run_command(cmd)
-        r = connection.run_command(cmd) do |data|
+      def bootstrap_run_command(cmd, limit = 3)
+        r = connection.run_command(cmd) do |data, ch|
           ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
+          ch.send_data("#{config[:su_password] || config[:connection_password]}\n") if data == "Password: "
         end
         if r.exit_status != 0
           stderr = (r.stderr + r.stdout).strip
 
           if stderr.match?("su: Authentication failure")
+            limit -= 1
             ui.warn("Failed to authenticate su - #{config[:su_user]} to #{server_name}")
             password = ui.ask("Enter password for su - #{config[:su_user]}@#{server_name}:", echo: false)
-
-            set_transport_options(su_password: password)
-
-            bootstrap_run_command(cmd)
+            config[:su_password] = password
+            bootstrap_run_command(cmd, limit) if limit > 0
           else
             ui.error("The following error occurred on #{server_name}:")
             ui.error(stderr)
@@ -907,7 +907,6 @@ class Chef
         @connection_opts.merge! winrm_opts
         @connection_opts.merge! ssh_opts
         @connection_opts.merge! ssh_identity_opts
-        @connection_opts.merge! su_user_opts
         @connection_opts
       end
 
@@ -1071,15 +1070,6 @@ class Chef
         {
           password: password,
         }
-      end
-
-      def su_user_opts
-        opts = {}
-        return opts if winrm? || !config.key?(:su_user)
-
-        opts[:su_user] = config[:su_user]
-        opts[:su_password] = config[:su_password] || config[:connection_password]
-        opts
       end
 
       # This is for deprecating config options. The fallback_key can be used
