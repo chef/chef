@@ -3011,11 +3011,11 @@ Use the `powershell_package_source` resource to register a PowerShell package re
 #### Properties
 
 - `source_name` - The name of the package source.
-- `url` - The url to the package source.
+- `url` - The URL to the package source.
 - `trusted` - Whether or not to trust packages from this source.
 - `provider_name` - The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.
-- `publish_location` - The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.
-- `script_source_location` - The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.
+- `publish_location` - The URL where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'.
+- `script_source_location` - The URL where scripts are located for this source. Only valid if the provider is 'PowerShellGet'.
 - `script_publish_location` - The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'.
 
 ### kernel_module

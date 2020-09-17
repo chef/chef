@@ -33,7 +33,7 @@ class Chef
         name_property: true
 
       property :url, String,
-        description: "The url to the package source.",
+        description: "The URL to the package source.",
         required: [:register]
 
       property :trusted, [TrueClass, FalseClass],
@@ -47,10 +47,10 @@ class Chef
         default: "NuGet"
 
       property :publish_location, String,
-        description: "The url where modules will be published to for this source. Only valid if the provider is `PowerShellGet`."
+        description: "The URL where modules will be published to for this source. Only valid if the provider is `PowerShellGet`."
 
       property :script_source_location, String,
-        description: "The url where scripts are located for this source. Only valid if the provider is `PowerShellGet`."
+        description: "The URL where scripts are located for this source. Only valid if the provider is `PowerShellGet`."
 
       property :script_publish_location, String,
         description: "The location where scripts will be published to for this source. Only valid if the provider is `PowerShellGet`."
