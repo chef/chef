@@ -608,7 +608,7 @@ class Chef
       def bootstrap_run_command(cmd, limit = 3)
         r = connection.run_command(cmd) do |data, ch|
           ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
-          ch.send_data("#{config[:su_password] || config[:connection_password]}\n") if data == "Password: "
+          ch.send_data("#{config[:su_password] || config[:connection_password]}\n") if data.match?("Password:")
         end
         if r.exit_status != 0
           stderr = (r.stderr + r.stdout).strip
