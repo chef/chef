@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.63 -->
-## [v16.5.63](https://github.com/chef/chef/tree/v16.5.63) (2020-09-17)
+<!-- latest_release 16.5.64 -->
+## [v16.5.64](https://github.com/chef/chef/tree/v16.5.64) (2020-09-17)
 
 #### Merged Pull Requests
-- Fix idempotency in the osx_profile resource and avoid writing data to disk [#10444](https://github.com/chef/chef/pull/10444) ([tas50](https://github.com/tas50))
+- Update to the latest license_scout gem [#10445](https://github.com/chef/chef/pull/10445) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.4.41 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to the latest license_scout gem [#10445](https://github.com/chef/chef/pull/10445) ([tas50](https://github.com/tas50)) <!-- 16.5.64 -->
 - Fix idempotency in the osx_profile resource and avoid writing data to disk [#10444](https://github.com/chef/chef/pull/10444) ([tas50](https://github.com/tas50)) <!-- 16.5.63 -->
 - Update InSpec to the latest [#10443](https://github.com/chef/chef/pull/10443) ([tas50](https://github.com/tas50)) <!-- 16.5.62 -->
 - Docs fixes from review [#10440](https://github.com/chef/chef/pull/10440) ([tas50](https://github.com/tas50)) <!-- 16.5.61 -->
