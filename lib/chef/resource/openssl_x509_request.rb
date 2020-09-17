@@ -31,7 +31,7 @@ class Chef
       description "Use the **openssl_x509_request** resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."
       introduced "14.4"
       examples <<~DOC
-        **Generate new ec key and csr file**
+        **Generate new EC key and CSR file**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_ec_request.csr' do
@@ -42,7 +42,7 @@ class Chef
         end
         ```
 
-        **Generate a new csr file from an existing ec key**
+        **Generate a new CSR file from an existing EC key**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_ec_request2.csr' do
@@ -54,7 +54,7 @@ class Chef
         end
         ```
 
-        **Generate new rsa key and csr file**
+        **Generate new RSA key and CSR file**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_rsa_request.csr' do
