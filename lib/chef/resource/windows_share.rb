@@ -189,35 +189,31 @@ class Chef
         # we do this here instead of requiring the property because :delete doesn't need path set
         raise "No path property set" unless new_resource.path
 
-        set_users
-        converge_if_changed do
-          # you can't actually change the path so you have to delete the old share first
-          if different_path?
-            Chef::Log.debug("The path has changed so we will delete and recreate share")
-            delete_share
-            create_share
-          elsif current_resource.nil?
-            # powershell cmdlet for create is different than updates
-            Chef::Log.debug("The current resource is nil so we will create a new share")
-            create_share
-          else
-            Chef::Log.debug("The current resource was not nil so we will update an existing share")
-            update_share
-          end
+        if !current_resource.nil? && compare_users && !different_path?
+          logger.debug("Skipping update of #{new_resource}: has not changed any of the specified properties.")
+        else
+          converge_by("create #{new_resource}") do
+            # you can't actually change the path so you have to delete the old share first
+            if different_path?
+              Chef::Log.debug("The path has changed so we will delete and recreate share")
+              delete_share
+              create_share
+            elsif current_resource.nil?
+              # powershell cmdlet for create is different than updates
+              Chef::Log.debug("The current resource is nil so we will create a new share")
+              create_share
+            else
+              Chef::Log.debug("The current resource was not nil so we will update an existing share")
+              update_share
+            end
 
-          # creating the share does not set permissions so we need to update
-          update_permissions
+            # creating the share does not set permissions so we need to update
+            update_permissions
+          end
         end
       end
 
-<<<<<<< HEAD
       action :delete, description: "Delete an existing Windows share" do
-=======
-      action :delete do
-        description "Delete an existing Windows share."
-
-        set_users
->>>>>>> Fixed windows share is not idempotent when using local groups
         if current_resource.nil?
           Chef::Log.debug("#{new_resource.share_name} does not exist - nothing to do")
         else
@@ -310,13 +306,13 @@ class Chef
           property_name = "#{type}_users"
 
           # brand new share, but nothing to set
-          return false if current_resource.nil? && new_resource.send(property_name).empty?
+          return false if current_resource.nil? && new_resource_users[property_name].empty?
 
           # brand new share with new permissions to set
-          return true if current_resource.nil? && !new_resource.send(property_name).empty?
+          return true if current_resource.nil? && !new_resource_users[property_name].empty?
 
           # there's a difference between the current and desired state
-          return true unless (new_resource.send(property_name) - current_resource.send(property_name)).empty?
+          return true unless (new_resource_users[property_name] - current_resource.send(property_name)).empty?
 
           # anything else
           false
@@ -339,9 +335,19 @@ class Chef
         # Grant-SmbShareAccess sets only one permission to one user so we need to remove from the lower permission access
         # For change_users remove common full_users from it
         # For read_users remove common full_users as well as change_users
-        def set_users
-          new_resource.change_users = new_resource.change_users - new_resource.full_users
-          new_resource.read_users = new_resource.read_users - (new_resource.full_users + new_resource.change_users)
+        def new_resource_users
+          users = {}
+          users["full_users"] = new_resource.full_users
+
+          users["change_users"] = new_resource.change_users - new_resource.full_users
+          users["read_users"] = new_resource.read_users - (new_resource.full_users + new_resource.change_users)
+          users
+        end
+
+        # Compare the full_users, change_users and read_users from current_resource and new_resource
+        # @returns boolean True/False
+        def compare_users
+          current_resource.full_users == new_resource_users["full_users"] && current_resource.change_users == new_resource_users["change_users"] && current_resource.read_users == new_resource_users["read_users"]
         end
       end
 
