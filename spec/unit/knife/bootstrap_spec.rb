@@ -1775,7 +1775,6 @@ describe Chef::Knife::Bootstrap do
       let(:exit_status) { 1 }
       let(:stdout) { "su: Authentication failure" }
       let(:connection_obj) { double("connection", transport_options: {}) }
-      let(:result_mock2) { double("result", exit_status: 1, stderr: "A message", stdout: "") }
       it "shows an error and exits" do
         allow(connection).to receive(:connection).and_return(connection_obj)
         expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
@@ -1786,10 +1785,8 @@ describe Chef::Knife::Bootstrap do
           .to receive(:run_command)
           .with("su - USER -c 'sh /path.sh'")
           .and_yield("output here", nil)
-          .and_return result_mock
-        expect(knife.ui).to receive(:ask).and_return("password").twice
-        expect(connection).to receive(:run_command).with("su - USER -c 'sh /path.sh'").and_return(result_mock, result_mock2)
-        expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
+          .and_raise(Train::UserError)
+        expect { knife.perform_bootstrap("/path.sh") }.to raise_error(Train::UserError)
       end
     end
   end
