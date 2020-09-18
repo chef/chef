@@ -24,7 +24,7 @@ require_relative "../config"
 require_relative "../node"
 require_relative "../exceptions"
 require_relative "expand_node_object"
-require_relative "policefile"
+require_relative "policyfile"
 
 class Chef
   module PolicyBuilder
