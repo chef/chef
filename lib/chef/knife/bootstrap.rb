@@ -606,25 +606,26 @@ class Chef
 
       # Actual bootstrap command to be run on the node.
       # Handles recursive calls if su USER failed to authenticate.
-      def bootstrap_run_command(cmd, limit = 3)
-        r = connection.run_command(cmd) do |data, ch|
+      def bootstrap_run_command(cmd)
+        r = connection.run_command(cmd) do |data, channel|
           ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
-          ch.send_data("#{config[:su_password] || config[:connection_password]}\n") if data.match?("Password:")
+          channel.send_data("#{config[:su_password] || config[:connection_password]}\n") if data.match?("Password:")
         end
-        if r.exit_status != 0
-          stderr = (r.stderr + r.stdout).strip
 
-          if stderr.match?("su: Authentication failure")
-            limit -= 1
-            ui.warn("Failed to authenticate su - #{config[:su_user]} to #{server_name}")
-            password = ui.ask("Enter password for su - #{config[:su_user]}@#{server_name}:", echo: false)
-            config[:su_password] = password
-            bootstrap_run_command(cmd, limit) if limit > 0
-          else
-            ui.error("The following error occurred on #{server_name}:")
-            ui.error(stderr)
-            exit(r.exit_status)
-          end
+        if r.exit_status != 0
+          ui.error("The following error occurred on #{server_name}:")
+          ui.error("#{r.stdout} #{r.stderr}".strip)
+          exit(r.exit_status)
+        end
+      rescue Train::UserError => e
+        limit ||= 0
+        if e.reason == :bad_su_user_password && limit < 3
+          limit += 1
+          ui.warn("Failed to authenticate su - #{config[:su_user]} to #{server_name}")
+          config[:su_password] = ui.ask("Enter password for su - #{config[:su_user]}@#{server_name}:", echo: false)
+          retry
+        else
+          raise
         end
       end
 
