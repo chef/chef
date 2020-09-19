@@ -44,7 +44,7 @@ module ChefConfig
 
         # host names must be specified in credentials file as ['foo.example.org'] with quotes
         if !credentials.nil? && !credentials[profile].nil?
-          credentials[profile].map { |k, v| [k.to_sym, v] }.to_h # return symbolized keys to match Train.options()
+          credentials[profile].transform_keys { |k| k.to_sym } # return symbolized keys to match Train.options()
         else
           nil
         end

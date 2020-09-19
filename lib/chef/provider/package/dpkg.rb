@@ -164,10 +164,7 @@ class Chef
         #
         # @return [Hash] Mapping of package names to sources
         def name_sources
-          @name_sources =
-            begin
-              Hash[*package_name_array.zip(resolved_source_array).flatten]
-            end
+          @name_sources ||= Hash[*package_name_array.zip(resolved_source_array).flatten]
         end
 
         # Helper to construct Hash of names-to-package-information.
@@ -186,17 +183,11 @@ class Chef
         end
 
         def name_candidate_version
-          @name_candidate_version ||=
-            begin
-              Hash[name_pkginfo.map { |k, v| [k, v ? v.split("\t")[1].strip : nil] }]
-            end
+          @name_candidate_version ||= name_pkginfo.transform_values { |v| v ? v.split("\t")[1]&.strip : nil }
         end
 
         def name_package_name
-          @name_package_name ||=
-            begin
-              Hash[name_pkginfo.map { |k, v| [k, v ? v.split("\t")[0] : nil] }]
-            end
+          @name_package_name ||= name_pkginfo.transform_values { |v| v ? v.split("\t")[0] : nil }
         end
 
         # Return candidate version array from pkg-deb -W against the source file(s).
