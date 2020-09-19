@@ -166,7 +166,7 @@ module ChefConfig
         when "client_key"
           extract_key(value, :client_key, :client_key_contents)
         when "knife"
-          Config.knife.merge!(value.transform_keys { |k| k.to_sym })
+          Config.knife.merge!(value.transform_keys(&:to_sym)
         else
           Config[key.to_sym] = value
         end
