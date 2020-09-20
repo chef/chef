@@ -33,15 +33,6 @@ class Chef
       include Chef::Mixin::EnforceOwnershipAndPermissions
       include Chef::Mixin::FileClass
 
-      def negative_complement(big)
-        if big > 1073741823 # Fixnum max
-          big -= (2**32) # diminished radix wrap to negative
-        end
-        big
-      end
-
-      private :negative_complement
-
       def load_current_resource
         @current_resource = Chef::Resource::Link.new(new_resource.name)
         current_resource.target_file(new_resource.target_file)
