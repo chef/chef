@@ -24,7 +24,7 @@ require_relative "search/query"
 require_relative "mixin/api_version_request_handling"
 require_relative "exceptions"
 require_relative "server_api"
-require_relative "userable"
+require_relative "abstract_user"
 
 # OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
 #
@@ -34,7 +34,7 @@ require_relative "userable"
 #
 # Exception: self.list is backwards compatible with OSC 11
 class Chef
-  class UserV1 < Chef::Userable
+  class UserV1 < Chef::AbstractUser
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate

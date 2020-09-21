@@ -18,7 +18,7 @@
 
 # common methods of User and UserV1
 class Chef
-  class BaseUser
+  class AbstractUser
 
     def initialize
       @name = ""

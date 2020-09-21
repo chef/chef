@@ -22,7 +22,7 @@ require_relative "mash"
 require_relative "json_compat"
 require_relative "search/query"
 require_relative "server_api"
-require_relative "userable"
+require_relative "abstract_user"
 
 # TODO
 # DEPRECATION NOTE
@@ -36,7 +36,7 @@ require_relative "userable"
 # This file and corresponding osc_user knife files
 # should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
-  class User < Chef::Userable
+  class User < Chef::AbstractUser
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
