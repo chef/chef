@@ -70,7 +70,7 @@ class Chef
       # pastel.decorate is a lightweight replacement for highline.color
       def pastel
         @pastel ||= begin
-          require "pastel"
+          require "pastel" unless defined?(Pastel)
           Pastel.new
         end
       end

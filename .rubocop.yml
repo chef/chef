@@ -30,3 +30,11 @@ Lint/IneffectiveAccessModifier:
   Enabled: false
 Lint/ShadowedException:
   Enabled: false
+
+# set additional paths
+ChefRuby/UnlessDefinedRequire:
+  Include:
+    - 'lib/**/*'
+    - 'chef-bin/**/*'
+    - 'chef-config/**/*'
+    - 'chef-utils/**/*'

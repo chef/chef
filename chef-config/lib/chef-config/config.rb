@@ -1258,9 +1258,9 @@ module ChefConfig
     # @api private
     def self.enable_fips_mode
       OpenSSL.fips_mode = true
-      require "digest"
-      require "digest/sha1"
-      require "digest/md5"
+      require "digest" unless defined?(Digest)
+      require "digest/sha1" unless defined?(Digest::SHA1)
+      require "digest/md5" unless defined?(Digest::MD5)
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
       Digest.send(:remove_const, "SHA1") if Digest.const_defined?("SHA1")

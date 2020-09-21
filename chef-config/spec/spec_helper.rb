@@ -1,4 +1,4 @@
-require "chef-utils"
+require "chef-utils" unless defined?(ChefUtils)
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
