@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.65 -->
-## [v16.5.65](https://github.com/chef/chef/tree/v16.5.65) (2020-09-18)
+<!-- latest_release 16.5.66 -->
+## [v16.5.66](https://github.com/chef/chef/tree/v16.5.66) (2020-09-21)
 
 #### Merged Pull Requests
-- Add missing requires to chef/policy_builder/dynamic [#10446](https://github.com/chef/chef/pull/10446) ([tas50](https://github.com/tas50))
+- Pull in the new tty-table to unlock new license-acceptance [#10450](https://github.com/chef/chef/pull/10450) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.64 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in the new tty-table to unlock new license-acceptance [#10450](https://github.com/chef/chef/pull/10450) ([tas50](https://github.com/tas50)) <!-- 16.5.66 -->
 - Add missing requires to chef/policy_builder/dynamic [#10446](https://github.com/chef/chef/pull/10446) ([tas50](https://github.com/tas50)) <!-- 16.5.65 -->
 <!-- release_rollup -->
 
