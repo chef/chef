@@ -102,6 +102,7 @@ class Chef
 
       This recipe will generate report output similar to the following:
 
+      ```
       [2013-11-26T03:11:06+00:00] INFO: Chef Infra Client Run complete in 0.300029878 seconds
       [2013-11-26T03:11:06+00:00] INFO: Running report handlers
       [2013-11-26T03:11:06+00:00] INFO: Cookbooks and versions run: ["cookbook_versions_handler 1.0.0"]
