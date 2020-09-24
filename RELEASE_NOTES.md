@@ -1,5 +1,10 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# Whats New in 16.5.71
+
+* Add missing requires to chef/policy_builder/dynamic.
+* Check for full name in addition to short name for `homebrew_package` resource. `homebrew_package 'homebrew/core/vim'` and `homebrew_package 'vim'` styles should now both work correctly.
+
 # What's New in 16.5
 
 ## Performance Improvements
@@ -16,7 +21,7 @@ We continue to reduce the size of the Chef Infra Client install and optimize the
   - knife config use-profile [NAME] -> knife config use [NAME]
   - knife config list-profiles -> knife config list
   - knife config get -> knife config show
-  
+
 ## Chef InSpec 4.23.4
 
 Chef InSpec has been updated from 4.22.1 to 4.23.4. This new release includes the following improvements:
