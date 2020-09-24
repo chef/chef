@@ -34,4 +34,4 @@ for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'knife' 'chef-s
 done
 
 echo "--- :mag_right: Testing ${pkg_ident} functionality"
-hab pkg exec "${pkg_ident}" rspec -f documentation --tag ~executables spec/functional || error 'failures during rspec tests'
+hab pkg exec "${pkg_ident}" rspec --tag ~executables spec/functional || error 'failures during rspec tests'
