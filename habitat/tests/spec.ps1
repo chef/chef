@@ -10,8 +10,15 @@ $chef_gem_root = (hab pkg exec $PackageIdentifier gem.cmd which chef | Split-Pat
 try {
     Push-Location $chef_gem_root
     $env:PATH = "C:\hab\bin;$env:PATH"
+
+    # Put chef's GEM_PATH in the machine environment so that the windows service
+    # tests will be able to consume the win32-service gem
+    $pkgEnv = hab pkg env $PackageIdentifier
+    $gemPath = $pkgEnv | Where-Object { $_.StartsWith("`$env:GEM_PATH=") }
+    SETX GEM_PATH $($gemPath.Split("=")[1]) /m
+
     hab pkg binlink --force $PackageIdentifier
-    /hab/bin/rspec --format progress --tag ~executables --tag ~choco_installed spec/functional
+    /hab/bin/rspec --format documentation --tag ~executables --tag ~choco_installed spec/functional
     if (-not $?) { throw "functional testing failed"}
 } finally {
     Pop-Location
