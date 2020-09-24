@@ -172,7 +172,7 @@ class Chef
     def configure_logging
       configure_log_location
       logger.init(MonoLogger.new(chef_config[:log_location][0]))
-      chef_config[:log_location][1..-1].each do |log_location|
+      chef_config[:log_location][1..].each do |log_location|
         logger.loggers << MonoLogger.new(log_location)
       end
       logger.level = resolve_log_level

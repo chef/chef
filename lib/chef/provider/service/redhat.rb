@@ -84,7 +84,7 @@ class Chef
             chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", returns: [0, 1])
             unless run_levels.nil? || run_levels.empty?
               all_levels_match = true
-              chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
+              chkconfig.stdout.split(/\s+/)[1..].each do |level|
                 index = level.split(":").first
                 status = level.split(":").last
                 if CHKCONFIG_ON.match?(level)

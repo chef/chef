@@ -47,7 +47,7 @@ class Chef
                 v2
               end
             end
-            cookbook_gems[args.first] += args[1..-1]
+            cookbook_gems[args.first] += args[1..]
           end
         end
 

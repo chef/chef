@@ -36,7 +36,7 @@ class Chef
           slice_number = @new_resource.backup
           backup_files = sorted_backup_files
           if backup_files.length >= @new_resource.backup
-            remainder = backup_files.slice(slice_number..-1)
+            remainder = backup_files.slice(slice_number..)
             remainder.each do |backup_to_delete|
               delete_backup(backup_to_delete)
             end
