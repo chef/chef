@@ -2,9 +2,9 @@ This file holds "in progress" release notes for the current release under develo
 
 # Whats New in 16.5.71
 
-* Add missing requires to chef/policy_builder/dynamic.
+* Add missing requires to prevent errors when loading `chef/policy_builder/dynamic`.
 * Check for full name in addition to short name for `homebrew_package` resource. `homebrew_package 'homebrew/core/vim'` and `homebrew_package 'vim'` styles should now both work correctly.
-* Improved the license acceptance flow to give helpful information if user passes an invalid value in the environment variable or command line argument.
+* Improved the license acceptance flow to give helpful information if the user passes an invalid value in the environment variable or command line argument.
 
 # What's New in 16.5
 
