@@ -19,7 +19,9 @@
 require_relative "../resource"
 require_relative "../http/simple"
 require "tmpdir" unless defined?(Dir.mktmpdir)
-autoload :Addressable, "addressable"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 
 class Chef
   class Resource
