@@ -931,7 +931,7 @@ RSpec.describe ChefConfig::Config do
 
         shared_examples_for "a suitable locale" do
           it "returns an English UTF-8 locale" do
-            expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
+            expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef Infra Client to use/)
             expect(ChefConfig.logger).to_not receive(:trace).with(/Defaulting to locale en_US.UTF-8 on Windows/)
             expect(ChefConfig.logger).to_not receive(:trace).with(/No usable locale -a command found/)
             expect(ChefConfig::Config.guess_internal_locale).to eq expected_locale
@@ -984,7 +984,7 @@ RSpec.describe ChefConfig::Config do
           let(:locale_array) { ["af_ZA", "af_ZA.ISO8859-1", "af_ZA.ISO8859-15", "af_ZA.UTF-8"] }
 
           it "should fall back to C locale" do
-            expect(ChefConfig.logger).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
+            expect(ChefConfig.logger).to receive(:warn).with("Please install an English UTF-8 locale for Chef Infra Client to use, falling back to C locale and disabling UTF-8 support.")
             expect(ChefConfig::Config.guess_internal_locale).to eq "C"
           end
         end

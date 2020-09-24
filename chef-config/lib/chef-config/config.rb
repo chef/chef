@@ -1205,7 +1205,7 @@ module ChefConfig
           # Transform into the form en_ZZ.UTF-8
           guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
         else
-          ChefConfig.logger.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+          ChefConfig.logger.warn "Please install an English UTF-8 locale for #{ChefUtils::Dist::Infra::PRODUCT} to use, falling back to C locale and disabling UTF-8 support."
           "C"
         end
       end
