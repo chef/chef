@@ -36,5 +36,5 @@ ChefRuby/UnlessDefinedRequire:
   Include:
     - 'lib/**/*'
     - 'chef-bin/**/*'
-    - 'chef-config/**/*'
-    - 'chef-utils/**/*'
+    - 'chef-config/lib/**/*'
+    - 'chef-utils/lib/**/*'

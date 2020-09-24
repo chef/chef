@@ -20,7 +20,7 @@ require "spec_helper"
 require "tempfile" unless defined?(Tempfile)
 
 require "chef-config/exceptions"
-require "chef-utils" unless defined?(ChefUtils)
+require "chef-utils"
 require "chef-config/workstation_config_loader"
 
 RSpec.describe ChefConfig::WorkstationConfigLoader do

@@ -1,4 +1,4 @@
-require "chef-utils" unless defined?(ChefUtils)
+require "chef-utils"
 
 # FIXME: dynamically generate this for accuracy
 HELPER_MODULES = [
