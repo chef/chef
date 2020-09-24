@@ -98,6 +98,7 @@ subscriptions:
       - bash:.expeditor/update_dockerfile.sh
       - built_in:tag_docker_image
       - built_in:publish_rubygems
+      - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
 
   # the habitat chain
