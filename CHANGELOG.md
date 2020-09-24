@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.68 -->
-## [v16.5.68](https://github.com/chef/chef/tree/v16.5.68) (2020-09-21)
+<!-- latest_release 16.5.69 -->
+## [v16.5.69](https://github.com/chef/chef/tree/v16.5.69) (2020-09-24)
 
 #### Merged Pull Requests
-- Remove unused method [#10449](https://github.com/chef/chef/pull/10449) ([007lva](https://github.com/007lva))
+- Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.64 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins)) <!-- 16.5.69 -->
 - Remove unused method [#10449](https://github.com/chef/chef/pull/10449) ([007lva](https://github.com/007lva)) <!-- 16.5.68 -->
 - Check for full names in Homebrew package info [#10360](https://github.com/chef/chef/pull/10360) ([ed-brex](https://github.com/ed-brex)) <!-- 16.5.67 -->
 - Pull in the new tty-table to unlock new license-acceptance [#10450](https://github.com/chef/chef/pull/10450) ([tas50](https://github.com/tas50)) <!-- 16.5.66 -->
