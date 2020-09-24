@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.72 -->
-## [v16.5.72](https://github.com/chef/chef/tree/v16.5.72) (2020-09-24)
+<!-- latest_release 16.5.73 -->
+## [v16.5.73](https://github.com/chef/chef/tree/v16.5.73) (2020-09-24)
 
 #### Merged Pull Requests
-- Use ChefUtils::Dist::Infra::PRODUCT for locale warning instead of &quot;Chef&quot; [#10461](https://github.com/chef/chef/pull/10461) ([ramereth](https://github.com/ramereth))
+- Preparing 16.5 hotfix patch to fix Workstation build issue [#10462](https://github.com/chef/chef/pull/10462) ([tyler-ball](https://github.com/tyler-ball))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.64 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Preparing 16.5 hotfix patch to fix Workstation build issue [#10462](https://github.com/chef/chef/pull/10462) ([tyler-ball](https://github.com/tyler-ball)) <!-- 16.5.73 -->
 - Use ChefUtils::Dist::Infra::PRODUCT for locale warning instead of &quot;Chef&quot; [#10461](https://github.com/chef/chef/pull/10461) ([ramereth](https://github.com/ramereth)) <!-- 16.5.72 -->
 - Update require gating to include chef-utils/chef-config &amp; gate more [#10451](https://github.com/chef/chef/pull/10451) ([tas50](https://github.com/tas50)) <!-- 16.5.71 -->
 - Simplify Hash transforms &amp; minor code refactoring [#10447](https://github.com/chef/chef/pull/10447) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.70 -->
