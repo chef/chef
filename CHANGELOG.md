@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.69 -->
-## [v16.5.69](https://github.com/chef/chef/tree/v16.5.69) (2020-09-24)
+<!-- latest_release 16.5.70 -->
+## [v16.5.70](https://github.com/chef/chef/tree/v16.5.70) (2020-09-24)
 
 #### Merged Pull Requests
-- Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins))
+- Simplify Hash transforms &amp; minor code refactoring [#10447](https://github.com/chef/chef/pull/10447) ([vsingh-msys](https://github.com/vsingh-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.64 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Simplify Hash transforms &amp; minor code refactoring [#10447](https://github.com/chef/chef/pull/10447) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.70 -->
 - Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins)) <!-- 16.5.69 -->
 - Remove unused method [#10449](https://github.com/chef/chef/pull/10449) ([007lva](https://github.com/007lva)) <!-- 16.5.68 -->
 - Check for full names in Homebrew package info [#10360](https://github.com/chef/chef/pull/10360) ([ed-brex](https://github.com/ed-brex)) <!-- 16.5.67 -->
