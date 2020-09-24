@@ -19,7 +19,7 @@
 require_relative "base"
 require_relative "../platform/query_helpers"
 require_relative "../win32/eventlog"
-require "chef-utils" unless defined?(ChefUtils)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   module EventLoggers
