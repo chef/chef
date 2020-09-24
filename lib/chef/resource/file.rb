@@ -22,7 +22,7 @@ require_relative "../platform/query_helpers"
 require_relative "../mixin/securable"
 require_relative "file/verification"
 require "pathname" unless defined?(Pathname)
-require "chef-utils" unless defined?(ChefUtils)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Resource

@@ -23,7 +23,7 @@ end
 require_relative "config"
 require_relative "exceptions"
 require "timeout" unless defined?(Timeout)
-require "chef-utils" unless defined?(ChefUtils)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
 
