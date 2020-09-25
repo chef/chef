@@ -33,7 +33,9 @@ module Mixlib
   autoload :ShellOut, "mixlib/shellout"
 end
 autoload :URI, "uri"
-autoload :Addressable, "addressable/uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 autoload :OpenSSL, "openssl"
 autoload :YAML, "yaml"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)

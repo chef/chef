@@ -21,7 +21,9 @@ require_relative "../exceptions"
 require_relative "../server_api"
 
 autoload :URI, "uri"
-autoload :Addressable, "addressable/uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 
 class Chef
   class Search
