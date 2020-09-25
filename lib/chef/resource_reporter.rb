@@ -19,8 +19,6 @@
 # limitations under the License.
 #
 
-require "uri" unless defined?(URI)
-require "securerandom" unless defined?(SecureRandom)
 require_relative "event_dispatch/base"
 
 class Chef
