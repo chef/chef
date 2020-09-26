@@ -265,7 +265,7 @@ class Chef
           @memory_store.get(path)
 
         elsif path[0] == "file_store" && path[1] == "repo"
-          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path[2..-1].join("/"))
+          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path[2..].join("/"))
           begin
             entry.read
           rescue Chef::ChefFS::FileSystem::NotFoundError => e

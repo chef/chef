@@ -68,7 +68,7 @@ class Chef
 
         if @name_args.size > 1
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
+          entries = @name_args[1..].map do |entry|
             entry.split(",").map(&:strip)
           end.flatten
         else

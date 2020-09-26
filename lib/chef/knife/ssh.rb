@@ -489,7 +489,7 @@ class Chef
 
         new_window_cmds = lambda do
           if session.servers_for.size > 1
-            [""] + session.servers_for[1..-1].map do |server|
+            [""] + session.servers_for[1..].map do |server|
               if config[:tmux_split]
                 "split-window #{ssh_dest.call(server)}; tmux select-layout tiled"
               else
@@ -625,7 +625,7 @@ class Chef
           when "cssh"
             cssh
           else
-            ssh_command(@name_args[1..-1].join(" "))
+            ssh_command(@name_args[1..].join(" "))
           end
 
         session.close

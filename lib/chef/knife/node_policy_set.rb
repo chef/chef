@@ -45,7 +45,7 @@ class Chef
 
       # Set policy name and group to node
       def set_policy(node)
-        policy_group, policy_name = @name_args[1..-1]
+        policy_group, policy_name = @name_args[1..]
         node.policy_name  = policy_name
         node.policy_group = policy_group
       end
@@ -70,7 +70,7 @@ class Chef
 
       # True if one of policy_name or policy_group was given, but not both
       def incomplete_policyfile_options?
-        policy_group, policy_name = @name_args[1..-1]
+        policy_group, policy_name = @name_args[1..]
         (policy_group.nil? || policy_name.nil? || @name_args[1..-1].size > 2)
       end
 

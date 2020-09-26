@@ -124,7 +124,7 @@ class Chef
           # Return the link destination (strip off \??\ at the beginning, which is a local filesystem thing)
           link_dest = reparse_buffer.reparse_buffer.substitute_name
           if /^\\\?\?\\/.match?(link_dest)
-            link_dest = link_dest[4..-1]
+            link_dest = link_dest[4..]
           end
           link_dest
         end

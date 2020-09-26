@@ -64,7 +64,7 @@ class Chef
             if is_dir
               return recursive && name != "." && name != ".."
             elsif ruby_only
-              return false if name[-3..-1] != ".rb"
+              return false if name[-3..] != ".rb"
             end
 
             # Check chefignore

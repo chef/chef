@@ -649,7 +649,7 @@ module ChefConfig
     # credentials toml files which doesn't allow ruby symbol values
     configurable(:ssl_verify_mode).writes_value do |value|
       if value.is_a?(String) && value[0] == ":"
-        value[1..-1].to_sym
+        value[1..].to_sym
       else
         value.to_sym
       end

@@ -170,7 +170,7 @@ class Chef
         # is the provided ID a key ID from a keyserver. Looks at length and HEX only values
         # @param [String] id the key value passed by the user that *may* be an ID
         def is_key_id?(id)
-          id = id[2..-1] if id.start_with?("0x")
+          id = id[2..] if id.start_with?("0x")
           id =~ /^\h+$/ && [8, 16, 40].include?(id.length)
         end
 

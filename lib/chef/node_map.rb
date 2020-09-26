@@ -225,13 +225,13 @@ class Chef
 
       if attribute == :platform_family
         # If any blocklist value matches, we don't match
-        return false if blocklist.any? { |v| v[1..-1] == value || platform_family_query_helper?(node, v[1..-1]) }
+        return false if blocklist.any? { |v| v[1..] == value || platform_family_query_helper?(node, v[1..]) }
 
         # If the allowlist is empty, or anything matches, we match.
         allowlist.empty? || allowlist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
       else
         # If any blocklist value matches, we don't match
-        return false if blocklist.any? { |v| v[1..-1] == value }
+        return false if blocklist.any? { |v| v[1..] == value }
 
         # If the allowlist is empty, or anything matches, we match.
         allowlist.empty? || allowlist.any? { |v| v == :all || v == value }

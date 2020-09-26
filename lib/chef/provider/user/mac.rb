@@ -608,7 +608,7 @@ class Chef
         end
 
         def run_dscl(*args)
-          result = shell_out("dscl", "-plist", ".", "-#{args[0]}", args[1..-1])
+          result = shell_out("dscl", "-plist", ".", "-#{args[0]}", args[1..])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if /No such key: /.match?(result.stdout)
@@ -617,7 +617,7 @@ class Chef
         end
 
         def run_plutil(*args)
-          result = shell_out("plutil", "-#{args[0]}", args[1..-1])
+          result = shell_out("plutil", "-#{args[0]}", args[1..])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
 
           result.stdout
