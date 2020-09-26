@@ -18,7 +18,7 @@
 
 require_relative "../knife"
 require_relative "../application"
-require "winrm"
+require "winrm" unless defined?(WinRM::Connection)
 require "winrm-elevated"
 
 class Chef
