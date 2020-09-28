@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.76 -->
-## [v16.5.76](https://github.com/chef/chef/tree/v16.5.76) (2020-09-26)
+<!-- latest_release 16.5.77 -->
+## [v16.5.77](https://github.com/chef/chef/tree/v16.5.77) (2020-09-28)
 
 #### Merged Pull Requests
-- Use Ruby 2.6 endless Range syntax [#10463](https://github.com/chef/chef/pull/10463) ([007lva](https://github.com/007lva))
+- Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.64 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50)) <!-- 16.5.77 -->
 - Use Ruby 2.6 endless Range syntax [#10463](https://github.com/chef/chef/pull/10463) ([007lva](https://github.com/007lva)) <!-- 16.5.76 -->
 - Remove unnecessary require. [#10465](https://github.com/chef/chef/pull/10465) ([phiggins](https://github.com/phiggins)) <!-- 16.5.75 -->
 - autoload addressable/uri on :URI inside addressable module [#10464](https://github.com/chef/chef/pull/10464) ([mwrock](https://github.com/mwrock)) <!-- 16.5.74 -->
