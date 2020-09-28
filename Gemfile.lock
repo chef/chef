@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: a40b62de5f41e98ba240eb502d778470e1ec5186
+  revision: 7e828c793e50bb955389fc8064a2562727d82912
   branch: master
   specs:
-    chefstyle (1.4.1)
-      rubocop (= 0.91.0)
+    chefstyle (1.4.2)
+      rubocop (= 0.92.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 0487d320efda47bce88b68c0916e2f4b275244ae
+  revision: e0d81b68c3b78712e0c34ce14ff60d7dcc662d25
   branch: master
   specs:
-    ohai (16.5.4)
+    ohai (16.5.6)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -153,8 +153,8 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.11)
-    chef-zero (15.0.2)
+    chef-vault (4.0.12)
+    chef-zero (15.0.3)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
@@ -197,10 +197,10 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.23.4)
+    inspec-core (4.23.11)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
-      faraday (>= 0.9.0)
+      faraday (>= 0.9.0, < 1.1)
       hashie (~> 3.4)
       json_schemer (>= 0.2.1, < 0.2.12)
       license-acceptance (>= 0.2.13, < 3.0)
@@ -220,8 +220,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.23.4)
-      inspec-core (= 4.23.4)
+    inspec-core-bin (4.23.11)
+      inspec-core (= 4.23.11)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.3.1)
@@ -270,7 +270,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.2)
-    parser (2.7.1.4)
+    parser (2.7.1.5)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -294,7 +294,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.1)
     rb-readline (0.5.5)
-    regexp_parser (1.8.0)
+    regexp_parser (1.8.1)
     rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -315,17 +315,17 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.91.0)
+    rubocop (0.92.0)
       parallel (~> 1.10)
-      parser (>= 2.7.1.1)
+      parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.7)
       rexml
-      rubocop-ast (>= 0.4.0, < 1.0)
+      rubocop-ast (>= 0.5.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.4.2)
-      parser (>= 2.7.1.4)
+    rubocop-ast (0.7.1)
+      parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
     ruby-shadow (2.5.0)
