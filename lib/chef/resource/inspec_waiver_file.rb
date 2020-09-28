@@ -35,7 +35,7 @@ class Chef
           control 'my_inspec_control_01'
           run_test false
           justification "The subject of this control is not managed by Chef on the systems in policy group \#{node['policy_group']}"
-          expiration 2021-01-01
+          expiration '2021-01-01'
           action :add
         end
       ```
@@ -87,6 +87,10 @@ class Chef
       property :justification, String,
         description: "Can be any text you want and might include a reason for the waiver as well as who signed off on the waiver."
 
+      property :backup, [false, Integers],
+        description: 'The number of backups to be kept in /var/chef/backup (for UNIX- and Linux-based platforms) or C:/chef/backup (for the Microsoft Windows platform). Set to false to prevent backups from being kept.',
+        default: false
+
       action :add do
         filename = new_resource.file
         yaml_contents = if ::File.file?(filename) && ::File.readable?(filename) && !::File.zero?(filename)
@@ -109,6 +113,7 @@ class Chef
             file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
               path new_resource.file
               content waiver_hash.to_yaml
+              backup new_resource.backup
               action :create
             end
           end
@@ -119,6 +124,7 @@ class Chef
           file "Update Waiver File #{new_resource.file} to add waiver for control #{new_resource.control}" do
             path new_resource.file
             content waiver_hash.to_yaml
+            backup new_resource.backup
             action :create
           end
         end
@@ -135,6 +141,7 @@ class Chef
             file "Update Waiver File #{new_resource.file} to remove waiver for control #{new_resource.control}" do
               path new_resource.file
               content waiver_hash.to_yaml
+              backup new_resource.backup
               action :create
             end
           end

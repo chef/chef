@@ -66,4 +66,12 @@ describe Chef::Resource::InspecWaiverFile do
   it "expects the justification property to fail if given a non-string value" do
     expect { resource.justification true }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
+
+  it "expects the backup property to fail validation when set to true" do
+    expect { resource.backup true }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "expects the backup property to fail validation when passed a string" do
+    expect { resource.backup 'please' }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
 end

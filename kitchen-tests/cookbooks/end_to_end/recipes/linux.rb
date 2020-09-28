@@ -72,6 +72,19 @@ include_recipe "git"
   end
 end
 
+%w{001 002 003}.each do |control|
+  inspec_waivers_file "fake_inspec_control_#{control}" do
+    file '/etc/chef/inspec_waiver_file.yaml'
+    expiration '2025-07-01'
+    action :add
+  end
+end
+
+inspec_waivers_file "fake_inspec_control_002" do
+  file '/etc/chef/inspec_waiver_file.yaml'
+  action :remove
+end
+
 user_ulimit "tomcat" do
   filehandle_soft_limit 8192
   filehandle_hard_limit 8192
