@@ -21,7 +21,7 @@
 # limitations under the License.
 #
 
-require "openssl" unless defined?(OpenSSL)
+autoload :OpenSSL, "openssl"
 require_relative "../util/path_helper"
 
 class Chef

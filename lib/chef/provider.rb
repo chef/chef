@@ -30,9 +30,6 @@ require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider
-    require_relative "mixin/why_run"
-    require_relative "mixin/provides"
-
     attr_accessor :new_resource
     attr_accessor :current_resource
     attr_accessor :after_resource
@@ -91,7 +88,7 @@ class Chef
     def self.use(partial)
       dirname = ::File.dirname(partial)
       basename = ::File.basename(partial, ".rb")
-      basename = basename[1..-1] if basename.start_with?("_")
+      basename = basename[1..] if basename.start_with?("_")
       class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
     end
 
@@ -455,6 +452,5 @@ end
 
 # Requiring things at the bottom breaks cycles
 require_relative "chef_class"
-require_relative "mixin/why_run"
 require_relative "resource_collection"
 require_relative "runner"

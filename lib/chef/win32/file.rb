@@ -78,7 +78,7 @@ class Chef
       def self.symlink?(file_name)
         is_symlink = false
         path = encode_path(file_name)
-        if ::File.exists?(file_name) || ::File.symlink?(file_name)
+        if ::File.exist?(file_name) || ::File.symlink?(file_name)
           if (GetFileAttributesW(path) & FILE_ATTRIBUTE_REPARSE_POINT) > 0
             file_search_handle(file_name) do |handle, find_data|
               if find_data[:dw_reserved_0] == IO_REPARSE_TAG_SYMLINK
@@ -104,7 +104,7 @@ class Chef
       # will raise a NotImplementedError, as per MRI.
       #
       def self.readlink(link_name)
-        raise Errno::ENOENT, link_name unless ::File.exists?(link_name) || ::File.symlink?(link_name)
+        raise Errno::ENOENT, link_name unless ::File.exist?(link_name) || ::File.symlink?(link_name)
 
         symlink_file_handle(link_name) do |handle|
           # Go to DeviceIoControl to get the symlink information
@@ -124,7 +124,7 @@ class Chef
           # Return the link destination (strip off \??\ at the beginning, which is a local filesystem thing)
           link_dest = reparse_buffer.reparse_buffer.substitute_name
           if /^\\\?\?\\/.match?(link_dest)
-            link_dest = link_dest[4..-1]
+            link_dest = link_dest[4..]
           end
           link_dest
         end

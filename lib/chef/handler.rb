@@ -240,6 +240,8 @@ class Chef
     # This ensures that all handlers get a chance to run even if one fails.
     # This method should not be overridden by subclasses unless you know what
     # you're doing.
+    #
+    # @api private
     def run_report_safely(run_status)
       run_report_unsafe(run_status)
     rescue Exception => e

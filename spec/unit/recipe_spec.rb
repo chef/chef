@@ -25,7 +25,7 @@ require "chef/platform/resource_priority_map"
 describe Chef::Recipe do
 
   let(:cookbook_collection) do
-    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    cookbook_repo = File.expand_path(File.join(__dir__, "..", "data", "cookbooks"))
     cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
     cookbook_loader.load_cookbooks
     Chef::CookbookCollection.new(cookbook_loader)

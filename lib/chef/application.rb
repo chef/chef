@@ -25,10 +25,12 @@ require_relative "log"
 require_relative "platform"
 require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "tmpdir" unless defined?(Dir.mktmpdir)
-require "rbconfig"
+require "rbconfig" unless defined?(RbConfig)
 require_relative "application/exit_code"
-require_relative "dist"
-require "license_acceptance/acceptor"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+module LicenseAcceptance
+  autoload :Acceptor, "license_acceptance/acceptor"
+end
 
 class Chef
   class Application
@@ -39,9 +41,6 @@ class Chef
 
       @chef_client = nil
       @chef_client_json = nil
-
-      # Always switch to a readable directory. Keeps subsequent Dir.chdir() {}
-      # from failing due to permissions when launched as a less privileged user.
     end
 
     # Configure mixlib-cli to always separate defaults from user-supplied CLI options
@@ -96,7 +95,11 @@ class Chef
     # Parse configuration (options and config file)
     def configure_chef
       parse_options
-      load_config_file
+      begin
+        load_config_file
+      rescue Exception => e
+        Chef::Application.fatal!(e.message, Chef::Exceptions::ConfigurationError.new)
+      end
       chef_config.export_proxies
       chef_config.init_openssl
       File.umask chef_config[:umask]
@@ -151,8 +154,6 @@ class Chef
 
     def apply_extra_config_options(extra_config_options)
       chef_config.apply_extra_config_options(extra_config_options)
-    rescue ChefConfig::UnparsableConfigOption => e
-      Chef::Application.fatal!(e.message)
     end
 
     # Set the specific recipes to Chef::Config if the recipes are valid
@@ -171,7 +172,7 @@ class Chef
     def configure_logging
       configure_log_location
       logger.init(MonoLogger.new(chef_config[:log_location][0]))
-      chef_config[:log_location][1..-1].each do |log_location|
+      chef_config[:log_location][1..].each do |log_location|
         logger.loggers << MonoLogger.new(log_location)
       end
       logger.level = resolve_log_level
@@ -306,7 +307,7 @@ class Chef
     end
 
     def fork_chef_client
-      logger.info "Forking #{Chef::Dist::PRODUCT} instance to converge..."
+      logger.info "Forking #{ChefUtils::Dist::Infra::PRODUCT} instance to converge..."
       pid = fork do
         # Want to allow forked processes to finish converging when
         # TERM singal is received (exit gracefully)
@@ -315,7 +316,7 @@ class Chef
             " finishing converge to exit normally (send SIGINT to terminate immediately)")
         end
 
-        client_solo = chef_config[:solo] ? "#{Chef::Dist::SOLOEXEC}" : "#{Chef::Dist::CLIENT}"
+        client_solo = chef_config[:solo] ? ChefUtils::Dist::Solo::EXEC : ChefUtils::Dist::Infra::CLIENT
         $0 = "#{client_solo} worker: ppid=#{Process.ppid};start=#{Time.new.strftime("%R:%S")};"
         begin
           logger.trace "Forked instance now converging"
@@ -327,7 +328,7 @@ class Chef
           exit 0
         end
       end
-      logger.trace "Fork successful. Waiting for new #{Chef::Dist::CLIENT} pid: #{pid}"
+      logger.trace "Fork successful. Waiting for new #{ChefUtils::Dist::Infra::CLIENT} pid: #{pid}"
       result = Process.waitpid2(pid)
       handle_child_exit(result)
       logger.trace "Forked instance successfully reaped (pid: #{pid})"
@@ -339,9 +340,9 @@ class Chef
       return true if status.success?
 
       message = if status.signaled?
-                  "#{Chef::Dist::PRODUCT} run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
+                  "#{ChefUtils::Dist::Infra::PRODUCT} run process terminated by signal #{status.termsig} (#{Signal.list.invert[status.termsig]})"
                 else
-                  "#{Chef::Dist::PRODUCT} run process exited unsuccessfully (exit code #{status.exitstatus})"
+                  "#{ChefUtils::Dist::Infra::PRODUCT} run process exited unsuccessfully (exit code #{status.exitstatus})"
                 end
       raise Exceptions::ChildConvergeError, message
     end
@@ -352,7 +353,8 @@ class Chef
       logger.fatal("Configuration error #{error.class}: #{error.message}")
       filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each { |line| logger.fatal("  " + line ) }
-      Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", error)
+      raise Chef::Exceptions::ConfigurationError.new("Aborting due to error in '#{config_file_path}': #{error}")
+      # Chef::Application.fatal!("Aborting due to error in '#{config_file_path}'", Chef::Exceptions::ConfigurationError.new(error))
     end
 
     # This is a hook for testing
@@ -373,8 +375,8 @@ class Chef
         chef_stacktrace_out = "Generated at #{Time.now}\n"
         chef_stacktrace_out += message
 
-        Chef::FileCache.store("#{Chef::Dist::SHORT}-stacktrace.out", chef_stacktrace_out)
-        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{Chef::Dist::SHORT}-stacktrace.out", false)}")
+        Chef::FileCache.store("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", chef_stacktrace_out)
+        logger.fatal("Stacktrace dumped to #{Chef::FileCache.load("#{ChefUtils::Dist::Infra::SHORT}-stacktrace.out", false)}")
         logger.fatal("Please provide the contents of the stacktrace.out file if you file a bug report")
         if Chef::Config[:always_dump_stacktrace]
           logger.fatal(message)

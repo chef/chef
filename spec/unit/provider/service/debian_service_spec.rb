@@ -47,7 +47,7 @@ describe Chef::Provider::Service::Debian do
 
   describe "load_current_resource" do
     it "ensures /usr/sbin/update-rc.d is available" do
-      expect(File).to receive(:exists?).with("/usr/sbin/update-rc.d") .and_return(false)
+      expect(File).to receive(:exist?).with("/usr/sbin/update-rc.d").and_return(false)
 
       @provider.define_resource_requirements
       expect do

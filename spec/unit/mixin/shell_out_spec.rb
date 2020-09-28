@@ -21,7 +21,7 @@
 #
 
 require "spec_helper"
-require "chef/mixin/path_sanity"
+require "chef/mixin/default_paths"
 
 describe Chef::Mixin::ShellOut do
   let(:shell_out_class) { Class.new { include Chef::Mixin::ShellOut } }
@@ -74,7 +74,7 @@ describe Chef::Mixin::ShellOut do
                   "LC_ALL" => Chef::Config[:internal_locale],
                   "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path => shell_out_obj.sanitized_path,
+                  env_path => shell_out_obj.default_paths,
                 }).and_return(retobj)
               shell_out_obj.send(method, cmd, **options)
             end
@@ -87,7 +87,7 @@ describe Chef::Mixin::ShellOut do
                   "LC_ALL" => Chef::Config[:internal_locale],
                   "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path => shell_out_obj.sanitized_path,
+                  env_path => shell_out_obj.default_paths,
                 }).and_return(retobj)
               shell_out_obj.send(method, cmd, **options)
               expect(options[:environment].key?("LC_ALL")).to be false
@@ -115,7 +115,7 @@ describe Chef::Mixin::ShellOut do
                   "LC_ALL" => Chef::Config[:internal_locale],
                   "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path => shell_out_obj.sanitized_path,
+                  env_path => shell_out_obj.default_paths,
                 }).and_return(retobj)
               shell_out_obj.send(method, cmd, **options)
             end
@@ -128,7 +128,7 @@ describe Chef::Mixin::ShellOut do
                   "LC_ALL" => Chef::Config[:internal_locale],
                   "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path => shell_out_obj.sanitized_path,
+                  env_path => shell_out_obj.default_paths,
                 }).and_return(retobj)
               shell_out_obj.send(method, cmd, **options)
               expect(options[:env].key?("LC_ALL")).to be false
@@ -144,7 +144,7 @@ describe Chef::Mixin::ShellOut do
                   "LC_ALL" => Chef::Config[:internal_locale],
                   "LANG" => Chef::Config[:internal_locale],
                   "LANGUAGE" => Chef::Config[:internal_locale],
-                  env_path => shell_out_obj.sanitized_path,
+                  env_path => shell_out_obj.default_paths,
                 }).and_return(retobj)
               shell_out_obj.send(method, cmd, **options)
             end
@@ -158,7 +158,7 @@ describe Chef::Mixin::ShellOut do
                 "LC_ALL" => Chef::Config[:internal_locale],
                 "LANG" => Chef::Config[:internal_locale],
                 "LANGUAGE" => Chef::Config[:internal_locale],
-                env_path => shell_out_obj.sanitized_path,
+                env_path => shell_out_obj.default_paths,
               }).and_return(retobj)
             shell_out_obj.send(method, cmd)
           end

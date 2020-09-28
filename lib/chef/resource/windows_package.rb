@@ -20,7 +20,7 @@ require_relative "../mixin/uris"
 require_relative "package"
 require_relative "../provider/package/windows"
 require_relative "../win32/error" if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -30,7 +30,30 @@ class Chef
       provides(:windows_package) { true }
       provides :package, os: "windows"
 
-      description "Use the **windows_package** resource to manage packages on the Microsoft Windows platform. The windows_package resource supports these installer formats:\n\n Microsoft Installer Package (MSI)\n Nullsoft Scriptable Install System (NSIS)\n Inno Setup (inno)\n Wise\n InstallShield\n Custom installers such as installing a non-.msi file that embeds an .msi-based installer\n"
+      description <<~DESC
+        Use the **windows_package** resource to manage packages on the Microsoft Windows platform.
+        The **windows_package** resource supports these installer formats:
+          * Microsoft Installer Package (MSI)
+          * Nullsoft Scriptable Install System (NSIS)
+          * Inno Setup (inno)
+          * Wise
+          * InstallShield
+          * Custom installers such as installing a non-.msi file that embeds an .msi-based installer
+
+        To enable idempotence of the `:install` action or to enable the `:remove` action with no source property specified,
+        `package_name` MUST be an exact match of the name used by the package installer. The names of installed packages
+        Windows knows about can be found in **Add/Remove programs**, in the output of `ohai packages`, or in the
+        `DisplayName` property in one of the following in the Windows registry:
+
+        * `HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall`
+        * `HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall`
+        * `HKEY_LOCAL_MACHINE\\Software\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall`
+
+        Note: If there are multiple versions of a package installed with the same display name, all of those packages will
+        be removed unless a version is provided in the **version** property or unless it can be discovered in the installer
+        file specified by the **source** property.
+      DESC
+
       introduced "11.12"
       examples <<~DOC
       **Install a package**:
@@ -135,15 +158,15 @@ class Chef
           end
         end),
         default_description: "The resource block's name", # this property is basically a name_property but not really so we need to spell it out
-        description: "The path to a package in the local file system. The location of the package may be at a URL."
+        description: "The path to a package in the local file system or the URL of a remote file that will be downloaded."
 
       property :checksum, String,
         desired_state: false, coerce: (proc { |c| c.downcase }),
-        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{Chef::Dist::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
+        description: "The SHA-256 checksum of the file. Use to prevent a file from being re-downloaded. When the local file matches the checksum, #{ChefUtils::Dist::Infra::PRODUCT} does not download it. Use when a URL is specified by the `source` property."
 
       property :remote_file_attributes, Hash,
         desired_state: false,
-        description: "If the source package to install is at a remote location this property allows you to define a hash of properties and their value which will be used by the underlying remote_file resource, which fetches the source."
+        description: "If the source package to install is at a remote location, this property allows you to define a hash of properties which will be used by the underlying **remote_file** resource used to fetch the source."
     end
   end
 end

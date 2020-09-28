@@ -64,7 +64,7 @@ class Chef
             if is_dir
               return recursive && name != "." && name != ".."
             elsif ruby_only
-              return false if name[-3..-1] != ".rb"
+              return false if name[-3..] != ".rb"
             end
 
             # Check chefignore
@@ -137,7 +137,7 @@ class Chef
           end
 
           def exists?
-            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+            File.exist?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
           end
 
           def read

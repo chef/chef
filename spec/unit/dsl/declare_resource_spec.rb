@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::ResourceCollection do
   let(:run_context) do
-    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "cookbooks"))
+    cookbook_repo = File.expand_path(File.join(__dir__, "..", "..", "data", "cookbooks"))
     cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
     cookbook_loader.load_cookbooks
     node = Chef::Node.new

@@ -34,8 +34,8 @@ require_relative "node/attribute"
 require_relative "mash"
 require_relative "json_compat"
 require_relative "search/query"
-require_relative "whitelist"
-require_relative "blacklist"
+require_relative "attribute_allowlist"
+require_relative "attribute_blocklist"
 
 class Chef
   class Node
@@ -706,21 +706,45 @@ class Chef
       end
     end
 
+    # a method to handle the renamed configuration from whitelist -> allowed
+    # and to throw a deprecation warning when the old configuration is set
+    #
+    # @param [String] level the attribute level
+    def allowlist_or_whitelist_config(level)
+      if Chef::Config["#{level}_attribute_whitelist".to_sym]
+        Chef.deprecated(:attribute_blacklist_configuration, "Attribute whitelist configurations have been deprecated. Use the allowed_LEVEL_attribute configs instead")
+        Chef::Config["#{level}_attribute_whitelist".to_sym]
+      else
+        Chef::Config["allowed_#{level}_attributes".to_sym]
+      end
+    end
+
+    # a method to handle the renamed configuration from blacklist -> blocked
+    # and to throw a deprecation warning when the old configuration is set
+    #
+    # @param [String] level the attribute level
+    def blocklist_or_blacklist_config(level)
+      if Chef::Config["#{level}_attribute_blacklist".to_sym]
+        Chef.deprecated(:attribute_blacklist_configuration, "Attribute blacklist configurations have been deprecated. Use the blocked_LEVEL_attribute configs instead")
+        Chef::Config["#{level}_attribute_blacklist".to_sym]
+      else
+        Chef::Config["blocked_#{level}_attributes".to_sym]
+      end
+    end
+
     def data_for_save
       data = for_json
       %w{automatic default normal override}.each do |level|
-        whitelist_config_option = "#{level}_attribute_whitelist".to_sym
-        whitelist = Chef::Config[whitelist_config_option]
-        unless whitelist.nil? # nil => save everything
-          logger.info("Whitelisting #{level} node attributes for save.")
-          data[level] = Chef::Whitelist.filter(data[level], whitelist)
+        allowlist = allowlist_or_whitelist_config(level)
+        unless allowlist.nil? # nil => save everything
+          logger.info("Allowing #{level} node attributes for save.")
+          data[level] = Chef::AttributeAllowlist.filter(data[level], allowlist)
         end
 
-        blacklist_config_option = "#{level}_attribute_blacklist".to_sym
-        blacklist = Chef::Config[blacklist_config_option]
-        unless blacklist.nil? # nil => remove nothing
-          logger.info("Blacklisting #{level} node attributes for save")
-          data[level] = Chef::Blacklist.filter(data[level], blacklist)
+        blocklist = blocklist_or_blacklist_config(level)
+        unless blocklist.nil? # nil => remove nothing
+          logger.info("Blocking #{level} node attributes for save")
+          data[level] = Chef::AttributeBlocklist.filter(data[level], blocklist)
         end
       end
       data

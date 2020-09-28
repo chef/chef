@@ -201,17 +201,17 @@ describe Chef::Provider::RemoteDirectory do
         @fclass = Chef::CFCCheck.new
 
         Dir.mktmpdir do |tmp_dir|
-          begin
-            @fclass.file_class.symlink(tmp_dir.dup, symlinked_dir_path)
-            expect(::File.exist?(symlinked_dir_path)).to be_truthy
 
-            @provider.run_action
+          @fclass.file_class.symlink(tmp_dir.dup, symlinked_dir_path)
+          expect(::File.exist?(symlinked_dir_path)).to be_truthy
 
-            expect(::File.exist?(symlinked_dir_path)).to be_falsey
-            expect(::File.exist?(tmp_dir)).to be_truthy
-          rescue Chef::Exceptions::Win32APIError
-            skip "This must be run as an Administrator to create symlinks"
-          end
+          @provider.run_action
+
+          expect(::File.exist?(symlinked_dir_path)).to be_falsey
+          expect(::File.exist?(tmp_dir)).to be_truthy
+        rescue Chef::Exceptions::Win32APIError
+          skip "This must be run as an Administrator to create symlinks"
+
         end
       end
     end

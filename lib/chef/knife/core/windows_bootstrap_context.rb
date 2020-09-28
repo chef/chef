@@ -18,7 +18,7 @@
 
 require_relative "bootstrap_context"
 require_relative "../../util/path_helper"
-require_relative "../../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
@@ -41,20 +41,6 @@ class Chef
           super(config, run_list, chef_config, secret)
         end
 
-        # This is a duplicate of ChefConfig::PathHelper.cleanpath, however
-        # this presumes Windows so we can avoid changing the method definitions
-        # across Chef, ChefConfig, and ChefUtils for the circumstance where
-        # the methods are being run for a system other than the one Ruby is
-        # executing on.
-        #
-        # We only need to cleanpath the paths that we are passing to cmd.exe,
-        # anything written to a configuration file or passed as an argument
-        # will be interpreted by ruby later and do the right thing.
-        def cleanpath(path)
-          path = Pathname.new(path).cleanpath.to_s
-          path.gsub(File::SEPARATOR, '\\')
-        end
-
         def validation_key
           if File.exist?(File.expand_path(chef_config[:validation_key]))
             IO.read(File.expand_path(chef_config[:validation_key]))
@@ -72,12 +58,21 @@ class Chef
         end
 
         def config_content
+          # The windows: true / windows: false in the block that follows is more than a bit weird.  The way to read this is that we need
+          # the e.g. var_chef_dir to be rendered for the windows value ("C:\chef"), but then we are rendering into a file to be read by
+          # ruby, so we don't actually care about forward-vs-backslashes and by rendering into unix we avoid having to deal with the
+          # double-backwhacking of everything.  So we expect to see:
+          #
+          # file_cache_path "C:/chef"
+          #
+          # Which is mildly odd, but should be entirely correct as far as ruby cares.
+          #
           client_rb = <<~CONFIG
             chef_server_url  "#{chef_config[:chef_server_url]}"
             validation_client_name "#{chef_config[:validation_client_name]}"
-            file_cache_path   "#{ChefConfig::Config.var_chef_dir(true)}/cache"
-            file_backup_path  "#{ChefConfig::Config.var_chef_dir(true)}/backup"
-            cache_options     ({:path => "#{ChefConfig::Config.etc_chef_dir(true)}/cache/checksums", :skip_expires => true})
+            file_cache_path   "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: true))}\\\\cache"
+            file_backup_path  "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: true))}\\\\backup"
+            cache_options     ({:path => "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.etc_chef_dir(windows: true))}\\\\cache\\\\checksums", :skip_expires => true})
           CONFIG
 
           unless chef_config[:chef_license].nil?
@@ -90,8 +85,8 @@ class Chef
             client_rb << "# Using default node name (fqdn)\n"
           end
 
-          if chef_config[:config_log_level]
-            client_rb << %Q{log_level :#{chef_config[:config_log_level]}\n}
+          if config[:config_log_level]
+            client_rb << %Q{log_level :#{config[:config_log_level]}\n}
           else
             client_rb << "log_level        :auto\n"
           end
@@ -140,11 +135,11 @@ class Chef
           end
 
           if config[:secret]
-            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(true)}/encrypted_data_bag_secret"\n}
+            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(windows: true)}/encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs_script.empty?
-            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(true)}/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(windows: true)}/trusted_certs"\n}
           end
 
           if chef_config[:fips]
@@ -173,9 +168,14 @@ class Chef
         end
 
         def start_chef
+          c_opscode_dir = ChefConfig::PathHelper.cleanpath(ChefConfig::Config.c_opscode_dir, windows: true)
+          client_rb = clean_etc_chef_file("client.rb")
+          first_boot = clean_etc_chef_file("first-boot.json")
+
           bootstrap_environment_option = bootstrap_environment.nil? ? "" : " -E #{bootstrap_environment}"
-          start_chef = "SET \"PATH=%SystemRoot%\\system32;%SystemRoot%;%SystemRoot%\\System32\\Wbem;%SYSTEMROOT%\\System32\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{ChefConfig::Config.c_opscode_dir}\\bin;#{ChefConfig::Config.c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
-          start_chef << "#{Chef::Dist::CLIENT} -c #{ChefConfig::Config.etc_chef_dir(true)}/client.rb -j #{ChefConfig::Config.etc_chef_dir(true)}/first-boot.json#{bootstrap_environment_option}\n"
+
+          start_chef = "SET \"PATH=%SYSTEM32%;%SystemRoot%;%SYSTEM32%\\Wbem;%SYSTEM32%\\WindowsPowerShell\\v1.0\\;C:\\ruby\\bin;#{c_opscode_dir}\\bin;#{c_opscode_dir}\\embedded\\bin\;%PATH%\"\n"
+          start_chef << "#{ChefUtils::Dist::Infra::CLIENT} -c #{client_rb} -j #{first_boot}#{bootstrap_environment_option}\n"
         end
 
         def win_wget
@@ -275,12 +275,20 @@ class Chef
           install_command('"') + "\n" + fallback_install_task_command
         end
 
+        def clean_etc_chef_file(path)
+          ChefConfig::PathHelper.cleanpath(etc_chef_file(path), windows: true)
+        end
+
+        def etc_chef_file(path)
+          "#{bootstrap_directory}/#{path}"
+        end
+
         def bootstrap_directory
-          cleanpath(ChefConfig::Config.etc_chef_dir(true))
+          ChefConfig::Config.etc_chef_dir(windows: true)
         end
 
         def local_download_path
-          "%TEMP%\\#{Chef::Dist::CLIENT}-latest.msi"
+          "%TEMP%\\#{ChefUtils::Dist::Infra::CLIENT}-latest.msi"
         end
 
         # Build a URL to query www.chef.io that will redirect to the correct
@@ -357,7 +365,7 @@ class Chef
           <<~EOH
             @set MSIERRORCODE=!ERRORLEVEL!
             @if ERRORLEVEL 1 (
-                @echo WARNING: Failed to install #{Chef::Dist::PRODUCT} MSI package in remote context with status code !MSIERRORCODE!.
+                @echo WARNING: Failed to install #{ChefUtils::Dist::Infra::PRODUCT} MSI package in remote context with status code !MSIERRORCODE!.
                 @echo WARNING: This may be due to a defect in operating system update KB2918614: http://support.microsoft.com/kb/2918614
                 @set OLDLOGLOCATION="%CHEF_CLIENT_MSI_LOG_PATH%-fail.log"
                 @move "%CHEF_CLIENT_MSI_LOG_PATH%" "!OLDLOGLOCATION!" > NUL
@@ -366,26 +374,26 @@ class Chef
                 @schtasks /create /f  /sc once /st 00:00:00 /tn chefclientbootstraptask /ru SYSTEM /rl HIGHEST /tr \"cmd /c #{command} & sleep 2 & waitfor /s %computername% /si chefclientinstalldone\"
 
                 @if ERRORLEVEL 1 (
-                    @echo ERROR: Failed to create #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL! > "&2"
+                    @echo ERROR: Failed to create #{ChefUtils::Dist::Infra::PRODUCT} installation scheduled task with status code !ERRORLEVEL! > "&2"
                 ) else (
-                    @echo Successfully created scheduled task to install #{Chef::Dist::PRODUCT}.
+                    @echo Successfully created scheduled task to install #{ChefUtils::Dist::Infra::PRODUCT}.
                     @schtasks /run /tn chefclientbootstraptask
                     @if ERRORLEVEL 1 (
-                        @echo ERROR: Failed to execute #{Chef::Dist::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
+                        @echo ERROR: Failed to execute #{ChefUtils::Dist::Infra::PRODUCT} installation scheduled task with status code !ERRORLEVEL!. > "&2"
                     ) else (
-                        @echo Successfully started #{Chef::Dist::PRODUCT} installation scheduled task.
+                        @echo Successfully started #{ChefUtils::Dist::Infra::PRODUCT} installation scheduled task.
                         @echo Waiting for installation to complete -- this may take a few minutes...
                         waitfor chefclientinstalldone /t 600
                         if ERRORLEVEL 1 (
-                            @echo ERROR: Timed out waiting for #{Chef::Dist::PRODUCT} package to install
+                            @echo ERROR: Timed out waiting for #{ChefUtils::Dist::Infra::PRODUCT} package to install
                         ) else (
-                            @echo Finished waiting for #{Chef::Dist::PRODUCT} package to install.
+                            @echo Finished waiting for #{ChefUtils::Dist::Infra::PRODUCT} package to install.
                         )
                         @schtasks /delete /f /tn chefclientbootstraptask > NUL
                     )
                 )
             ) else (
-                @echo Successfully installed #{Chef::Dist::PRODUCT} package.
+                @echo Successfully installed #{ChefUtils::Dist::Infra::PRODUCT} package.
             )
           EOH
         end

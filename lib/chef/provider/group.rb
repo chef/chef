@@ -17,13 +17,11 @@
 #
 
 require_relative "../provider"
-require_relative "../mixin/shell_out"
 require "etc" unless defined?(Etc)
 
 class Chef
   class Provider
     class Group < Chef::Provider
-      include Chef::Mixin::ShellOut
       attr_accessor :group_exists
       attr_accessor :change_desc
 

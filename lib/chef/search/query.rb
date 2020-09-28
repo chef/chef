@@ -20,8 +20,10 @@ require_relative "../config"
 require_relative "../exceptions"
 require_relative "../server_api"
 
-require "uri" unless defined?(URI)
-require "addressable/uri" unless defined?(Addressable::URI)
+autoload :URI, "uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 
 class Chef
   class Search
@@ -132,10 +134,9 @@ class Chef
         args_h
       end
 
-      QUERY_PARAM_VALUE = Addressable::URI::CharacterClasses::QUERY + "\\&\\;"
-
       def escape_value(s)
-        s && Addressable::URI.encode_component(s.to_s, QUERY_PARAM_VALUE)
+        query_param_value = Addressable::URI::CharacterClasses::QUERY + "\\&\\;"
+        s && Addressable::URI.encode_component(s.to_s, query_param_value)
       end
 
       def create_query_string(type, query, rows, start)

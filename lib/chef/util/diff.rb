@@ -40,15 +40,11 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
-require "diff/lcs"
-require "diff/lcs/hunk"
-
 class Chef
   class Util
     class Diff
       # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
       # @todo: move coercion to UTF-8 into to_json
-      # @todo: replace shellout to diff -u with diff-lcs gem
 
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings
@@ -64,7 +60,7 @@ class Chef
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exists?(file)
+        unless File.exist?(file)
           Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
@@ -87,6 +83,9 @@ class Chef
       # produces a unified-output-format diff with 3 lines of context
       # ChefFS uses udiff() directly
       def udiff(old_file, new_file)
+        require "diff/lcs"
+        require "diff/lcs/hunk"
+
         diff_str = ""
         file_length_difference = 0
 
@@ -107,16 +106,16 @@ class Chef
         # join them. otherwise, print out the old one.
         old_hunk = hunk = nil
         diff_data.each do |piece|
-          begin
-            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
-            file_length_difference = hunk.file_length_difference
-            next unless old_hunk
-            next if hunk.merge(old_hunk)
 
-            diff_str << old_hunk.diff(:unified) << "\n"
-          ensure
-            old_hunk = hunk
-          end
+          hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
+          file_length_difference = hunk.file_length_difference
+          next unless old_hunk
+          next if hunk.merge(old_hunk)
+
+          diff_str << old_hunk.diff(:unified) << "\n"
+        ensure
+          old_hunk = hunk
+
         end
         diff_str << old_hunk.diff(:unified) << "\n"
         diff_str

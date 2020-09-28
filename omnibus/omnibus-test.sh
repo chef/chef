@@ -43,33 +43,28 @@ if [[ -f /etc/redhat-release ]]; then
 fi
 
 # Set up a custom tmpdir, and clean it up before and after the tests
-TMPDIR="${TMPDIR:-/tmp}/cheftest"
-export TMPDIR
+export TMPDIR="${TMPDIR:-/tmp}/cheftest"
 sudo rm -rf "$TMPDIR"
 mkdir -p "$TMPDIR"
 
 # Verify that we kill any orphaned test processes. Kill any orphaned rspec processes.
 sudo kill -9 $(ps ax | grep 'rspec' | grep -v grep | awk '{ print $1 }') || true
 
-PATH="/opt/$product/bin:$PATH"
-export PATH
+export PATH="/opt/$product/bin:$PATH"
 
-BIN_DIR="/opt/$product/bin"
-export BIN_DIR
+export BIN_DIR="/opt/$product/bin"
 
 # We don't want to add the embedded bin dir to the main PATH as this
 # could mask issues in our binstub shebangs.
-EMBEDDED_BIN_DIR="/opt/$product/embedded/bin"
-export EMBEDDED_BIN_DIR
+export EMBEDDED_BIN_DIR="/opt/$product/embedded/bin"
 
 # If we are on Mac our symlinks are located under /usr/local/bin
 # otherwise they are under /usr/bin
 if [[ -f /usr/bin/sw_vers ]]; then
-  USR_BIN_DIR="/usr/local/bin"
+  export USR_BIN_DIR="/usr/local/bin"
 else
-  USR_BIN_DIR="/usr/bin"
+  export USR_BIN_DIR="/usr/bin"
 fi
-export USR_BIN_DIR
 
 # sanity check that we're getting the correct symlinks from the pre-install script
 # solaris doesn't have readlink or test -e. ls -n is different on BSD. proceed with caution.
@@ -127,17 +122,16 @@ chef-client --version
 
 # ffi-yajl must run in c-extension mode or we take perf hits, so we force it
 # before running rspec so that we don't wind up testing the ffi mode
-FORCE_FFI_YAJL=ext
-export FORCE_FFI_YAJL
+export FORCE_FFI_YAJL=ext
 
 # chef-shell smoke tests require "rb-readline" which requires "infocmp"
 # most platforms provide "infocmp" by default via an "ncurses" package but SLES 12 provide it via "ncurses-devel" which
 # isn't typically installed. omnibus-toolchain has "infocmp" built-in so we add omnibus-toolchain to the PATH to ensure
 # tests will function properly.
-PATH="/opt/$TOOLCHAIN/bin:/usr/local/bin:/opt/$TOOLCHAIN/embedded/bin:$PATH"
+export PATH="/opt/$TOOLCHAIN/bin:/usr/local/bin:/opt/$TOOLCHAIN/embedded/bin:$PATH"
 
 # add chef's bin paths to PATH to ensure tests function properly
-PATH="/opt/$product/bin:/opt/$product/embedded/bin:$PATH"
+export PATH="/opt/$product/bin:/opt/$product/embedded/bin:$PATH"
 
 gem_list="$(gem which chef)"
 lib_dir="$(dirname "$gem_list")"
@@ -153,9 +147,8 @@ elif [[ -d /usr/local/etc/sudoers.d ]]; then
 fi
 
 # accept license
-CHEF_LICENSE=accept-no-persist
+export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
-sudo -E bundle install
-# FIXME: we need to add back unit and integration tests here.  we have no coverage of those on e.g. AIX
-sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation spec/functional
+sudo -E bundle install --jobs=3 --retry=3
+sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml --profile -f progress

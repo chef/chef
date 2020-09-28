@@ -4,6 +4,7 @@ set -euo pipefail
 
 export CHEF_LICENSE="accept-no-persist"
 export HAB_LICENSE="accept-no-persist"
+export HAB_NONINTERACTIVE="true"
 
 project_root="$(git rev-parse --show-toplevel)"
 pkg_ident="$1"
@@ -24,11 +25,12 @@ package_version=$(awk -F / '{print $3}' <<<"$pkg_ident")
 cd "${project_root}"
 
 echo "--- :mag_right: Testing ${pkg_ident} executables"
-[[ "$package_version" = "$(hab pkg exec "${pkg_ident}" chef-client --version | sed 's/.*: //')" ]] || error "chef-client is not the expected version"
+actual_version=$(hab pkg exec "${pkg_ident}" chef-client -- --version | sed 's/.*: //')
+[[ "$package_version" = "$actual_version" ]] || error "chef-client is not the expected version. Expected '$package_version', got '$actual_version'"
 
 for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'knife' 'chef-solo'; do
   echo -en "\t$executable = "
-  hab pkg exec "${pkg_ident}" "${executable}" --version || error "${executable} failed to execute properly"
+  hab pkg exec "${pkg_ident}" "${executable}" -- --version || error "${executable} failed to execute properly"
 done
 
 echo "--- :mag_right: Testing ${pkg_ident} functionality"

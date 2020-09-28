@@ -18,7 +18,7 @@
 
 require "spec_helper"
 require "chef/exceptions"
-require "lib/chef/chef_fs/config.rb"
+require "lib/chef/chef_fs/config"
 
 describe Chef::ChefFS::Config do
   describe "initialize" do

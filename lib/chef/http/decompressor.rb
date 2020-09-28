@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "zlib"
+require "zlib" unless defined?(Zlib)
 require_relative "http_request"
 
 class Chef

@@ -31,7 +31,6 @@ class Chef
 
         checksum.slice(0, 6)
       end
-
     end
   end
 end

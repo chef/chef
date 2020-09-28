@@ -26,14 +26,14 @@ module ChefConfig
     # Maximum characters in a standard Windows path (260 including drive letter and NUL)
     WIN_MAX_PATH = 259
 
-    def self.dirname(path)
-      if ChefUtils.windows?
+    def self.dirname(path, windows: ChefUtils.windows?)
+      if windows
         # Find the first slash, not counting trailing slashes
         end_slash = path.size
         loop do
-          slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator)}]/, end_slash - 1)
+          slash = path.rindex(/[#{Regexp.escape(File::SEPARATOR)}#{Regexp.escape(path_separator(windows: windows))}]/, end_slash - 1)
           if !slash
-            return end_slash == path.size ? "." : path_separator
+            return end_slash == path.size ? "." : path_separator(windows: windows)
           elsif slash == end_slash - 1
             end_slash = slash
           else
@@ -47,32 +47,28 @@ module ChefConfig
 
     BACKSLASH = '\\'.freeze
 
-    def self.path_separator
-      if ChefUtils.windows?
-        File::ALT_SEPARATOR || BACKSLASH
+    def self.path_separator(windows: ChefUtils.windows?)
+      if windows
+        BACKSLASH
       else
         File::SEPARATOR
       end
     end
 
-    def self.join(*args)
-      path_separator_regex = Regexp.escape(File::SEPARATOR)
-      unless path_separator == File::SEPARATOR
-        path_separator_regex << Regexp.escape(path_separator)
-      end
-
-      trailing_slashes = /[#{path_separator_regex}]+$/
-      leading_slashes = /^[#{path_separator_regex}]+/
+    def self.join(*args, windows: ChefUtils.windows?)
+      path_separator_regex = Regexp.escape(windows ? "#{File::SEPARATOR}#{BACKSLASH}" : File::SEPARATOR)
+      trailing_slashes_regex = /[#{path_separator_regex}]+$/.freeze
+      leading_slashes_regex = /^[#{path_separator_regex}]+/.freeze
 
       args.flatten.inject do |joined_path, component|
-        joined_path = joined_path.sub(trailing_slashes, "")
-        component = component.sub(leading_slashes, "")
-        joined_path + "#{path_separator}#{component}"
+        joined_path = joined_path.sub(trailing_slashes_regex, "")
+        component = component.sub(leading_slashes_regex, "")
+        joined_path + "#{path_separator(windows: windows)}#{component}"
       end
     end
 
-    def self.validate_path(path)
-      if ChefUtils.windows?
+    def self.validate_path(path, windows: ChefUtils.windows?)
+      if windows
         unless printable?(path)
           msg = "Path '#{path}' contains non-printable characters. Check that backslashes are escaped with another backslash (e.g. C:\\\\Windows) in double-quoted strings."
           ChefConfig.logger.error(msg)
@@ -111,14 +107,14 @@ module ChefConfig
     end
 
     # Produces a comparable path.
-    def self.canonical_path(path, add_prefix = true)
+    def self.canonical_path(path, add_prefix = true, windows: ChefUtils.windows?)
       # First remove extra separators and resolve any relative paths
       abs_path = File.absolute_path(path)
 
-      if ChefUtils.windows?
+      if windows
         # Add the \\?\ API prefix on Windows unless add_prefix is false
         # Downcase on Windows where paths are still case-insensitive
-        abs_path.gsub!(::File::SEPARATOR, path_separator)
+        abs_path.gsub!(::File::SEPARATOR, path_separator(windows: windows))
         if add_prefix && abs_path !~ /^\\\\?\\/
           abs_path.insert(0, "\\\\?\\")
         end
@@ -129,36 +125,67 @@ module ChefConfig
       abs_path
     end
 
-    # This is the INVERSE of Pathname#cleanpath, it converts forward
-    # slashes to backslashes for Windows.  Since the Ruby API and the
-    # Windows APIs all consume forward slashes, this helper function
-    # should only be used for *DISPLAY* logic to send strings back
-    # to the user with backslashes.  Internally, filename paths should
-    # generally be stored with forward slashes for consistency.  It is
-    # not necessary or desired to blindly convert pathnames to have
-    # backslashes on Windows.
+    # The built in ruby Pathname#cleanpath method does not clean up forward slashes and
+    # backslashes.  This is a wrapper around that which does.  In general this is NOT
+    # recommended for internal use within ruby/chef since ruby does not care about forward slashes
+    # vs. backslashes, even on Windows.  Where this generally matters is when being rendered
+    # to the user, or being rendered into things like the windows PATH or to commands that
+    # are being executed.  In some cases it may be easier on windows to render paths to
+    # unix-style for being eventually eval'd by ruby in the future (templates being rendered
+    # with code to be consumed by ruby) where forcing unix-style forward slashes avoids the
+    # issue of needing to escape the backslashes in rendered strings.  This has a boolean
+    # operator to force windows-style or non-windows style operation, where the default is
+    # determined by the underlying node['platform'] value.
     #
-    # Generally, if the user isn't going to be seeing it, you should be
-    # using Pathname#cleanpath instead of this function.
-    def self.cleanpath(path)
+    # In general if you don't know if you need this routine, do not use it, best practice
+    # within chef/ruby itself is not to care.  Only use it to force windows or unix style
+    # when it really matters.
+    #
+    # @param path [String] the path to clean
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] cleaned path
+    #
+    def self.cleanpath(path, windows: ChefUtils.windows?)
       path = Pathname.new(path).cleanpath.to_s
-      # ensure all forward slashes are backslashes
-      if ChefUtils.windows?
-        path = path.gsub(File::SEPARATOR, path_separator)
+      if windows
+        # ensure all forward slashes are backslashes
+        path.gsub(File::SEPARATOR, path_separator(windows: windows))
+      else
+        # ensure all backslashes are forward slashes
+        path.gsub(BACKSLASH, File::SEPARATOR)
       end
-      path
     end
 
-    def self.paths_eql?(path1, path2)
-      canonical_path(path1) == canonical_path(path2)
+    # This is not just escaping for something like use in Regexps, or in globs.  For the former
+    # just use Regexp.escape.  For the latter, use escape_glob_dir below.
+    #
+    # This is escaping where the path to be rendered is being put into a ruby file which will
+    # later be read back by ruby (or something similar) so we need quadruple backslashes.
+    #
+    # In order to print:
+    #
+    #   file_cache_path "C:\\chef"
+    #
+    # We need to convert "C:\chef" to "C:\\\\chef" to interpolate into a string which is rendered
+    # into the output file with that line in it.
+    #
+    # @param path [String] the path to escape
+    # @return [String] the escaped path
+    #
+    def self.escapepath(path)
+      path.gsub(BACKSLASH, BACKSLASH * 4)
+    end
+
+    def self.paths_eql?(path1, path2, windows: ChefUtils.windows?)
+      canonical_path(path1, windows: windows) == canonical_path(path2, windows: windows)
     end
 
     # @deprecated this method is deprecated. Please use escape_glob_dirs
     # Paths which may contain glob-reserved characters need
     # to be escaped before globbing can be done.
     # http://stackoverflow.com/questions/14127343
-    def self.escape_glob(*parts)
-      path = cleanpath(join(*parts))
+    def self.escape_glob(*parts, windows: ChefUtils.windows?)
+      path = cleanpath(join(*parts, windows: windows), windows: windows)
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
@@ -169,8 +196,8 @@ module ChefConfig
       path.gsub(/[\\\{\}\[\]\*\?]/) { |x| "\\" + x }
     end
 
-    def self.relative_path_from(from, to)
-      Pathname.new(cleanpath(to)).relative_path_from(Pathname.new(cleanpath(from)))
+    def self.relative_path_from(from, to, windows: ChefUtils.windows?)
+      Pathname.new(cleanpath(to, windows: windows)).relative_path_from(Pathname.new(cleanpath(from, windows: windows)))
     end
 
     # Set the project-specific home directory environment variable.
@@ -216,11 +243,11 @@ module ChefConfig
     #
     # The return is a list of all the returned values from each block invocation or a list of paths
     # if no block is provided.
-    def self.all_homes(*args)
+    def self.all_homes(*args, windows: ChefUtils.windows?)
       paths = []
       paths << ENV[@@per_tool_home_environment] if defined?(@@per_tool_home_environment) && @@per_tool_home_environment && ENV[@@per_tool_home_environment]
       paths << ENV["CHEF_HOME"] if ENV["CHEF_HOME"]
-      if ChefUtils.windows?
+      if windows
         # By default, Ruby uses the the following environment variables to determine Dir.home:
         # HOME
         # HOMEDRIVE HOMEPATH
@@ -249,7 +276,7 @@ module ChefConfig
       # Note: Maybe this is a bad idea on some unixy systems where \ might be a valid character depending on
       # the particular brand of kool-aid you consume.  This code assumes that \ and / are both
       # path separators on any system being used.
-      paths = paths.map { |home_path| home_path.gsub(path_separator, ::File::SEPARATOR) if home_path }
+      paths = paths.map { |home_path| home_path.gsub(path_separator(windows: windows), ::File::SEPARATOR) if home_path }
 
       # Filter out duplicate paths and paths that don't exist.
       valid_paths = paths.select { |home_path| home_path && Dir.exist?(home_path.force_encoding("utf-8")) }

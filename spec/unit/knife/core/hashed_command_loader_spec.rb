@@ -50,7 +50,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
   describe "#list_commands" do
     before do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
     end
 
     it "lists all commands by category when no argument is given" do
@@ -63,7 +63,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
     context "when the plugin path is invalid" do
       before do
-        expect(File).to receive(:exists?).with("/file/for/plugin/b").and_return(false)
+        expect(File).to receive(:exist?).with("/file/for/plugin/b").and_return(false)
       end
 
       it "lists all commands by category when no argument is given" do
@@ -90,7 +90,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
     end
 
     it "loads the correct file and returns true if the command exists" do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       expect(Kernel).to receive(:load).with("/file/for/plugin/a").and_return(true)
       expect(loader.load_command(["cool_a"])).to eq(true)
     end

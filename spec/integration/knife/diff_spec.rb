@@ -318,7 +318,9 @@ describe "knife diff", :workstation do
     end
   end # without versioned cookbooks
 
-  with_versioned_cookbooks do
+  context "with versioned cookbooks" do
+    before { Chef::Config[:versioned_cookbooks] = true }
+
     when_the_chef_server "has one of each thing" do
       before do
         client "x", "{}"

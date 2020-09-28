@@ -44,11 +44,11 @@ class Chef
         unless new_resource.user.nil?
           requirements.assert(:all_actions) do |a|
             a.assertion do
-              begin
-                get_homedir(new_resource.user)
-              rescue ArgumentError
-                false
-              end
+
+              get_homedir(new_resource.user)
+            rescue ArgumentError
+              false
+
             end
             a.whyrun("User #{new_resource.user} does not exist, this run will fail unless it has been previously created. Assuming it would have been created.")
             a.failure_message(Chef::Exceptions::User, "#{new_resource.user} required by resource #{new_resource.name} does not exist")

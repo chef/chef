@@ -12,19 +12,13 @@
 #
 # When a build is promoted to our "stable" channel .expeditor/update_dockerfile.sh is run to update the version
 # in this file and also tag that image as "latest" on Docker Hub. Additionally major and minor tags will be
-# applied so 15.0.260 would be tagged as "latest", "15" and "15.0", as well as "15.0.260".
+# applied so 15.0.260 would be tagged as "latest", "stable", "15" and "15.0", as well as "15.0.260".
 
 FROM busybox
 LABEL maintainer="Chef Software, Inc. <docker@chef.io>"
 
-ARG EXPEDITOR_CHANNEL
 ARG CHANNEL=stable
-ARG EXPEDITOR_VERSION
-ARG VERSION=16.2.73
-
-# Allow the build arg below to be controlled by either build arguments
-ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
-ENV CHANNEL ${EXPEDITOR_CHANNEL:-${CHANNEL}}
+ARG VERSION=16.5.64
 
 RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/6/chef-${VERSION}-1.el6.x86_64.rpm" -O /tmp/chef-client.rpm && \
     rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \

@@ -185,7 +185,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(File.dirname(__FILE__), "../../../lib/chef/knife/bootstrap/templates", "example.erb")) }
+      let(:builtin_template_path) { File.expand_path(File.join(__dir__, "../../../lib/chef/knife/bootstrap/templates", "example.erb")) }
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -206,7 +206,7 @@ describe Chef::Knife::Bootstrap do
       end
 
       before(:each) do
-        expect(File).to receive(:exists?).with(bootstrap_template).and_return(false)
+        expect(File).to receive(:exist?).with(bootstrap_template).and_return(false)
       end
 
       context "when file is available everywhere" do
@@ -215,7 +215,7 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(true)
         end
 
         it "should load the template from built-in templates" do
@@ -229,8 +229,8 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(true)
 
           it "should load the template from chef_config_dir" do
             knife.find_template.should eq(chef_config_dir_template_path)
@@ -244,9 +244,9 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(env_home_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(env_home_template_path).and_return(true)
         end
 
         it "should load the template from chef_config_dir" do
@@ -260,10 +260,10 @@ describe Chef::Knife::Bootstrap do
           configure_env_home
           configure_gem_files
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(env_home_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(gem_files_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(env_home_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(gem_files_template_path).and_return(true)
         end
 
         it "should load the template from Gem files" do
@@ -277,9 +277,9 @@ describe Chef::Knife::Bootstrap do
           configure_gem_files
           allow(Chef::Util::PathHelper).to receive(:home).with(".chef", "bootstrap", "example.erb").and_return(nil)
 
-          expect(File).to receive(:exists?).with(builtin_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(chef_config_dir_template_path).and_return(false)
-          expect(File).to receive(:exists?).with(gem_files_template_path).and_return(true)
+          expect(File).to receive(:exist?).with(builtin_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(chef_config_dir_template_path).and_return(false)
+          expect(File).to receive(:exist?).with(gem_files_template_path).and_return(true)
         end
 
         it "should load the template from Gem files" do
@@ -472,7 +472,7 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs")) }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
 
     let(:rendered_template) do
       knife.merge_configs
@@ -504,7 +504,7 @@ describe Chef::Knife::Bootstrap do
     end
 
     context "when :trusted_cets_dir is empty" do
-      let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs_empty")) }
+      let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs_empty")) }
       it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
         expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
       end
@@ -514,7 +514,7 @@ describe Chef::Knife::Bootstrap do
 
   context "when doing fips things" do
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(File.dirname(__FILE__), "../../data/trusted_certs")) }
+    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
 
     before do
       Chef::Config[:knife][:bootstrap_template] = template_file
@@ -570,7 +570,7 @@ describe Chef::Knife::Bootstrap do
     context "when client_d_dir is set" do
       let(:client_d_dir) do
         Chef::Util::PathHelper.cleanpath(
-          File.join(File.dirname(__FILE__), "../../data/client.d_00")
+          File.join(__dir__, "../../data/client.d_00")
         )
       end
 
@@ -597,7 +597,7 @@ describe Chef::Knife::Bootstrap do
       context "a nested directory structure" do
         let(:client_d_dir) do
           Chef::Util::PathHelper.cleanpath(
-            File.join(File.dirname(__FILE__), "../../data/client.d_01")
+            File.join(__dir__, "../../data/client.d_01")
           )
         end
         it "creates a file foo/bar.rb" do

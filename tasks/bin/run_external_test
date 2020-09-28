@@ -6,7 +6,7 @@
 # of the chef / ohai repos. It let's us know if we need to update downstream
 # gems or fix regressions in chef *before* we release.
 
-$:.unshift(File.expand_path("../../lib", File.dirname(__FILE__)))
+$:.unshift(File.expand_path("../../lib", __dir__))
 
 require "tmpdir"
 require "bundler"
@@ -32,7 +32,7 @@ Dir.mktmpdir("chef-external-test") do |dir|
   Dir.chdir(dir) do
     shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
     Bundler.with_unbundled_env do
-      shell_out!("bundle install", live_stream: STDOUT, env: env)
+      shell_out!("bundle install --jobs=3 --retry=3", live_stream: STDOUT, env: env)
       shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT, env: env)
     end
   end

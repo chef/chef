@@ -21,7 +21,7 @@ require "ostruct"
 
 shared_examples_for "define_resource_requirements_common" do
   it "should raise an error if /sbin/chkconfig does not exist" do
-    allow(File).to receive(:exists?).with("/sbin/chkconfig").and_return(false)
+    allow(File).to receive(:exist?).with("/sbin/chkconfig").and_return(false)
     allow(@provider).to receive(:shell_out).with("/sbin/service chef status").and_raise(Errno::ENOENT)
     allow(@provider).to receive(:shell_out!).with("/sbin/chkconfig --list chef", returns: [0, 1]).and_raise(Errno::ENOENT)
     @provider.load_current_resource
@@ -55,7 +55,7 @@ describe "Chef::Provider::Service::Redhat" do
     @provider = Chef::Provider::Service::Redhat.new(@new_resource, @run_context)
     @provider.action = :start
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
-    allow(File).to receive(:exists?).with("/sbin/chkconfig").and_return(true)
+    allow(File).to receive(:exist?).with("/sbin/chkconfig").and_return(true)
   end
 
   describe "while not in why run mode" do

@@ -3,6 +3,7 @@
 set -euo pipefail
 
 export HAB_LICENSE="accept"
+export HAB_NONINTERACTIVE="true"
 
 hab_target="$1"
 

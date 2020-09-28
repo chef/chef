@@ -111,8 +111,7 @@ describe Chef::Runner do
 
     it "should use the provider specified by the resource (if it has one)" do
       provider = Chef::Provider::Easy.new(run_context.resource_collection[0], run_context)
-      # Expect provider to be called twice, because will fall back to old provider lookup
-      expect(run_context.resource_collection[0]).to receive(:provider).twice.and_return(Chef::Provider::Easy)
+      expect(run_context.resource_collection[0]).to receive(:provider).once.and_return(Chef::Provider::Easy)
       expect(Chef::Provider::Easy).to receive(:new).once.and_return(provider)
       runner.converge
     end

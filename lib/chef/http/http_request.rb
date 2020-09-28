@@ -20,10 +20,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "uri" unless defined?(URI)
-require "cgi" unless defined?(CGI)
-require "net/http" unless defined?(Net::HTTP)
-require_relative "../dist"
+autoload :URI, "uri"
+autoload :CGI, "cgi"
+module Net
+  autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
+end
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 # To load faster, we only want ohai's version string.
 # However, in ohai before 0.6.0, the version is defined
@@ -42,7 +44,7 @@ class Chef
 
       engine = defined?(RUBY_ENGINE) ? RUBY_ENGINE : "ruby"
 
-      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +#{Chef::Dist::WEBSITE})".freeze
+      UA_COMMON = "/#{::Chef::VERSION} (#{engine}-#{RUBY_VERSION}-p#{RUBY_PATCHLEVEL}; ohai-#{Ohai::VERSION}; #{RUBY_PLATFORM}; +#{ChefUtils::Dist::Org::WEBSITE})".freeze
       DEFAULT_UA = "Chef Client" << UA_COMMON
 
       USER_AGENT = "User-Agent".freeze

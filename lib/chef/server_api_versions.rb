@@ -51,6 +51,10 @@ class Chef
       @unversioned
     end
 
+    def negotiated?
+      !@versions.nil? || unversioned?
+    end
+
     def reset!
       @versions = nil
       @unversioned = false

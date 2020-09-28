@@ -18,7 +18,7 @@
 
 require_relative "auth_credentials"
 require_relative "../exceptions"
-require "openssl" unless defined?(OpenSSL)
+autoload :OpenSSL, "openssl"
 
 class Chef
   class HTTP
@@ -68,6 +68,8 @@ class Chef
           version_class.best_request_version
         elsif api_version
           api_version
+        elsif Chef::ServerAPIVersions.instance.negotiated?
+          Chef::ServerAPIVersions.instance.max_server_version.to_s
         else
           DEFAULT_SERVER_API_VERSION
         end

@@ -20,8 +20,8 @@
 # limitations under the License.
 
 require "mixlib/config" unless defined?(Mixlib::Config)
-require "pathname" unless defined?(Pathname)
-require "chef-utils" unless defined?(ChefUtils::CANARY)
+autoload :Pathname, "pathname"
+autoload :ChefUtils, "chef-utils"
 
 require_relative "fips"
 require_relative "logger"
@@ -29,12 +29,16 @@ require_relative "windows"
 require_relative "path_helper"
 require_relative "mixin/fuzzy_hostname_matcher"
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
-require "uri" unless defined?(URI)
-require "addressable/uri" unless defined?(Addressable::URI)
-require "openssl" unless defined?(OpenSSL)
-require "yaml"
-require_relative "dist"
+module Mixlib
+  autoload :ShellOut, "mixlib/shellout"
+end
+autoload :URI, "uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
+autoload :OpenSSL, "openssl"
+autoload :YAML, "yaml"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 module ChefConfig
 
@@ -74,42 +78,66 @@ module ChefConfig
       path
     end
 
-    # On *nix, /etc/chef
-    def self.etc_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : PathHelper.join("/etc", ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+    # On *nix, /etc/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.etc_chef_dir(windows: ChefUtils.windows?)
+      path = windows ? c_chef_dir : PathHelper.join("/etc", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, /var/chef
-    def self.var_chef_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : PathHelper.join("/var", ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+    # On *nix, /var/chef, on Windows C:\chef
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.var_chef_dir(windows: ChefUtils.windows?)
+      path = windows ? c_chef_dir : PathHelper.join("/var", ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
+      PathHelper.cleanpath(path, windows: windows)
     end
 
-    # On *nix, the root of /var/, used to test if we can create and write in /var/chef
-    def self.var_root_dir(is_windows = ChefUtils.windows?)
-      path = is_windows ? c_chef_dir : "/var"
-      PathHelper.cleanpath(path)
+    # On *nix, /var, on Windows C:\
+    #
+    # @param windows [Boolean] optional flag to force to windows or unix-style
+    # @return [String] the platform-specific path
+    #
+    def self.var_root_dir(windows: ChefUtils.windows?)
+      path = windows ? "C:\\" : "/var"
+      PathHelper.cleanpath(path, windows: windows)
     end
 
     # On windows, C:/chef/
-    def self.c_chef_dir
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
+    def self.c_chef_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
     end
 
-    def self.c_opscode_dir
+    # On windows, C:/opscode
+    #
+    # (should only be called in a windows-context)
+    #
+    # @return [String] the platform-specific path
+    #
+    def self.c_opscode_dir(windows: ChefUtils.windows?)
       drive = windows_installation_drive || "C:"
-      path = PathHelper.join(drive, ChefConfig::Dist::LEGACY_CONF_DIR, ChefConfig::Dist::DIR_SUFFIX)
-      PathHelper.cleanpath(path)
+      PathHelper.join(drive, ChefUtils::Dist::Org::LEGACY_CONF_DIR, ChefUtils::Dist::Infra::DIR_SUFFIX, windows: windows)
     end
 
     # the drive where Chef is installed on a windows host. This is determined
     # either by the drive containing the current file or by the SYSTEMDRIVE ENV
     # variable
     #
+    # (should only be called in a windows-context)
+    #
     # @return [String] the drive letter
+    #
     def self.windows_installation_drive
       if ChefUtils.windows?
         drive = File.expand_path(__FILE__).split("/", 2)[0]
@@ -164,7 +192,7 @@ module ChefConfig
       if config_file
         PathHelper.dirname(PathHelper.canonical_path(config_file, false))
       else
-        PathHelper.join(PathHelper.cleanpath(user_home), ChefConfig::Dist::USER_CONF_DIR, "")
+        PathHelper.join(PathHelper.cleanpath(user_home), ChefUtils::Dist::Infra::USER_CONF_DIR, "")
       end
     end
 
@@ -243,7 +271,7 @@ module ChefConfig
         end
         path = new_path
       end
-      ChefConfig.logger.info("Auto-discovered #{ChefConfig::Dist::SHORT} repository at #{path}")
+      ChefConfig.logger.info("Auto-discovered #{ChefUtils::Dist::Infra::SHORT} repository at #{path}")
       path
     end
 
@@ -313,8 +341,11 @@ module ChefConfig
     # Defaults to <chef_repo_path>/users.
     default(:user_path) { derive_path_from_chef_repo_path("users") }.writes_value { |path| expand_relative_paths(path) }
 
-    # Turn on "path sanity" by default.
+    # DEPRECATED
     default :enforce_path_sanity, false
+
+    # Enforce default paths by default for all APIs, not just the default internal shell_out
+    default :enforce_default_paths, false
 
     # Formatted Chef Client output is a beta feature, disabled by default:
     default :formatter, "null"
@@ -338,12 +369,12 @@ module ChefConfig
         # Otherwise, we'll create .chef under the user's home directory and use that as
         # the cache path.
         unless path_accessible?(primary_cache_path) || path_accessible?(primary_cache_root)
-          secondary_cache_path = PathHelper.join(user_home, ChefConfig::Dist::USER_CONF_DIR)
-          secondary_cache_path = target_mode? ? "#{secondary_cache_path}/#{target_mode.host}" : secondary_cache_path
+          secondary_cache_path = PathHelper.join(user_home, ChefUtils::Dist::Infra::USER_CONF_DIR)
+          secondary_cache_path = target_mode? ? PathHelper.join(secondary_cache_path, target_mode.host) : secondary_cache_path
           ChefConfig.logger.trace("Unable to access cache at #{primary_cache_path}. Switching cache to #{secondary_cache_path}")
           secondary_cache_path
         else
-          target_mode? ? "#{primary_cache_path}/#{target_mode.host}" : primary_cache_path
+          target_mode? ? PathHelper.join(primary_cache_path, target_mode.host) : primary_cache_path
         end
       end
     end
@@ -352,7 +383,7 @@ module ChefConfig
     #
     # @param path [String]
     def self.path_accessible?(path)
-      File.exists?(path) && File.readable?(path) && File.writable?(path)
+      File.exist?(path) && File.readable?(path) && File.writable?(path)
     end
 
     # Where cookbook files are stored on the server (by content checksum)
@@ -369,7 +400,7 @@ module ChefConfig
     # If your `file_cache_path` resides on a NFS (or non-flock()-supporting
     # fs), it's recommended to set this to something like
     # '/tmp/chef-client-running.pid'
-    default(:lockfile) { PathHelper.join(file_cache_path, "#{ChefConfig::Dist::CLIENT}-running.pid") }
+    default(:lockfile) { PathHelper.join(file_cache_path, "#{ChefUtils::Dist::Infra::CLIENT}-running.pid") }
 
     ## Daemonization Settings ##
     # What user should Chef run as?
@@ -618,7 +649,7 @@ module ChefConfig
     # credentials toml files which doesn't allow ruby symbol values
     configurable(:ssl_verify_mode).writes_value do |value|
       if value.is_a?(String) && value[0] == ":"
-        value[1..-1].to_sym
+        value[1..].to_sym
       else
         value.to_sym
       end
@@ -766,7 +797,7 @@ module ChefConfig
       if chef_server_url.to_s =~ %r{/organizations/(.*)$}
         "#{$1}-validator"
       else
-        "#{ChefConfig::Dist::SHORT}-validator"
+        "#{ChefUtils::Dist::Infra::SHORT}-validator"
       end
     end
 
@@ -840,7 +871,7 @@ module ChefConfig
     default :profile, nil
 
     default :chef_guid_path do
-      PathHelper.join(config_dir, "#{ChefConfig::Dist::SHORT}_guid")
+      PathHelper.join(config_dir, "#{ChefUtils::Dist::Infra::SHORT}_guid")
     end
 
     default :chef_guid, nil
@@ -959,23 +990,32 @@ module ChefConfig
     #
     default :no_lazy_load, true
 
-    # A whitelisted array of attributes you want sent over the wire when node
-    # data is saved. The default setting is nil, which collects all data. Setting
-    # to [] will not collect any data for save.
-    #
-    default :automatic_attribute_whitelist, nil
-    default :default_attribute_whitelist, nil
-    default :normal_attribute_whitelist, nil
-    default :override_attribute_whitelist, nil
+    # A array of attributes you want sent over the wire when node
+    # data is saved. The default setting is nil, which collects all data.
+    # NOTE: Setting to [] will not collect ANY data to save.
+    default :allowed_automatic_attributes, nil
+    default :allowed_default_attributes, nil
+    default :allowed_normal_attributes, nil
+    default :allowed_override_attributes, nil
 
-    # A blacklisted array of attributes you do not want to send over the
+    # An array of attributes you do not want to send over the
     # wire when node data is saved
-    # The default setting is nil, which collects all data. Setting to [] will
-    # still collect all data for save
+    # The default setting is nil, which collects all data.
+    # NOTE: Setting to [] will still collect all data to save
+    default :blocked_automatic_attributes, nil
+    default :blocked_default_attributes, nil
+    default :blocked_normal_attributes, nil
+    default :blocked_override_attributes, nil
+
+    # deprecated config options that will be removed in Chef Infra Client 17
     default :automatic_attribute_blacklist, nil
     default :default_attribute_blacklist, nil
     default :normal_attribute_blacklist, nil
     default :override_attribute_blacklist, nil
+    default :automatic_attribute_whitelist, nil
+    default :default_attribute_whitelist, nil
+    default :normal_attribute_whitelist, nil
+    default :override_attribute_whitelist, nil
 
     # Pull down all the rubygems versions from rubygems and cache them the first time we do a gem_package or
     # chef_gem install.  This is memory-expensive and will grow without bounds, but will reduce network
@@ -1040,7 +1080,7 @@ module ChefConfig
       # generated by the DataCollector when Chef is run in Solo mode. This
       # allows users to associate their Solo nodes with faux organizations
       # without the nodes being connected to an actual Chef Server.
-      default :organization, "#{ChefConfig::Dist::SHORT}_solo"
+      default :organization, "#{ChefUtils::Dist::Infra::SHORT}_solo"
     end
 
     configurable(:http_proxy)
@@ -1066,13 +1106,6 @@ module ChefConfig
       export_no_proxy(no_proxy) if key?(:no_proxy) && no_proxy
     end
 
-    # Character classes for Addressable
-    # See https://www.ietf.org/rfc/rfc3986.txt 3.2.1
-    # The user part may not have a : in it
-    USER = Addressable::URI::CharacterClasses::UNRESERVED + Addressable::URI::CharacterClasses::SUB_DELIMS
-    # The password part may have any valid USERINFO characters
-    PASSWORD = USER + "\\:"
-
     # Builds a proxy uri and exports it to the appropriate environment variables. Examples:
     #   http://username:password@hostname:port
     #   https://username@hostname:port
@@ -1084,15 +1117,22 @@ module ChefConfig
     #   pass = password
     # @api private
     def self.export_proxy(scheme, path, user, pass)
+      # Character classes for Addressable
+      # See https://www.ietf.org/rfc/rfc3986.txt 3.2.1
+      # The user part may not have a : in it
+      user_class = Addressable::URI::CharacterClasses::UNRESERVED + Addressable::URI::CharacterClasses::SUB_DELIMS
+      # The password part may have any valid USERINFO characters
+      password_class = user_class + "\\:"
+
       path = "#{scheme}://#{path}" unless path.include?("://")
       # URI.split returns the following parts:
       # [scheme, userinfo, host, port, registry, path, opaque, query, fragment]
       uri = Addressable::URI.encode(path, Addressable::URI)
 
       if user && !user.empty?
-        userinfo = Addressable::URI.encode_component(user, USER)
+        userinfo = Addressable::URI.encode_component(user, user_class)
         if pass
-          userinfo << ":#{Addressable::URI.encode_component(pass, PASSWORD)}"
+          userinfo << ":#{Addressable::URI.encode_component(pass, password_class)}"
         end
         uri.userinfo = userinfo
       end
@@ -1167,7 +1207,7 @@ module ChefConfig
           # Transform into the form en_ZZ.UTF-8
           guessed_locale.gsub(/UTF-?8$/i, "UTF-8")
         else
-          ChefConfig.logger.warn "Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support."
+          ChefConfig.logger.warn "Please install an English UTF-8 locale for #{ChefUtils::Dist::Infra::PRODUCT} to use, falling back to C locale and disabling UTF-8 support."
           "C"
         end
       end
@@ -1220,9 +1260,9 @@ module ChefConfig
     # @api private
     def self.enable_fips_mode
       OpenSSL.fips_mode = true
-      require "digest"
-      require "digest/sha1"
-      require "digest/md5"
+      require "digest" unless defined?(Digest)
+      require "digest/sha1" unless defined?(Digest::SHA1)
+      require "digest/md5" unless defined?(Digest::MD5)
       # Remove pre-existing constants if they do exist to reduce the
       # amount of log spam and warnings.
       Digest.send(:remove_const, "SHA1") if Digest.const_defined?("SHA1")

@@ -37,7 +37,8 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
     @provider = Chef::Provider::Service::Arch.new(@new_resource, @run_context)
 
-    allow(::File).to receive(:exists?).with("/etc/rc.conf").and_return(true)
+    allow(::File).to receive(:exist?).with("/etc/rc.d/chef").and_return(false)
+    allow(::File).to receive(:exist?).with("/etc/rc.conf").and_return(true)
     allow(::File).to receive(:read).with("/etc/rc.conf").and_return("DAEMONS=(network apache sshd)")
   end
 
@@ -106,7 +107,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
   end
 
   it "should fail if file /etc/rc.conf does not exist" do
-    allow(::File).to receive(:exists?).with("/etc/rc.conf").and_return(false)
+    allow(::File).to receive(:exist?).with("/etc/rc.conf").and_return(false)
     expect { @provider.load_current_resource }.to raise_error(Chef::Exceptions::Service)
   end
 

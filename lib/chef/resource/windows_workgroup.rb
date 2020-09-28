@@ -16,15 +16,12 @@
 #
 
 require_relative "../resource"
-require_relative "../mixin/powershell_out"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class WindowsWorkgroup < Chef::Resource
       provides :windows_workgroup
-
-      include Chef::Mixin::PowershellOut
 
       description "Use the **windows_workgroup** resource to join or change the workgroup of a Windows host."
       introduced "14.5"
@@ -57,12 +54,13 @@ class Chef
 
       property :password, String,
         description: "The password for the local administrator user. Required if using the `user` property.",
+        sensitive: true,
         desired_state: false
 
       property :reboot, Symbol,
         equal_to: %i{never request_reboot reboot_now},
-        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
-        description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
+        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{ChefUtils::Dist::Infra::PRODUCT} run completes), and :never (Don't reboot)",
+        description: "Controls the system reboot behavior post workgroup joining. Reboot immediately, after the #{ChefUtils::Dist::Infra::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
         coerce: proc { |x| clarify_reboot(x) },
         default: :immediate, desired_state: false
 
@@ -83,6 +81,7 @@ class Chef
       end
 
       # define this again so we can default it to true. Otherwise failures print the password
+      # FIXME: this should now be unnecessary with the password property itself marked sensitive?
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
 

@@ -19,8 +19,8 @@
 require_relative "../../mixin/shell_out"
 require_relative "../user"
 require_relative "../../resource/user/dscl_user"
-require "openssl" unless defined?(OpenSSL)
-require "plist"
+autoload :OpenSSL, "openssl"
+autoload :Plist, "plist"
 require_relative "../../util/path_helper"
 
 class Chef
@@ -562,7 +562,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         # Sets a value in user information hash using Chef attributes as keys.
         #
         def dscl_set(user_hash, key, value)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
 
           user_hash[DSCL_PROPERTY_MAP[key]] = [ value ]
           user_hash
@@ -572,7 +572,7 @@ in 'password', with the associated 'salt' and 'iterations'.")
         # Gets a value from user information hash using Chef attributes as keys.
         #
         def dscl_get(user_hash, key)
-          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.keys.include?(key)
+          raise "Unknown dscl key #{key}" unless DSCL_PROPERTY_MAP.key?(key)
 
           # DSCL values are set as arrays
           value = user_hash[DSCL_PROPERTY_MAP[key]]
@@ -584,16 +584,16 @@ in 'password', with the associated 'salt' and 'iterations'.")
         #
 
         def run_dscl(*args)
-          result = shell_out("dscl", ".", "-#{args[0]}", args[1..-1])
+          result = shell_out("dscl", ".", "-#{args[0]}", args[1..])
           return "" if ( args.first =~ /^delete/ ) && ( result.exitstatus != 0 )
           raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") unless result.exitstatus == 0
-          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if /No such key: /.match?(result.stdout)
+          raise(Chef::Exceptions::DsclCommandFailed, "dscl error: #{result.inspect}") if result.stdout.include?("No such key: ")
 
           result.stdout
         end
 
         def run_plutil(*args)
-          result = shell_out("plutil", "-#{args[0]}", args[1..-1])
+          result = shell_out("plutil", "-#{args[0]}", args[1..])
           raise(Chef::Exceptions::PlistUtilCommandFailed, "plutil error: #{result.inspect}") unless result.exitstatus == 0
 
           if result.stdout.encoding == Encoding::ASCII_8BIT

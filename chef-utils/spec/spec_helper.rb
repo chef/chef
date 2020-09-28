@@ -6,7 +6,7 @@ HELPER_MODULES = [
   ChefUtils::DSL::Cloud,
   ChefUtils::DSL::Introspection,
   ChefUtils::DSL::OS,
-  ChefUtils::DSL::PathSanity,
+  ChefUtils::DSL::DefaultPaths,
   ChefUtils::DSL::Platform,
   ChefUtils::DSL::PlatformFamily,
   ChefUtils::DSL::Service,

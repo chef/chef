@@ -43,19 +43,11 @@ class Chef
       protected
 
       def template_source_name(name, options)
-        if options[:source]
-          options[:source]
-        else
-          name
-        end
+        options[:source] || name
       end
 
       def find_cookbook_name(options)
-        if options[:cookbook]
-          options[:cookbook]
-        else
-          @cookbook_name
-        end
+        options[:cookbook] || @cookbook_name
       end
     end
   end

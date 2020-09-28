@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef-utils" unless defined?(ChefUtils::CANARY)
-require "chef/mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+autoload :ChefUtils, "chef-utils"
+require_relative "../mixin/chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
 
 class Chef
   module DSL
@@ -79,14 +79,14 @@ class Chef
           key_matches = []
           keys = @values[platform].keys
           keys.each do |k|
-            begin
-              if Chef::VersionConstraint::Platform.new(k).include?(node_version)
-                key_matches << k
-              end
-            rescue Chef::Exceptions::InvalidVersionConstraint => e
-              Chef::Log.trace "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
-              Chef::Log.trace(e)
+
+            if Chef::VersionConstraint::Platform.new(k).include?(node_version)
+              key_matches << k
             end
+          rescue Chef::Exceptions::InvalidVersionConstraint => e
+            Chef::Log.trace "Caught InvalidVersionConstraint. This means that a key in value_for_platform cannot be interpreted as a Chef::VersionConstraint::Platform."
+            Chef::Log.trace(e)
+
           end
           return @values[platform][version] if key_matches.include?(version)
 

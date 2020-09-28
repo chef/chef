@@ -1,4 +1,4 @@
-# This file is managed by <%= Chef::Dist::PRODUCT %>. Changes will be overwritten.
+# This file is managed by <%= ChefUtils::Dist::Infra::PRODUCT %>. Changes will be overwritten.
 
 <% @command_aliases.each do |a| -%>
 Cmnd_Alias <%= a[:name].upcase %> = <%= a[:command_list].join(', ') %>

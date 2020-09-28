@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "set" unless defined?(Set)
+autoload :Set, "set"
 require_relative "../log"
 require_relative "../recipe"
 require_relative "../resource/lwrp_base"
@@ -169,17 +169,17 @@ class Chef
       def compile_recipes
         @events.recipe_load_start(run_list_expansion.recipes.size)
         run_list_expansion.recipes.each do |recipe|
-          begin
-            path = resolve_recipe(recipe)
-            @run_context.load_recipe(recipe)
-            @events.recipe_file_loaded(path, recipe)
-          rescue Chef::Exceptions::RecipeNotFound => e
-            @events.recipe_not_found(e)
-            raise
-          rescue Exception => e
-            @events.recipe_file_load_failed(path, e, recipe)
-            raise
-          end
+
+          path = resolve_recipe(recipe)
+          @run_context.load_recipe(recipe)
+          @events.recipe_file_loaded(path, recipe)
+        rescue Chef::Exceptions::RecipeNotFound => e
+          @events.recipe_not_found(e)
+          raise
+        rescue Exception => e
+          @events.recipe_file_load_failed(path, e, recipe)
+          raise
+
         end
         @events.recipe_load_complete
       end
@@ -231,14 +231,14 @@ class Chef
 
       def load_libraries_from_cookbook(cookbook_name, globs = "**/*.rb")
         each_file_in_cookbook_by_segment(cookbook_name, :libraries, globs) do |filename|
-          begin
-            logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
-            Kernel.require(filename)
-            @events.library_file_loaded(filename)
-          rescue Exception => e
-            @events.library_file_load_failed(filename, e)
-            raise
-          end
+
+          logger.trace("Loading cookbook #{cookbook_name}'s library file: #{filename}")
+          Kernel.require(filename)
+          @events.library_file_loaded(filename)
+        rescue Exception => e
+          @events.library_file_load_failed(filename, e)
+          raise
+
         end
       end
 
@@ -325,7 +325,7 @@ class Chef
 
       def count_files_by_segment(segment, root_alias = nil)
         cookbook_collection.inject(0) do |count, cookbook_by_name|
-          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).select { |record| record[:name] == root_alias }.size : 0)
+          count + cookbook_by_name[1].segment_filenames(segment).size + (root_alias ? cookbook_by_name[1].files_for(:root_files).count { |record| record[:name] == root_alias } : 0)
         end
       end
 

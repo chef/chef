@@ -5,13 +5,14 @@ require "chef/mixin/shell_out"
 require "tiny_server"
 require "tmpdir"
 require "chef/platform"
+require "chef-utils/dist"
 
 describe "chef-client" do
 
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -22,7 +23,7 @@ describe "chef-client" do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "bundle exec #{Chef::Dist::CLIENT} --no-fork --minimal-ohai" }
+  let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --no-fork --minimal-ohai" }
 
   let(:critical_env_vars) { %w{PATH RUBYOPT BUNDLE_GEMFILE GEM_PATH}.map { |o| "#{o}=#{ENV[o]}" } .join(" ") }
 

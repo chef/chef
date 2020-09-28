@@ -15,42 +15,21 @@
 # limitations under the License.
 #
 
-require_relative "../internal"
-require_relative "platform_family"
+require_relative "default_paths"
 
 module ChefUtils
   module DSL
     module PathSanity
-      include Internal
+      include ChefUtils::DSL::DefaultPaths
 
-      # @since 15.5
       def sanitized_path(env = nil)
-        env_path = env ? env["PATH"] : __env_path
-        env_path = "" if env_path.nil?
-        path_separator = ChefUtils.windows? ? ";" : ":"
-        # ensure the Ruby and Gem bindirs are included for omnibus chef installs
-        new_paths = env_path.split(path_separator)
-        [ __ruby_bindir, __gem_bindir ].compact.each do |path|
-          new_paths = [ path ] + new_paths unless new_paths.include?(path)
-        end
-        __sane_paths.each do |path|
-          new_paths << path unless new_paths.include?(path)
-        end
-        new_paths.join(path_separator).encode("utf-8", invalid: :replace, undef: :replace)
+        default_paths(env)
       end
 
       private
 
       def __sane_paths
-        ChefUtils.windows? ? %w{} : %w{/usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin}
-      end
-
-      def __ruby_bindir
-        RbConfig::CONFIG["bindir"]
-      end
-
-      def __gem_bindir
-        Gem.bindir
+        __default_paths
       end
 
       extend self

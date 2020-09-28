@@ -15,9 +15,9 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require_relative "helpers/cron_validations"
-require "digest/md5"
+require "digest/md5" unless defined?(Digest::MD5)
 
 class Chef
   class Resource
@@ -26,25 +26,25 @@ class Chef
 
       provides :chef_client_cron
 
-      description "Use the **chef_client_cron** resource to setup the #{Chef::Dist::PRODUCT} to run as a cron job. This resource will also create the specified log directory if it doesn't already exist."
+      description "Use the **chef_client_cron** resource to setup the #{ChefUtils::Dist::Infra::PRODUCT} to run as a cron job. This resource will also create the specified log directory if it doesn't already exist."
       introduced "16.0"
       examples <<~DOC
-      **Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence**:
+      **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-      chef_client_cron "Run #{Chef::Dist::PRODUCT} as a cron job"
+      chef_client_cron "Run #{ChefUtils::Dist::Infra::PRODUCT} as a cron job"
       ```
 
-      **Run #{Chef::Dist::PRODUCT} twice a day**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} twice a day**:
 
       ```ruby
-      chef_client_cron "Run #{Chef::Dist::PRODUCT} every 12 hours" do
+      chef_client_cron "Run #{ChefUtils::Dist::Infra::PRODUCT} every 12 hours" do
         minute 0
         hour "0,12"
       end
       ```
 
-      **Run #{Chef::Dist::PRODUCT} with extra options passed to the client**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
       chef_client_cron "Run an override recipe" do
@@ -56,42 +56,42 @@ class Chef
       extend Chef::ResourceHelpers::CronValidations
 
       property :job_name, String,
-        default: Chef::Dist::CLIENT,
+        default: ChefUtils::Dist::Infra::CLIENT,
         description: "The name of the cron job to create."
 
       property :comment, String,
         description: "A comment to place in the cron.d file."
 
       property :user, String,
-        description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
+        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         default: "root"
 
       property :minute, [Integer, String],
-        description: "The minute at which #{Chef::Dist::PRODUCT} is to run (0 - 59) or a cron pattern such as '0,30'.",
+        description: "The minute at which #{ChefUtils::Dist::Infra::PRODUCT} is to run (0 - 59) or a cron pattern such as '0,30'.",
         default: "0,30", callbacks: {
           "should be a valid minute spec" => method(:validate_minute),
         }
 
       property :hour, [Integer, String],
-        description: "The hour at which #{Chef::Dist::PRODUCT} is to run (0 - 23) or a cron pattern such as '0,12'.",
+        description: "The hour at which #{ChefUtils::Dist::Infra::PRODUCT} is to run (0 - 23) or a cron pattern such as '0,12'.",
         default: "*", callbacks: {
           "should be a valid hour spec" => method(:validate_hour),
         }
 
       property :day, [Integer, String],
-        description: "The day of month at which #{Chef::Dist::PRODUCT} is to run (1 - 31) or a cron pattern such as '1,7,14,21,28'.",
+        description: "The day of month at which #{ChefUtils::Dist::Infra::PRODUCT} is to run (1 - 31) or a cron pattern such as '1,7,14,21,28'.",
         default: "*", callbacks: {
           "should be a valid day spec" => method(:validate_day),
         }
 
       property :month, [Integer, String],
-        description: "The month in the year on which #{Chef::Dist::PRODUCT} is to run (1 - 12, jan-dec, or *).",
+        description: "The month in the year on which #{ChefUtils::Dist::Infra::PRODUCT} is to run (1 - 12, jan-dec, or *).",
         default: "*", callbacks: {
           "should be a valid month spec" => method(:validate_month),
         }
 
       property :weekday, [Integer, String],
-        description: "The day of the week on which #{Chef::Dist::PRODUCT} is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
+        description: "The day of the week on which #{ChefUtils::Dist::Infra::PRODUCT} is to run (0-7, mon-sun, or *), where Sunday is both 0 and 7.",
         default: "*", callbacks: {
           "should be a valid weekday spec" => method(:validate_dow),
         }
@@ -100,7 +100,7 @@ class Chef
         default: 300,
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive number" => proc { |v| v > 0 } },
-        description: "A random number of seconds between 0 and X to add to interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time."
+        description: "A random number of seconds between 0 and X to add to interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time."
 
       property :mailto, String,
         description: "The e-mail address to e-mail any cron task failures to."
@@ -110,12 +110,12 @@ class Chef
         default: false
 
       property :config_directory, String,
-        default: Chef::Dist::CONF_DIR,
+        default: ChefConfig::Config.etc_chef_dir,
         description: "The path of the config directory."
 
       property :log_directory, String,
-        default: lazy { platform?("mac_os_x") ? "/Library/Logs/#{Chef::Dist::DIR_SUFFIX.capitalize}" : "/var/log/#{Chef::Dist::DIR_SUFFIX}" },
-        default_description: "/Library/Logs/#{Chef::Dist::DIR_SUFFIX.capitalize} on macOS and /var/log/#{Chef::Dist::DIR_SUFFIX} otherwise",
+        default: lazy { platform?("mac_os_x") ? "/Library/Logs/#{ChefUtils::Dist::Infra::DIR_SUFFIX.capitalize}" : "/var/log/#{ChefUtils::Dist::Infra::DIR_SUFFIX}" },
+        default_description: "/Library/Logs/#{ChefUtils::Dist::Infra::DIR_SUFFIX.capitalize} on macOS and /var/log/#{ChefUtils::Dist::Infra::DIR_SUFFIX} otherwise",
         description: "The path of the directory to create the log file in."
 
       property :log_file_name, String,
@@ -127,16 +127,22 @@ class Chef
         description: "Append to the log file instead of overwriting the log file on each run."
 
       property :chef_binary_path, String,
-        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}",
-        description: "The path to the #{Chef::Dist::CLIENT} binary."
+        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}",
+        description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
         default: lazy { [] },
-        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command."
+        description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command."
 
       property :environment, Hash,
         default: lazy { {} },
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
+
+      property :nice, [Integer, String],
+        description: "The process priority to run the #{ChefUtils::Dist::Infra::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",
+        introduced: "16.5",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
@@ -158,7 +164,7 @@ class Chef
           mailto      new_resource.mailto if new_resource.mailto
           user        new_resource.user
           comment     new_resource.comment if new_resource.comment
-          command     cron_command
+          command     client_command
         end
       end
 
@@ -187,15 +193,16 @@ class Chef
         #
         # @return [String]
         #
-        def cron_command
+        def client_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
+          cmd << "#{which("nice")} -n #{new_resource.nice} " if new_resource.nice
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
           cmd << "-c #{::File.join(new_resource.config_directory, "client.rb")} "
           cmd << "--chef-license accept " if new_resource.accept_chef_license
           cmd << log_command
-          cmd << " || echo \"#{Chef::Dist::PRODUCT} execution failed\"" if new_resource.mailto
+          cmd << " || echo \"#{ChefUtils::Dist::Infra::PRODUCT} execution failed\"" if new_resource.mailto
           cmd
         end
 

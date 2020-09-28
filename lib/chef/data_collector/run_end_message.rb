@@ -60,8 +60,8 @@ class Chef
             "cookbooks" => ( node && node["cookbooks"] ) || {},
             "policy_name" => node&.policy_name,
             "policy_group" => node&.policy_group,
-            "start_time" => run_status.start_time.utc.iso8601,
-            "end_time" => run_status.end_time.utc.iso8601,
+            "start_time" => run_status&.start_time&.utc&.iso8601,
+            "end_time" => run_status&.end_time&.utc&.iso8601,
             "source" => solo_run? ? "chef_solo" : "chef_client",
             "status" => status,
             "total_resource_count" => all_action_records(action_collection).count,
@@ -133,7 +133,17 @@ class Chef
           end
 
           hash["conditional"] = action_record.conditional.to_text if action_record.status == :skipped
-          hash["error_message"] = action_record.exception.message unless action_record.exception.nil?
+
+          unless action_record.exception.nil?
+            hash["error_message"] = action_record.exception.message
+
+            hash["error"] = {
+              "class" => action_record.exception.class,
+              "message" => action_record.exception.message,
+              "backtrace" => action_record.exception.backtrace,
+              "description" => action_record.error_description,
+            }
+          end
 
           hash
         end

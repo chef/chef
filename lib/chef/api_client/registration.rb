@@ -72,14 +72,14 @@ class Chef
 
       def assert_destination_writable!
         abs_path = File.expand_path(destination)
-        unless File.exists?(File.dirname(abs_path))
+        unless File.exist?(File.dirname(abs_path))
           begin
             FileUtils.mkdir_p(File.dirname(abs_path))
           rescue Errno::EACCES
             raise Chef::Exceptions::CannotWritePrivateKey, "I can't create the configuration directory at #{File.dirname(abs_path)} - check permissions?"
           end
         end
-        if (File.exists?(abs_path) && !File.writable?(abs_path)) || !File.writable?(File.dirname(abs_path))
+        if (File.exist?(abs_path) && !File.writable?(abs_path)) || !File.writable?(File.dirname(abs_path))
           raise Chef::Exceptions::CannotWritePrivateKey, "I can't write your private key to #{abs_path} - check permissions?"
         end
       end

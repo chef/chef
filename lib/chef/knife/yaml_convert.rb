@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "yaml"
+autoload :YAML, "yaml"
 require_relative "../knife"
 class Chef::Knife::YamlConvert < Chef::Knife
 

@@ -20,12 +20,10 @@ rubygems:
   - chef-bin
   - chef-utils
 
-docker_images:
-  - chef
-
 pipelines:
   - verify:
       public: true
+  - docker/build
   - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
@@ -88,15 +86,15 @@ subscriptions:
   # the omnibus/docker/gem chain
   - workload: artifact_published:unstable:chef:{{version_constraint}}
     actions:
-      - built_in:build_docker_image
+      - trigger_pipeline:docker/build
   - workload: artifact_published:current:chef:{{version_constraint}}
     actions:
-      - built_in:tag_docker_image
+      - built_in:promote_docker_images
   - workload: artifact_published:stable:chef:{{version_constraint}}
     actions:
       - built_in:rollover_changelog
       - bash:.expeditor/update_dockerfile.sh
-      - built_in:tag_docker_image
+      - built_in:promote_docker_images
       - built_in:publish_rubygems
       - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels

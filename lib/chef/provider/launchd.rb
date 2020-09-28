@@ -20,7 +20,7 @@ require_relative "../provider"
 require_relative "../resource/file"
 require_relative "../resource/cookbook_file"
 require_relative "../resource/macosx_service"
-require "plist"
+autoload :Plist, "plist"
 require "forwardable" unless defined?(Forwardable)
 
 class Chef
@@ -209,7 +209,7 @@ class Chef
 
       # @api private
       def path
-        @path ||= new_resource.path ? new_resource.path : gen_path_from_type
+        @path ||= new_resource.path || gen_path_from_type
       end
     end
   end

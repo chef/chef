@@ -19,7 +19,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -38,7 +38,7 @@ class Chef
           action :periodic
         end
         ```
-        **Update the Homebrew repository at the start of a #{Chef::Dist::PRODUCT} run**:
+        **Update the Homebrew repository at the start of a #{ChefUtils::Dist::Infra::PRODUCT} run**:
         ```ruby
         homebrew_update 'update'
         ```
@@ -62,8 +62,8 @@ class Chef
         #
         # @return [Boolean]
         def brew_up_to_date?
-          ::File.exist?("#{BREW_STAMP}") &&
-            ::File.mtime("#{BREW_STAMP}") > Time.now - new_resource.frequency
+          ::File.exist?(BREW_STAMP) &&
+            ::File.mtime(BREW_STAMP) > Time.now - new_resource.frequency
         end
 
         def do_update
@@ -71,7 +71,7 @@ class Chef
             recursive true
           end
 
-          file "#{BREW_STAMP}" do
+          file BREW_STAMP do
             content "BREW::Update::Post-Invoke-Success\n"
             action :create_if_missing
           end
@@ -86,7 +86,7 @@ class Chef
       end
 
       action :periodic do
-        return unless mac_os_x?
+        return unless macos?
 
         unless brew_up_to_date?
           converge_by "update new lists of packages" do
@@ -96,7 +96,7 @@ class Chef
       end
 
       action :update do
-        return unless mac_os_x?
+        return unless macos?
 
         converge_by "force update new lists of packages" do
           do_update

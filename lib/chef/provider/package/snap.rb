@@ -20,7 +20,7 @@ require_relative "../package"
 require_relative "../../resource/snap_package"
 require_relative "../../mixin/shell_out"
 require "socket" unless defined?(Socket)
-require "json"
+require "json" unless defined?(JSON)
 
 class Chef
   class Provider
@@ -218,7 +218,6 @@ class Chef
           waiting = true
           while waiting
             result = get_change_id(id)
-            puts "STATUS: #{result["result"]["status"]}"
             case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue

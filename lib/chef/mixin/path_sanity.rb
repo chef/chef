@@ -16,14 +16,15 @@
 # limitations under the License.
 #
 
+require_relative "default_paths"
+
 class Chef
   module Mixin
-    # @ deprecated
     module PathSanity
+      include Chef::Mixin::DefaultPaths
+
       def enforce_path_sanity(env = ENV)
-        if Chef::Config[:enforce_path_sanity]
-          env["PATH"] = ChefUtils::DSL::PathSanity.sanitized_path(env)
-        end
+        enforce_default_paths(env)
       end
     end
   end

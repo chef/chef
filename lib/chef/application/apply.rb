@@ -27,13 +27,13 @@ require "fileutils" unless defined?(FileUtils)
 require "tempfile" unless defined?(Tempfile)
 require_relative "../providers"
 require_relative "../resources"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "license_acceptance/cli_flags/mixlib_cli"
 
 class Chef::Application::Apply < Chef::Application
   include LicenseAcceptance::CLIFlags::MixlibCLI
 
-  banner "Usage: #{Chef::Dist::APPLY} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
+  banner "Usage: #{ChefUtils::Dist::Apply::EXEC} [RECIPE_FILE | -e RECIPE_TEXT | -s] [OPTIONS]"
 
   option :execute,
     short: "-e RECIPE_TEXT",
@@ -77,6 +77,11 @@ class Chef::Application::Apply < Chef::Application
     description: "Set the log level (trace, debug, info, warn, error, fatal).",
     proc: lambda { |l| l.to_sym }
 
+  option :log_location_cli,
+    short: "-L LOGLOCATION",
+    long: "--logfile LOGLOCATION",
+    description: "Set the log file location, defaults to STDOUT - recommended for daemonizing."
+
   option :always_dump_stacktrace,
     long: "--[no-]always-dump-stacktrace",
     boolean: true,
@@ -95,9 +100,9 @@ class Chef::Application::Apply < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show #{Chef::Dist::PRODUCT} version.",
+    description: "Show #{ChefUtils::Dist::Infra::PRODUCT} version.",
     boolean: true,
-    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :why_run,
@@ -114,7 +119,7 @@ class Chef::Application::Apply < Chef::Application
 
   option :profile_ruby,
     long: "--[no-]profile-ruby",
-    description: "Dump complete Ruby call graph stack of entire #{Chef::Dist::PRODUCT} run (expert only).",
+    description: "Dump complete Ruby call graph stack of entire #{ChefUtils::Dist::Infra::PRODUCT} run (expert only).",
     boolean: true,
     default: false
 
@@ -126,7 +131,7 @@ class Chef::Application::Apply < Chef::Application
 
   option :minimal_ohai,
     long: "--minimal-ohai",
-    description: "Only run the bare minimum Ohai plugins #{Chef::Dist::PRODUCT} needs to function.",
+    description: "Only run the bare minimum Ohai plugins #{ChefUtils::Dist::Infra::PRODUCT} needs to function.",
     boolean: true
 
   attr_reader :json_attribs
@@ -176,7 +181,7 @@ class Chef::Application::Apply < Chef::Application
                   else
                     Chef::RunContext.new(@chef_client.node, {}, @chef_client.events)
                   end
-    recipe = Chef::Recipe.new("(#{Chef::Dist::APPLY} cookbook)", "(#{Chef::Dist::APPLY} recipe)", run_context)
+    recipe = Chef::Recipe.new("(#{ChefUtils::Dist::Apply::EXEC} cookbook)", "(#{ChefUtils::Dist::Apply::EXEC} recipe)", run_context)
     [recipe, run_context]
   end
 
@@ -213,11 +218,11 @@ class Chef::Application::Apply < Chef::Application
     end
     runner = Chef::Runner.new(run_context)
     catch(:end_client_run_early) do
-      begin
-        runner.converge
-      ensure
-        @recipe_fh.close
-      end
+
+      runner.converge
+    ensure
+      @recipe_fh.close
+
     end
     Chef::Platform::Rebooter.reboot_if_needed!(runner)
   end

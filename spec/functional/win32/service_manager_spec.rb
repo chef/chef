@@ -125,7 +125,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
         it "start should start the service", :volatile do
           service_manager.run(["-a", "start"])
           expect(test_service_state).to eq("running")
-          expect(File.exists?(test_service_file)).to be_truthy
+          expect(File.exist?(test_service_file)).to be_truthy
         end
 
         it "stop should not affect the service" do

@@ -158,7 +158,7 @@ class Chef
         end
 
         def global_options
-          new_resource.global_options if new_resource.global_options
+          new_resource.global_options
         end
       end
     end

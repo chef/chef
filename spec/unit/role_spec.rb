@@ -259,7 +259,7 @@ describe Chef::Role do
     it "should return a Chef::Role object from JSON" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes", "#{Chef::Config[:role_path]}/memes/lolcat.json"])
       file_path = File.join(Chef::Config[:role_path], "memes/lolcat.json")
-      expect(File).to receive(:exists?).with(file_path).exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with(file_path).exactly(1).times.and_return(true)
       expect(IO).to receive(:read).with(file_path).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -268,7 +268,7 @@ describe Chef::Role do
     it "should return a Chef::Role object from a Ruby DSL" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes", "#{Chef::Config[:role_path]}/memes/lolcat.rb"])
       rb_path = File.join(Chef::Config[:role_path], "memes/lolcat.rb")
-      expect(File).to receive(:exists?).with(rb_path).exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with(rb_path).exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with(rb_path).exactly(1).times.and_return(true)
       expect(File).to receive(:file?).with(rb_path).exactly(1).times.and_return(true)
       expect(IO).to receive(:read).with(rb_path).and_return(ROLE_DSL)
@@ -280,8 +280,8 @@ describe Chef::Role do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes", "#{Chef::Config[:role_path]}/memes/lolcat.json", "#{Chef::Config[:role_path]}/memes/lolcat.rb"])
       js_path = File.join(Chef::Config[:role_path], "memes/lolcat.json")
       rb_path = File.join(Chef::Config[:role_path], "memes/lolcat.rb")
-      expect(File).to receive(:exists?).with(js_path).exactly(1).times.and_return(true)
-      expect(File).not_to receive(:exists?).with(rb_path)
+      expect(File).to receive(:exist?).with(js_path).exactly(1).times.and_return(true)
+      expect(File).not_to receive(:exist?).with(rb_path)
       expect(IO).to receive(:read).with(js_path).and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -289,19 +289,19 @@ describe Chef::Role do
 
     it "should raise an exception if the file does not exist" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/meme.rb"])
-      expect(File).not_to receive(:exists?)
+      expect(File).not_to receive(:exist?)
       expect { @role.class.from_disk("lolcat") }.to raise_error(Chef::Exceptions::RoleNotFound)
     end
 
     it "should raise an exception if two files exist with the same name" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes/lolcat.rb", "#{Chef::Config[:role_path]}/lolcat.rb"])
-      expect(File).not_to receive(:exists?)
+      expect(File).not_to receive(:exist?)
       expect { @role.class.from_disk("lolcat") }.to raise_error(Chef::Exceptions::DuplicateRole)
     end
 
     it "should not raise an exception if two files exist with a similar name" do
       expect(Dir).to receive(:glob).and_return(["#{Chef::Config[:role_path]}/memes/lolcat.rb", "#{Chef::Config[:role_path]}/super_lolcat.rb"])
-      expect(File).to receive(:exists?).with("#{Chef::Config[:role_path]}/memes/lolcat.rb").and_return(true)
+      expect(File).to receive(:exist?).with("#{Chef::Config[:role_path]}/memes/lolcat.rb").and_return(true)
       allow_any_instance_of(Chef::Role).to receive(:from_file).with("#{Chef::Config[:role_path]}/memes/lolcat.rb")
       expect { @role.class.from_disk("lolcat") }.not_to raise_error
     end
@@ -317,7 +317,7 @@ describe Chef::Role do
 
     it "should return a Chef::Role object from JSON" do
       expect(Dir).to receive(:glob).with(File.join(root, "**", "**")).exactly(1).times.and_return(["#{root}/lolcat.json"])
-      expect(File).to receive(:exists?).with("#{root}/lolcat.json").exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with("#{root}/lolcat.json").exactly(1).times.and_return(true)
       expect(IO).to receive(:read).with("#{root}/lolcat.json").and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -326,7 +326,7 @@ describe Chef::Role do
     it "should return a Chef::Role object from JSON when role is in the second path" do
       expect(Dir).to receive(:glob).with(File.join(root, "**", "**")).exactly(1).times.and_return([])
       expect(Dir).to receive(:glob).with(File.join("#{root}/path2", "**", "**")).exactly(1).times.and_return(["#{root}/path2/lolcat.json"])
-      expect(File).to receive(:exists?).with("#{root}/path2/lolcat.json").exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with("#{root}/path2/lolcat.json").exactly(1).times.and_return(true)
       expect(IO).to receive(:read).with("#{root}/path2/lolcat.json").and_return('{"name": "ceiling_cat", "json_class": "Chef::Role" }')
       expect(@role).to be_a_kind_of(Chef::Role)
       @role.class.from_disk("lolcat")
@@ -334,7 +334,7 @@ describe Chef::Role do
 
     it "should return a Chef::Role object from a Ruby DSL" do
       expect(Dir).to receive(:glob).with(File.join(root, "**", "**")).exactly(1).times.and_return(["#{root}/lolcat.rb"])
-      expect(File).to receive(:exists?).with("#{root}/lolcat.rb").exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with("#{root}/lolcat.rb").exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with("#{root}/lolcat.rb").and_return(true)
       expect(File).to receive(:file?).with("#{root}/lolcat.rb").and_return(true)
       expect(IO).to receive(:read).with("#{root}/lolcat.rb").exactly(1).times.and_return(ROLE_DSL)
@@ -345,7 +345,7 @@ describe Chef::Role do
     it "should return a Chef::Role object from a Ruby DSL when role is in the second path" do
       expect(Dir).to receive(:glob).with(File.join(root, "**", "**")).exactly(1).times.and_return([])
       expect(Dir).to receive(:glob).with(File.join("#{root}/path2", "**", "**")).exactly(1).times.and_return(["#{root}/path2/lolcat.rb"])
-      expect(File).to receive(:exists?).with("#{root}/path2/lolcat.rb").exactly(1).times.and_return(true)
+      expect(File).to receive(:exist?).with("#{root}/path2/lolcat.rb").exactly(1).times.and_return(true)
       expect(File).to receive(:readable?).with("#{root}/path2/lolcat.rb").and_return(true)
       expect(File).to receive(:file?).with("#{root}/path2/lolcat.rb").and_return(true)
       expect(IO).to receive(:read).with("#{root}/path2/lolcat.rb").exactly(1).times.and_return(ROLE_DSL)

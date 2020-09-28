@@ -32,7 +32,6 @@ require_relative "platform/provider_handler_map"
 require_relative "platform/resource_handler_map"
 require_relative "deprecated"
 require_relative "event_dispatch/dsl"
-require_relative "deprecated"
 
 class Chef
   class << self

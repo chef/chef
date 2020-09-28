@@ -55,13 +55,13 @@ describe Chef::Resource::Link do
   end
 
   after(:each) do
-    begin
-      cleanup_link(to) if File.exists?(to)
-      cleanup_link(target_file) if File.exists?(target_file)
-      cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
-    rescue
-      puts "Could not remove a file: #{$!}"
-    end
+
+    cleanup_link(to) if File.exist?(to)
+    cleanup_link(target_file) if File.exist?(target_file)
+    cleanup_link(CHEF_SPEC_BACKUP_PATH) if File.exist?(CHEF_SPEC_BACKUP_PATH)
+  rescue
+    puts "Could not remove a file: #{$!}"
+
   end
 
   def user(user)
@@ -273,7 +273,7 @@ describe Chef::Resource::Link do
           resource.run_action(:create)
         end
         it "preserves the hard link" do
-          expect(File.exists?(target_file)).to be_truthy
+          expect(File.exist?(target_file)).to be_truthy
           expect(symlink?(target_file)).to be_falsey
           # Writing to one hardlinked file should cause both
           # to have the new value.
@@ -298,7 +298,7 @@ describe Chef::Resource::Link do
           resource.run_action(:create)
         end
         it "links to the target file" do
-          expect(File.exists?(target_file)).to be_truthy
+          expect(File.exist?(target_file)).to be_truthy
           expect(symlink?(target_file)).to be_falsey
           # Writing to one hardlinked file should cause both
           # to have the new value.
@@ -338,7 +338,7 @@ describe Chef::Resource::Link do
             include_context "delete succeeds"
             it "the :delete action does not delete the target file" do
               resource.run_action(:delete)
-              expect(File.exists?(to)).to be_truthy
+              expect(File.exist?(to)).to be_truthy
             end
           end
           context "pointing somewhere else", :requires_root_or_running_windows do
@@ -366,7 +366,7 @@ describe Chef::Resource::Link do
             include_context "delete succeeds"
             it "the :delete action does not delete the target file" do
               resource.run_action(:delete)
-              expect(File.exists?(to)).to be_truthy
+              expect(File.exist?(to)).to be_truthy
             end
           end
           context "pointing nowhere" do
@@ -383,7 +383,7 @@ describe Chef::Resource::Link do
         context "and the link already exists and is a hard link to the file" do
           before(:each) do
             link(to, target_file)
-            expect(File.exists?(target_file)).to be_truthy
+            expect(File.exist?(target_file)).to be_truthy
             expect(symlink?(target_file)).to be_falsey
           end
           include_context "create symbolic link succeeds"
@@ -403,7 +403,7 @@ describe Chef::Resource::Link do
           it "create errors out" do
             if windows?
               expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
-            elsif os_x? || solaris? || freebsd? || aix?
+            elsif macos? || solaris? || freebsd? || aix?
               expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
               expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
@@ -582,14 +582,14 @@ describe Chef::Resource::Link do
         context "and the link already exists and is a hard link to the file" do
           before(:each) do
             link(to, target_file)
-            expect(File.exists?(target_file)).to be_truthy
+            expect(File.exist?(target_file)).to be_truthy
             expect(symlink?(target_file)).to be_falsey
           end
           include_context "create hard link is noop"
           include_context "delete succeeds"
           it "the :delete action does not delete the target file" do
             resource.run_action(:delete)
-            expect(File.exists?(to)).to be_truthy
+            expect(File.exist?(to)).to be_truthy
           end
         end
         context "and the link already exists and is a file" do
@@ -606,7 +606,7 @@ describe Chef::Resource::Link do
           it "errors out" do
             if windows?
               expect { resource.run_action(:create) }.to raise_error(Errno::EACCES)
-            elsif os_x? || solaris? || freebsd? || aix?
+            elsif macos? || solaris? || freebsd? || aix?
               expect { resource.run_action(:create) }.to raise_error(Errno::EPERM)
             else
               expect { resource.run_action(:create) }.to raise_error(Errno::EISDIR)
@@ -653,9 +653,9 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("macOS/FreeBSD/AIX/Solaris symlink? and readlink working on hard links to symlinks") if os_x? || freebsd? || aix? || solaris?
+              skip("macOS/FreeBSD/AIX/Solaris symlink? and readlink working on hard links to symlinks") if macos? || freebsd? || aix? || solaris?
               resource.run_action(:create)
-              expect(File.exists?(target_file)).to be_truthy
+              expect(File.exist?(target_file)).to be_truthy
               # macOS gets angry about this sort of link. Bug in macOS, IMO.
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))
@@ -672,9 +672,9 @@ describe Chef::Resource::Link do
           end
           context "and the link does not yet exist" do
             it "links to the target file" do
-              skip("macOS/FreeBSD/AIX/Solaris fails to create hardlinks to broken symlinks") if os_x? || freebsd? || aix? || solaris?
+              skip("macOS/FreeBSD/AIX/Solaris fails to create hardlinks to broken symlinks") if macos? || freebsd? || aix? || solaris?
               resource.run_action(:create)
-              expect(File.exists?(target_file) || File.symlink?(target_file)).to be_truthy
+              expect(File.exist?(target_file) || File.symlink?(target_file)).to be_truthy
               expect(symlink?(target_file)).to be_truthy
               expect(readlink(target_file)).to eq(canonicalize(@other_target))
             end

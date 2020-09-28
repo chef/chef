@@ -113,7 +113,7 @@ class Chef
         # @return [void]
         def target(id, page = nil)
           @deprecation_id = id
-          @doc_page = page || "#{deprecation_key}"
+          @doc_page = page || deprecation_key.to_s
         end
       end
     end
@@ -243,6 +243,10 @@ class Chef
 
     class ResourceNameWithoutProvides < Base
       target 31
+    end
+
+    class AttributeBlacklistConfiguration < Base
+      target 32
     end
 
     class Generic < Base

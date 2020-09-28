@@ -36,7 +36,7 @@
 # XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
 #
 
-require_relative "dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class NodeMap
@@ -86,7 +86,7 @@ class Chef
                         else
                           klass.superclass.to_s
                         end
-        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: Chef::Dist::PRODUCT } )
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: ChefUtils::Dist::Infra::PRODUCT } )
       end
 
       # The map is sorted in order of preference already; we just need to find
@@ -212,7 +212,7 @@ class Chef
     # - no negative matches (!value)
     # - at least one positive match (value or :all), or no positive filters
     #
-    def matches_black_white_list?(node, filters, attribute)
+    def matches_block_allow_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
       return true unless filters[attribute]
@@ -220,21 +220,21 @@ class Chef
       filter_values = Array(filters[attribute])
       value = node[attribute]
 
-      # Split the blacklist and whitelist
-      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
+      # Split the blocklist and allowlist
+      blocklist, allowlist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
 
       if attribute == :platform_family
-        # If any blacklist value matches, we don't match
-        return false if blacklist.any? { |v| v[1..-1] == value || platform_family_query_helper?(node, v[1..-1]) }
+        # If any blocklist value matches, we don't match
+        return false if blocklist.any? { |v| v[1..] == value || platform_family_query_helper?(node, v[1..]) }
 
-        # If the whitelist is empty, or anything matches, we match.
-        whitelist.empty? || whitelist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
+        # If the allowlist is empty, or anything matches, we match.
+        allowlist.empty? || allowlist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
       else
-        # If any blacklist value matches, we don't match
-        return false if blacklist.any? { |v| v[1..-1] == value }
+        # If any blocklist value matches, we don't match
+        return false if blocklist.any? { |v| v[1..] == value }
 
-        # If the whitelist is empty, or anything matches, we match.
-        whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
+        # If the allowlist is empty, or anything matches, we match.
+        allowlist.empty? || allowlist.any? { |v| v == :all || v == value }
       end
     end
 
@@ -263,9 +263,9 @@ class Chef
     end
 
     def filters_match?(node, filters)
-      matches_black_white_list?(node, filters, :os) &&
-        matches_black_white_list?(node, filters, :platform_family) &&
-        matches_black_white_list?(node, filters, :platform) &&
+      matches_block_allow_list?(node, filters, :os) &&
+        matches_block_allow_list?(node, filters, :platform_family) &&
+        matches_block_allow_list?(node, filters, :platform) &&
         matches_version_list?(node, filters, :platform_version) &&
         matches_target_mode?(filters)
     end
@@ -314,8 +314,8 @@ class Chef
       return -1 if !b && a
       return 0 if !a && !b
 
-      # Check for blacklists ('!windows'). Those always come *after* positive
-      # whitelists.
+      # Check for blocklists ('!windows'). Those always come *after* positive
+      # allowlists.
       a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
       b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
       return 1 if a_negated && !b_negated

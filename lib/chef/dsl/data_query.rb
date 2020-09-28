@@ -17,8 +17,8 @@
 #
 
 require_relative "../search/query"
-require_relative "../data_bag"
-require_relative "../data_bag_item"
+Chef.autoload :DataBag, File.expand_path("../data_bag", __dir__)
+Chef.autoload :DataBagItem, File.expand_path("../data_bag_item", __dir__)
 require_relative "../encrypted_data_bag_item"
 require_relative "../encrypted_data_bag_item/check_encrypted"
 

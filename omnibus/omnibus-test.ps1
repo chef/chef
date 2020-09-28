@@ -1,6 +1,9 @@
 # Stop script execution when a non-terminating error occurs
 $ErrorActionPreference = "Stop"
 
+# install chocolatey
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
 $channel = "$Env:CHANNEL"
 If ([string]::IsNullOrEmpty($channel)) { $channel = "unstable" }
 
@@ -91,8 +94,26 @@ winrm quickconfig -quiet
 bundle
 If ($lastexitcode -ne 0) { Exit $lastexitcode }
 
-# FIXME: we need to add back unit and integration tests here.  we have no coverage of those on e.g. AIX
-#
-# chocolatey functional tests fail so disable that tag directly <-- and this is a bug that needs fixing.
-bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f documentation --tag ~choco_installed spec/functional
-If ($lastexitcode -ne 0) { Exit $lastexitcode }
+# buildkite changes the casing of the Path variable to PATH
+# It is not clear how or where that happens, but it breaks the choco
+# tests. Removing the PATH and resetting it with the expected casing
+$p = $env:PATH
+$env:PATH = $null
+$env:Path = $p
+
+# Running the specs separately fixes an edge case on 2012R2-i386 where the desktop heap's
+# allocated limit is hit and any test's attempt to create a new process is met with
+# exit code -1073741502 (STATUS_DLL_INIT_FAILED). after much research and troubleshooting,
+# desktop heap exhaustion seems likely (https://docs.microsoft.com/en-us/archive/blogs/ntdebugging/desktop-heap-overview)
+$exit = 0
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile -- ./spec/unit
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile -- ./spec/functional
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml -f progress --profile -- ./spec/integration
+If ($lastexitcode -ne 0) { $exit = 1 }
+
+Exit $exit

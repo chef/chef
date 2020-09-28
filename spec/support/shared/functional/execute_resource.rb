@@ -62,7 +62,7 @@ shared_context "a command that can be executed as an alternate user" do
   end
 
   after do
-    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exist?(script_output_path)
     Dir.rmdir(script_output_dir) if Dir.exist?(script_output_dir)
   end
 end

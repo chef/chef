@@ -25,11 +25,7 @@ class Chef
       provides(:sysctl) { true }
       provides(:sysctl_param) { true }
 
-      description "Use the **sysctl** resource to set or remove kernel parameters using the sysctl"\
-                  " command line tool and configuration files in the system's sysctl.d directory. "\
-                  "Configuration files managed by this resource are named 99-chef-KEYNAME.conf. If"\
-                  " an existing value was already set for the value it will be backed up to the node"\
-                  " and restored if the :remove action is used later."
+      description "Use the **sysctl** resource to set or remove kernel parameters using the `sysctl` command line tool and configuration files in the system's `sysctl.d` directory. Configuration files managed by this resource are named `99-chef-KEYNAME.conf`."
       examples <<~DOC
       **Set vm.swappiness**:
 
@@ -128,11 +124,11 @@ class Chef
       end
 
       load_current_value do
-        begin
-          value get_sysctl_value(key)
-        rescue
-          current_value_does_not_exist!
-        end
+
+        value get_sysctl_value(key)
+      rescue
+        current_value_does_not_exist!
+
       end
 
       action :apply do

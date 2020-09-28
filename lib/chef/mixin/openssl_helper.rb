@@ -14,15 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+autoload :OpenSSL, "openssl"
 
 class Chef
   module Mixin
     # various helpers for use with openssl. Currently used by the openssl_* resources
     module OpenSSLHelper
-      def self.included(_base)
-        require "openssl" unless defined?(::OpenSSL)
-      end
-
       # determine the key filename from the cert filename
       # @param [String] cert_filename the path to the certfile
       # @return [String] the path to the keyfile
@@ -412,7 +409,7 @@ class Chef
       # @param [string] cert_file path of the cert file or cert content
       # @param [integer] renew_before_expiry number of days before expiration
       # @return [true, false]
-      def cert_need_renewall?(cert_file, renew_before_expiry)
+      def cert_need_renewal?(cert_file, renew_before_expiry)
         resp = true
         cert_content = ::File.exist?(cert_file) ? File.read(cert_file) : cert_file
         begin
@@ -427,6 +424,8 @@ class Chef
 
         resp
       end
+
+      alias_method :cert_need_renewall?, :cert_need_renewal?
 
       private
 

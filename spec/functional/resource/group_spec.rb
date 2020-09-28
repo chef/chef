@@ -307,12 +307,12 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   let(:number) do
     # Loop until we pick a gid that is not in use.
     loop do
-      begin
-        gid = rand(2000..9999) # avoid low group numbers
-        return nil if Etc.getgrgid(gid).nil? # returns nil on windows
-      rescue ArgumentError # group does not exist
-        return gid
-      end
+
+      gid = rand(2000..9999) # avoid low group numbers
+      return nil if Etc.getgrgid(gid).nil? # returns nil on windows
+    rescue ArgumentError # group does not exist
+      return gid
+
     end
   end
 

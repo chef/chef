@@ -61,10 +61,6 @@ shared_examples_for "a diff util" do
       Chef::Config[:diff_disabled] = true
     end
 
-    after do
-      Chef::Config[:diff_disabled] = false
-    end
-
     it "calling for_output should return the error message" do
       expect(differ.for_output).to eql( [ "(diff output suppressed by config)" ] )
     end
@@ -300,12 +296,7 @@ shared_examples_for "a diff util" do
 
   describe "when testing the diff_filesize_threshold" do
     before do
-      @diff_filesize_threshold_saved = Chef::Config[:diff_filesize_threshold]
       Chef::Config[:diff_filesize_threshold] = 10
-    end
-
-    after do
-      Chef::Config[:diff_filesize_threshold] = @diff_filesize_threshold_saved
     end
 
     describe "when the old_file goes over the threshold" do
@@ -359,12 +350,7 @@ shared_examples_for "a diff util" do
     describe "when the diff output is too long" do
 
       before do
-        @diff_output_threshold_saved = Chef::Config[:diff_output_threshold]
         Chef::Config[:diff_output_threshold] = 10
-      end
-
-      after do
-        Chef::Config[:diff_output_threshold] = @diff_output_threshold_saved
       end
 
       it "calling for_output should return the error message" do
@@ -546,7 +532,7 @@ shared_examples_for "a diff util" do
 
 end
 
-describe Chef::Util::Diff, uses_diff: true do
+describe Chef::Util::Diff do
   let!(:old_file) { old_tempfile.path }
   let!(:new_file) { new_tempfile.path }
 

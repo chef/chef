@@ -87,7 +87,7 @@ class Chef
           when :json
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
-            require "yaml"
+            require "yaml" unless defined?(YAML)
             YAML.dump(data)
           when :pp
             require "stringio" unless defined?(StringIO)

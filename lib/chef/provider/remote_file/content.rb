@@ -21,6 +21,9 @@ require "uri" unless defined?(URI)
 require "tempfile" unless defined?(Tempfile)
 require_relative "../../file_content_management/content_base"
 require_relative "../../mixin/uris"
+module Net
+  autoload :FTPError, "net/ftp"
+end
 
 class Chef
   class Provider

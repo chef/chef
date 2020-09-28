@@ -476,12 +476,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 
@@ -504,12 +504,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 
@@ -535,12 +535,12 @@ shared_examples_for "a configured file resource" do
         end
 
         it "issues a warning/assumption in whyrun mode" do
-          begin
-            Chef::Config[:why_run] = true
-            resource.run_action(:create) # should not raise
-          ensure
-            Chef::Config[:why_run] = false
-          end
+
+          Chef::Config[:why_run] = true
+          resource.run_action(:create) # should not raise
+        ensure
+          Chef::Config[:why_run] = false
+
         end
       end
 
@@ -1037,8 +1037,8 @@ shared_context Chef::Resource::File do
   end
 
   after(:each) do
-    FileUtils.rm_r(path) if File.exists?(path)
-    FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exists?(CHEF_SPEC_BACKUP_PATH)
+    FileUtils.rm_r(path) if File.exist?(path)
+    FileUtils.rm_r(CHEF_SPEC_BACKUP_PATH) if File.exist?(CHEF_SPEC_BACKUP_PATH)
   end
 
   after do

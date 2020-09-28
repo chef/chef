@@ -16,17 +16,19 @@
 #
 
 namespace :spellcheck do
-  task :fetch_common do
-    sh "wget -q https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt"
-  end
-
-  task run: %i{config_check fetch_common} do
+  task run: :prereqs do
     sh 'cspell "**/*"'
   end
 
   desc "List the unique unrecognized words in the project."
-  task unknown_words: %i{config_check fetch_common} do
+  task unknown_words: :prereqs do
     sh 'cspell "**/*" --wordsOnly --no-summary | sort | uniq'
+  end
+
+  task prereqs: %i{cspell_check config_check fetch_common}
+
+  task :fetch_common do
+    sh "wget -q https://raw.githubusercontent.com/chef/chef_dictionary/master/chef.txt -O chef_dictionary.txt"
   end
 
   task :config_check do
@@ -41,6 +43,19 @@ namespace :spellcheck do
     unless (JSON.parse(File.read(config_file)) rescue false)
       abort "Failed to parse config file '#{config_file}', skipping spellcheck"
     end
+  end
+
+  task :cspell_check do
+    cspell_version = begin
+                       `cspell --version`
+                     rescue
+                       nil
+                     end
+
+    cspell_version.is_a?(String) || abort(<<~INSTALL_CSPELL)
+          cspell is needed to run the spellcheck tasks. Run `npm install -g cspell` to install.
+          For more information: https://www.npmjs.com/package/cspell
+    INSTALL_CSPELL
   end
 end
 

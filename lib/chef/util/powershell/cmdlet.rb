@@ -16,7 +16,9 @@
 # limitations under the License.
 #
 
-require "mixlib/shellout" unless defined?(Mixlib::ShellOut::DEFAULT_READ_TIMEOUT)
+module Mixlib
+  autoload :ShellOut, "mixlib/shellout"
+end
 require_relative "../../mixin/windows_architecture_helper"
 require_relative "cmdlet_result"
 
@@ -164,7 +166,7 @@ class Chef
           end
 
           def self.destroy(name)
-            proc { File.delete(name) if File.exists? name }
+            proc { File.delete(name) if File.exist? name }
           end
         end
       end

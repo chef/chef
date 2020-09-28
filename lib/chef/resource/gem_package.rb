@@ -17,7 +17,7 @@
 #
 
 require_relative "package"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -31,10 +31,10 @@ class Chef
 
         Note: The **gem_package** resource must be specified as `gem_package` and cannot be shortened to `package` in a recipe.
 
-        Warning: The **chef_gem** and **gem_package** resources are both used to install Ruby gems. For any machine on which #{Chef::Dist::PRODUCT} is
+        Warning: The **chef_gem** and **gem_package** resources are both used to install Ruby gems. For any machine on which #{ChefUtils::Dist::Infra::PRODUCT} is
         installed, there are two instances of Ruby. One is the standard, system-wide instance of Ruby and the other is a dedicated instance that is
-        available only to #{Chef::Dist::PRODUCT}.
-        Use the **chef_gem** resource to install gems into the instance of Ruby that is dedicated to #{Chef::Dist::PRODUCT}.
+        available only to #{ChefUtils::Dist::Infra::PRODUCT}.
+        Use the **chef_gem** resource to install gems into the instance of Ruby that is dedicated to #{ChefUtils::Dist::Infra::PRODUCT}.
         Use the **gem_package** resource to install all other gems (i.e. install gems system-wide).
       DESC
 
@@ -86,7 +86,7 @@ class Chef
         default: lazy { Chef::Config[:clear_gem_sources] }, desired_state: false
 
       property :gem_binary, String, desired_state: false,
-        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{Chef::Dist::PRODUCT} will be used."
+        description: "The path of a gem binary to use for the installation. By default, the same version of Ruby that is used by #{ChefUtils::Dist::Infra::PRODUCT} will be used."
 
       property :include_default_source, [ TrueClass, FalseClass, nil ],
         description: "Set to `false` to not include `Chef::Config[:rubygems_url]` in the sources.",

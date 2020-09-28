@@ -23,9 +23,8 @@ RSpec.describe ChefConfig::PathHelper do
 
   let(:path_helper) { described_class }
 
-  shared_examples_for "common_functionality" do
-    describe "join" do
-
+  context "common functionality" do
+    context "join" do
       it "joins starting with '' resolve to absolute paths" do
         expect(path_helper.join("", "a", "b")).to eq("#{path_helper.path_separator}a#{path_helper.path_separator}b")
       end
@@ -33,10 +32,9 @@ RSpec.describe ChefConfig::PathHelper do
       it "joins ending with '' add a / to the end" do
         expect(path_helper.join("a", "b", "")).to eq("a#{path_helper.path_separator}b#{path_helper.path_separator}")
       end
-
     end
 
-    describe "dirname" do
+    context "dirname" do
       it "dirname('abc') is '.'" do
         expect(path_helper.dirname("abc")).to eq(".")
       end
@@ -55,42 +53,109 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  context "on windows" do
+  context "forcing windows/non-windows" do
+    context "forcing windows" do
+      it "path_separator is \\" do
+        expect(path_helper.path_separator(windows: true)).to eq('\\')
+      end
+
+      context "platform-specific #join behavior" do
+        it "joins components on Windows when some end with unix separators" do
+          expected = "C:\\foo\\bar\\baz"
+          expect(path_helper.join('C:\\foo/', "bar", "baz", windows: true)).to eq(expected)
+        end
+
+        it "joins components when some end with separators" do
+          expected = "C:\\foo\\bar\\baz"
+          expect(path_helper.join('C:\\foo\\', "bar", "baz", windows: true)).to eq(expected)
+        end
+
+        it "joins components when some end and start with separators" do
+          expected = "C:\\foo\\bar\\baz"
+          expect(path_helper.join('C:\\foo\\', "bar/", "/baz", windows: true)).to eq(expected)
+        end
+
+        it "joins components that don't end in separators" do
+          expected = "C:\\foo\\bar\\baz"
+          expect(path_helper.join('C:\\foo', "bar", "baz", windows: true)).to eq(expected)
+        end
+      end
+
+      it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
+        expect(path_helper.cleanpath('/a/b\\c/d/', windows: true)).to eq('\\a\\b\\c\\d')
+      end
+
+      it "cleanpath does not remove leading double backslash" do
+        expect(path_helper.cleanpath('\\\\a/b\\c/d/', windows: true)).to eq('\\\\a\\b\\c\\d')
+      end
+    end
+
+    context "forcing unix" do
+      it "path_separator is /" do
+        expect(path_helper.path_separator(windows: false)).to eq("/")
+      end
+
+      it "cleanpath removes extra slashes alone" do
+        expect(path_helper.cleanpath("/a///b/c/d/", windows: false)).to eq("/a/b/c/d")
+      end
+
+      context "platform-specific #join behavior" do
+        it "joins components when some end with separators" do
+          expected = "/foo/bar/baz"
+          expect(path_helper.join("/foo/", "bar", "baz", windows: false)).to eq(expected)
+        end
+
+        it "joins components when some end and start with separators" do
+          expected = "/foo/bar/baz"
+          expect(path_helper.join("/foo/", "bar/", "/baz", windows: false)).to eq(expected)
+        end
+
+        it "joins components that don't end in separators" do
+          expected = "/foo/bar/baz"
+          expect(path_helper.join("/foo", "bar", "baz", windows: false)).to eq(expected)
+        end
+      end
+
+      it "cleanpath changes backslashes into slashes and leaves slashes alone" do
+        expect(path_helper.cleanpath('/a/b\\c/d/', windows: false)).to eq("/a/b/c/d")
+      end
+
+      it "cleanpath does not remove leading double backslash" do
+        expect(path_helper.cleanpath('\\\\a/b\\c/d/', windows: false)).to eq("//a/b/c/d")
+      end
+    end
+  end
+
+  context "on windows", :windows_only do
 
     before(:each) do
       allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
-    include_examples("common_functionality")
-
     it "path_separator is \\" do
       expect(path_helper.path_separator).to eq('\\')
     end
 
-    describe "platform-specific #join behavior" do
-
+    context "platform-specific #join behavior" do
       it "joins components on Windows when some end with unix separators" do
-        expect(path_helper.join('C:\\foo/', "bar", "baz")).to eq('C:\\foo\\bar\\baz')
+        expected = "C:\\foo\\bar\\baz"
+        expect(path_helper.join('C:\\foo/', "bar", "baz")).to eq(expected)
       end
 
       it "joins components when some end with separators" do
-        expected = path_helper.cleanpath("/foo/bar/baz")
-        expected = "C:#{expected}"
+        expected = "C:\\foo\\bar\\baz"
         expect(path_helper.join('C:\\foo\\', "bar", "baz")).to eq(expected)
       end
 
       it "joins components when some end and start with separators" do
-        expected = path_helper.cleanpath("/foo/bar/baz")
-        expected = "C:#{expected}"
+        expected = "C:\\foo\\bar\\baz"
         expect(path_helper.join('C:\\foo\\', "bar/", "/baz")).to eq(expected)
       end
 
       it "joins components that don't end in separators" do
-        expected = path_helper.cleanpath("/foo/bar/baz")
-        expected = "C:#{expected}"
+        expected = "C:\\foo\\bar\\baz"
         expect(path_helper.join('C:\\foo', "bar", "baz")).to eq(expected)
       end
-
     end
 
     it "cleanpath changes slashes into backslashes and leaves backslashes alone" do
@@ -100,16 +165,12 @@ RSpec.describe ChefConfig::PathHelper do
     it "cleanpath does not remove leading double backslash" do
       expect(path_helper.cleanpath('\\\\a/b\\c/d/')).to eq('\\\\a\\b\\c\\d')
     end
-
   end
 
-  context "on unix" do
-
+  context "on unix", :unix_only do
     before(:each) do
       allow(ChefUtils).to receive(:windows?).and_return(false)
     end
-
-    include_examples("common_functionality")
 
     it "path_separator is /" do
       expect(path_helper.path_separator).to eq("/")
@@ -119,8 +180,7 @@ RSpec.describe ChefConfig::PathHelper do
       expect(path_helper.cleanpath("/a///b/c/d/")).to eq("/a/b/c/d")
     end
 
-    describe "platform-specific #join behavior" do
-
+    context "platform-specific #join behavior" do
       it "joins components when some end with separators" do
         expected = path_helper.cleanpath("/foo/bar/baz")
         expect(path_helper.join("/foo/", "bar", "baz")).to eq(expected)
@@ -135,12 +195,19 @@ RSpec.describe ChefConfig::PathHelper do
         expected = path_helper.cleanpath("/foo/bar/baz")
         expect(path_helper.join("/foo", "bar", "baz")).to eq(expected)
       end
-
     end
 
+    it "cleanpath changes backslashes into slashes and leaves slashes alone" do
+      expect(path_helper.cleanpath('/a/b\\c/d/', windows: false)).to eq("/a/b/c/d")
+    end
+
+    # NOTE: this seems a bit weird to me, but this is just the way Pathname#cleanpath works
+    it "cleanpath does not remove leading double backslash" do
+      expect(path_helper.cleanpath('\\\\a/b\\c/d/')).to eq("//a/b/c/d")
+    end
   end
 
-  describe "validate_path" do
+  context "validate_path" do
     context "on windows" do
       before(:each) do
         # pass by default
@@ -171,7 +238,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  describe "windows_max_length_exceeded?" do
+  context "windows_max_length_exceeded?" do
     it "returns true if the path is too long (259 + NUL) for the API" do
       expect(path_helper.windows_max_length_exceeded?("C:\\" + "a" * 250 + "\\" + "b" * 6)).to be_truthy
     end
@@ -185,7 +252,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  describe "printable?" do
+  context "printable?" do
     it "returns true if the string contains no non-printable characters" do
       expect(path_helper.printable?("C:\\Program Files (x86)\\Microsoft Office\\Files.lst")).to be_truthy
     end
@@ -208,7 +275,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  describe "canonical_path" do
+  context "canonical_path" do
     context "on windows", :windows_only do
       it "returns an absolute path with backslashes instead of slashes" do
         expect(path_helper.canonical_path("\\\\?\\C:/windows/win.ini")).to eq("\\\\?\\c:\\windows\\win.ini")
@@ -230,25 +297,25 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  describe "paths_eql?" do
+  context "paths_eql?" do
     it "returns true if the paths are the same" do
-      allow(path_helper).to receive(:canonical_path).with("bandit").and_return("c:/bandit/bandit")
-      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
       expect(path_helper.paths_eql?("bandit", "../bandit/bandit")).to be_truthy
     end
 
     it "returns false if the paths are different" do
-      allow(path_helper).to receive(:canonical_path).with("bandit").and_return("c:/Bo/Bandit")
-      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit").and_return("c:/bandit/bandit")
+      allow(path_helper).to receive(:canonical_path).with("bandit", windows: ChefUtils.windows?).and_return("c:/Bo/Bandit")
+      allow(path_helper).to receive(:canonical_path).with("../bandit/bandit", windows: ChefUtils.windows?).and_return("c:/bandit/bandit")
       expect(path_helper.paths_eql?("bandit", "../bandit/bandit")).to be_falsey
     end
   end
 
-  describe "escape_glob" do
+  context "escape_glob" do
     it "escapes characters reserved by glob" do
       path = "C:\\this\\*path\\[needs]\\escaping?"
       escaped_path = "C:\\\\this\\\\\\*path\\\\\\[needs\\]\\\\escaping\\?"
-      expect(path_helper.escape_glob(path)).to eq(escaped_path)
+      expect(path_helper.escape_glob(path, windows: true)).to eq(escaped_path)
     end
 
     context "when given more than one argument" do
@@ -259,14 +326,12 @@ RSpec.describe ChefConfig::PathHelper do
                        else
                          "this/\\*path/\\[needs\\]/escaping\\?"
                        end
-        expect(path_helper).to receive(:join).with(*args).and_call_original
-        expect(path_helper).to receive(:cleanpath).and_call_original
         expect(path_helper.escape_glob(*args)).to eq(escaped_path)
       end
     end
   end
 
-  describe "escape_glob_dir" do
+  context "escape_glob_dir" do
     it "escapes characters reserved by glob without using backslashes for path separators" do
       path = "C:/this/*path/[needs]/escaping?"
       escaped_path = "C:/this/\\*path/\\[needs\\]/escaping\\?"
@@ -283,7 +348,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
   end
 
-  describe "all_homes" do
+  context "all_homes" do
     before do
       stub_const("ENV", env)
       allow(ChefUtils).to receive(:windows?).and_return(is_windows)

@@ -18,7 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 require "chef/application/knife"
 
 Chef::Application::Knife.new.run

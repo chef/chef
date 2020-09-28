@@ -28,7 +28,7 @@ require_relative "event_dispatch/events_output_stream"
 require_relative "train_transport"
 require_relative "exceptions"
 require "forwardable" unless defined?(Forwardable)
-require "set" unless defined?(Set)
+autoload :Set, "set"
 
 class Chef
 
@@ -627,7 +627,7 @@ class Chef
     # @return [Train::Plugins::Transport] The child class for our train transport.
     #
     def transport
-      @transport ||= Chef::TrainTransport.build_transport(logger)
+      @transport ||= Chef::TrainTransport.new(logger).build_transport
     end
 
     # Remote connection object from Train

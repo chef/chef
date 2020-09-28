@@ -24,6 +24,8 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      unified_mode true
+
       provides :openssl_x509_certificate
       provides(:openssl_x509) { true } # legacy cookbook name.
 
@@ -84,32 +86,32 @@ class Chef
         description: "The permission mode applied to all files created by the resource."
 
       property :country, String,
-        description: "Value for the C certificate field."
+        description: "Value for the `C` certificate field."
 
       property :state, String,
-        description: "Value for the ST certificate field."
+        description: "Value for the `ST` certificate field."
 
       property :city, String,
-        description: "Value for the L certificate field."
+        description: "Value for the `L` certificate field."
 
       property :org, String,
-        description: "Value for the O certificate field."
+        description: "Value for the `O` certificate field."
 
       property :org_unit, String,
-        description: "Value for the OU certificate field."
+        description: "Value for the `OU` certificate field."
 
       property :common_name, String,
-        description: "Value for the CN certificate field."
+        description: "Value for the `CN` certificate field."
 
       property :email, String,
-        description: "Value for the email certificate field."
+        description: "Value for the `email` certificate field."
 
       property :extensions, Hash,
-        description: "Hash of X509 Extensions entries, in format { 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }.",
+        description: "Hash of X509 Extensions entries, in format `{ 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }`.",
         default: lazy { {} }
 
       property :subject_alt_name, Array,
-        description: "Array of Subject Alternative Name entries, in format DNS:example.com or IP:1.2.3.4.",
+        description: "Array of Subject Alternative Name entries, in format `DNS:example.com` or `IP:1.2.3.4`.",
         default: lazy { [] }
 
       property :key_file, String,
@@ -120,7 +122,7 @@ class Chef
 
       property :key_type, String,
         equal_to: %w{rsa ec},
-        description: "The desired type of the generated key (rsa or ec).",
+        description: "The desired type of the generated key.",
         default: "rsa"
 
       property :key_length, Integer,
@@ -129,18 +131,18 @@ class Chef
         default: 2048
 
       property :key_curve, String,
-        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options.",
+        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run `openssl ecparam -list_curves` to see available options.",
         equal_to: %w{secp384r1 secp521r1 prime256v1},
         default: "prime256v1"
 
       property :csr_file, String,
-        description: "The path to a X509 Certificate Request (CSR) on the filesystem. If the csr_file property is specified, the resource will attempt to source a CSR from this location. If no CSR file is found, the resource will generate a Self-Signed Certificate and the certificate fields must be specified (common_name at last)."
+        description: "The path to a X509 Certificate Request (CSR) on the filesystem. If the `csr_file` property is specified, the resource will attempt to source a CSR from this location. If no CSR file is found, the resource will generate a Self-Signed Certificate and the certificate fields must be specified (common_name at last)."
 
       property :ca_cert_file, String,
-        description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the certificate will be signed with them."
+        description: "The path to the CA X509 Certificate on the filesystem. If the `ca_cert_file` property is specified, the `ca_key_file` property must also be specified, the certificate will be signed with them."
 
       property :ca_key_file, String,
-        description: "The path to the CA private key on the filesystem. If the ca_key_file property is specified, the 'ca_cert_file' property must also be specified, the certificate will be signed with them."
+        description: "The path to the CA private key on the filesystem. If the `ca_key_file` property is specified, the `ca_cert_file` property must also be specified, the certificate will be signed with them."
 
       property :ca_key_pass, String,
         description: "The passphrase for CA private key's passphrase."
@@ -161,7 +163,7 @@ class Chef
           content cert.to_pem
         end
 
-        if !new_resource.renew_before_expiry.nil? && cert_need_renewall?(new_resource.path, new_resource.renew_before_expiry)
+        if !new_resource.renew_before_expiry.nil? && cert_need_renewal?(new_resource.path, new_resource.renew_before_expiry)
           file new_resource.path do
             action :create
             owner new_resource.owner unless new_resource.owner.nil?
@@ -173,7 +175,7 @@ class Chef
         end
 
         if new_resource.csr_file.nil?
-          file new_resource.key_file do
+          file key_file do
             action :create_if_missing
             owner new_resource.owner unless new_resource.owner.nil?
             group new_resource.group unless new_resource.group.nil?
@@ -185,24 +187,25 @@ class Chef
       end
 
       action_class do
-        def generate_key_file
-          unless new_resource.key_file
-            path, file = ::File.split(new_resource.path)
-            filename = ::File.basename(file, ::File.extname(file))
-            new_resource.key_file path + "/" + filename + ".key"
-          end
-          new_resource.key_file
+        def key_file
+          @key_file ||=
+            if new_resource.key_file
+              new_resource.key_file
+            else
+              path, file = ::File.split(new_resource.path)
+              filename = ::File.basename(file, ::File.extname(file))
+              path + "/" + filename + ".key"
+            end
         end
 
         def key
-          @key ||= if priv_key_file_valid?(generate_key_file, new_resource.key_pass)
-                     OpenSSL::PKey.read ::File.read(generate_key_file), new_resource.key_pass
+          @key ||= if priv_key_file_valid?(key_file, new_resource.key_pass)
+                     OpenSSL::PKey.read ::File.read(key_file), new_resource.key_pass
                    elsif new_resource.key_type == "rsa"
                      gen_rsa_priv_key(new_resource.key_length)
                    else
                      gen_ec_priv_key(new_resource.key_curve)
                    end
-          @key
         end
 
         def request
@@ -214,15 +217,15 @@ class Chef
         end
 
         def subject
-          subject = OpenSSL::X509::Name.new
-          subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
-          subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
-          subject.add_entry("L", new_resource.city) unless new_resource.city.nil?
-          subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
-          subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
-          subject.add_entry("CN", new_resource.common_name)
-          subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
-          subject
+          OpenSSL::X509::Name.new.tap do |csr_subject|
+            csr_subject.add_entry("C", new_resource.country) unless new_resource.country.nil?
+            csr_subject.add_entry("ST", new_resource.state) unless new_resource.state.nil?
+            csr_subject.add_entry("L", new_resource.city) unless new_resource.city.nil?
+            csr_subject.add_entry("O", new_resource.org) unless new_resource.org.nil?
+            csr_subject.add_entry("OU", new_resource.org_unit) unless new_resource.org_unit.nil?
+            csr_subject.add_entry("CN", new_resource.common_name)
+            csr_subject.add_entry("emailAddress", new_resource.email) unless new_resource.email.nil?
+          end
         end
 
         def ca_private_key

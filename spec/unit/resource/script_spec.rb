@@ -21,8 +21,13 @@ require "spec_helper"
 
 describe Chef::Resource::Script do
   let(:resource_instance_name) { "fakey_fakerton" }
-  let(:script_resource) { Chef::Resource::Script.new(resource_instance_name) }
   let(:resource_name) { :script }
+
+  let(:script_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, nil, nil)
+
+    Chef::Resource::Script.new(resource_instance_name, run_context)
+  end
 
   it "sets the default action as :run" do
     expect(script_resource.action).to eql([:run])

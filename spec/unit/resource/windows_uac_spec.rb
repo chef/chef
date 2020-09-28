@@ -44,7 +44,7 @@ describe Chef::Resource::WindowsUac do
     expect { resource.consent_behavior_users :bogus }.to raise_error(ArgumentError)
   end
 
-  it "sets the default action as :create" do
+  it "sets the default action as :configure" do
     expect(resource.action).to eql([:configure])
   end
 end

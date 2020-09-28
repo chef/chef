@@ -20,7 +20,7 @@ class Chef
       # pastel.decorate is a lightweight replacement for highline.color
       def pastel
         @pastel ||= begin
-          require "pastel"
+          require "pastel" unless defined?(Pastel)
           Pastel.new
         end
       end
@@ -126,7 +126,7 @@ class Chef
         indent_line(options)
 
         # Note that the next line will need to be started
-        if line[-1..-1] == "\n"
+        if line[-1..] == "\n"
           @line_started = false
         end
 

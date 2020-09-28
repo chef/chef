@@ -44,6 +44,9 @@ class Chef
       # @return [Exception] The exception that was thrown
       attr_accessor :exception
 
+      # @return [Hash] JSON-formatted error description from the Chef::Formatters::ErrorMapper
+      attr_accessor :error_description
+
       # @return [Numeric] The elapsed time in seconds with machine precision
       attr_accessor :elapsed_time
 
@@ -223,6 +226,7 @@ class Chef
 
       current_record.status = :failed
       current_record.exception = exception
+      current_record.error_description = Formatters::ErrorMapper.resource_failed(new_resource, action, exception).for_json
     end
 
     # Hook called after an action is completed.  This is always called, even if the action fails.

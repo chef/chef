@@ -273,10 +273,10 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
 
     context "when running on a 32-bit version of Windows", :windows32_only do
       it "raises an exception if :x86_64 process architecture is specified" do
-        begin
-          expect(resource.architecture(:x86_64)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
-        rescue Chef::Exceptions::Win32ArchitectureIncorrect
-        end
+
+        expect(resource.architecture(:x86_64)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+      rescue Chef::Exceptions::Win32ArchitectureIncorrect
+
       end
     end
   end

@@ -242,48 +242,100 @@ shared_examples_for "a securable resource with existing target" do
     include_context "use Windows permissions"
 
     describe "when setting owner" do
-      before do
-        resource.owner(SID.admin_account_name)
-        resource.run_action(:create)
+      context "with user name" do
+        before do
+          resource.owner(SID.admin_account_name)
+          resource.run_action(:create)
+        end
+
+        it "should set the owner" do
+          expect(descriptor.owner).to eq(SID.Administrator)
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
 
-      it "should set the owner" do
-        expect(descriptor.owner).to eq(SID.Administrator)
-      end
+      context "with SID" do
+        before do
+          resource.owner(SID.Administrator.to_s)
+          resource.run_action(:create)
+        end
 
-      it "is marked as updated only if changes are made" do
-        expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        it "should set the owner" do
+          expect(descriptor.owner).to eq(SID.Administrator)
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
     end
 
     describe "when setting group" do
-      before do
-        resource.group("Administrators")
-        resource.run_action(:create)
+      context "with group name" do
+        before do
+          resource.group("Administrators")
+          resource.run_action(:create)
+        end
+
+        it "should set the group" do
+          expect(descriptor.group).to eq(SID.Administrators)
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
 
-      it "should set the group" do
-        expect(descriptor.group).to eq(SID.Administrators)
-      end
+      context "with group SID" do
+        before do
+          resource.group(SID.Administrators.to_s)
+          resource.run_action(:create)
+        end
 
-      it "is marked as updated only if changes are made" do
-        expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        it "should set the group" do
+          expect(descriptor.group).to eq(SID.Administrators)
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
     end
 
     describe "when setting rights and deny_rights" do
-      before do
-        resource.deny_rights(:modify, "Guest")
-        resource.rights(:read, "Guest")
-        resource.run_action(:create)
+      context "with user name" do
+        before do
+          resource.deny_rights(:modify, "Guest")
+          resource.rights(:read, "Guest")
+          resource.run_action(:create)
+        end
+
+        it "should set the rights and deny_rights" do
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms) + allowed_acl(SID.Guest, expected_read_perms))
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
 
-      it "should set the rights and deny_rights" do
-        expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms) + allowed_acl(SID.Guest, expected_read_perms))
-      end
+      context "with SID" do
+        before do
+          resource.deny_rights(:modify, SID.Guest.to_s)
+          resource.rights(:read, SID.Guest.to_s)
+          resource.run_action(:create)
+        end
 
-      it "is marked as updated only if changes are made" do
-        expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        it "should set the rights and deny_rights" do
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_modify_perms) + allowed_acl(SID.Guest, expected_read_perms))
+        end
+
+        it "is marked as updated only if changes are made" do
+          expect(resource.updated_by_last_action?).to eq(expect_updated?)
+        end
       end
     end
   end
@@ -302,8 +354,14 @@ shared_examples_for "a securable resource without existing target" do
       expect(descriptor.owner).to eq(SID.default_security_object_owner)
     end
 
-    it "sets owner when owner is specified" do
+    it "sets owner when owner is specified by name" do
       resource.owner "Guest"
+      resource.run_action(:create)
+      expect(descriptor.owner).to eq(SID.Guest)
+    end
+
+    it "sets owner when owner is specified by SID" do
+      resource.owner SID.Guest.to_s
       resource.run_action(:create)
       expect(descriptor.owner).to eq(SID.Guest)
     end
@@ -339,8 +397,14 @@ shared_examples_for "a securable resource without existing target" do
       expect(descriptor.group).to eq(SID.default_security_object_group)
     end
 
-    it "sets group when group is specified" do
+    it "sets group when group is specified by name" do
       resource.group "Everyone"
+      resource.run_action(:create)
+      expect(descriptor.group).to eq(SID.Everyone)
+    end
+
+    it "sets group when group is specified by SID" do
+      resource.group SID.Everyone.to_s
       resource.run_action(:create)
       expect(descriptor.group).to eq(SID.Everyone)
     end
@@ -406,6 +470,17 @@ shared_examples_for "a securable resource without existing target" do
             allowed_acl(SID.Guest, expected_modify_perms)
           )
         end
+
+        it "multiple rights with SID" do
+          resource.rights(:read, SID.Everyone.to_s)
+          resource.rights(:modify, SID.Guest.to_s)
+          resource.run_action(:create)
+
+          expect(explicit_aces).to eq(
+            allowed_acl(SID.Everyone, expected_read_perms) +
+            allowed_acl(SID.Guest, expected_modify_perms)
+          )
+        end
       end
     end
 
@@ -439,6 +514,12 @@ shared_examples_for "a securable resource without existing target" do
         it ":full_control rights" do
           # deny is an ACE with full rights, but is a deny type ace, not an allow type
           resource.deny_rights(:full_control, "Guest")
+          resource.run_action(:create)
+          expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_full_control_perms))
+        end
+
+        it "using SID" do
+          resource.deny_rights(:full_control, SID.Guest.to_s)
           resource.run_action(:create)
           expect(explicit_aces).to eq(denied_acl(SID.Guest, expected_full_control_perms))
         end

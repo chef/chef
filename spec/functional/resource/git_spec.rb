@@ -20,7 +20,7 @@ require "spec_helper"
 require "tmpdir"
 
 # Deploy relies heavily on symlinks, so it doesn't work on windows.
-describe Chef::Resource::Git, requires_git: true do
+describe Chef::Resource::Git do
   include RecipeDSLHelper
 
   # Some versions of git complains when the deploy directory is

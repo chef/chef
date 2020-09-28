@@ -33,6 +33,12 @@ describe Chef::Resource::ChefClientSystemdTimer do
     expect(resource.user).to eql("root")
   end
 
+  it "validates the cpu_quota property input" do
+    expect { resource.cpu_quota(0) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.cpu_quota(50) }.not_to raise_error
+    expect { resource.cpu_quota(101) }.not_to raise_error
+  end
+
   it "builds a default value for chef_binary_path dist values" do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
@@ -68,6 +74,35 @@ describe Chef::Resource::ChefClientSystemdTimer do
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
       expect(provider.chef_client_cmd).to eql("/opt/chef/bin/chef-client --chef-license accept -c #{root_path}")
+    end
+  end
+
+  describe "#service_content" do
+    it "does not set ConditionACPower if run_on_battery property is set to true (the default)" do
+      expect(provider.service_content["Service"]).not_to have_key("ConditionACPower")
+    end
+
+    it "sets ConditionACPower if run_on_battery property is set to false" do
+      resource.run_on_battery false
+      expect(provider.service_content["Service"]["ConditionACPower"]).to eq("true")
+    end
+
+    it "does not set Environment if environment property is empty" do
+      expect(provider.service_content["Service"]).not_to have_key("Environment")
+    end
+
+    it "sets Environment if environment property is set" do
+      resource.environment({ "foo" => "bar" })
+      expect(provider.service_content["Service"]["Environment"]).to eq(["\"foo=bar\""])
+    end
+
+    it "does not set CPUQuota if cpu_quota property is not set" do
+      expect(provider.service_content["Service"]).not_to have_key("CPUQuota")
+    end
+
+    it "sets CPUQuota if cpu_quota property is set" do
+      resource.cpu_quota 50
+      expect(provider.service_content["Service"]["CPUQuota"]).to eq(50)
     end
   end
 end

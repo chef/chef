@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-require_relative "../../mixin/shell_out"
 require_relative "init"
 require_relative "../../resource/service"
 
@@ -26,8 +25,6 @@ class Chef
       class Openbsd < Chef::Provider::Service::Init
 
         provides :service, os: "openbsd"
-
-        include Chef::Mixin::ShellOut
 
         attr_reader :init_command, :rc_conf, :rc_conf_local, :enabled_state_found
 
@@ -132,7 +129,7 @@ class Chef
         end
 
         def update_rcl(value)
-          FileUtils.touch RC_CONF_LOCAL_PATH unless ::File.exists? RC_CONF_LOCAL_PATH
+          FileUtils.touch RC_CONF_LOCAL_PATH unless ::File.exist? RC_CONF_LOCAL_PATH
           ::File.write(RC_CONF_LOCAL_PATH, value)
           @rc_conf_local = value
         end

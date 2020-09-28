@@ -19,8 +19,6 @@
 #
 
 require_relative "exceptions"
-require_relative "dsl/data_query"
-require_relative "dsl/registry_helper"
 require_relative "dsl/reboot_pending"
 require_relative "dsl/resources"
 require_relative "dsl/declare_resource"
@@ -38,7 +36,7 @@ require_relative "resource/resource_notification"
 require_relative "provider_resolver"
 require_relative "resource_resolver"
 require_relative "provider"
-require "set" unless defined?(Set)
+autoload :Set, "set"
 
 require_relative "mixin/deprecation"
 require_relative "mixin/properties"
@@ -53,8 +51,6 @@ class Chef
     #
 
     include Chef::DSL::DeclareResource
-    include Chef::DSL::DataQuery
-    include Chef::DSL::RegistryHelper
     include Chef::DSL::RebootPending
     extend Chef::Mixin::Provides
 
@@ -663,17 +659,17 @@ class Chef
 
       all_props = {}
       self.class.state_properties.map do |p|
-        begin
-          all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
-        rescue Chef::Exceptions::ValidationFailed
-          # This space left intentionally blank, the property was probably required or had an invalid default.
-        end
+
+        all_props[p.name.to_s] = p.sensitive? ? '"*sensitive value suppressed*"' : value_to_text(p.get(self))
+      rescue Chef::Exceptions::ValidationFailed
+        # This space left intentionally blank, the property was probably required or had an invalid default.
+
       end
 
       ivars = instance_variables.map(&:to_sym) - HIDDEN_IVARS
       ivars.each do |ivar|
         iv = ivar.to_s.sub(/^@/, "")
-        if all_props.keys.include?(iv)
+        if all_props.key?(iv)
           text << "  #{iv} #{all_props[iv]}\n"
         elsif (value = instance_variable_get(ivar)) && !(value.respond_to?(:empty?) && value.empty?)
           text << "  #{iv} #{value_to_text(value)}\n"
@@ -1484,7 +1480,7 @@ class Chef
     def self.use(partial)
       dirname = ::File.dirname(partial)
       basename = ::File.basename(partial, ".rb")
-      basename = basename[1..-1] if basename.start_with?("_")
+      basename = basename[1..] if basename.start_with?("_")
       class_eval IO.read(::File.expand_path("#{dirname}/_#{basename}.rb", ::File.dirname(caller_locations.first.absolute_path)))
     end
 

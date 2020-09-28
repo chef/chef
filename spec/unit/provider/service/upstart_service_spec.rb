@@ -74,7 +74,7 @@ describe Chef::Provider::Service::Upstart do
       @status = double("Status", exitstatus: 0, stdout: "", stderr: "")
       allow(@provider).to receive(:shell_out).and_return(@status)
 
-      allow(::File).to receive(:exists?).and_return(true)
+      allow(::File).to receive(:exist?).and_return(true)
       allow(::File).to receive(:open).and_return(true)
     end
 
@@ -181,13 +181,13 @@ describe Chef::Provider::Service::Upstart do
     end
 
     it "should assume disable when no job configuration file is found" do
-      allow(::File).to receive(:exists?).and_return(false)
+      allow(::File).to receive(:exist?).and_return(false)
       expect(@current_resource).to receive(:running).with(false)
       @provider.load_current_resource
     end
 
     it "should track state when the upstart configuration file fails to load" do
-      expect(File).to receive(:exists?).and_return false
+      expect(File).to receive(:exist?).and_return false
       @provider.load_current_resource
       expect(@provider.instance_variable_get("@config_file_found")).to eq(false)
     end

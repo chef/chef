@@ -68,7 +68,7 @@ end
 
 # If you want to load anything into the testing environment
 # without versioning it, add it to spec/support/local_gems.rb
-require "spec/support/local_gems.rb" if File.exists?(File.join(File.dirname(__FILE__), "support", "local_gems.rb"))
+require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__), "support", "local_gems.rb"))
 
 # Explicitly require spec helpers that need to load first
 require "spec/support/platform_helpers"
@@ -141,9 +141,10 @@ RSpec.configure do |config|
 
   config.filter_run_excluding windows_only: true unless windows?
   config.filter_run_excluding not_supported_on_windows: true if windows?
-  config.filter_run_excluding not_supported_on_macos: true if mac_osx?
-  config.filter_run_excluding macos_only: true unless mac_osx?
-  config.filter_run_excluding macos_1014: true unless mac_osx_1014?
+  config.filter_run_excluding not_supported_on_macos: true if macos?
+  config.filter_run_excluding macos_only: true unless macos?
+  config.filter_run_excluding macos_1013: true unless macos_1013?
+  config.filter_run_excluding macos_gte_1014: true unless macos_gte_1014?
   config.filter_run_excluding not_supported_on_aix: true if aix?
   config.filter_run_excluding not_supported_on_solaris: true if solaris?
   config.filter_run_excluding not_supported_on_gce: true if gce?
@@ -175,7 +176,6 @@ RSpec.configure do |config|
   config.filter_run_excluding requires_root: true unless root?
   config.filter_run_excluding requires_root_or_running_windows: true unless root? || windows?
   config.filter_run_excluding requires_unprivileged_user: true if root?
-  config.filter_run_excluding uses_diff: true unless has_diff?
   config.filter_run_excluding openssl_gte_101: true unless openssl_gte_101?
   config.filter_run_excluding openssl_lt_101: true unless openssl_lt_101?
   config.filter_run_excluding aes_256_gcm_only: true unless aes_256_gcm?
@@ -243,6 +243,8 @@ RSpec.configure do |config|
 
     Chef::Log.setup!
 
+    Chef::ServerAPIVersions.instance.reset!
+
     Chef::Config[:log_level] = :fatal
     Chef::Log.level(Chef::Config[:log_level])
 
@@ -298,17 +300,15 @@ RSpec.configure do |config|
 
   # Protect Rspec from accidental exit(0) causing rspec to terminate without error
   config.around(:example) do |ex|
-    begin
-      ex.run
-    rescue SystemExit => e
-      raise UnexpectedSystemExit.from(e)
-    end
+
+    ex.run
+  rescue SystemExit => e
+    raise UnexpectedSystemExit.from(e)
+
   end
 end
 
 require "webrick/utils"
-require "thread"
-
 #    Webrick uses a centralized/synchronized timeout manager. It works by
 #    starting a thread to check for timeouts on an interval. The timeout
 #    checker thread cannot be stopped or canceled in any easy way, and it

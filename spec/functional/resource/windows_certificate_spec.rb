@@ -390,7 +390,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       end
 
       after do
-        if File.exists?(out_path)
+        if File.exist?(out_path)
           File.delete(out_path)
         end
       end
@@ -405,7 +405,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
           expect(no_of_certificates).to eq(1)
         end
         it "Stores Certificate content at given path" do
-          expect(File.exists?(out_path)).to be_truthy
+          expect(File.exist?(out_path)).to be_truthy
         end
         it "Does not converge while fetching" do
           expect(win_certificate).not_to be_updated_by_last_action
@@ -425,7 +425,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
           expect(stdout.string.strip).to be_empty
         end
         it "Does not store certificate content at given path" do
-          expect(File.exists?(out_path)).to be_falsy
+          expect(File.exist?(out_path)).to be_falsy
         end
         it "Does not converge while fetching" do
           expect(win_certificate).not_to be_updated_by_last_action

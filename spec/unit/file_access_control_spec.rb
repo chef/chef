@@ -26,7 +26,7 @@ describe Chef::FileAccessControl do
         # we have to re-load the file so the proper
         # platform specific module is mixed in
         @node = Chef::Node.new
-        load File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "file_access_control.rb")
+        load File.join(__dir__, "..", "..", "lib", "chef", "file_access_control.rb")
         @resource = Chef::Resource::File.new("/tmp/a_file.txt")
         @resource.owner("toor")
         @resource.group("wheel")

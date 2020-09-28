@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "shellwords" unless defined?(Shellwords)
 
 class Chef
@@ -47,6 +47,10 @@ class Chef
       property :password, String,
         description: "The password to use when registering. This property is not applicable if using an activation key. If specified, username and environment are also required."
 
+      property :system_name, String,
+        description: "The name of the system to register, defaults to the hostname.",
+        introduced: "16.5"
+
       property :auto_attach,
         [TrueClass, FalseClass],
         description: "If true, RHSM will attempt to automatically attach the host to applicable subscriptions. It is generally better to use an activation key with the subscriptions pre-defined.",
@@ -61,7 +65,7 @@ class Chef
         default: false, desired_state: false
 
       property :https_for_ca_consumer, [TrueClass, FalseClass],
-        description: "If true, #{Chef::Dist::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
+        description: "If true, #{ChefUtils::Dist::Infra::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
         default: false, desired_state: false,
         introduced: "15.9"
 
@@ -121,24 +125,30 @@ class Chef
       end
 
       action_class do
+        #
+        # @return [Symbol] dnf_package or yum_package depending on OS release
+        #
         def package_resource
           node["platform_version"].to_i >= 8 ? :dnf_package : :yum_package
         end
 
+        #
+        # @return [Boolean] is the node registered with RHSM
+        #
         def registered_with_rhsm?
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("subscription-manager status", env: { LANG: "en_US" })
-          cmd.run_command
-          !cmd.stdout.match(/Overall Status: Unknown/)
+          @registered ||= !shell_out("subscription-manager status").stdout.include?("Overall Status: Unknown")
         end
 
+        #
+        # @return [Boolean] is katello-ca-consumer installed
+        #
         def katello_cert_rpm_installed?
-          # FIXME: use shell_out
-          cmd = Mixlib::ShellOut.new("rpm -qa | grep katello-ca-consumer")
-          cmd.run_command
-          !cmd.stdout.match(/katello-ca-consumer/).nil?
+          shell_out("rpm -qa").stdout.include?("katello-ca-consumer")
         end
 
+        #
+        # @return [String] The URI to fetch katello-ca-consumer-latest.noarch.rpm from
+        #
         def ca_consumer_package_source
           protocol = new_resource.https_for_ca_consumer ? "https" : "http"
           "#{protocol}://#{new_resource.satellite_host}/pub/katello-ca-consumer-latest.noarch.rpm"
@@ -153,6 +163,7 @@ class Chef
 
               command << new_resource.activation_key.map { |key| "--activationkey=#{Shellwords.shellescape(key)}" }
               command << "--org=#{Shellwords.shellescape(new_resource.organization)}"
+              command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
               command << "--force" if new_resource.force
 
               return command.join(" ")
@@ -165,6 +176,7 @@ class Chef
             command << "--username=#{Shellwords.shellescape(new_resource.username)}"
             command << "--password=#{Shellwords.shellescape(new_resource.password)}"
             command << "--environment=#{Shellwords.shellescape(new_resource.environment)}" if using_satellite_host?
+            command << "--name=#{Shellwords.shellescape(new_resource.system_name)}" if new_resource.system_name
             command << "--auto-attach" if new_resource.auto_attach
             command << "--force" if new_resource.force
 

@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 require "chef-config/exceptions"
 require "chef-utils"

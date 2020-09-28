@@ -79,11 +79,15 @@ module ChefUtils
         extra_path ||= __extra_path
         paths = __env_path.split(File::PATH_SEPARATOR) + Array(extra_path)
         paths.uniq!
+        exts = ENV["PATHEXT"] ? ENV["PATHEXT"].split(";") : []
+        exts.unshift("")
         cmds.map do |cmd|
           paths.map do |path|
-            filename = File.join(path, cmd)
-            filename if __valid_executable?(filename, &block)
-          end.compact
+            exts.map do |ext|
+              filename = File.join(path, "#{cmd}#{ext}")
+              filename if __valid_executable?(filename, &block)
+            end.compact
+          end
         end.flatten
       end
 

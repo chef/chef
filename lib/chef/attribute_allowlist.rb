@@ -2,14 +2,14 @@
 require_relative "exceptions"
 
 class Chef
-  class Whitelist
+  class AttributeAllowlist
 
-    # filter takes two arguments - the data you want to filter, and a whitelisted array
-    # of keys you want included. You can capture a subtree of the data to filter by
+    # filter takes two arguments - the data you want to filter, and an array of
+    # keys you want included. You can capture a subtree of the data to filter by
     # providing a "/"-delimited string of keys. If some key includes "/"-characters,
     # you must provide an array of keys instead.
     #
-    # Whitelist.filter(
+    # AttributeAllowlist.filter(
     #   { "filesystem" => {
     #       "/dev/disk" => {
     #         "size" => "10mb"
@@ -27,18 +27,18 @@ class Chef
     #   },
     #   ["network/interfaces/eth0", ["filesystem", "/dev/disk"]])
     # will capture the eth0 and /dev/disk subtrees.
-    def self.filter(data, whitelist = nil)
-      return data if whitelist.nil?
+    def self.filter(data, allowlist = nil)
+      return data if allowlist.nil?
 
       new_data = {}
-      whitelist.each do |item|
+      allowlist.each do |item|
         add_data(data, new_data, item)
       end
       new_data
     end
 
-    # Walk the data has according to the keys provided by the whitelisted item
-    # and add the data to the whitelisting result.
+    # Walk the data has according to the keys provided by the allowlisted item
+    # and add the data to the allowlisting result.
     def self.add_data(data, new_data, item)
       parts = to_array(item)
 
@@ -46,7 +46,7 @@ class Chef
       filtered_data = new_data
       parts[0..-2].each do |part|
         unless all_data.key?(part)
-          Chef::Log.warn("Could not find whitelist attribute #{item}.")
+          Chef::Log.warn("Could not find allowlist attribute #{item}.")
           return nil
         end
 
@@ -58,7 +58,7 @@ class Chef
       # Note: You can't do all_data[parts[-1]] here because the value
       # may be false-y
       unless all_data.key?(parts[-1])
-        Chef::Log.warn("Could not find whitelist attribute #{item}.")
+        Chef::Log.warn("Could not find allowlist attribute #{item}.")
         return nil
       end
 

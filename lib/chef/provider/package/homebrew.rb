@@ -127,7 +127,7 @@ class Chef
 
           # check each item in the hash to see if we were passed an alias
           brew_info.each_value do |p|
-            return p if p["aliases"].include?(package_name)
+            return p if p["full_name"] == package_name || p["aliases"].include?(package_name)
           end
 
           {}

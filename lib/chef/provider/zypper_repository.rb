@@ -19,9 +19,8 @@
 require_relative "../resource"
 require_relative "../dsl/declare_resource"
 require_relative "noop"
-require_relative "../mixin/shell_out"
 require "shellwords" unless defined?(Shellwords)
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Provider
@@ -111,7 +110,7 @@ class Chef
           logger.trace("Will use :cookbook_file resource to cache the gpg key locally")
           :cookbook_file
         else
-          raise Chef::Exceptions::FileNotFound, "Cannot determine location of gpgkey. Must start with 'http' or be a file managed by #{Chef::Dist::PRODUCT}."
+          raise Chef::Exceptions::FileNotFound, "Cannot determine location of gpgkey. Must start with 'http' or be a file managed by #{ChefUtils::Dist::Infra::PRODUCT}."
         end
       end
 

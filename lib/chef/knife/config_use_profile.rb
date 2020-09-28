@@ -16,23 +16,21 @@
 #
 
 require_relative "../knife"
+require_relative "./config_use"
 
 class Chef
   class Knife
-    class ConfigUseProfile < Knife
+    class ConfigUseProfile < ConfigUse
+
+      # Handle the subclassing (knife doesn't do this :()
+      dependency_loaders.concat(superclass.dependency_loaders)
+
       banner "knife config use-profile PROFILE"
-
-      deps do
-        require "fileutils" unless defined?(FileUtils)
-      end
-
-      # Disable normal config loading since this shouldn't fail if the profile
-      # doesn't exist of the config is otherwise corrupted.
-      def configure_chef
-        apply_computed_config
-      end
+      category "deprecated"
 
       def run
+        Chef::Log.warn("knife config use-profile has been deprecated in favor of knife config use. This will be removed in the major release version!")
+
         credentials_data = self.class.config_loader.parse_credentials_file
         context_file = ChefConfig::PathHelper.home(".chef", "context").freeze
         profile = @name_args[0]&.strip
@@ -42,21 +40,8 @@ class Chef
           exit 1
         end
 
-        if credentials_data.nil? || credentials_data.empty?
-          ui.fatal("No profiles found, #{self.class.config_loader.credentials_file_path} does not exist or is empty")
-          exit 1
-        end
-
-        if credentials_data[profile].nil?
-          raise ChefConfig::ConfigurationError, "Profile #{profile} doesn't exist. Please add it to #{self.class.config_loader.credentials_file_path} and if it is profile with DNS name check that you are not missing single quotes around it as per docs https://docs.chef.io/workstation/knife_setup/#knife-profiles."
-        else
-          # Ensure the .chef/ folder exists.
-          FileUtils.mkdir_p(File.dirname(context_file))
-          IO.write(context_file, "#{profile}\n")
-          ui.msg("Set default profile to #{profile}")
-        end
+        super
       end
-
     end
   end
 end

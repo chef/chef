@@ -18,7 +18,7 @@
 #
 
 require "etc" unless defined?(Etc)
-require "rexml/document" unless defined?(REXML::Document)
+autoload :REXML, "rexml/document"
 require_relative "../../resource/service"
 require_relative "../../resource/macosx_service"
 require_relative "simple"
@@ -47,7 +47,7 @@ class Chef
           @current_resource = Chef::Resource::MacosxService.new(@new_resource.name)
           @current_resource.service_name(@new_resource.service_name)
           @plist_size = 0
-          @plist = @new_resource.plist ? @new_resource.plist : find_service_plist
+          @plist = @new_resource.plist || find_service_plist
           @service_label = find_service_label
           # LaunchAgents should be loaded as the console user.
           @console_user = @plist ? @plist.include?("LaunchAgents") : false
@@ -81,7 +81,7 @@ class Chef
           end
 
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?(@plist.to_s) }
+            a.assertion { ::File.exist?(@plist.to_s) }
             a.failure_message Chef::Exceptions::Service,
               "Could not find plist for #{@new_resource}"
           end
@@ -221,7 +221,7 @@ class Chef
           return nil if @plist.nil?
 
           # Plist must exist by this point
-          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exists?(@plist)
+          raise Chef::Exceptions::FileNotFound, "Cannot find #{@plist}!" unless ::File.exist?(@plist)
 
           # Most services have the same internal label as the name of the
           # plist file. However, there is no rule saying that *has* to be

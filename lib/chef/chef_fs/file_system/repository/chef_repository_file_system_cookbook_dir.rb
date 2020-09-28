@@ -76,7 +76,7 @@ class Chef
 
             # Write out .uploaded-cookbook-version.json
             # cookbook_file_path = File.join(file_path, cookbook_name) <- this should be the same as self.file_path
-            unless File.exists?(file_path)
+            unless File.exist?(file_path)
               FileUtils.mkdir_p(file_path)
             end
             uploaded_cookbook_version_path = File.join(file_path, Chef::Cookbook::CookbookVersionLoader::UPLOADED_COOKBOOK_VERSION_FILE)
@@ -132,7 +132,7 @@ class Chef
           end
 
           def can_upload?
-            File.exists?(uploaded_cookbook_version_path) || children.size > 0
+            File.exist?(uploaded_cookbook_version_path) || children.size > 0
           end
 
           protected

@@ -32,7 +32,7 @@ class Chef
 
       def run
         name = @name_args[0]
-        tags = @name_args[1..-1]
+        tags = @name_args[1..]
 
         if name.nil? || tags.nil? || tags.empty?
           show_usage

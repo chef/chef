@@ -33,16 +33,16 @@ module WEBrick
       last_error = nil
       sockets = []
       res.each do |ai|
-        begin
-          logger.debug("TCPServer.new(#{ai[3]}, #{port})") if logger
-          sock = TCPServer.new(ai[3], port)
-          port = sock.addr[1] if port == 0
-          Utils.set_close_on_exec(sock)
-          sockets << sock
-        rescue => ex
-          logger.warn("TCPServer Error: #{ex}") if logger
-          last_error = ex
-        end
+
+        logger.debug("TCPServer.new(#{ai[3]}, #{port})") if logger
+        sock = TCPServer.new(ai[3], port)
+        port = sock.addr[1] if port == 0
+        Utils.set_close_on_exec(sock)
+        sockets << sock
+      rescue => ex
+        logger.warn("TCPServer Error: #{ex}") if logger
+        last_error = ex
+
       end
       raise last_error if sockets.empty?
 

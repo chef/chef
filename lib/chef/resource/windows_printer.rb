@@ -22,7 +22,9 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsPrinter < Chef::Resource
-      require "resolv"
+      unified_mode true
+
+      autoload :Resolv, "resolv"
 
       provides(:windows_printer) { true }
 
@@ -76,34 +78,22 @@ class Chef
 
       property :ipv4_address, String,
         description: "The IPv4 address of the printer, such as `10.4.64.23`",
-        validation_message: "The ipv4_address property must be in the IPv4 format of `WWW.XXX.YYY.ZZZ`",
-        regex: Resolv::IPv4::Regex
-
-      property :exists, [TrueClass, FalseClass],
-        skip_docs: true
+        callbacks: {
+          "The ipv4_address property must be in the IPv4 format of `WWW.XXX.YYY.ZZZ`" =>
+            proc { |v| v.match(Resolv::IPv4::Regex) },
+        }
 
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
-
-      # does the printer exist
-      #
-      # @param [String] name the name of the printer
-      # @return [Boolean]
-      def printer_exists?(name)
-        printer_reg_key = PRINTERS_REG_KEY + name
-        logger.trace "Checking to see if this reg key exists: '#{printer_reg_key}'"
-        registry_key_exists?(printer_reg_key)
-      end
 
       # @todo Set @current_resource printer properties from registry
       load_current_value do |desired|
         name desired.name
-        exists printer_exists?(desired.name)
       end
 
       action :create do
         description "Create a new printer and a printer port if one doesn't already exist."
 
-        if @current_resource.exists
+        if printer_exists?
           Chef::Log.info "#{@new_resource} already exists - nothing to do."
         else
           converge_by("Create #{@new_resource}") do
@@ -115,7 +105,7 @@ class Chef
       action :delete do
         description "Delete an existing printer. Note this does not delete the associated printer port."
 
-        if @current_resource.exists
+        if printer_exists?
           converge_by("Delete #{@new_resource}") do
             delete_printer
           end
@@ -125,11 +115,22 @@ class Chef
       end
 
       action_class do
+        private
+
+        # does the printer exist
+        #
+        # @param [String] name the name of the printer
+        # @return [Boolean]
+        def printer_exists?
+          printer_reg_key = PRINTERS_REG_KEY + new_resource.name
+          logger.trace "Checking to see if this reg key exists: '#{printer_reg_key}'"
+          registry_key_exists?(printer_reg_key)
+        end
+
         # creates the printer port and then the printer
         def create_printer
           # Create the printer port first
-          windows_printer_port new_resource.ipv4_address do
-          end
+          windows_printer_port new_resource.ipv4_address
 
           port_name = "IP_#{new_resource.ipv4_address}"
 

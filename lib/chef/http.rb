@@ -22,10 +22,13 @@
 #
 
 require "tempfile" unless defined?(Tempfile)
-require "net/https"
-require "uri" unless defined?(URI)
+autoload :OpenSSL, "openssl"
+autoload :URI, "uri"
+module Net
+  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
+  autoload :HTTPClientException, File.expand_path("monkey_patches/net_http", __dir__)
+end
 require_relative "http/basic_client"
-require_relative "monkey_patches/net_http"
 require_relative "config"
 require_relative "platform/query_helpers"
 require_relative "exceptions"
@@ -58,7 +61,6 @@ class Chef
           handler.handle_chunk(chunk)
         end
       end
-
     end
 
     def self.middlewares
@@ -155,7 +157,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -194,7 +196,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -250,7 +252,7 @@ class Chef
     rescue Net::HTTPClientException => e
       http_attempts += 1
       response = e.response
-      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts > 0
+      if response.is_a?(Net::HTTPNotAcceptable) && version_retries - http_attempts >= 0
         Chef::Log.trace("Negotiating protocol version with #{url}, retry #{http_attempts}/#{version_retries}")
         retry
       else
@@ -429,7 +431,7 @@ class Chef
           response, request, return_value = yield
           # handle HTTP 50X Error
           if response.is_a?(Net::HTTPServerError) && !Chef::Config.local_mode
-            if http_retry_count - http_attempts + 1 > 0
+            if http_retry_count - http_attempts >= 0
               sleep_time = 1 + (2**http_attempts) + rand(2**http_attempts)
               Chef::Log.error("Server returned error #{response.code} for #{url}, retrying #{http_attempts}/#{http_retry_count} in #{sleep_time}s")
               sleep(sleep_time)
@@ -439,7 +441,7 @@ class Chef
           return [response, request, return_value]
         end
       rescue SocketError, Errno::ETIMEDOUT, Errno::ECONNRESET => e
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
@@ -447,21 +449,21 @@ class Chef
         e.message.replace "Error connecting to #{url} - #{e.message}"
         raise e
       rescue Errno::ECONNREFUSED
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Connection refused connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Errno::ECONNREFUSED, "Connection refused connecting to #{url}, giving up"
       rescue Timeout::Error
-        if http_retry_count - http_attempts + 1 > 0
+        if http_retry_count - http_attempts >= 0
           Chef::Log.error("Timeout connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
         end
         raise Timeout::Error, "Timeout connecting to #{url}, giving up"
       rescue OpenSSL::SSL::SSLError => e
-        if (http_retry_count - http_attempts + 1 > 0) && !e.message.include?("certificate verify failed")
+        if (http_retry_count - http_attempts >= 0) && !e.message.include?("certificate verify failed")
           Chef::Log.error("SSL Error connecting to #{url}, retry #{http_attempts}/#{http_retry_count}")
           sleep(http_retry_delay)
           retry
@@ -471,7 +473,7 @@ class Chef
     end
 
     def version_retries
-      @version_retries ||= options[:version_class].possible_requests
+      @version_retries ||= options[:version_class]&.possible_requests || 1
     end
 
     # @api private

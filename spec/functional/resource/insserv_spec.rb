@@ -38,11 +38,11 @@ describe Chef::Resource::Service, :requires_root, :opensuse do
   # Platform specific validation routines.
   def service_should_be_started(file_name)
     # The existence of this file indicates that the service was started.
-    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_truthy
+    expect(File.exist?("#{Dir.tmpdir}/#{file_name}")).to be_truthy
   end
 
   def service_should_be_stopped(file_name)
-    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_falsey
+    expect(File.exist?("#{Dir.tmpdir}/#{file_name}")).to be_falsey
   end
 
   def delete_test_files
@@ -73,13 +73,13 @@ describe Chef::Resource::Service, :requires_root, :opensuse do
   end
 
   before(:all) do
-    File.delete("/etc/init.d/inittest") if File.exists?("/etc/init.d/inittest")
-    FileUtils.cp((File.join(File.dirname(__FILE__), "/../assets/inittest")).to_s, "/etc/init.d/inittest")
+    File.delete("/etc/init.d/inittest") if File.exist?("/etc/init.d/inittest")
+    FileUtils.cp((File.join(__dir__, "/../assets/inittest")).to_s, "/etc/init.d/inittest")
     FileUtils.chmod(0755, "/etc/init.d/inittest")
   end
 
   after(:all) do
-    File.delete("/etc/init.d/inittest") if File.exists?("/etc/init.d/inittest")
+    File.delete("/etc/init.d/inittest") if File.exist?("/etc/init.d/inittest")
   end
 
   before(:each) do

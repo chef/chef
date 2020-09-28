@@ -17,11 +17,8 @@
 #
 
 require "spec_helper"
-require "chef/mixin/powershell_out"
 
 describe Chef::Resource::WindowsSecurityPolicy, :windows_only do
-  include Chef::Mixin::PowershellExec
-
   let(:secoption) { "MaximumPasswordAge" }
   let(:secvalue) { "30" }
   let(:windows_test_run_context) do

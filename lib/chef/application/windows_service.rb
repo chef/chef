@@ -29,7 +29,7 @@ require "socket" unless defined?(Socket)
 require "uri" unless defined?(URI)
 require "win32/daemon"
 require_relative "../mixin/shell_out"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Application
@@ -41,7 +41,7 @@ class Chef
         short: "-c CONFIG",
         long: "--config CONFIG",
         default: "#{Chef::Config.etc_chef_dir}/client.rb",
-        description: "The configuration file to use for #{Chef::Dist::PRODUCT} runs."
+        description: "The configuration file to use for #{ChefUtils::Dist::Infra::PRODUCT} runs."
 
       option :log_location,
         short: "-L LOGLOCATION",
@@ -57,7 +57,7 @@ class Chef
       option :interval,
         short: "-i SECONDS",
         long: "--interval SECONDS",
-        description: "Set the number of seconds to wait between #{Chef::Dist::PRODUCT} runs.",
+        description: "Set the number of seconds to wait between #{ChefUtils::Dist::Infra::PRODUCT} runs.",
         proc: lambda { |s| s.to_i }
 
       DEFAULT_LOG_LOCATION ||= "#{Chef::Config.c_chef_dir}/client.log".freeze
@@ -67,7 +67,7 @@ class Chef
         @service_signal = ConditionVariable.new
 
         reconfigure
-        Chef::Log.info("#{Chef::Dist::CLIENT} Service initialized")
+        Chef::Log.info("#{ChefUtils::Dist::Infra::CLIENT} Service initialized")
       end
 
       def service_main(*startup_parameters)
@@ -78,33 +78,33 @@ class Chef
         while running?
           # Grab the service_action_mutex to make a chef-client run
           @service_action_mutex.synchronize do
-            begin
-              Chef::Log.info("Next #{Chef::Dist::CLIENT} run will happen in #{timeout} seconds")
-              @service_signal.wait(@service_action_mutex, timeout)
 
-              # Continue only if service is RUNNING
-              next if state != RUNNING
+            Chef::Log.info("Next #{ChefUtils::Dist::Infra::CLIENT} run will happen in #{timeout} seconds")
+            @service_signal.wait(@service_action_mutex, timeout)
 
-              # Reconfigure each time through to pick up any changes in the client file
-              Chef::Log.info("Reconfiguring with startup parameters")
-              reconfigure(startup_parameters)
-              timeout = Chef::Config[:interval]
+            # Continue only if service is RUNNING
+            next if state != RUNNING
 
-              # Honor splay sleep config
-              timeout += rand Chef::Config[:splay]
+            # Reconfigure each time through to pick up any changes in the client file
+            Chef::Log.info("Reconfiguring with startup parameters")
+            reconfigure(startup_parameters)
+            timeout = Chef::Config[:interval]
 
-              # run chef-client only if service is in RUNNING state
-              next if state != RUNNING
+            # Honor splay sleep config
+            timeout += rand Chef::Config[:splay]
 
-              Chef::Log.info("#{Chef::Dist::CLIENT} service is starting a #{Chef::Dist::CLIENT} run...")
-              run_chef_client
-            rescue SystemExit => e
-              # Do not raise any of the errors here in order to
-              # prevent service crash
-              Chef::Log.error("#{e.class}: #{e}")
-            rescue Exception => e
-              Chef::Log.error("#{e.class}: #{e}")
-            end
+            # run chef-client only if service is in RUNNING state
+            next if state != RUNNING
+
+            Chef::Log.info("#{ChefUtils::Dist::Infra::CLIENT} service is starting a #{ChefUtils::Dist::Infra::CLIENT} run...")
+            run_chef_client
+          rescue SystemExit => e
+            # Do not raise any of the errors here in order to
+            # prevent service crash
+            Chef::Log.error("#{e.class}: #{e}")
+          rescue Exception => e
+            Chef::Log.error("#{e.class}: #{e}")
+
           end
         end
 
@@ -131,12 +131,12 @@ class Chef
             break
           else
             unless run_warning_displayed
-              Chef::Log.info("Currently a #{Chef::Dist::PRODUCT} run is happening on this system.")
+              Chef::Log.info("Currently a #{ChefUtils::Dist::Infra::PRODUCT} run is happening on this system.")
               Chef::Log.info("Service will stop when run is completed.")
               run_warning_displayed = true
             end
 
-            Chef::Log.trace("Waiting for #{Chef::Dist::PRODUCT} run...")
+            Chef::Log.trace("Waiting for #{ChefUtils::Dist::Infra::PRODUCT} run...")
             sleep 1
           end
         end
@@ -150,7 +150,7 @@ class Chef
         # since this is a PAUSE signal.
 
         if @service_action_mutex.locked?
-          Chef::Log.info("Currently a #{Chef::Dist::PRODUCT} run is happening.")
+          Chef::Log.info("Currently a #{ChefUtils::Dist::Infra::PRODUCT} run is happening.")
           Chef::Log.info("Service will pause once it's completed.")
         else
           Chef::Log.info("Service is pausing....")
@@ -185,7 +185,7 @@ class Chef
         # The log_location and config_file of the parent process is passed to the new chef-client process.
         # We need to add the --no-fork, as by default it is set to fork=true.
 
-        Chef::Log.info "Starting #{Chef::Dist::CLIENT} in a new process"
+        Chef::Log.info "Starting #{ChefUtils::Dist::Infra::CLIENT} in a new process"
         # Pass config params to the new process
         config_params = " --no-fork"
         config_params += " -c #{Chef::Config[:config_file]}" unless Chef::Config[:config_file].nil?
@@ -197,20 +197,20 @@ class Chef
         # Starts a new process and waits till the process exits
 
         result = shell_out(
-          "#{Chef::Dist::CLIENT}.bat #{config_params}",
+          "#{ChefUtils::Dist::Infra::CLIENT}.bat #{config_params}",
           timeout: Chef::Config[:windows_service][:watchdog_timeout],
           logger: Chef::Log
         )
         Chef::Log.trace (result.stdout).to_s
         Chef::Log.trace (result.stderr).to_s
       rescue Mixlib::ShellOut::CommandTimeout => e
-        Chef::Log.error "#{Chef::Dist::CLIENT} timed out\n(#{e})"
+        Chef::Log.error "#{ChefUtils::Dist::Infra::CLIENT} timed out\n(#{e})"
         Chef::Log.error(<<-EOF)
-            Your #{Chef::Dist::CLIENT} run timed out. You can increase the time #{Chef::Dist::CLIENT} is given
+            Your #{ChefUtils::Dist::Infra::CLIENT} run timed out. You can increase the time #{ChefUtils::Dist::Infra::CLIENT} is given
             to complete by configuring windows_service.watchdog_timeout in your client.rb.
         EOF
       rescue Mixlib::ShellOut::ShellCommandFailed => e
-        Chef::Log.warn "Not able to start #{Chef::Dist::CLIENT} in new process (#{e})"
+        Chef::Log.warn "Not able to start #{ChefUtils::Dist::Infra::CLIENT} in new process (#{e})"
       rescue => e
         Chef::Log.error e
       ensure

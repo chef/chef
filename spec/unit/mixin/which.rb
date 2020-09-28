@@ -159,4 +159,12 @@ describe Chef::Mixin::Which do
       end
     end
   end
+
+  describe "useful non-stubbed tests" do
+    it "works even when the PATH is nuked via adding default_paths", unix_only: true do
+      old_path = ENV["PATH"]
+      expect(test.which("ls")).to be_truthy
+      ENV["PATH"] = old_path
+    end
+  end
 end

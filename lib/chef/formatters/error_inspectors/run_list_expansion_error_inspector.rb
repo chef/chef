@@ -18,7 +18,7 @@
 #
 
 require_relative "api_error_formatting"
-require_relative "../../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module Formatters
@@ -78,7 +78,7 @@ class Chef
           case response
           when Net::HTTPUnauthorized
             error_description.section("Authentication Error:", <<~E)
-              Failed to authenticate to the #{Chef::Dist::SERVER_PRODUCT} (http 401).
+              Failed to authenticate to the #{ChefUtils::Dist::Server::PRODUCT} (http 401).
             E
 
             error_description.section("Server Response:", format_rest_error)
@@ -109,7 +109,7 @@ class Chef
             E
             error_description.section("Server Response:", format_rest_error)
           when Net::HTTPBadGateway, Net::HTTPServiceUnavailable
-            error_description.section("Server Unavailable", "The #{Chef::Dist::SERVER_PRODUCT} is temporarily unavailable")
+            error_description.section("Server Unavailable", "The #{ChefUtils::Dist::Server::PRODUCT} is temporarily unavailable")
             error_description.section("Server Response:", format_rest_error)
           else
             error_description.section("Unexpected API Request Failure:", format_rest_error)

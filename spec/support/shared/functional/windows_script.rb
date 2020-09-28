@@ -39,11 +39,11 @@ shared_context Chef::Resource::WindowsScript do
   end
 
   before(:each) do
-    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exist?(script_output_path)
   end
 
   after(:each) do
-    File.delete(script_output_path) if File.exists?(script_output_path)
+    File.delete(script_output_path) if File.exist?(script_output_path)
   end
 
   shared_examples_for "a script resource with architecture attribute" do
@@ -138,7 +138,7 @@ shared_context Chef::Resource::WindowsScript do
 
       after do
         script_file.close! if script_file
-        ::File.delete(script_file.to_path) if script_file && ::File.exists?(script_file.to_path)
+        ::File.delete(script_file.to_path) if script_file && ::File.exist?(script_file.to_path)
       end
 
       include_context "alternate user identity"

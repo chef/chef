@@ -19,13 +19,17 @@
 
 require_relative "../util/path_helper"
 require_relative "../resource"
-require "win32-certstore" if Chef::Platform.windows?
-require "openssl" unless defined?(OpenSSL)
-require_relative "../dist"
+module Win32
+  autoload :Certstore, "win32-certstore" if Chef::Platform.windows?
+end
+autoload :OpenSSL, "openssl"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class WindowsCertificate < Chef::Resource
+      unified_mode true
+
       provides :windows_certificate
 
       description "Use the **windows_certificate** resource to install a certificate into the Windows certificate store from a file. The resource grants read-only access to the private key for designated accounts. Due to current limitations in WinRM, installing certificates remotely may not work if the operation requires a user profile. Operations on the local machine store should still work."
@@ -80,7 +84,7 @@ class Chef
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
-        description: "Ensure that sensitive resource data is not logged by the #{Chef::Dist::CLIENT}.",
+        description: "Ensure that sensitive resource data is not logged by the #{ChefUtils::Dist::Infra::CLIENT}.",
         default: lazy { pfx_password ? true : false }, skip_docs: true
 
       action :create do

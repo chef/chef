@@ -563,11 +563,10 @@ class Chef
       # @param path [Array] Array of args to method chain to descend into the node object
       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_defaults(path)
-        ret = DEFAULT_COMPONENTS.inject(NIL) do |merged, component_ivar|
+        DEFAULT_COMPONENTS.inject(NIL) do |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
         end
-        ret
       end
 
       # Deep merge the override attribute levels with array merging.
@@ -577,11 +576,10 @@ class Chef
       # @param path [Array] Array of args to method chain to descend into the node object
       # @return [attr] Deep Merged values (may be VividMash, Hash, Array, etc) from the node object
       def merge_overrides(path)
-        ret = OVERRIDE_COMPONENTS.inject(NIL) do |merged, component_ivar|
+        OVERRIDE_COMPONENTS.inject(NIL) do |merged, component_ivar|
           component_value = apply_path(instance_variable_get(component_ivar), path)
           deep_merge!(merged, component_value)
         end
-        ret
       end
 
       # needed for __path__

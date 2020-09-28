@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "tempfile" unless defined?(Tempfile)
-require "erubis" unless defined?(Erubis)
+autoload :Tempfile, "tempfile"
+autoload :Erubis, "erubis"
 
 class Chef
   module Mixin
@@ -204,7 +204,7 @@ class Chef
           all_ivars.delete(:@_extension_modules)
           all_ivars.inject({}) do |ivar_map, ivar_symbol_name|
             value = instance_variable_get(ivar_symbol_name)
-            name_without_at = ivar_symbol_name.to_s[1..-1].to_sym
+            name_without_at = ivar_symbol_name.to_s[1..].to_sym
             ivar_map[name_without_at] = value
             ivar_map
           end

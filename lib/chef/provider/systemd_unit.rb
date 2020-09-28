@@ -18,7 +18,6 @@
 
 require_relative "../provider"
 require_relative "../mixin/which"
-require_relative "../mixin/shell_out"
 require_relative "../resource/file"
 require_relative "../resource/file/verification/systemd_unit"
 require "iniparse"
@@ -28,7 +27,6 @@ class Chef
   class Provider
     class SystemdUnit < Chef::Provider
       include Chef::Mixin::Which
-      include Chef::Mixin::ShellOut
 
       provides :systemd_unit
 

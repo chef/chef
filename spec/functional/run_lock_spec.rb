@@ -61,17 +61,17 @@ describe Chef::RunLock do
     let!(:p1) { ClientProcess.new(self, "p1") }
     let!(:p2) { ClientProcess.new(self, "p2") }
     after(:each) do |example|
-      begin
-        p1.stop
-        p2.stop
-      rescue
-        example.exception = $!
-        raise
-      ensure
-        if example.exception
-          print_events
-        end
+
+      p1.stop
+      p2.stop
+    rescue
+      example.exception = $!
+      raise
+    ensure
+      if example.exception
+        print_events
       end
+
     end
 
     def print_events
@@ -445,21 +445,21 @@ describe Chef::RunLock do
     def start
       example.log_event("#{name}.start")
       @pid = fork do
-        begin
-          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
-            run_lock = TestRunLock.new(example.lockfile)
-            run_lock.client_process = self
-            fire_event("started")
-            run_lock.acquire
-            fire_event("acquired lock")
-            run_lock.save_pid
-            fire_event("saved pid")
-            exit!(0)
-          end
-        rescue
-          fire_event($!.message.lines.join(" // "))
-          raise
+
+        Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
+          run_lock = TestRunLock.new(example.lockfile)
+          run_lock.client_process = self
+          fire_event("started")
+          run_lock.acquire
+          fire_event("acquired lock")
+          run_lock.save_pid
+          fire_event("saved pid")
+          exit!(0)
         end
+      rescue
+        fire_event($!.message.lines.join(" // "))
+        raise
+
       end
       example.log_event("#{name}.start forked (pid #{pid})")
     end

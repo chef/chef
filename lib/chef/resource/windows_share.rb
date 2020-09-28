@@ -26,6 +26,8 @@ require_relative "../util/path_helper"
 class Chef
   class Resource
     class WindowsShare < Chef::Resource
+      unified_mode true
+
       provides :windows_share
 
       description "Use the **windows_share** resource to create, modify and remove Windows shares."
@@ -59,7 +61,7 @@ class Chef
       # Specifies the path of the location of the folder to share. The path must be fully qualified. Relative paths or paths that contain wildcard characters are not permitted.
       property :path, String,
         description: "The path of the folder to share. Required when creating. If the share already exists on a different path then it is deleted and re-created.",
-        coerce: proc { |p| p.gsub(%r{/}, "\\") || p }
+        coerce: proc { |p| p.tr("/", "\\") || p }
 
       # Specifies an optional description of the SMB share. A description of the share is displayed by running the Get-SmbShare cmdlet. The description may not contain more than 256 characters.
       property :description, String,
@@ -116,8 +118,6 @@ class Chef
 
       # Specifies which files and folders in the SMB share are visible to users. AccessBased: SMB does not the display the files and folders for a share to a user unless that user has rights to access the files and folders. By default, access-based enumeration is disabled for new SMB shares. Unrestricted: SMB displays files and folders to a user even when the user does not have permission to access the items.
       # property :folder_enumeration_mode, String, equal_to: %(AccessBased Unrestricted)
-
-      include Chef::Mixin::PowershellOut
 
       load_current_value do |desired|
         # this command selects individual objects because EncryptData & CachingMode have underlying
@@ -233,6 +233,8 @@ class Chef
       end
 
       action_class do
+        private
+
         def different_path?
           return false if current_resource.nil? # going from nil to something isn't different for our concerns
           return false if current_resource.path == Chef::Util::PathHelper.cleanpath(new_resource.path)

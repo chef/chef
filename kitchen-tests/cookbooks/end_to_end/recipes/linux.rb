@@ -23,7 +23,7 @@ execute "sensitive sleep" do
   sensitive true
 end
 
-timezone "UTC"
+timezone "America/Los_Angeles"
 
 include_recipe "::_yum" if platform_family?("rhel")
 
@@ -50,6 +50,7 @@ ssh_known_hosts_entry "github.com"
 
 include_recipe "chef-client::delete_validation"
 include_recipe "chef-client::config"
+include_recipe "::_chef_client_trusted_certificate"
 
 include_recipe "openssh"
 
@@ -99,7 +100,12 @@ end
 
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
   interval "1hr"
+  cpu_quota 50
   only_if { systemd? }
+end
+
+chef_client_systemd_timer "a timer that does not exist" do
+  action :remove
 end
 
 locale "set system locale" do
@@ -117,6 +123,7 @@ include_recipe "::_cron"
 include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests"
+include_recipe "::_mount"
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue

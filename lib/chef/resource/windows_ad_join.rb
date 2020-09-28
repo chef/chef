@@ -16,12 +16,14 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class WindowsAdJoin < Chef::Resource
       provides :windows_ad_join
+
+      unified_mode true
 
       description "Use the **windows_ad_join** resource to join a Windows Active Directory domain."
       introduced "14.0"
@@ -74,9 +76,14 @@ class Chef
 
       property :reboot, Symbol,
         equal_to: %i{immediate delayed never request_reboot reboot_now},
-        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{Chef::Dist::PRODUCT} run completes), and :never (Don't reboot)",
-        description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{Chef::Dist::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
+        validation_message: "The reboot property accepts :immediate (reboot as soon as the resource completes), :delayed (reboot once the #{ChefUtils::Dist::Infra::PRODUCT} run completes), and :never (Don't reboot)",
+        description: "Controls the system reboot behavior post domain joining. Reboot immediately, after the #{ChefUtils::Dist::Infra::PRODUCT} run completes, or never. Note that a reboot is necessary for changes to take effect.",
         default: :immediate
+
+      property :reboot_delay, Integer,
+        description: "The amount of time (in minutes) to delay a reboot request.",
+        default: 0,
+        introduced: "16.5"
 
       property :new_hostname, String,
         description: "Specifies a new hostname for the computer in the new domain.",
@@ -114,6 +121,7 @@ class Chef
             unless new_resource.reboot == :never
               reboot "Reboot to join domain #{new_resource.domain_name}" do
                 action clarify_reboot(new_resource.reboot)
+                delay_mins new_resource.reboot_delay
                 reason "Reboot to join domain #{new_resource.domain_name}"
               end
             end
@@ -147,6 +155,7 @@ class Chef
             unless new_resource.reboot == :never
               reboot "Reboot to leave domain #{new_resource.domain_name}" do
                 action clarify_reboot(new_resource.reboot)
+                delay_mins new_resource.reboot_delay
                 reason "Reboot to leave domain #{new_resource.domain_name}"
               end
             end

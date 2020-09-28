@@ -17,7 +17,7 @@ require_relative "../cookbook_version"
 require_relative "chefignore"
 require_relative "metadata"
 require_relative "../util/path_helper"
-require "find"
+require "find" unless defined?(Find.find)
 
 class Chef
   class Cookbook

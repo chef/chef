@@ -83,7 +83,7 @@ describe Chef::Provider::Service::Macosx do
             .with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false)
             .and_return(double("Status",
               stdout: launchctl_stdout, exitstatus: 0))
-          allow(File).to receive(:exists?).and_return([true], [])
+          allow(File).to receive(:exist?).and_return([true], [])
           allow(provider).to receive(:shell_out!)
             .with(/plutil -convert xml1 -o/, default_env: false)
             .and_return(double("Status", stdout: plutil_stdout))
@@ -109,7 +109,7 @@ describe Chef::Provider::Service::Macosx do
 
               before do
                 allow(Dir).to receive(:glob).and_return([])
-                allow(File).to receive(:exists?).and_return([true], [])
+                allow(File).to receive(:exist?).and_return([true], [])
                 allow(provider).to receive(:shell_out!)
                   .with(/plutil -convert xml1 -o/)
                   .and_raise(Mixlib::ShellOut::ShellCommandFailed)
@@ -165,7 +165,7 @@ describe Chef::Provider::Service::Macosx do
             describe "running unsupported actions" do
               before do
                 allow(Dir).to receive(:glob).and_return([(plist).to_s], [])
-                allow(File).to receive(:exists?).and_return([true], [])
+                allow(File).to receive(:exist?).and_return([true], [])
               end
               it "should throw an exception when reload action is attempted" do
                 expect { provider.run_action(:reload) }.to raise_error(Chef::Exceptions::UnsupportedAction)

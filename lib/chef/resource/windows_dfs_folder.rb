@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDfsFolder < Chef::Resource
+      unified_mode true
+
       provides :windows_dfs_folder
 
       description "Use the **windows_dfs_folder** resource to creates a folder within DFS as many levels deep as required."

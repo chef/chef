@@ -24,20 +24,31 @@ class Chef
       require_relative "../mixin/openssl_helper"
       include Chef::Mixin::OpenSSLHelper
 
+      unified_mode true
+
       provides :openssl_x509_crl
 
       description "Use the **openssl_x509_crl** resource to generate PEM-formatted x509 certificate revocation list (CRL) files."
       introduced "14.4"
       examples <<~DOC
-        Generate a CRL file given a cert file and key file
+      **Create a certificate revocation file**
 
-        ```ruby
-        openssl_x509_crl '/etc/ssl_files/my_ca2.crl' do
-          ca_cert_file '/etc/ssl_files/my_ca2.crt'
-          ca_key_file '/etc/ssl_files/my_ca2.key'
-          expire 1
-        end
-        ```
+      ```ruby
+      openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
+        ca_cert_file '/etc/ssl_test/my_ca.crt'
+        ca_key_file '/etc/ssl_test/my_ca.key'
+      end
+      ```
+
+      **Create a certificate revocation file for a particular serial**
+
+      ```ruby
+      openssl_x509_crl '/etc/ssl_test/my_ca.crl' do
+        ca_cert_file '/etc/ssl_test/my_ca.crt'
+        ca_key_file '/etc/ssl_test/my_ca.key'
+        serial_to_revoke C7BCB6602A2E4251EF4E2827A228CB52BC0CEA2F
+      end
+      ```
       DOC
 
       property :path, String,
@@ -60,11 +71,11 @@ class Chef
         default: 1
 
       property :ca_cert_file, String,
-        description: "The path to the CA X509 Certificate on the filesystem. If the ca_cert_file property is specified, the ca_key_file property must also be specified, the CRL will be signed with them.",
+        description: "The path to the CA X509 Certificate on the filesystem. If the `ca_cert_file` property is specified, the `ca_key_file` property must also be specified, the CRL will be signed with them.",
         required: true
 
       property :ca_key_file, String,
-        description: "The path to the CA private key on the filesystem. If the ca_key_file property is specified, the ca_cert_file property must also be specified, the CRL will be signed with them.",
+        description: "The path to the CA private key on the filesystem. If the `ca_key_file` property is specified, the `ca_cert_file` property must also be specified, the CRL will be signed with them.",
         required: true
 
       property :ca_key_pass, String,

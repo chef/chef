@@ -5,20 +5,20 @@ require "chef/run_lock"
 require "chef/config"
 require "timeout"
 require "fileutils"
+require "chef-utils"
 require "chef/win32/security" if ChefUtils.windows?
-require "chef/dist"
 
-describe Chef::Dist::SOLOEXEC do
+describe ChefUtils::Dist::Solo::EXEC do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
   let(:cookbook_x_100_metadata_rb) { cb_metadata("x", "1.0.0") }
 
   let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
 
-  let(:chef_solo) { "bundle exec #{Chef::Dist::SOLOEXEC} --legacy-mode --minimal-ohai" }
+  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
 
   when_the_repository "creates nodes" do
     let(:nodes_dir) { File.join(@repository_dir, "nodes") }
@@ -183,7 +183,7 @@ describe Chef::Dist::SOLOEXEC do
       # run_lock gets stuck we can discover it.
       expect do
         Timeout.timeout(120) do
-          chef_dir = File.join(File.dirname(__FILE__), "..", "..", "..")
+          chef_dir = File.join(__dir__, "..", "..", "..")
 
           threads = []
 

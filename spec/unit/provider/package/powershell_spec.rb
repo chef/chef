@@ -19,7 +19,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Provider::Package::Powershell, :windows_only do
+describe Chef::Provider::Package::Powershell, :windows_only, :windows_gte_10 do
   include Chef::Mixin::PowershellOut
   let(:timeout) { 900 }
   let(:source) { nil }

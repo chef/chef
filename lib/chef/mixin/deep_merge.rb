@@ -19,16 +19,33 @@
 
 class Chef
   module Mixin
-    # == Chef::Mixin::DeepMerge
     # Implements a deep merging algorithm for nested data structures.
-    # ==== Notice:
-    #   This code was originally imported from deep_merge by Steve Midgley.
-    #   deep_merge is available under the MIT license from
-    #   http://trac.misuse.org/science/wiki/DeepMerge
+    #
+    # This code was originally imported from deep_merge by Steve Midgley.
+    # deep_merge is available under the MIT license from
+    # http://trac.misuse.org/science/wiki/DeepMerge
+    #
+    # Note that this is not considered a public interface.  It is technically
+    # public and has been used and we cannot break the API, but continued
+    # external use is discouraged.  We are unlikely to change the shape of
+    # the API and break anyone, but this code does not serve the purposes of
+    # cookbook authors and customers.  It is intended only for the purposes
+    # of the internal use in the chef-client codebase.  We do not accept
+    # pull requests to extend the functionality of this algorithm.  Users
+    # who find this does nearly what they want, should copy and paste the
+    # algorithm and tune to their needs.  We will not maintain any additional
+    # use cases.
+    #
+    # "It is what it is, and if it isn't what you want, you need to build
+    # that yourself"
+    #
+    # @api private
+    #
     module DeepMerge
 
       extend self
 
+      # @api private
       def merge(first, second)
         first  = Mash.new(first)  unless first.is_a?(Mash)
         second = Mash.new(second) unless second.is_a?(Mash)
@@ -38,29 +55,27 @@ class Chef
 
       class InvalidParameter < StandardError; end
 
-      # Deep Merge core documentation.
       # deep_merge! method permits merging of arbitrary child elements. The two top level
       # elements must be hashes. These hashes can contain unlimited (to stack limit) levels
       # of child elements. These child elements to not have to be of the same types.
       # Where child elements are of the same type, deep_merge will attempt to merge them together.
       # Where child elements are not of the same type, deep_merge will skip or optionally overwrite
       # the destination element with the contents of the source element at that level.
+      #
       # So if you have two hashes like this:
+      #
       #   source = {:x => [1,2,3], :y => 2}
       #   dest =   {:x => [4,5,'6'], :y => [7,8,9]}
       #   dest.deep_merge!(source)
       #   Results: {:x => [1,2,3,4,5,'6'], :y => 2}
+      #
       # By default, "deep_merge!" will overwrite any unmergeables and merge everything else.
       # To avoid this, use "deep_merge" (no bang/exclamation mark)
+      #
+      # @api private
+      #
       def deep_merge!(source, dest)
-        # if dest doesn't exist, then simply copy source to it
-        if dest.nil?
-          dest = source; return dest
-        end
-
         case source
-        when nil
-          dest
         when Hash
           if dest.is_a?(Hash)
             source.each do |src_key, src_value|
@@ -87,10 +102,12 @@ class Chef
         dest
       end # deep_merge!
 
+      # @api private
       def hash_only_merge(merge_onto, merge_with)
         hash_only_merge!(safe_dup(merge_onto), safe_dup(merge_with))
       end
 
+      # @api private
       def safe_dup(thing)
         thing.dup
       rescue TypeError
@@ -101,6 +118,9 @@ class Chef
       # `merge_onto` is the object that will "lose" in case of conflict.
       # `merge_with` is the object whose values will replace `merge_onto`s
       # values when there is a conflict.
+      #
+      # @api private
+      #
       def hash_only_merge!(merge_onto, merge_with)
         # If there are two Hashes, recursively merge.
         if merge_onto.is_a?(Hash) && merge_with.is_a?(Hash)
@@ -120,17 +140,14 @@ class Chef
             end
           end
           merge_onto
-
-        # If merge_with is nil, don't replace merge_onto
-        elsif merge_with.nil?
-          merge_onto
-
         # In all other cases, replace merge_onto with merge_with
         else
           merge_with
         end
       end
 
+      # @api private
+      #
       def deep_merge(source, dest)
         deep_merge!(safe_dup(source), safe_dup(dest))
       end

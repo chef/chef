@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsDfsNamespace < Chef::Resource
+      unified_mode true
+
       provides :windows_dfs_namespace
 
       description "Use the **windows_dfs_namespace** resource to creates a share and DFS namespace on a Windows server."

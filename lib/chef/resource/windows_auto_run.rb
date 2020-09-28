@@ -21,6 +21,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsAutorun < Chef::Resource
+      unified_mode true
+
       provides(:windows_auto_run) { true }
 
       description "Use the **windows_auto_run** resource to set applications to run at login."

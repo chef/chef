@@ -14,8 +14,8 @@
 # limitations under the License.
 #
 
-CHEF_SPEC_DATA = File.expand_path(File.dirname(__FILE__) + "/../data/")
-CHEF_SPEC_ASSETS = File.expand_path(File.dirname(__FILE__) + "/../functional/assets/")
+CHEF_SPEC_DATA = File.expand_path(__dir__ + "/../data/")
+CHEF_SPEC_ASSETS = File.expand_path(__dir__ + "/../functional/assets/")
 CHEF_SPEC_BACKUP_PATH = File.join(Dir.tmpdir, "test-backup-path")
 
 def sha256_checksum(path)
@@ -40,22 +40,11 @@ def make_tmpname(prefix_suffix, n = nil)
   path << suffix
 end
 
-# NOTE:
-# This is a temporary fix to get tests passing on systems that have no `diff`
-# until we can replace shelling out to `diff` with ruby diff-lcs
-def has_diff?
-  diff_cmd = Mixlib::ShellOut.new("diff -v")
-  diff_cmd.run_command
-  true
-rescue Errno::ENOENT
-  false
-end
-
 # This is a helper to determine if the ruby in the PATH contains
 # win32/service gem. windows_service_manager tests create a windows
 # service that starts with the system ruby and requires this gem.
 def system_windows_service_gem?
-  windows_service_gem_check_command = %{ruby -r "win32/daemon" -e ":noop" > #{DEV_NULL} 2>&1}
+  windows_service_gem_check_command = %{ruby -r "win32/daemon" -e ":noop" > #{File::NULL} 2>&1}
   if defined?(Bundler)
     Bundler.with_unbundled_env do
       # This returns true if the gem can be loaded

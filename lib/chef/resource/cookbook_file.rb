@@ -21,7 +21,7 @@
 require_relative "file"
 require_relative "../provider/cookbook_file"
 require_relative "../mixin/securable"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -31,7 +31,7 @@ class Chef
 
       provides :cookbook_file
 
-      description "Use the **cookbook_file** resource to transfer files from a sub-directory of COOKBOOK_NAME/files/ to a specified path located on a host that is running the #{Chef::Dist::PRODUCT}. The file is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located in the COOKBOOK_NAME/files/default sub-directory may be used on any platform.\n\nDuring a #{Chef::Dist::PRODUCT} run, the checksum for each local file is calculated and then compared against the checksum for the same file as it currently exists in the cookbook on the #{Chef::Dist::SERVER_PRODUCT}. A file is not transferred when the checksums match. Only files that require an update are transferred from the #{Chef::Dist::SERVER_PRODUCT} to a node."
+      description "Use the **cookbook_file** resource to transfer files from a sub-directory of COOKBOOK_NAME/files/ to a specified path located on a host that is running the #{ChefUtils::Dist::Infra::PRODUCT}. The file is selected according to file specificity, which allows different source files to be used based on the hostname, host platform (operating system, distro, or as appropriate), or platform version. Files that are located in the COOKBOOK_NAME/files/default sub-directory may be used on any platform.\n\nDuring a #{ChefUtils::Dist::Infra::PRODUCT} run, the checksum for each local file is calculated and then compared against the checksum for the same file as it currently exists in the cookbook on the #{ChefUtils::Dist::Server::PRODUCT}. A file is not transferred when the checksums match. Only files that require an update are transferred from the #{ChefUtils::Dist::Server::PRODUCT} to a node."
 
       property :source, [ String, Array ],
         description: "The name of the file in COOKBOOK_NAME/files/default or the path to a file located in COOKBOOK_NAME/files. The path must include the file name and its extension. This can be used to distribute specific files depending upon the platform used.",

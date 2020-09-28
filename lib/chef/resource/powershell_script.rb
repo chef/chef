@@ -25,19 +25,31 @@ class Chef
       provides :powershell_script, os: "windows"
 
       property :flags, String,
-        description: "A string that is passed to the Windows PowerShell command",
-        default: lazy { default_flags },
-        coerce: proc { |input|
-          if input == default_flags
-            # Means there was no input provided,
-            # and should use defaults in this case
-            input
-          else
-            # The last occurrence of a flag would override its
-            # previous one at the time of command execution.
-            [default_flags, input].join(" ")
+        description: "A string that is passed to the Windows PowerShell command"
+
+      property :convert_boolean_return, [true, false],
+        default: false,
+        description: <<~DESC
+          Return `0` if the last line of a command is evaluated to be true or to return `1` if the last line is evaluated to be false.
+
+          When the `guard_interpreter` common attribute is set to `:powershell_script`, a string command will be evaluated as if this value were set to `true`. This is because the behavior of this attribute is similar to the value of the `"$?"` expression common in UNIX interpreters. For example, this:
+
+          ```ruby
+          powershell_script 'make_safe_backup' do
+            guard_interpreter :powershell_script
+            code 'cp ~/data/nodes.json ~/data/nodes.bak'
+            not_if 'test-path ~/data/nodes.bak'
           end
-        }
+          ```
+
+          is similar to:
+          ```ruby
+          bash 'make_safe_backup' do
+            code 'cp ~/data/nodes.json ~/data/nodes.bak'
+            not_if 'test -e ~/data/nodes.bak'
+          end
+          ```
+        DESC
 
       description "Use the **powershell_script** resource to execute a script using the Windows PowerShell"\
                   " interpreter, much like how the script and script-based resources—bash, csh, perl, python,"\
@@ -52,15 +64,6 @@ class Chef
         super
         @interpreter = "powershell.exe"
         @default_guard_interpreter = resource_name
-        @convert_boolean_return = false
-      end
-
-      def convert_boolean_return(arg = nil)
-        set_or_return(
-          :convert_boolean_return,
-          arg,
-          kind_of: [ FalseClass, TrueClass ]
-        )
       end
 
       # Allow callers evaluating guards to request default
@@ -72,15 +75,6 @@ class Chef
       # same behavior.
       def self.get_default_attributes(opts)
         { convert_boolean_return: true }
-      end
-
-      # Options that will be passed to Windows PowerShell command
-      #
-      # @returns [String]
-      def default_flags
-        # Set InputFormat to None as PowerShell will hang if STDIN is redirected
-        # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
-        "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None"
       end
     end
   end

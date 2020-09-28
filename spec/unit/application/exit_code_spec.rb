@@ -61,6 +61,10 @@ describe Chef::Application::ExitCode do
       expect(valid_rfc_exit_codes.include?(41)).to eq(true)
     end
 
+    it "validates a CONFIG_FAILURE return code of 43" do
+      expect(valid_rfc_exit_codes.include?(43)).to eq(true)
+    end
+
     it "validates a CLIENT_UPGRADED return code of 213" do
       expect(valid_rfc_exit_codes.include?(213)).to eq(true)
     end
@@ -111,6 +115,12 @@ describe Chef::Application::ExitCode do
       reboot_error = Chef::Exceptions::RebootPending.new("BOOM")
       runtime_error = Chef::Exceptions::RunFailedWrappingError.new(reboot_error)
       expect(exit_codes.normalize_exit_code(runtime_error)).to eq(37)
+    end
+
+    it "returns CONFIG_FAILURE when a configuration exception is specified" do
+      config_error = Chef::Exceptions::ConfigurationError.new("BOOM")
+      runtime_error = Chef::Exceptions::RunFailedWrappingError.new(config_error)
+      expect(exit_codes.normalize_exit_code(runtime_error)).to eq(43)
     end
 
     it "returns CLIENT_UPGRADED when the client was upgraded during converge" do

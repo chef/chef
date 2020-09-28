@@ -21,6 +21,7 @@ class Chef
   class Resource
     class WindowsFont < Chef::Resource
       require_relative "../util/path_helper"
+      unified_mode true
 
       provides(:windows_font) { true }
 
@@ -98,8 +99,9 @@ class Chef
         def font_exists?
           require "win32ole" if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
           fonts_dir = WIN32OLE.new("WScript.Shell").SpecialFolders("Fonts")
+          fonts_dir_local = Chef::Util::PathHelper.join(ENV["home"], "AppData/Local/Microsoft/Windows/fonts")
           logger.trace("Seeing if the font at #{Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)} exists")
-          ::File.exist?(Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name))
+          ::File.exist?(Chef::Util::PathHelper.join(fonts_dir, new_resource.font_name)) || ::File.exist?(Chef::Util::PathHelper.join(fonts_dir_local, new_resource.font_name))
         end
 
         # Parse out the schema provided to us to see if it's one we support via remote_file.

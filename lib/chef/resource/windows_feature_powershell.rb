@@ -23,6 +23,8 @@ require_relative "../platform/query_helpers"
 class Chef
   class Resource
     class WindowsFeaturePowershell < Chef::Resource
+      unified_mode true
+
       provides(:windows_feature_powershell) { true }
 
       description "Use the **windows_feature_powershell** resource to add, remove, or entirely delete Windows features and roles using PowerShell. This resource offers significant speed benefits over the windows_feature_dism resource, but requires installation of the Remote Server Administration Tools on non-server releases of Windows."
@@ -141,8 +143,12 @@ class Chef
       action_class do
         # @return [Array] features the user has requested to install which need installation
         def features_to_install
-          # the intersection of the features to install & disabled features are what needs installing
-          @install ||= new_resource.feature_name & node["powershell_features_cache"]["disabled"]
+          # the intersection of the features to install & disabled/removed features are what needs installing
+          @features_to_install ||= begin
+            features = node["powershell_features_cache"]["disabled"]
+            features |= node["powershell_features_cache"]["removed"] if new_resource.source
+            new_resource.feature_name & features
+          end
         end
 
         # @return [Array] features the user has requested to remove which need removing
@@ -182,6 +188,12 @@ class Chef
         # @return [void]
         def reload_cached_powershell_data
           Chef::Log.debug("Caching Windows features available via Get-WindowsFeature.")
+
+          #
+          # FIXME FIXME FIXME
+          # The node object should not be used for caching state like this and this is not a public API and may break.
+          # FIXME FIXME FIXME
+          #
           node.override["powershell_features_cache"] = Mash.new
           node.override["powershell_features_cache"]["enabled"] = []
           node.override["powershell_features_cache"]["disabled"] = []

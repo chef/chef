@@ -59,7 +59,7 @@ module ChefConfig
         @chef_config_dir = false
         full_path = working_directory.split(File::SEPARATOR)
         (full_path.length - 1).downto(0) do |i|
-          candidate_directory = File.join(full_path[0..i] + [ChefConfig::Dist::USER_CONF_DIR])
+          candidate_directory = File.join(full_path[0..i] + [ChefUtils::Dist::Infra::USER_CONF_DIR])
           if File.exist?(candidate_directory) && File.directory?(candidate_directory)
             @chef_config_dir = candidate_directory
             break
@@ -129,7 +129,7 @@ module ChefConfig
         candidate_configs << File.join(chef_config_dir, "knife.rb")
       end
       # Look for $HOME/.chef/knife.rb
-      PathHelper.home(ChefConfig::Dist::USER_CONF_DIR) do |dot_chef_dir|
+      PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR) do |dot_chef_dir|
         candidate_configs << File.join(dot_chef_dir, "config.rb")
         candidate_configs << File.join(dot_chef_dir, "knife.rb")
       end
@@ -140,13 +140,11 @@ module ChefConfig
     end
 
     def working_directory
-      a = if ChefUtils.windows?
-            env["CD"]
-          else
-            env["PWD"]
-          end || Dir.pwd
-
-      a
+      if ChefUtils.windows?
+        env["CD"]
+      else
+        env["PWD"]
+      end || Dir.pwd
     end
 
     def apply_credentials(creds, profile)
@@ -168,7 +166,7 @@ module ChefConfig
         when "client_key"
           extract_key(value, :client_key, :client_key_contents)
         when "knife"
-          Config.knife.merge!(Hash[value.map { |k, v| [k.to_sym, v] }])
+          Config.knife.merge!(value.transform_keys(&:to_sym))
         else
           Config[key.to_sym] = value
         end
@@ -186,7 +184,7 @@ module ChefConfig
     end
 
     def home_chef_dir
-      @home_chef_dir ||= PathHelper.home(ChefConfig::Dist::USER_CONF_DIR)
+      @home_chef_dir ||= PathHelper.home(ChefUtils::Dist::Infra::USER_CONF_DIR)
     end
 
     def apply_config(config_content, config_file_path)

@@ -59,20 +59,22 @@ describe Chef::ServerAPI do
   end
 
   context "versioned apis" do
-    class VersionedClassV0
-      extend Chef::Mixin::VersionedAPI
-      minimum_api_version 0
-    end
+    let(:version_class) do
+      Class.new do
+        extend Chef::Mixin::VersionedAPIFactory
 
-    class VersionedClassV2
-      extend Chef::Mixin::VersionedAPI
-      minimum_api_version 2
-    end
+        version_class_v0 = Class.new do
+          extend Chef::Mixin::VersionedAPI
+          minimum_api_version 0
+        end
+        add_versioned_api_class version_class_v0
 
-    class VersionedClassVersions
-      extend Chef::Mixin::VersionedAPIFactory
-      add_versioned_api_class VersionedClassV0
-      add_versioned_api_class VersionedClassV2
+        version_class_v2 = Class.new do
+          extend Chef::Mixin::VersionedAPI
+          minimum_api_version 2
+        end
+        add_versioned_api_class version_class_v2
+      end
     end
 
     before do
@@ -80,7 +82,7 @@ describe Chef::ServerAPI do
     end
 
     let(:versioned_client) do
-      Chef::ServerAPI.new(url, version_class: VersionedClassVersions)
+      Chef::ServerAPI.new(url, version_class: version_class)
     end
 
     it "on protocol negotiation it posts the same message body without doubly-encoding the json string" do
@@ -114,10 +116,35 @@ describe Chef::ServerAPI do
 
     it "500 on a get retries and gets correctly " do
       WebMock.disable_net_connect!
-      get_body = { bar: "baz" }
       headers = { "Accept" => "application/json", "Accept-Encoding" => "gzip;q=1.0,deflate;q=0.6,identity;q=0.3", "Host" => "chef.example.com:4000", "X-Chef-Version" => Chef::VERSION, "X-Ops-Sign" => "algorithm=sha1;version=1.1;", "X-Ops-Userid" => "silent-bob" }
       stub_request(:get, "http://chef.example.com:4000/foo").with(headers: headers).to_return(status: [500, "Internal Server Error"])
       stub_request(:get, "http://chef.example.com:4000/foo").with(headers: headers).to_return(status: 200, body: "", headers: {})
+      client.get("foo")
+    end
+
+    it "406 on a post does protocol negotiation" do
+      WebMock.disable_net_connect!
+      post_body = { bar: "baz" }
+      body_406 = '{"error":"invalid-x-ops-server-api-version","message":"Specified version 2 not supported","min_version":0,"max_version":1}'
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: { "X-Ops-Server-Api-Version" => "2" }).to_return(status: [406, "Not Acceptable"], body: body_406 )
+      stub_request(:post, "http://chef.example.com:4000/foo").with(body: post_body.to_json, headers: { "X-Ops-Server-Api-Version" => "0" }).to_return(status: 200, body: "", headers: {})
+      client.post("foo", post_body)
+    end
+
+    it "406 on a put does protocol negotiation" do
+      WebMock.disable_net_connect!
+      put_body = { bar: "baz" }
+      body_406 = '{"error":"invalid-x-ops-server-api-version","message":"Specified version 2 not supported","min_version":0,"max_version":1}'
+      stub_request(:put, "http://chef.example.com:4000/foo").with(body: put_body.to_json, headers: { "X-Ops-Server-Api-Version" => "2" }).to_return(status: [406, "Not Acceptable"], body: body_406 )
+      stub_request(:put, "http://chef.example.com:4000/foo").with(body: put_body.to_json, headers: { "X-Ops-Server-Api-Version" => "0" }).to_return(status: 200, body: "", headers: {})
+      client.put("foo", put_body)
+    end
+
+    it "406 on a get does protocol negotiation" do
+      WebMock.disable_net_connect!
+      body_406 = '{"error":"invalid-x-ops-server-api-version","message":"Specified version 2 not supported","min_version":0,"max_version":1}'
+      stub_request(:get, "http://chef.example.com:4000/foo").with(headers: { "X-Ops-Server-Api-Version" => "2" }).to_return(status: [406, "Not Acceptable"], body: body_406 )
+      stub_request(:get, "http://chef.example.com:4000/foo").with(headers: { "X-Ops-Server-Api-Version" => "0" }).to_return(status: 200, body: "", headers: {})
       client.get("foo")
     end
   end

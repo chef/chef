@@ -21,51 +21,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsUserPrivilege < Chef::Resource
-      privilege_opts = %w{SeTrustedCredManAccessPrivilege
-                          SeNetworkLogonRight
-                          SeTcbPrivilege
-                          SeMachineAccountPrivilege
-                          SeIncreaseQuotaPrivilege
-                          SeInteractiveLogonRight
-                          SeRemoteInteractiveLogonRight
-                          SeBackupPrivilege
-                          SeChangeNotifyPrivilege
-                          SeSystemtimePrivilege
-                          SeTimeZonePrivilege
-                          SeCreatePagefilePrivilege
-                          SeCreateTokenPrivilege
-                          SeCreateGlobalPrivilege
-                          SeCreatePermanentPrivilege
-                          SeCreateSymbolicLinkPrivilege
-                          SeDebugPrivilege
-                          SeDenyNetworkLogonRight
-                          SeDenyBatchLogonRight
-                          SeDenyServiceLogonRight
-                          SeDenyInteractiveLogonRight
-                          SeDenyRemoteInteractiveLogonRight
-                          SeEnableDelegationPrivilege
-                          SeRemoteShutdownPrivilege
-                          SeAuditPrivilege
-                          SeImpersonatePrivilege
-                          SeIncreaseWorkingSetPrivilege
-                          SeIncreaseBasePriorityPrivilege
-                          SeLoadDriverPrivilege
-                          SeLockMemoryPrivilege
-                          SeBatchLogonRight
-                          SeServiceLogonRight
-                          SeSecurityPrivilege
-                          SeRelabelPrivilege
-                          SeSystemEnvironmentPrivilege
-                          SeManageVolumePrivilege
-                          SeProfileSingleProcessPrivilege
-                          SeSystemProfilePrivilege
-                          SeUndockPrivilege
-                          SeAssignPrimaryTokenPrivilege
-                          SeRestorePrivilege
-                          SeShutdownPrivilege
-                          SeSyncAgentPrivilege
-                          SeTakeOwnershipPrivilege
-                        }
+      unified_mode true
 
       provides :windows_user_privilege
       description "The windows_user_privilege resource allows to add and set principal (User/Group) to the specified privilege.\n Ref: https://docs.microsoft.com/en-us/windows/security/threat-protection/security-policy-settings/user-rights-assignment"
@@ -123,22 +79,67 @@ class Chef
       ```
       DOC
 
+      PRIVILEGE_OPTS = %w{ SeAssignPrimaryTokenPrivilege
+                           SeAuditPrivilege
+                           SeBackupPrivilege
+                           SeBatchLogonRight
+                           SeChangeNotifyPrivilege
+                           SeCreateGlobalPrivilege
+                           SeCreatePagefilePrivilege
+                           SeCreatePermanentPrivilege
+                           SeCreateSymbolicLinkPrivilege
+                           SeCreateTokenPrivilege
+                           SeDebugPrivilege
+                           SeDenyBatchLogonRight
+                           SeDenyInteractiveLogonRight
+                           SeDenyNetworkLogonRight
+                           SeDenyRemoteInteractiveLogonRight
+                           SeDenyServiceLogonRight
+                           SeEnableDelegationPrivilege
+                           SeImpersonatePrivilege
+                           SeIncreaseBasePriorityPrivilege
+                           SeIncreaseQuotaPrivilege
+                           SeIncreaseWorkingSetPrivilege
+                           SeInteractiveLogonRight
+                           SeLoadDriverPrivilege
+                           SeLockMemoryPrivilege
+                           SeMachineAccountPrivilege
+                           SeManageVolumePrivilege
+                           SeNetworkLogonRight
+                           SeProfileSingleProcessPrivilege
+                           SeRelabelPrivilege
+                           SeRemoteInteractiveLogonRight
+                           SeRemoteShutdownPrivilege
+                           SeRestorePrivilege
+                           SeSecurityPrivilege
+                           SeServiceLogonRight
+                           SeShutdownPrivilege
+                           SeSyncAgentPrivilege
+                           SeSystemEnvironmentPrivilege
+                           SeSystemProfilePrivilege
+                           SeSystemtimePrivilege
+                           SeTakeOwnershipPrivilege
+                           SeTcbPrivilege
+                           SeTimeZonePrivilege
+                           SeTrustedCredManAccessPrivilege
+                           SeUndockPrivilege
+                          }.freeze
+
       property :principal, String,
         description: "An optional property to add the user to the given privilege. Use only with add and remove action.",
         name_property: true
 
-      property :users, Array,
-        description: "An optional property to set the privilege for given users. Use only with set action."
+      property :users, [Array, String],
+        description: "An optional property to set the privilege for given users. Use only with set action.",
+        coerce: proc { |v| Array(v) }
 
       property :privilege, [Array, String],
-        description: "Privilege to set for users.",
+        description: "One or more privileges to set for users.",
         required: true,
-        coerce: proc { |v| v.is_a?(String) ? Array[v] : v },
+        coerce: proc { |v| Array(v) },
         callbacks: {
-           "Option privilege must include any of the: #{privilege_opts}" => lambda { |v|
-             (privilege_opts & v).size == v.size
-           },
-         }
+          "Privilege property restricted to the following values: #{PRIVILEGE_OPTS}" => lambda { |n| (n - PRIVILEGE_OPTS).empty? },
+        }
 
       load_current_value do |new_resource|
         if new_resource.principal && (new_resource.action.include?(:add) || new_resource.action.include?(:remove))

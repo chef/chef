@@ -59,9 +59,15 @@ module ResourceInspector
                required: opts[:required] || false,
                default: opts[:default_description] || get_default(opts[:default]),
                name_property: opts[:name_property] || false,
-               equal_to: Array(opts[:equal_to]).sort.map(&:inspect) }
+               equal_to: sort_equal_to(opts[:equal_to]) }
     end
     data
+  end
+
+  def self.sort_equal_to(equal_to)
+    Array(equal_to).sort.map(&:inspect)
+  rescue ArgumentError
+    Array(equal_to).map(&:inspect)
   end
 
   def self.extract_cookbook(path, complete)

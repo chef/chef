@@ -173,6 +173,6 @@ shared_context Chef::Resource::Directory do
   end
 
   after(:each) do
-    FileUtils.rm_r(path) if File.exists?(path)
+    FileUtils.rm_r(path) if File.exist?(path)
   end
 end

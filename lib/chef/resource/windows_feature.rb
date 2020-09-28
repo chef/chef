@@ -125,6 +125,8 @@ class Chef
       end
 
       action_class do
+        private
+
         # call the appropriate windows_feature resource based on the specified subresource
         # @return [void]
         def run_default_subresource(desired_action)

@@ -255,7 +255,7 @@ class Chef
         end
 
         def visudo_content(path)
-          if ::File.exists?(path)
+          if ::File.exist?(path)
             "cat #{new_resource.config_prefix}/sudoers | #{new_resource.visudo_binary} -cf - && #{new_resource.visudo_binary} -cf %{path}"
           else
             "cat #{new_resource.config_prefix}/sudoers %{path} | #{new_resource.visudo_binary} -cf -"

@@ -31,12 +31,12 @@ describe Chef::Resource::BffPackage, :requires_root, external: ohai[:platform] !
 
   def bff_pkg_should_be_installed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(0)
-    ::File.exists?("/usr/PkgA/bin/acommand")
+    ::File.exist?("/usr/PkgA/bin/acommand")
   end
 
   def bff_pkg_should_be_removed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(1)
-    !::File.exists?("/usr/PkgA/bin/acommand")
+    !::File.exist?("/usr/PkgA/bin/acommand")
   end
 
   before(:all) do

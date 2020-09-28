@@ -170,7 +170,7 @@ RSpec.describe ChefConfig::Config do
           apply_config
           expect(described_class[:data_bag_path]).to eq("#{current_directory}/data_bags")
           expect(described_class[:cookbook_path]).to eq("#{current_directory}/cookbooks")
-          expect(described_class[:chef_repo_path]).to eq("#{current_directory}")
+          expect(described_class[:chef_repo_path]).to eq(current_directory)
         end
       end
 
@@ -222,13 +222,70 @@ RSpec.describe ChefConfig::Config do
       ChefConfig::Config.add_formatter(:doc, "/var/log/formatter.log")
       expect(ChefConfig::Config.formatters).to eq([[:doc, "/var/log/formatter.log"]])
     end
+  end
 
+  describe "#var_chef_path" do
+    let (:dirname) { ChefUtils::Dist::Infra::DIR_SUFFIX }
+
+    context "on unix", :unix_only do
+      it "var_chef_dir is /var/chef" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("/var/#{dirname}")
+      end
+
+      it "var_root_dir is /var" do
+        expect(ChefConfig::Config.var_root_dir).to eql("/var")
+      end
+
+      it "etc_chef_dir is /etc/chef" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("/etc/#{dirname}")
+      end
+    end
+
+    context "on windows", :windows_only do
+      it "var_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.var_chef_dir).to eql("C:\\#{dirname}")
+      end
+
+      it "var_root_dir is C:\\" do
+        expect(ChefConfig::Config.var_root_dir).to eql("C:\\")
+      end
+
+      it "etc_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.etc_chef_dir).to eql("C:\\#{dirname}")
+      end
+    end
+
+    context "when forced to unix" do
+      it "var_chef_dir is /var/chef" do
+        expect(ChefConfig::Config.var_chef_dir(windows: false)).to eql("/var/#{dirname}")
+      end
+
+      it "var_root_dir is /var" do
+        expect(ChefConfig::Config.var_root_dir(windows: false)).to eql("/var")
+      end
+
+      it "etc_chef_dir is /etc/chef" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: false)).to eql("/etc/#{dirname}")
+      end
+    end
+
+    context "when forced to windows" do
+      it "var_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.var_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      end
+
+      it "var_root_dir is C:\\" do
+        expect(ChefConfig::Config.var_root_dir(windows: true)).to eql("C:\\")
+      end
+
+      it "etc_chef_dir is C:\\chef" do
+        expect(ChefConfig::Config.etc_chef_dir(windows: true)).to eql("C:\\#{dirname}")
+      end
+    end
   end
 
   [ false, true ].each do |is_windows|
-
     context "On #{is_windows ? "Windows" : "Unix"}" do
-
       before :each do
         allow(ChefUtils).to receive(:windows?).and_return(is_windows)
       end
@@ -430,8 +487,8 @@ RSpec.describe ChefConfig::Config do
 
         describe "ChefConfig::Config[:cache_path]" do
           let(:target_mode_host) { "fluffy.kittens.org" }
-          let(:target_mode_primary_cache_path) { "#{primary_cache_path}/#{target_mode_host}" }
-          let(:target_mode_secondary_cache_path) { "#{secondary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_primary_cache_path) { ChefUtils.windows? ? "#{primary_cache_path}\\#{target_mode_host}" : "#{primary_cache_path}/#{target_mode_host}" }
+          let(:target_mode_secondary_cache_path) { ChefUtils.windows? ? "#{secondary_cache_path}\\#{target_mode_host}" : "#{secondary_cache_path}/#{target_mode_host}" }
 
           before do
             if is_windows
@@ -874,7 +931,7 @@ RSpec.describe ChefConfig::Config do
 
         shared_examples_for "a suitable locale" do
           it "returns an English UTF-8 locale" do
-            expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef to use/)
+            expect(ChefConfig.logger).to_not receive(:warn).with(/Please install an English UTF-8 locale for Chef Infra Client to use/)
             expect(ChefConfig.logger).to_not receive(:trace).with(/Defaulting to locale en_US.UTF-8 on Windows/)
             expect(ChefConfig.logger).to_not receive(:trace).with(/No usable locale -a command found/)
             expect(ChefConfig::Config.guess_internal_locale).to eq expected_locale
@@ -927,7 +984,7 @@ RSpec.describe ChefConfig::Config do
           let(:locale_array) { ["af_ZA", "af_ZA.ISO8859-1", "af_ZA.ISO8859-15", "af_ZA.UTF-8"] }
 
           it "should fall back to C locale" do
-            expect(ChefConfig.logger).to receive(:warn).with("Please install an English UTF-8 locale for Chef to use, falling back to C locale and disabling UTF-8 support.")
+            expect(ChefConfig.logger).to receive(:warn).with("Please install an English UTF-8 locale for Chef Infra Client to use, falling back to C locale and disabling UTF-8 support.")
             expect(ChefConfig::Config.guess_internal_locale).to eq "C"
           end
         end

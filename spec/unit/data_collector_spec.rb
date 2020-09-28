@@ -26,10 +26,6 @@ require "socket"
 # actually running -- another testing requirement similar to the integration testing framework in cheffish as well)
 #
 describe Chef::DataCollector do
-  before(:each) do
-    Chef::Config[:enable_reporting] = true
-  end
-
   let(:node) { Chef::Node.new }
 
   let(:rest_client) { double("Chef::ServerAPI (mock)") }
@@ -39,6 +35,13 @@ describe Chef::DataCollector do
   let(:new_resource) do
     new_resource = Chef::Resource::File.new("/tmp/a-file.txt")
     new_resource.checksum nil
+    # This next line is a hack to work around the fact that the name property will not have been autovivified yet
+    # in these unit tests which breaks some assumptions.  Really the Formatters::ErrorMapper.resource_failed and
+    # related APIs need to properly walk and get properties on the resource rather than walking through instance
+    # variables, but the ErrorMappers probably pre-date the conversion to properties.  But this next line is necesary
+    # to populate the name_property instance variable (which will happen naturally during the course of running the
+    # provider, so I don't think this is a user-visibile bug).
+    new_resource.path
     new_resource
   end
 
@@ -286,119 +289,6 @@ describe Chef::DataCollector do
     it "includes the resource record" do
       expect_converge_message("resources" => resource_record)
       send_run_failed_or_completed_event
-    end
-  end
-
-  describe "#should_be_enabled?" do
-    shared_examples_for "a solo-like run" do
-      it "is disabled in solo-legacy without a data_collector url and token" do
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-
-      it "is disabled in solo-legacy with only a url" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-
-      it "is disabled in solo-legacy with only a token" do
-        Chef::Config[:data_collector][:token] = "admit_one"
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-
-      it "is enabled in solo-legacy with both a token and url" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        Chef::Config[:data_collector][:token] = "no_cash_value"
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-      end
-
-      it "is enabled in solo-legacy with only an output location to a file" do
-        Chef::Config[:data_collector][:output_locations] = { files: [ "/always/be/counting/down" ] }
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-      end
-
-      it "is disabled in solo-legacy with only an output location to a uri" do
-        Chef::Config[:data_collector][:output_locations] = { urls: [ "https://esa.local/ariane5" ] }
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-
-      it "is enabled in solo-legacy with only an output location to a uri with a token" do
-        Chef::Config[:data_collector][:output_locations] = { urls: [ "https://esa.local/ariane5" ] }
-        Chef::Config[:data_collector][:token] = "good_for_one_fare"
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-      end
-
-      it "is enabled in solo-legacy when the mode is :solo" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        Chef::Config[:data_collector][:token] = "non_redeemable"
-        Chef::Config[:data_collector][:mode] = :solo
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-      end
-
-      it "is enabled in solo-legacy when the mode is :both" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        Chef::Config[:data_collector][:token] = "non_negotiable"
-        Chef::Config[:data_collector][:mode] = :both
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-      end
-
-      it "is disabled in solo-legacy when the mode is :client" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        Chef::Config[:data_collector][:token] = "NYCTA"
-        Chef::Config[:data_collector][:mode] = :client
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-
-      it "is disabled in solo-legacy mode when the mode is :nonsense" do
-        Chef::Config[:data_collector][:server_url] = "https://www.esa.local/ariane5"
-        Chef::Config[:data_collector][:token] = "MTA"
-        Chef::Config[:data_collector][:mode] = :nonsense
-        expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-      end
-    end
-
-    it "by default it is enabled" do
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-    end
-
-    it "is disabled in why-run" do
-      Chef::Config[:why_run] = true
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-    end
-
-    describe "a solo legacy run" do
-      before(:each) do
-        Chef::Config[:solo_legacy_mode] = true
-      end
-
-      it_behaves_like "a solo-like run"
-    end
-
-    describe "a local mode run" do
-      before(:each) do
-        Chef::Config[:local_mode] = true
-      end
-
-      it_behaves_like "a solo-like run"
-    end
-
-    it "is enabled in client mode when the mode is :both" do
-      Chef::Config[:data_collector][:mode] = :both
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
-    end
-
-    it "is disabled in client mode when the mode is :solo" do
-      Chef::Config[:data_collector][:mode] = :solo
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-    end
-
-    it "is disabled in client mode when the mode is :nonsense" do
-      Chef::Config[:data_collector][:mode] = :nonsense
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be false
-    end
-
-    it "is still enabled if you set a token in client mode" do
-      Chef::Config[:data_collector][:token] =  "good_for_one_ride"
-      expect(Chef::DataCollector::ConfigValidation.should_be_enabled?).to be true
     end
   end
 
@@ -780,6 +670,13 @@ describe Chef::DataCollector do
         let(:resource_record) do
           rec = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec["error_message"] = "imperial to metric conversion error"
+          rec["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           [ rec ]
         end
         let(:status) { "failure" }
@@ -808,6 +705,13 @@ describe Chef::DataCollector do
           rec = resource_record_for(new_resource, nil, nil, :create, "failed", "1234")
           rec["before"] = {}
           rec["error_message"] = "imperial to metric conversion error"
+          rec["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           [ rec ]
         end
         let(:status) { "failure" }
@@ -842,6 +746,13 @@ describe Chef::DataCollector do
         let(:resource_record) do
           rec1 = resource_record_for(new_resource, current_resource, nil, :create, "failed", "1234")
           rec1["error_message"] = "imperial to metric conversion error"
+          rec1["error"] = {
+            "class" => exception.class,
+            "message" => exception.message,
+            "backtrace" => exception.backtrace,
+            "description" => error_description,
+          }
+
           rec2 = resource_record_for(unprocessed_resource, nil, nil, :nothing, "unprocessed", "")
           [ rec1, rec2 ]
         end

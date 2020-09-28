@@ -20,6 +20,8 @@ require_relative "../resource"
 class Chef
   class Resource
     class WindowsPagefile < Chef::Resource
+      unified_mode true
+
       provides(:windows_pagefile) { true }
 
       description "Use the **windows_pagefile** resource to configure pagefile settings on Windows."
@@ -109,6 +111,8 @@ class Chef
       end
 
       action_class do
+        private
+
         # make sure the provided name property matches the appropriate format
         # we do this here and not in the property itself because if automatic_managed
         # is set then this validation is not necessary / doesn't make sense at all

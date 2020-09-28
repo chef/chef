@@ -29,6 +29,11 @@ describe Chef::Resource::ChefClientCron do
     expect(resource.action).to eql([:add])
   end
 
+  it "supports :add and :remove actions" do
+    expect { resource.action :add }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+  end
+
   it "coerces splay to an Integer" do
     resource.splay "10"
     expect(resource.splay).to eql(10)
@@ -42,6 +47,19 @@ describe Chef::Resource::ChefClientCron do
     expect(resource.chef_binary_path).to eql("/opt/chef/bin/chef-client")
   end
 
+  it "raises an error if nice is less than -20" do
+    expect { resource.nice(-21) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "raises an error if nice is greater than 19" do
+    expect { resource.nice(20) }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "coerces nice to an Integer" do
+    resource.nice "10"
+    expect(resource.nice).to eql(10)
+  end
+
   it "log_directory is /Library/Logs/Chef on macOS systems" do
     node.automatic_attrs[:platform_family] = "mac_os_x"
     node.automatic_attrs[:platform] = "mac_os_x"
@@ -51,11 +69,6 @@ describe Chef::Resource::ChefClientCron do
   it "log_directory is /var/log/chef on non-macOS systems" do
     node.automatic_attrs[:platform_family] = "ubuntu"
     expect(resource.log_directory).to eql("/var/log/chef")
-  end
-
-  it "supports :add and :remove actions" do
-    expect { resource.action :add }.not_to raise_error
-    expect { resource.action :remove }.not_to raise_error
   end
 
   describe "#splay_sleep_time" do
@@ -71,7 +84,7 @@ describe Chef::Resource::ChefClientCron do
     end
   end
 
-  describe "#cron_command" do
+  describe "#client_command" do
     before do
       allow(provider).to receive(:splay_sleep_time).and_return("123")
     end
@@ -79,56 +92,64 @@ describe Chef::Resource::ChefClientCron do
     let(:root_path) { windows? ? "C:\\chef/client.rb" : "/etc/chef/client.rb" }
 
     it "creates a valid command if using all default properties" do
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
       )
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path} -L /var/log/chef/client.log"
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
-      expect(provider.cron_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /var/log/chef/client.log")
+      expect(provider.client_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /var/log/chef/client.log")
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/my-chef/my-client.log"
       )
     end
 
     it "uses mailto if set" do
       resource.mailto "bob@example.com"
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log || echo \"Chef Infra Client execution failed\""
       )
     end
 
     it "uses custom chef-client binary if set" do
       resource.chef_binary_path "/usr/local/bin/chef-client"
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /usr/local/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
       )
     end
 
     it "appends to the log file appending if set to false" do
       resource.append_log_file false
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} > /var/log/chef/client.log 2>&1"
       )
     end
 
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
-      expect(provider.cron_command).to eql(
+      expect(provider.client_command).to eql(
         "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} --chef-license accept -L /var/log/chef/client.log"
+      )
+    end
+
+    it "uses nice if set" do
+      allow(provider).to receive(:which).with("nice").and_return("/usr/bin/nice")
+      resource.nice(-15)
+      expect(provider.client_command).to eql(
+        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
       )
     end
   end

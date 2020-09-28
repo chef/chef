@@ -491,16 +491,14 @@ describe Chef::Application do
 
   describe "configuration errors" do
     before do
-      expect(Process).to receive(:exit)
+      allow(Process).to receive(:exit).and_return(true)
     end
 
     def raises_informative_fatals_on_configure_chef
       config_file_regexp = Regexp.new @app.config[:config_file]
-      expect(Chef::Log).to receive(:fatal)
-        .with(/Configuration error/)
-      expect(Chef::Log).to receive(:fatal)
-        .with(config_file_regexp)
-        .at_least(1).times
+      expect(Chef::Log).to receive(:fatal).with(/Configuration error/)
+      expect(Chef::Log).to receive(:fatal).with(config_file_regexp)
+      expect(Process).to receive(:exit).with(43).and_return(true)
       @app.configure_chef
     end
 

@@ -16,6 +16,7 @@
 #
 
 require "uri" unless defined?(URI)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class DataCollector
@@ -46,14 +47,14 @@ class Chef
           return unless output_locations
 
           # but deliberately setting an empty output_location we consider to be an error (XXX: but should we?)
-          if output_locations.empty?
+          unless valid_hash_with_keys?(output_locations, :urls, :files)
             raise Chef::Exceptions::ConfigurationError,
               "Chef::Config[:data_collector][:output_locations] is empty. Please supply an hash of valid URLs and / or local file paths."
           end
 
           # loop through all the types and locations and validate each one-by-one
           output_locations.each do |type, locations|
-            locations.each do |location|
+            Array(locations).each do |location|
               validate_url!(location) if type == :urls
               validate_file!(location) if type == :files
             end
@@ -86,15 +87,20 @@ class Chef
             false
           when running_mode == :client && Chef::Config[:data_collector][:token]
             Chef::Log.warn("Data collector token authentication is not recommended for client-server mode. " \
-                           "Please upgrade #{Chef::Dist::SERVER_PRODUCT} to 12.11 or later and remove the token from your config file " \
+                           "Please upgrade #{ChefUtils::Dist::Server::PRODUCT} to 12.11 or later and remove the token from your config file " \
                            "to use key based authentication instead")
             true
-          when Chef::Config[:data_collector][:output_locations] && Chef::Config[:data_collector][:output_locations][:files] && !Chef::Config[:data_collector][:output_locations][:files].empty?
+          when Chef::Config[:data_collector][:output_locations] && !valid_hash_with_keys?(Chef::Config[:data_collector][:output_locations], :urls)
             # we can run fine to a file without a token, even in solo mode.
+            unless valid_hash_with_keys?(Chef::Config[:data_collector][:output_locations], :files)
+              raise Chef::Exceptions::ConfigurationError,
+                "Chef::Config[:data_collector][:output_locations] is empty. Please supply an hash of valid URLs and / or local file paths."
+            end
+
             true
           when running_mode == :solo && !Chef::Config[:data_collector][:token]
             # we are in solo mode and are not logging to a file, so must have a token
-            Chef::Log.trace("Data collector token must be configured to use #{Chef::Dist::AUTOMATE} data collector with #{Chef::Dist::SOLO}")
+            Chef::Log.trace("Data collector token must be configured to use #{ChefUtils::Dist::Automate::PRODUCT} data collector with #{ChefUtils::Dist::Solo::PRODUCT}")
             false
           else
             true
@@ -105,16 +111,10 @@ class Chef
 
         # validate an output_location file
         def validate_file!(file)
-          open(file, "a") {}
-        rescue Errno::ENOENT
+          return true if Chef::Config.path_accessible?(File.expand_path(file))
+
           raise Chef::Exceptions::ConfigurationError,
             "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is a non existent file path."
-        rescue Errno::EACCES
-          raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which cannot be written to by Chef."
-        rescue Exception => e
-          raise Chef::Exceptions::ConfigurationError,
-            "Chef::Config[:data_collector][:output_locations][:files] contains the location #{file}, which is invalid: #{e.message}."
         end
 
         # validate an output_location url
@@ -125,6 +125,15 @@ class Chef
             "Chef::Config[:data_collector][:output_locations][:urls] contains the url #{url} which is not valid."
         end
 
+        # Validate the hash contains at least one of the given keys.
+        #
+        # @param hash [Hash] the hash to be validated.
+        # @param keys [Array] an array of keys to check existence of in the hash.
+        # @return [Boolean] true if the hash contains any of the given keys.
+        #
+        def valid_hash_with_keys?(hash, *keys)
+          hash.is_a?(Hash) && keys.any? { |k| hash.key?(k) }
+        end
       end
     end
   end

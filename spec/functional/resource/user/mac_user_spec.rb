@@ -19,7 +19,7 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 metadata = {
-  macos_1014: true,
+  macos_gte_1014: true,
   requires_root: true,
 }
 

@@ -61,7 +61,7 @@ describe Chef::ChefFS::PathUtils do
   end
 
   context "invoking realest_path" do
-    let(:good_path) { File.dirname(__FILE__) }
+    let(:good_path) { __dir__ }
     let(:parent_path) { File.dirname(good_path) }
 
     it "handles paths with no wildcards or globs" do

@@ -116,172 +116,167 @@ describe Chef::Resource::Execute do
     end
   end
 
-  shared_examples_for "a consumer of the Execute resource" do
-    context "when running on Windows" do
-      before do
-        allow(resource).to receive(:windows?).and_return(true)
-      end
+  context "when running on Windows" do
+    before do
+      allow(resource).to receive(:windows?).and_return(true)
+    end
 
-      context "when no user, domain, or password is specified" do
-        let(:username) { nil }
-        let(:domain) { nil }
-        let(:password) { nil }
-        it_behaves_like "it received valid credentials"
-      end
+    context "when no user, domain, or password is specified" do
+      let(:username) { nil }
+      let(:domain) { nil }
+      let(:password) { nil }
+      it_behaves_like "it received valid credentials"
+    end
 
-      context "when a valid username is specified" do
-        let(:username) { "starchild" }
-        let(:elevated) { false }
-        context "when a valid domain is specified" do
-          let(:domain) { "mothership" }
+    context "when a valid username is specified" do
+      let(:username) { "starchild" }
+      let(:elevated) { false }
+      context "when a valid domain is specified" do
+        let(:domain) { "mothership" }
 
-          context "when the password is not specified" do
-            let(:password) { nil }
-            it_behaves_like "it received invalid credentials"
-          end
-
-          context "when the password is specified" do
-            let(:password) { "we.funk!" }
-            it_behaves_like "it received valid credentials"
-          end
-        end
-
-        context "when the domain is not specified" do
-          let(:domain) { nil }
-          let(:elevated) { false }
-
-          context "when the password is not specified" do
-            let(:password) { nil }
-            it_behaves_like "it received invalid credentials"
-          end
-
-          context "when the password is specified" do
-            let(:password) { "we.funk!" }
-            it_behaves_like "it received valid credentials"
-          end
-        end
-
-        context "when username is not specified" do
-          let(:username) { nil }
-
-          context "when domain is specified" do
-            let(:domain) { "mothership" }
-            let(:password) { nil }
-            it_behaves_like "it received invalid username and domain"
-          end
-
-          context "when password is specified" do
-            let(:domain) { nil }
-            let(:password) { "we.funk!" }
-            it_behaves_like "it received invalid username and domain"
-          end
-        end
-      end
-
-      context "when invalid username is specified" do
-        let(:username) { "user@domain@domain" }
-        let(:domain) { nil }
-        let(:password) { "we.funk!" }
-        it_behaves_like "it received invalid username and domain"
-      end
-
-      context "when the domain is provided in both username and domain" do
-        let(:domain) { "some_domain" }
-        let(:password) { "we.funk!" }
-
-        context "when username is in the form domain\\user" do
-          let(:username) { "mothership\\starchild" }
-          it_behaves_like "it received invalid username and domain"
-        end
-
-        context "when username is in the form user@domain" do
-          let(:username) { "starchild@mothership" }
-          it_behaves_like "it received invalid username and domain"
-        end
-      end
-
-      context "when elevated is passed" do
-        let(:elevated) { true }
-
-        context "when username and password are not passed" do
-          let(:username) { nil }
-          let(:domain) { nil }
+        context "when the password is not specified" do
           let(:password) { nil }
           it_behaves_like "it received invalid credentials"
         end
 
-        context "when username and password are passed" do
-          let(:username) { "user" }
-          let(:domain) { nil }
+        context "when the password is specified" do
           let(:password) { "we.funk!" }
           it_behaves_like "it received valid credentials"
         end
       end
-    end
 
-    context "when not running on Windows" do
-      before do
-        allow(resource).to receive(:node).and_return({ platform_family: "ubuntu" })
-      end
-
-      context "when no user, domain, or password is specified" do
-        let(:username) { nil }
+      context "when the domain is not specified" do
         let(:domain) { nil }
-        let(:password) { nil }
-        it_behaves_like "it received valid credentials"
-      end
+        let(:elevated) { false }
 
-      context "when the user is specified and the domain and password are not" do
-        let(:username) { "starchild" }
-        let(:domain) { nil }
-        let(:password) { nil }
-        it_behaves_like "it received valid credentials"
-
-        context "when the password is specified and the domain is not" do
-          let(:password) { "we.funk!" }
-          let(:domain) { nil }
-          it_behaves_like "it received credentials that are not valid on the platform"
+        context "when the password is not specified" do
+          let(:password) { nil }
+          it_behaves_like "it received invalid credentials"
         end
 
-        context "when the domain is specified and the password is not" do
+        context "when the password is specified" do
+          let(:password) { "we.funk!" }
+          it_behaves_like "it received valid credentials"
+        end
+      end
+
+      context "when username is not specified" do
+        let(:username) { nil }
+
+        context "when domain is specified" do
           let(:domain) { "mothership" }
           let(:password) { nil }
-          it_behaves_like "it received credentials that are not valid on the platform"
+          it_behaves_like "it received invalid username and domain"
         end
 
-        context "when the domain and password are specified" do
-          let(:domain) { "mothership" }
+        context "when password is specified" do
+          let(:domain) { nil }
           let(:password) { "we.funk!" }
-          it_behaves_like "it received credentials that are not valid on the platform"
+          it_behaves_like "it received invalid username and domain"
         end
       end
+    end
 
-      context "when the user is not specified" do
+    context "when invalid username is specified" do
+      let(:username) { "user@domain@domain" }
+      let(:domain) { nil }
+      let(:password) { "we.funk!" }
+      it_behaves_like "it received invalid username and domain"
+    end
+
+    context "when the domain is provided in both username and domain" do
+      let(:domain) { "some_domain" }
+      let(:password) { "we.funk!" }
+
+      context "when username is in the form domain\\user" do
+        let(:username) { "mothership\\starchild" }
+        it_behaves_like "it received invalid username and domain"
+      end
+
+      context "when username is in the form user@domain" do
+        let(:username) { "starchild@mothership" }
+        it_behaves_like "it received invalid username and domain"
+      end
+    end
+
+    context "when elevated is passed" do
+      let(:elevated) { true }
+
+      context "when username and password are not passed" do
         let(:username) { nil }
-        context "when the domain is specified" do
-          let(:domain) { "mothership" }
-          context "when the password is specified" do
-            let(:password) { "we.funk!" }
-            it_behaves_like "it received credentials that are not valid on the platform"
-          end
+        let(:domain) { nil }
+        let(:password) { nil }
+        it_behaves_like "it received invalid credentials"
+      end
 
-          context "when password is not specified" do
-            let(:password) { nil }
-            it_behaves_like "it received credentials that are not valid on the platform"
-          end
-        end
-
-        context "when the domain is not specified" do
-          let(:domain) { nil }
-          context "when the password is specified" do
-            let(:password) { "we.funk!" }
-            it_behaves_like "it received credentials that are not valid on the platform"
-          end
-        end
+      context "when username and password are passed" do
+        let(:username) { "user" }
+        let(:domain) { nil }
+        let(:password) { "we.funk!" }
+        it_behaves_like "it received valid credentials"
       end
     end
   end
 
-  it_behaves_like "a consumer of the Execute resource"
+  context "when not running on Windows" do
+    before do
+      allow(resource).to receive(:node).and_return({ platform_family: "ubuntu" })
+    end
 
+    context "when no user, domain, or password is specified" do
+      let(:username) { nil }
+      let(:domain) { nil }
+      let(:password) { nil }
+      it_behaves_like "it received valid credentials"
+    end
+
+    context "when the user is specified and the domain and password are not" do
+      let(:username) { "starchild" }
+      let(:domain) { nil }
+      let(:password) { nil }
+      it_behaves_like "it received valid credentials"
+
+      context "when the password is specified and the domain is not" do
+        let(:password) { "we.funk!" }
+        let(:domain) { nil }
+        it_behaves_like "it received credentials that are not valid on the platform"
+      end
+
+      context "when the domain is specified and the password is not" do
+        let(:domain) { "mothership" }
+        let(:password) { nil }
+        it_behaves_like "it received credentials that are not valid on the platform"
+      end
+
+      context "when the domain and password are specified" do
+        let(:domain) { "mothership" }
+        let(:password) { "we.funk!" }
+        it_behaves_like "it received credentials that are not valid on the platform"
+      end
+    end
+
+    context "when the user is not specified" do
+      let(:username) { nil }
+      context "when the domain is specified" do
+        let(:domain) { "mothership" }
+        context "when the password is specified" do
+          let(:password) { "we.funk!" }
+          it_behaves_like "it received credentials that are not valid on the platform"
+        end
+
+        context "when password is not specified" do
+          let(:password) { nil }
+          it_behaves_like "it received credentials that are not valid on the platform"
+        end
+      end
+
+      context "when the domain is not specified" do
+        let(:domain) { nil }
+        context "when the password is specified" do
+          let(:password) { "we.funk!" }
+          it_behaves_like "it received credentials that are not valid on the platform"
+        end
+      end
+    end
+  end
 end

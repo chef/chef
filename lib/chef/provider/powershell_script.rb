@@ -31,20 +31,31 @@ class Chef
         super()
       end
 
-      def command
-        # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
-        interpreter_path = Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
+      # Set InputFormat to None as PowerShell will hang if STDIN is redirected
+      # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
+      DEFAULT_FLAGS = "-NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None".freeze
 
+      def command
         # Must use -File rather than -Command to launch the script
         # file created by the base class that contains the script
         # code -- otherwise, powershell.exe does not propagate the
         # error status of a failed Windows process that ran at the
         # end of the script, it gets changed to '1'.
         #
-        "\"#{interpreter_path}\" #{new_resource.flags} -File \"#{script_file_path}\""
+        [
+          %Q{"#{interpreter_path}"},
+          DEFAULT_FLAGS,
+          new_resource.flags,
+          %Q{-File "#{script_file_path}"},
+        ].join(" ")
       end
 
       protected
+
+      def interpreter_path
+        # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
+        Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
+      end
 
       def code
         code = wrapper_script
@@ -71,7 +82,12 @@ class Chef
           # written to the file system at this point, which is required since
           # the intent is to execute the code just written to it.
           user_script_file.close
-          validation_command = "\"#{interpreter}\" #{new_resource.flags} -Command \". '#{user_script_file.path}'\""
+          validation_command = [
+            %Q{"#{interpreter_path}"},
+            DEFAULT_FLAGS,
+            new_resource.flags,
+            %Q{-Command ". '#{user_script_file.path}'"},
+          ].join(" ")
 
           # Note that other script providers like bash allow syntax errors
           # to be suppressed by setting 'returns' to a value that the
