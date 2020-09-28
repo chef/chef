@@ -8,7 +8,7 @@ This file holds "in progress" release notes for the current release under develo
 * Improved the license acceptance flow to give helpful information if the user passes an invalid value in the environment variable or command line argument.
 * Updated Chef InSpec to 4.23.11 in order to resolve issues running the new `junit2` reporter
 * Additional performance improvements to reduce the startup time of the `chef-client` and `knife` commands.
-* `knife vault` commands now output proper JSON or YAML when using the `-f json` or `-f yaml` flags
+* `knife vault` commands now output proper JSON or YAML when using the `-f json` or `-f yaml` flags.
 
 # What's New in 16.5
 
