@@ -6,7 +6,7 @@ This file holds "in progress" release notes for the current release under develo
 * The `homebrew_package` resource will now check for the full and short package names. Both `homebrew_package 'homebrew/core/vim'` and `homebrew_package 'vim'` styles should now work correctly.
 * Resolved errors that occured in cookbooks requiring `addressable/uri`
 * Improved the license acceptance flow to give helpful information if the user passes an invalid value in the environment variable or command line argument.
-* Updated Chef InSpec to 4.23.11 in order to resolve issues running the new `junit2` reporter
+* Updated Chef InSpec to 4.23.11 in order to resolve issues when running the new `junit2` reporter.
 * Additional performance improvements to reduce the startup time of the `chef-client` and `knife` commands.
 * `knife vault` commands now output proper JSON or YAML when using the `-f json` or `-f yaml` flags.
 
