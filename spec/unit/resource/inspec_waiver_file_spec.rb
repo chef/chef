@@ -75,6 +75,6 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects the backup property to fail validation when passed a string" do
-    expect { resource.backup 'please' }.to raise_error(Chef::Exceptions::ValidationFailed)
+    expect { resource.backup "please" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 end
