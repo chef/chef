@@ -74,14 +74,14 @@ end
 
 %w{001 002 003}.each do |control|
   inspec_waiver_file "fake_inspec_control_#{control}" do
-    file '/etc/chef/inspec_waiver_file.yaml'
-    expiration '2025-07-01'
+    file "/etc/chef/inspec_waiver_file.yaml"
+    expiration "2025-07-01"
     action :add
   end
 end
 
 inspec_waiver_file "fake_inspec_control_002" do
-  file '/etc/chef/inspec_waiver_file.yaml'
+  file "/etc/chef/inspec_waiver_file.yaml"
   action :remove
 end
 

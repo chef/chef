@@ -43,7 +43,7 @@ describe Chef::Resource::InspecWaiverFile do
   end
 
   it "expects expiration property to fail with date format YYYY/MM/DD" do
-    expect { resource.expiration "2022/09/23" }.to raise_error(Chef::Exceptions::ArgumentError)
+    expect { resource.expiration "2022/09/23" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "expects expiration property to fail with invalid date 2022-02-31" do
