@@ -87,7 +87,7 @@ class Chef
       property :justification, String,
         description: "Can be any text you want and might include a reason for the waiver as well as who signed off on the waiver."
 
-      property :backup, [false, Integers],
+      property :backup, [false, Integer],
         description: "The number of backups to be kept in /var/chef/backup (for UNIX- and Linux-based platforms) or C:/chef/backup (for the Microsoft Windows platform). Set to false to prevent backups from being kept.",
         default: false
 
