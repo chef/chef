@@ -76,10 +76,8 @@ class Chef
             re = Regexp.new('\d{4}-\d{2}-\d{2}$').freeze
             if re.match?(e)
               Date.valid_date?(*e.split("-").map(&:to_i))
-            elsif e.nil?
-              true
             else
-              false
+              e.nil?
             end
           },
         }
