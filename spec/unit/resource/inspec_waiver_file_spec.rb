@@ -1,6 +1,5 @@
 #
-# Author:: Cary Penniman (<cary@rightscale.com>)
-# Author:: Tyler Cloke (<tyler@chef.io>)
+# Author:: Davin Taddeo (<davin@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -45,6 +44,10 @@ describe Chef::Resource::InspecWaiverFile do
 
   it "expects expiration property to fail with date format YYYY/MM/DD" do
     expect { resource.expiration "2022/09/23" }.to raise_error(Chef::Exceptions::ValidationFailed)
+  end
+
+  it "expects expiration property to fail with invalid date 2022-02-31" do
+    expect { resource.expiration "2022-02-31" }.to raise_error(Chef::Exceptions::ValidationFailed)
   end
 
   it "expects expiration property to match YYYY-MM-DD" do
