@@ -100,22 +100,16 @@ class Chef
         control_hash["run"] = new_resource.run_test unless new_resource.run_test.nil?
         control_hash["justification"] = new_resource.justification.to_s
 
-        if waiver_hash.key?(new_resource.control)
-          unless waiver_hash[new_resource.control] == control_hash
-            waiver_hash.delete(new_resource.control)
-            waiver_hash[new_resource.control] = control_hash
-          end
-        else
+        unless waiver_hash[new_resource.control] == control_hash
           waiver_hash[new_resource.control] = control_hash
-        end
-
-        waiver_hash = waiver_hash.sort.to_h
-
-        file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
-          path new_resource.file
-          content waiver_hash.to_yaml
-          backup new_resource.backup
-          action :create
+          waiver_hash = waiver_hash.sort.to_h
+  
+          file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
+            path new_resource.file
+            content waiver_hash.to_yaml
+            backup new_resource.backup
+            action :create
+          end
         end
       end
 
@@ -136,14 +130,11 @@ class Chef
 
       action_class do
         def load_waiver_file_to_hash(file_name)
-          if ::File.file?(file_name) && ::File.readable?(file_name) && !::File.zero?(file_name)
-            file_contents = IO.read(file_name)
-            contents_hash = {}
-            contents_hash = ::YAML.safe_load(file_contents) unless file_contents.empty?
+          if ::File.exist?(file_name)
+            ::YAML.load_file(file_name)
           else
-            contents_hash = {}
+            {}
           end
-          contents_hash
         end
       end
     end
