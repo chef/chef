@@ -43,14 +43,14 @@ windows_firewall_profile "Public" do
 end
 
 %w{001 002 003}.each do |control|
-  inspec_waivers_file "fake_inspec_control_#{control}" do
+  inspec_waiver_file "fake_inspec_control_#{control}" do
     file 'C:\chef\inspec_waiver_file.yaml'
     expiration '2025-07-01'
     action :add
   end
 end
 
-inspec_waivers_file "fake_inspec_control_002" do
+inspec_waiver_file "fake_inspec_control_002" do
   file 'C:\chef\inspec_waiver_file.yaml'
   action :remove
 end
