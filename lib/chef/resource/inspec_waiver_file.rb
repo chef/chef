@@ -24,7 +24,7 @@ class Chef
       provides :inspec_waiver_file
       unified_mode true
 
-      description "Use the **inspec_waiver_file** resource to add or remove entries from an inspec waiver file. This can be used in conjunction with the audit cookbook"
+      description "Use the **inspec_waiver_file** resource to add or remove entries from an inspec waiver file. This can be used in conjunction with the audit cookbook."
       introduced "16.3"
       examples <<~DOC
       **Add an InSpec waiver entry to a given waiver file**:
