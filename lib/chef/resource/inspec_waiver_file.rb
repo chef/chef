@@ -16,7 +16,6 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
 require "yaml" unless defined?(YAML)
 require "date"
 
