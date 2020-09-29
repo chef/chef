@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require "yaml" unless defined?(YAML)
+require "yaml"
 require "date"
 
 class Chef
