@@ -103,7 +103,7 @@ class Chef
         unless waiver_hash[new_resource.control] == control_hash
           waiver_hash[new_resource.control] = control_hash
           waiver_hash = waiver_hash.sort.to_h
-  
+
           file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
             path new_resource.file
             content waiver_hash.to_yaml
