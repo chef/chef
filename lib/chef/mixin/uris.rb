@@ -17,7 +17,9 @@
 #
 
 autoload :URI, "uri"
-autoload :Addressable, "addressable/uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 
 class Chef
   module Mixin

@@ -31,7 +31,7 @@ class Chef
       description "Use the **openssl_x509_request** resource to generate PEM-formatted x509 certificates requests. If no existing key is specified, the resource will automatically generate a passwordless key with the certificate."
       introduced "14.4"
       examples <<~DOC
-        Generate new ec key and csr file
+        **Generate new EC key and CSR file**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_ec_request.csr' do
@@ -42,7 +42,7 @@ class Chef
         end
         ```
 
-        Generate a new csr file from an existing ec key
+        **Generate a new CSR file from an existing EC key**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_ec_request2.csr' do
@@ -54,7 +54,7 @@ class Chef
         end
         ```
 
-        Generate new rsa key and csr file
+        **Generate new RSA key and CSR file**
 
         ```ruby
         openssl_x509_request '/etc/ssl_files/my_rsa_request.csr' do
@@ -80,46 +80,44 @@ class Chef
         description: "The permission mode applied to all files created by the resource."
 
       property :country, String,
-        description: "Value for the C certificate field."
+        description: "Value for the `C` certificate field."
 
       property :state, String,
-        description: "Value for the ST certificate field."
+        description: "Value for the `ST` certificate field."
 
       property :city, String,
-        description: "Value for the L certificate field."
+        description: "Value for the `L` certificate field."
 
       property :org, String,
-        description: "Value for the O certificate field."
+        description: "Value for the `O` certificate field."
 
       property :org_unit, String,
-        description: "Value for the OU certificate field."
+        description: "Value for the `OU` certificate field."
 
       property :common_name, String,
         required: true,
-        description: "Value for the CN certificate field."
+        description: "Value for the `CN` certificate field."
 
       property :email, String,
-        description: "Value for the email certificate field."
+        description: "Value for the `email` certificate field."
 
       property :key_file, String,
-        description: "The path to a certificate key file on the filesystem. If the key_file property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
+        description: "The path to a certificate key file on the filesystem. If the `key_file` property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the `key_file` property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."
 
       property :key_pass, String,
         description: "The passphrase for an existing key's passphrase."
 
       property :key_type, String,
         equal_to: %w{rsa ec}, default: "ec",
-        description: "The desired type of the generated key (rsa or ec)."
+        description: "The desired type of the generated key."
 
       property :key_length, Integer,
         equal_to: [1024, 2048, 4096, 8192], default: 2048,
-        description: "The desired bit length of the generated key (if key_type is equal to 'rsa')."
+        description: "The desired bit length of the generated key (if key_type is equal to `rsa`)."
 
       property :key_curve, String,
         equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1",
-        description: "The desired curve of the generated key (if key_type is equal to 'ec'). Run openssl ecparam -list_curves to see available options."
-
-      default_action :create
+        description: "The desired curve of the generated key (if key_type is equal to `ec`). Run `openssl ecparam -list_curves` to see available options."
 
       action :create do
         description "Generate a certificate request."

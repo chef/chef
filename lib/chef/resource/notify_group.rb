@@ -15,7 +15,6 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
 
 class Chef
   class Resource

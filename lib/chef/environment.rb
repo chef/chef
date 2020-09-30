@@ -25,7 +25,7 @@ require_relative "mixin/params_validate"
 require_relative "mixin/from_file"
 require_relative "version_constraint"
 require_relative "server_api"
-require_relative "dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Environment
@@ -308,7 +308,7 @@ class Chef
     def self.validate_cookbook_version(version)
       if Chef::Config[:solo_legacy_mode]
         raise Chef::Exceptions::IllegalVersionConstraint,
-          "Environment cookbook version constraints not allowed in #{Chef::Dist::SOLO}"
+          "Environment cookbook version constraints not allowed in #{ChefUtils::Dist::Solo::PRODUCT}"
       else
         Chef::VersionConstraint.new version
         true

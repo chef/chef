@@ -33,7 +33,7 @@ class Chef
         name_property: true
 
       property :url, String,
-        description: "The url to the package source.",
+        description: "The URL to the package source.",
         required: [:register]
 
       property :trusted, [TrueClass, FalseClass],
@@ -43,17 +43,17 @@ class Chef
       property :provider_name, String,
         equal_to: %w{ Programs msi NuGet msu PowerShellGet psl chocolatey },
         validation_message: "The following providers are supported: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' or 'chocolatey'",
-        description: "The package management provider for the source. It supports the following providers: 'Programs', 'msi', 'NuGet', 'msu', 'PowerShellGet', 'psl' and 'chocolatey'.",
+        description: "The package management provider for the source.",
         default: "NuGet"
 
       property :publish_location, String,
-        description: "The url where modules will be published to for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The URL where modules will be published to for this source. Only valid if the provider is `PowerShellGet`."
 
       property :script_source_location, String,
-        description: "The url where scripts are located for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The URL where scripts are located for this source. Only valid if the provider is `PowerShellGet`."
 
       property :script_publish_location, String,
-        description: "The location where scripts will be published to for this source. Only valid if the provider is 'PowerShellGet'."
+        description: "The location where scripts will be published to for this source. Only valid if the provider is `PowerShellGet`."
 
       load_current_value do
         cmd = load_resource_state_script(source_name)

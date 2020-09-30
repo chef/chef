@@ -22,7 +22,7 @@ require "ohai/config"
 module Net
   autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
 end
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef::Application::Knife < Chef::Application
 
@@ -61,7 +61,7 @@ class Chef::Application::Knife < Chef::Application
   option :environment,
     short: "-E ENVIRONMENT",
     long: "--environment ENVIRONMENT",
-    description: "Set the #{Chef::Dist::PRODUCT} environment (except for in searches, where this will be flagrantly ignored)."
+    description: "Set the #{ChefUtils::Dist::Infra::PRODUCT} environment (except for in searches, where this will be flagrantly ignored)."
 
   option :editor,
     short: "-e EDITOR",
@@ -86,18 +86,18 @@ class Chef::Application::Knife < Chef::Application
   option :node_name,
     short: "-u USER",
     long: "--user USER",
-    description: "#{Chef::Dist::SERVER_PRODUCT} API client username."
+    description: "#{ChefUtils::Dist::Server::PRODUCT} API client username."
 
   option :client_key,
     short: "-k KEY",
     long: "--key KEY",
-    description: "#{Chef::Dist::SERVER_PRODUCT} API client key.",
+    description: "#{ChefUtils::Dist::Server::PRODUCT} API client key.",
     proc: lambda { |path| File.expand_path(path, Dir.pwd) }
 
   option :chef_server_url,
     short: "-s URL",
     long: "--server-url URL",
-    description: "#{Chef::Dist::SERVER_PRODUCT} URL."
+    description: "#{ChefUtils::Dist::Server::PRODUCT} URL."
 
   option :yes,
     short: "-y",
@@ -122,16 +122,16 @@ class Chef::Application::Knife < Chef::Application
   option :local_mode,
     short: "-z",
     long: "--local-mode",
-    description: "Point knife commands at local repository instead of #{Chef::Dist::SERVER_PRODUCT}.",
+    description: "Point knife commands at local repository instead of #{ChefUtils::Dist::Server::PRODUCT}.",
     boolean: true
 
   option :chef_zero_host,
     long: "--chef-zero-host HOST",
-    description: "Host to start #{Chef::Dist::ZERO} on."
+    description: "Host to start #{ChefUtils::Dist::Zero::PRODUCT} on."
 
   option :chef_zero_port,
     long: "--chef-zero-port PORT",
-    description: "Port (or port range) to start #{Chef::Dist::ZERO} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
+    description: "Port (or port range) to start #{ChefUtils::Dist::Zero::PRODUCT} on. Port ranges like 1000,1010 or 8889-9999 will try all given ports until one works."
 
   option :listen,
     long: "--[no-]listen",
@@ -141,9 +141,9 @@ class Chef::Application::Knife < Chef::Application
   option :version,
     short: "-v",
     long: "--version",
-    description: "Show #{Chef::Dist::PRODUCT} version.",
+    description: "Show #{ChefUtils::Dist::Infra::PRODUCT} version.",
     boolean: true,
-    proc: lambda { |v| puts "#{Chef::Dist::PRODUCT}: #{::Chef::VERSION}" },
+    proc: lambda { |v| puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{::Chef::VERSION}" },
     exit: 0
 
   option :fips,
@@ -218,10 +218,10 @@ class Chef::Application::Knife < Chef::Application
     end
 
     if want_help?
-      puts "#{Chef::Dist::PRODUCT}: #{Chef::VERSION}"
+      puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{Chef::VERSION}"
       puts
-      puts "Docs: #{Chef::Dist::KNIFE_DOCS}"
-      puts "Patents: #{Chef::Dist::PATENTS}"
+      puts "Docs: #{ChefUtils::Dist::Org::KNIFE_DOCS}"
+      puts "Patents: #{ChefUtils::Dist::Org::PATENTS}"
       puts
     end
 

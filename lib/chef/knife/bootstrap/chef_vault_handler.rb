@@ -112,7 +112,7 @@ class Chef
               if bootstrap_vault_item
                 bootstrap_vault_item
               else
-                json = bootstrap_vault_json ? bootstrap_vault_json : File.read(bootstrap_vault_file)
+                json = bootstrap_vault_json || File.read(bootstrap_vault_file)
                 Chef::JSONCompat.from_json(json)
               end
             end

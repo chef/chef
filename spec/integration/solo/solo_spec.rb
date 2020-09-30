@@ -5,10 +5,10 @@ require "chef/run_lock"
 require "chef/config"
 require "timeout"
 require "fileutils"
+require "chef-utils"
 require "chef/win32/security" if ChefUtils.windows?
-require "chef/dist"
 
-describe Chef::Dist::SOLOEXEC do
+describe ChefUtils::Dist::Solo::EXEC do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
@@ -18,7 +18,7 @@ describe Chef::Dist::SOLOEXEC do
 
   let(:cookbook_ancient_100_metadata_rb) { cb_metadata("ancient", "1.0.0") }
 
-  let(:chef_solo) { "bundle exec #{Chef::Dist::SOLOEXEC} --legacy-mode --minimal-ohai" }
+  let(:chef_solo) { "bundle exec #{ChefUtils::Dist::Solo::EXEC} --legacy-mode --minimal-ohai" }
 
   when_the_repository "creates nodes" do
     let(:nodes_dir) { File.join(@repository_dir, "nodes") }

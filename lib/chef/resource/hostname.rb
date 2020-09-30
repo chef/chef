@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -248,7 +248,7 @@ class Chef
 
             # reboot because $windows
             reboot "setting hostname" do
-              reason "#{Chef::Dist::PRODUCT} updated system hostname"
+              reason "#{ChefUtils::Dist::Infra::PRODUCT} updated system hostname"
               only_if { new_resource.windows_reboot }
               action :request_reboot
             end

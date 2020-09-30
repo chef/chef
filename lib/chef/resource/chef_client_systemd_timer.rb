@@ -15,7 +15,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -24,24 +24,24 @@ class Chef
 
       provides :chef_client_systemd_timer
 
-      description "Use the **chef_client_systemd_timer** resource to setup the #{Chef::Dist::PRODUCT} to run as a systemd timer."
+      description "Use the **chef_client_systemd_timer** resource to setup the #{ChefUtils::Dist::Infra::PRODUCT} to run as a systemd timer."
       introduced "16.0"
       examples <<~DOC
-      **Setup #{Chef::Dist::PRODUCT} to run using the default 30 minute cadence**:
+      **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-      chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} as a systemd timer"
+      chef_client_systemd_timer "Run #{ChefUtils::Dist::Infra::PRODUCT} as a systemd timer"
       ```
 
-      **Run #{Chef::Dist::PRODUCT} every 1 hour**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour**:
 
       ```ruby
-      chef_client_systemd_timer "Run #{Chef::Dist::PRODUCT} every 1 hour" do
+      chef_client_systemd_timer "Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour" do
         interval "1hr"
       end
       ```
 
-      **Run #{Chef::Dist::PRODUCT} with extra options passed to the client**:
+      **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
       chef_client_systemd_timer "Run an override recipe" do
@@ -52,14 +52,14 @@ class Chef
 
       property :job_name, String,
         description: "The name of the system timer to create.",
-        default: Chef::Dist::CLIENT
+        default: ChefUtils::Dist::Infra::CLIENT
 
       property :description, String,
         description: "The description to add to the systemd timer. This will be displayed when running `systemctl status` for the timer.",
-        default: "#{Chef::Dist::PRODUCT} periodic execution"
+        default: "#{ChefUtils::Dist::Infra::PRODUCT} periodic execution"
 
       property :user, String,
-        description: "The name of the user that #{Chef::Dist::PRODUCT} runs as.",
+        description: "The name of the user that #{ChefUtils::Dist::Infra::PRODUCT} runs as.",
         default: "root"
 
       property :delay_after_boot, String,
@@ -71,7 +71,7 @@ class Chef
         default: "30min"
 
       property :splay, String,
-        description: "A interval between 0 and X to add to the interval so that all #{Chef::Dist::CLIENT} commands don't execute at the same time. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
+        description: "A interval between 0 and X to add to the interval so that all #{ChefUtils::Dist::Infra::CLIENT} commands don't execute at the same time. This is expressed as a systemd time span such as `300seconds`, `1hr`, or `1m`. See <https://www.freedesktop.org/software/systemd/man/systemd.time.html> for a complete list of allowed time span values.",
         default: "5min"
 
       property :accept_chef_license, [true, false],
@@ -79,19 +79,19 @@ class Chef
         default: false
 
       property :run_on_battery, [true, false],
-        description: "Run the timer for #{Chef::Dist::PRODUCT} if the system is on battery.",
+        description: "Run the timer for #{ChefUtils::Dist::Infra::PRODUCT} if the system is on battery.",
         default: true
 
       property :config_directory, String,
         description: "The path of the config directory.",
-        default: Chef::Dist::CONF_DIR
+        default: ChefConfig::Config.etc_chef_dir
 
       property :chef_binary_path, String,
-        description: "The path to the #{Chef::Dist::CLIENT} binary.",
-        default: "/opt/#{Chef::Dist::DIR_SUFFIX}/bin/#{Chef::Dist::CLIENT}"
+        description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary.",
+        default: "/opt/#{ChefUtils::Dist::Infra::DIR_SUFFIX}/bin/#{ChefUtils::Dist::Infra::CLIENT}"
 
       property :daemon_options, Array,
-        description: "An array of options to pass to the #{Chef::Dist::CLIENT} command.",
+        description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
         default: lazy { [] }
 
       property :environment, Hash,
@@ -99,7 +99,7 @@ class Chef
         default: lazy { {} }
 
       property :cpu_quota, [Integer, String],
-        description: "The systemd CPUQuota to run the #{Chef::Dist::CLIENT} process with. This is a percentage value of the total CPU time available on the system. If the system has more than 1 core this may be a value greater than 100.",
+        description: "The systemd CPUQuota to run the #{ChefUtils::Dist::Infra::CLIENT} process with. This is a percentage value of the total CPU time available on the system. If the system has more than 1 core this may be a value greater than 100.",
         introduced: "16.5",
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }

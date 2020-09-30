@@ -24,7 +24,7 @@ require_relative "../run_context"
 require_relative "../config"
 require_relative "../node"
 require_relative "../server_api"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module PolicyBuilder
@@ -91,7 +91,7 @@ class Chef
         @node = nil
 
         if Chef::Config[:solo_legacy_mode]
-          raise UnsupportedFeature, "Policyfile does not support chef-solo. Use #{Chef::Dist::CLIENT} local mode instead."
+          raise UnsupportedFeature, "Policyfile does not support chef-solo. Use #{ChefUtils::Dist::Infra::CLIENT} local mode instead."
         end
 
         if override_runlist

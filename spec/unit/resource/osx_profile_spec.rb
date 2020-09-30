@@ -102,6 +102,72 @@ describe Chef::Resource::OsxProfile do
           "ProfileVersion" => 1 }],
       }
     end
+    let(:profile_raw_xml) do
+      <<~OUT
+      <?xml version="1.0" encoding="UTF-8"?>
+      <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+      <plist version="1.0">
+        <dict>
+            <key>tsmith</key>
+            <array>
+              <dict>
+                  <key>ProfileDisplayName</key>
+                  <string>Screensaver Settings</string>
+                  <key>ProfileIdentifier</key>
+                  <string>com.company.screensaver</string>
+                  <key>ProfileInstallDate</key>
+                  <string>2020-09-17 17:20:49 +0000</string>
+                  <key>ProfileItems</key>
+                  <array>
+                    <dict>
+                        <key>PayloadContent</key>
+                        <dict>
+                          <key>PayloadContentManagedPreferences</key>
+                          <dict>
+                              <key>com.apple.screensaver</key>
+                              <dict>
+                                <key>Forced</key>
+                                <array>
+                                    <dict>
+                                      <key>mcx_preference_settings</key>
+                                      <dict>
+                                          <key>idleTime</key>
+                                          <integer>0</integer>
+                                      </dict>
+                                    </dict>
+                                </array>
+                              </dict>
+                          </dict>
+                        </dict>
+                        <key>PayloadDisplayName</key>
+                        <string>com.apple.screensaver</string>
+                        <key>PayloadIdentifier</key>
+                        <string>com.company.screensaver</string>
+                        <key>PayloadType</key>
+                        <string>com.apple.ManagedClient.preferences</string>
+                        <key>PayloadUUID</key>
+                        <string>73fc30e0-1e57-0131-c32d-000c2944c108</string>
+                        <key>PayloadVersion</key>
+                        <integer>1</integer>
+                    </dict>
+                  </array>
+                  <key>ProfileOrganization</key>
+                  <string>Chef</string>
+                  <key>ProfileType</key>
+                  <string>Configuration</string>
+                  <key>ProfileUUID</key>
+                  <string>ed5e36c8-ea0b-5960-8f49-3c7d9121687e</string>
+                  <key>ProfileVersion</key>
+                  <integer>1</integer>
+              </dict>
+            </array>
+        </dict>
+      </plist>
+      OUT
+    end
+    let(:shell_out_profiles) do
+      double("shell_out", exitstatus: 0, error?: false, stdout: profile_raw_xml)
+    end
     # If anything is changed within this profile, be sure to update the
     # ProfileUUID in all_profiles to match the new config specific UUID
     let(:test_profile) do
@@ -155,7 +221,7 @@ describe Chef::Resource::OsxProfile do
       resource.profile_name profile_name
       allow(provider).to receive(:get_installed_profiles).and_call_original
       allow(provider).to receive(:read_plist).and_return(all_profiles)
-      expect(provider).to receive(:shell_out_compacted).with("/usr/bin/profiles", "-P", "-o", kind_of(String))
+      expect(provider).to receive(:shell_out_compacted).with("/usr/bin/profiles", "-P", "-o", "stdout-xml").and_return(shell_out_profiles)
       provider.load_current_resource
     end
 

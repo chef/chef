@@ -55,7 +55,6 @@ require_relative "mixin/deprecation"
 require "chef-utils" unless defined?(ChefUtils::CANARY)
 require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
-require_relative "dist"
 require "forwardable" unless defined?(Forwardable)
 
 class Chef
@@ -245,11 +244,11 @@ class Chef
 
         events.run_start(Chef::VERSION, run_status)
 
-        logger.info("*** #{Chef::Dist::PRODUCT} #{Chef::VERSION} ***")
+        logger.info("*** #{ChefUtils::Dist::Infra::PRODUCT} #{Chef::VERSION} ***")
         logger.info("Platform: #{RUBY_PLATFORM}")
-        logger.info "#{Chef::Dist::CLIENT.capitalize} pid: #{Process.pid}"
+        logger.info "#{ChefUtils::Dist::Infra::CLIENT.capitalize} pid: #{Process.pid}"
         logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
-        logger.debug("#{Chef::Dist::CLIENT.capitalize} request_id: #{request_id}")
+        logger.debug("#{ChefUtils::Dist::Infra::CLIENT.capitalize} request_id: #{request_id}")
         ENV["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths if Chef::Config[:enforce_default_paths] || Chef::Config[:enforce_path_sanity]
 
         if Chef::Config.target_mode?
@@ -273,7 +272,7 @@ class Chef
         build_node
 
         run_status.start_clock
-        logger.info("Starting #{Chef::Dist::PRODUCT} Run for #{node.name}")
+        logger.info("Starting #{ChefUtils::Dist::Infra::PRODUCT} Run for #{node.name}")
         run_started
 
         do_windows_admin_check
@@ -288,7 +287,7 @@ class Chef
         converge_and_save(run_context)
 
         run_status.stop_clock
-        logger.info("#{Chef::Dist::PRODUCT} Run complete in #{run_status.elapsed_time} seconds")
+        logger.info("#{ChefUtils::Dist::Infra::PRODUCT} Run complete in #{run_status.elapsed_time} seconds")
         run_completed_successfully
         events.run_completed(node, run_status)
 
@@ -334,7 +333,7 @@ class Chef
       eol_year = 2006 + Gem::Version.new(Chef::VERSION).segments.first
 
       if Time.now > Time.new(eol_year, 5, 01)
-        logger.warn("This release of #{Chef::Dist::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
+        logger.warn("This release of #{ChefUtils::Dist::Infra::PRODUCT} became end of life (EOL) on May 1st #{eol_year}. Please update to a supported release to receive new features, bug fixes, and security updates.")
       end
     end
 
@@ -763,7 +762,7 @@ class Chef
         logger.trace("Checking for administrator privileges....")
 
         if !has_admin_privileges?
-          message = "#{Chef::Dist::CLIENT} doesn't have administrator privileges on node #{node_name}."
+          message = "#{ChefUtils::Dist::Infra::CLIENT} doesn't have administrator privileges on node #{node_name}."
           if Chef::Config[:fatal_windows_admin_check]
             logger.fatal(message)
             logger.fatal("fatal_windows_admin_check is set to TRUE.")
@@ -772,7 +771,7 @@ class Chef
             logger.warn("#{message} This might cause unexpected resource failures.")
           end
         else
-          logger.trace("#{Chef::Dist::CLIENT} has administrator privileges on node #{node_name}.")
+          logger.trace("#{ChefUtils::Dist::Infra::CLIENT} has administrator privileges on node #{node_name}.")
         end
       end
     end

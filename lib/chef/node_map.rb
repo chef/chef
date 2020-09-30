@@ -36,7 +36,7 @@
 # XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
 #
 
-require_relative "dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class NodeMap
@@ -86,7 +86,7 @@ class Chef
                         else
                           klass.superclass.to_s
                         end
-        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: Chef::Dist::PRODUCT } )
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: ChefUtils::Dist::Infra::PRODUCT } )
       end
 
       # The map is sorted in order of preference already; we just need to find
@@ -225,13 +225,13 @@ class Chef
 
       if attribute == :platform_family
         # If any blocklist value matches, we don't match
-        return false if blocklist.any? { |v| v[1..-1] == value || platform_family_query_helper?(node, v[1..-1]) }
+        return false if blocklist.any? { |v| v[1..] == value || platform_family_query_helper?(node, v[1..]) }
 
         # If the allowlist is empty, or anything matches, we match.
         allowlist.empty? || allowlist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
       else
         # If any blocklist value matches, we don't match
-        return false if blocklist.any? { |v| v[1..-1] == value }
+        return false if blocklist.any? { |v| v[1..] == value }
 
         # If the allowlist is empty, or anything matches, we match.
         allowlist.empty? || allowlist.any? { |v| v == :all || v == value }

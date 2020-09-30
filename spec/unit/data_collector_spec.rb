@@ -26,10 +26,6 @@ require "socket"
 # actually running -- another testing requirement similar to the integration testing framework in cheffish as well)
 #
 describe Chef::DataCollector do
-  before(:each) do
-    Chef::Config[:enable_reporting] = true
-  end
-
   let(:node) { Chef::Node.new }
 
   let(:rest_client) { double("Chef::ServerAPI (mock)") }

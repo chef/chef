@@ -16,7 +16,7 @@
 #
 
 require_relative "../resource"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "shellwords" unless defined?(Shellwords)
 
 class Chef
@@ -65,7 +65,7 @@ class Chef
         default: false, desired_state: false
 
       property :https_for_ca_consumer, [TrueClass, FalseClass],
-        description: "If true, #{Chef::Dist::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
+        description: "If true, #{ChefUtils::Dist::Infra::PRODUCT} will fetch the katello-ca-consumer-latest.noarch.rpm from the satellite_host using HTTPS.",
         default: false, desired_state: false,
         introduced: "15.9"
 

@@ -1,5 +1,5 @@
 require_relative "base"
-require_relative "../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
 
@@ -28,20 +28,20 @@ class Chef
 
       # Called at the very start of a Chef Run
       def run_start(version, run_status)
-        puts_line "Starting #{Chef::Dist::PRODUCT}, version #{version}"
-        puts_line "Patents: #{Chef::Dist::PATENTS}"
+        puts_line "Starting #{ChefUtils::Dist::Infra::PRODUCT}, version #{version}"
+        puts_line "Patents: #{ChefUtils::Dist::Org::PATENTS}"
         puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
       # Called at the end of the Chef run.
       def run_completed(node)
-        puts "#{Chef::Dist::PRODUCT} finished, #{@updated_resources.size} resources updated"
+        puts "#{ChefUtils::Dist::Infra::PRODUCT} finished, #{@updated_resources.size} resources updated"
       end
 
       # called at the end of a failed run
       def run_failed(exception)
-        puts "#{Chef::Dist::PRODUCT} failed. #{@updated_resources.size} resources updated"
+        puts "#{ChefUtils::Dist::Infra::PRODUCT} failed. #{@updated_resources.size} resources updated"
       end
 
       # Called right after ohai runs.

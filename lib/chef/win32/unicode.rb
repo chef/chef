@@ -40,7 +40,7 @@ module FFI
         last_char = nil
         while last_char != "\000\000"
           length += 1
-          last_char = get_bytes(0, length * 2)[-2..-1]
+          last_char = get_bytes(0, length * 2)[-2..]
         end
 
         num_wchars = length

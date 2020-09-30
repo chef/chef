@@ -16,8 +16,6 @@ jobs:
   - job:
     strategy:
       matrix:
-        ubuntu_kitchen_tests:
-          imageName: 'ubuntu-latest'
         mac_kitchen_tests:
           imageName: 'macos-latest'
 

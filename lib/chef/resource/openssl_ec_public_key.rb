@@ -31,7 +31,7 @@ class Chef
       description "Use the **openssl_ec_public_key** resource to generate elliptic curve (EC) public key files from a given EC private key."
       introduced "14.4"
       examples <<~DOC
-        Generate new ec public key from a private key on disk
+        **Generate new EC public key from a private key on disk**
 
         ```ruby
         openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3.pub' do
@@ -41,7 +41,7 @@ class Chef
         end
         ```
 
-        Generate new ec public key by passing in a private key
+        **Generate new EC public key by passing in a private key**
 
         ```ruby
         openssl_ec_public_key '/etc/ssl_files/eckey_prime256v1_des3_2.pub' do

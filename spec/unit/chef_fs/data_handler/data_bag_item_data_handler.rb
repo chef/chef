@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-require "lib/chef/chef_fs/data_handler/data_bag_item_data_handler.rb"
+require "lib/chef/chef_fs/data_handler/data_bag_item_data_handler"
 
 class TestDataBag < Mash
   attr_accessor :name

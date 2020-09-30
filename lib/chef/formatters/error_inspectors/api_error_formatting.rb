@@ -17,7 +17,7 @@
 #
 
 require_relative "../../http/authenticator"
-require_relative "../../dist"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 require "timeout" unless defined?(Timeout)
 
 class Chef
@@ -41,7 +41,7 @@ class Chef
       def describe_eof_error(error_description)
         error_description.section("Authentication Error:", <<~E)
           Received an EOF on transport socket.  This almost always indicates a network
-          error external to #{Chef::Dist::CLIENT}.  Some causes include:
+          error external to #{ChefUtils::Dist::Infra::CLIENT}.  Some causes include:
 
             - Blocking ICMP Dest Unreachable (breaking Path MTU Discovery)
             - IPsec or VPN tunnelling / TCP Encapsulation MTU issues
@@ -115,8 +115,8 @@ class Chef
           error_description.section("Incompatible server API version:", <<~E)
             This version of the API that this request specified is not supported by the server you sent this request to.
             The server supports a min API version of #{min_server_version} and a max API version of #{max_server_version}.
-            #{Chef::Dist::PRODUCT} just made a request with an API version of #{client_api_version}.
-            Please either update your #{Chef::Dist::PRODUCT} or the server to be a compatible set.
+            #{ChefUtils::Dist::Infra::PRODUCT} just made a request with an API version of #{client_api_version}.
+            Please either update your #{ChefUtils::Dist::Infra::PRODUCT} or the server to be a compatible set.
           E
         else
           describe_http_error(error_description)
@@ -131,7 +131,7 @@ class Chef
       end
 
       def describe_503_error(error_description)
-        error_description.section("Server Unavailable", "The #{Chef::Dist::SERVER_PRODUCT} is temporarily unavailable")
+        error_description.section("Server Unavailable", "The #{ChefUtils::Dist::Server::PRODUCT} is temporarily unavailable")
         error_description.section("Server Response:", format_rest_error)
       end
 
