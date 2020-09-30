@@ -1,31 +1,29 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.5.77 -->
-## [v16.5.77](https://github.com/chef/chef/tree/v16.5.77) (2020-09-28)
-
-#### Merged Pull Requests
-- Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.5.64 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50)) <!-- 16.5.77 -->
-- Use Ruby 2.6 endless Range syntax [#10463](https://github.com/chef/chef/pull/10463) ([007lva](https://github.com/007lva)) <!-- 16.5.76 -->
-- Remove unnecessary require. [#10465](https://github.com/chef/chef/pull/10465) ([phiggins](https://github.com/phiggins)) <!-- 16.5.75 -->
-- autoload addressable/uri on :URI inside addressable module [#10464](https://github.com/chef/chef/pull/10464) ([mwrock](https://github.com/mwrock)) <!-- 16.5.74 -->
-- Preparing 16.5 hotfix patch to fix Workstation build issue [#10462](https://github.com/chef/chef/pull/10462) ([tyler-ball](https://github.com/tyler-ball)) <!-- 16.5.73 -->
-- Use ChefUtils::Dist::Infra::PRODUCT for locale warning instead of &quot;Chef&quot; [#10461](https://github.com/chef/chef/pull/10461) ([ramereth](https://github.com/ramereth)) <!-- 16.5.72 -->
-- Update require gating to include chef-utils/chef-config &amp; gate more [#10451](https://github.com/chef/chef/pull/10451) ([tas50](https://github.com/tas50)) <!-- 16.5.71 -->
-- Simplify Hash transforms &amp; minor code refactoring [#10447](https://github.com/chef/chef/pull/10447) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.5.70 -->
-- Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins)) <!-- 16.5.69 -->
-- Remove unused method [#10449](https://github.com/chef/chef/pull/10449) ([007lva](https://github.com/007lva)) <!-- 16.5.68 -->
-- Check for full names in Homebrew package info [#10360](https://github.com/chef/chef/pull/10360) ([ed-brex](https://github.com/ed-brex)) <!-- 16.5.67 -->
-- Pull in the new tty-table to unlock new license-acceptance [#10450](https://github.com/chef/chef/pull/10450) ([tas50](https://github.com/tas50)) <!-- 16.5.66 -->
-- Add missing requires to chef/policy_builder/dynamic [#10446](https://github.com/chef/chef/pull/10446) ([tas50](https://github.com/tas50)) <!-- 16.5.65 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.5.77](https://github.com/chef/chef/tree/v16.5.77) (2020-09-29)
+
+#### Merged Pull Requests
+- Add missing requires to chef/policy_builder/dynamic [#10446](https://github.com/chef/chef/pull/10446) ([tas50](https://github.com/tas50))
+- Pull in the new tty-table to unlock new license-acceptance [#10450](https://github.com/chef/chef/pull/10450) ([tas50](https://github.com/tas50))
+- Check for full names in Homebrew package info [#10360](https://github.com/chef/chef/pull/10360) ([ed-brex](https://github.com/ed-brex))
+- Remove unused method [#10449](https://github.com/chef/chef/pull/10449) ([007lva](https://github.com/007lva))
+- Fix examples markdown in chef_handler resource. [#10459](https://github.com/chef/chef/pull/10459) ([phiggins](https://github.com/phiggins))
+- Simplify Hash transforms &amp; minor code refactoring [#10447](https://github.com/chef/chef/pull/10447) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update require gating to include chef-utils/chef-config &amp; gate more [#10451](https://github.com/chef/chef/pull/10451) ([tas50](https://github.com/tas50))
+- Use ChefUtils::Dist::Infra::PRODUCT for locale warning instead of &quot;Chef&quot; [#10461](https://github.com/chef/chef/pull/10461) ([ramereth](https://github.com/ramereth))
+- Preparing 16.5 hotfix patch to fix Workstation build issue [#10462](https://github.com/chef/chef/pull/10462) ([tyler-ball](https://github.com/tyler-ball))
+- autoload addressable/uri on :URI inside addressable module [#10464](https://github.com/chef/chef/pull/10464) ([mwrock](https://github.com/mwrock))
+- Remove unnecessary require. [#10465](https://github.com/chef/chef/pull/10465) ([phiggins](https://github.com/phiggins))
+- Use Ruby 2.6 endless Range syntax [#10463](https://github.com/chef/chef/pull/10463) ([007lva](https://github.com/007lva))
+- Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.5.64](https://github.com/chef/chef/tree/v16.5.64) (2020-09-17)
 
 #### Merged Pull Requests
@@ -96,7 +94,6 @@
 - Update InSpec to the latest [#10443](https://github.com/chef/chef/pull/10443) ([tas50](https://github.com/tas50))
 - Fix idempotency in the osx_profile resource and avoid writing data to disk [#10444](https://github.com/chef/chef/pull/10444) ([tas50](https://github.com/tas50))
 - Update to the latest license_scout gem [#10445](https://github.com/chef/chef/pull/10445) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.4.41](https://github.com/chef/chef/tree/v16.4.41) (2020-08-19)
 
