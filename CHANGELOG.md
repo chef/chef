@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.5.78 -->
+## [v16.5.78](https://github.com/chef/chef/tree/v16.5.78) (2020-09-30)
+
+#### Merged Pull Requests
+- Pull in Ohai 16.6 and train-core/train-winrm updates [#10474](https://github.com/chef/chef/pull/10474) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.5.77 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Pull in Ohai 16.6 and train-core/train-winrm updates [#10474](https://github.com/chef/chef/pull/10474) ([tas50](https://github.com/tas50)) <!-- 16.5.78 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
