@@ -247,15 +247,6 @@ describe Chef::Provider::Mount::Mount do
       expect(@provider.current_resource.enabled).to be_falsey
     end
 
-    it "should set enabled to false if the mount point is not last in fstab" do
-      line_1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-      line_2 = "/dev/sdy1 #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-      allow(::File).to receive(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
-
-      @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_falsey
-    end
-
     it "should not mangle the mount options if the device in fstab is a symlink" do
       # expand the target path to correct specs on Windows
       target = "/dev/mapper/target"

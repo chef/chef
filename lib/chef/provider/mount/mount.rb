@@ -70,10 +70,6 @@ class Chef
               @current_resource.dump($4.to_i)
               @current_resource.pass($5.to_i)
               logger.trace("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
-              next
-            when %r{^[/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+}
-              enabled = false
-              logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
           end
           @current_resource.enabled(enabled)
