@@ -47,6 +47,30 @@ windows_firewall_profile "Public" do
   action :disable
 end
 
+windows_audit_policy "Update Some Advanced Audit Policies to Success and Failure" do
+  subcategory subcategory ["Application Generated", "Application Group Management", "Audit Policy Change"]
+  success true
+  failure true
+end
+
+windows_audit_policy "Update Some Advanced Audit Policies to Success only" do
+  subcategory subcategory ["Authentication Policy Change", "Authorization Policy Change"]
+  success true
+  failure false
+end
+
+windows_audit_policy "Update Some Advanced Audit Policies to Failure only" do
+  subcategory subcategory ["Central Policy Staging", "Certification Services", "Computer Account Management"]
+  success false
+  failure true
+end
+
+windows_audit_policy "Update Some Advanced Audit Policies to No Auditing" do
+  subcategory subcategory ["Credential Validation", "DPAPI Activity", "Detailed File Share"]
+  success false
+  failure false
+end
+
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300

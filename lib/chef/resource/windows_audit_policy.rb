@@ -152,30 +152,6 @@ class Chef
       property :audit_base_directories, [true, false],
                description: "Setting this audit policy option to true will force the system to assign a System Access Control List to named objects to enable auditing of container objects such as directories."
 
-      def subcategory_configured?(sub_cat, success_value, failure_value)
-        setting = if success_value && failure_value
-                    "Success and Failure$"
-                  elsif success_value && !failure_value
-                    "Success$"
-                  elsif !success_value && failure_value
-                    "(Failure$)&!(Success and Failure$)"
-                  else
-                    "No Auditing"
-                  end
-        powershell_exec(<<-CODE).result
-          $auditpol_config = auditpol /get /subcategory:"#{sub_cat}"
-          if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
-        CODE
-      end
-
-      def option_configured?(option_name, option_setting)
-        setting = option_setting ? "Enabled$" : "Disabled$"
-        powershell_exec(<<-CODE).result
-          $auditpol_config = auditpol /get /option:#{option_name}
-          if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
-        CODE
-      end
-
       action :set do
         unless new_resource.subcategory.nil?
           new_resource.subcategory.each do |subcategory|
@@ -223,6 +199,32 @@ class Chef
             cmd = "auditpol /set /option:AuditBaseObjects /value:#{val}"
             powershell_exec!(cmd)
           end
+        end
+      end
+
+      action_class do
+        def subcategory_configured?(sub_cat, success_value, failure_value)
+          setting = if success_value && failure_value
+                      "Success and Failure$"
+                    elsif success_value && !failure_value
+                      "Success$"
+                    elsif !success_value && failure_value
+                      "#{sub_cat} \\s+ Failure$"
+                    else
+                      "No Auditing"
+                    end
+          powershell_exec!(<<-CODE).result
+            $auditpol_config = auditpol /get /subcategory:"#{sub_cat}"
+            if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
+          CODE
+        end
+  
+        def option_configured?(option_name, option_setting)
+          setting = option_setting ? "Enabled$" : "Disabled$"
+          powershell_exec!(<<-CODE).result
+            $auditpol_config = auditpol /get /option:#{option_name}
+            if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
+          CODE
         end
       end
     end
