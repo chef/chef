@@ -209,7 +209,7 @@ class Chef
                     elsif success_value && !failure_value
                       "Success$"
                     elsif !success_value && failure_value
-                      "#{sub_cat} \\s+ Failure$"
+                      "#{sub_cat}\\s+Failure$"
                     else
                       "No Auditing"
                     end
