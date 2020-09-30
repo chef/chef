@@ -58,6 +58,7 @@ class Chef
           each_with_object
           empty?
           entries
+          except
           fetch
           fetch_values
           filter
@@ -137,6 +138,7 @@ class Chef
           default_proc=
           delete
           delete_if
+          except!
           filter!
           keep_if
           map!
