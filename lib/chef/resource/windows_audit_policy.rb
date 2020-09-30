@@ -218,7 +218,7 @@ class Chef
             if ($auditpol_config | Select-String "#{setting}") { return $true } else { return $false }
           CODE
         end
-  
+
         def option_configured?(option_name, option_setting)
           setting = option_setting ? "Enabled$" : "Disabled$"
           powershell_exec!(<<-CODE).result
