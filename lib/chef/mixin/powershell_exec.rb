@@ -117,14 +117,7 @@ class Chef
       # The same as the #powershell_exec method except this will raise
       # Chef::PowerShell::CommandFailed if the command fails
       def powershell_exec!(script, interpreter = :powershell)
-        case interpreter
-        when :powershell
-          cmd = Chef::PowerShell.new(script)
-        when :pwsh
-          cmd = Chef::Pwsh.new(script)
-        else
-          raise ArgumentError, "Expected interpreter of :powershell or :pwsh"
-        end
+        cmd = powershell_exec(script, interpreter)
         cmd.error!
         cmd
       end
