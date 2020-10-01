@@ -46,10 +46,10 @@ class Chef
       # location, we revert these variables after the script completes.
       original_dml = ENV["DOTNET_MULTILEVEL_LOOKUP"]
       original_dotnet_root = ENV["DOTNET_ROOT"]
-      
+
       ENV["DOTNET_MULTILEVEL_LOOKUP"] = "0"
       ENV["DOTNET_ROOT"] = RbConfig::CONFIG["bindir"]
-      
+
       super
     ensure
       ENV["DOTNET_MULTILEVEL_LOOKUP"] = original_dml
