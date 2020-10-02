@@ -2,7 +2,14 @@
 $ErrorActionPreference = "Stop"
 
 # install chocolatey
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Set-ExecutionPolicy Bypass -Scope Process -Force
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+# install powershell core
+Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7.0.3/PowerShell-7.0.3-win-x64.msi" -UseBasicParsing -OutFile powershell.msi
+Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
+$env:path += ";C:\Program Files\PowerShell\7"
 
 $channel = "$Env:CHANNEL"
 If ([string]::IsNullOrEmpty($channel)) { $channel = "unstable" }

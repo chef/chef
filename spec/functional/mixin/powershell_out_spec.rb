@@ -18,12 +18,20 @@
 require "spec_helper"
 require "chef/mixin/powershell_out"
 
-describe Chef::Mixin::PowershellOut, windows_only: true do
+describe Chef::Mixin::PowershellOut, :windows_only do
   include Chef::Mixin::PowershellOut
 
   describe "#powershell_out" do
     it "runs a powershell command and collects stdout" do
       expect(powershell_out("get-process").run_command.stdout).to match /Handles/
+    end
+
+    it "uses :powershell by default" do
+      expect(powershell_out("$PSVersionTable").run_command.stdout).to match /Desktop/
+    end
+
+    it ":pwsh interpreter uses core edition", :pwsh_installed do
+      expect(powershell_out("$PSVersionTable", :pwsh).run_command.stdout).to match /Core/
     end
 
     it "does not raise exceptions when the command is invalid" do
