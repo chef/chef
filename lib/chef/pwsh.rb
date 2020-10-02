@@ -18,8 +18,6 @@
 class Chef
   class Pwsh < Chef::PowerShell
 
-    @@wrapper_dll ||= Dir.glob("#{RbConfig::CONFIG["bindir"]}/**/Chef.PowerShell.Wrapper.Core.dll").last
-
     # Run a command under pwsh (powershell core) via FFI
     # This implementation requires the managed dll, native wrapper and a
     # published, self contained dotnet core directory tree to exist in the
@@ -28,7 +26,7 @@ class Chef
     # @param script [String] script to run
     # @return [Object] output
     def initialize(script)
-      @dll = @@wrapper_dll
+      @dll = Pwsh.dll
       super
     end
 
@@ -54,6 +52,10 @@ class Chef
     ensure
       ENV["DOTNET_MULTILEVEL_LOOKUP"] = original_dml
       ENV["DOTNET_ROOT"] = original_dotnet_root
+    end
+
+    def self.dll
+      @dll ||= Dir.glob("#{RbConfig::CONFIG["bindir"]}/**/Chef.PowerShell.Wrapper.Core.dll").last
     end
   end
 end
