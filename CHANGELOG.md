@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.2 -->
-## [v16.6.2](https://github.com/chef/chef/tree/v16.6.2) (2020-10-02)
+<!-- latest_release 16.6.3 -->
+## [v16.6.3](https://github.com/chef/chef/tree/v16.6.3) (2020-10-03)
 
 #### Merged Pull Requests
-- add interpreter arg to powershell_out allowing it to call pwsh.exe [#10478](https://github.com/chef/chef/pull/10478) ([mwrock](https://github.com/mwrock))
+- Update to Ruby 2.7.2 / Rubygems 3.1.4 [#10480](https://github.com/chef/chef/pull/10480) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to Ruby 2.7.2 / Rubygems 3.1.4 [#10480](https://github.com/chef/chef/pull/10480) ([tas50](https://github.com/tas50)) <!-- 16.6.3 -->
 - add interpreter arg to powershell_out allowing it to call pwsh.exe [#10478](https://github.com/chef/chef/pull/10478) ([mwrock](https://github.com/mwrock)) <!-- 16.6.2 -->
 - add ruby-3.0 hash methods to immutabilize_hash [#10475](https://github.com/chef/chef/pull/10475) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.6.1 -->
 - Update to the windows_audit_policy resource to fix a bug on failure-only auditing [#10473](https://github.com/chef/chef/pull/10473) ([chef-davin](https://github.com/chef-davin)) <!-- 16.6.0 -->
