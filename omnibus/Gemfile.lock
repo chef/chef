@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 3e43293a0eff95c4175c983247b737a2ce137e35
+  revision: 447cd359cff2c6fe3e5785d711862100db78104a
   branch: master
   specs:
-    omnibus (7.0.27)
+    omnibus (7.0.30)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -11,14 +11,14 @@ GIT
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
       mixlib-versioning
-      ohai (>= 13, < 17)
+      ohai (>= 15)
       pedump
       ruby-progressbar (~> 1.7)
       thor (>= 0.18, < 2.0)
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 0e0686b82299ca2ddc6b9251319e4309142c4b7d
+  revision: e5ac48a1cd931b5f1931e9828713e32718fd36e6
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.378.0)
+    aws-partitions (1.380.0)
     aws-sdk-core (3.109.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -41,8 +41,8 @@ GEM
     aws-sdk-kms (1.39.0)
       aws-sdk-core (~> 3, >= 3.109.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.81.1)
-      aws-sdk-core (~> 3, >= 3.104.3)
+    aws-sdk-s3 (1.83.0)
+      aws-sdk-core (~> 3, >= 3.109.0)
       aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.2)
