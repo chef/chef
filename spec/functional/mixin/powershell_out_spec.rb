@@ -27,7 +27,7 @@ describe Chef::Mixin::PowershellOut, :windows_only do
     end
 
     it "uses :powershell by default" do
-      expect(powershell_out("$PSVersionTable").run_command.stdout).to match /Desktop/
+      expect(powershell_out("$PSVersionTable").run_command.stdout).to match /CLRVersion/
     end
 
     it ":pwsh interpreter uses core edition", :pwsh_installed do
