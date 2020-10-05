@@ -182,7 +182,7 @@ class Chef
         events.unregister(self) unless Chef::Config[:data_collector][:output_locations]
 
         begin
-          code = e&.response&.code&.to_s
+          code = e&.response&.code.to_s
         rescue
           # i really don't care
         end
