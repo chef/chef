@@ -412,57 +412,58 @@ class Chef
           begin
             target_version_array = []
             each_package do |package_name, new_version, current_version, candidate_version|
-              case action
-              when :upgrade
-                if version_equals?(current_version, new_version)
-                  # this is an odd use case
-                  logger.trace("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
-                  target_version_array.push(nil)
-                elsif version_equals?(current_version, candidate_version)
-                  logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
-                  target_version_array.push(nil)
-                elsif candidate_version.nil?
-                  logger.trace("#{new_resource} #{package_name} has no candidate_version to upgrade to")
-                  target_version_array.push(nil)
-                elsif current_version.nil?
-                  logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
-                  target_version_array.push(candidate_version)
-                elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
-                  logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
-                  target_version_array.push(nil)
-                else
-                  logger.trace("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
-                  target_version_array.push(candidate_version)
-                end
-
-              when :install
-                if new_version
-                  if version_requirement_satisfied?(current_version, new_version)
-                    logger.trace("#{new_resource} #{package_name} #{current_version} satisfies #{new_version} requirement")
-                    target_version_array.push(nil)
-                  elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
-                    logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
-                    target_version_array.push(nil)
-                  else
-                    logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
-                    target_version_array.push(new_version)
-                  end
-                elsif current_version.nil?
-                  logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
-                  target_version_array.push(candidate_version)
-                else
-                  logger.trace("#{new_resource} #{package_name} #{current_version} already installed")
-                  target_version_array.push(nil)
-                end
-
-              else
-                # in specs please test the public interface provider.run_action(:install) instead of provider.action_install
-                raise "internal error - target_version_array in package provider does not understand this action"
-              end
+              target = target_version(package_name, new_version, current_version, candidate_version)
+              target_version_array.push(target == current_version ? nil : target)
             end
-
             target_version_array
           end
+      end
+
+      # Returns the version a package should have after the install/upgrade operation is complete.
+      #
+      # @return [String] target package version
+      def target_version(package_name, new_version, current_version, candidate_version)
+        case action
+        when :upgrade
+          if version_equals?(current_version, new_version)
+            # this is an odd use case
+            logger.trace("#{new_resource} #{package_name} #{new_version} is already installed -- you are equality pinning with an :upgrade action, this may be deprecated in the future")
+          elsif version_equals?(current_version, candidate_version)
+            logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
+          elsif candidate_version.nil?
+            logger.trace("#{new_resource} #{package_name} has no candidate_version to upgrade to")
+          elsif current_version.nil?
+            logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
+            return candidate_version
+          elsif !allow_downgrade && version_compare(current_version, candidate_version) == 1
+            logger.trace("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{candidate_version}. Skipping...)")
+          else
+            logger.trace("#{new_resource} #{package_name} is out of date, will upgrade to #{candidate_version}")
+            return candidate_version
+          end
+
+        when :install
+          if new_version
+            if version_requirement_satisfied?(current_version, new_version)
+              logger.trace("#{new_resource} #{package_name} #{current_version} satisfies #{new_version} requirement")
+            elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
+              logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
+            else
+              logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
+              return new_version
+            end
+          elsif current_version.nil?
+            logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
+            return candidate_version
+          else
+            logger.trace("#{new_resource} #{package_name} #{current_version} already installed")
+          end
+
+        else
+          # in specs please test the public interface provider.run_action(:install) instead of provider.action_install
+          raise "internal error - target_version in package provider does not understand this action"
+        end
+        current_version
       end
 
       # Check the list of current_version_array and candidate_version_array. For any of the

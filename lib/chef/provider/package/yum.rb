@@ -153,6 +153,41 @@ class Chef
 
         private
 
+        def target_version(package_name, new_version, current_version, candidate_version)
+          return super if action != :install || current_version.nil? || new_version
+
+          # Install-only packages cannot produce version conflicts.
+          package_idx = package_name_array.find_index(package_name)
+          return super if python_helper.install_only_packages(installed_version(package_idx).name)
+
+          # Before telling the user that no action is being taken because the package is already installed, make sure
+          # that it doesn't require upgrading to maintain multilib version consistency with another package being
+          # installed in the same package set.
+          package_name_array.each_with_index do |_other_name, other_idx|
+            if multilib_update_required(package_idx, other_idx)
+              logger.trace("#{new_resource} #{package_name} needs updating to #{candidate_version} to maintain multilib version consistency")
+              return candidate_version
+            end
+          end
+
+          super
+        end
+
+        # Returns true if other_idx is a variant of package_idx for a different architecture and package_idx needs to
+        # update so that other_idx can install without generating a multilib version conflict.
+        def multilib_update_required(package_idx, other_idx)
+          return false if current_version_array[other_idx] && !new_version_array[other_idx]
+
+          other_available = available_version(other_idx)
+          package_installed = installed_version(package_idx)
+          package_available = available_version(package_idx)
+          return false if other_available.name != package_installed.name
+          return false if other_available.version != package_available.version
+          return false if other_available.version == package_installed.version
+
+          true
+        end
+
         # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
         def resolved_package_lock_names(names)
           names.each_with_index.map do |name, i|
