@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.4 -->
-## [v16.6.4](https://github.com/chef/chef/tree/v16.6.4) (2020-10-05)
+<!-- latest_release 16.6.5 -->
+## [v16.6.5](https://github.com/chef/chef/tree/v16.6.5) (2020-10-05)
 
 #### Merged Pull Requests
-- Remove extra safe navigation [#10482](https://github.com/chef/chef/pull/10482) ([tas50](https://github.com/tas50))
+- add interpreter arg to powershell_exec allowing it to run powershell core [#10476](https://github.com/chef/chef/pull/10476) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- add interpreter arg to powershell_exec allowing it to run powershell core [#10476](https://github.com/chef/chef/pull/10476) ([mwrock](https://github.com/mwrock)) <!-- 16.6.5 -->
 - Remove extra safe navigation [#10482](https://github.com/chef/chef/pull/10482) ([tas50](https://github.com/tas50)) <!-- 16.6.4 -->
 - Update to Ruby 2.7.2 / Rubygems 3.1.4 [#10480](https://github.com/chef/chef/pull/10480) ([tas50](https://github.com/tas50)) <!-- 16.6.3 -->
 - add interpreter arg to powershell_out allowing it to call pwsh.exe [#10478](https://github.com/chef/chef/pull/10478) ([mwrock](https://github.com/mwrock)) <!-- 16.6.2 -->
