@@ -29,9 +29,9 @@ describe Chef::Mixin::PowershellExec, :windows_only, :windows_gte_10 do
         expect(object.powershell_exec("$PSVersionTable")).to be_kind_of(Chef::PowerShell)
       end
 
-      it "uses the Desktop edition" do
+      it "uses less than version 6" do
         execution = object.powershell_exec("$PSVersionTable")
-        expect(execution.result["PSEdition"]).to eql("Desktop")
+        expect(execution.result["PSVersion"].to_s.to_i).to be < 6
       end
     end
 
@@ -40,9 +40,9 @@ describe Chef::Mixin::PowershellExec, :windows_only, :windows_gte_10 do
         expect(object.powershell_exec("$PSVersionTable", :pwsh)).to be_kind_of(Chef::Pwsh)
       end
 
-      it "uses the Desktop edition" do
+      it "uses greater than version 6" do
         execution = object.powershell_exec("$PSVersionTable", :pwsh)
-        expect(execution.result["PSEdition"]).to eql("Core")
+        expect(execution.result["PSVersion"]["Major"]).to be > 6
       end
     end
 
@@ -51,9 +51,9 @@ describe Chef::Mixin::PowershellExec, :windows_only, :windows_gte_10 do
         expect(object.powershell_exec("$PSVersionTable", :powershell)).to be_kind_of(Chef::PowerShell)
       end
 
-      it "uses the Desktop edition" do
+      it "uses less than version 6" do
         execution = object.powershell_exec("$PSVersionTable", :powershell)
-        expect(execution.result["PSEdition"]).to eql("Desktop")
+        expect(execution.result["PSVersion"].to_s.to_i).to be < 6
       end
     end
 
