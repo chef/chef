@@ -36,6 +36,7 @@ class Chef
     def initialize(script)
       raise "Chef::PowerShell can only be used on the Windows platform." unless RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
 
+      @dll ||= "Chef.PowerShell.Wrapper.dll"
       exec(script)
     end
 
@@ -59,10 +60,10 @@ class Chef
       raise Chef::PowerShell::CommandFailed, "Unexpected exit in PowerShell command: #{@errors}" if error?
     end
 
-    private
+    protected
 
     def exec(script)
-      FFI.ffi_lib "Chef.PowerShell.Wrapper.dll"
+      FFI.ffi_lib @dll
       FFI.attach_function :execute_powershell, :ExecuteScript, [:string], :pointer
       execution = FFI.execute_powershell(script).read_utf16string
       hashed_outcome = Chef::JSONCompat.parse(execution)

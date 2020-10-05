@@ -1913,7 +1913,8 @@
     "omnibus/resources/chef/**/*",
     "kitchen-tests/cookbooks/end_to_end/files/*",
     "spec/**",
-    "docs_site"
+    "docs_site",
+    "distro/ruby_bin_folder/**/*"
   ],
   "ignoreRegExpList": [
     // Ignore "'s" at the end of a word. If "Chef" is an accepted word, so is "Chef's".

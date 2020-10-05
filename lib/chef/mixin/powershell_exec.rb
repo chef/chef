@@ -16,11 +16,14 @@
 # limitations under the License.
 
 require_relative "../powershell"
+require_relative "../pwsh"
 
-# The powershell_exec mixin provides in-process access to PowerShell engine via
-# a COM interop (installed by the Chef Client installer).
+# The powershell_exec mixin provides in-process access to the PowerShell engine.
 #
-# powershell_exec returns a Chef::PowerShell object that provides 4 methods:
+# powershell_exec is initialized with a string that should be set to the script
+# to run and also takes an optional interpreter argument which must be either
+# :powershell (Windows PowerShell which is the default) or :pwsh (PowerShell
+# Core). It will return a Chef::PowerShell object that provides 4 methods:
 #
 # .result - returns a hash representing the results returned by executing the
 #           PowerShell script block
@@ -41,6 +44,9 @@ require_relative "../powershell"
 #
 # > powershell_exec("$a = $true; $a").result
 #  => true
+#
+# > powershell_exec("$PSVersionTable", :pwsh).result["PSEdition"]
+#  => "Core"
 #
 # > powershell_exec("not-found").errors
 #  => ["ObjectNotFound: (not-found:String) [], CommandNotFoundException: The
@@ -90,22 +96,28 @@ require_relative "../powershell"
 class Chef
   module Mixin
     module PowershellExec
-      # Run a command under PowerShell via a managed (.NET) COM interop API.
-      # This implementation requires the managed dll to be registered on the
-      # target machine.
+      # Run a command under PowerShell via a managed (.NET) API.
       #
       # Requires: .NET Framework 4.0 or higher on the target machine.
       #
       # @param script [String] script to run
+      # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
       # @return [Chef::PowerShell] output
-      def powershell_exec(script)
-        Chef::PowerShell.new(script)
+      def powershell_exec(script, interpreter = :powershell)
+        case interpreter
+        when :powershell
+          Chef::PowerShell.new(script)
+        when :pwsh
+          Chef::Pwsh.new(script)
+        else
+          raise ArgumentError, "Expected interpreter of :powershell or :pwsh"
+        end
       end
 
       # The same as the #powershell_exec method except this will raise
       # Chef::PowerShell::CommandFailed if the command fails
-      def powershell_exec!(script)
-        cmd = Chef::PowerShell.new(script)
+      def powershell_exec!(script, interpreter = :powershell)
+        cmd = powershell_exec(script, interpreter)
         cmd.error!
         cmd
       end
