@@ -113,8 +113,8 @@ class Chef
 
           # @return Array<Version>
           # NB: "options" here is the yum_package options hash and is deliberately not **opts
-          def package_query(action, provides, version: nil, arch: nil, options: {})
-            parameters = { "provides" => provides, "version" => version, "arch" => arch }
+          def package_query(action, provides, version: nil, arch: nil, options: {}, multilibcompat: nil)
+            parameters = { "provides" => provides, "version" => version, "arch" => arch, "multilibcompat" => multilibcompat }
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
             # XXX: for now we restart before and after every query with an enablerepo/disablerepo to clean the helpers internal state

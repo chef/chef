@@ -82,6 +82,28 @@ except NameError:
                 return True
         return False
 
+# Compares a set of candidate packages with the packages installed on a system
+# and returns the set of packages that would not generate a multilib version
+# conflict when installed.
+def remove_multilib_incompat(pkgs):
+    compat_pkgs = []
+    installed = {}
+
+    for pkg in pkgs:
+        if base.allowedMultipleInstalls(pkg):
+            compat_pkgs.append(pkg)
+            continue
+        installed.setdefault(pkg.name, base.rpmdb.searchNames([pkg.name]))
+        for inst in installed[pkg.name]:
+            if pkg.arch == inst.arch:
+                continue
+            if not pkg.verEQ(inst):
+                break
+        else:
+            compat_pkgs.append(pkg)
+
+    return compat_pkgs
+
 def query(command):
     base = get_base()
 
@@ -127,7 +149,7 @@ def query(command):
     #     since searchNevra does not support prco tuples.
     if bool(re.search('\\s+', command['provides'])):
         # handles flags (<, >, =, etc) and versions, but no wildcareds
-        # raises error for any invalid input like: 'FOO BAR BAZ' 
+        # raises error for any invalid input like: 'FOO BAR BAZ'
         pkgs = obj.getProvides(*string_to_prco_tuple(command['provides']))
     elif do_nevra:
         # now if we're given version or arch properties explicitly, then we do a SearchNevra.
@@ -144,6 +166,9 @@ def query(command):
         if not pkgs:
             # handles wildcards
             pkgs = obj.searchProvides(command['provides'])
+
+    if pkgs and base.arch.multilib and base.conf.protected_multilib and (command['action'] == 'whatavailable') and ('multilibcompat' in command):
+        pkgs = remove_multilib_incompat(pkgs) or pkgs
 
     if not pkgs:
         outpipe.write(command['provides'].split().pop(0)+' nil nil\n')

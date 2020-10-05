@@ -220,7 +220,8 @@ class Chef
           @available_version[index] ||= if new_resource.source
                                           resolve_source_to_version_obj
                                         else
-                                          python_helper.package_query(:whatavailable, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
+                                          mc = (action == :install) || nil
+                                          python_helper.package_query(:whatavailable, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options, multilibcompat: mc)
                                         end
 
           @available_version[index]
