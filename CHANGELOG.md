@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.6 -->
-## [v16.6.6](https://github.com/chef/chef/tree/v16.6.6) (2020-10-05)
+<!-- latest_release 16.6.7 -->
+## [v16.6.7](https://github.com/chef/chef/tree/v16.6.7) (2020-10-05)
 
 #### Merged Pull Requests
-- fix specs on powershell v4 and below [#10484](https://github.com/chef/chef/pull/10484) ([mwrock](https://github.com/mwrock))
+- Update Ohai to 16.6.1 [#10486](https://github.com/chef/chef/pull/10486) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.6.1 [#10486](https://github.com/chef/chef/pull/10486) ([tas50](https://github.com/tas50)) <!-- 16.6.7 -->
 - fix specs on powershell v4 and below [#10484](https://github.com/chef/chef/pull/10484) ([mwrock](https://github.com/mwrock)) <!-- 16.6.6 -->
 - add interpreter arg to powershell_exec allowing it to run powershell core [#10476](https://github.com/chef/chef/pull/10476) ([mwrock](https://github.com/mwrock)) <!-- 16.6.5 -->
 - Remove extra safe navigation [#10482](https://github.com/chef/chef/pull/10482) ([tas50](https://github.com/tas50)) <!-- 16.6.4 -->
