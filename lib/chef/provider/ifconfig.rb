@@ -236,7 +236,7 @@ class Chef
         return unless can_generate_config?
 
         b = binding
-        template = ::ERB.new(@config_template, nil, '-')
+        template = ::ERB.new(@config_template, nil, "-")
         config = resource_for_config(@config_path)
         config.content(template.result(b))
         config.run_action(:create)
