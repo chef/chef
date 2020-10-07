@@ -22,10 +22,17 @@ class Chef
     class PowershellScript < Chef::Resource::WindowsScript
       unified_mode true
 
+      set_guard_inherited_attributes(:interpreter)
+
       provides :powershell_script, os: "windows"
 
       property :flags, String,
         description: "A string that is passed to the Windows PowerShell command"
+
+      property :interpreter, String,
+        default: "powershell",
+        equal_to: %w{powershell pwsh},
+        description: "The interpreter type, `powershell` or `pwsh` (PowerShell Core)"
 
       property :convert_boolean_return, [true, false],
         default: false,
@@ -62,7 +69,6 @@ class Chef
 
       def initialize(*args)
         super
-        @interpreter = "powershell.exe"
         @default_guard_interpreter = resource_name
       end
 

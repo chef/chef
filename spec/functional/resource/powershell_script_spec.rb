@@ -47,7 +47,7 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     r
   end
 
-  describe "when the run action is invoked on Windows" do
+  shared_examples_for "a running powershell script" do
     it "successfully executes a non-cmdlet Windows binary as the last command of the script" do
       resource.code(successful_executable_script_content + " | out-file -encoding ASCII #{script_output_path}")
       resource.returns(0)
@@ -231,22 +231,54 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
       resource.only_if { true }
       expect { resource.should_skip?(:run) }.to raise_error(ArgumentError, /guard_interpreter does not support blocks/)
     end
+  end
 
-    context "when dsc is supported", :windows_powershell_dsc_only do
-      it "can execute LCM configuration code" do
-        resource.code <<~EOF
-          configuration LCM
+  context "when using the powershell interpreter" do
+    before do
+      resource.interpreter "powershell"
+    end
+
+    it_behaves_like "a running powershell script"
+
+    it "runs Windows Powershell" do
+      resource.code("$PSVersionTable.PSVersion.Major | out-file -encoding ASCII #{script_output_path}")
+      resource.returns(0)
+      resource.run_action(:run)
+
+      expect(get_script_output.to_i).to be < 6
+    end
+  end
+
+  context "when using the pwsh interpreter", :pwsh_installed do
+    before do
+      resource.interpreter "pwsh"
+    end
+
+    it_behaves_like "a running powershell script"
+
+    it "runs a version of powershell greater than 6" do
+      resource.code("$PSVersionTable.PSVersion.Major | out-file -encoding ASCII #{script_output_path}")
+      resource.returns(0)
+      resource.run_action(:run)
+
+      expect(get_script_output.to_i).to be > 6
+    end
+  end
+
+  context "when dsc is supported", :windows_powershell_dsc_only do
+    it "can execute LCM configuration code" do
+      resource.code <<~EOF
+        configuration LCM
+        {
+          param ($thumbprint)
+          localconfigurationmanager
           {
-            param ($thumbprint)
-            localconfigurationmanager
-            {
-              RebootNodeIfNeeded = $false
-              ConfigurationMode = 'ApplyOnly'
-            }
+            RebootNodeIfNeeded = $false
+            ConfigurationMode = 'ApplyOnly'
           }
-        EOF
-        expect { resource.run_action(:run) }.not_to raise_error
-      end
+        }
+      EOF
+      expect { resource.run_action(:run) }.not_to raise_error
     end
   end
 
@@ -346,6 +378,17 @@ describe Chef::Resource::WindowsScript::PowershellScript, :windows_only do
     end
 
     context "with powershell_script as the guard_interpreter" do
+
+      context "when pwsh is the interpreter", :pwsh_installed do
+        before do
+          resource.interpreter "pwsh"
+        end
+
+        it "uses powershell core to evaluate the guard" do
+          resource.not_if "$PSVersionTable.PSEdition -eq 'Core'"
+          expect(resource.should_skip?(:run)).to be_truthy
+        end
+      end
 
       it "has a guard_interpreter attribute set to :powershell_script" do
         expect(resource.guard_interpreter).to eq(:powershell_script)
