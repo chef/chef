@@ -104,6 +104,34 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
 
+      property :nice, [Integer, String],
+        description: "Sets the default nice level (scheduling priority) for #{ChefUtils::Dist::Infra::CLIENT} processes. Takes an integer between -20 (highest priority) and 19 (lowest priority)",
+        introduced: "16.6",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between -20 and 19" => proc { |v| v >= -20 && v <= 19 } }
+
+      property :cpu_scheduling_policy, String,
+        description: "Sets the CPU scheduling policy for #{ChefUtils::Dist::Infra::CLIENT} processes. Takes one of other, batch, idle, fifo or rr. ",
+        introduced: "16.6",
+        equal_to: %w{other batch idle fifo rr}
+
+      property :cpu_scheduling_priority, [Integer, String],
+        description: "Sets the CPU scheduling priority for #{ChefUtils::Dist::Infra::CLIENT} processes. The available priority range depends on the selected CPU scheduling policy (see above). For real-time scheduling policies an integer between 1 (lowest priority) and 99 (highest priority) can be used.",
+        introduced: "16.6",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between 1 and 99" => proc { |v| v >= 1 && v <= 99 } }
+
+      property :io_scheduling_class, String,
+        description: "Sets the I/O scheduling class for #{ChefUtils::Dist::Infra::CLIENT} processes. Takes an integer between 0 and 3 or one of the strings none, realtime, best-effort or idle.",
+        introduced: "16.6",
+        equal_to: %w{none realtime best-effort idle}
+
+      property :io_scheduling_priority, [Integer, String],
+        description: "Sets the I/O scheduling priority for #{ChefUtils::Dist::Infra::CLIENT} processes. Takes an integer between 0 (highest priority) and 7 (lowest priority). The available priorities depend on the selected I/O scheduling class (see above). ",
+        introduced: "16.6",
+        coerce: proc { |x| Integer(x) },
+        callbacks: { "should be an Integer between 0 and 7" => proc { |v| v >= 0 && v <= 7 } }
+
       action :add do
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
@@ -179,6 +207,11 @@ class Chef
           unit["Service"]["ConditionACPower"] = "true" unless new_resource.run_on_battery
           unit["Service"]["CPUQuota"] = new_resource.cpu_quota if new_resource.cpu_quota
           unit["Service"]["Environment"] = new_resource.environment.collect { |k, v| "\"#{k}=#{v}\"" } unless new_resource.environment.empty?
+          unit["Service"]["Nice"] = new_resource.nice unless new_resource.nice.nil?
+          unit["Service"]["CPUSchedulingPolicy"] = new_resource.cpu_scheduling_policy unless new_resource.cpu_scheduling_policy.nil?
+          unit["Service"]["CPUSchedulingPriority"] = new_resource.cpu_scheduling_priority unless new_resource.cpu_scheduling_priority.nil?
+          unit["Service"]["IOSchedulingClass"] = new_resource.io_scheduling_class unless new_resource.io_scheduling_class.nil?
+          unit["Service"]["IOSchedulingPriority"] = new_resource.io_scheduling_priority unless new_resource.io_scheduling_priority.nil?
           unit
         end
       end

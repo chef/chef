@@ -101,6 +101,11 @@ end
 chef_client_systemd_timer "Run chef-client as a systemd timer" do
   interval "1hr"
   cpu_quota 50
+  nice 19
+  cpu_scheduling_policy "idle"
+  cpu_scheduling_priority 1
+  io_scheduling_class "idle"
+  io_scheduling_priority 7
   only_if { systemd? }
 end
 
