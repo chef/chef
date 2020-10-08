@@ -27,23 +27,57 @@ class Chef
         def initialize(new_resource, run_context)
           super(new_resource, run_context)
           @config_template = %{
-<% if new_resource.device %>DEVICE=<%= new_resource.device %><% end %>
-<% if new_resource.onboot == "yes" %>ONBOOT=<%= new_resource.onboot %><% end %>
-<% if new_resource.bootproto %>BOOTPROTO=<%= new_resource.bootproto %><% end %>
-<% if new_resource.target %>IPADDR=<%= new_resource.target %><% end %>
-<% if new_resource.mask %>NETMASK=<%= new_resource.mask %><% end %>
-<% if new_resource.network %>NETWORK=<%= new_resource.network %><% end %>
-<% if new_resource.bcast %>BROADCAST=<%= new_resource.bcast %><% end %>
-<% if new_resource.onparent %>ONPARENT=<%= new_resource.onparent %><% end %>
-<% if new_resource.hwaddr %>HWADDR=<%= new_resource.hwaddr %><% end %>
-<% if new_resource.metric %>METRIC=<%= new_resource.metric %><% end %>
-<% if new_resource.mtu %>MTU=<%= new_resource.mtu %><% end %>
-<% if new_resource.ethtool_opts %>ETHTOOL_OPTS="<%= new_resource.ethtool_opts %>"<% end %>
-<% if new_resource.bonding_opts %>BONDING_OPTS="<%= new_resource.bonding_opts %>"<% end %>
-<% if new_resource.master %>MASTER=<%= new_resource.master %><% end %>
-<% if new_resource.slave %>SLAVE=<%= new_resource.slave %><% end %>
-<% if new_resource.vlan %>VLAN=<%= new_resource.vlan %><% end %>
-<% if new_resource.gateway %>GATEWAY=<%= new_resource.gateway %><% end %>
+<% if new_resource.device -%>
+DEVICE=<%= new_resource.device %>
+<% end -%>
+<% if new_resource.onboot == "yes" -%>
+ONBOOT=<%= new_resource.onboot %>
+<% end -%>
+<% if new_resource.bootproto -%>
+BOOTPROTO=<%= new_resource.bootproto %>
+<% end -%>
+<% if new_resource.target -%>
+IPADDR=<%= new_resource.target %>
+<% end -%>
+<% if new_resource.mask -%>
+NETMASK=<%= new_resource.mask %>
+<% end -%>
+<% if new_resource.network -%>
+NETWORK=<%= new_resource.network %>
+<% end -%>
+<% if new_resource.bcast -%>
+BROADCAST=<%= new_resource.bcast %>
+<% end -%>
+<% if new_resource.onparent -%>
+ONPARENT=<%= new_resource.onparent %>
+<% end -%>
+<% if new_resource.hwaddr -%>
+HWADDR=<%= new_resource.hwaddr %>
+<% end -%>
+<% if new_resource.metric -%>
+METRIC=<%= new_resource.metric %>
+<% end -%>
+<% if new_resource.mtu -%>
+MTU=<%= new_resource.mtu %>
+<% end -%>
+<% if new_resource.ethtool_opts -%>
+ETHTOOL_OPTS="<%= new_resource.ethtool_opts %>"
+<% end -%>
+<% if new_resource.bonding_opts -%>
+BONDING_OPTS="<%= new_resource.bonding_opts %>"
+<% end -%>
+<% if new_resource.master -%>
+MASTER=<%= new_resource.master %>
+<% end -%>
+<% if new_resource.slave -%>
+SLAVE=<%= new_resource.slave %>
+<% end -%>
+<% if new_resource.vlan -%>
+VLAN=<%= new_resource.vlan %>
+<% end -%>
+<% if new_resource.gateway -%>
+GATEWAY=<%= new_resource.gateway %>
+<% end -%>
           }
           @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{new_resource.device}"
         end
