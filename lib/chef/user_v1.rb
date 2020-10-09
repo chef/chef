@@ -24,7 +24,6 @@ require_relative "search/query"
 require_relative "mixin/api_version_request_handling"
 require_relative "exceptions"
 require_relative "server_api"
-require_relative "abstract_user"
 
 # OSC 11 BACKWARDS COMPATIBILITY NOTE (remove after OSC 11 support ends)
 #
@@ -34,13 +33,84 @@ require_relative "abstract_user"
 #
 # Exception: self.list is backwards compatible with OSC 11
 class Chef
-  class UserV1 < Chef::AbstractUser
+  class UserV1
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::ApiVersionRequestHandling
 
     SUPPORTED_API_VERSIONS = [0, 1].freeze
+
+    def initialize
+      @username = nil
+      @display_name = nil
+      @first_name = nil
+      @middle_name = nil
+      @last_name = nil
+      @email = nil
+      @password = nil
+      @public_key = nil
+      @private_key = nil
+      @create_key = nil
+    end
+
+    def chef_root_rest_v0
+      @chef_root_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "0" })
+    end
+
+    def chef_root_rest_v1
+      @chef_root_rest_v1 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "1" })
+    end
+
+    def username(arg = nil)
+      set_or_return(:username, arg,
+        regex: /^[a-z0-9\-_]+$/)
+    end
+
+    def display_name(arg = nil)
+      set_or_return(:display_name,
+        arg, kind_of: String)
+    end
+
+    def first_name(arg = nil)
+      set_or_return(:first_name,
+        arg, kind_of: String)
+    end
+
+    def middle_name(arg = nil)
+      set_or_return(:middle_name,
+        arg, kind_of: String)
+    end
+
+    def last_name(arg = nil)
+      set_or_return(:last_name,
+        arg, kind_of: String)
+    end
+
+    def email(arg = nil)
+      set_or_return(:email,
+        arg, kind_of: String)
+    end
+
+    def create_key(arg = nil)
+      set_or_return(:create_key, arg,
+        kind_of: [TrueClass, FalseClass])
+    end
+
+    def public_key(arg = nil)
+      set_or_return(:public_key,
+        arg, kind_of: String)
+    end
+
+    def private_key(arg = nil)
+      set_or_return(:private_key,
+        arg, kind_of: String)
+    end
+
+    def password(arg = nil)
+      set_or_return(:password,
+        arg, kind_of: String)
+    end
 
     def to_h
       result = {

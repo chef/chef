@@ -26,7 +26,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require_relative "../user"
+        require_relative "../user_v1"
       end
 
       option :file,
@@ -57,7 +57,7 @@ class Chef
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 
       def user
-        @user_field ||= Chef::User.new
+        @user_field ||= Chef::UserV1.new
       end
 
       def run

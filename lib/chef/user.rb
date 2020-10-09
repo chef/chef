@@ -22,7 +22,6 @@ require_relative "mash"
 require_relative "json_compat"
 require_relative "search/query"
 require_relative "server_api"
-require_relative "abstract_user"
 
 # TODO
 # DEPRECATION NOTE
@@ -36,9 +35,46 @@ require_relative "abstract_user"
 # This file and corresponding osc_user knife files
 # should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
-  class User < Chef::AbstractUser
+  class User
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
+
+    def initialize
+      @name = ""
+      @public_key = nil
+      @private_key = nil
+      @password = nil
+      @admin = false
+    end
+
+    def chef_rest_v0
+      @chef_rest_v0 ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url], { api_version: "0" })
+    end
+
+    def name(arg = nil)
+      set_or_return(:name, arg,
+        regex: /^[a-z0-9\-_]+$/)
+    end
+
+    def admin(arg = nil)
+      set_or_return(:admin,
+        arg, kind_of: [TrueClass, FalseClass])
+    end
+
+    def public_key(arg = nil)
+      set_or_return(:public_key,
+        arg, kind_of: String)
+    end
+
+    def private_key(arg = nil)
+      set_or_return(:private_key,
+        arg, kind_of: String)
+    end
+
+    def password(arg = nil)
+      set_or_return(:password,
+        arg, kind_of: String)
+    end
 
     def to_h
       result = {
@@ -58,13 +94,13 @@ class Chef
     end
 
     def destroy
-      chef_root_rest_v0.delete("users/#{@name}")
+      chef_rest_v0.delete("users/#{@name}")
     end
 
     def create
       payload = { name: name, admin: admin, password: password }
       payload[:public_key] = public_key if public_key
-      new_user = chef_root_rest_v0.post("users", payload)
+      new_user = chef_rest_v0.post("users", payload)
       Chef::User.from_hash(to_h.merge(new_user))
     end
 
@@ -72,7 +108,7 @@ class Chef
       payload = { name: name, admin: admin }
       payload[:private_key] = new_key if new_key
       payload[:password] = password if password
-      updated_user = chef_root_rest_v0.put("users/#{name}", payload)
+      updated_user = chef_rest_v0.put("users/#{name}", payload)
       Chef::User.from_hash(to_h.merge(updated_user))
     end
 
@@ -87,7 +123,7 @@ class Chef
     end
 
     def reregister
-      reregistered_self = chef_root_rest_v0.put("users/#{name}", { name: name, admin: admin, private_key: true })
+      reregistered_self = chef_rest_v0.put("users/#{name}", { name: name, admin: admin, private_key: true })
       private_key(reregistered_self["private_key"])
       self
     end

@@ -31,7 +31,7 @@ describe Chef::Knife::UserShow do
     @password = "abc123"
     @user = double("Chef::User")
     allow(@user).to receive(:root_rest).and_return(root_rest)
-    allow(Chef::User).to receive(:new).and_return(@user)
+    # allow(Chef::User).to receive(:new).and_return(@user)
     @key = "You don't come into cooking to get rich - Ramsay"
   end
 
@@ -42,13 +42,13 @@ describe Chef::Knife::UserShow do
     end
 
     it "should load the user" do
-      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "2" }).and_return(root_rest)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
       expect(@user.root_rest).to receive(:get).with("users/my_user")
       knife.run
     end
 
     it "loads and displays the user" do
-      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "2" }).and_return(root_rest)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
       expect(@user.root_rest).to receive(:get).with("users/my_user")
       expect(knife).to receive(:format_for_display)
       knife.run
@@ -81,7 +81,7 @@ describe Chef::Knife::UserShow do
       result = { "organizations" => [] }
       knife.config[:with_orgs] = true
 
-      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "2" }).and_return(root_rest)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
       allow(@org).to receive(:[]).with("organization").and_return({ "name" => "test" })
       expect(@user.root_rest).to receive(:get).with("users/#{@user_name}").and_return(result)
       expect(@user.root_rest).to receive(:get).with("users/#{@user_name}/organizations").and_return(orgs)
