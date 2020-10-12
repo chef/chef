@@ -27,6 +27,26 @@ class Chef
       description "Use the **chef_client_config** resource to create a client.rb file in the #{ChefUtils::Dist::Infra::PRODUCT} configuration directory. See the [client.rb docs](https://docs.chef.io/config_rb_client/) for more details on options available in the client.rb configuration file."
       introduced "16.6"
       examples <<~DOC
+      **Bare minimum #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+      end
+      ```
+
+      **More complex #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        log_level :info
+        log_location :syslog
+        http_proxy 'proxy.example.dmz'
+        https_proxy 'proxy.example.dmz'
+        no_proxy %w(internal.example.dmz)
+      end
+      ```
       DOC
 
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
