@@ -75,7 +75,7 @@ class Chef
         description: "The user that should own the client.rb file and the configuration directory if it needs to be created."
 
       property :node_name, String,
-        description: "The name of the node. This determines which configuration should be applied and sets the `client_name`, which is the name used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT}. If this value is not provided Chef Infra Client will use the node's FQDN as the node name. In general, Chef recommends that you leave this setting blank and let the client assign the FQDN of the node as the node_name during each Chef Infra Client run."
+        description: "The name of the node. This determines which configuration should be applied and sets the `client_name`, which is the name used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT}. If this value is not provided #{ChefUtils::Dist::Infra::PRODUCT} will use the node's FQDN as the node name. Leaving this setting blank and letting the client assign the FQDN of the node as the node_name during each #{ChefUtils::Dist::Infra::PRODUCT} run is recommended."
 
       property :chef_server_url, String,
         description: "The URL for the #{ChefUtils::Dist::Server::PRODUCT}.",
