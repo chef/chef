@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: fb934be0cce05bdb30e6329e109cdb614333406b
+  revision: 5a9d289050658ef6af34977f4f41eeb7ffaa2991
   branch: master
   specs:
-    chefstyle (1.4.3)
-      rubocop (= 0.92.0)
+    chefstyle (1.4.5)
+      rubocop (= 0.93.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 6be2a1af0596fa03dfa0807998107a95218a10b3
+  revision: e1063aa34410ebd5612f9c1e0ce6dc3c586cc6c6
   branch: master
   specs:
-    ohai (16.6.1)
+    ohai (16.6.3)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -270,7 +270,7 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.19.2)
-    parser (2.7.1.5)
+    parser (2.7.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
@@ -294,7 +294,7 @@ GEM
     rainbow (3.0.0)
     rake (13.0.1)
     rb-readline (0.5.5)
-    regexp_parser (1.8.1)
+    regexp_parser (1.8.2)
     rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -315,13 +315,13 @@ GEM
     rspec_junit_formatter (0.2.3)
       builder (< 4)
       rspec-core (>= 2, < 4, != 2.12.0)
-    rubocop (0.92.0)
+    rubocop (0.93.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
-      regexp_parser (>= 1.7)
+      regexp_parser (>= 1.8)
       rexml
-      rubocop-ast (>= 0.5.0)
+      rubocop-ast (>= 0.6.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
     rubocop-ast (0.7.1)
@@ -376,7 +376,7 @@ GEM
     unicode_utils (1.4.0)
     uri_template (0.7.0)
     uuidtools (2.1.5)
-    webmock (3.9.1)
+    webmock (3.9.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
