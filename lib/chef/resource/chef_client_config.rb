@@ -60,10 +60,10 @@ class Chef
       # @return [Symbol] The symbol form of the symbol-like string, string, or symbol value
       #
       def string_to_symbol(prop_val)
-        if prop_val.is_a?(String)
-          prop_val.start_with?(":") ? prop_val[1..-1].to_sym : prop_val.to_sym
+        if prop_val.is_a?(String) && prop_val.start_with?(":")
+          prop_val[1..-1].to_sym
         else
-          prop_val
+          prop_val.to_sym
         end
       end
 
