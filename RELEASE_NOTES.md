@@ -19,7 +19,7 @@ end
 
 ### powershell_out / powershell_exec helpers
 
-The `powershell_out` and `powershell_exec` helpers for use in custom resources have been updated to support `pwsh` with a new argument that accepts either `:pwsh` or `:powershell`
+The `powershell_out` and `powershell_exec` helpers for use in custom resources have been updated to support `pwsh` with a new argument that accepts either `:pwsh` or `:powershell`.
 
 ```ruby
 powershell_exec('$PSVersionTable', :pwsh)
