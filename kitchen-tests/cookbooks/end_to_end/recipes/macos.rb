@@ -39,19 +39,8 @@ end
 
 ssh_known_hosts_entry "github.com"
 
+include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
-
-chef_client_config "Create chef-client's client.rb" do
-  chef_server_url "https://localhost"
-  chef_license "accept"
-  additional_config <<~CONFIG
-    begin
-      require 'aws-sdk'
-    rescue LoadError
-      Chef::Log.warn "Failed to load aws-sdk."
-    end
-  CONFIG
-end
 
 chef_client_launchd "Every 30 mins Infra Client run" do
   interval 30

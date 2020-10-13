@@ -79,18 +79,7 @@ users_manage "create sysadmin" do
   action [:create]
 end
 
-chef_client_config "Create chef-client's client.rb" do
-  chef_server_url "https://localhost"
-  chef_license "accept"
-  additional_config <<~CONFIG
-    begin
-      require 'aws-sdk'
-    rescue LoadError
-      Chef::Log.warn "Failed to load aws-sdk."
-    end
-  CONFIG
-end
-
+include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
 
 include_recipe "git"
