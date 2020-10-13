@@ -30,22 +30,22 @@ class Chef
       **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-      chef_client_systemd_timer "Run #{ChefUtils::Dist::Infra::PRODUCT} as a systemd timer"
+      chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a systemd timer'
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour**:
 
       ```ruby
-      chef_client_systemd_timer "Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour" do
-        interval "1hr"
+      chef_client_systemd_timer 'Run #{ChefUtils::Dist::Infra::PRODUCT} every 1 hour' do
+        interval '1hr'
       end
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
-      chef_client_systemd_timer "Run an override recipe" do
-        daemon_options ["--override-runlist mycorp_base::default"]
+      chef_client_systemd_timer 'Run an override recipe' do
+        daemon_options ['--override-runlist mycorp_base::default']
       end
       ```
       DOC

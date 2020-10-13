@@ -39,7 +39,7 @@ class Chef
         chef_sleep 'wait for the service to start' do
           seconds 10
         end
-        ````
+        ```
 
         **Use a notification from another resource to sleep only when necessary**:
 

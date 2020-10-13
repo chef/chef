@@ -109,7 +109,8 @@ class Chef
 
       property :config_directory, String,
         description: "The directory to store the client.rb in.",
-        default: ChefConfig::Config.etc_chef_dir
+        default: ChefConfig::Config.etc_chef_dir,
+        default_description: "`/etc/chef/` on *nix-like systems and `C:\chef\` on Windows"
 
       property :user, String,
         description: "The user that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
@@ -118,9 +119,9 @@ class Chef
         description: "The group that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
 
       property :node_name, [String, NilClass], # this accepts nil so people can disable the default
-        description: "The name of the node. This determines which configuration should be applied and sets the `client_name`, which is the name used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT}. If this value is not provided #{ChefUtils::Dist::Infra::PRODUCT} will use the node's FQDN as the node name. Leaving this setting blank and letting the client assign the FQDN of the node as the node_name during each #{ChefUtils::Dist::Infra::PRODUCT} run is recommended.",
+        description: "The name of the node. This configuration sets the `node.name` value used in cookbooks and the `client_name` value used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT} to determine what configuration to apply. Note: By default this configuration uses the `node.name` value which would be set during bootstrap. Hard coding this value in the `client.rb` config avoids logic within #{ChefUtils::Dist::Server::PRODUCT} that performs DNS lookups and may fail in the event of a DNS outage. To skip this default value and instead use the built-in #{ChefUtils::Dist::Server::PRODUCT} logic, set this property to `nil`",
         default: lazy { node.name },
-        default_description: "The `node.name` value. Hard coding this value in the client.rb avoids logic within #{ChefUtils::Dist::Server::PRODUCT} that performs DNS lookups and may fail in the event of a DNS outage. To skip this default value and instead use the built-in #{ChefUtils::Dist::Server::PRODUCT} logic, set this property to `nil`"
+        default_description: "The `node.name` value reported by #{ChefUtils::Dist::Infra::PRODUCT}."
 
       property :chef_server_url, String,
         description: "The URL for the #{ChefUtils::Dist::Server::PRODUCT}.",
