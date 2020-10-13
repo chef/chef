@@ -84,7 +84,7 @@ class Chef
         description: "Windows only: Use to specify the user name."
 
       property :domain, String,
-        description: "Windows only: Use to specify the domain in which the username and password are located."
+        description: "Windows only: Use to specify the domain in which the `username` and `password` are located."
 
       private
 
