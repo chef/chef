@@ -131,7 +131,7 @@ describe Chef::Resource::ChefClientConfig do
 
   describe "#format_handler" do
     it "provides an array of handler object creation code" do
-      expect(provider.format_handler([{"class" => "Foo", "arguments" => ["'one'", "two", "three"]}])).to eql(["Foo.new('one',two,three)"])
+      expect(provider.format_handler([{ "class" => "Foo", "arguments" => ["'one'", "two", "three"] }])).to eql(["Foo.new('one',two,three)"])
     end
   end
 end
