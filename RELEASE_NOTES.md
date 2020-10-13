@@ -94,7 +94,7 @@ The `ifconfig` resource has been updated to no longer add empty blank lines to t
 
 ### windows_audit_policy
 
-The `windows_audit_policy` resource has been updated to fix a bug on failure-only auditing
+The `windows_audit_policy` resource has been updated to fix a bug on failure-only auditing.
 
 ## Ohai Improvements
 
