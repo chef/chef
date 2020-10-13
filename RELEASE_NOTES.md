@@ -47,7 +47,7 @@ end
 
 With the inclusion of the `chef_client_config` resource in Chef Infra Client 16.6, it is now possible to fully manage the Chef Infra Client without the need for the `chef-client` cookbook. We highly recommend using the `chef_client_config`, `chef_client_trusted_certicate`, and `chef_client_*` service resources to manage your clients instead of the `chef-client` cookbook. In the future we will mark that cookbook as deprecated, at which time it will no longer receive updates.
 
-Here's a sample of fully managing Linux hosts with the built-in resources
+Here's a sample of fully managing Linux hosts with the built-in resources:
 
 ```ruby
 chef_client_config 'Create client.rb' do
