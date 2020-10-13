@@ -29,6 +29,8 @@ class Chef
       examples <<~DOC
       **Bare minimum #{ChefUtils::Dist::Infra::PRODUCT} client.rb**:
 
+      The absolute minimum configuration necessary for a node to communicate with the Infra Server is the URL of the Infra Server. All other configuration options either have values at the server side (Policyfiles, Roles, Environments, etc) or have default values determined at client startup.
+
       ```ruby
       chef_client_config 'Create client.rb' do
         chef_server_url 'https://chef.example.dmz'
@@ -49,6 +51,8 @@ class Chef
       ```
 
       **Adding additional config content to the client.rb**:
+
+      This resource aims to provide common configuration options. Some configuration options are missing and some users may want to use arbitrary Ruby code within their configuration. For this we offer an `additional_config` property that can be used to add any configuration or code to the bottom of the `client.rb` file. Also keep in mind that within the configuration directory is a `client.d` directory where you can stick additional `.rb` files containing configuration options. These can be dropped off using `file` or `template` resources witin your cookbooks as necessary.
 
       ```ruby
       chef_client_config 'Create client.rb' do
