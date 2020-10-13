@@ -19,7 +19,6 @@
       @pid_file
       @policy_group
       @policy_name
-      @run_path
       @ssl_verify_mode).each do |prop| -%>
 <% next if eval(prop).nil? || eval(prop).empty? -%>
 <%=prop.delete_prefix("@") %> = <%= eval(prop).inspect %>

@@ -215,9 +215,6 @@ class Chef
       property :file_backup_path, String,
         description: "The location in which backup files are stored. If this value is empty, backup files are stored in the directory of the target file"
 
-      property :run_path, String,
-        description: "The location where #{ChefUtils::Dist::Infra::PRODUCT} should write the PID file."
-
       property :file_staging_uses_destdir, String,
         description: "How file staging (via temporary files) is done. When `true`, temporary files are created in the directory in which files will reside. When `false`, temporary files are created under `ENV['TMP']`"
 
@@ -268,7 +265,6 @@ class Chef
             policy_group: new_resource.policy_group,
             policy_name: new_resource.policy_name,
             report_handlers: format_handler(new_resource.report_handlers),
-            run_path: new_resource.run_path,
             ssl_verify_mode: new_resource.ssl_verify_mode,
             start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config
