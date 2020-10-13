@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.12 -->
-## [v16.6.12](https://github.com/chef/chef/tree/v16.6.12) (2020-10-13)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50))
+- Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
 - chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
 - provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock)) <!-- 16.6.11 -->
 - Bump Chefstyle &amp; other deps [#10498](https://github.com/chef/chef/pull/10498) ([tas50](https://github.com/tas50)) <!-- 16.6.10 -->
