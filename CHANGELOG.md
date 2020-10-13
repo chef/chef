@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.10 -->
-## [v16.6.10](https://github.com/chef/chef/tree/v16.6.10) (2020-10-12)
+<!-- latest_release 16.6.11 -->
+## [v16.6.11](https://github.com/chef/chef/tree/v16.6.11) (2020-10-13)
 
 #### Merged Pull Requests
-- Bump Chefstyle &amp; other deps [#10498](https://github.com/chef/chef/pull/10498) ([tas50](https://github.com/tas50))
+- provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock)) <!-- 16.6.11 -->
 - Bump Chefstyle &amp; other deps [#10498](https://github.com/chef/chef/pull/10498) ([tas50](https://github.com/tas50)) <!-- 16.6.10 -->
 - Changing ifconfig provider to reduce blank lines in redhat and debian ifconfigs [#10489](https://github.com/chef/chef/pull/10489) ([jmherbst](https://github.com/jmherbst)) <!-- 16.6.9 -->
 - add interpreter to handle pwsh and powershell to powershell_script [#10488](https://github.com/chef/chef/pull/10488) ([mwrock](https://github.com/mwrock)) <!-- 16.6.8 -->
