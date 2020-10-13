@@ -65,6 +65,24 @@ class Chef
         CONFIG
       end
       ```
+
+      **Setup two report handlers in the client.rb**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        report_handlers [
+          {
+           'class' => 'ReportHandler1Class',
+           'arguments' => ["'FirstArgument'", "'SecondArgument'"],
+          },
+          {
+           'class' => 'ReportHandler2Class',
+           'arguments' => ["'FirstArgument'", "'SecondArgument'"],
+          },
+        ]
+      end
+      ```
       DOC
 
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
@@ -160,15 +178,15 @@ class Chef
         description: "Run a minimal set of Ohai plugins providing data necessary for the execution of #{ChefUtils::Dist::Infra::PRODUCT}'s built-in resources. Setting this to true will skip many large and time consuming data sets such as `cloud` or `packages`. Setting this this to true may break cookbooks that assume all Ohai data will be present."
 
       property :start_handlers, Array,
-        description: "And an array of start handler hashes containing `class` and `argument` values.",
+        description: %q(An array of start handler hashes that contain the start handler class to run and the arguments to pass to that class. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
 
       property :report_handlers, Array,
-        description: "And an array of report handler hashes containing `class` and `argument` values.",
+        description: %q(An array of report handler hashes that contain the report handler class to run and the arguments to pass to that class. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
 
       property :exception_handlers, Array,
-        description: "And an array of exception handler hashes containing `class` and `argument` values.",
+        description: %q(An array of exception handler hashes that contain the exception handler class to run and the arguments to pass to that class. The hash should include `class` and `argument` keys where `class` is a String and `argument` is an array of quoted String values. For example: `[{'class' => 'MyHandler', %w('"argument1"', '"argument2"')}]`),
         default: []
 
       property :chef_license, String,
