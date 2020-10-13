@@ -112,7 +112,10 @@ class Chef
         default: ChefConfig::Config.etc_chef_dir
 
       property :user, String,
-        description: "The user that should own the client.rb file and the configuration directory if it needs to be created."
+        description: "The user that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
+
+      property :group, String,
+        description: "The group that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."
 
       property :node_name, String,
         description: "The name of the node. This determines which configuration should be applied and sets the `client_name`, which is the name used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT}. If this value is not provided #{ChefUtils::Dist::Infra::PRODUCT} will use the node's FQDN as the node name. Leaving this setting blank and letting the client assign the FQDN of the node as the node_name during each #{ChefUtils::Dist::Infra::PRODUCT} run is recommended."
@@ -225,6 +228,7 @@ class Chef
         unless ::Dir.exist?(new_resource.config_directory)
           directory new_resource.config_directory do
             user new_resource.user unless new_resource.user.nil?
+            group new_resource.group unless new_resource.group.nil?
             mode "0750"
             recursive true
           end
@@ -233,6 +237,7 @@ class Chef
         unless ::Dir.exist?(::File.join(new_resource.config_directory, "client.d"))
           directory ::File.join(new_resource.config_directory, "client.d") do
             user new_resource.user unless new_resource.user.nil?
+            group new_resource.group unless new_resource.group.nil?
             mode "0750"
             recursive true
           end
@@ -240,6 +245,8 @@ class Chef
 
         template ::File.join(new_resource.config_directory, "client.rb") do
           source ::File.expand_path("support/client.erb", __dir__)
+          user new_resource.user unless new_resource.user.nil?
+          group new_resource.group unless new_resource.group.nil?
           local true
           variables(
             chef_license: new_resource.chef_license,
