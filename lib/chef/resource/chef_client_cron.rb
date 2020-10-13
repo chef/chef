@@ -32,23 +32,23 @@ class Chef
       **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-      chef_client_cron "Run #{ChefUtils::Dist::Infra::PRODUCT} as a cron job"
+      chef_client_cron 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a cron job'
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} twice a day**:
 
       ```ruby
-      chef_client_cron "Run #{ChefUtils::Dist::Infra::PRODUCT} every 12 hours" do
+      chef_client_cron 'Run #{ChefUtils::Dist::Infra::PRODUCT} every 12 hours' do
         minute 0
-        hour "0,12"
+        hour '0,12'
       end
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
-      chef_client_cron "Run an override recipe" do
-        daemon_options ["--override-runlist mycorp_base::default"]
+      chef_client_cron 'Run an override recipe' do
+        daemon_options ['--override-runlist mycorp_base::default']
       end
       ```
       DOC
