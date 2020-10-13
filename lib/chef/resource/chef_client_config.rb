@@ -52,7 +52,7 @@ class Chef
 
       **Adding additional config content to the client.rb**:
 
-      This resource aims to provide common configuration options. Some configuration options are missing and some users may want to use arbitrary Ruby code within their configuration. For this we offer an `additional_config` property that can be used to add any configuration or code to the bottom of the `client.rb` file. Also keep in mind that within the configuration directory is a `client.d` directory where you can stick additional `.rb` files containing configuration options. These can be dropped off using `file` or `template` resources witin your cookbooks as necessary.
+      This resource aims to provide common configuration options. Some configuration options are missing and some users may want to use arbitrary Ruby code within their configuration. For this we offer an `additional_config` property that can be used to add any configuration or code to the bottom of the `client.rb` file. Also keep in mind that within the configuration directory is a `client.d` directory where you can put additional `.rb` files containing configuration options. These can be created using `file` or `template` resources within your cookbooks as necessary.
 
       ```ruby
       chef_client_config 'Create client.rb' do
