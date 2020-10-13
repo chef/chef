@@ -70,6 +70,7 @@ class Chef
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
       # @todo all properties for automate report
       # @todo add all descriptions
+      # @todo validate handler hash structure
 
       #
       # @param [String, Symbol] prop_val the value from the property
@@ -225,7 +226,7 @@ class Chef
             chef_license: new_resource.chef_license,
             chef_server_url: new_resource.chef_server_url,
             event_loggers: new_resource.event_loggers,
-            exception_handlers: new_resource.exception_handlers,
+            exception_handlers: format_handler(new_resource.exception_handlers),
             file_backup_path: new_resource.file_backup_path,
             file_cache_path: new_resource.file_cache_path,
             file_staging_uses_destdir: new_resource.file_staging_uses_destdir,
@@ -244,10 +245,10 @@ class Chef
             pid_file: new_resource.pid_file,
             policy_group: new_resource.policy_group,
             policy_name: new_resource.policy_name,
-            report_handlers: new_resource.report_handlers,
+            report_handlers: format_handler(new_resource.report_handlers),
             run_path: new_resource.run_path,
             ssl_verify_mode: new_resource.ssl_verify_mode,
-            start_handlers: new_resource.start_handlers,
+            start_handlers: format_handler(new_resource.start_handlers),
             additional_config: new_resource.additional_config
           )
           mode "0640"
@@ -258,6 +259,25 @@ class Chef
       action :remove do
         file ::File.join(new_resource.config_directory, "client.rb") do
           action :delete
+        end
+      end
+
+      action_class do
+        #
+        # Format the handler document in the way we want it presented in the client.rb file
+        #
+        # @param [Hash] a handler property
+        #
+        # @return [Array] Array of handler data
+        #
+        def format_handler(handler_property)
+          handler_data = []
+
+          handler_property.each do |handler|
+            handler_data << "#{handler["class"]}.new(#{handler["arguments"].join(",")})"
+          end
+
+          handler_data
         end
       end
     end

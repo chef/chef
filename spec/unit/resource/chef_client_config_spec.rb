@@ -34,7 +34,7 @@ describe Chef::Resource::ChefClientConfig do
     expect { resource.action :remove }.not_to raise_error
   end
 
-  context "ssl_verify_mode" do
+  describe "ssl_verify_mode property" do
     it "coerces String to Symbol" do
       resource.ssl_verify_mode "verify_peer"
       expect(resource.ssl_verify_mode).to eql(:verify_peer)
@@ -52,7 +52,7 @@ describe Chef::Resource::ChefClientConfig do
     end
   end
 
-  context "no_proxy" do
+  describe "no_proxy property" do
     it "coerces Array into comma separated list" do
       resource.no_proxy ["something.com", "example.com"]
       expect(resource.no_proxy).to eql("something.com,example.com")
@@ -64,7 +64,7 @@ describe Chef::Resource::ChefClientConfig do
     end
   end
 
-  context "ohai_disabled_plugins" do
+  describe "ohai_disabled_plugins property" do
     it "coerces String values into capitalized symbols" do
       resource.ohai_disabled_plugins %w{foo Bar}
       expect(resource.ohai_disabled_plugins).to eql(%i{Foo Bar})
@@ -81,7 +81,7 @@ describe Chef::Resource::ChefClientConfig do
     end
   end
 
-  context "ohai_optional_plugins" do
+  describe "ohai_optional_plugins property" do
     it "coerces String values into capitalized symbols" do
       resource.ohai_optional_plugins %w{foo Bar}
       expect(resource.ohai_optional_plugins).to eql(%i{Foo Bar})
@@ -98,7 +98,7 @@ describe Chef::Resource::ChefClientConfig do
     end
   end
 
-  context "log_level" do
+  describe "log_level property" do
     it "accepts auto trace debug info warn fatal" do
       expect { resource.log_level(:auto) }.not_to raise_error
       expect { resource.log_level(:trace) }.not_to raise_error
@@ -112,7 +112,7 @@ describe Chef::Resource::ChefClientConfig do
     end
   end
 
-  context "log_location" do
+  describe "log_location property" do
     it "accepts a String logfile location" do
       expect { resource.log_location("/foo/bar/") }.not_to raise_error
     end
@@ -126,6 +126,12 @@ describe Chef::Resource::ChefClientConfig do
       expect { resource.log_location(:syslog) }.not_to raise_error
       expect { resource.log_location(:win_evt) }.not_to raise_error
       expect { resource.log_location(:nope) }.to raise_error(Chef::Exceptions::ValidationFailed)
+    end
+  end
+
+  describe "#format_handler" do
+    it "provides an array of handler object creation code" do
+      expect(provider.format_handler([{"class" => "Foo", "arguments" => ["'one'", "two", "three"]}])).to eql(["Foo.new('one',two,three)"])
     end
   end
 end

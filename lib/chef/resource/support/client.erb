@@ -24,7 +24,7 @@
 <% next if eval('@' + prop).nil? || eval('@' + prop).empty? -%>
 <%=prop %> = <%= eval('@' + prop).inspect %>
 <% end -%>
-<%# log_location is special due to STDOUT/STDERR from String -> IO Object %>
+<%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
 <% unless @log_location.nil? %>
   <% if @log_location.is_a? String && %w(STDOUT STDERR).include?(@log_location) -%>
 log_location = <%= @log_location %>
@@ -32,11 +32,12 @@ log_location = <%= @log_location %>
 log_location = <%= @log_location.inspect %>
   <% end -%>
 <% end -%>
+<%# The code below is not DRY on purpose to improve readability -%>
 <% unless @start_handlers.empty? -%>
   # Do not crash if a start handler is missing / not installed yet
   begin
   <% @start_handlers.each do |handler| -%>
-    start_handlers << <%= handler["class"] %>.new(<%= handler["arguments"].join(',') %>)
+    start_handlers << <%= @handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
@@ -46,7 +47,7 @@ log_location = <%= @log_location.inspect %>
   # Do not crash if a report handler is missing / not installed yet
   begin
   <% @report_handlers.each do |handler| -%>
-    report_handlers << <%= handler["class"] %>.new(<%= handler["arguments"].join(',') %>)
+    report_handlers << <%= @handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
@@ -56,7 +57,7 @@ log_location = <%= @log_location.inspect %>
   # Do not crash if an exception handler is missing / not installed yet
   begin
   <% @exception_handlers.each do |handler| -%>
-    exception_handlers << <%= handler["class"] %>.new(<%= handler["arguments"].join(',') %>)
+    exception_handlers << <%= @handler %>
   <% end -%>
   rescue NameError => e
     Chef::Log.error e
