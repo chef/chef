@@ -1,28 +1,28 @@
-<% %w(node_name
-      chef_license
-      chef_server_url
-      event_loggers
-      file_backup_path
-      file_cache_path
-      file_staging_uses_destdir
-      formatters
-      http_proxy
-      https_proxy
-      ftp_proxy
-      log_level
-      log_location
-      minimal_ohai
-      named_run_list
-      no_proxy
-      ohai_disabled_plugins
-      ohai_optional_plugins
-      pid_file
-      policy_group
-      policy_name
-      run_path
-      ssl_verify_mode).each do |prop| -%>
-<% next if eval('@' + prop).nil? || eval('@' + prop).empty? -%>
-<%=prop %> = <%= eval('@' + prop).inspect %>
+<% %w(@node_name
+      @chef_license
+      @chef_server_url
+      @event_loggers
+      @file_backup_path
+      @file_cache_path
+      @file_staging_uses_destdir
+      @formatters
+      @http_proxy
+      @https_proxy
+      @ftp_proxy
+      @log_level
+      @log_location
+      @minimal_ohai
+      @named_run_list
+      @no_proxy
+      @ohai_disabled_plugins
+      @ohai_optional_plugins
+      @pid_file
+      @policy_group
+      @policy_name
+      @run_path
+      @ssl_verify_mode).each do |prop| -%>
+<% next if eval(prop).nil? || eval(prop).empty? -%>
+<%=prop.delete_prefix("@") %> = <%= eval(prop).inspect %>
 <% end -%>
 <%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
 <% unless @log_location.nil? %>
