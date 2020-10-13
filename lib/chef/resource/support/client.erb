@@ -20,8 +20,8 @@
       @policy_group
       @policy_name
       @ssl_verify_mode).each do |prop| -%>
-<% next if eval(prop).nil? || eval(prop).empty? -%>
-<%=prop.delete_prefix("@") %> = <%= eval(prop).inspect %>
+<% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>
+<%=prop.delete_prefix("@") %> = <%= instance_variable_get(prop).inspect %>
 <% end -%>
 <%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
 <% unless @log_location.nil? %>
