@@ -1,5 +1,124 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.6
+
+## pwsh Support
+
+We've updated multiple parts of the Chef Infra Client to fully support Microsoft's `pwsh` in addition to our previous support for `PowerShell`.
+
+### powershell_script resource
+
+The `powershell_script` resource includes a new `interpreter` property that accepts either `powershell` or `pwsh`.
+
+```ruby
+powershell_script 'check version table' do
+  code '$PSVersionTable'
+  interpreter 'pwsh'
+end
+```
+
+### powershell_out / powershell_exec helpers
+
+The `powershell_out` and `powershell_exec` helpers for use in custom resources have been updated to support `pwsh` with a new argument that accepts either `:pwsh` or `:powershell`
+
+```ruby
+powershell_exec('$PSVersionTable', :pwsh)
+```
+
+## Enhanced 32bit Windows Support
+
+The `powershell_exec` helper now supports 32bit Windows. This ensures many of the newer PowerShell based resources in Chef Infra Client will function as expected on 32bit systems.
+
+## New Resources
+
+### chef_client_config
+
+The `chef_client_config` resource allows you to manage Chef Infra Client's `client.rb` file without the need for the `chef-client` cookbook.
+
+#### Example
+
+```ruby
+chef_client_config 'Create client.rb' do
+  chef_server_url 'https://chef.example.dmz'
+end
+```
+
+#### chef-client Cookbook Future
+
+With the inclusion of the `chef_client_config` resource in Chef Infra Client 16.6, it is now possible to fully manage the Chef Infra Client without the need for the `chef-client` cookbook. We highly recommend using the `chef_client_config`, `chef_client_trusted_certicate`, and `chef_client_*` service resources to manage your clients instead of the `chef-client` cookbook. In the future we will mark that cookbook as deprecated, at which time it will no longer receive updates.
+
+Here's a sample of fully managing Linux hosts with the built-in resources
+
+```ruby
+chef_client_config 'Create client.rb' do
+  chef_server_url 'https://chef.example.dmz'
+end
+
+chef_client_trusted_certificate "chef.example.dmz" do
+  certificate <<~CERT
+  -----BEGIN CERTIFICATE-----
+  MIIDeTCCAmGgAwIBAgIJAPziuikCTox4MA0GCSqGSIb3DQEBCwUAMGIxCzAJBgNV
+  BAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNp
+  c2NvMQ8wDQYDVQQKDAZCYWRTU0wxFTATBgNVBAMMDCouYmFkc3NsLmNvbTAeFw0x
+  OTEwMDkyMzQxNTJaFw0yMTEwMDgyMzQxNTJaMGIxCzAJBgNVBAYTAlVTMRMwEQYD
+  VQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ8wDQYDVQQK
+  DAZCYWRTU0wxFTATBgNVBAMMDCouYmFkc3NsLmNvbTCCASIwDQYJKoZIhvcNAQEB
+  BQADggEPADCCAQoCggEBAMIE7PiM7gTCs9hQ1XBYzJMY61yoaEmwIrX5lZ6xKyx2
+  PmzAS2BMTOqytMAPgLaw+XLJhgL5XEFdEyt/ccRLvOmULlA3pmccYYz2QULFRtMW
+  hyefdOsKnRFSJiFzbIRMeVXk0WvoBj1IFVKtsyjbqv9u/2CVSndrOfEk0TG23U3A
+  xPxTuW1CrbV8/q71FdIzSOciccfCFHpsKOo3St/qbLVytH5aohbcabFXRNsKEqve
+  ww9HdFxBIuGa+RuT5q0iBikusbpJHAwnnqP7i/dAcgCskgjZjFeEU4EFy+b+a1SY
+  QCeFxxC7c3DvaRhBB0VVfPlkPz0sw6l865MaTIbRyoUCAwEAAaMyMDAwCQYDVR0T
+  BAIwADAjBgNVHREEHDAaggwqLmJhZHNzbC5jb22CCmJhZHNzbC5jb20wDQYJKoZI
+  hvcNAQELBQADggEBAGlwCdbPxflZfYOaukZGCaxYK6gpincX4Lla4Ui2WdeQxE95
+  w7fChXvP3YkE3UYUE7mupZ0eg4ZILr/A0e7JQDsgIu/SRTUE0domCKgPZ8v99k3A
+  vka4LpLK51jHJJK7EFgo3ca2nldd97GM0MU41xHFk8qaK1tWJkfrrfcGwDJ4GQPI
+  iLlm6i0yHq1Qg1RypAXJy5dTlRXlCLd8ufWhhiwW0W75Va5AEnJuqpQrKwl3KQVe
+  wGj67WWRgLfSr+4QG1mNvCZb2CkjZWmxkGPuoP40/y7Yu5OFqxP5tAjj4YixCYTW
+  EVA0pmzIzgBg+JIe3PdRy27T0asgQW/F4TY61Yk=
+  -----END CERTIFICATE-----
+  CERT
+end
+
+chef_client_systemd_timer "Run chef-client as a systemd timer" do
+  interval "1hr"
+  cpu_quota 50
+end
+```
+
+## Updated Resources
+
+### ifconfig
+
+The `ifconfig` resource has been updated to no longer add empty blank lines to the configuration files. Thanks for this improvement [@jmherbst](https://github.com/jmherbst/)!
+
+### windows_audit_policy
+
+The `windows_audit_policy` resource has been updated to fix a bug on failure-only auditing
+
+## Ohai Improvements
+
+### Passwd Plugin For Windows
+
+The optional Ohai `Passwd` plugin now supports Windows hosts in addition to Unix-like systems. To collect user/group data on Windows hosts you can use the `ohai_optional_plugins` property in the new `chef_client_config` resource to enable this plugin.
+
+```ruby
+chef_client_config 'Create client.rb' do
+  chef_server_url 'https://chef.example.dmz'
+  ohai_optional_plugins [:Passwd]
+end
+```
+
+Thanks for adding Windows support to this plugin [@jaymzh](https://github.com/jaymzh)!
+
+### Improved Azure Detection
+
+The `Azure` plugin has been improved to better detect Windows hosts running on Azure. The plugin will now look for DHCP with the domain of `reddog.microsoft.com`. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/)!
+
+## Security
+
+Ruby has been updated to 2.7.2 which includes a fix for [CVE-2020-25613](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25613).
+
 # Whats New in 16.5.77
 
 * Added missing requires to prevent errors when loading `chef/policy_builder/dynamic`.
