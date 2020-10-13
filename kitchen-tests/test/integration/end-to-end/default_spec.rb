@@ -7,4 +7,5 @@ client_rb = if os.windows?
 describe file(client_rb) do
   its("content") { should match(%r{chef_server_url = "https://localhost"}) }
   its("content") { should match(/chef_license = "accept"/) }
-end
+  its("content") { should match(/require 'aws-sdk'/) }
+endx

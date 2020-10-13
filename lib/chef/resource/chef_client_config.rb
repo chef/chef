@@ -47,12 +47,29 @@ class Chef
         no_proxy %w(internal.example.dmz)
       end
       ```
+
+      **Adding additional config content to the client.rb**:
+
+      ```ruby
+      chef_client_config 'Create client.rb' do
+        chef_server_url 'https://chef.example.dmz'
+        additional_config <<~CONFIG
+          # Extra config code to safely load a gem into the client run.
+          # Since the config is Ruby you can run any Ruby code you want via the client.rb.
+          # It's a great way to break things, so be careful
+          begin
+            require 'aws-sdk'
+          rescue LoadError
+            Chef::Log.warn "Failed to load aws-sdk."
+          end
+        CONFIG
+      end
+      ```
       DOC
 
       # @todo policy_file or policy_group being set requires the other to be set so enforce that.
       # @todo all properties for automate report
       # @todo add all descriptions
-      # @todo add free form "additional_config" property
 
       #
       # @param [String, Symbol] prop_val the value from the property
@@ -181,6 +198,9 @@ class Chef
       property :file_staging_uses_destdir, String,
         description: "How file staging (via temporary files) is done. When `true`, temporary files are created in the directory in which files will reside. When `false`, temporary files are created under `ENV['TMP']`"
 
+      property :additional_config, String,
+        description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
+
       action :create do
         unless ::Dir.exist?(new_resource.config_directory)
           directory new_resource.config_directory do
@@ -227,7 +247,8 @@ class Chef
             report_handlers: new_resource.report_handlers,
             run_path: new_resource.run_path,
             ssl_verify_mode: new_resource.ssl_verify_mode,
-            start_handlers: new_resource.start_handlers
+            start_handlers: new_resource.start_handlers,
+            additional_config: new_resource.additional_config
           )
           mode "0640"
           action :create
