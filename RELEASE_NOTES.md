@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## pwsh Support
 
-We've updated multiple parts of the Chef Infra Client to fully support Microsoft's `pwsh` in addition to our previous support for `PowerShell`.
+We've updated multiple parts of the Chef Infra Client to fully support Microsoft's `pwsh` (commonly known as PowerShell Core) in addition to our previous support for `PowerShell`.
 
 ### powershell_script resource
 
