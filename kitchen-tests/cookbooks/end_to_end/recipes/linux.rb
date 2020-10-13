@@ -48,10 +48,6 @@ end
 
 ssh_known_hosts_entry "github.com"
 
-include_recipe "chef-client::delete_validation"
-include_recipe "chef-client::config"
-include_recipe "::_chef_client_trusted_certificate"
-
 include_recipe "openssh"
 
 include_recipe "nscd"
@@ -86,6 +82,9 @@ user_ulimit "tomcat" do
   rtprio_soft_limit 60
   rtprio_hard_limit 60
 end
+
+include_recipe "::_chef_client_config"
+include_recipe "::_chef_client_trusted_certificate"
 
 chef_client_cron "Run chef-client as a cron job"
 
