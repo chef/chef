@@ -119,7 +119,7 @@ class Chef
 
       property :node_name, [String, NilClass], # this accepts nil so people can disable the default
         description: "The name of the node. This determines which configuration should be applied and sets the `client_name`, which is the name used when authenticating to a #{ChefUtils::Dist::Server::PRODUCT}. If this value is not provided #{ChefUtils::Dist::Infra::PRODUCT} will use the node's FQDN as the node name. Leaving this setting blank and letting the client assign the FQDN of the node as the node_name during each #{ChefUtils::Dist::Infra::PRODUCT} run is recommended.",
-        default: node.name,
+        default: lazy { node.name },
         default_description: "The `node.name` value. Hard coding this value in the client.rb avoids logic within #{ChefUtils::Dist::Server::PRODUCT} that performs DNS lookups and may fail in the event of a DNS outage. To skip this default value and instead use the built-in #{ChefUtils::Dist::Server::PRODUCT} logic, set this property to `nil`"
 
       property :chef_server_url, String,
