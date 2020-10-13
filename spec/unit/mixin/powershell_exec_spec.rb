@@ -19,7 +19,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_exec"
 
-describe Chef::Mixin::PowershellExec, :windows_only, :windows_gte_10 do
+describe Chef::Mixin::PowershellExec, :windows_only do
   let(:powershell_mixin) { Class.new { include Chef::Mixin::PowershellExec } }
   subject(:object) { powershell_mixin.new }
 
