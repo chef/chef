@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.13 -->
-## [v16.6.13](https://github.com/chef/chef/tree/v16.6.13) (2020-10-14)
+<!-- latest_release 16.6.14 -->
+## [v16.6.14](https://github.com/chef/chef/tree/v16.6.14) (2020-10-14)
 
 #### Merged Pull Requests
-- Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50))
-- Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50))
+- Support for ohai target mode [#10418](https://github.com/chef/chef/pull/10418) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.5.77 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Support for ohai target mode [#10418](https://github.com/chef/chef/pull/10418) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.6.14 -->
 - Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50)) <!-- 16.6.13 -->
 - Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
 - chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
