@@ -121,7 +121,7 @@ The `Azure` plugin has been improved to better detect Windows hosts running on A
 
 ### EC2 IAM Role Data
 
-Ohai now collects IAM Role data on EC2 hosts including the role name and info. To address potential security concerns the data we collect is sanitized to ensure we don't report security credentials to the Chef Infra Server. Thanks for this improvement [@kcbraunschweig](https://github.com/kcbraunschweig)
+Ohai now collects IAM Role data on EC2 hosts including the role name and info. To address potential security concerns the data we collect is sanitized to ensure we don't report security credentials to the Chef Infra Server. Thanks for this improvement [@kcbraunschweig](https://github.com/kcbraunschweig)!
 
 ## Security
 
