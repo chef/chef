@@ -25,7 +25,7 @@ The `powershell_out` and `powershell_exec` helpers for use in custom resources h
 powershell_exec('$PSVersionTable', :pwsh)
 ```
 
-## Enhanced 32bit Windows Support
+## Enhanced 32-bit Windows Support
 
 The `powershell_exec` helper now supports the 32-bit version of Windows. This ensures many of the newer PowerShell based resources in Chef Infra Client will function as expected on 32-bit systems.
 
