@@ -115,6 +115,10 @@ Thanks for adding Windows support to this plugin [@jaymzh](https://github.com/ja
 
 The `Azure` plugin has been improved to better detect Windows hosts running on Azure. The plugin will now look for DHCP with the domain of `reddog.microsoft.com`. Thanks for this improvement [@jasonwbarnett](https://github.com/jasonwbarnett/)!
 
+### EC2 IAM Role Data
+
+Ohai now collects IAM Role data on EC2 hosts including the role name and info. To address potential security concerns the data we collect is sanitized to ensure we don't report security credentials to the Chef Infra Server. Thanks for this improvement [@kcbraunschweig](https://github.com/kcbraunschweig)
+
 ## Security
 
 Ruby has been updated to 2.7.2, which includes a fix for [CVE-2020-25613](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25613).
