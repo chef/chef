@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 477c7078259f97d9957854385525ede69cd1156c
+  revision: f3ed5d38d9cf44c110a993e268ca5ed7f457e339
   branch: master
   specs:
-    omnibus (7.0.31)
+    omnibus (7.0.32)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-sugar (>= 3.3)
@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: e5ac48a1cd931b5f1931e9828713e32718fd36e6
+  revision: 9c01df0dbe8124bfbe2edbff6e93dfdf41942435
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -364,7 +364,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.4)
+    winrm (2.3.5)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)

@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e1063aa34410ebd5612f9c1e0ce6dc3c586cc6c6
+  revision: 009082b0b85eb2b2ae9fcee582a2677c01ceeafe
   branch: master
   specs:
-    ohai (16.6.3)
+    ohai (16.6.5)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -22,6 +22,7 @@ GIT
       mixlib-log (>= 2.0.1, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       plist (~> 3.1)
+      train-core
       wmi-lite (~> 1.0)
 
 PATH
@@ -324,7 +325,7 @@ GEM
       rubocop-ast (>= 0.6.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (0.7.1)
+    rubocop-ast (0.8.0)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
@@ -402,7 +403,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.4)
+    winrm (2.3.5)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
