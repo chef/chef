@@ -1,35 +1,33 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.14 -->
-## [v16.6.14](https://github.com/chef/chef/tree/v16.6.14) (2020-10-14)
-
-#### Merged Pull Requests
-- Support for ohai target mode [#10418](https://github.com/chef/chef/pull/10418) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.5.77 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Support for ohai target mode [#10418](https://github.com/chef/chef/pull/10418) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.6.14 -->
-- Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50)) <!-- 16.6.13 -->
-- Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
-- chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
-- provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock)) <!-- 16.6.11 -->
-- Bump Chefstyle &amp; other deps [#10498](https://github.com/chef/chef/pull/10498) ([tas50](https://github.com/tas50)) <!-- 16.6.10 -->
-- Changing ifconfig provider to reduce blank lines in redhat and debian ifconfigs [#10489](https://github.com/chef/chef/pull/10489) ([jmherbst](https://github.com/jmherbst)) <!-- 16.6.9 -->
-- add interpreter to handle pwsh and powershell to powershell_script [#10488](https://github.com/chef/chef/pull/10488) ([mwrock](https://github.com/mwrock)) <!-- 16.6.8 -->
-- Update Ohai to 16.6.1 [#10486](https://github.com/chef/chef/pull/10486) ([tas50](https://github.com/tas50)) <!-- 16.6.7 -->
-- fix specs on powershell v4 and below [#10484](https://github.com/chef/chef/pull/10484) ([mwrock](https://github.com/mwrock)) <!-- 16.6.6 -->
-- add interpreter arg to powershell_exec allowing it to run powershell core [#10476](https://github.com/chef/chef/pull/10476) ([mwrock](https://github.com/mwrock)) <!-- 16.6.5 -->
-- Remove extra safe navigation [#10482](https://github.com/chef/chef/pull/10482) ([tas50](https://github.com/tas50)) <!-- 16.6.4 -->
-- Update to Ruby 2.7.2 / Rubygems 3.1.4 [#10480](https://github.com/chef/chef/pull/10480) ([tas50](https://github.com/tas50)) <!-- 16.6.3 -->
-- add interpreter arg to powershell_out allowing it to call pwsh.exe [#10478](https://github.com/chef/chef/pull/10478) ([mwrock](https://github.com/mwrock)) <!-- 16.6.2 -->
-- add ruby-3.0 hash methods to immutabilize_hash [#10475](https://github.com/chef/chef/pull/10475) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.6.1 -->
-- Update to the windows_audit_policy resource to fix a bug on failure-only auditing [#10473](https://github.com/chef/chef/pull/10473) ([chef-davin](https://github.com/chef-davin)) <!-- 16.6.0 -->
-- Pull in Ohai 16.6 and train-core/train-winrm updates [#10474](https://github.com/chef/chef/pull/10474) ([tas50](https://github.com/tas50)) <!-- 16.5.78 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.6.14](https://github.com/chef/chef/tree/v16.6.14) (2020-10-14)
+
+#### Merged Pull Requests
+- Pull in Ohai 16.6 and train-core/train-winrm updates [#10474](https://github.com/chef/chef/pull/10474) ([tas50](https://github.com/tas50))
+- Update to the windows_audit_policy resource to fix a bug on failure-only auditing [#10473](https://github.com/chef/chef/pull/10473) ([chef-davin](https://github.com/chef-davin))
+- add ruby-3.0 hash methods to immutabilize_hash [#10475](https://github.com/chef/chef/pull/10475) ([lamont-granquist](https://github.com/lamont-granquist))
+- add interpreter arg to powershell_out allowing it to call pwsh.exe [#10478](https://github.com/chef/chef/pull/10478) ([mwrock](https://github.com/mwrock))
+- Update to Ruby 2.7.2 / Rubygems 3.1.4 [#10480](https://github.com/chef/chef/pull/10480) ([tas50](https://github.com/tas50))
+- Remove extra safe navigation [#10482](https://github.com/chef/chef/pull/10482) ([tas50](https://github.com/tas50))
+- add interpreter arg to powershell_exec allowing it to run powershell core [#10476](https://github.com/chef/chef/pull/10476) ([mwrock](https://github.com/mwrock))
+- fix specs on powershell v4 and below [#10484](https://github.com/chef/chef/pull/10484) ([mwrock](https://github.com/mwrock))
+- Update Ohai to 16.6.1 [#10486](https://github.com/chef/chef/pull/10486) ([tas50](https://github.com/tas50))
+- add interpreter to handle pwsh and powershell to powershell_script [#10488](https://github.com/chef/chef/pull/10488) ([mwrock](https://github.com/mwrock))
+- Changing ifconfig provider to reduce blank lines in redhat and debian ifconfigs [#10489](https://github.com/chef/chef/pull/10489) ([jmherbst](https://github.com/jmherbst))
+- Bump Chefstyle &amp; other deps [#10498](https://github.com/chef/chef/pull/10498) ([tas50](https://github.com/tas50))
+- provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock))
+- chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50))
+- Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50))
+- Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50))
+- Support for ohai target mode [#10418](https://github.com/chef/chef/pull/10418) ([lamont-granquist](https://github.com/lamont-granquist))
+<!-- latest_stable_release -->
+
 ## [v16.5.77](https://github.com/chef/chef/tree/v16.5.77) (2020-09-29)
 
 #### Merged Pull Requests
@@ -46,7 +44,6 @@
 - Remove unnecessary require. [#10465](https://github.com/chef/chef/pull/10465) ([phiggins](https://github.com/phiggins))
 - Use Ruby 2.6 endless Range syntax [#10463](https://github.com/chef/chef/pull/10463) ([007lva](https://github.com/007lva))
 - Bump dependencies to latest + resolve Chefstyle warning [#10468](https://github.com/chef/chef/pull/10468) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.5.64](https://github.com/chef/chef/tree/v16.5.64) (2020-09-17)
 
