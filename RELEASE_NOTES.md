@@ -86,6 +86,10 @@ chef_client_systemd_timer "Run chef-client as a systemd timer" do
 end
 ```
 
+## Target Mode Improvements
+
+MENTION OHAI SUPPORT IN TARGET MODE  HERE
+
 ## Updated Resources
 
 ### ifconfig
