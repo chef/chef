@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.6.13 -->
+## [v16.6.13](https://github.com/chef/chef/tree/v16.6.13) (2020-10-14)
 
 #### Merged Pull Requests
+- Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50))
 - Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update cacerts, ohai, and winrm to the latest [#10502](https://github.com/chef/chef/pull/10502) ([tas50](https://github.com/tas50)) <!-- 16.6.13 -->
 - Update examples and descriptions for better automated documentation [#10500](https://github.com/chef/chef/pull/10500) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
 - chef_client_config resource [#10365](https://github.com/chef/chef/pull/10365) ([tas50](https://github.com/tas50)) <!-- 16.6.12 -->
 - provide powershell_exec functionality on x86 [#10495](https://github.com/chef/chef/pull/10495) ([mwrock](https://github.com/mwrock)) <!-- 16.6.11 -->
