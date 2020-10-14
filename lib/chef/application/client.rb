@@ -27,6 +27,7 @@ module Mixlib
     autoload :Log, "mixlib/authentication"
   end
 end
+autoload :Train, "train"
 
 # DO NOT MAKE EDITS, see Chef::Application::Base
 #
@@ -115,8 +116,12 @@ class Chef::Application::Client < Chef::Application::Base
     Chef::Config.chef_zero.port = config[:chef_zero_port] if config[:chef_zero_port]
 
     if config[:target] || Chef::Config.target
-      Chef::Config.target_mode.enabled = true
       Chef::Config.target_mode.host = config[:target] || Chef::Config.target
+      if URI.parse(Chef::Config.target_mode.host).scheme
+        train_config = Train.unpack_target_from_uri(Chef::Config.target_mode.host)
+        Chef::Config.target_mode = train_config
+      end
+      Chef::Config.target_mode.enabled = true
       Chef::Config.node_name = Chef::Config.target_mode.host unless Chef::Config.node_name
     end
 
