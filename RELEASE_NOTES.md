@@ -117,7 +117,7 @@ The `Azure` plugin has been improved to better detect Windows hosts running on A
 
 ## Security
 
-Ruby has been updated to 2.7.2 which includes a fix for [CVE-2020-25613](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25613).
+Ruby has been updated to 2.7.2, which includes a fix for [CVE-2020-25613](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25613).
 
 # Whats New in 16.5.77
 
