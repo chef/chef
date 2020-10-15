@@ -27,7 +27,7 @@ class Chef
 
       provides(:systemd_unit) { true }
 
-      description "Use the **systemd_unit** resource to create, manage, and run systemd units."
+      description "Use the **systemd_unit** resource to create, manage, and run [systemd units](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts)."
       introduced "12.11"
 
       default_action :nothing

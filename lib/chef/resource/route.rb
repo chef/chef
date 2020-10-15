@@ -43,7 +43,7 @@ class Chef
         description: "The route metric value."
 
       property :netmask, [String, nil],
-        description: "The decimal representation of the network mask. For example: 255.255.255.0."
+        description: "The decimal representation of the network mask. For example: `255.255.255.0`."
 
       property :gateway, [String, nil],
         description: "The gateway for the route."
