@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.15 -->
-## [v16.6.15](https://github.com/chef/chef/tree/v16.6.15) (2020-10-15)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Minor updates for documentation generation [#10505](https://github.com/chef/chef/pull/10505) ([tas50](https://github.com/tas50))
+- Update powershell_script description to match docs site. [#10508](https://github.com/chef/chef/pull/10508) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update powershell_script description to match docs site. [#10508](https://github.com/chef/chef/pull/10508) ([phiggins](https://github.com/phiggins)) <!-- 16.6.15 -->
 - Minor updates for documentation generation [#10505](https://github.com/chef/chef/pull/10505) ([tas50](https://github.com/tas50)) <!-- 16.6.15 -->
 <!-- release_rollup -->
 
