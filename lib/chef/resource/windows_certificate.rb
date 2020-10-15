@@ -80,7 +80,7 @@ class Chef
         default: false
 
       property :cert_path, String,
-        description: ""
+        description: "The path to the certificate."
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
