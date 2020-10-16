@@ -161,7 +161,7 @@ class Chef
 
         def config_file_options
           # If the user has specified config file options previously, respect those.
-          return if Array(options).any? { |opt| opt =~ /--force-conf/ }
+          return if Array(options).any? { |opt| opt.include?("--force-conf") }
 
           # It doesn't make sense to install packages in a scenario that can
           # result in a prompt. Have users decide up-front whether they want to
