@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.16 -->
-## [v16.6.16](https://github.com/chef/chef/tree/v16.6.16) (2020-10-15)
+<!-- latest_release 16.6.17 -->
+## [v16.6.17](https://github.com/chef/chef/tree/v16.6.17) (2020-10-16)
 
 #### Merged Pull Requests
-- More resource documentation improvement [#10509](https://github.com/chef/chef/pull/10509) ([tas50](https://github.com/tas50))
-- Update powershell_script description to match docs site. [#10508](https://github.com/chef/chef/pull/10508) ([phiggins](https://github.com/phiggins))
+- Resource documentation updates from review [#10510](https://github.com/chef/chef/pull/10510) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Resource documentation updates from review [#10510](https://github.com/chef/chef/pull/10510) ([tas50](https://github.com/tas50)) <!-- 16.6.17 -->
 - More resource documentation improvement [#10509](https://github.com/chef/chef/pull/10509) ([tas50](https://github.com/tas50)) <!-- 16.6.16 -->
 - Update powershell_script description to match docs site. [#10508](https://github.com/chef/chef/pull/10508) ([phiggins](https://github.com/phiggins)) <!-- 16.6.15 -->
 - Minor updates for documentation generation [#10505](https://github.com/chef/chef/pull/10505) ([tas50](https://github.com/tas50)) <!-- 16.6.15 -->
