@@ -88,7 +88,7 @@ class Chef
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
+          Chef::Log.warn("`valid_actions` is deprecated, please use `allowed_actions` instead!")
           allowed_actions(*args)
         end
 
