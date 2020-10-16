@@ -22,6 +22,7 @@ require "wmi-lite/wmi"
 
 class Chef
   module ReservedNames::Win32
+    # @deprecated This isn't used anywhere in chef/chef and should be avoided if at all possible as each time it's used expensive WMI calls have to be made. Windows version should be fetched from chef-utils instead
     class Version
       class << self
         include Chef::ReservedNames::Win32::API::System
