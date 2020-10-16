@@ -159,7 +159,7 @@ namespace :docs_site do
         values = {}
         values["property"] = property["name"]
         values["ruby_type"] = friendly_types_list(property["is"])
-        values["required"] = property["required"]
+        values["required"] = !!property["required"] # right now we just want a boolean value here since the docs doesn't know what to do with an array of actions
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
         values["allowed_values"] = property["equal_to"].join(", ") unless property["equal_to"].empty?
