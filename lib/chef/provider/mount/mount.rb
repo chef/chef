@@ -201,7 +201,7 @@ class Chef
         end
 
         def network_device?
-          @new_resource.device =~ /:/ || @new_resource.device =~ %r{//}
+          @new_resource.device.include?(":") || @new_resource.device.include?("//")
         end
 
         def device_should_exist?
