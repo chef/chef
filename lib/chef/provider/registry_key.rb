@@ -35,6 +35,8 @@ class Chef
 
       include Chef::Mixin::Checksum
 
+      WORD_TYPES = %i{dword dword_big_endian qword}.freeze
+
       def running_on_windows!
         unless ChefUtils.windows?
           raise Chef::Exceptions::Win32NotWindows, "Attempt to manipulate the windows registry on a non-windows node"
@@ -122,9 +124,8 @@ class Chef
         new_resource.unscrubbed_values.each do |value|
           if @name_hash.key?(value[:name].downcase)
             current_value = @name_hash[value[:name].downcase]
-            if %i{dword dword_big_endian qword}.include? value[:type]
-              value[:data] = value[:data].to_i
-            end
+            value[:data] = value[:data].to_i if WORD_TYPES.include?(value[:type])
+
             unless current_value[:type] == value[:type] && current_value[:data] == value[:data]
               converge_by_value = if new_resource.sensitive
                                     value.merge(data: "*sensitive value suppressed*")

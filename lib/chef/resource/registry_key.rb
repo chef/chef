@@ -71,6 +71,8 @@ class Chef
 
       property :key, String, name_property: true
 
+      VALID_VALUE_HASH_KEYS = %i{name type data}.freeze
+
       def values(arg = nil)
         if not arg.nil?
           if arg.is_a?(Hash)
@@ -88,7 +90,7 @@ class Chef
             raise ArgumentError, "Missing name key in RegistryKey values hash" unless v.key?(:name)
 
             v.each_key do |key|
-              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless %i{name type data}.include?(key)
+              raise ArgumentError, "Bad key #{key} in RegistryKey values hash" unless VALID_VALUE_HASH_KEYS.include?(key)
             end
             raise ArgumentError, "Type of name => #{v[:name]} should be string" unless v[:name].is_a?(String)
 

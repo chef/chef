@@ -11,6 +11,8 @@ namespace :docs_site do
     require "fileutils"
     require "yaml"
 
+    RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].freeze
+
     # @return [String, nil] a pretty default value string or nil if we want to skip it
     def pretty_default(default)
       return nil if default.nil? || default == "" || default == "lazy default"
@@ -295,7 +297,7 @@ namespace :docs_site do
 
     resources.each do |resource, data|
       # skip some resources we don't directly document
-      next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
+      next if RESOURCES_TO_SKIP.include?(resource)
 
       next if ENV["DEBUG"] && !(resource == ENV["DEBUG"])
 
