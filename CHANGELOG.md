@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.6.19 -->
+## [v16.6.19](https://github.com/chef/chef/tree/v16.6.19) (2020-10-16)
 
 #### Merged Pull Requests
+- Avoid a slow hash merge [#10517](https://github.com/chef/chef/pull/10517) ([tas50](https://github.com/tas50))
 - Update docs generation task to handle Chef 16 required format [#10518](https://github.com/chef/chef/pull/10518) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid a slow hash merge [#10517](https://github.com/chef/chef/pull/10517) ([tas50](https://github.com/tas50)) <!-- 16.6.19 -->
 - Update docs generation task to handle Chef 16 required format [#10518](https://github.com/chef/chef/pull/10518) ([tas50](https://github.com/tas50)) <!-- 16.6.18 -->
 - Avoid declaring arrays in loops [#10513](https://github.com/chef/chef/pull/10513) ([tas50](https://github.com/tas50)) <!-- 16.6.18 -->
 - Resource documentation updates from review [#10510](https://github.com/chef/chef/pull/10510) ([tas50](https://github.com/tas50)) <!-- 16.6.17 -->
