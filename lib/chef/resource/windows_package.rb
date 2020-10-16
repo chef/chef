@@ -116,7 +116,7 @@ class Chef
       ```
       DOC
 
-      allowed_actions :install, :remove
+      actions :install, :remove
 
       def initialize(name, run_context = nil)
         super

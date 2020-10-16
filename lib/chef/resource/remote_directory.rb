@@ -32,7 +32,7 @@ class Chef
       description "Use the **remote_directory** resource to incrementally transfer a directory from a cookbook to a node. The director that is copied from the cookbook should be located under COOKBOOK_NAME/files/default/REMOTE_DIRECTORY. The remote_directory resource will obey file specificity."
 
       default_action :create
-      allowed_actions :create, :create_if_missing, :delete
+      actions :create, :create_if_missing, :delete
 
       def initialize(name, run_context = nil)
         super

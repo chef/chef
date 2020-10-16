@@ -32,7 +32,7 @@ class Chef
                   " and then by using the mount provider to create a file systems table (fstab) entry."
 
       default_action :create
-      allowed_actions :create, :assemble, :stop
+      actions :create, :assemble, :stop
 
       property :chunk, Integer,
         default: 16,

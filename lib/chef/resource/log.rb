@@ -47,7 +47,7 @@ class Chef
         equal_to: %i{debug info warn error fatal}, default: :info,
         description: "The logging level to display this message at."
 
-      allowed_actions :write
+      actions :write
       default_action :write
 
       def suppress_up_to_date_messages?

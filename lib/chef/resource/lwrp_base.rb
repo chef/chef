@@ -88,8 +88,8 @@ class Chef
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
-          allowed_actions(*args)
+          Chef::Log.warn("`valid_actions` is deprecated, please use `actions` instead!")
+          actions(*args)
         end
 
         # Set the run context on the class. Used to provide access to the node

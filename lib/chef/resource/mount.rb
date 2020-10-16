@@ -28,7 +28,7 @@ class Chef
       provides :mount
 
       default_action :mount
-      allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
+      actions :mount, :umount, :unmount, :remount, :enable, :disable
 
       # this is a poor API please do not re-use this pattern
       property :supports, [Array, Hash],

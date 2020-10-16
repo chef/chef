@@ -35,7 +35,7 @@ class Chef
       state_attrs :minute, :hour, :day, :month, :weekday, :user
 
       default_action :create
-      allowed_actions :create, :delete
+      actions :create, :delete
 
       property :time, Symbol,
         description: "A time interval.",

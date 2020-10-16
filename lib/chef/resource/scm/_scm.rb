@@ -19,7 +19,7 @@
 unified_mode true
 
 default_action :sync
-allowed_actions :checkout, :export, :sync, :diff, :log
+actions :checkout, :export, :sync, :diff, :log
 
 property :destination, String,
   description: "The location path to which the source is to be cloned, checked out, or exported. Default value: the name of the resource block.",

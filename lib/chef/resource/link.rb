@@ -41,7 +41,7 @@ class Chef
       state_attrs :owner # required since it's not a property below
 
       default_action :create
-      allowed_actions :create, :delete
+      actions :create, :delete
 
       property :target_file, String,
         description: "An optional property to set the target file if it differs from the resource block's name.",

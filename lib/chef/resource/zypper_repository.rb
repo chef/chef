@@ -106,7 +106,7 @@ class Chef
         default: true
 
       default_action :create
-      allowed_actions :create, :remove, :add, :refresh
+      actions :create, :remove, :add, :refresh
 
       # provide compatibility with the zypper cookbook
       alias_method :key, :gpgkey

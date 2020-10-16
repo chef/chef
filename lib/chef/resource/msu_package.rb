@@ -30,7 +30,7 @@ class Chef
       description "Use the **msu_package** resource to install Microsoft Update(MSU) packages on Microsoft Windows machines."
       introduced "12.17"
 
-      allowed_actions :install, :remove
+      actions :install, :remove
       default_action :install
 
       property :package_name, String,

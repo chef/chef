@@ -34,7 +34,7 @@ class Chef
       description "Use the **service** resource to manage a service."
 
       default_action :nothing
-      allowed_actions :enable, :disable, :start, :stop, :restart, :reload,
+      actions :enable, :disable, :start, :stop, :restart, :reload,
         :mask, :unmask
 
       # this is a poor API please do not re-use this pattern

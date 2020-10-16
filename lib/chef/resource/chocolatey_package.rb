@@ -46,7 +46,7 @@ class Chef
         ```
       DOC
 
-      allowed_actions :install, :upgrade, :remove, :purge, :reconfig
+      actions :install, :upgrade, :remove, :purge, :reconfig
 
       # windows can't take Array options yet
       property :options, [String, Array],

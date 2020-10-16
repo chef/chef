@@ -140,7 +140,7 @@ class Chef
       ```
       DOC
 
-      allowed_actions :create, :delete, :run, :end, :enable, :disable, :change
+      actions :create, :delete, :run, :end, :enable, :disable, :change
       default_action :create
 
       property :task_name, String, regex: [%r{\A[^/\:\*\?\<\>\|]+\z}],

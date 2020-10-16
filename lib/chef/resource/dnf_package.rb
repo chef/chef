@@ -43,7 +43,7 @@ class Chef
       description "Use the **dnf_package** resource to install, upgrade, and remove packages with DNF for Fedora and RHEL 8+. The dnf_package resource is able to resolve provides data for packages much like DNF can do when it is run from the command line. This allows a variety of options for installing packages, like minimum versions, virtual provides and library names."
       introduced "12.18"
 
-      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
+      actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock, :flush_cache
 
       # Install a specific arch
       property :arch, [String, Array],

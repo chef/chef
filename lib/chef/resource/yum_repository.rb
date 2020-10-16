@@ -194,7 +194,7 @@ class Chef
         description: "Username to use for basic authentication to a repository."
 
       default_action :create
-      allowed_actions :create, :remove, :makecache, :add, :delete
+      actions :create, :remove, :makecache, :add, :delete
 
       # provide compatibility with the yum cookbook < 3.0 properties
       alias_method :url, :baseurl

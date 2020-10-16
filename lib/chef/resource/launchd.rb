@@ -28,7 +28,7 @@ class Chef
       introduced "12.8"
 
       default_action :create
-      allowed_actions :create, :create_if_missing, :delete, :enable, :disable, :restart
+      actions :create, :create_if_missing, :delete, :enable, :disable, :restart
 
       property :label, String,
         name_property: true,

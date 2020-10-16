@@ -34,7 +34,7 @@ class Chef
                   " recommended to use the package resource as often as possible."
 
       default_action :install
-      allowed_actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock
+      actions :install, :upgrade, :remove, :purge, :reconfig, :lock, :unlock
 
       def initialize(name, *args)
         # We capture name here, before it gets coerced to name

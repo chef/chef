@@ -161,7 +161,7 @@ class Chef
         default: true, desired_state: false
 
       default_action :add
-      allowed_actions :add, :remove
+      actions :add, :remove
 
       action_class do
         LIST_APT_KEY_FINGERPRINTS = %w{apt-key adv --list-public-keys --with-fingerprint --with-colons}.freeze

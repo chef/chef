@@ -35,7 +35,7 @@ class Chef
       state_attrs :inet_addr, :mask
 
       default_action :add
-      allowed_actions :add, :delete, :enable, :disable
+      actions :add, :delete, :enable, :disable
 
       property :target, String,
         name_property: true,

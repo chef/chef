@@ -31,7 +31,7 @@ class Chef
       introduced "12.11"
 
       default_action :nothing
-      allowed_actions :create, :delete,
+      actions :create, :delete,
         :preset, :revert,
         :enable, :disable, :reenable,
         :mask, :unmask,

@@ -76,7 +76,7 @@ class Chef
         required: [:add]
 
       default_action :add
-      allowed_actions :add, :remove
+      actions :add, :remove
 
       APT_PREFERENCE_DIR = "/etc/apt/preferences.d".freeze
 

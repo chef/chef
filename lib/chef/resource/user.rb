@@ -26,7 +26,7 @@ class Chef
       description "Use the **user** resource to add users, update existing users, remove users, and to lock/unlock user passwords."
 
       default_action :create
-      allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
+      actions :create, :remove, :modify, :manage, :lock, :unlock
 
       property :username, String,
         description: "An optional property to set the username value if it differs from the resource block's name.",

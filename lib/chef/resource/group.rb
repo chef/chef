@@ -27,7 +27,7 @@ class Chef
 
       provides :group
 
-      allowed_actions :create, :remove, :modify, :manage
+      actions :create, :remove, :modify, :manage
       default_action :create
 
       property :group_name, String,

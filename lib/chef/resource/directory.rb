@@ -40,7 +40,7 @@ class Chef
       include Chef::Mixin::Securable
 
       default_action :create
-      allowed_actions :create, :delete
+      actions :create, :delete
 
       property :path, String, name_property: true,
                description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."

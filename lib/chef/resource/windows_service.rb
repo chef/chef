@@ -39,7 +39,7 @@ class Chef
       description "Use the **windows_service** resource to create, delete, or manage a service on the Microsoft Windows platform."
       introduced "12.0"
 
-      allowed_actions :configure_startup, :create, :delete, :configure
+      actions :configure_startup, :create, :delete, :configure
 
       property :timeout, Integer,
         description: "The amount of time (in seconds) to wait before timing out.",

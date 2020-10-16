@@ -27,7 +27,7 @@ class Chef
       provides :route
 
       default_action :add
-      allowed_actions :add, :delete
+      actions :add, :delete
 
       description "Use the **route** resource to manage the system routing table in a Linux environment."
 

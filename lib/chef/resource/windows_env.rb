@@ -37,7 +37,7 @@ class Chef
       DOC
 
       default_action :create
-      allowed_actions :create, :delete, :modify
+      actions :create, :delete, :modify
 
       property :key_name, String,
         description: "An optional property to set the name of the key that is to be created, deleted, or modified if it differs from the resource block's name.",

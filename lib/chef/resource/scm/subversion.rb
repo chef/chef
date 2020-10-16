@@ -30,7 +30,7 @@ class Chef
 
       description "Use the **subversion** resource to manage source control resources that exist in a Subversion repository."
 
-      allowed_actions :force_export
+      actions :force_export
 
       property :svn_arguments, [String, nil, FalseClass],
         description: "The extra arguments that are passed to the Subversion command.",

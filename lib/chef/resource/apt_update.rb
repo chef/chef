@@ -52,7 +52,7 @@ class Chef
         default: 86_400
 
       default_action :periodic
-      allowed_actions :update, :periodic
+      actions :update, :periodic
 
       action_class do
         APT_CONF_DIR = "/etc/apt/apt.conf.d".freeze

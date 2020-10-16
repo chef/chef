@@ -29,7 +29,7 @@ class Chef
       description "Use the **paludis_package** resource to manage packages for the Paludis platform."
       introduced "12.1"
 
-      allowed_actions :install, :remove, :upgrade
+      actions :install, :remove, :upgrade
 
       property :package_name, String,
         description: "An optional property to set the package name if it differs from the resource block's name.",

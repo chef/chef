@@ -31,7 +31,7 @@ class Chef
       state_attrs :values
 
       default_action :create
-      allowed_actions :create, :create_if_missing, :delete, :delete_key
+      actions :create, :create_if_missing, :delete, :delete_key
 
       # Some registry key data types may not be safely reported as json.
       # Example (CHEF-5323):

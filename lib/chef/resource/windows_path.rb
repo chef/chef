@@ -43,7 +43,7 @@ class Chef
       ```
       DOC
 
-      allowed_actions :add, :remove
+      actions :add, :remove
       default_action :add
 
       property :path, String,
