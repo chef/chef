@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.25 -->
-## [v16.6.25](https://github.com/chef/chef/tree/v16.6.25) (2020-10-19)
+<!-- latest_release 16.6.26 -->
+## [v16.6.26](https://github.com/chef/chef/tree/v16.6.26) (2020-10-19)
 
 #### Merged Pull Requests
-- Simplify the ifconfig provides statement on Ubuntu/Debian [#10528](https://github.com/chef/chef/pull/10528) ([tas50](https://github.com/tas50))
+- Refactor ResourceGuardInterpreter [#10494](https://github.com/chef/chef/pull/10494) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Refactor ResourceGuardInterpreter [#10494](https://github.com/chef/chef/pull/10494) ([phiggins](https://github.com/phiggins)) <!-- 16.6.26 -->
 - Simplify the ifconfig provides statement on Ubuntu/Debian [#10528](https://github.com/chef/chef/pull/10528) ([tas50](https://github.com/tas50)) <!-- 16.6.25 -->
 - Added functional test for windows_package with remote_file_attributes. [#10526](https://github.com/chef/chef/pull/10526) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.6.24 -->
 - Add required_ruby_version to chef-utils and chef-config [#10525](https://github.com/chef/chef/pull/10525) ([tas50](https://github.com/tas50)) <!-- 16.6.23 -->
