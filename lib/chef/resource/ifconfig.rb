@@ -26,7 +26,7 @@ class Chef
 
       provides :ifconfig
 
-      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems."
+      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality."
       examples <<~DOC
       **Configure a network interface with a static IP**
 
@@ -41,14 +41,6 @@ class Chef
       ```
       iface eth1 inet static
         address 33.33.33.80
-      ```
-
-      **Specify a boot protocol**
-
-      ```ruby
-      ifconfig '192.186.0.1' do
-        device 'eth0'
-      end
       ```
 
       **Configure an interface to use DHCP**
