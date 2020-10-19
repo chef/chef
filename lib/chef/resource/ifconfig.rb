@@ -102,6 +102,10 @@ class Chef
       property :gateway, String,
         introduced: "14.4",
         description: "The gateway to use for the interface."
+
+      property :bridge, String,
+        introduced: "16.7",
+        description: "The bridge interface this interface is a member of on Red Hat based systems."
     end
   end
 end
