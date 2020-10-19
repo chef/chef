@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.26 -->
-## [v16.6.26](https://github.com/chef/chef/tree/v16.6.26) (2020-10-19)
+<!-- latest_release 16.6.27 -->
+## [v16.6.27](https://github.com/chef/chef/tree/v16.6.27) (2020-10-19)
 
 #### Merged Pull Requests
-- Refactor ResourceGuardInterpreter [#10494](https://github.com/chef/chef/pull/10494) ([phiggins](https://github.com/phiggins))
+- Move the alias for attribute to property right into the property mixin [#10520](https://github.com/chef/chef/pull/10520) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move the alias for attribute to property right into the property mixin [#10520](https://github.com/chef/chef/pull/10520) ([tas50](https://github.com/tas50)) <!-- 16.6.27 -->
 - Refactor ResourceGuardInterpreter [#10494](https://github.com/chef/chef/pull/10494) ([phiggins](https://github.com/phiggins)) <!-- 16.6.26 -->
 - Simplify the ifconfig provides statement on Ubuntu/Debian [#10528](https://github.com/chef/chef/pull/10528) ([tas50](https://github.com/tas50)) <!-- 16.6.25 -->
 - Added functional test for windows_package with remote_file_attributes. [#10526](https://github.com/chef/chef/pull/10526) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.6.24 -->
