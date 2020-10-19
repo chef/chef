@@ -123,6 +123,7 @@ include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests"
 include_recipe "::_mount"
+include_recipe "::_ifconfig"
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue

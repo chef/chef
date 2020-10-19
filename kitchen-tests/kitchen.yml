@@ -54,6 +54,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: debian-10
   driver:
@@ -61,6 +62,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: centos-6
   driver:
@@ -125,6 +127,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
 - name: ubuntu-20.04
   driver:
@@ -132,6 +135,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
 - name: opensuse-leap-15
   driver:
@@ -139,8 +143,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install cron
-      - RUN /usr/bin/zypper --non-interactive install insserv-compat
+      - RUN /usr/bin/zypper --non-interactive install insserv-compat net-tools-deprecated # net-tools-deprecated is necessary for fconfig resource testing
 
 suites:
   - name: end-to-end
