@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.23 -->
-## [v16.6.23](https://github.com/chef/chef/tree/v16.6.23) (2020-10-17)
+<!-- latest_release 16.6.24 -->
+## [v16.6.24](https://github.com/chef/chef/tree/v16.6.24) (2020-10-19)
 
 #### Merged Pull Requests
-- Add required_ruby_version to chef-utils and chef-config [#10525](https://github.com/chef/chef/pull/10525) ([tas50](https://github.com/tas50))
+- Added functional test for windows_package with remote_file_attributes. [#10526](https://github.com/chef/chef/pull/10526) ([antima-gupta](https://github.com/antima-gupta))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Added functional test for windows_package with remote_file_attributes. [#10526](https://github.com/chef/chef/pull/10526) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.6.24 -->
 - Add required_ruby_version to chef-utils and chef-config [#10525](https://github.com/chef/chef/pull/10525) ([tas50](https://github.com/tas50)) <!-- 16.6.23 -->
 - Remove constantize method from Chef::Mixin::ConvertToClassName [#10522](https://github.com/chef/chef/pull/10522) ([tas50](https://github.com/tas50)) <!-- 16.6.22 -->
 - Fix bad formatting in a deprecation message [#10521](https://github.com/chef/chef/pull/10521) ([tas50](https://github.com/tas50)) <!-- 16.6.21 -->
