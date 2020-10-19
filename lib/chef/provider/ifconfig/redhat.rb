@@ -78,10 +78,12 @@ VLAN=<%= new_resource.vlan %>
 <% if new_resource.gateway -%>
 GATEWAY=<%= new_resource.gateway %>
 <% end -%>
+<% if new_resource.bridge -%>
+BRIDGE=<%= new_resource.bridge %>
+<% end -%>
           }
           @config_path = "/etc/sysconfig/network-scripts/ifcfg-#{new_resource.device}"
         end
-
       end
     end
   end
