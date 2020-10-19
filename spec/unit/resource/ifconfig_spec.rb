@@ -90,19 +90,11 @@ describe Chef::Resource::Ifconfig do
     it_should_behave_like "being a platform based on RedHat", "redhat", "4.0"
   end
 
-  describe "when it is an old Debian platform" do
-    it_should_behave_like "being a platform based on an old Debian", "debian", "6.0"
-  end
-
-  describe "when it is a new Debian platform" do
+  describe "when it is a Debian platform" do
     it_should_behave_like "being a platform based on a recent Debian", "debian", "7.0"
   end
 
-  describe "when it is an old Ubuntu platform" do
-    it_should_behave_like "being a platform based on an old Debian", "ubuntu", "11.04"
-  end
-
-  describe "when it is a new Ubuntu platform" do
+  describe "when it is a Ubuntu platform" do
     it_should_behave_like "being a platform based on a recent Debian", "ubuntu", "11.10"
   end
 

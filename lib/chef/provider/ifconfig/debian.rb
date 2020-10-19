@@ -23,8 +23,7 @@ class Chef
   class Provider
     class Ifconfig
       class Debian < Chef::Provider::Ifconfig
-        provides :ifconfig, platform: %w{ubuntu}, platform_version: ">= 11.10"
-        provides :ifconfig, platform: %w{debian}, platform_version: ">= 7.0"
+        provides :ifconfig, platform_family: %w{debian}
 
         INTERFACES_FILE = "/etc/network/interfaces".freeze
         INTERFACES_DOT_D_DIR = "/etc/network/interfaces.d".freeze
@@ -81,7 +80,7 @@ iface <%= new_resource.device %> <%= new_resource.family %> static
         protected
 
         def enforce_interfaces_dot_d_sanity
-          # on ubuntu 18.04 there's no interfaces file and it uses interfaces.d by default
+          # on ubuntu 18.04+ there's no interfaces file and it uses interfaces.d by default
           return if ::File.directory?(INTERFACES_DOT_D_DIR) && !::File.exist?(INTERFACES_FILE)
 
           # create /etc/network/interfaces.d via dir resource (to get reporting, etc)
