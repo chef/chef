@@ -72,8 +72,6 @@ class Chef
           resource_class
         end
 
-        alias :attribute :property
-
         # Adds +action_names+ to the list of valid actions for this resource.
         # Does not include superclass's action list when appending.
         def actions(*action_names)
