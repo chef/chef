@@ -20,7 +20,6 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    - remote: /opt/chef/embedded/bin/rake --version
     - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
@@ -143,7 +142,7 @@ platforms:
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/zypper --non-interactive update
-      - RUN /usr/bin/zypper --non-interactive install insserv-compat net-tools-deprecated # net-tools-deprecated is necessary for fconfig resource testing
+      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
 
 suites:
   - name: end-to-end
