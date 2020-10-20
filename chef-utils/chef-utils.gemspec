@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Chef Software, Inc"]
   spec.email         = ["oss@chef.io"]
 
-  spec.summary       = %q{Basic utility functions for Core Chef development}
+  spec.summary       = %q{Basic utility functions for Core Chef Infra development}
   spec.homepage      = "https://github.com/chef/chef/tree/master/chef-utils"
   spec.license       = "Apache-2.0"
 
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
 
   spec.metadata = {
     "bug_tracker_uri" => "https://github.com/chef/chef/issues",
-    "changelog_uri" => "https://github.com/chef/chef/CHANGELOG.md",
+    "changelog_uri" => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
     "documentation_uri" => "https://github.com/chef/chef/tree/master/chef-utils/README.md",
     "homepage_uri" => "https://github.com/chef/chef/tree/master/chef-utils",
     "source_code_uri" => "https://github.com/chef/chef/tree/master/chef-utils",
@@ -42,7 +42,4 @@ Gem::Specification.new do |spec|
 
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
-
-  spec.bindir        = "bin"
-  spec.executables   = []
 end
