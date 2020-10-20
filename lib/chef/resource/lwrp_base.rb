@@ -63,11 +63,11 @@ class Chef
 
           Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
-          LWRPBase.loaded_lwrps[filename] = true
-
           # wire up the default resource name after the class is parsed only if we haven't declared one.
           # (this ordering is important for MapCollision deprecation warnings)
           resource_class.provides resource_name.to_sym unless Chef::ResourceResolver.includes_handler?(resource_name.to_sym, self)
+
+          LWRPBase.loaded_lwrps[filename] = resource_class
 
           resource_class
         end
