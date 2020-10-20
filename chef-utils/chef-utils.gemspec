@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Chef Software, Inc"]
   spec.email         = ["oss@chef.io"]
 
-  spec.summary       = %q{Basic utility functions for Core Chef development}
+  spec.summary       = %q{Basic utility functions for Core Chef Infra development}
   spec.homepage      = "https://github.com/chef/chef/tree/master/chef-utils"
   spec.license       = "Apache-2.0"
 
@@ -42,7 +42,4 @@ Gem::Specification.new do |spec|
 
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
-
-  spec.bindir        = "bin"
-  spec.executables   = []
 end
