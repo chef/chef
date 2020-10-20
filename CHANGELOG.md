@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.30 -->
-## [v16.6.30](https://github.com/chef/chef/tree/v16.6.30) (2020-10-19)
+<!-- latest_release 16.6.31 -->
+## [v16.6.31](https://github.com/chef/chef/tree/v16.6.31) (2020-10-20)
 
 #### Merged Pull Requests
-- Use a native resource in the ifconfig debian provider [#10533](https://github.com/chef/chef/pull/10533) ([tas50](https://github.com/tas50))
+- Update train-core &amp; pull in the faster MSI installs [#10534](https://github.com/chef/chef/pull/10534) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update train-core &amp; pull in the faster MSI installs [#10534](https://github.com/chef/chef/pull/10534) ([tas50](https://github.com/tas50)) <!-- 16.6.31 -->
 - Use a native resource in the ifconfig debian provider [#10533](https://github.com/chef/chef/pull/10533) ([tas50](https://github.com/tas50)) <!-- 16.6.30 -->
 - Test ifconfig in Test Kitchen and add examples to the resource [#10530](https://github.com/chef/chef/pull/10530) ([tas50](https://github.com/tas50)) <!-- 16.6.29 -->
 - Add bridge property to ifconfig for RHEL based systems [#10529](https://github.com/chef/chef/pull/10529) ([tas50](https://github.com/tas50)) <!-- 16.6.28 -->
