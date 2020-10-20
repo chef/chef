@@ -23,7 +23,7 @@ require "rake"
 begin
   require "rspec/core/rake_task"
 
-  desc "Run specs for Chef's Components"
+  desc "Run specs for Chef's Gem Components"
   task :component_specs do
     %w{chef-utils chef-config}.each do |gem|
       Dir.chdir(gem) do

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,6 @@ $LOAD_PATH.unshift(File.expand_path("chef-config/lib", __dir__))
 begin
   require_relative "tasks/rspec"
   require_relative "tasks/dependencies"
-  require_relative "tasks/announce"
   require_relative "tasks/docs"
   require_relative "tasks/spellcheck"
   require_relative "chef-utils/lib/chef-utils/dist" unless defined?(ChefUtils::Dist)
