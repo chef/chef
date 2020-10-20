@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.34 -->
-## [v16.6.34](https://github.com/chef/chef/tree/v16.6.34) (2020-10-20)
+<!-- latest_release 16.6.35 -->
+## [v16.6.35](https://github.com/chef/chef/tree/v16.6.35) (2020-10-20)
 
 #### Merged Pull Requests
-- Remove the announcement rake task + minor task updates [#10540](https://github.com/chef/chef/pull/10540) ([tas50](https://github.com/tas50))
+- Remove the yard doc generation task / group [#10541](https://github.com/chef/chef/pull/10541) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the yard doc generation task / group [#10541](https://github.com/chef/chef/pull/10541) ([tas50](https://github.com/tas50)) <!-- 16.6.35 -->
 - Remove the announcement rake task + minor task updates [#10540](https://github.com/chef/chef/pull/10540) ([tas50](https://github.com/tas50)) <!-- 16.6.34 -->
 - Minor gem cleanup for chef-bin/chef-utils/chef-config [#10539](https://github.com/chef/chef/pull/10539) ([tas50](https://github.com/tas50)) <!-- 16.6.33 -->
 - Fix LWRP build cache [#10536](https://github.com/chef/chef/pull/10536) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.6.32 -->
