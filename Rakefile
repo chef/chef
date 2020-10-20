@@ -47,6 +47,7 @@ namespace :pre_install do
 
   desc "Renders the powershell extensions with distro flavoring"
   task :render_powershell_extension do
+    require "erb"
     template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
     psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
     FileUtils.mkdir_p psm1_path
