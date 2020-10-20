@@ -41,10 +41,6 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-group(:docgen) do
-  gem "yard"
-end
-
 # Everything except AIX
 group(:ruby_prof) do
   # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers

@@ -97,15 +97,3 @@ begin
 rescue LoadError
   puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
 end
-
-begin
-  require "yard"
-  DOC_FILES = [ "spec/tiny_server.rb", "lib/**/*.rb" ].freeze
-
-  YARD::Rake::YardocTask.new(:docs) do |t|
-    t.files = DOC_FILES
-    t.options = ["--format", "html"]
-  end
-rescue LoadError
-  puts "yard is not available. bundle install first to make sure all dependencies are installed."
-end
