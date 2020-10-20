@@ -1,6 +1,7 @@
 autoload :Inspec, 'inspec'
 
 require_relative 'default_attributes'
+require_relative 'reporter/audit_enforcer'
 require_relative 'reporter/json_file'
 
 class Chef
@@ -214,6 +215,8 @@ class Chef
           path = audit_attributes['json_file']['location']
           Chef::Log.info "Writing report to #{path}"
           Chef::Audit::Reporter::JsonFile.new(file: path).send_report(report)
+        when 'audit-enforcer'
+          Chef::Audit::Reporter::AuditEnforcer.new.send_report(report)
         else
           Chef::Log.warn "#{reporter} is not a supported InSpec report collector"
         end
