@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.31 -->
-## [v16.6.31](https://github.com/chef/chef/tree/v16.6.31) (2020-10-20)
+<!-- latest_release 16.6.32 -->
+## [v16.6.32](https://github.com/chef/chef/tree/v16.6.32) (2020-10-20)
 
 #### Merged Pull Requests
-- Update train-core &amp; pull in the faster MSI installs [#10534](https://github.com/chef/chef/pull/10534) ([tas50](https://github.com/tas50))
+- Fix LWRP build cache [#10536](https://github.com/chef/chef/pull/10536) ([tecracer-theinen](https://github.com/tecracer-theinen))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix LWRP build cache [#10536](https://github.com/chef/chef/pull/10536) ([tecracer-theinen](https://github.com/tecracer-theinen)) <!-- 16.6.32 -->
 - Update train-core &amp; pull in the faster MSI installs [#10534](https://github.com/chef/chef/pull/10534) ([tas50](https://github.com/tas50)) <!-- 16.6.31 -->
 - Use a native resource in the ifconfig debian provider [#10533](https://github.com/chef/chef/pull/10533) ([tas50](https://github.com/tas50)) <!-- 16.6.30 -->
 - Test ifconfig in Test Kitchen and add examples to the resource [#10530](https://github.com/chef/chef/pull/10530) ([tas50](https://github.com/tas50)) <!-- 16.6.29 -->
