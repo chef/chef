@@ -6,27 +6,6 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
 
     Chef::Config[:client_key] = File.expand_path('../../../data/ssl/private_key.pem', __dir__)
     Chef::Config[:node_name] = 'spec-node'
-
-    # TODO: Had to change 'X-Ops-Server-Api-Version' from 1 to 2, is that correct?
-    stub_request(:post, 'https://chef.server/data_collector')
-      .with(
-        body: enriched_report,
-        headers: {
-          'X-Chef-Version' => Chef::VERSION,
-          'X-Ops-Authorization-1'=>'gifUT8qLYgXh8erdBeAVCX7Lz0UyU0nMDY/ONwej5ZUDDMuX6Jatp59gOI+3',
-          'X-Ops-Authorization-2'=>'/IFR9yZibVDROdNYEWuo6VXX8HynoUdFBw2aZx5APcoLzwcACQPoR9GlPejD',
-          'X-Ops-Authorization-3'=>'d/yN2VHTLhybWRB6b7FBhk60sTvQYWK03iEUiy8yy5rSr0S9+dI8vEWT+EJm',
-          'X-Ops-Authorization-4'=>'xKcSf1mhPtZ7oIjTIIBBKt8SGPAovN1lYwqD8ycdtGN5y3/qMMMYpfDhB2Y4',
-          'X-Ops-Authorization-5'=>'RctLQURtnaOPcxsTanUPuayDELFcBJzmUni+5O+bcgz8g96E5Pji+c9YqwMc',
-          'X-Ops-Authorization-6'=>'2Bm9X3ep7cwJEwtcsv3UJ2Se+JoG77TXyy2T5DUo4w==',
-          'X-Ops-Content-Hash'=>'yfck5nQDcRWta06u45Q+J463LYY=',
-          'X-Ops-Server-Api-Version' => '2',
-          'X-Ops-Sign' => 'algorithm=sha1;version=1.1;',
-          'X-Ops-Timestamp' => /.+/,
-          'X-Ops-Userid' => 'spec-node',
-          'X-Remote-Request-Id' => /.+/
-        }
-      ).to_return(status: 200)
   end
 
   let(:reporter) { Chef::Audit::Reporter::ChefServerAutomate.new(opts) }
@@ -168,8 +147,31 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
     }
   end
 
-  it 'sends report successfully to ChefServerAutomate' do
+  it 'sends report successfully' do
+    # TODO: Had to change 'X-Ops-Server-Api-Version' from 1 to 2, is that correct?
+    report_stub = stub_request(:post, 'https://chef.server/data_collector')
+      .with(
+        body: enriched_report,
+        headers: {
+          'X-Chef-Version' => Chef::VERSION,
+          'X-Ops-Authorization-1'=>'gifUT8qLYgXh8erdBeAVCX7Lz0UyU0nMDY/ONwej5ZUDDMuX6Jatp59gOI+3',
+          'X-Ops-Authorization-2'=>'/IFR9yZibVDROdNYEWuo6VXX8HynoUdFBw2aZx5APcoLzwcACQPoR9GlPejD',
+          'X-Ops-Authorization-3'=>'d/yN2VHTLhybWRB6b7FBhk60sTvQYWK03iEUiy8yy5rSr0S9+dI8vEWT+EJm',
+          'X-Ops-Authorization-4'=>'xKcSf1mhPtZ7oIjTIIBBKt8SGPAovN1lYwqD8ycdtGN5y3/qMMMYpfDhB2Y4',
+          'X-Ops-Authorization-5'=>'RctLQURtnaOPcxsTanUPuayDELFcBJzmUni+5O+bcgz8g96E5Pji+c9YqwMc',
+          'X-Ops-Authorization-6'=>'2Bm9X3ep7cwJEwtcsv3UJ2Se+JoG77TXyy2T5DUo4w==',
+          'X-Ops-Content-Hash'=>'yfck5nQDcRWta06u45Q+J463LYY=',
+          'X-Ops-Server-Api-Version' => '2',
+          'X-Ops-Sign' => 'algorithm=sha1;version=1.1;',
+          'X-Ops-Timestamp' => /.+/,
+          'X-Ops-Userid' => 'spec-node',
+          'X-Remote-Request-Id' => /.+/
+        }
+      ).to_return(status: 200)
+
     allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
     expect(reporter.send_report(inspec_report)).to eq(true)
+
+    expect(report_stub).to have_been_requested
   end
 end

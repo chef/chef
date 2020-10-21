@@ -5,35 +5,10 @@ describe Chef::Audit::Reporter::Automate do
   before :each do
     WebMock.disable_net_connect!
 
-    token = 'fake_token'
-
     Chef::Config[:data_collector] = { token: token, server_url: 'https://automate.test/data_collector' }
-
-    stub_request(:post, 'https://automate.test/compliance/profiles/metasearch')
-      .with(
-        body: '{"sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}',
-        headers: {
-          'Accept-Encoding' => 'identity',
-          'X-Chef-Version' => Chef::VERSION,
-          'X-Data-Collector-Auth' => 'version=1.0',
-          'X-Data-Collector-Token' => token
-        }
-      ).to_return(
-        status: 200,
-        body: '{"missing_sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}'
-      )
-
-    stub_request(:post, 'https://automate.test/data_collector')
-      .with(
-        body: enriched_report,
-        headers: {
-          'Accept-Encoding' => 'identity',
-          'X-Chef-Version' => Chef::VERSION,
-          'X-Data-Collector-Auth' => 'version=1.0',
-          'X-Data-Collector-Token' => token
-        }
-      ).to_return(status: 200)
   end
+
+  let(:token) { "fake_token" }
 
   let(:reporter) { Chef::Audit::Reporter::Automate.new(opts) }
 
@@ -181,21 +156,50 @@ describe Chef::Audit::Reporter::Automate do
     }
   end
 
-  it 'sends report successfully to ChefAutomate' do
-    allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
-    expect(reporter.send_report(inspec_report)).to eq(true)
+  describe "#send_report" do
+    it 'sends report successfully to ChefAutomate' do
+      metasearch_stub = stub_request(:post, 'https://automate.test/compliance/profiles/metasearch')
+        .with(
+          body: '{"sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}',
+          headers: {
+            'Accept-Encoding' => 'identity',
+            'X-Chef-Version' => Chef::VERSION,
+            'X-Data-Collector-Auth' => 'version=1.0',
+            'X-Data-Collector-Token' => token
+          }
+        ).to_return(
+          status: 200,
+          body: '{"missing_sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}'
+        )
+
+      report_stub = stub_request(:post, 'https://automate.test/data_collector')
+        .with(
+          body: enriched_report,
+          headers: {
+            'Accept-Encoding' => 'identity',
+            'X-Chef-Version' => Chef::VERSION,
+            'X-Data-Collector-Auth' => 'version=1.0',
+            'X-Data-Collector-Token' => token
+          }
+        ).to_return(status: 200)
+
+      allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
+      expect(reporter.send_report(inspec_report)).to eq(true)
+
+      expect(metasearch_stub).to have_been_requested
+      expect(report_stub).to have_been_requested
+    end
+
+    it 'does not send report when entity_uuid is missing' do
+      opts.delete(:entity_uuid)
+      reporter = Chef::Audit::Reporter::Automate.new(opts)
+      expect(reporter.send_report(inspec_report)).to eq(false)
+    end
   end
 
   it 'enriches report correctly with the most test coverage' do
     allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
     expect(reporter.truncate_controls_results(reporter.enriched_report(inspec_report), 2)).to eq(enriched_report)
-  end
-
-  it 'does not send report when entity_uuid is missing' do
-    opts.delete(:entity_uuid)
-    reporter = Chef::Audit::Reporter::Automate.new(opts)
-    expect(reporter.send_report(inspec_report)).to eq(false)
-    pending "expect no HTTP requests"
   end
 
   describe "#truncate_controls_results" do
