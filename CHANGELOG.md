@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.36 -->
-## [v16.6.36](https://github.com/chef/chef/tree/v16.6.36) (2020-10-20)
+<!-- latest_release 16.6.37 -->
+## [v16.6.37](https://github.com/chef/chef/tree/v16.6.37) (2020-10-21)
 
 #### Merged Pull Requests
-- Bump Ohai to 16.7 and cacerts to the latest [#10542](https://github.com/chef/chef/pull/10542) ([tas50](https://github.com/tas50))
+- ensure powershell_package commands are run with tls 1.2 [#10543](https://github.com/chef/chef/pull/10543) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- ensure powershell_package commands are run with tls 1.2 [#10543](https://github.com/chef/chef/pull/10543) ([mwrock](https://github.com/mwrock)) <!-- 16.6.37 -->
 - Bump Ohai to 16.7 and cacerts to the latest [#10542](https://github.com/chef/chef/pull/10542) ([tas50](https://github.com/tas50)) <!-- 16.6.36 -->
 - Remove the yard doc generation task / group [#10541](https://github.com/chef/chef/pull/10541) ([tas50](https://github.com/tas50)) <!-- 16.6.35 -->
 - Remove the announcement rake task + minor task updates [#10540](https://github.com/chef/chef/pull/10540) ([tas50](https://github.com/tas50)) <!-- 16.6.34 -->
