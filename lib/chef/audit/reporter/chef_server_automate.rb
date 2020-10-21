@@ -41,18 +41,22 @@ class Chef
             Chef::Log.warn 'Infra Server < 13.0 defaults to a limit of ~1MB, 13.0+ defaults to a limit of ~2MB.'
           end
 
-          if @insecure
-            Chef::Config[:verify_api_cert] = false
-            Chef::Config[:ssl_verify_mode] = :verify_none
-          end
-
           Chef::Log.info "Report to Chef Automate via Chef Server: #{@url}"
-          rest = Chef::ServerAPI.new(@url, Chef::Config)
           with_http_rescue do
-            rest.post(@url, automate_report)
+            http_client.post(@url, automate_report)
             return true
           end
           false
+        end
+
+        def http_client
+          config = if @insecure
+            Chef::Config.merge(ssl_verify_mode: :verify_none)
+          else
+            Chef::Config
+          end
+
+          Chef::ServerAPI.new(@url, config)
         end
 
         def with_http_rescue

@@ -49,13 +49,6 @@ class Chef
               headers['x-data-collector-auth'] = 'version=1.0'
             end
 
-            # Enable OpenSSL::SSL::VERIFY_NONE via `node['audit']['insecure']`
-            # See https://github.com/chef/chef/blob/master/lib/chef/http/ssl_policies.rb#L54
-            if @insecure
-              Chef::Config[:verify_api_cert] = false
-              Chef::Config[:ssl_verify_mode] = :verify_none
-            end
-
             all_report_shas = report_profile_sha256s(report)
             missing_report_shas = missing_automate_profiles(@url, headers, all_report_shas)
 
@@ -81,8 +74,7 @@ class Chef
             begin
               Chef::Log.info "Report to Chef Automate: #{@url}"
               Chef::Log.debug "Audit Report: #{json_report}"
-              http = Chef::HTTP.new(@url)
-              http.post(nil, json_report, headers)
+              http_client.post(nil, json_report, headers)
               true
             rescue => e
               Chef::Log.error "send_report: POST to #{@url} returned: #{e.message}"
@@ -92,6 +84,14 @@ class Chef
             Chef::Log.warn 'data_collector.token and data_collector.server_url must be defined in client.rb!'
             Chef::Log.warn 'Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate'
             false
+          end
+        end
+
+        def http_client
+          if @insecure
+            Chef::HTTP.new(@url, ssl_verify_mode: :verify_none)
+          else
+            Chef::HTTP.new(@url)
           end
         end
 
