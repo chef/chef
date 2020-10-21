@@ -3,17 +3,36 @@ require 'json' # For .to_json
 
 describe Chef::Audit::Reporter::Automate do
   before :each do
-    Chef::Config[:data_collector] = { token: 'dctoken', server_url: 'https://automate.test/data_collector' }
+    WebMock.disable_net_connect!
+
+    token = 'fake_token'
+
+    Chef::Config[:data_collector] = { token: token, server_url: 'https://automate.test/data_collector' }
 
     stub_request(:post, 'https://automate.test/compliance/profiles/metasearch')
-      .with(body: '{"sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}',
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'identity', 'Content-Length' => /.+/, 'Content-Type' => 'application/json', 'Host' => 'automate.test', 'User-Agent' => /.+/, 'X-Chef-Version' => /.+/, 'X-Data-Collector-Auth' => 'version=1.0', 'X-Data-Collector-Token' => 'dctoken' })
-      .to_return(status: 200, body: '{"missing_sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}', headers: {})
+      .with(
+        body: '{"sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}',
+        headers: {
+          'Accept-Encoding' => 'identity',
+          'X-Chef-Version' => Chef::VERSION,
+          'X-Data-Collector-Auth' => 'version=1.0',
+          'X-Data-Collector-Token' => token
+        }
+      ).to_return(
+        status: 200,
+        body: '{"missing_sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}'
+      )
 
     stub_request(:post, 'https://automate.test/data_collector')
-      .with(body: enriched_report.to_json,
-            headers: { 'Accept' => '*/*', 'Accept-Encoding' => 'identity', 'Content-Length' => /.+/, 'Content-Type' => 'application/json', 'Host' => 'automate.test', 'User-Agent' => /.+/, 'X-Chef-Version' => /.+/, 'X-Data-Collector-Auth' => 'version=1.0', 'X-Data-Collector-Token' => 'dctoken' })
-      .to_return(status: 200, body: '', headers: {})
+      .with(
+        body: enriched_report,
+        headers: {
+          'Accept-Encoding' => 'identity',
+          'X-Chef-Version' => Chef::VERSION,
+          'X-Data-Collector-Auth' => 'version=1.0',
+          'X-Data-Collector-Token' => token
+        }
+      ).to_return(status: 200)
   end
 
   let(:reporter) { Chef::Audit::Reporter::Automate.new(opts) }

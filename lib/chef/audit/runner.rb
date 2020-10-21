@@ -3,6 +3,8 @@ autoload :Inspec, 'inspec'
 require_relative 'default_attributes'
 require_relative 'reporter/audit_enforcer'
 require_relative 'reporter/json_file'
+require_relative 'reporter/automate'
+require_relative 'reporter/chef_server_automate'
 
 class Chef
   module Audit
