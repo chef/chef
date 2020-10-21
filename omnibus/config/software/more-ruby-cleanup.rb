@@ -113,6 +113,8 @@ build do
       xmllint
       xslt-config
       xsltproc
+      coderay
+      ffi-yajl-bench
     }.each do |f|
       file_path = "#{install_dir}/embedded/bin/#{f}"
 
