@@ -172,10 +172,4 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
     allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
     expect(reporter.send_report(inspec_report)).to eq(true)
   end
-
-  it 'enriches report correctly with the most test coverage' do
-    allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
-    expect(reporter.truncate_controls_results(reporter.enriched_report(inspec_report), 2)).to eq(enriched_report)
-    pending "delete this duplicate test?"
-  end
 end
