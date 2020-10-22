@@ -79,11 +79,11 @@ class Chef
           end
         end
 
-        def http_client
+        def http_client(url=@url)
           if @insecure
-            Chef::HTTP.new(@url, ssl_verify_mode: :verify_none)
+            Chef::HTTP.new(url, ssl_verify_mode: :verify_none)
           else
-            Chef::HTTP.new(@url)
+            Chef::HTTP.new(url)
           end
         end
 
@@ -173,8 +173,7 @@ class Chef
           Chef::Log.debug "Checking the Automate profiles metadata for: #{report_shas}"
           meta_url = URI(automate_url)
           meta_url.path = '/compliance/profiles/metasearch'
-          http = Chef::HTTP.new(meta_url.to_s)
-          response_str = http.post(nil, "{\"sha256\": #{report_shas}}", headers)
+          response_str = http_client(meta_url.to_s).post(nil, "{\"sha256\": #{report_shas}}", headers)
           missing_shas = JSON.parse(response_str)['missing_sha256']
           unless missing_shas.empty?
             Chef::Log.info "Automate is missing metadata for the following profile ids: #{missing_shas}"
