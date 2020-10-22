@@ -151,4 +151,4 @@ export CHEF_LICENSE=accept-no-persist
 
 cd "$chef_gem"
 sudo -E bundle install --jobs=3 --retry=3
-sudo -E bundle exec rspec -r rspec_junit_formatter -f RspecJunitFormatter -o test.xml --profile -f progress
+sudo -E bundle exec rspec --profile -f progress
