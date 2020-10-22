@@ -54,9 +54,7 @@ end
 
 group(:development, :test) do
   gem "rake"
-  gem "rspec-core", "~> 3.5"
-  gem "rspec-mocks", "~> 3.5"
-  gem "rspec-expectations", "~> 3.5"
+  gem "rspec"
   gem "rspec_junit_formatter", "~> 0.2.0"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
