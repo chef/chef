@@ -197,10 +197,6 @@ describe Chef::Audit::Reporter::Automate do
     end
   end
 
-  it 'enriches report correctly with the most test coverage' do
-    expect(reporter.truncate_controls_results(reporter.enriched_report(inspec_report), 2)).to eq(enriched_report)
-  end
-
   describe "#truncate_controls_results" do
     let(:report) do
       {
