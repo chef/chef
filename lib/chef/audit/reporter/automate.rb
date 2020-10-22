@@ -42,9 +42,11 @@ class Chef
             return false
           end
 
-          headers = { 'Content-Type' => 'application/json' }
-          headers['x-data-collector-token'] = @token
-          headers['x-data-collector-auth'] = 'version=1.0'
+          headers = {
+            'Content-Type' => 'application/json',
+            'x-data-collector-auth' => 'version=1.0',
+            'x-data-collector-token' => @token,
+          }
 
           all_report_shas = report.fetch(:profiles, []).map { |p| p[:sha256] }
           missing_report_shas = missing_automate_profiles(headers, all_report_shas)
