@@ -23,16 +23,9 @@ class Chef
           @run_time_limit        = opts[:run_time_limit]
           @control_results_limit = opts[:control_results_limit]
 
-          if defined?(Chef) &&
-             defined?(Chef::Config) &&
-             Chef::Config[:data_collector] &&
-             Chef::Config[:data_collector][:token] &&
-             Chef::Config[:data_collector][:server_url]
-
-            dc = Chef::Config[:data_collector]
-            @url = dc[:server_url]
-            @token = dc[:token]
-          end
+          # TODO: Chef::Config does not respond to :dig
+          @url = Chef::Config.to_hash.dig(:data_collector, :server_url)
+          @token = Chef::Config.to_hash.dig(:data_collector, :token)
         end
 
         # Method used in order to send the inspec report to the data_collector server
