@@ -36,47 +36,45 @@ class Chef
             return false
           end
 
-          if defined?(Chef) && defined?(Chef::Config)
-            headers = { 'Content-Type' => 'application/json' }
-            unless @token.nil?
-              headers['x-data-collector-token'] = @token
-              headers['x-data-collector-auth'] = 'version=1.0'
-            end
-
-            all_report_shas = report_profile_sha256s(report)
-            missing_report_shas = missing_automate_profiles(@url, headers, all_report_shas)
-
-            full_report = truncate_controls_results(enriched_report(report), @control_results_limit)
-
-            # If the Automate backend has the profile metadata for at least one profile, proceed with metadata stripping
-            full_report = strip_profiles_meta(full_report, missing_report_shas, 1) if missing_report_shas.length < all_report_shas.length
-            json_report = full_report.to_json
-
-            report_size = json_report.bytesize
-            # Automate GRPC currently has a message limit of ~4MB
-            # https://github.com/chef/automate/issues/1417#issuecomment-541908157
-            if report_size > 4 * 1024 * 1024
-              Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
-              Chef::Log.warn 'Automate has an internal 4MB limit that is not currently configurable.'
-            end
-
-            unless json_report
-              Chef::Log.warn 'Something went wrong, report can\'t be nil'
-              return false
-            end
-
-            begin
-              Chef::Log.info "Report to Chef Automate: #{@url}"
-              Chef::Log.debug "Audit Report: #{json_report}"
-              http_client.post(nil, json_report, headers)
-              true
-            rescue => e
-              Chef::Log.error "send_report: POST to #{@url} returned: #{e.message}"
-              false
-            end
-          else
+          unless @url && @token
             Chef::Log.warn 'data_collector.token and data_collector.server_url must be defined in client.rb!'
             Chef::Log.warn 'Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate'
+            return false
+          end
+
+          headers = { 'Content-Type' => 'application/json' }
+          headers['x-data-collector-token'] = @token
+          headers['x-data-collector-auth'] = 'version=1.0'
+
+          all_report_shas = report_profile_sha256s(report)
+          missing_report_shas = missing_automate_profiles(@url, headers, all_report_shas)
+
+          full_report = truncate_controls_results(enriched_report(report), @control_results_limit)
+
+          # If the Automate backend has the profile metadata for at least one profile, proceed with metadata stripping
+          full_report = strip_profiles_meta(full_report, missing_report_shas, 1) if missing_report_shas.length < all_report_shas.length
+          json_report = full_report.to_json
+
+          report_size = json_report.bytesize
+          # Automate GRPC currently has a message limit of ~4MB
+          # https://github.com/chef/automate/issues/1417#issuecomment-541908157
+          if report_size > 4 * 1024 * 1024
+            Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
+            Chef::Log.warn 'Automate has an internal 4MB limit that is not currently configurable.'
+          end
+
+          unless json_report
+            Chef::Log.warn 'Something went wrong, report can\'t be nil'
+            return false
+          end
+
+          begin
+            Chef::Log.info "Report to Chef Automate: #{@url}"
+            Chef::Log.debug "Audit Report: #{json_report}"
+            http_client.post(nil, json_report, headers)
+            true
+          rescue => e
+            Chef::Log.error "send_report: POST to #{@url} returned: #{e.message}"
             false
           end
         end
