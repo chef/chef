@@ -120,26 +120,24 @@ class Chef
           final_report
         end
 
+        CONTROL_RESULT_SORT_ORDER = %w{ failed skipped passed }
+
         # Truncates the number of results per control in the report when they exceed max_results.
         # The truncation prioritizes failed and skipped results over passed ones.
         # Controls where results have been truncated will get a new object 'removed_results_counts'
         # with the status counts of the truncated results
         def truncate_controls_results(report, max_results)
           return report unless max_results.is_a?(Integer) && max_results > 0
-          report[:profiles].each do |profile|
-            next unless profile[:controls].is_a?(Array)
-            profile[:controls].each do |control|
-              next unless control[:results].is_a?(Array)
+
+          report.fetch(:profiles, []).each do |profile|
+            profile.fetch(:controls, []).each do |control|
               # Only bother with truncation if the number of results exceed max_results
               next unless control[:results].length > max_results
               res = control[:results]
-              truncated = { failed: 0, skipped: 0, passed: 0 }
-              res.sort_by! do |r|
-                # Replacing "skipped" with "kipped" for the sort logic so that
-                # the results are sorted in this order: failed, skipped, passed
-                r[:status] == 'skipped' ? 'kipped' : r[:status]
-              end
+              res.sort_by! { |r| CONTROL_RESULT_SORT_ORDER.index(r[:status]) }
+
               # Count the results that will be truncated
+              truncated = { failed: 0, skipped: 0, passed: 0 }
               (max_results..res.length - 1).each do |i|
                 case res[i][:status]
                 when 'failed'
