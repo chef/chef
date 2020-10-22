@@ -31,6 +31,7 @@ describe Chef::Audit::Reporter::Automate do
       },
       run_time_limit: 1.0,
       control_results_limit: 2,
+      timestamp: Time.parse('2016-07-19T19:19:19+01:00'),
     }
   end
 
@@ -183,7 +184,6 @@ describe Chef::Audit::Reporter::Automate do
           }
         ).to_return(status: 200)
 
-      allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
       expect(reporter.send_report(inspec_report)).to eq(true)
 
       expect(metasearch_stub).to have_been_requested
@@ -198,7 +198,6 @@ describe Chef::Audit::Reporter::Automate do
   end
 
   it 'enriches report correctly with the most test coverage' do
-    allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
     expect(reporter.truncate_controls_results(reporter.enriched_report(inspec_report), 2)).to eq(enriched_report)
   end
 

@@ -24,6 +24,7 @@ class Chef
           @ipaddress             = opts[:node_info][:ipaddress]
           @fqdn                  = opts[:node_info][:fqdn]
           @control_results_limit = opts[:control_results_limit]
+          @timestamp             = opts.fetch(:timestamp) { Time.now }
         end
 
         def send_report(report)

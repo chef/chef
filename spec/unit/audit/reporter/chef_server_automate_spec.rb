@@ -29,6 +29,7 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
       },
       url: 'https://chef.server/data_collector',
       control_results_limit: 2,
+      timestamp: Time.parse('2016-07-19T19:19:19+01:00'),
     }
   end
 
@@ -154,12 +155,12 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
         body: enriched_report,
         headers: {
           'X-Chef-Version' => Chef::VERSION,
-          'X-Ops-Authorization-1'=>'gifUT8qLYgXh8erdBeAVCX7Lz0UyU0nMDY/ONwej5ZUDDMuX6Jatp59gOI+3',
-          'X-Ops-Authorization-2'=>'/IFR9yZibVDROdNYEWuo6VXX8HynoUdFBw2aZx5APcoLzwcACQPoR9GlPejD',
-          'X-Ops-Authorization-3'=>'d/yN2VHTLhybWRB6b7FBhk60sTvQYWK03iEUiy8yy5rSr0S9+dI8vEWT+EJm',
-          'X-Ops-Authorization-4'=>'xKcSf1mhPtZ7oIjTIIBBKt8SGPAovN1lYwqD8ycdtGN5y3/qMMMYpfDhB2Y4',
-          'X-Ops-Authorization-5'=>'RctLQURtnaOPcxsTanUPuayDELFcBJzmUni+5O+bcgz8g96E5Pji+c9YqwMc',
-          'X-Ops-Authorization-6'=>'2Bm9X3ep7cwJEwtcsv3UJ2Se+JoG77TXyy2T5DUo4w==',
+          'X-Ops-Authorization-1'=> /.+/,
+          'X-Ops-Authorization-2'=> /.+/,
+          'X-Ops-Authorization-3'=> /.+/,
+          'X-Ops-Authorization-4'=> /.+/,
+          'X-Ops-Authorization-5'=> /.+/,
+          'X-Ops-Authorization-6'=> /.+/,
           'X-Ops-Content-Hash'=>'yfck5nQDcRWta06u45Q+J463LYY=',
           'X-Ops-Server-Api-Version' => '2',
           'X-Ops-Sign' => 'algorithm=sha1;version=1.1;',
@@ -169,7 +170,6 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
         }
       ).to_return(status: 200)
 
-    allow(Time).to receive(:now).and_return(Time.parse('2016-07-19T19:19:19+01:00'))
     expect(reporter.send_report(inspec_report)).to eq(true)
 
     expect(report_stub).to have_been_requested

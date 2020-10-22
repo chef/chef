@@ -22,6 +22,7 @@ class Chef
           @fqdn                  = opts[:node_info][:fqdn]
           @run_time_limit        = opts[:run_time_limit]
           @control_results_limit = opts[:control_results_limit]
+          @timestamp             = opts.fetch(:timestamp) { Time.now }
 
           # TODO: Chef::Config does not respond to :dig
           @url = Chef::Config.to_hash.dig(:data_collector, :server_url)
@@ -106,7 +107,7 @@ class Chef
           # addition in InSpec and will be remove in the next inspec major release
           final_report.delete(:controls)
           final_report[:node_name]         = @node_name
-          final_report[:end_time]          = Time.now.utc.strftime('%FT%TZ')
+          final_report[:end_time]          = @timestamp.utc.strftime('%FT%TZ')
           final_report[:node_uuid]         = @entity_uuid
           final_report[:environment]       = @environment
           final_report[:roles]             = @roles
