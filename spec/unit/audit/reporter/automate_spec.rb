@@ -283,9 +283,4 @@ describe Chef::Audit::Reporter::Automate do
       expect(truncated_report[:profiles][0][:controls][0][:results].length).to eq(1)
     end
   end
-
-  it 'report_profile_sha256s returns array of profile ids found in the report' do
-    expect(reporter.report_profile_sha256s(inspec_report)).to eq(['7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd'])
-  end
-
 end

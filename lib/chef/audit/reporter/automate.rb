@@ -46,8 +46,8 @@ class Chef
           headers['x-data-collector-token'] = @token
           headers['x-data-collector-auth'] = 'version=1.0'
 
-          all_report_shas = report_profile_sha256s(report)
-          missing_report_shas = missing_automate_profiles(@url, headers, all_report_shas)
+          all_report_shas = report.fetch(:profiles, []).map { |p| p[:sha256] }
+          missing_report_shas = missing_automate_profiles(headers, all_report_shas)
 
           full_report = truncate_controls_results(enriched_report(report), @control_results_limit)
 
@@ -93,8 +93,6 @@ class Chef
         # ***************************************************************************************
 
         def enriched_report(final_report)
-          return nil unless final_report.is_a?(Hash)
-
           # Remove nil profiles if any
           final_report[:profiles].select! { |p| p }
 
@@ -128,7 +126,6 @@ class Chef
         # with the status counts of the truncated results
         def truncate_controls_results(report, max_results)
           return report unless max_results.is_a?(Integer) && max_results > 0
-          return report unless report.is_a?(Hash) && report[:profiles].is_a?(Array)
           report[:profiles].each do |profile|
             next unless profile[:controls].is_a?(Array)
             profile[:controls].each do |control|
@@ -161,17 +158,11 @@ class Chef
           report
         end
 
-        # Extracts all the profile sha256 IDs from an inspec report
-        def report_profile_sha256s(report)
-          return [] unless report.is_a?(Hash) && report[:profiles].is_a?(Array)
-          report[:profiles].map { |p| p[:sha256] }
-        end
-
         # Contacts the metasearch Automate API to check which of the inspec profile sha256 ids
         # passed in via `report_shas` are missing from the Automate profiles metadata database.
-        def missing_automate_profiles(automate_url, headers, report_shas)
+        def missing_automate_profiles(headers, report_shas)
           Chef::Log.debug "Checking the Automate profiles metadata for: #{report_shas}"
-          meta_url = URI(automate_url)
+          meta_url = URI(@url)
           meta_url.path = '/compliance/profiles/metasearch'
           response_str = http_client(meta_url.to_s).post(nil, "{\"sha256\": #{report_shas}}", headers)
           missing_shas = JSON.parse(response_str)['missing_sha256']
