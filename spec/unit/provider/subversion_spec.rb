@@ -271,9 +271,6 @@ describe Chef::Provider::Subversion do
   end
 
   context "selects the correct svn binary" do
-    before do
-    end
-
     it "selects 'svn' as the binary by default" do
       @resource.svn_binary nil
       allow(ChefUtils).to receive(:windows?) { false }
