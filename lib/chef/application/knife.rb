@@ -20,7 +20,7 @@ require_relative "../application"
 require "mixlib/log"
 require "ohai/config"
 module Net
-  autoload :HTTP, File.expand_path("../monkey_patches/net_http", __dir__)
+  autoload :HTTP, "net/http"
 end
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 

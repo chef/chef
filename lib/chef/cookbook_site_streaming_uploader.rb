@@ -20,7 +20,7 @@
 
 autoload :URI, "uri"
 module Net
-  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
+  autoload :HTTP, "net/http"
 end
 autoload :OpenSSL, "openssl"
 module Mixlib

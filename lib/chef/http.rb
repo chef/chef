@@ -25,8 +25,8 @@ require "tempfile" unless defined?(Tempfile)
 autoload :OpenSSL, "openssl"
 autoload :URI, "uri"
 module Net
-  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
-  autoload :HTTPClientException, File.expand_path("monkey_patches/net_http", __dir__)
+  autoload :HTTP, "net/http"
+  autoload :HTTPClientException, "net/http"
 end
 require_relative "http/basic_client"
 require_relative "config"
