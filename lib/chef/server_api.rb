@@ -71,10 +71,6 @@ class Chef
       return_value
     rescue Exception => exception
       log_failed_request(response, return_value) unless response.nil?
-
-      if exception.respond_to?(:chef_rest_request=)
-        exception.chef_rest_request = rest_request
-      end
       raise
     end
   end

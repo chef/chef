@@ -165,10 +165,6 @@ class Chef
       end
     rescue Exception => exception
       log_failed_request(response, return_value) unless response.nil?
-
-      if exception.respond_to?(:chef_rest_request=)
-        exception.chef_rest_request = rest_request
-      end
       raise
     end
 
@@ -204,9 +200,6 @@ class Chef
       end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
-      if e.respond_to?(:chef_rest_request=)
-        e.chef_rest_request = rest_request
-      end
       raise
     end
 
@@ -260,9 +253,6 @@ class Chef
       end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
-      if e.respond_to?(:chef_rest_request=)
-        e.chef_rest_request = rest_request
-      end
       raise
     end
 
