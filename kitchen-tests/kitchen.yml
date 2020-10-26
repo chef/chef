@@ -104,6 +104,7 @@ platforms:
     intermediate_instructions:
       - RUN yum -y install e2fsprogs
       - RUN yum -y reinstall systemd
+      - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: fedora-latest
