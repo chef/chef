@@ -21,7 +21,7 @@ class Chef
     module Unformatter
 
       def write(message)
-        data = message.match(/(\[.+?\] )?([\w]+):(.*)$/)
+        data = message.match(/(\[.+?\] )?(\w+):(.*)$/)
         send(data[2].downcase.chomp.to_sym, data[3].strip)
       rescue NoMethodError
         send(:info, message)

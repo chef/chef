@@ -79,8 +79,8 @@ class Chef
               loop do
 
                 # low rent parser. try to gracefully handle nested blocks in resources
-                nesting += 1 if /[\s]+do[\s]*/.match?(lines[current_line])
-                nesting -= 1 if /end[\s]*$/.match?(lines[current_line])
+                nesting += 1 if /\s+do\s*/.match?(lines[current_line])
+                nesting -= 1 if /end\s*$/.match?(lines[current_line])
 
                 relevant_lines << format_line(current_line, lines[current_line])
 
@@ -114,11 +114,11 @@ class Chef
         end
 
         def parse_source
-          resource.source_line[/^(([\w]:)?[^:]+):([\d]+)/, 1]
+          resource.source_line[/^((\w:)?[^:]+):(\d+)/, 1]
         end
 
         def parse_line(source)
-          resource.source_line[/^#{Regexp.escape(source)}:([\d]+)/, 1].to_i
+          resource.source_line[/^#{Regexp.escape(source)}:(\d+)/, 1].to_i
         end
 
       end

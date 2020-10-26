@@ -22,7 +22,7 @@ class Chef
   class Knife
     class SubcommandLoader
       class GemGlobLoader < Chef::Knife::SubcommandLoader
-        MATCHES_CHEF_GEM ||= %r{/chef-[\d]+\.[\d]+\.[\d]+}.freeze
+        MATCHES_CHEF_GEM ||= %r{/che-[\d+.[\d+.[\d+}.freeze
         MATCHES_THIS_CHEF_GEM ||= %r{/chef-#{Chef::VERSION}(-\w+)?(-\w+)?/}.freeze
 
         def subcommand_files
