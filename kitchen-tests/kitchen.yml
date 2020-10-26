@@ -136,6 +136,14 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
+- name: ubuntu-20.10
+  driver:
+    image: dokken/ubuntu-20.10
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+
 - name: opensuse-leap-15
   driver:
     image: dokken/opensuse-leap-15
