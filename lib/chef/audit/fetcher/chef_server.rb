@@ -1,0 +1,136 @@
+require 'uri'
+require "plugins/inspec-compliance/lib/inspec-compliance"
+
+# This class implements an InSpec fetcher for for Chef Server. The implementation
+# is based on the Chef Compliance fetcher and only adapts the calls to redirect
+# the requests via Chef Server.
+#
+# This implementation depends on chef-client runtime, therefore it is only executable
+# inside of a chef-client run
+
+class Chef
+  module Audit
+    module Fetcher
+      class ChefServer < ::InspecPlugins::Compliance::Fetcher
+        name 'chef-server'
+
+        # it positions itself before `compliance` fetcher
+        # only load it, if the Chef Server is integrated with Chef Compliance
+        priority 501
+
+        CONFIG = { 'insecure' => true }
+
+        # Accepts URLs to compliance profiles in one of two forms:
+        # * a String URL with a compliance scheme, like "compliance://namespace/profile_name"
+        # * a Hash with a key of `compliance` and a value like "compliance/profile_name" and optionally a `version` key with a String value
+        def self.resolve(target)
+          uri = get_target_uri(target)
+          return nil if uri.nil?
+
+          profile = uri.host + uri.path
+          profile = uri.user + '@' + profile if uri.user
+
+          version = target[:version] if target.respond_to?(:key?) && target.key?(:version)
+          new(target_url(profile, version), CONFIG)
+        rescue URI::Error => _e
+          nil
+        end
+
+        def self.target_url(profile, version = nil)
+          organization = Chef::Config[:chef_server_url].split('/').last
+          namespace, profile_name = profile.split('/')
+
+          path_parts = [""]
+          path_parts << "compliance" if chef_server_reporter? || chef_server_fetcher?
+          path_parts << "organizations/#{organization}/owners/#{namespace}/compliance/#{profile_name}"
+          path_parts << "version/#{version}" if version
+          path_parts << "tar"
+
+          target_url = URI(Chef::Config[:chef_server_url])
+          target_url.path = path_parts.compact.join("/")
+
+          Chef::Log.info("Fetching profile from: #{target_url}")
+          target_url
+        end
+
+        #
+        # We want to save compliance: in the lockfile rather than url: to
+        # make sure we go back through the ComplianceAPI handling.
+        #
+        def resolved_source
+          { compliance: chef_server_url }
+        end
+
+        # Downloads archive to temporary file using a Chef::ServerAPI
+        # client so that Chef Server's header-based authentication can be
+        # used.
+        def download_archive_to_temp
+          return @temp_archive_path unless @temp_archive_path.nil?
+
+          rest = Chef::ServerAPI.new(@target, Chef::Config.merge(ssl_verify_mode: :verify_none))
+          archive = with_http_rescue do
+            rest.streaming_request(@target)
+          end
+          @archive_type = '.tar.gz'
+
+          if archive.nil?
+            path = @target.respond_to?(:path) ? @target.path : path
+            raise "Unable to find requested profile on path: '#{path}' on the Automate system."
+          end
+
+          Inspec::Log.debug("Archive stored at temporary location: #{archive.path}")
+          @temp_archive_path = archive.path
+        end
+
+        def with_http_rescue
+          response = yield
+          if response.respond_to?(:code)
+            # handle non 200 error codes, they are not raised as Net::HTTPClientException
+            handle_http_error_code(response.code) if response.code.to_i >= 300
+          end
+          response
+        rescue Net::HTTPClientException => e
+          Chef::Log.error e
+          handle_http_error_code(e.response.code)
+        end
+
+        def handle_http_error_code(code)
+          case code
+          when /401|403/
+            Chef::Log.error 'Auth issue: see audit cookbook TROUBLESHOOTING.md'
+          when /404/
+            Chef::Log.error 'Object does not exist on remote server.'
+          when /413/
+            Chef::Log.error 'You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html'
+          when /429/
+            Chef::Log.error "This error typically means the data sent was larger than Automate's limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
+          end
+          msg = "Received HTTP error #{code}"
+          Chef::Log.error msg
+          raise msg if @raise_if_unreachable
+        end
+
+        def to_s
+          'Chef Server/Compliance Profile Loader'
+        end
+
+        CHEF_SERVER_REPORTERS = %w(chef-server chef-server-compliance chef-server-visibility chef-server-automate)
+        def self.chef_server_reporter?
+          (Array(Chef.node.attributes['audit']['reporter']) & CHEF_SERVER_REPORTERS).any?
+        end
+
+        CHEF_SERVER_FETCHERS = %w(chef-server chef-server-compliance chef-server-visibility chef-server-automate)
+        def self.chef_server_fetcher?
+          CHEF_SERVER_FETCHERS.include?(Chef.node.attributes['audit']['fetcher'])
+        end
+
+        private
+
+        def chef_server_url
+          m = %r{^#{@config['server']}/owners/(?<owner>[^/]+)/compliance/(?<id>[^/]+)/tar$}.match(@target)
+          "#{m[:owner]}/#{m[:id]}"
+        end
+      end
+    end
+  end
+end
