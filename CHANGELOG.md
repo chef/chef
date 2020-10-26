@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.6.38 -->
-## [v16.6.38](https://github.com/chef/chef/tree/v16.6.38) (2020-10-21)
+<!-- latest_release 16.6.39 -->
+## [v16.6.39](https://github.com/chef/chef/tree/v16.6.39) (2020-10-26)
 
 #### Merged Pull Requests
-- Remove coderay and ffi-yajl-bench binstubs [#10544](https://github.com/chef/chef/pull/10544) ([tas50](https://github.com/tas50))
+- Remove unused monkeypatch on net/http. [#10548](https://github.com/chef/chef/pull/10548) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove unused monkeypatch on net/http. [#10548](https://github.com/chef/chef/pull/10548) ([phiggins](https://github.com/phiggins)) <!-- 16.6.39 -->
 - Remove coderay and ffi-yajl-bench binstubs [#10544](https://github.com/chef/chef/pull/10544) ([tas50](https://github.com/tas50)) <!-- 16.6.38 -->
 - ensure powershell_package commands are run with tls 1.2 [#10543](https://github.com/chef/chef/pull/10543) ([mwrock](https://github.com/mwrock)) <!-- 16.6.37 -->
 - Bump Ohai to 16.7 and cacerts to the latest [#10542](https://github.com/chef/chef/pull/10542) ([tas50](https://github.com/tas50)) <!-- 16.6.36 -->
