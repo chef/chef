@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.1 -->
-## [v16.7.1](https://github.com/chef/chef/tree/v16.7.1) (2020-10-26)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Remove references to monkeypatch method. [#10551](https://github.com/chef/chef/pull/10551) ([phiggins](https://github.com/phiggins))
+- Add Test Kitchen testing on Ubuntu 20.10 [#10553](https://github.com/chef/chef/pull/10553) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add Test Kitchen testing on Ubuntu 20.10 [#10553](https://github.com/chef/chef/pull/10553) ([tas50](https://github.com/tas50)) <!-- 16.7.1 -->
 - Remove references to monkeypatch method. [#10551](https://github.com/chef/chef/pull/10551) ([phiggins](https://github.com/phiggins)) <!-- 16.7.1 -->
 - Remove an empty before block in a spec [#10550](https://github.com/chef/chef/pull/10550) ([tas50](https://github.com/tas50)) <!-- 16.7.0 -->
 - Remove unused monkeypatch on net/http. [#10548](https://github.com/chef/chef/pull/10548) ([phiggins](https://github.com/phiggins)) <!-- 16.6.39 -->
