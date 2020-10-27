@@ -26,6 +26,7 @@ describe Chef::Resource::WindowsShare do
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::WindowsShare.new("foobar", run_context) }
+  let(:provider) { resource.provider_for_action(:create) }
 
   it "sets resource name as :windows_share" do
     expect(resource.resource_name).to eql(:windows_share)
@@ -71,6 +72,36 @@ describe Chef::Resource::WindowsShare do
         let(:users_with_hostname) { resource.send(users, ["hostname1\\mygroup"]) }
         let(:result_with_hostname) { ["hostname1\\mygroup"] }
       end
+    end
+  end
+
+  it "#new_resource_users" do
+    resource.read_users(["mygroup"])
+    resource.change_users(["mygroup"])
+    result = provider.send(:new_resource_users)
+    expect(result).to eq({ "full_users" => [], "change_users" => ["hostname\\mygroup"], "read_users" => []})
+  end
+
+  context "check user permissions need to update or not" do
+
+    before do
+      resource.read_users(["mygroup"])
+      resource.change_users(["mygroup"])
+    end
+
+    it "check user read permissions to update" do
+      result = provider.send(:permissions_need_update?, "read")
+      expect(result).to eq(false)
+    end
+
+    it "check user change permissions to update" do
+      result = provider.send(:permissions_need_update?, "change")
+      expect(result).to eq(true)
+    end
+
+    it "check user full permissions to update" do
+      result = provider.send(:permissions_need_update?, "full")
+      expect(result).to eq(false)
     end
   end
 end
