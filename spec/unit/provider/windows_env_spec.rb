@@ -321,7 +321,7 @@ describe "windows_env provider", :windows_only do
     describe "action_create" do
       before do
         ENV.delete("CHEF_WINDOWS_ENV_TEST")
-        allow(@provider).to receive(:key_exists?).and_return(false)
+        allow(provider).to receive(:key_exists?).and_return(false)
       end
 
       it "should update the ruby ENV object when it creates the key" do

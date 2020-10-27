@@ -56,12 +56,12 @@ class Chef
 
       action_class do
         include Chef::Mixin::WindowsEnvHelper if ChefUtils.windows?
-      end
 
-      def load_current_resource
-        @current_resource = Chef::Resource::WindowsPath.new(new_resource.name)
-        @current_resource.path(new_resource.path)
-        @current_resource
+        def load_current_resource
+          @current_resource = Chef::Resource::WindowsPath.new(new_resource.name)
+          @current_resource.path(new_resource.path)
+          @current_resource
+        end
       end
 
       action :add do

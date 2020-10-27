@@ -45,7 +45,7 @@ describe "windows_path provider", :windows_only do
   describe "#action_add" do
     it "uses env resource to add 'path' environment variable" do
       allow(provider).to receive(:expand_env_vars)
-      expect(provider).to receive(:declare_resource).with(:env, "path")
+      expect(provider).to receive(:declare_resource).with(:env, "path", hash_including)
       provider.run_action(:add)
     end
   end
@@ -53,7 +53,7 @@ describe "windows_path provider", :windows_only do
   describe "#action_remove" do
     it "uses env resource to remove 'path' environment variable" do
       allow(provider).to receive(:expand_env_vars)
-      expect(provider).to receive(:declare_resource).with(:env, "path")
+      expect(provider).to receive(:declare_resource).with(:env, "path", hash_including)
       provider.run_action(:remove)
     end
   end
