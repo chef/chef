@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::WindowsPath, :windows_only do
+describe "windows_path provider", :windows_only do
   before(:all) do
     @old_path = ENV["PATH"].dup
   end
@@ -27,14 +27,9 @@ describe Chef::Provider::WindowsPath, :windows_only do
     ENV["PATH"] = @old_path
   end
 
-  let(:new_resource) { Chef::Resource::WindowsPath.new("some_path") }
-
-  let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::WindowsPath.new(new_resource, run_context)
-  end
+  let(:run_context) { Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new) }
+  let(:new_resource) { Chef::Resource::WindowsPath.new("some_path", run_context) }
+  let(:provider) { new_resource.provider_for_action(:add) }
 
   describe "#load_current_resource" do
     it "returns a current_resource" do

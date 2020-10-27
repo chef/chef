@@ -18,21 +18,17 @@
 
 require "spec_helper"
 
-describe Chef::Provider::WindowsEnv, :windows_only do
+describe "windows_env provider", :windows_only do
 
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
   before do
-    @new_resource = Chef::Resource::WindowsEnv.new("FOO")
+    @new_resource = Chef::Resource::WindowsEnv.new("FOO", run_context)
     @new_resource.value("bar")
     @new_resource.user("<System>")
-    @provider = Chef::Provider::WindowsEnv.new(@new_resource, run_context)
-  end
-
-  it "assumes the key_name exists by default" do
-    expect(@provider.key_exists).to be_truthy
+    @provider = @new_resource.provider_for_action(:create)
   end
 
   describe "when loading the current status" do
@@ -41,7 +37,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
       # Chef::Resource::Env.stub(:new).and_return(@current_resource)
       @provider.current_resource = @current_resource
       allow(@provider).to receive(:env_value).with("FOO").and_return("bar")
-      allow(@provider).to receive(:env_key_exists).and_return(true)
+      allow(@provider).to receive(:key_exists?).and_return(true)
     end
 
     it "should create a current resource with the same name as the new resource" do
@@ -59,18 +55,6 @@ describe Chef::Provider::WindowsEnv, :windows_only do
       expect(@provider.current_resource.key_name).to eq("FOO")
     end
 
-    it "should check if the key_name and user exist" do
-      expect(@provider).to receive(:env_key_exists).with("FOO").and_return(true)
-      @provider.load_current_resource
-      expect(@provider.key_exists).to be_truthy
-    end
-
-    it "should flip the value of exists if the key does not exist" do
-      expect(@provider).to receive(:env_key_exists).with("FOO").and_return(false)
-      @provider.load_current_resource
-      expect(@provider.key_exists).to be_falsey
-    end
-
     it "should return the current resource" do
       expect(@provider.load_current_resource).to be_a_kind_of(Chef::Resource::WindowsEnv)
     end
@@ -78,7 +62,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
 
   describe "action_create" do
     before do
-      @provider.key_exists = false
+      allow(@provider).to receive(:key_exists?).and_return(false)
       allow(@provider).to receive(:create_env).and_return(true)
       allow(@provider).to receive(:modify_env).and_return(true)
     end
@@ -94,20 +78,20 @@ describe Chef::Provider::WindowsEnv, :windows_only do
     end
 
     it "should check to see if the values are the same if the key exists" do
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       expect(@provider).to receive(:requires_modify_or_create?).and_return(false)
       @provider.action_create
     end
 
     it "should call modify_env if the key exists with provided user and values are not equal" do
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       allow(@provider).to receive(:requires_modify_or_create?).and_return(true)
       expect(@provider).to receive(:modify_env).and_return(true)
       @provider.action_create
     end
 
     it "should set the new_resources updated flag when it updates an existing value" do
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       allow(@provider).to receive(:requires_modify_or_create?).and_return(true)
       allow(@provider).to receive(:modify_env).and_return(true)
       @provider.action_create
@@ -118,7 +102,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
   describe "action_delete" do
     before(:each) do
       @provider.current_resource = @current_resource
-      @provider.key_exists = false
+      allow(@provider).to receive(:key_exists?).and_return(false)
       allow(@provider).to receive(:delete_element).and_return(false)
       allow(@provider).to receive(:delete_env).and_return(true)
     end
@@ -134,13 +118,13 @@ describe Chef::Provider::WindowsEnv, :windows_only do
     end
 
     it "should call delete_env if the key exists" do
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       expect(@provider).to receive(:delete_env)
       @provider.action_delete
     end
 
     it "should set the new_resources updated flag to true if the key is deleted" do
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       @provider.action_delete
       expect(@new_resource).to be_updated
     end
@@ -149,7 +133,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
   describe "action_modify" do
     before(:each) do
       @provider.current_resource = @current_resource
-      @provider.key_exists = true
+      allow(@provider).to receive(:key_exists?).and_return(true)
       allow(@provider).to receive(:modify_env).and_return(true)
     end
 
@@ -179,7 +163,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
     end
 
     it "should raise a Chef::Exceptions::WindowsEnv if the key doesn't exist" do
-      @provider.key_exists = false
+      allow(@provider).to receive(:key_exists?).and_return(false)
       expect { @provider.action_modify }.to raise_error(Chef::Exceptions::WindowsEnv)
     end
   end
@@ -324,12 +308,12 @@ describe Chef::Provider::WindowsEnv, :windows_only do
 
   context "when environment variable is not PATH" do
     let(:new_resource) do
-      new_resource = Chef::Resource::WindowsEnv.new("CHEF_WINDOWS_ENV_TEST")
+      new_resource = Chef::Resource::WindowsEnv.new("CHEF_WINDOWS_ENV_TEST", run_context)
       new_resource.value("foo")
       new_resource
     end
     let(:provider) do
-      provider = Chef::Provider::WindowsEnv.new(new_resource, run_context)
+      provider = new_resource.provider_for_action(:create)
       allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
       provider
     end
@@ -337,7 +321,7 @@ describe Chef::Provider::WindowsEnv, :windows_only do
     describe "action_create" do
       before do
         ENV.delete("CHEF_WINDOWS_ENV_TEST")
-        provider.key_exists = false
+        allow(@provider).to receive(:key_exists?).and_return(false)
       end
 
       it "should update the ruby ENV object when it creates the key" do
@@ -376,12 +360,12 @@ describe Chef::Provider::WindowsEnv, :windows_only do
       let(:system_root) { "%SystemRoot%" }
       let(:system_root_value) { 'D:\Windows' }
       let(:new_resource) do
-        new_resource = Chef::Resource::WindowsEnv.new("PATH")
+        new_resource = Chef::Resource::WindowsEnv.new("PATH", run_context)
         new_resource.value(system_root)
         new_resource
       end
       let(:provider) do
-        provider = Chef::Provider::WindowsEnv.new(new_resource, run_context)
+        provider = new_resource.provider_for_action(:create)
         allow(provider).to receive(:env_obj).and_return(double("null object").as_null_object)
         provider
       end

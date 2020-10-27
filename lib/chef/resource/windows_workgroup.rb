@@ -21,6 +21,8 @@ require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 class Chef
   class Resource
     class WindowsWorkgroup < Chef::Resource
+      unified_mode true
+
       provides :windows_workgroup
 
       description "Use the **windows_workgroup** resource to join or change the workgroup of a Windows host."
