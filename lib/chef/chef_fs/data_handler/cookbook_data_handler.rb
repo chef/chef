@@ -24,7 +24,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          key == "cookbook_name" || key == "version"
+          %w{cookbook_name version}.include?(key)
         end
 
         def chef_class

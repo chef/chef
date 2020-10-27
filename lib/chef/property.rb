@@ -559,7 +559,7 @@ class Chef
       if modified_options.key?(:name_property) ||
           modified_options.key?(:name_attribute) ||
           modified_options.key?(:default)
-        options = options.reject { |k, v| k == :name_attribute || k == :name_property || k == :default }
+        options = options.reject { |k, v| %i{name_attribute name_property default}.include?(k) }
       end
       self.class.new(**options.merge(modified_options))
     end

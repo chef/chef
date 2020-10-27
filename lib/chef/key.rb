@@ -46,7 +46,7 @@ class Chef
       # Actor that the key is for, either a client or a user.
       @actor = actor
 
-      unless actor_field_name == "user" || actor_field_name == "client"
+      unless %w{user client}.include?(actor_field_name)
         raise Chef::Exceptions::InvalidKeyArgument, "the second argument to initialize must be either 'user' or 'client'"
       end
 
