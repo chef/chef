@@ -26,7 +26,7 @@ class Chef
 
       provides :ifconfig
 
-      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality. This resource will not work with Fedora release 33 or later."
+      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality. Warning: This resource will not work with Fedora release 33 or later."
       examples <<~DOC
       **Configure a network interface with a static IP**
 
