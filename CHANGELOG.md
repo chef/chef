@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.4 -->
-## [v16.7.4](https://github.com/chef/chef/tree/v16.7.4) (2020-10-27)
+<!-- latest_release 16.7.5 -->
+## [v16.7.5](https://github.com/chef/chef/tree/v16.7.5) (2020-10-27)
 
 #### Merged Pull Requests
-- Update InSpec to 4.23.15 [#10559](https://github.com/chef/chef/pull/10559) ([tas50](https://github.com/tas50))
+- Merge repetitive conditionals [#10558](https://github.com/chef/chef/pull/10558) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Merge repetitive conditionals [#10558](https://github.com/chef/chef/pull/10558) ([tas50](https://github.com/tas50)) <!-- 16.7.5 -->
 - Update InSpec to 4.23.15 [#10559](https://github.com/chef/chef/pull/10559) ([tas50](https://github.com/tas50)) <!-- 16.7.4 -->
 - Final batch of unified_mode providers [#10557](https://github.com/chef/chef/pull/10557) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.3 -->
 - Add back Oracle 8 Test Kitchen testing [#10554](https://github.com/chef/chef/pull/10554) ([tas50](https://github.com/tas50)) <!-- 16.7.2 -->
