@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: a96420eb71b6be3c1581ce6473be6583de292e6b
+  revision: 28a9db0795189580b0d260de670e55ddd9f073f2
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.384.0)
+    aws-partitions (1.386.0)
     aws-sdk-core (3.109.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -234,7 +234,7 @@ GEM
       win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
-    molinillo (0.6.6)
+    molinillo (0.7.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
     net-scp (3.0.0)
