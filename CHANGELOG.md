@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.3 -->
+## [v16.7.3](https://github.com/chef/chef/tree/v16.7.3) (2020-10-27)
 
 #### Merged Pull Requests
+- Final batch of unified_mode providers [#10557](https://github.com/chef/chef/pull/10557) ([lamont-granquist](https://github.com/lamont-granquist))
 - Add back Oracle 8 Test Kitchen testing [#10554](https://github.com/chef/chef/pull/10554) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Final batch of unified_mode providers [#10557](https://github.com/chef/chef/pull/10557) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.3 -->
 - Add back Oracle 8 Test Kitchen testing [#10554](https://github.com/chef/chef/pull/10554) ([tas50](https://github.com/tas50)) <!-- 16.7.2 -->
 - ifconfig is not compatible with Fedora 33 or later [#10555](https://github.com/chef/chef/pull/10555) ([tas50](https://github.com/tas50)) <!-- 16.7.2 -->
 - Add Test Kitchen testing on Ubuntu 20.10 [#10553](https://github.com/chef/chef/pull/10553) ([tas50](https://github.com/tas50)) <!-- 16.7.1 -->
