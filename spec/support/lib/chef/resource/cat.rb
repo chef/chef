@@ -29,7 +29,7 @@ class Chef
       end
 
       def pretty_kitty(arg = nil)
-        if arg == true || arg == false
+        if [true, false].include?(arg)
           @pretty_kitty = arg
         end
         @pretty_kitty
