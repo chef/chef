@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.2 -->
-## [v16.7.2](https://github.com/chef/chef/tree/v16.7.2) (2020-10-27)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- ifconfig is not compatible with Fedora 33 or later [#10555](https://github.com/chef/chef/pull/10555) ([tas50](https://github.com/tas50))
-- Add Test Kitchen testing on Ubuntu 20.10 [#10553](https://github.com/chef/chef/pull/10553) ([tas50](https://github.com/tas50))
+- Add back Oracle 8 Test Kitchen testing [#10554](https://github.com/chef/chef/pull/10554) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add back Oracle 8 Test Kitchen testing [#10554](https://github.com/chef/chef/pull/10554) ([tas50](https://github.com/tas50)) <!-- 16.7.2 -->
 - ifconfig is not compatible with Fedora 33 or later [#10555](https://github.com/chef/chef/pull/10555) ([tas50](https://github.com/tas50)) <!-- 16.7.2 -->
 - Add Test Kitchen testing on Ubuntu 20.10 [#10553](https://github.com/chef/chef/pull/10553) ([tas50](https://github.com/tas50)) <!-- 16.7.1 -->
 - Remove references to monkeypatch method. [#10551](https://github.com/chef/chef/pull/10551) ([phiggins](https://github.com/phiggins)) <!-- 16.7.1 -->
