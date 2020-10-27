@@ -541,6 +541,21 @@ steps:
         privileged: true
         single-use: true
 
+- label: "Kitchen: Oracle Linux 8"
+  commands:
+    - scripts/bk_tests/bk_linux_exec.sh
+    - cd kitchen-tests
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-oraclelinux-8
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
 - label: "Kitchen: Fedora latest"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
