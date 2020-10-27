@@ -23,6 +23,7 @@ class Chef
   class Resource
     class WindowsService < Chef::Resource::Service
       include Chef::Win32ServiceConstants
+      unified_mode true
 
       ALLOWED_START_TYPES = {
         automatic: SERVICE_AUTO_START,

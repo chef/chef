@@ -735,7 +735,7 @@ describe Chef::ProviderResolver do
         "windows" => {
           batch: [ Chef::Resource::Batch, Chef::Provider::Batch ],
           dsc_script: [ Chef::Resource::DscScript, Chef::Provider::DscScript ],
-          windows_env: [ Chef::Resource::WindowsEnv, Chef::Provider::WindowsEnv ],
+          windows_env: [ Chef::Resource::WindowsEnv ],
           group: [ Chef::Resource::Group, Chef::Provider::Group::Windows ],
           mount: [ Chef::Resource::Mount, Chef::Provider::Mount::Windows ],
           package: [ Chef::Resource::WindowsPackage, Chef::Provider::Package::Windows ],

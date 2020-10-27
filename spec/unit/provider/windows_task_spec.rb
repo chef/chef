@@ -18,15 +18,16 @@
 
 require "spec_helper"
 
-describe Chef::Provider::WindowsTask, :windows_only do
-  let(:new_resource) { Chef::Resource::WindowsTask.new("sample_task") }
+describe "windows_task provider", :windows_only do
+  let(:new_resource) { Chef::Resource::WindowsTask.new("sample_task", run_context) }
   let(:current_resource) { Chef::Resource::WindowsTask.new }
 
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
   let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::WindowsTask.new(new_resource, run_context)
+    new_resource.provider_for_action(:create)
   end
 
   describe "#load_current_resource" do
