@@ -182,16 +182,7 @@ class Chef
       property :frequency_modifier, [Integer, String],
         default: 1
 
-      property :frequency, Symbol, equal_to: %i{minute
-      hourly
-      daily
-      weekly
-      monthly
-      once
-      on_logon
-      onstart
-      on_idle
-      none},
+      property :frequency, Symbol, equal_to: %i{minute hourly daily weekly monthly once on_logon onstart on_idle none},
         description: "The frequency with which to run the task."
 
       property :start_day, String,
