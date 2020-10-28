@@ -28,6 +28,87 @@ class Chef
       provides :git
 
       description "Use the **git** resource to manage source control resources that exist in a git repository. git version 1.6.5 (or higher) is required to use all of the functionality in the git resource."
+      examples <<~DOC
+      **Use the git mirror**
+
+      ```ruby
+      git '/opt/mysources/couch' do
+        repository 'git://git.apache.org/couchdb.git'
+        revision 'master'
+        action :sync
+      end
+      ```
+
+      **Use different branches**
+
+      To use different branches, depending on the environment of the node:
+
+      ```ruby
+      branch_name = if node.chef_environment == 'QA'
+                      'staging'
+                    else
+                      'master'
+                    end
+
+      git '/home/user/deployment' do
+         repository 'git@github.com:gitsite/deployment.git'
+         revision branch_name
+         action :sync
+         user 'user'
+         group 'test'
+      end
+      ```
+
+      Where the `branch_name` variable is set to staging or master, depending on the environment of the node. Once this is determined, the `branch_name` variable is used to set the revision for the repository. If the git status command is used after running the example above, it will return the branch name as `deploy`, as this is the default value. Run Chef Infra Client in debug mode to verify that the correct branches are being checked out:
+
+      ```
+      sudo chef-client -l debug
+      ```
+
+      **Install an application from git using bash**
+
+      The following example shows how Bash can be used to install a plug-in for rbenv named ruby-build, which is located in git version source control. First, the application is synchronized, and then Bash changes its working directory to the location in which ruby-build is located, and then runs a command.
+
+      ```ruby
+      git "#{Chef::Config[:file_cache_path]}/ruby-build" do
+        repository 'git://github.com/sstephenson/ruby-build.git'
+        revision 'master'
+        action :sync
+      end
+
+      bash 'install_ruby_build' do
+        cwd "#{Chef::Config[:file_cache_path]}/ruby-build"
+        user 'rbenv'
+        group 'rbenv'
+        code <<-EOH
+          ./install.sh
+          EOH
+        environment 'PREFIX' => '/usr/local'
+      end
+      ```
+
+      **Notify a resource post-checkout**
+
+      ```ruby
+      git "#{Chef::Config[:file_cache_path]}/libvpx" do
+        repository node[:libvpx][:git_repository]
+        revision node[:libvpx][:git_revision]
+        action :sync
+        notifies :run, 'bash[compile_libvpx]', :immediately
+      end
+      ```
+
+      **Pass in environment variables**
+
+      ```ruby
+      git '/opt/mysources/couch' do
+        repository 'git://git.apache.org/couchdb.git'
+        revision 'master'
+        environment 'VAR' => 'whatever'
+        action :sync
+      end
+      ```
+      DOC
 
       property :additional_remotes, Hash,
         description: "A Hash of additional remotes that are added to the git repository configuration.",
@@ -41,7 +122,7 @@ class Chef
         default: false
 
       property :enable_checkout, [TrueClass, FalseClass],
-        description: "Check out a repo from master. Set to false when using the checkout_branch attribute to prevent the git resource from attempting to check out master from master.",
+        description: "Check out a repo from master. Set to `false` when using the `checkout_branch` attribute to prevent the git resource from attempting to check out `master` from `master`.",
         default: true
 
       property :remote, String,
