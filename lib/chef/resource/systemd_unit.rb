@@ -55,7 +55,7 @@ class Chef
 
       ```ruby
       systemd_unit 'sysstat-collect.timer' do
-        content <<-EOU.gsub(/^\s+/, '')
+        content <<~EOU
         [Unit]
         Description=Run system activity accounting tool every 10 minutes
 
