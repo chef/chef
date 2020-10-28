@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.6 -->
-## [v16.7.6](https://github.com/chef/chef/tree/v16.7.6) (2020-10-28)
+<!-- latest_release 16.7.7 -->
+## [v16.7.7](https://github.com/chef/chef/tree/v16.7.7) (2020-10-28)
 
 #### Merged Pull Requests
-- Mount resources not idempotent with label fixes [#10566](https://github.com/chef/chef/pull/10566) ([antima-gupta](https://github.com/antima-gupta))
+- Simplify a weird conditional in chef-config [#10560](https://github.com/chef/chef/pull/10560) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Simplify a weird conditional in chef-config [#10560](https://github.com/chef/chef/pull/10560) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Mount resources not idempotent with label fixes [#10566](https://github.com/chef/chef/pull/10566) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.6 -->
 - Merge repetitive conditionals [#10558](https://github.com/chef/chef/pull/10558) ([tas50](https://github.com/tas50)) <!-- 16.7.5 -->
 - Update InSpec to 4.23.15 [#10559](https://github.com/chef/chef/pull/10559) ([tas50](https://github.com/tas50)) <!-- 16.7.4 -->
