@@ -34,7 +34,7 @@ property :revision, String,
 
 property :user, [String, Integer],
   description: "The system user that will own the checked-out code.",
-  default_description: "`HOME` environment variable of the current user"
+  default_description: "`HOME` environment variable of the user running #{ChefUtils::Dist::Infra::CLIENT}"
 
 property :group, [String, Integer],
   description: "The system group that will own the checked-out code."
