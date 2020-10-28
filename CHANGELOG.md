@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Correctly generate docs yaml files to include package warnings [#10569](https://github.com/chef/chef/pull/10569) ([tas50](https://github.com/tas50))
 - Improve the package docs generation + resolve rubocop warnings [#10567](https://github.com/chef/chef/pull/10567) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Correctly generate docs yaml files to include package warnings [#10569](https://github.com/chef/chef/pull/10569) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Improve the package docs generation + resolve rubocop warnings [#10567](https://github.com/chef/chef/pull/10567) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Simplify a weird conditional in chef-config [#10560](https://github.com/chef/chef/pull/10560) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Mount resources not idempotent with label fixes [#10566](https://github.com/chef/chef/pull/10566) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.6 -->
