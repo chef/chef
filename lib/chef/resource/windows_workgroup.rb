@@ -92,8 +92,8 @@ class Chef
 
         unless workgroup_member?
           converge_by("join workstation workgroup #{new_resource.workgroup_name}") do
-            ps_run = powershell_out(join_command)
-            raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.stderr}}" if ps_run.error?
+            ps_run = powershell_exec(join_command)
+            raise "Failed to join the workgroup #{new_resource.workgroup_name}: #{ps_run.errors}}" if ps_run.error?
 
             unless new_resource.reboot == :never
               reboot "Reboot to join workgroup #{new_resource.workgroup_name}" do
@@ -119,10 +119,10 @@ class Chef
 
         # @return [Boolean] is the node a member of the workgroup specified in the resource
         def workgroup_member?
-          node_workgroup = powershell_out!("(Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
+          node_workgroup = powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).Workgroup")
           raise "Failed to determine if system already a member of workgroup #{new_resource.workgroup_name}" if node_workgroup.error?
 
-          node_workgroup.stdout.downcase.strip == new_resource.workgroup_name.downcase
+          String(node_workgroup.result).downcase.strip == new_resource.workgroup_name.downcase
         end
       end
     end

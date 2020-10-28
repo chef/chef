@@ -109,12 +109,12 @@ class Chef
           cmd << " -Force"
 
           converge_by("join Active Directory domain #{new_resource.domain_name}") do
-            ps_run = powershell_out(cmd)
+            ps_run = powershell_exec(cmd)
             if ps_run.error?
               if sensitive?
                 raise "Failed to join the domain #{new_resource.domain_name}: *suppressed sensitive resource output*"
               else
-                raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.stderr}"
+                raise "Failed to join the domain #{new_resource.domain_name}: #{ps_run.errors}"
               end
             end
 
@@ -143,12 +143,12 @@ class Chef
           cmd << " -Force"
 
           converge_by("leave Active Directory domain #{node_domain}") do
-            ps_run = powershell_out(cmd)
+            ps_run = powershell_exec(cmd)
             if ps_run.error?
               if sensitive?
                 raise "Failed to leave the domain #{node_domain}: *suppressed sensitive resource output*"
               else
-                raise "Failed to leave the domain #{node_domain}: #{ps_run.stderr}"
+                raise "Failed to leave the domain #{node_domain}: #{ps_run.errors}"
               end
             end
 
@@ -170,10 +170,10 @@ class Chef
         #   workgroup the node is a member of.
         #
         def node_domain
-          node_domain = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Domain")
-          raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.stderr}}" if node_domain.error?
+          node_domain = powershell_exec!("(Get-WmiObject Win32_ComputerSystem).Domain")
+          raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.errors}}" if node_domain.error?
 
-          node_domain.stdout.downcase.strip
+          node_domain.result.downcase.strip
         end
 
         #
@@ -182,10 +182,10 @@ class Chef
         #   workgroup.
         #
         def node_workgroup
-          node_workgroup = powershell_out!("(Get-WmiObject Win32_ComputerSystem).Workgroup")
+          node_workgroup = powershell_exec!("(Get-WmiObject Win32_ComputerSystem).Workgroup")
           raise "Failed to check if the system is currently a member of a workgroup" if node_workgroup.error?
 
-          node_workgroup.stdout.downcase.strip
+          node_workgroup.result
         end
 
         #

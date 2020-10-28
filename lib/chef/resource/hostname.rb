@@ -240,7 +240,7 @@ class Chef
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             converge_by "set hostname to #{new_resource.hostname}" do
-              powershell_out! <<~EOH
+              powershell_exec! <<~EOH
                 $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
                 $sysInfo.Rename("#{new_resource.hostname}")
               EOH
