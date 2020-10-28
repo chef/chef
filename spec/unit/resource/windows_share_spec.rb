@@ -79,7 +79,7 @@ describe Chef::Resource::WindowsShare do
     resource.read_users(["mygroup"])
     resource.change_users(["mygroup"])
     result = provider.send(:new_resource_users)
-    expect(result).to eq({ "full_users" => [], "change_users" => ["hostname\\mygroup"], "read_users" => []})
+    expect(result).to eq({ "full_users" => [], "change_users" => ["hostname\\mygroup"], "read_users" => [] })
   end
 
   context "check user permissions need to update or not" do

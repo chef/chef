@@ -189,7 +189,7 @@ class Chef
         # we do this here instead of requiring the property because :delete doesn't need path set
         raise "No path property set" unless new_resource.path
 
-        unless (current_resource.nil? || users_changed? || different_path?)
+        unless current_resource.nil? || users_changed? || different_path?
           logger.debug("Skipping update of #{new_resource}: has not changed any of the specified properties.")
         else
           converge_by("create #{new_resource}") do
@@ -353,7 +353,7 @@ class Chef
 
       # local names are returned from Get-SmbShareAccess in the full format MACHINE\\NAME
       # but users of this resource would simply say NAME so we need to add hostname for comparison
-      # If hostname is not present infront of user then add hostname from node
+      # If hostname is not present in front of user then add hostname from node
 
       # @input_params [Array]
       # @returns [Array]
