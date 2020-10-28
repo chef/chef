@@ -227,9 +227,6 @@ namespace :docs_site do
 
       properties["unit_file_verification"] = true if name == "systemd_unit"
 
-      # these packages all provide 'package' depending on OS and we want to inject a warning / note that you can just use 'package' instead
-      properties["notes_resource_based_on_package" ] = true if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package solaris_package windows_package yum_package zypper_package}.include?(name)
-
       properties
     end
 
@@ -237,7 +234,7 @@ namespace :docs_site do
     # using the markers "Note:" for "note" sections and "Warning:" for "warning" sections.
     # TODO: has the limitation that the plain description section is assumed to come first,
     # and is followed by one or more "note"s or "warning"s sections.
-    def build_description(text)
+    def build_description(name, text)
       return [{ "markdown" => nil }] if text.nil?
 
       description_pattern = /(Note:|Warning:)?((?:(?!Note:|Warning:).)*)/m
@@ -262,6 +259,9 @@ namespace :docs_site do
         end
       end
 
+      # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
+      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package solaris_package windows_package yum_package zypper_package}.include?(name)
+
       description
     end
 
@@ -281,7 +281,7 @@ namespace :docs_site do
       r["resource"] = name
       r["aliases"] = ["/resource_#{name}.html"]
       r["menu"] = build_menu_item(name)
-      r["resource_description_list"] = build_description(data["description"])
+      r["resource_description_list"] = build_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
