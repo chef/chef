@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.8 -->
+## [v16.7.8](https://github.com/chef/chef/tree/v16.7.8) (2020-10-28)
 
 #### Merged Pull Requests
+- Improve resource documentation [#10570](https://github.com/chef/chef/pull/10570) ([tas50](https://github.com/tas50))
 - Correctly generate docs yaml files to include package warnings [#10569](https://github.com/chef/chef/pull/10569) ([tas50](https://github.com/tas50))
 - Improve the package docs generation + resolve rubocop warnings [#10567](https://github.com/chef/chef/pull/10567) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
@@ -11,6 +12,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve resource documentation [#10570](https://github.com/chef/chef/pull/10570) ([tas50](https://github.com/tas50)) <!-- 16.7.8 -->
 - Correctly generate docs yaml files to include package warnings [#10569](https://github.com/chef/chef/pull/10569) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Improve the package docs generation + resolve rubocop warnings [#10567](https://github.com/chef/chef/pull/10567) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
 - Simplify a weird conditional in chef-config [#10560](https://github.com/chef/chef/pull/10560) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
