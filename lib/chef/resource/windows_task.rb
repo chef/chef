@@ -75,7 +75,7 @@ class Chef
         command 'chef-client'
         run_level :highest
         frequency :once
-        start_time "16:10"
+        start_time 16:10'
       end
       ```
 
@@ -115,6 +115,7 @@ class Chef
       ```
 
       **Create a scheduled task to run when computer is idle with idle duration 20 min**:
+
       ```ruby
       windows_task 'chef-client' do
         command 'chef-client'
