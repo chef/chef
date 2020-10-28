@@ -1,3 +1,5 @@
+RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].freeze
+
 namespace :docs_site do
 
   desc "Generate resource documentation pages in a docs_site directory"
@@ -10,8 +12,6 @@ namespace :docs_site do
     require "chef/resource_inspector"
     require "fileutils"
     require "yaml"
-
-    RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].freeze
 
     # @return [String, nil] a pretty default value string or nil if we want to skip it
     def pretty_default(default)
@@ -168,11 +168,14 @@ namespace :docs_site do
       end
     end
 
-    def special_properties(name, data)
+    def special_properties(name)
       properties = {}
 
       # these package properties support passing arrays for the package name
-      properties["common_resource_functionality_multiple_packages"] = true if %w{yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
+      if %w{snap_package dpkg_package yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
+        properties["common_resource_functionality_multiple_packages"] = true
+        properties["properties_multiple_packages"] = true
+      end
 
       properties["common_resource_functionality_resources_common_windows_security"] = true if name == "remote_directory"
 
@@ -187,8 +190,6 @@ namespace :docs_site do
       properties["nameless_apt_update"] = true if name == "apt_update"
 
       properties["nameless_build_essential"] = true if name == "build_essential"
-
-      properties["properties_multiple_packages"] = true if %w{dnf_package package zypper_package}.include?(name)
 
       properties["properties_resources_common_windows_security"] = true if %w{cookbook_file file template remote_file directory}.include?(name)
 
@@ -274,7 +275,7 @@ namespace :docs_site do
       r["resource_reference"] = true
 
       # These properties are set to special values for only a few resources.
-      r.merge!(special_properties(name, data))
+      r.merge!(special_properties(name))
 
       r["title"] = "#{name} resource"
       r["resource"] = name
