@@ -33,7 +33,8 @@ property :revision, String,
   default: "HEAD"
 
 property :user, [String, Integer],
-  description: "The system user that will own the checked-out code."
+  description: "The system user that will own the checked-out code.",
+  default_description: "`HOME` environment variable of the current user"
 
 property :group, [String, Integer],
   description: "The system group that will own the checked-out code."

@@ -29,6 +29,18 @@ class Chef
       provides :subversion
 
       description "Use the **subversion** resource to manage source control resources that exist in a Subversion repository."
+      examples <<~DOC
+      **Get the latest version of an application**
+
+      ```ruby
+      subversion 'CouchDB Edge' do
+        repository 'http://svn.apache.org/repos/asf/couchdb/trunk'
+        revision 'HEAD'
+        destination '/opt/mysources/couch'
+        action :sync
+      end
+      ```
+      DOC
 
       allowed_actions :force_export
 
