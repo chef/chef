@@ -212,17 +212,6 @@ class Chef
 
         private
 
-        def device_fstab
-          case @new_resource.device_type
-          when :device
-            @new_resource.device
-          when :label
-            "LABEL=#{@new_resource.device}"
-          when :uuid
-            "UUID=#{@new_resource.device}"
-          end
-        end
-
         def device_real
           if @real_device.nil?
             if @new_resource.device_type == :device

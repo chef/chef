@@ -121,9 +121,12 @@ class Chef
       # It's entirely plausible that a site might prefer UUIDs or labels, so
       # we need to be able to update fstab to conform with their wishes
       # without necessarily needing to remount the device.
-      # See #6851 for more.
+      # See #6851 for more. 
+      # We have to compare current resource device with device_fstab value 
+      # because entry in /etc/fstab will be as per device_type.
+      # For Ex: 'LABEL=/tmp/ /mnt ext3 defaults,nofail 0 2', where 'device_type' is :label.
       def device_unchanged?
-        @current_resource.device == @new_resource.device
+        @current_resource.device == device_fstab
       end
 
       #
@@ -167,6 +170,18 @@ class Chef
           end
 
           sleep 0.1
+        end
+      end
+
+      # Retruns the new_resource device as per device_type
+      def device_fstab
+        case @new_resource.device_type
+        when :device
+          @new_resource.device
+        when :label
+          "LABEL=#{@new_resource.device}"
+        when :uuid
+          "UUID=#{@new_resource.device}"
         end
       end
     end
