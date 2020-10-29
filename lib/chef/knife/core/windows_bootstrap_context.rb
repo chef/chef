@@ -255,6 +255,8 @@ class Chef
                [String] $localPath
             )
 
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
             $ProxyUrl = $env:http_proxy;
             $webClient = new-object System.Net.WebClient;
 
