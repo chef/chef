@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.12 -->
-## [v16.7.12](https://github.com/chef/chef/tree/v16.7.12) (2020-10-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Fix secret options in windows bootstrap [#10577](https://github.com/chef/chef/pull/10577) ([mwrock](https://github.com/mwrock))
+- Remove the provider_resolver specs that are not helpful [#10576](https://github.com/chef/chef/pull/10576) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the provider_resolver specs that are not helpful [#10576](https://github.com/chef/chef/pull/10576) ([tas50](https://github.com/tas50)) <!-- 16.7.12 -->
 - Fix secret options in windows bootstrap [#10577](https://github.com/chef/chef/pull/10577) ([mwrock](https://github.com/mwrock)) <!-- 16.7.12 -->
 - Update Ohai to 16.7.4 and win32-process to 0.9.0 [#10580](https://github.com/chef/chef/pull/10580) ([tas50](https://github.com/tas50)) <!-- 16.7.11 -->
 - Don&#39;t run rspec with documentation formatter. [#10578](https://github.com/chef/chef/pull/10578) ([phiggins](https://github.com/phiggins)) <!-- 16.7.10 -->
