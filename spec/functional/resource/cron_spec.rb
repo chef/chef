@@ -26,7 +26,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
   # Platform specific validation routines.
   def cron_should_exists(cron_name, command)
     case ohai[:platform]
-    when "aix", "opensolaris", "solaris2", "omnios"
+    when "aix", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(0)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").stdout.lines.to_a.size).to eq(1)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{command}\"").exitstatus).to eq(0)
@@ -41,7 +41,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
 
   def cron_should_not_exists(cron_name)
     case ohai[:platform]
-    when "aix", "opensolaris", "solaris2", "omnios"
+    when "aix", "solaris2", "omnios"
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{cron_name}\"").exitstatus).to eq(1)
       expect(shell_out("crontab -l #{new_resource.user} | grep \"#{new_resource.command}\"").stdout.lines.to_a.size).to eq(0)
     else
@@ -113,7 +113,7 @@ describe Chef::Resource::Cron, :requires_root, :unix_only do
     end
   end
 
-  exclude_solaris = %w{solaris opensolaris solaris2 omnios}.include?(ohai[:platform])
+  exclude_solaris = %w{solaris solaris2 omnios}.include?(ohai[:platform])
   describe "create action with various attributes", external: exclude_solaris do
     def create_and_validate_with_property(resource, attribute, value)
       if ohai[:platform] == "aix"

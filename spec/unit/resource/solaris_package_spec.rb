@@ -21,16 +21,14 @@ require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::SolarisPackage, "initialize" do
 
-  %w{solaris2 nexentacore}.each do |platform_family|
-    static_provider_resolution(
-      resource: Chef::Resource::SolarisPackage,
-      provider: Chef::Provider::Package::Solaris,
-      name: :solaris_package,
-      action: :install,
-      os: "solaris2",
-      platform_family: platform_family
-    )
-  end
+  static_provider_resolution(
+    resource: Chef::Resource::SolarisPackage,
+    provider: Chef::Provider::Package::Solaris,
+    name: :solaris_package,
+    action: :install,
+    os: "solaris2",
+    platform_family: "solaris2"
+  )
 
   let(:resource) { Chef::Resource::SolarisPackage.new("foo") }
 
