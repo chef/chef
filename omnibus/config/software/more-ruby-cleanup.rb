@@ -54,12 +54,16 @@ build do
       examples
       ext
       Gemfile.lock
+      install.rb
       java
       patches
       perf
       rakelib
+      README-json-jruby.md
+      references
       sample
       samples
+      script
       site
       vendor
       VERSION
