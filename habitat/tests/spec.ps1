@@ -18,7 +18,7 @@ try {
     SETX GEM_PATH $($gemPath.Split("=")[1]) /m
 
     hab pkg binlink --force $PackageIdentifier
-    /hab/bin/rspec --format documentation --tag ~executables --tag ~choco_installed spec/functional
+    /hab/bin/rspec --tag ~executables --tag ~choco_installed spec/functional
     if (-not $?) { throw "functional testing failed"}
 } finally {
     Pop-Location
