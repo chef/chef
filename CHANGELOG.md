@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.9 -->
+## [v16.7.9](https://github.com/chef/chef/tree/v16.7.9) (2020-10-29)
 
 #### Merged Pull Requests
+- Remove support for nexentacore and opensolaris which are both a decade EOL [#10573](https://github.com/chef/chef/pull/10573) ([tas50](https://github.com/tas50))
 - Fix some spelling / cookstyle errors in the git examples [#10575](https://github.com/chef/chef/pull/10575) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove support for nexentacore and opensolaris which are both a decade EOL [#10573](https://github.com/chef/chef/pull/10573) ([tas50](https://github.com/tas50)) <!-- 16.7.9 -->
 - Fix some spelling / cookstyle errors in the git examples [#10575](https://github.com/chef/chef/pull/10575) ([tas50](https://github.com/tas50)) <!-- 16.7.8 -->
 - Improve resource documentation [#10570](https://github.com/chef/chef/pull/10570) ([tas50](https://github.com/tas50)) <!-- 16.7.8 -->
 - Correctly generate docs yaml files to include package warnings [#10569](https://github.com/chef/chef/pull/10569) ([tas50](https://github.com/tas50)) <!-- 16.7.7 -->
