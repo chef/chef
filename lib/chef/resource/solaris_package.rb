@@ -25,7 +25,6 @@ class Chef
       unified_mode true
 
       provides :solaris_package
-      provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
 
       description "Use the **solaris_package** resource to manage packages on the Solaris platform."
 
