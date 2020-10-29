@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.14 -->
-## [v16.7.14](https://github.com/chef/chef/tree/v16.7.14) (2020-10-29)
+<!-- latest_release 16.7.15 -->
+## [v16.7.15](https://github.com/chef/chef/tree/v16.7.15) (2020-10-29)
 
 #### Merged Pull Requests
-- Remove the provides :package for solaris_package [#10572](https://github.com/chef/chef/pull/10572) ([tas50](https://github.com/tas50))
+- Fix download errors during knife bootstrap on windows due to lack of TLS 1.2 support [#10574](https://github.com/chef/chef/pull/10574) ([TimothyTitan](https://github.com/TimothyTitan))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix download errors during knife bootstrap on windows due to lack of TLS 1.2 support [#10574](https://github.com/chef/chef/pull/10574) ([TimothyTitan](https://github.com/TimothyTitan)) <!-- 16.7.15 -->
 - Remove the provides :package for solaris_package [#10572](https://github.com/chef/chef/pull/10572) ([tas50](https://github.com/tas50)) <!-- 16.7.14 -->
 - Remove a few more files from our install artifact [#10581](https://github.com/chef/chef/pull/10581) ([tas50](https://github.com/tas50)) <!-- 16.7.13 -->
 - Remove the provider_resolver specs that are not helpful [#10576](https://github.com/chef/chef/pull/10576) ([tas50](https://github.com/tas50)) <!-- 16.7.12 -->
