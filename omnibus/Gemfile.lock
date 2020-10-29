@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.386.0)
+    aws-partitions (1.388.0)
     aws-sdk-core (3.109.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -227,11 +227,11 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.6)
+    mixlib-shellout (3.1.7)
       chef-utils
-    mixlib-shellout (3.1.6-universal-mingw32)
+    mixlib-shellout (3.1.7-universal-mingw32)
       chef-utils
-      win32-process (~> 0.8.2)
+      win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.7.0)
