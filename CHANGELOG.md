@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.13 -->
-## [v16.7.13](https://github.com/chef/chef/tree/v16.7.13) (2020-10-29)
+<!-- latest_release 16.7.14 -->
+## [v16.7.14](https://github.com/chef/chef/tree/v16.7.14) (2020-10-29)
 
 #### Merged Pull Requests
-- Remove a few more files from our install artifact [#10581](https://github.com/chef/chef/pull/10581) ([tas50](https://github.com/tas50))
-- Remove the provider_resolver specs that are not helpful [#10576](https://github.com/chef/chef/pull/10576) ([tas50](https://github.com/tas50))
+- Remove the provides :package for solaris_package [#10572](https://github.com/chef/chef/pull/10572) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the provides :package for solaris_package [#10572](https://github.com/chef/chef/pull/10572) ([tas50](https://github.com/tas50)) <!-- 16.7.14 -->
 - Remove a few more files from our install artifact [#10581](https://github.com/chef/chef/pull/10581) ([tas50](https://github.com/tas50)) <!-- 16.7.13 -->
 - Remove the provider_resolver specs that are not helpful [#10576](https://github.com/chef/chef/pull/10576) ([tas50](https://github.com/tas50)) <!-- 16.7.12 -->
 - Fix secret options in windows bootstrap [#10577](https://github.com/chef/chef/pull/10577) ([mwrock](https://github.com/mwrock)) <!-- 16.7.12 -->
