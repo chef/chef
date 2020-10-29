@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.10 -->
-## [v16.7.10](https://github.com/chef/chef/tree/v16.7.10) (2020-10-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Remove rspec_junit_formatter and rspec version pins [#10579](https://github.com/chef/chef/pull/10579) ([phiggins](https://github.com/phiggins))
+- Don&#39;t run rspec with documentation formatter. [#10578](https://github.com/chef/chef/pull/10578) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t run rspec with documentation formatter. [#10578](https://github.com/chef/chef/pull/10578) ([phiggins](https://github.com/phiggins)) <!-- 16.7.10 -->
 - Remove rspec_junit_formatter and rspec version pins [#10579](https://github.com/chef/chef/pull/10579) ([phiggins](https://github.com/phiggins)) <!-- 16.7.10 -->
 - Remove support for nexentacore and opensolaris which are both a decade EOL [#10573](https://github.com/chef/chef/pull/10573) ([tas50](https://github.com/tas50)) <!-- 16.7.9 -->
 - Fix some spelling / cookstyle errors in the git examples [#10575](https://github.com/chef/chef/pull/10575) ([tas50](https://github.com/tas50)) <!-- 16.7.8 -->
