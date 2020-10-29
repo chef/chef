@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e6258ed31f526bc268cef47280b12d4c227973bf
+  revision: 7b700df35ec1d884ac6507016bf2319d70dffa36
   branch: master
   specs:
-    ohai (16.7.0)
+    ohai (16.7.4)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -107,7 +107,7 @@ PATH
       win32-eventlog (= 0.6.3)
       win32-mmap (~> 0.4.1)
       win32-mutex (~> 0.4.2)
-      win32-process (~> 0.8.2)
+      win32-process (~> 0.9)
       win32-service (>= 2.1.5, < 3.0)
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
@@ -251,11 +251,11 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.6)
+    mixlib-shellout (3.1.7)
       chef-utils
-    mixlib-shellout (3.1.6-universal-mingw32)
+    mixlib-shellout (3.1.7-universal-mingw32)
       chef-utils
-      win32-process (~> 0.8.2)
+      win32-process (~> 0.9)
       wmi-lite (~> 1.0)
     multi_json (1.15.0)
     multipart-post (2.1.1)
@@ -392,7 +392,7 @@ GEM
       ffi
     win32-mutex (0.4.3)
       win32-ipc (>= 0.6.0)
-    win32-process (0.8.3)
+    win32-process (0.9.0)
       ffi (>= 1.0.0)
     win32-service (2.1.6)
       ffi
