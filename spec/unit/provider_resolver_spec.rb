@@ -424,7 +424,7 @@ describe Chef::ProviderResolver do
         it_behaves_like "a debian platform using the insserv provider"
       end
 
-      on_platform %w{solaris2 openindiana opensolaris nexentacore omnios smartos}, os: "solaris2", platform_version: "5.11" do
+      on_platform %w{solaris2 openindiana opensolaris omnios smartos}, os: "solaris2", platform_version: "5.11" do
         it "returns a Solaris provider" do
           stub_service_providers
           stub_service_configs
@@ -811,10 +811,6 @@ describe Chef::ProviderResolver do
           },
 
           "solaris2" => {
-            "nexentacore" => {
-              "3.1.4" => {
-              },
-            },
             "omnios" => {
               "3.1.4" => {
                 user: [ Chef::Resource::User::SolarisUser, Chef::Provider::User::Solaris ],

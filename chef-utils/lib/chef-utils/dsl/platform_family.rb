@@ -320,7 +320,7 @@ module ChefUtils
       # @return [Boolean]
       #
       def solaris_based?(node = __getnode)
-        %w{solaris2 smartos omnios openindiana opensolaris nexentacore}.include?(node["platform"])
+        %w{solaris2 smartos omnios openindiana opensolaris}.include?(node["platform"])
       end
 
       # All of the BSD-lineage.
