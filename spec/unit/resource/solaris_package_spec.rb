@@ -27,7 +27,7 @@ describe Chef::Resource::SolarisPackage, "initialize" do
     name: :solaris_package,
     action: :install,
     os: "solaris2",
-    platform_family: solaris2
+    platform_family: "solaris2"
   )
 
   let(:resource) { Chef::Resource::SolarisPackage.new("foo") }
