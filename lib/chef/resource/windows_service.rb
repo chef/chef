@@ -147,7 +147,6 @@ class Chef
       ```
       DOC
 
-
       allowed_actions :configure_startup, :create, :delete, :configure
 
       property :timeout, Integer,
