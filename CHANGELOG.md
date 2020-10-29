@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.11 -->
+## [v16.7.11](https://github.com/chef/chef/tree/v16.7.11) (2020-10-29)
 
 #### Merged Pull Requests
+- Update Ohai to 16.7.4 and win32-process to 0.9.0 [#10580](https://github.com/chef/chef/pull/10580) ([tas50](https://github.com/tas50))
 - Don&#39;t run rspec with documentation formatter. [#10578](https://github.com/chef/chef/pull/10578) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.7.4 and win32-process to 0.9.0 [#10580](https://github.com/chef/chef/pull/10580) ([tas50](https://github.com/tas50)) <!-- 16.7.11 -->
 - Don&#39;t run rspec with documentation formatter. [#10578](https://github.com/chef/chef/pull/10578) ([phiggins](https://github.com/phiggins)) <!-- 16.7.10 -->
 - Remove rspec_junit_formatter and rspec version pins [#10579](https://github.com/chef/chef/pull/10579) ([phiggins](https://github.com/phiggins)) <!-- 16.7.10 -->
 - Remove support for nexentacore and opensolaris which are both a decade EOL [#10573](https://github.com/chef/chef/pull/10573) ([tas50](https://github.com/tas50)) <!-- 16.7.9 -->
