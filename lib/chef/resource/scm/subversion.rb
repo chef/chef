@@ -36,7 +36,7 @@ class Chef
       subversion 'CouchDB Edge' do
         repository 'http://svn.apache.org/repos/asf/couchdb/trunk'
         revision 'HEAD'
-        destination '/opt/mysources/couch'
+        destination '/opt/my_sources/couch'
         action :sync
       end
       ```

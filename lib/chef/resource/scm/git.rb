@@ -32,7 +32,7 @@ class Chef
       **Use the git mirror**
 
       ```ruby
-      git '/opt/mysources/couch' do
+      git '/opt/my_sources/couch' do
         repository 'git://git.apache.org/couchdb.git'
         revision 'master'
         action :sync
@@ -51,7 +51,7 @@ class Chef
                     end
 
       git '/home/user/deployment' do
-         repository 'git@github.com:gitsite/deployment.git'
+         repository 'git@github.com:git_site/deployment.git'
          revision branch_name
          action :sync
          user 'user'
@@ -101,7 +101,7 @@ class Chef
       **Pass in environment variables**
 
       ```ruby
-      git '/opt/mysources/couch' do
+      git '/opt/my_sources/couch' do
         repository 'git://git.apache.org/couchdb.git'
         revision 'master'
         environment 'VAR' => 'whatever'
