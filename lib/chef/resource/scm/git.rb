@@ -32,7 +32,7 @@ class Chef
       **Use the git mirror**
 
       ```ruby
-      git '/opt/mysources/couch' do
+      git '/opt/my_sources/couch' do
         repository 'git://git.apache.org/couchdb.git'
         revision 'master'
         action :sync
@@ -51,7 +51,7 @@ class Chef
                     end
 
       git '/home/user/deployment' do
-         repository 'git@github.com:gitsite/deployment.git'
+         repository 'git@github.com:git_site/deployment.git'
          revision branch_name
          action :sync
          user 'user'
@@ -71,7 +71,7 @@ class Chef
 
       ```ruby
       git "#{Chef::Config[:file_cache_path]}/ruby-build" do
-        repository 'git://github.com/sstephenson/ruby-build.git'
+        repository 'git://github.com/rbenv/ruby-build.git'
         revision 'master'
         action :sync
       end
@@ -90,18 +90,18 @@ class Chef
       **Notify a resource post-checkout**
 
       ```ruby
-      git "#{Chef::Config[:file_cache_path]}/libvpx" do
-        repository node[:libvpx][:git_repository]
-        revision node[:libvpx][:git_revision]
+      git "#{Chef::Config[:file_cache_path]}/my_app" do
+        repository node['my_app']['git_repository']
+        revision node['my_app']['git_revision']
         action :sync
-        notifies :run, 'bash[compile_libvpx]', :immediately
+        notifies :run, 'bash[compile_my_app]', :immediately
       end
       ```
 
       **Pass in environment variables**
 
       ```ruby
-      git '/opt/mysources/couch' do
+      git '/opt/my_sources/couch' do
         repository 'git://git.apache.org/couchdb.git'
         revision 'master'
         environment 'VAR' => 'whatever'
