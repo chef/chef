@@ -326,7 +326,7 @@ describe Chef::Resource::AptPackage, metadata do
         pkg_check = shell_out!("dpkg -l chef-integration-test", returns: [0, 1])
 
         if pkg_check.exitstatus == 0
-          expect(pkg_check.stdout).to match(/un[\s]+chef-integration-test/)
+          expect(pkg_check.stdout).to match(/un\s+chef-integration-test/)
         end
       end
 
@@ -359,7 +359,7 @@ describe Chef::Resource::AptPackage, metadata do
       it "upgrades the package for action :upgrade" do
         package_resource.run_action(:upgrade)
         dpkg_l = shell_out!("dpkg -l chef-integration-test", returns: [0])
-        expect(dpkg_l.stdout).to match(/chef\-integration\-test[\s]+1\.1\-1/)
+        expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.1\-1/)
         expect(package_resource).to be_updated_by_last_action
       end
 
@@ -373,7 +373,7 @@ describe Chef::Resource::AptPackage, metadata do
         it "upgrades the package for action :install" do
           package_resource.run_action(:install)
           dpkg_l = shell_out!("dpkg -l chef-integration-test", returns: [0])
-          expect(dpkg_l.stdout).to match(/chef\-integration\-test[\s]+1\.1\-1/)
+          expect(dpkg_l.stdout).to match(/chef\-integration\-test\s+1\.1\-1/)
           expect(package_resource).to be_updated_by_last_action
         end
       end

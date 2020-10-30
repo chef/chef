@@ -157,9 +157,9 @@ describe Chef::Knife::Configure do
     expect(::File).to receive(:open).with("/home/you/.chef/credentials", "w").and_yield config_file
     @knife.config[:repository] = "/home/you/chef-repo"
     @knife.run
-    expect(config_file.string).to match(/^client_name[\s]+=[\s]+'#{Etc.getlogin}'$/)
-    expect(config_file.string).to match(%r{^client_key[\s]+=[\s]+'/home/you/.chef/#{Etc.getlogin}.pem'$})
-    expect(config_file.string).to match(/^chef_server_url\s+=[\s]+'#{default_server_url}'$/)
+    expect(config_file.string).to match(/^client_name\s+=\s+'#{Etc.getlogin}'$/)
+    expect(config_file.string).to match(%r{^client_key\s+=\s+'/home/you/.chef/#{Etc.getlogin}.pem'$})
+    expect(config_file.string).to match(/^chef_server_url\s+=\s+'#{default_server_url}'$/)
   end
 
   it "creates a new client when given the --initial option" do

@@ -150,8 +150,8 @@ describe Shell do
     end
 
     it "creates a help banner with the command descriptions" do
-      expect(@chef_object.help_banner).to match(/^\|\ Command[\s]+\|\ Description[\s]*$/)
-      expect(@chef_object.help_banner).to match(/^\|\ rspec_method[\s]+\|\ rspecin\'[\s]*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ Command\s+\|\ Description\s*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ rspec_method\s+\|\ rspecin\'\s*$/)
     end
   end
 
