@@ -620,6 +620,7 @@ steps:
 - label: ":habicat: Windows plan"
   commands:
     - ./scripts/ci/verify-plan.ps1
+  timeout_in_minutes: 60
   expeditor:
     executor:
       windows:

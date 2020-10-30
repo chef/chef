@@ -2,11 +2,9 @@ require "fcntl"
 require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
-require "chef/mixin/powershell_out"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
-  extend Chef::Mixin::PowershellOut
 end
 
 # magic stolen from bundler/spec/support/less_than_proc.rb
@@ -242,11 +240,15 @@ def ifconfig?
 end
 
 def choco_installed?
-  result = ShellHelpers.powershell_out("choco --version")
+  result = ShellHelpers.shell_out("choco --version")
   result.stderr.empty?
+rescue
+  false
 end
 
 def pwsh_installed?
-  result = ShellHelpers.powershell_out("pwsh.exe --version")
+  result = ShellHelpers.shell_out("pwsh.exe --version")
   result.stderr.empty?
+rescue
+  false
 end

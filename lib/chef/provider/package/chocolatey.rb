@@ -151,7 +151,7 @@ class Chef
           @choco_exe ||= begin
               # if this check is in #define_resource_requirements, it won't get
               # run before choco.exe gets called from #load_current_resource.
-              exe_path = ::File.join(choco_install_path.to_s, "bin", "choco.exe")
+              exe_path = ::File.join(choco_install_path, "bin", "choco.exe")
               raise Chef::Exceptions::MissingLibrary, CHOCO_MISSING_MSG unless ::File.exist?(exe_path)
 
               exe_path
@@ -160,9 +160,9 @@ class Chef
 
         # lets us mock out an incorrect value for testing.
         def choco_install_path
-          @choco_install_path ||= powershell_out!(
-            PATHFINDING_POWERSHELL_COMMAND
-          ).stdout.chomp
+          result = powershell_exec!(PATHFINDING_POWERSHELL_COMMAND).result
+          result = "" if result.empty?
+          result
         end
 
         # Helper to dispatch a choco command through shell_out using the timeout

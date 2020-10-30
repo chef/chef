@@ -501,8 +501,7 @@ describe "behavior when Chocolatey is not installed" do
 
   before do
     # the shellout sometimes returns "", but test nil to be safe.
-    allow(provider).to receive(:choco_install_path).and_return(nil)
-    provider.instance_variable_set("@choco_install_path", nil)
+    allow(provider).to receive(:choco_install_path).and_return("")
 
     # we don't care what this returns, but we have to let it be called.
     allow(provider).to receive(:shell_out_compacted!).and_return(double(stdout: ""))

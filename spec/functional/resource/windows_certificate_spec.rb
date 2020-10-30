@@ -16,18 +16,18 @@
 #
 
 require "spec_helper"
-require "chef/mixin/powershell_out"
+require "chef/mixin/powershell_exec"
 require "chef/resource/windows_certificate"
 
 module WindowsCertificateHelper
-  include Chef::Mixin::PowershellOut
+  include Chef::Mixin::PowershellExec
 
   def create_store(store)
     path = "Cert:\\LocalMachine\\" + store
     command = <<~EOC
       New-Item -Path #{path}
     EOC
-    powershell_out(command)
+    powershell_exec(command)
   end
 
   def cleanup(store)
@@ -35,15 +35,19 @@ module WindowsCertificateHelper
     command = <<~EOC
       Remove-Item -Path #{path} -Recurse
     EOC
-    powershell_out(command)
+    powershell_exec(command)
   end
 
   def no_of_certificates
     path = "Cert:\\LocalMachine\\" + store
+    # Seems weird that we have to call dir twice right?
+    # The powershell pki module cache the last dir in module session state
+    # Issuing dir with a different arg (-Force) seems to refresh that state.
     command = <<~EOC
-      Write-Host (dir #{path} | measure).Count;
+      dir #{path} -Force | Out-Null
+      (dir #{path} | measure).Count
     EOC
-    powershell_out(command).stdout.to_i
+    powershell_exec(command).result.to_i
   end
 end
 
