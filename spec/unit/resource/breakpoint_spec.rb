@@ -58,7 +58,7 @@ describe Chef::Resource::Breakpoint do
 
   it "names itself after the line number of the file where it's created" do
     resource = Chef::Resource::Breakpoint.new
-    expect(resource.name).to match(/breakpoint_spec\.rb\:[\d]{2}\:in \`new\'$/)
+    expect(resource.name).to match(/breakpoint_spec\.rb\:\d{2}\:in \`new\'$/)
   end
 
 end

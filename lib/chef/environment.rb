@@ -35,7 +35,7 @@ class Chef
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
 
-    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/.freeze
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:\s+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:\s+).+)$/.freeze
 
     def initialize(chef_server_rest: nil)
       @name = ""

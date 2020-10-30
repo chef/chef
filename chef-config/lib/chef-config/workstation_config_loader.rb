@@ -195,8 +195,8 @@ module ChefConfig
       message = ""
       message << "You have invalid ruby syntax in your config file #{config_file_path}\n\n"
       message << "#{e.class.name}: #{e.message}\n"
-      if file_line = e.message[/#{Regexp.escape(config_file_path)}:[\d]+/]
-        line = file_line[/:([\d]+)$/, 1].to_i
+      if file_line = e.message[/#{Regexp.escape(config_file_path)}:\d+/]
+        line = file_line[/:(\d+)$/, 1].to_i
         message << highlight_config_error(config_file_path, line)
       end
       raise ChefConfig::ConfigurationError, message
@@ -206,7 +206,7 @@ module ChefConfig
       filtered_trace = e.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
       filtered_trace.each { |bt_line| message << "  " << bt_line << "\n" }
       unless filtered_trace.empty?
-        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:([\d]+)/, 1]
+        line_nr = filtered_trace.first[/#{Regexp.escape(config_file_path)}:(\d+)/, 1]
         message << highlight_config_error(config_file_path, line_nr.to_i)
       end
       raise ChefConfig::ConfigurationError, message
