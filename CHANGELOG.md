@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.17 -->
-## [v16.7.17](https://github.com/chef/chef/tree/v16.7.17) (2020-10-30)
+<!-- latest_release 16.7.18 -->
+## [v16.7.18](https://github.com/chef/chef/tree/v16.7.18) (2020-10-30)
 
 #### Merged Pull Requests
-- Simplify regexes by removing extra character classes [#10584](https://github.com/chef/chef/pull/10584) ([tas50](https://github.com/tas50))
+- Improve Windows resource performance by converting powershell_out usage to powershell_exec [#10545](https://github.com/chef/chef/pull/10545) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve Windows resource performance by converting powershell_out usage to powershell_exec [#10545](https://github.com/chef/chef/pull/10545) ([mwrock](https://github.com/mwrock)) <!-- 16.7.18 -->
 - Simplify regexes by removing extra character classes [#10584](https://github.com/chef/chef/pull/10584) ([tas50](https://github.com/tas50)) <!-- 16.7.17 -->
 - Avoid a splat operator where we don&#39;t need one [#10583](https://github.com/chef/chef/pull/10583) ([tas50](https://github.com/tas50)) <!-- 16.7.16 -->
 - Fix download errors during knife bootstrap on windows due to lack of TLS 1.2 support [#10574](https://github.com/chef/chef/pull/10574) ([TimothyTitan](https://github.com/TimothyTitan)) <!-- 16.7.15 -->
