@@ -97,6 +97,17 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
+- label: "Integration Ubuntu 20.04 :ruby: 3.0"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:3.0
+        privileged: true
+
 - label: "Functional Ubuntu 20.04 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -110,6 +121,19 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
+- label: "Functional Ubuntu 20.04 :ruby: 3.0"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y cron locales # needed for functional tests to pass
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:3.0
+        privileged: true
+
 - label: "Unit Ubuntu 20.04 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -120,6 +144,17 @@ steps:
     executor:
       docker:
         image: rubydistros/ubuntu-20.04:2.7
+
+- label: "Unit Ubuntu 20.04 :ruby: 3.0"
+  commands:
+    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
+    - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:3.0
 
 - label: "Integration CentOS 7 :ruby: 2.7"
   commands:
