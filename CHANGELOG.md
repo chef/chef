@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.18 -->
-## [v16.7.18](https://github.com/chef/chef/tree/v16.7.18) (2020-10-30)
+<!-- latest_release 16.7.19 -->
+## [v16.7.19](https://github.com/chef/chef/tree/v16.7.19) (2020-10-31)
 
 #### Merged Pull Requests
-- Improve Windows resource performance by converting powershell_out usage to powershell_exec [#10545](https://github.com/chef/chef/pull/10545) ([mwrock](https://github.com/mwrock))
+- Update ohai to 16.7.9 and rspec to 3.10 [#10587](https://github.com/chef/chef/pull/10587) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update ohai to 16.7.9 and rspec to 3.10 [#10587](https://github.com/chef/chef/pull/10587) ([tas50](https://github.com/tas50)) <!-- 16.7.19 -->
 - Improve Windows resource performance by converting powershell_out usage to powershell_exec [#10545](https://github.com/chef/chef/pull/10545) ([mwrock](https://github.com/mwrock)) <!-- 16.7.18 -->
 - Simplify regexes by removing extra character classes [#10584](https://github.com/chef/chef/pull/10584) ([tas50](https://github.com/tas50)) <!-- 16.7.17 -->
 - Avoid a splat operator where we don&#39;t need one [#10583](https://github.com/chef/chef/pull/10583) ([tas50](https://github.com/tas50)) <!-- 16.7.16 -->
