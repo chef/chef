@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.19 -->
-## [v16.7.19](https://github.com/chef/chef/tree/v16.7.19) (2020-10-31)
+<!-- latest_release 16.7.20 -->
+## [v16.7.20](https://github.com/chef/chef/tree/v16.7.20) (2020-11-02)
 
 #### Merged Pull Requests
-- Update ohai to 16.7.9 and rspec to 3.10 [#10587](https://github.com/chef/chef/pull/10587) ([tas50](https://github.com/tas50))
+- Fix homebrew_update [#10586](https://github.com/chef/chef/pull/10586) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix homebrew_update [#10586](https://github.com/chef/chef/pull/10586) ([phiggins](https://github.com/phiggins)) <!-- 16.7.20 -->
 - Update ohai to 16.7.9 and rspec to 3.10 [#10587](https://github.com/chef/chef/pull/10587) ([tas50](https://github.com/tas50)) <!-- 16.7.19 -->
 - Improve Windows resource performance by converting powershell_out usage to powershell_exec [#10545](https://github.com/chef/chef/pull/10545) ([mwrock](https://github.com/mwrock)) <!-- 16.7.18 -->
 - Simplify regexes by removing extra character classes [#10584](https://github.com/chef/chef/pull/10584) ([tas50](https://github.com/tas50)) <!-- 16.7.17 -->
