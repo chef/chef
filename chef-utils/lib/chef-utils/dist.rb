@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module ChefUtils
   # This class is not fully implemented, depending on it is not recommended!
   module Dist
