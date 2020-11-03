@@ -54,6 +54,8 @@ group(:development, :test) do
   gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
+  # TODO: Figure out the proper way to depend on inspec so that CI doesn't fail.
+  gem "inspec-core", "~> 4.18"
 end
 
 group(:chefstyle) do
