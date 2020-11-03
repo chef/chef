@@ -33,9 +33,9 @@ class DummyResource < Chef::Resource
   end
 end
 
-describe ResourceInspector do
+describe Chef::ResourceInspector do
   describe "inspecting a resource" do
-    subject { ResourceInspector.extract_resource(DummyResource, false) }
+    subject { Chef::ResourceInspector.extract_resource(DummyResource, false) }
 
     it "returns a hash with required data" do
       expect(subject[:description]).to eq "A dummy resource"
@@ -50,7 +50,7 @@ describe ResourceInspector do
     end
 
     context "including built in properties" do
-      subject { ResourceInspector.extract_resource(DummyResource, true) }
+      subject { Chef::ResourceInspector.extract_resource(DummyResource, true) }
       it "returns many properties" do
         expect(subject[:properties].count).to be > 1
         expect(subject[:properties].map { |n| n[:name] }).to include(:name, :first, :sensitive)

@@ -294,7 +294,7 @@ namespace :docs_site do
     end
 
     FileUtils.mkdir_p "docs_site"
-    resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
+    resources = Chef::JSONCompat.parse(Chef::ResourceInspector.inspect)
 
     resources.each do |resource, data|
       # skip some resources we don't directly document
