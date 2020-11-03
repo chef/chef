@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use not_if and only_if to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
+      description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
 
       examples <<~EXAMPLES
         **Run a command upon notification**:
