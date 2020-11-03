@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright 2009-2016, Dan Kubb
 
 # Permission is hereby granted, free of charge, to any person obtaining

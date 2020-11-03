@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright:: Copyright 2017, Noah Kantrowitz
 # License:: Apache License, Version 2.0
 #
