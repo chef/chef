@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.21 -->
-## [v16.7.21](https://github.com/chef/chef/tree/v16.7.21) (2020-11-03)
+<!-- latest_release 16.7.22 -->
+## [v16.7.22](https://github.com/chef/chef/tree/v16.7.22) (2020-11-03)
 
 #### Merged Pull Requests
-- Freeze strings in chef-utils [#10590](https://github.com/chef/chef/pull/10590) ([tas50](https://github.com/tas50))
+- Namespace ResourceInspector to avoid conflicts with Inspec&#39;s [#10595](https://github.com/chef/chef/pull/10595) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Namespace ResourceInspector to avoid conflicts with Inspec&#39;s [#10595](https://github.com/chef/chef/pull/10595) ([phiggins](https://github.com/phiggins)) <!-- 16.7.22 -->
 - Freeze strings in chef-utils [#10590](https://github.com/chef/chef/pull/10590) ([tas50](https://github.com/tas50)) <!-- 16.7.21 -->
 - Fix homebrew_update [#10586](https://github.com/chef/chef/pull/10586) ([phiggins](https://github.com/phiggins)) <!-- 16.7.20 -->
 - Update ohai to 16.7.9 and rspec to 3.10 [#10587](https://github.com/chef/chef/pull/10587) ([tas50](https://github.com/tas50)) <!-- 16.7.19 -->
