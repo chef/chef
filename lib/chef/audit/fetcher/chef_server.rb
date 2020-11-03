@@ -24,33 +24,31 @@ class Chef
         # * a String URL with a compliance scheme, like "compliance://namespace/profile_name"
         # * a Hash with a key of `compliance` and a value like "compliance/profile_name" and optionally a `version` key with a String value
         def self.resolve(target)
-          uri = get_target_uri(target)
-          return nil if uri.nil?
+          profile_uri = get_target_uri(target)
+          return nil if profile_uri.nil?
 
-          profile = uri.host + uri.path
-          profile = uri.user + '@' + profile if uri.user
-
-          version = target[:version] if target.respond_to?(:key?) && target.key?(:version)
-          new(target_url(profile, version), CONFIG)
-        rescue URI::Error => _e
-          nil
-        end
-
-        def self.target_url(profile, version = nil)
           organization = Chef::Config[:chef_server_url].split('/').last
-          namespace, profile_name = profile.split('/')
+          owner = profile_uri.user ? "#{profile_uri.user}@#{profile_uri.host}" : profile_uri.host
+          version = target[:version] if target.respond_to?(:key?)
 
           path_parts = [""]
           path_parts << "compliance" if chef_server_reporter? || chef_server_fetcher?
-          path_parts << "organizations/#{organization}/owners/#{namespace}/compliance/#{profile_name}"
+          path_parts << "organizations"
+          path_parts << organization
+          path_parts << "owners"
+          path_parts << owner
+          path_parts << "compliance"
+          path_parts << profile_uri.path
           path_parts << "version/#{version}" if version
           path_parts << "tar"
 
           target_url = URI(Chef::Config[:chef_server_url])
-          target_url.path = path_parts.compact.join("/")
-
+          target_url.path = File.join(path_parts)
           Chef::Log.info("Fetching profile from: #{target_url}")
-          target_url
+
+          new(target_url, CONFIG)
+        rescue URI::Error => _e
+          nil
         end
 
         #
