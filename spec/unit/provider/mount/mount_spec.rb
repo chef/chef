@@ -418,9 +418,29 @@ describe Chef::Provider::Mount::Mount do
         @fstab = StringIO.new
         allow(::File).to receive(:readlines).and_return([])
         expect(::File).to receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
-        expect(::File).to receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
 
         @provider.enable_fs
+      end
+
+      it "should update the last matching entry if enabled is true" do
+        @new_resource.fstype("ext4")
+        @new_resource.dump(2)
+        @new_resource.pass(1)
+        allow(@current_resource).to receive(:enabled).and_return(true)
+        fstab_read = ["/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n"]
+
+        fstab_write = StringIO.new
+        allow(::File).to receive(:readlines).with("/etc/fstab").and_return(fstab_read)
+        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+
+        @provider.enable_fs
+        expect(fstab_write.string).to eq("/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdz1 /tmp/foo #{@new_resource.fstype} defaults #{@new_resource.dump} #{@new_resource.pass}\n" +
+          "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n")
       end
     end
 
