@@ -138,7 +138,7 @@ class Chef
       end
 
       # extracts relevant node data
-      def gather_nodeinfo
+      def node_info
         runlist_roles = node.run_list.select { |item| item.type == :role }.map(&:name)
         runlist_recipes = node.run_list.select { |item| item.type == :recipe }.map(&:name)
         {
@@ -173,7 +173,7 @@ class Chef
           opts = {
             entity_uuid: node['chef_guid'],
             run_id: run_id,
-            node_info: gather_nodeinfo,
+            node_info: node_info,
             insecure: insecure,
             run_time_limit: run_time_limit,
             control_results_limit: control_results_limit,
@@ -187,7 +187,7 @@ class Chef
             opts = {
               entity_uuid: node['chef_guid'],
               run_id: run_id,
-              node_info: gather_nodeinfo,
+              node_info: node_info,
               insecure: insecure,
               url: url,
               run_time_limit: run_time_limit,

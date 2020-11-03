@@ -90,7 +90,7 @@ class Chef
 
         "json_file" => {
           # The location of the json-file output:
-          # <chef_cache_path>/cookbooks/audit/inspec-<YYYYMMDDHHMMSS>.json
+          # <chef_cache_path>/cookbooks/audit/inspec-<timestamp>.json
           # TODO: ^^ comment is wrong
           # TODO: Does this path work?
           "location" => File.expand_path(Time.now.utc.strftime("../../../inspec-%Y%m%d%H%M%S.json"), __dir__),

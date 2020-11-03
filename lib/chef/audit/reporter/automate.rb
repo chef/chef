@@ -90,7 +90,7 @@ class Chef
         end
 
         # ***************************************************************************************
-        # TODO: We could likely simplify/remove alot of the extra logic we have here with a small
+        # TODO: We could likely simplify/remove some of the extra logic we have here with a small
         # revamp of the Automate expected input.
         # ***************************************************************************************
 
@@ -101,8 +101,9 @@ class Chef
           # Label this content as an inspec_report
           final_report[:type] = "inspec_report"
 
-          # Ensure controls are never stored or shipped, since this was an accidential
+          # Ensure controls are never stored or shipped, since this was an accidental
           # addition in InSpec and will be remove in the next inspec major release
+          # TODO: Is this comment ^^ accurate? Is this still necessary?
           final_report.delete(:controls)
           final_report[:node_name]         = @node_name
           final_report[:end_time]          = @timestamp.utc.strftime("%FT%TZ")
