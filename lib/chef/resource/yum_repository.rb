@@ -37,7 +37,7 @@ class Chef
         gpgkey 'http://artifacts.ourco.org/pub/yum/RPM-GPG-KEY-OURCO-8'
         action :create
       end
-      ```ruby
+      ```
 
       **Delete a repository**:
 
