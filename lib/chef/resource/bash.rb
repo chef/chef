@@ -80,7 +80,7 @@ class Chef
 
       ```ruby
       git "#{Chef::Config[:file_cache_path]}/ruby-build" do
-        repository 'git://github.com/sstephenson/ruby-build.git'
+        repository 'git://github.com/rbenv/ruby-build.git'
         revision 'master'
         action :sync
       end
