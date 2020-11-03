@@ -1,4 +1,4 @@
-autoload :JSON, 'json'
+autoload :JSON, "json"
 
 class Chef
   module Audit

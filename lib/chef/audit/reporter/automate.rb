@@ -37,15 +37,15 @@ class Chef
           end
 
           unless @url && @token
-            Chef::Log.warn 'data_collector.token and data_collector.server_url must be defined in client.rb!'
-            Chef::Log.warn 'Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate'
+            Chef::Log.warn "data_collector.token and data_collector.server_url must be defined in client.rb!"
+            Chef::Log.warn "Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate"
             return false
           end
 
           headers = {
-            'Content-Type' => 'application/json',
-            'x-data-collector-auth' => 'version=1.0',
-            'x-data-collector-token' => @token,
+            "Content-Type" => "application/json",
+            "x-data-collector-auth" => "version=1.0",
+            "x-data-collector-token" => @token,
           }
 
           all_report_shas = report.fetch(:profiles, []).map { |p| p[:sha256] }
@@ -62,11 +62,11 @@ class Chef
           # https://github.com/chef/automate/issues/1417#issuecomment-541908157
           if report_size > 4 * 1024 * 1024
             Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
-            Chef::Log.warn 'Automate has an internal 4MB limit that is not currently configurable.'
+            Chef::Log.warn "Automate has an internal 4MB limit that is not currently configurable."
           end
 
           unless json_report
-            Chef::Log.warn 'Something went wrong, report can\'t be nil'
+            Chef::Log.warn "Something went wrong, report can't be nil"
             return false
           end
 
@@ -81,7 +81,7 @@ class Chef
           end
         end
 
-        def http_client(url=@url)
+        def http_client(url = @url)
           if @insecure
             Chef::HTTP.new(url, ssl_verify_mode: :verify_none)
           else
@@ -99,13 +99,13 @@ class Chef
           final_report[:profiles].select! { |p| p }
 
           # Label this content as an inspec_report
-          final_report[:type] = 'inspec_report'
+          final_report[:type] = "inspec_report"
 
           # Ensure controls are never stored or shipped, since this was an accidential
           # addition in InSpec and will be remove in the next inspec major release
           final_report.delete(:controls)
           final_report[:node_name]         = @node_name
-          final_report[:end_time]          = @timestamp.utc.strftime('%FT%TZ')
+          final_report[:end_time]          = @timestamp.utc.strftime("%FT%TZ")
           final_report[:node_uuid]         = @entity_uuid
           final_report[:environment]       = @environment
           final_report[:roles]             = @roles
@@ -122,7 +122,7 @@ class Chef
           final_report
         end
 
-        CONTROL_RESULT_SORT_ORDER = %w{ failed skipped passed }
+        CONTROL_RESULT_SORT_ORDER = %w{ failed skipped passed }.freeze
 
         # Truncates the number of results per control in the report when they exceed max_results.
         # The truncation prioritizes failed and skipped results over passed ones.
@@ -135,6 +135,7 @@ class Chef
             profile.fetch(:controls, []).each do |control|
               # Only bother with truncation if the number of results exceed max_results
               next unless control[:results].length > max_results
+
               res = control[:results]
               res.sort_by! { |r| CONTROL_RESULT_SORT_ORDER.index(r[:status]) }
 
@@ -142,11 +143,11 @@ class Chef
               truncated = { failed: 0, skipped: 0, passed: 0 }
               (max_results..res.length - 1).each do |i|
                 case res[i][:status]
-                when 'failed'
+                when "failed"
                   truncated[:failed] += 1
-                when 'skipped'
+                when "skipped"
                   truncated[:skipped] += 1
-                when 'passed'
+                when "passed"
                   truncated[:passed] += 1
                 end
               end
@@ -163,9 +164,9 @@ class Chef
         def missing_automate_profiles(headers, report_shas)
           Chef::Log.debug "Checking the Automate profiles metadata for: #{report_shas}"
           meta_url = URI(@url)
-          meta_url.path = '/compliance/profiles/metasearch'
+          meta_url.path = "/compliance/profiles/metasearch"
           response_str = http_client(meta_url.to_s).post(nil, "{\"sha256\": #{report_shas}}", headers)
-          missing_shas = JSON.parse(response_str)['missing_sha256']
+          missing_shas = JSON.parse(response_str)["missing_sha256"]
           unless missing_shas.empty?
             Chef::Log.info "Automate is missing metadata for the following profile ids: #{missing_shas}"
           end

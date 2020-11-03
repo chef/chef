@@ -1,25 +1,25 @@
-require "uri"
+require "uri" unless defined?(URI)
 require "plugins/inspec-compliance/lib/inspec-compliance"
 
 class Chef
   module Audit
     module Fetcher
       class Automate < ::InspecPlugins::Compliance::Fetcher
-        name 'chef-automate'
+        name "chef-automate"
 
         # it positions itself before `compliance` fetcher
         # only load it, if you want to use audit cookbook in Chef Solo with Chef Automate
         priority 502
 
         CONFIG = {
-          'insecure' => true,
-          'token' => nil,
-          'server_type' => 'automate',
-          'automate' => {
-            'ent' => 'default',
-            'token_type' => 'dctoken',
+          "insecure" => true,
+          "token" => nil,
+          "server_type" => "automate",
+          "automate" => {
+            "ent" => "default",
+            "token_type" => "dctoken",
           },
-        }
+        }.freeze
 
         def self.resolve(target)
           uri = get_target_uri(target)
@@ -45,13 +45,13 @@ class Chef
             url.path = profile_path
             profile_fetch_url = url.to_s
 
-            config['token'] = dc['token']
+            config["token"] = dc["token"]
 
-            if config['token'].nil?
-              raise 'No data-collector token set, which is required by the chef-automate fetcher. ' \
-                'Set the `data_collector.token` configuration parameter in your client.rb ' \
+            if config["token"].nil?
+              raise "No data-collector token set, which is required by the chef-automate fetcher. " \
+                "Set the `data_collector.token` configuration parameter in your client.rb " \
                 'or use the "chef-server-automate" reporter which does not require any ' \
-                'data-collector settings and uses Chef Server to fetch profiles.'
+                "data-collector settings and uses Chef Server to fetch profiles."
             end
           end
 
@@ -61,7 +61,7 @@ class Chef
         end
 
         def to_s
-          'Chef Automate for Chef Solo Fetcher'
+          "Chef Automate for Chef Solo Fetcher"
         end
       end
     end

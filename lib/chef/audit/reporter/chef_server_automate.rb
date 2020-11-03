@@ -1,4 +1,4 @@
-require_relative 'automate'
+require_relative "automate"
 
 class Chef
   module Audit
@@ -39,7 +39,7 @@ class Chef
           # this is set to slightly less than the oc_erchef limit
           if report_size > 900 * 1024
             Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
-            Chef::Log.warn 'Infra Server < 13.0 defaults to a limit of ~1MB, 13.0+ defaults to a limit of ~2MB.'
+            Chef::Log.warn "Infra Server < 13.0 defaults to a limit of ~1MB, 13.0+ defaults to a limit of ~2MB."
           end
 
           Chef::Log.info "Report to Chef Automate via Chef Server: #{@url}"
@@ -52,10 +52,10 @@ class Chef
 
         def http_client
           config = if @insecure
-            Chef::Config.merge(ssl_verify_mode: :verify_none)
-          else
-            Chef::Config
-          end
+                     Chef::Config.merge(ssl_verify_mode: :verify_none)
+                   else
+                     Chef::Config
+                   end
 
           Chef::ServerAPI.new(@url, config)
         end
@@ -75,11 +75,11 @@ class Chef
         def handle_http_error_code(code)
           case code
           when /401|403/
-            Chef::Log.error 'Auth issue: see audit cookbook TROUBLESHOOTING.md'
+            Chef::Log.error "Auth issue: see audit cookbook TROUBLESHOOTING.md"
           when /404/
-            Chef::Log.error 'Object does not exist on remote server.'
+            Chef::Log.error "Object does not exist on remote server."
           when /413/
-            Chef::Log.error 'You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html'
+            Chef::Log.error "You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
           when /429/
             Chef::Log.error "This error typically means the data sent was larger than Automate's limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
           end

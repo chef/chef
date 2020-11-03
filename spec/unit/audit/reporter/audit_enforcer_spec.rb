@@ -1,15 +1,15 @@
-require 'spec_helper'
+require "spec_helper"
 
 describe Chef::Audit::Reporter::AuditEnforcer do
   let(:reporter) { Chef::Audit::Reporter::AuditEnforcer.new }
 
-  it 'does not raise error for a successful InSpec report' do
+  it "does not raise error for a successful InSpec report" do
     report = {
       "profiles": [
         {
           "controls": [
-            { "id": 'c1', "results": [{ "status": 'passed' }] },
-            { "id": 'c2', "results": [{ "status": 'passed' }] },
+            { "id": "c1", "results": [{ "status": "passed" }] },
+            { "id": "c2", "results": [{ "status": "passed" }] },
           ],
         },
       ],
@@ -18,24 +18,24 @@ describe Chef::Audit::Reporter::AuditEnforcer do
     expect(reporter.send_report(report)).to eq(true)
   end
 
-  it 'does not raise error for an InSpec report with no controls' do
-    report = { "profiles": [{ "name": 'empty' }] }
+  it "does not raise error for an InSpec report with no controls" do
+    report = { "profiles": [{ "name": "empty" }] }
 
     expect(reporter.send_report(report)).to eq(true)
   end
 
-  it 'does not raise error for an InSpec report with controls but no results' do
-    report = { "profiles": [{ "controls": [{ "id": 'empty' }] }] }
+  it "does not raise error for an InSpec report with controls but no results" do
+    report = { "profiles": [{ "controls": [{ "id": "empty" }] }] }
     expect(reporter.send_report(report)).to eq(true)
   end
 
-  it 'raises an error for a failed InSpec report' do
+  it "raises an error for a failed InSpec report" do
     report = {
       "profiles": [
         {
           "controls": [
-            { "id": 'c1', "results": [{ "status": 'passed' }] },
-            { "id": 'c2', "results": [{ "status": 'failed' }] },
+            { "id": "c1", "results": [{ "status": "passed" }] },
+            { "id": "c2", "results": [{ "status": "failed" }] },
           ],
         },
       ],
@@ -43,6 +43,6 @@ describe Chef::Audit::Reporter::AuditEnforcer do
 
     expect {
       reporter.send_report(report)
-    }.to raise_error(Chef::Audit::Reporter::AuditEnforcer::ControlFailure, 'Audit c2 has failed. Aborting chef-client run.')
+    }.to raise_error(Chef::Audit::Reporter::AuditEnforcer::ControlFailure, "Audit c2 has failed. Aborting chef-client run.")
   end
 end

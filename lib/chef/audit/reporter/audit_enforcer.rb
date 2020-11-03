@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 class Chef
   module Audit
     module Reporter
@@ -10,7 +8,7 @@ class Chef
           report.fetch(:profiles, []).each do |profile|
             profile.fetch(:controls, []).each do |control|
               control.fetch(:results, []).each do |result|
-                raise ControlFailure, "Audit #{control[:id]} has failed. Aborting chef-client run." if result[:status] == 'failed'
+                raise ControlFailure, "Audit #{control[:id]} has failed. Aborting chef-client run." if result[:status] == "failed"
               end
             end
           end

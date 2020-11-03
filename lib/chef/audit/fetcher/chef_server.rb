@@ -1,4 +1,4 @@
-require 'uri'
+require "uri" unless defined?(URI)
 require "plugins/inspec-compliance/lib/inspec-compliance"
 
 # This class implements an InSpec fetcher for for Chef Server. The implementation
@@ -12,13 +12,13 @@ class Chef
   module Audit
     module Fetcher
       class ChefServer < ::InspecPlugins::Compliance::Fetcher
-        name 'chef-server'
+        name "chef-server"
 
         # it positions itself before `compliance` fetcher
         # only load it, if the Chef Server is integrated with Chef Compliance
         priority 501
 
-        CONFIG = { 'insecure' => true }
+        CONFIG = { "insecure" => true }.freeze
 
         # Accepts URLs to compliance profiles in one of two forms:
         # * a String URL with a compliance scheme, like "compliance://namespace/profile_name"
@@ -27,7 +27,7 @@ class Chef
           profile_uri = get_target_uri(target)
           return nil if profile_uri.nil?
 
-          organization = Chef::Config[:chef_server_url].split('/').last
+          organization = Chef::Config[:chef_server_url].split("/").last
           owner = profile_uri.user ? "#{profile_uri.user}@#{profile_uri.host}" : profile_uri.host
           version = target[:version] if target.respond_to?(:key?)
 
@@ -69,7 +69,7 @@ class Chef
           archive = with_http_rescue do
             rest.streaming_request(@target)
           end
-          @archive_type = '.tar.gz'
+          @archive_type = ".tar.gz"
 
           if archive.nil?
             path = @target.respond_to?(:path) ? @target.path : path
@@ -95,11 +95,11 @@ class Chef
         def handle_http_error_code(code)
           case code
           when /401|403/
-            Chef::Log.error 'Auth issue: see audit cookbook TROUBLESHOOTING.md'
+            Chef::Log.error "Auth issue: see audit cookbook TROUBLESHOOTING.md"
           when /404/
-            Chef::Log.error 'Object does not exist on remote server.'
+            Chef::Log.error "Object does not exist on remote server."
           when /413/
-            Chef::Log.error 'You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html'
+            Chef::Log.error "You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
           when /429/
             Chef::Log.error "This error typically means the data sent was larger than Automate's limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
           end
@@ -109,17 +109,17 @@ class Chef
         end
 
         def to_s
-          'Chef Server/Compliance Profile Loader'
+          "Chef Server/Compliance Profile Loader"
         end
 
-        CHEF_SERVER_REPORTERS = %w(chef-server chef-server-compliance chef-server-visibility chef-server-automate)
+        CHEF_SERVER_REPORTERS = %w{chef-server chef-server-compliance chef-server-visibility chef-server-automate}.freeze
         def self.chef_server_reporter?
-          (Array(Chef.node.attributes['audit']['reporter']) & CHEF_SERVER_REPORTERS).any?
+          (Array(Chef.node.attributes["audit"]["reporter"]) & CHEF_SERVER_REPORTERS).any?
         end
 
-        CHEF_SERVER_FETCHERS = %w(chef-server chef-server-compliance chef-server-visibility chef-server-automate)
+        CHEF_SERVER_FETCHERS = %w{chef-server chef-server-compliance chef-server-visibility chef-server-automate}.freeze
         def self.chef_server_fetcher?
-          CHEF_SERVER_FETCHERS.include?(Chef.node.attributes['audit']['fetcher'])
+          CHEF_SERVER_FETCHERS.include?(Chef.node.attributes["audit"]["fetcher"])
         end
 
         private

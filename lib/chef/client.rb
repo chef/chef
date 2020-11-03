@@ -57,7 +57,7 @@ require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
 
-require_relative 'audit/runner'
+require_relative "audit/runner"
 
 class Chef
   # == Chef::Client
