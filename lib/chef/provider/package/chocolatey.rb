@@ -79,7 +79,7 @@ class Chef
           name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
           name_nil_versions = name_versions_to_install.select { |n, v| v.nil? }
-          name_has_versions = name_versions_to_install.reject { |n, v| v.nil? }
+          name_has_versions = name_versions_to_install.compact
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
@@ -101,7 +101,7 @@ class Chef
           name_versions_to_install = desired_name_versions.select { |n, v| lowercase_names(names).include?(n) }
 
           name_nil_versions = name_versions_to_install.select { |n, v| v.nil? }
-          name_has_versions = name_versions_to_install.reject { |n, v| v.nil? }
+          name_has_versions = name_versions_to_install.compact
 
           # choco does not support installing multiple packages with version pins
           name_has_versions.each do |name, version|
