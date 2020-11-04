@@ -360,7 +360,7 @@ class Chef
       def add_hostname(users)
         users.map do |user|
           user = "#{node["hostname"]}\\" + user unless user.include?('\\')
-          user
+          user.downcase
         end
       end
     end

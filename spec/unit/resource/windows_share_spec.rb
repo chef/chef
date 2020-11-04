@@ -62,6 +62,10 @@ describe Chef::Resource::WindowsShare do
     it "add hostname to user without hostname" do
       expect(users_without_hostname).to eq(result_without_hostname)
     end
+
+    it "add hostname to user with users name downcase" do
+      expect(users_with_capital_case).to eq(result_with_downcase)
+    end
   end
 
   %w{full_users change_users read_users}.each do |users|
@@ -71,6 +75,8 @@ describe Chef::Resource::WindowsShare do
         let(:result_without_hostname) { ["hostname\\mygroup"] }
         let(:users_with_hostname) { resource.send(users, ["hostname1\\mygroup"]) }
         let(:result_with_hostname) { ["hostname1\\mygroup"] }
+        let(:users_with_capital_case) { resource.send(users, ["MYGROUP"]) }
+        let(:result_with_downcase) { ["hostname\\mygroup"] }
       end
     end
   end
