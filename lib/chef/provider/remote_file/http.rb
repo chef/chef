@@ -73,7 +73,6 @@ class Chef
           end
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
-            tempfile.close
           else
             # cache_control shows the file is unchanged, so we got back nil from the streaming_request above, and it is
             # now our responsibility to unlink the tempfile we created
