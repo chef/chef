@@ -32,7 +32,7 @@ Lint/ShadowedException:
   Enabled: false
 
 # set additional paths
-ChefRuby/UnlessDefinedRequire:
+Chef/Ruby/UnlessDefinedRequire:
   Include:
     - 'lib/**/*'
     - 'chef-bin/**/*'
