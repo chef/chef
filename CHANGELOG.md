@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.24 -->
-## [v16.7.24](https://github.com/chef/chef/tree/v16.7.24) (2020-11-04)
+<!-- latest_release 16.7.25 -->
+## [v16.7.25](https://github.com/chef/chef/tree/v16.7.25) (2020-11-05)
 
 #### Merged Pull Requests
-- Use tr where we don&#39;t need gsub and a regex [#10597](https://github.com/chef/chef/pull/10597) ([tas50](https://github.com/tas50))
+- Remove duplicate Gemfile gems + update ohai to 16.7.13 [#10602](https://github.com/chef/chef/pull/10602) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove duplicate Gemfile gems + update ohai to 16.7.13 [#10602](https://github.com/chef/chef/pull/10602) ([tas50](https://github.com/tas50)) <!-- 16.7.25 -->
 - Use tr where we don&#39;t need gsub and a regex [#10597](https://github.com/chef/chef/pull/10597) ([tas50](https://github.com/tas50)) <!-- 16.7.24 -->
 - Improve auto generated resource docs [#10596](https://github.com/chef/chef/pull/10596) ([tas50](https://github.com/tas50)) <!-- 16.7.23 -->
 - Namespace ResourceInspector to avoid conflicts with Inspec&#39;s [#10595](https://github.com/chef/chef/pull/10595) ([phiggins](https://github.com/phiggins)) <!-- 16.7.22 -->
