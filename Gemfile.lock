@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 7557513c626fb4f2372a09074e1411b5fc8de64f
+  revision: 0a2584c4ef7120031d97beb3b05e833ec4cb5857
   branch: master
   specs:
-    ohai (16.7.9)
+    ohai (16.7.13)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -322,7 +322,7 @@ GEM
       rubocop-ast (>= 0.6.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (1.1.0)
+    rubocop-ast (1.1.1)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
@@ -428,7 +428,6 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bcrypt_pbkdf (>= 1.1.0.rc1)
   chef!
   chef-bin!
   chef-config!
@@ -437,7 +436,6 @@ DEPENDENCIES
   chef-vault
   cheffish (>= 14)
   chefstyle!
-  ed25519
   fauxhai-ng
   inspec-core (~> 4.18)
   inspec-core-bin (~> 4.18)
