@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.388.0)
-    aws-sdk-core (3.109.1)
+    aws-partitions (1.389.0)
+    aws-sdk-core (3.109.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -197,7 +197,7 @@ GEM
     iso8601 (0.13.0)
     jmespath (1.4.0)
     json (2.3.1)
-    kitchen-vagrant (1.7.0)
+    kitchen-vagrant (1.7.1)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
     license-acceptance (2.1.2)
@@ -222,7 +222,7 @@ GEM
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
-    mixlib-install (3.12.3)
+    mixlib-install (3.12.5)
       mixlib-shellout
       mixlib-versioning
       thor
