@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.26 -->
-## [v16.7.26](https://github.com/chef/chef/tree/v16.7.26) (2020-11-05)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Use .compact instead of .select/.reject to remove nils [#10601](https://github.com/chef/chef/pull/10601) ([tas50](https://github.com/tas50))
+- Update to the new chefstyle [#10603](https://github.com/chef/chef/pull/10603) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to the new chefstyle [#10603](https://github.com/chef/chef/pull/10603) ([tas50](https://github.com/tas50)) <!-- 16.7.26 -->
 - Use .compact instead of .select/.reject to remove nils [#10601](https://github.com/chef/chef/pull/10601) ([tas50](https://github.com/tas50)) <!-- 16.7.26 -->
 - Remove duplicate Gemfile gems + update ohai to 16.7.13 [#10602](https://github.com/chef/chef/pull/10602) ([tas50](https://github.com/tas50)) <!-- 16.7.25 -->
 - Use tr where we don&#39;t need gsub and a regex [#10597](https://github.com/chef/chef/pull/10597) ([tas50](https://github.com/tas50)) <!-- 16.7.24 -->
