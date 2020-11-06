@@ -89,9 +89,7 @@ class Chef
               case op_action
               when "InDesiredState"
                 current_resource[:skipped] = op_value.strip == "True" ? true : false
-              when "ResourcesInDesiredState"
-                current_resource[:name] = op_value.strip if op_value
-              when "ResourcesNotInDesiredState"
+              when "ResourcesInDesiredState", "ResourcesNotInDesiredState"
                 current_resource[:name] = op_value.strip if op_value
               when "ReturnValue"
                 current_resource[:context] = nil

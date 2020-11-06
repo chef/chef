@@ -31,13 +31,9 @@ class Chef
           @node = node
 
           case output_format
-          when nil
+          when nil, :text
             @json_format = false
-          when :json
-            @json_format = true
-          when :text
-            @json_format = false
-          when :object
+          when :json, :object
             @json_format = true
           else
             raise ArgumentError, "Invalid output format #{output_format} specified"
@@ -128,9 +124,7 @@ class Chef
             switch_present = true
 
             case switch_value
-            when Numeric
-              switch_argument = switch_value.to_s
-            when Float
+            when Numeric, Float
               switch_argument = switch_value.to_s
             when FalseClass
               switch_present = false
