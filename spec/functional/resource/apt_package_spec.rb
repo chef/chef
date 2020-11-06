@@ -39,9 +39,7 @@ module AptServer
   def tcp_test_port(hostname, port)
     tcp_socket = TCPSocket.new(hostname, port)
     true
-  rescue Errno::ETIMEDOUT
-    false
-  rescue Errno::ECONNREFUSED
+  rescue Errno::ETIMEDOUT, Errno::ECONNREFUSED
     false
   ensure
     tcp_socket && tcp_socket.close
