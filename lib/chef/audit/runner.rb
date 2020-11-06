@@ -83,7 +83,7 @@ class Chef
       end
 
       def audit_attributes
-        @audit_attributes ||= Chef::Audit::DefaultAttributes::DEFAULTS.merge(node["audit"])
+        @audit_attributes ||= Chef::Audit::DefaultAttributes::DEFAULTS.merge(node["audit"] || {})
       end
 
       def inspec_profiles
