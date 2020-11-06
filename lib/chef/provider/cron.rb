@@ -157,12 +157,7 @@ class Chef
               next
             when ENV_PATTERN
               next if cron_found
-            when SPECIAL_PATTERN
-              if cron_found
-                cron_found = false
-                next
-              end
-            when CRON_PATTERN
+            when SPECIAL_PATTERN, CRON_PATTERN
               if cron_found
                 cron_found = false
                 next
