@@ -29,7 +29,6 @@ gem "inspec-core", "~> 4.23"
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 4.23" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
