@@ -24,10 +24,11 @@ gem "cheffish", ">= 14"
 
 gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 
+gem "inspec-core", "~> 4.23"
+
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 4.23"
   gem "inspec-core-bin", "~> 4.23" # need to provide the binaries for inspec
   gem "chef-vault"
 end
@@ -54,8 +55,6 @@ group(:development, :test) do
   gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
-  # TODO: Figure out the proper way to depend on inspec so that CI doesn't fail.
-  gem "inspec-core", "~> 4.18"
 end
 
 group(:chefstyle) do
