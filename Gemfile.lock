@@ -217,6 +217,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
+    inspec-core-bin (4.23.15)
+      inspec-core (= 4.23.15)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.3.1)
@@ -429,6 +431,7 @@ DEPENDENCIES
   chefstyle (= 1.5.2)
   fauxhai-ng
   inspec-core (~> 4.23)
+  inspec-core-bin (~> 4.23)
   ohai!
   pry
   pry-byebug
