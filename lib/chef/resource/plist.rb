@@ -151,9 +151,7 @@ class Chef
           value.to_i
         when "float"
           value.to_f
-        when "string"
-          value
-        when "dictionary"
+        when "string", "dictionary"
           value
         when nil
           ""
@@ -168,9 +166,7 @@ class Chef
           "array"
         when Integer
           "integer"
-        when FalseClass
-          "bool"
-        when TrueClass
+        when FalseClass, TrueClass
           "bool"
         when Hash
           "dict"

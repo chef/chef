@@ -221,9 +221,7 @@ class Chef
             case result["result"]["status"]
             when "Do", "Doing", "Undoing", "Undo"
               # Continue
-            when "Abort"
-              raise result
-            when "Hold", "Error"
+            when "Abort", "Hold", "Error"
               raise result
             when "Done"
               waiting = false

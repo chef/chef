@@ -73,9 +73,7 @@ class Chef
 
       def convert_value(value)
         case value
-        when VividMash
-          value
-        when AttrArray
+        when VividMash, AttrArray
           value
         when Hash
           VividMash.new(value, __root__, __node__, __precedence__)

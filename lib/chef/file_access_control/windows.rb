@@ -255,10 +255,7 @@ class Chef
             flags |= CONTAINER_INHERIT_ACE
           when :objects_only
             flags |= OBJECT_INHERIT_ACE
-          when true
-            flags |= CONTAINER_INHERIT_ACE
-            flags |= OBJECT_INHERIT_ACE
-          when nil
+          when true, nil
             flags |= CONTAINER_INHERIT_ACE
             flags |= OBJECT_INHERIT_ACE
           end
