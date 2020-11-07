@@ -160,54 +160,6 @@ class Chef
         }
       end
 
-=begin
-      def send_report(reporter, report)
-        Chef::Log.info "Reporting to #{reporter}"
-
-        insecure = audit_attributes['insecure']
-        run_time_limit = audit_attributes['run_time_limit']
-        control_results_limit = audit_attributes['control_results_limit']
-
-        # TODO: harmonize reporter interface
-        if reporter == 'chef-automate'
-          opts = {
-            entity_uuid: node['chef_guid'],
-            run_id: run_id,
-            node_info: node_info,
-            insecure: insecure,
-            run_time_limit: run_time_limit,
-            control_results_limit: control_results_limit,
-          }
-          Reporter::ChefAutomate.new(opts).send_report(report)
-        elsif reporter == 'chef-server-automate'
-          chef_url = audit_attributes['server'] || base_chef_server_url
-          chef_org = Chef::Config[:chef_server_url].split('/').last
-          if chef_url
-            url = construct_url(chef_url, File.join('organizations', chef_org, 'data-collector'))
-            opts = {
-              entity_uuid: node['chef_guid'],
-              run_id: run_id,
-              node_info: node_info,
-              insecure: insecure,
-              url: url,
-              run_time_limit: run_time_limit,
-              control_results_limit: control_results_limit,
-            }
-            Reporter::ChefServerAutomate.new(opts).send_report(report)
-          else
-            Chef::Log.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
-          end
-        elsif reporter == 'json-file'
-          path = audit_attributes['json_file']['location']
-          Chef::Log.info "Writing report to #{path}"
-          Reporter::JsonFile.new(file: path).send_report(report)
-        elsif reporter == 'audit-enforcer'
-          Reporter::AuditEnforcer.new.send_report(report)
-        else
-          Chef::Log.warn "#{reporter} is not a supported InSpec report collector"
-        end
-      end
-=end
       def send_report(reporter, report)
         Chef::Log.info "Reporting to #{reporter}"
 
@@ -216,6 +168,34 @@ class Chef
         control_results_limit = audit_attributes["control_results_limit"]
 
         case reporter
+        when "chef-automate"
+          opts = {
+            entity_uuid: node["chef_guid"],
+            run_id: run_id,
+            node_info: node_info,
+            insecure: insecure,
+            run_time_limit: run_time_limit,
+            control_results_limit: control_results_limit,
+          }
+          Chef::Audit::Reporter::Automate.new(opts).send_report(report)
+        when "chef-server-automate"
+          chef_url = audit_attributes["server"] || base_chef_server_url
+          chef_org = Chef::Config[:chef_server_url].split("/").last
+          if chef_url
+            url = construct_url(chef_url, File.join("organizations", chef_org, "data-collector"))
+            opts = {
+              entity_uuid: node["chef_guid"],
+              run_id: run_id,
+              node_info: node_info,
+              insecure: insecure,
+              url: url,
+              run_time_limit: run_time_limit,
+              control_results_limit: control_results_limit,
+            }
+            Chef::Audit::Reporter::ChefServer.new(opts).send_report(report)
+          else
+            Chef::Log.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
+          end
         when "json-file"
           path = audit_attributes["json_file"]["location"]
           Chef::Log.info "Writing report to #{path}"
@@ -227,6 +207,7 @@ class Chef
         end
       end
 
+      # TODO: This is probably much more careful than it needs to be
       def run_id
         return unless run_context &&
           run_context.events &&
