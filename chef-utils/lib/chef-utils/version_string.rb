@@ -28,7 +28,7 @@ module ChefUtils
     #
     # @param val [String] Version string to parse.
     def initialize(val)
-      val = "" unless val
+      val ||= ""
       super(val)
       begin
         @parsed_version = ::Gem::Version.create(self)
