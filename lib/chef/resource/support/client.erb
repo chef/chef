@@ -20,12 +20,12 @@
       @policy_group
       @policy_name
       @ssl_verify_mode).each do |prop| -%>
-<% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>
+<% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? || prop == '@log_location' -%>
 <%=prop.delete_prefix("@") %> <%= instance_variable_get(prop).inspect %>
 <% end -%>
 <%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
 <% unless @log_location.nil? %>
-  <% if @log_location.is_a? String && %w(STDOUT STDERR).include?(@log_location) -%>
+  <% if (@log_location.is_a? String) && (%w(STDOUT STDERR).include?(@log_location)) -%>
 log_location <%= @log_location %>
   <% else -%>
 log_location <%= @log_location.inspect %>
