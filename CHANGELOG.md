@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.29 -->
-## [v16.7.29](https://github.com/chef/chef/tree/v16.7.29) (2020-11-09)
+<!-- latest_release 16.7.30 -->
+## [v16.7.30](https://github.com/chef/chef/tree/v16.7.30) (2020-11-09)
 
 #### Merged Pull Requests
-- Use ||= where we can [#10609](https://github.com/chef/chef/pull/10609) ([tas50](https://github.com/tas50))
+- Don&#39;t uses regexes in splits when we don&#39;t need to [#10610](https://github.com/chef/chef/pull/10610) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t uses regexes in splits when we don&#39;t need to [#10610](https://github.com/chef/chef/pull/10610) ([tas50](https://github.com/tas50)) <!-- 16.7.30 -->
 - Use ||= where we can [#10609](https://github.com/chef/chef/pull/10609) ([tas50](https://github.com/tas50)) <!-- 16.7.29 -->
 - Collapse more duplicate branches [#10605](https://github.com/chef/chef/pull/10605) ([tas50](https://github.com/tas50)) <!-- 16.7.28 -->
 - Collapse several duplicate branches down [#10604](https://github.com/chef/chef/pull/10604) ([tas50](https://github.com/tas50)) <!-- 16.7.27 -->
