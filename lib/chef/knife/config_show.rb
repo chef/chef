@@ -79,7 +79,7 @@ class Chef
               end
             else
               # It's a dotted path string.
-              filter_parts = filter.split(/\./)
+              filter_parts = filter.split(".")
               extract = lambda do |memo, filter_part|
                 memo.is_a?(Hash) ? memo[filter_part.to_sym] : nil
               end

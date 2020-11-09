@@ -62,7 +62,7 @@ class Chef
             end
 
             pkg_query = shell_out!("pkg", "rquery", options, "%v", new_resource.package_name, env: nil)
-            pkg_query.exitstatus == 0 ? pkg_query.stdout.strip.split(/\n/).last : nil
+            pkg_query.exitstatus == 0 ? pkg_query.stdout.strip.split('\n').last : nil
           end
 
           def repo_regex

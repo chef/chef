@@ -330,7 +330,7 @@ class Chef
         long: "--bootstrap-vault-item VAULT_ITEM",
         description: 'A single vault and item to update as "vault:item".',
         proc: Proc.new { |i, accumulator|
-          (vault, item) = i.split(/:/)
+          (vault, item) = i.split(":")
           accumulator ||= {}
           accumulator[vault] ||= []
           accumulator[vault].push(item)
