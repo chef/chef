@@ -588,7 +588,6 @@ class Chef
 
     def file_vendor
       @file_vendor ||= Chef::Cookbook::FileVendor.create_from_manifest(cookbook_manifest)
-      @file_vendor
     end
 
   end
