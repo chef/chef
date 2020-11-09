@@ -544,7 +544,7 @@ describe Chef::Provider::Mount::Solaris, :unix_only do
 
       it "should mount the filesystem with options if options were passed" do
         options = "logging,noatime,largefiles,nosuid,rw,quota"
-        new_resource.options(options.split(/,/))
+        new_resource.options(options.split(","))
         expect(provider).to receive(:shell_out_compacted!).with("mount", "-F", fstype, "-o", options, device, mountpoint)
         provider.mount_fs
       end
