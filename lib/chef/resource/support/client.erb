@@ -10,7 +10,6 @@
       @https_proxy
       @ftp_proxy
       @log_level
-      @log_location
       @minimal_ohai
       @named_run_list
       @no_proxy
@@ -21,14 +20,14 @@
       @policy_name
       @ssl_verify_mode).each do |prop| -%>
 <% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>
-<%=prop.delete_prefix("@") %> = <%= instance_variable_get(prop).inspect %>
+<%=prop.delete_prefix("@") %> <%= instance_variable_get(prop).inspect %>
 <% end -%>
 <%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
 <% unless @log_location.nil? %>
-  <% if @log_location.is_a? String && %w(STDOUT STDERR).include?(@log_location) -%>
-log_location = <%= @log_location %>
+  <% if @log_location.is_a?(String) && %w(STDOUT STDERR).include?(@log_location) -%>
+log_location <%= @log_location %>
   <% else -%>
-log_location = <%= @log_location.inspect %>
+log_location <%= @log_location.inspect %>
   <% end -%>
 <% end -%>
 <%# The code below is not DRY on purpose to improve readability -%>
