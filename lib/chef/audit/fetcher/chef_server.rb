@@ -1,7 +1,7 @@
 require "uri" unless defined?(URI)
 require "plugins/inspec-compliance/lib/inspec-compliance"
 
-# This class implements an InSpec fetcher for for Chef Server. The implementation
+# This class implements an InSpec fetcher for Chef Server. The implementation
 # is based on the Chef Compliance fetcher and only adapts the calls to redirect
 # the requests via Chef Server.
 #
