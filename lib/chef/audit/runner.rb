@@ -14,7 +14,7 @@ class Chef
       extend Forwardable
 
       attr_reader :run_status
-      def_delegators :run_status, :node, :run_context
+      def_delegators :run_status, :node, :run_context, :run_id
       def_delegators :node, :logger
 
       def enabled?
@@ -205,20 +205,6 @@ class Chef
         else
           Chef::Log.warn "#{reporter} is not a supported InSpec report collector"
         end
-      end
-
-      # TODO: This is probably much more careful than it needs to be
-      def run_id
-        return unless run_context &&
-          run_context.events &&
-          run_context.events.subscribers.is_a?(Array)
-
-        run_context.events.subscribers.each do |sub|
-          if sub.class == Chef::ResourceReporter && defined?(sub.run_id)
-            return sub.run_id
-          end
-        end
-        nil
       end
     end
   end
