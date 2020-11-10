@@ -61,6 +61,7 @@ class Chef
       end
 
       def inspec_opts
+        # TODO: this code needs to not call return
         waivers = Array(audit_attributes["waiver_file"]).select do |file|
           return true if File.exist?(file)
 
