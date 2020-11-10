@@ -71,7 +71,6 @@ class Chef
 
         {
           "report" => true,
-          "format" => "json-automate", # TODO: Remove this? Deprecation notice in audit cookbook
           "reporter" => ["json-automate"],
           "output" => audit_attributes["quiet"] ? ::File::NULL : STDOUT,
           "logger" => Chef::Log,
