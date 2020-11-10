@@ -24,18 +24,15 @@ require "json" unless defined?(JSON)
 
 class Chef
   class JSONCompat
-    JSON_MAX_NESTING = 1000
 
     class <<self
 
-      # API to use to avoid create_additions
       def parse(source, opts = {})
         FFI_Yajl::Parser.parse(source, opts)
       rescue FFI_Yajl::ParseError => e
         raise Chef::Exceptions::JSON::ParseError, e.message
       end
 
-      # Just call the JSON gem's parse method with a modified :max_nesting field
       def from_json(source, opts = {})
         obj = parse(source, opts)
 
@@ -56,10 +53,8 @@ class Chef
       end
 
       def to_json_pretty(obj, opts = nil)
-        opts ||= {}
-        options_map = {}
-        options_map[:pretty] = true
-        options_map[:indent] = opts[:indent] if opts.key?(:indent)
+        options_map = { pretty: true }
+        options_map[:indent] = opts[:indent] if opts.respond_to?(:key?) && opts.key?(:indent)
         to_json(obj, options_map).chomp
       end
 
