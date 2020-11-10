@@ -88,14 +88,8 @@ class Chef
           end
         end
 
-        # ***************************************************************************************
-        # TODO: We could likely simplify/remove some of the extra logic we have here with a small
-        # revamp of the Automate expected input.
-        # ***************************************************************************************
-
         def enriched_report(final_report)
-          # Remove nil profiles if any
-          final_report[:profiles].select! { |p| p }
+          final_report[:profiles].compact!
 
           # Label this content as an inspec_report
           final_report[:type] = "inspec_report"
