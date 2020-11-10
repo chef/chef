@@ -1,5 +1,59 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.7
+
+## Performance Enhancements
+
+In Chef Infra Client 16.7 we've put a particular focus on optimizing the performance of the client. We've performaned several dozen minor optimizations that increase performance and reduce overall memory usage accross all platforms. On Windows our work has been particuarly pronounced as we've improved resource execution and Chef Infra Client installation. Chef Infra Client install times on Windows are now up to a 3x faster than previous releases. Resources which use PowerShell to make changes now execute significantly faster. This improvement will be the most noticable in Chef Infra Client runs that don't make actual system changes (no-op runs), where determining the current system state was previously resource intensive.
+
+## Windows Bootstrap Improvements
+
+Bootstrapping of Windows nodes has been improved when using `knife bootstrap`. The `knife bootstrap` `--secret` flag is now respected on Windows hosts, allowing for the proper setup of nodes to use encrypted data bags. Thanks for reporting this issue [@AMC-7](https://github.com/AMC-7). Additionally during the bootstrap we now force connections to use TLS 1.2, preventing failures on Windows 2012-2016. Thanks for this improvement [@TimothyTitan](https://github.com/TimothyTitan).
+
+## New Resources
+
+### homebrew_install
+
+The new `homebrew_install` resource is used to install the Homebrew package manager on macOS systems.
+
+## Updated Resources
+
+### chef_client_config
+
+The `chef_client_config` resource has been updated to no longer produce invalid `client.rb` content.
+
+### group
+
+The `group` resource on Windows has been improved to provide log output of changes being made and to properly translate group SIDs to names in order to operate idempotently. Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
+
+### homebrew_update
+
+The `homebrew_update` has been updated to resolve failures that would occur when running the resource.
+
+### ifconfig
+
+The `ifconfig` resource has been updated to better support Linux distributions that are derivatives of either Ubuntu or Debian. Support for setting the `BRIDGE` property on RHEL-based systems has also been added.
+
+### mount
+
+The `mount` resource is now idempotent on Linux systems when using a label for the device name and when using network paths that end with a slash. Thanks for reporting these issue [@limitusus](https://github.com/limitusus) and [@axelrtgs](https://github.com/axelrtgs).
+
+### powershell_package
+
+The `powershell_package` resource has been updated to better force connections to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Connections must be forced to use TLS 1.2 as system default cipher suite which did not include TLS 1.2 in Windows 2012-2016.
+
+### zypper_package
+
+The `zypper_package` resource has been refactored to improve idempotency when specifying a version of the package to either install or downgrade.
+
+## Ohai Improvements
+
+- `pop_os` is now detected as having the `platform_family` of `debian`. Thanks for this improvement [@chasebolt](https://github.com/chasebolt)
+- Recent `openindiana` releases are now properly detected.
+- The `Hostnamectl` plugin properly detects hostnames that contain a colon. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)
+- The `Zpool` plugin now properly detects ZFS zpools that include `nvme` or `xvd` drives. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)
+- The `Zpool` plugin now properly detects ZFS zpools that uses disk labels/guids instead of traditional drive designations
+
 # What's New in 16.6
 
 ## pwsh Support
