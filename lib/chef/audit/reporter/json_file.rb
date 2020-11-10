@@ -1,4 +1,4 @@
-autoload :JSON, "json"
+require_relative "../../json_compat"
 
 class Chef
   module Audit
@@ -9,7 +9,7 @@ class Chef
         end
 
         def send_report(report)
-          File.write(@path, JSON.generate(report))
+          File.write(@path, Chef::JSONCompat.to_json(report))
         end
       end
     end
