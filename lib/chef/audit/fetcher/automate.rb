@@ -40,12 +40,11 @@ class Chef
                              "#{base_path}/tar"
                            end
 
-            dc = Chef::Config[:data_collector]
-            url = URI(dc[:server_url])
+            url = URI(Chef::Config[:data_collector][:server_url])
             url.path = profile_path
             profile_fetch_url = url.to_s
 
-            config["token"] = dc["token"]
+            config["token"] = Chef::Config[:data_collector][:token]
 
             if config["token"].nil?
               raise "No data-collector token set, which is required by the chef-automate fetcher. " \

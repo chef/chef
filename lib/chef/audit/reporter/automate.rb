@@ -24,9 +24,8 @@ class Chef
           @control_results_limit = opts[:control_results_limit]
           @timestamp             = opts.fetch(:timestamp) { Time.now }
 
-          # TODO: Chef::Config does not respond to :dig
-          @url = Chef::Config.to_hash.dig(:data_collector, :server_url)
-          @token = Chef::Config.to_hash.dig(:data_collector, :token)
+          @url = Chef::Config[:data_collector][:server_url]
+          @token = Chef::Config[:data_collector][:token]
         end
 
         # Method used in order to send the inspec report to the data_collector server
