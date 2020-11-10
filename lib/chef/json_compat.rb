@@ -53,10 +53,8 @@ class Chef
       end
 
       def to_json_pretty(obj, opts = nil)
-        opts ||= {}
-        options_map = {}
-        options_map[:pretty] = true
-        options_map[:indent] = opts[:indent] if opts.key?(:indent)
+        options_map = { pretty: true }
+        options_map[:indent] = opts[:indent] if opts.respond_to?(:key?) && opts.key?(:indent)
         to_json(obj, options_map).chomp
       end
 
