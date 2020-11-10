@@ -24,7 +24,6 @@ require "json" unless defined?(JSON)
 
 class Chef
   class JSONCompat
-    JSON_MAX_NESTING = 1000
 
     class <<self
 
