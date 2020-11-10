@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 0a2584c4ef7120031d97beb3b05e833ec4cb5857
+  revision: 014df5c5aa9441938515d665206104e000539d09
   branch: master
   specs:
-    ohai (16.7.13)
+    ohai (16.7.18)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -176,7 +176,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.3.1)
+    fauxhai-ng (8.4.0)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
@@ -270,7 +270,7 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
-    parallel (1.19.2)
+    parallel (1.20.0)
     parser (2.7.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
@@ -356,7 +356,7 @@ GEM
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-cursor (~> 0.7)
-    tty-color (0.5.2)
+    tty-color (0.6.0)
     tty-cursor (0.7.1)
     tty-prompt (0.22.0)
       pastel (~> 0.8)
@@ -374,7 +374,7 @@ GEM
     unicode_utils (1.4.0)
     uri_template (0.7.0)
     uuidtools (2.1.5)
-    webmock (3.9.3)
+    webmock (3.9.5)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
