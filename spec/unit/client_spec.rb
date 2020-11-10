@@ -801,4 +801,20 @@ describe Chef::Client do
       allow_any_instance_of(Chef::RunLock).to receive(:save_pid).and_raise(NoMethodError)
     end
   end
+
+  describe "deprecated enforce_path_sanity" do
+    include_context "a client run"
+    include_context "converge completed"
+
+    it "print a warning, when enforce_path_sanity is passed" do
+      Chef::Config[:enforce_path_sanity] = true
+      expect(logger).to receive(:warn).with("`enforce_path_sanity` is deprecated, please use `enforce_default_paths` instead!")
+      client.run
+    end
+
+    it "should not print a warning, when enforce_path_sanity is not passed" do
+      expect(logger).not_to receive(:warn).with("`enforce_path_sanity` is deprecated, please use `enforce_default_paths` instead!")
+      client.run
+    end
+  end
 end

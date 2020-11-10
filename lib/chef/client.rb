@@ -243,12 +243,12 @@ class Chef
         run_status.run_context = run_context
 
         events.run_start(Chef::VERSION, run_status)
-
         logger.info("*** #{ChefUtils::Dist::Infra::PRODUCT} #{Chef::VERSION} ***")
         logger.info("Platform: #{RUBY_PLATFORM}")
         logger.info "#{ChefUtils::Dist::Infra::CLIENT.capitalize} pid: #{Process.pid}"
         logger.info "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         logger.debug("#{ChefUtils::Dist::Infra::CLIENT.capitalize} request_id: #{request_id}")
+        logger.warn("`enforce_path_sanity` is deprecated, please use `enforce_default_paths` instead!") if Chef::Config[:enforce_path_sanity]
         ENV["PATH"] = ChefUtils::DSL::DefaultPaths.default_paths if Chef::Config[:enforce_default_paths] || Chef::Config[:enforce_path_sanity]
 
         run_ohai
