@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.32 -->
-## [v16.7.32](https://github.com/chef/chef/tree/v16.7.32) (2020-11-10)
+<!-- latest_release 16.7.33 -->
+## [v16.7.33](https://github.com/chef/chef/tree/v16.7.33) (2020-11-10)
 
 #### Merged Pull Requests
-- Cleanup Chef::JSONCompat [#10612](https://github.com/chef/chef/pull/10612) ([phiggins](https://github.com/phiggins))
+- chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3)) <!-- 16.7.33 -->
 - Cleanup Chef::JSONCompat [#10612](https://github.com/chef/chef/pull/10612) ([phiggins](https://github.com/phiggins)) <!-- 16.7.32 -->
 - Added deprecation warning for enforce_path_sanity [#10613](https://github.com/chef/chef/pull/10613) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.7.31 -->
 - Don&#39;t uses regexes in splits when we don&#39;t need to [#10610](https://github.com/chef/chef/pull/10610) ([tas50](https://github.com/tas50)) <!-- 16.7.30 -->
