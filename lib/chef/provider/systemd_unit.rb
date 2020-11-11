@@ -259,7 +259,7 @@ class Chef
       end
 
       def systemctl_path
-        @systemctl_path ||= which("systemctl")
+        @systemctl_path ||= Chef::Mixin::Which.which("systemctl")
       end
 
       def systemctl_args

@@ -382,7 +382,7 @@ shared_examples_for "a configured file resource" do
   include Chef::Mixin::ShellOut
 
   def selinux_security_context_restored?(path)
-    @restorecon_path = which("restorecon") if @restorecon_path.nil?
+    @restorecon_path = Chef::Mixin::Which.which("restorecon") if @restorecon_path.nil?
     restorecon_test_command = "#{@restorecon_path} -n -v #{path}"
     cmdresult = shell_out!(restorecon_test_command)
     # restorecon will print the required changes to stdout if any is

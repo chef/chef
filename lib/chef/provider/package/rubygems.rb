@@ -437,7 +437,7 @@ class Chef
         end
 
         def find_gem_by_path
-          which("gem", extra_path: RbConfig::CONFIG["bindir"])
+          Chef::Mixin::Which.which("gem", extra_path: RbConfig::CONFIG["bindir"])
         end
 
         def gem_dependency

@@ -196,7 +196,7 @@ class Chef
         def client_command
           cmd = ""
           cmd << "/bin/sleep #{splay_sleep_time(new_resource.splay)}; "
-          cmd << "#{which("nice")} -n #{new_resource.nice} " if new_resource.nice
+          cmd << "#{Chef::Mixin::Which.which("nice")} -n #{new_resource.nice} " if new_resource.nice
           cmd << "#{new_resource.chef_binary_path} "
           cmd << "#{new_resource.daemon_options.join(" ")} " unless new_resource.daemon_options.empty?
           cmd << "-c #{::File.join(new_resource.config_directory, "client.rb")} "

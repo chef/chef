@@ -59,7 +59,7 @@ class Chef
           end
 
           def systemd_analyze_path
-            @systemd_analyze_path ||= which("systemd-analyze")
+            @systemd_analyze_path ||= Chef::Mixin::Which.Chef::Mixin::Which.which("systemd-analyze")
           end
         end
       end

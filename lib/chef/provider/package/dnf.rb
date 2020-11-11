@@ -43,7 +43,7 @@ class Chef
 
         # amazon will eventually use DNF
         provides :package, platform: "amazon" do
-          which("dnf")
+          Chef::Mixin::Which.which("dnf")
         end
 
         provides :dnf_package

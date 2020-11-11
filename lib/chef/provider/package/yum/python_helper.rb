@@ -41,7 +41,7 @@ class Chef
 
           def yum_command
             @yum_command ||= begin
-              cmd = which("platform-python", "python", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
+              cmd = Chef::Mixin::Which.which("platform-python", "python", "python2", "python2.7", extra_path: "/usr/libexec") do |f|
                 shell_out("#{f} -c 'import yum'").exitstatus == 0
               end
               raise Chef::Exceptions::Package, "cannot find yum libraries, you may need to use dnf_package" unless cmd

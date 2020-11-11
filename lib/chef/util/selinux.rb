@@ -61,12 +61,12 @@ class Chef
       private
 
       def restorecon_path
-        @@restorecon_path = which("restorecon") if @@restorecon_path.nil?
+        @@restorecon_path = Chef::Mixin::Which.which("restorecon") if @@restorecon_path.nil?
         @@restorecon_path
       end
 
       def selinuxenabled_path
-        @@selinuxenabled_path = which("selinuxenabled") if @@selinuxenabled_path.nil?
+        @@selinuxenabled_path = Chef::Mixin::Which.which("selinuxenabled") if @@selinuxenabled_path.nil?
         @@selinuxenabled_path
       end
 

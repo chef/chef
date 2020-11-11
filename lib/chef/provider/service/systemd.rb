@@ -198,7 +198,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def systemctl_path
     if @systemctl_path.nil?
-      @systemctl_path = which("systemctl")
+      @systemctl_path = Chef::Mixin::Which.which("systemctl")
     end
     @systemctl_path
   end
