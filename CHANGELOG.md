@@ -1,16 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.35 -->
-## [v16.7.35](https://github.com/chef/chef/tree/v16.7.35) (2020-11-11)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- mount: Fixes for findmount output causing idempotency issues [#10614](https://github.com/chef/chef/pull/10614) ([antima-gupta](https://github.com/antima-gupta))
-- Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50))
+- Add additional property coerce specs to mount [#10625](https://github.com/chef/chef/pull/10625) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add additional property coerce specs to mount [#10625](https://github.com/chef/chef/pull/10625) ([tas50](https://github.com/tas50)) <!-- 16.7.35 -->
 - mount: Fixes for findmount output causing idempotency issues [#10614](https://github.com/chef/chef/pull/10614) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.35 -->
 - Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
