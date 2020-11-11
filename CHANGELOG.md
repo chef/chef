@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.33 -->
-## [v16.7.33](https://github.com/chef/chef/tree/v16.7.33) (2020-11-10)
+<!-- latest_release 16.7.34 -->
+## [v16.7.34](https://github.com/chef/chef/tree/v16.7.34) (2020-11-11)
 
 #### Merged Pull Requests
-- chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3))
+- Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3)) <!-- 16.7.33 -->
 - Cleanup Chef::JSONCompat [#10612](https://github.com/chef/chef/pull/10612) ([phiggins](https://github.com/phiggins)) <!-- 16.7.32 -->
 - Added deprecation warning for enforce_path_sanity [#10613](https://github.com/chef/chef/pull/10613) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.7.31 -->
