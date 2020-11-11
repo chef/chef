@@ -102,6 +102,7 @@ class Chef
             if md = line.match(/^(\S*)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(.*)$/)
               (status, name, type, version, arch, repo) = [ md[1], md[2], md[3], md[4], md[5], md[6] ]
               next if version == "Version" # header
+
               return version
             end
           end
@@ -121,7 +122,7 @@ class Chef
         end
 
         def zip(names, versions)
-          ret = names.zip(versions).map do |n, v|
+          names.zip(versions).map do |n, v|
             (v.nil? || v.empty?) ? n : "#{n}=#{v}"
           end.compact
         end
