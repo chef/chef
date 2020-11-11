@@ -172,10 +172,7 @@ namespace :docs_site do
       properties = {}
 
       # these package properties support passing arrays for the package name
-      if %w{snap_package dpkg_package yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
-        properties["common_resource_functionality_multiple_packages"] = true
-        properties["properties_multiple_packages"] = true
-      end
+      properties["multi_package_resource"] = true if %w{snap_package dpkg_package yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
 
       properties["common_resource_functionality_resources_common_windows_security"] = true if name == "remote_directory"
 
