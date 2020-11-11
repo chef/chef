@@ -18,7 +18,7 @@
 require "spec_helper"
 require "chef/mixin/powershell_exec"
 
-describe Chef::Resource::PowershellPackageSource, :windows_only do
+describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
   include Chef::Mixin::PowershellExec
 
   let(:source_name) { "fake" }
@@ -82,6 +82,10 @@ describe Chef::Resource::PowershellPackageSource, :windows_only do
 
   context "with NuGet provider" do
     let(:provider_name) { "NuGet" }
+
+    before(:all) do
+      powershell_exec!("Install-PackageProvider -Name NuGet -Force")
+    end
 
     it_behaves_like "package_source"
   end
