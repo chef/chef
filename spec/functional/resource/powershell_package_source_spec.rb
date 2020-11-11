@@ -84,7 +84,7 @@ describe Chef::Resource::PowershellPackageSource, :windows_gte_10 do
     let(:provider_name) { "NuGet" }
 
     before(:all) do
-      powershell_exec!("Install-PackageProvider -Name NuGet -Force")
+      powershell_exec!("[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;Install-PackageProvider -Name NuGet -Force")
     end
 
     it_behaves_like "package_source"
