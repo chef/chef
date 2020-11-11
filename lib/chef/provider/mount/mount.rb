@@ -223,7 +223,8 @@ class Chef
               @real_device = device_line.chomp unless device_line.nil?
             end
           end
-          @real_device
+          # Removed "/" from the end of str, because it was causing idempotency issue.
+          @real_device.chomp("/")
         end
 
         def device_logstring

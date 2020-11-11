@@ -175,13 +175,15 @@ class Chef
 
       # Returns the new_resource device as per device_type
       def device_fstab
+        # Removed "/" from the end of str, because it was causing idempotency issue.
+        device = @new_resource.device.chomp("/")
         case @new_resource.device_type
         when :device
-          @new_resource.device
+          device
         when :label
-          "LABEL=#{@new_resource.device}"
+          "LABEL=#{device}"
         when :uuid
-          "UUID=#{@new_resource.device}"
+          "UUID=#{device}"
         end
       end
     end
