@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.35 -->
+## [v16.7.35](https://github.com/chef/chef/tree/v16.7.35) (2020-11-11)
 
 #### Merged Pull Requests
+- mount: Fixes for findmount output causing idempotency issues [#10614](https://github.com/chef/chef/pull/10614) ([antima-gupta](https://github.com/antima-gupta))
 - Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- mount: Fixes for findmount output causing idempotency issues [#10614](https://github.com/chef/chef/pull/10614) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.35 -->
 - Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3)) <!-- 16.7.33 -->
