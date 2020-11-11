@@ -26,85 +26,16 @@ class Chef
     class Package
       class Zypper < Chef::Provider::Package
         use_multipackage_api
+        allow_nils
 
         provides :package, platform_family: "suse"
         provides :zypper_package
 
-        def get_versions(package_name)
-          candidate_version = current_version = nil
-          is_installed = false
-          logger.trace("#{new_resource} checking zypper")
-          status = shell_out!("zypper", "--non-interactive", "info", package_name)
-          status.stdout.each_line do |line|
-            case line
-            when /^Version *: (.+) *$/
-              candidate_version = $1.strip
-              logger.trace("#{new_resource} version #{candidate_version}")
-            when /^Installed *: Yes.*$/ # http://rubular.com/r/9StcAMjOn6
-              is_installed = true
-              logger.trace("#{new_resource} is installed")
-            when /^Status *: out-of-date \(version (.+) installed\) *$/
-              current_version = $1.strip
-              logger.trace("#{new_resource} out of date version #{current_version}")
-            end
-          end
-          current_version ||= candidate_version if is_installed
-          { current_version: current_version, candidate_version: candidate_version }
-        end
-
-        def versions
-          @versions ||=
-            begin
-              raw_versions = package_name_array.map do |package_name|
-                get_versions(package_name)
-              end
-              Hash[*package_name_array.zip(raw_versions).flatten]
-            end
-        end
-
-        def get_candidate_versions
-          package_name_array.map do |package_name|
-            versions[package_name][:candidate_version]
-          end
-        end
-
-        def get_current_versions
-          package_name_array.map do |package_name|
-            versions[package_name][:current_version]
-          end
-        end
-
-        def packages_all_locked?(names, versions)
-          names.all? { |n| locked_packages.include? n }
-        end
-
-        def packages_all_unlocked?(names, versions)
-          names.all? { |n| !locked_packages.include? n }
-        end
-
-        def locked_packages
-          @locked_packages ||=
-            begin
-              locked = shell_out!("zypper", "locks")
-              locked.stdout.each_line.map do |line|
-                line.split("|").shift(2).last.strip
-              end
-            end
-        end
-
         def load_current_resource
           @current_resource = Chef::Resource::ZypperPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-
-          @candidate_version = get_candidate_versions
           current_resource.version(get_current_versions)
-
           current_resource
-        end
-
-        def zypper_version
-          @zypper_version ||=
-            `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
         end
 
         def install_package(name, version)
@@ -134,10 +65,70 @@ class Chef
 
         private
 
-        def zip(names, versions)
-          names.zip(versions).map do |n, v|
-            (v.nil? || v.empty?) ? n : "#{n}=#{v}"
+        def get_current_versions
+          package_name_array.each_with_index.map { |pkg, i| installed_version(i) }
+        end
+
+        def candidate_version
+          @candidate_version ||= package_name_array.each_with_index.map { |pkg, i| available_version(i) }
+        end
+
+        def resolve_current_version(package_name)
+          latest_version = current_version = nil
+          is_installed = false
+          logger.trace("#{new_resource} checking zypper")
+          status = shell_out!("zypper", "--non-interactive", "info", package_name)
+          status.stdout.each_line do |line|
+            case line
+            when /^Version *: (.+) *$/
+              latest_version = $1.strip
+              logger.trace("#{new_resource} version #{latest_version}")
+            when /^Installed *: Yes.*$/ # http://rubular.com/r/9StcAMjOn6
+              is_installed = true
+              logger.trace("#{new_resource} is installed")
+            when /^Status *: out-of-date \(version (.+) installed\) *$/
+              current_version = $1.strip
+              logger.trace("#{new_resource} out of date version #{current_version}")
+            end
           end
+          current_version ||= latest_version if is_installed
+          current_version
+        end
+
+        def resolve_available_version(package_name, new_version)
+          search_string = new_version.nil? ? package_name : "#{package_name}=#{new_version}"
+          so = shell_out!("zypper", "--non-interactive", "search", "-s", "--provides", "--match-exact", "--type=package", search_string)
+          so.stdout.each_line do |line|
+            if md = line.match(/^(\S*)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(\S+)\s+\|\s+(.*)$/)
+              (status, name, type, version, arch, repo) = [ md[1], md[2], md[3], md[4], md[5], md[6] ]
+              next if version == "Version" # header
+              return version
+            end
+          end
+          nil
+        end
+
+        def available_version(index)
+          @available_version ||= []
+          @available_version[index] ||= resolve_available_version(package_name_array[index], safe_version_array[index])
+          @available_version[index]
+        end
+
+        def installed_version(index)
+          @installed_version ||= []
+          @installed_version[index] ||= resolve_current_version(package_name_array[index])
+          @installed_version[index]
+        end
+
+        def zip(names, versions)
+          ret = names.zip(versions).map do |n, v|
+            (v.nil? || v.empty?) ? n : "#{n}=#{v}"
+          end.compact
+        end
+
+        def zypper_version
+          @zypper_version ||=
+            `zypper -V 2>&1`.scan(/\d+/).join(".").to_f
         end
 
         def zypper_package(command, global_options, *options, names, versions)
@@ -160,6 +151,35 @@ class Chef
         def global_options
           new_resource.global_options
         end
+
+        def packages_all_locked?(names, versions)
+          names.all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          names.all? { |n| !locked_packages.include? n }
+        end
+
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = shell_out!("zypper", "locks")
+              locked.stdout.each_line.map do |line|
+                line.split("|").shift(2).last.strip
+              end
+            end
+        end
+
+        def safe_version_array
+          if new_resource.version.is_a?(Array)
+            new_resource.version
+          elsif new_resource.version.nil?
+            package_name_array.map { nil }
+          else
+            [ new_resource.version ]
+          end
+        end
+
       end
     end
   end
