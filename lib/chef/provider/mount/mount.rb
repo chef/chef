@@ -166,7 +166,7 @@ class Chef
             # The current options don't match what we have, so
             # update the last matching entry with current option
             # and order will remain the same.
-            update_or_delete_fs(true)
+            edit_fstab
           else
             ::File.open("/etc/fstab", "a") do |fstab|
               fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
@@ -176,7 +176,7 @@ class Chef
         end
 
         def disable_fs
-          update_or_delete_fs
+          edit_fstab(:remove)
         end
 
         def network_device?
@@ -248,7 +248,7 @@ class Chef
         end
 
         # It will update or delete the entry from fstab.
-        def update_or_delete_fs(update_fs = false)
+        def edit_fstab(action = :update)
           if @current_resource.enabled
             contents = []
 
@@ -256,7 +256,7 @@ class Chef
             ::File.readlines("/etc/fstab").reverse_each do |line|
               if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
                 found = true
-                if update_fs
+                if action == :update
                   logger.trace("#{@new_resource} is updated with new content in fstab")
                   contents << ("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
                 else
