@@ -40,12 +40,13 @@ class Chef
       #   values [{
       #     :name => "ValueWithBadData",
       #     :type => :binary,
-      #     :data => 255.chr * 1
+      #     :data => [0, 1, 2].map(&:chr).join
       #   }]
       #   action :create
       # end
       #
-      # will raise Encoding::UndefinedConversionError: "\xFF" from ASCII-8BIT to UTF-8.
+      # will raise Encoding::UndefinedConversionError: "\x01\x02\x03" from ASCII-8BIT to
+      # UTF-8.
       #
       # To avoid sending data that cannot be nicely converted for json, we have
       # the values method return "safe" data if the data type is "unsafe". Known "unsafe"
