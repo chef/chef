@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.34 -->
-## [v16.7.34](https://github.com/chef/chef/tree/v16.7.34) (2020-11-11)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50))
+- Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the yaml we generate for resource documentation [#10622](https://github.com/chef/chef/pull/10622) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - Update Ohai to 16.7.18 and Fauxhai to 8.4 [#10619](https://github.com/chef/chef/pull/10619) ([tas50](https://github.com/tas50)) <!-- 16.7.34 -->
 - chef_client_config: Resolve invalid configuration in client.rb [#10608](https://github.com/chef/chef/pull/10608) ([srb3](https://github.com/srb3)) <!-- 16.7.33 -->
 - Cleanup Chef::JSONCompat [#10612](https://github.com/chef/chef/pull/10612) ([phiggins](https://github.com/phiggins)) <!-- 16.7.32 -->
