@@ -54,7 +54,7 @@ class Chef
               mounted = true
               logger.trace("Bind device #{device_logstring} mounted as #{real_mount_point}")
             # Permalink for network device mounted to an existing mount point: https://rubular.com/r/JRTXXGFdQtwCD6
-            when %r{\A#{Regexp.escape(real_mount_point)}\s+#{device_mount_regex}\[}
+            when /\A#{Regexp.escape(real_mount_point)}\s+#{device_mount_regex}\[/
               mounted = true
               logger.trace("Network device #{device_logstring} mounted as #{real_mount_point}")
             end
