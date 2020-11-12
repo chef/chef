@@ -62,7 +62,7 @@ module Shell
         if subsession = jobs.select_shell_session(context_obj)
           jobs.switch(subsession)
         else
-          irb(context_obj)
+          irb(context_obj) # rubocop: disable Lint/Debugger
         end
       end
 
