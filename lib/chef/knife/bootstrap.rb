@@ -407,6 +407,7 @@ class Chef
       deps do
         require "erubis" unless defined?(Erubis)
 
+        require "net/ssh" unless defined?(Net::SSH)
         require_relative "../json_compat"
         require_relative "../util/path_helper"
         require_relative "bootstrap/chef_vault_handler"
