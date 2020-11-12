@@ -75,7 +75,7 @@ class Chef
           "output" => audit_attributes["quiet"] ? ::File::NULL : STDOUT,
           "logger" => Chef::Log,
           backend_cache: audit_attributes["inspec_backend_cache"],
-          attributes: audit_attributes["attributes"],
+          inputs: audit_attributes["attributes"],
           waiver_file: waivers,
           reporter_message_truncation: audit_attributes["result_message_limit"],
           reporter_backtrace_inclusion: audit_attributes["result_include_backtrace"],
