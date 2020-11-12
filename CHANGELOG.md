@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.40 -->
-## [v16.7.40](https://github.com/chef/chef/tree/v16.7.40) (2020-11-12)
+<!-- latest_release 16.7.41 -->
+## [v16.7.41](https://github.com/chef/chef/tree/v16.7.41) (2020-11-12)
 
 #### Merged Pull Requests
-- knife bootstrap deps require net/ssh [#10638](https://github.com/chef/chef/pull/10638) ([vsingh-msys](https://github.com/vsingh-msys))
+- Update omnibus to remove the chef-sugar dep [#10629](https://github.com/chef/chef/pull/10629) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update omnibus to remove the chef-sugar dep [#10629](https://github.com/chef/chef/pull/10629) ([tas50](https://github.com/tas50)) <!-- 16.7.41 -->
 - knife bootstrap deps require net/ssh [#10638](https://github.com/chef/chef/pull/10638) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 16.7.40 -->
 - Change how zypper_package calculates the candidate_version [#10631](https://github.com/chef/chef/pull/10631) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.39 -->
 - Prevent failures generating docs [#10634](https://github.com/chef/chef/pull/10634) ([tas50](https://github.com/tas50)) <!-- 16.7.38 -->
