@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.37 -->
-## [v16.7.37](https://github.com/chef/chef/tree/v16.7.37) (2020-11-12)
+<!-- latest_release 16.7.38 -->
+## [v16.7.38](https://github.com/chef/chef/tree/v16.7.38) (2020-11-12)
 
 #### Merged Pull Requests
-- Fix ps specs [#10633](https://github.com/chef/chef/pull/10633) ([mwrock](https://github.com/mwrock))
+- Prevent failures generating docs [#10634](https://github.com/chef/chef/pull/10634) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Prevent failures generating docs [#10634](https://github.com/chef/chef/pull/10634) ([tas50](https://github.com/tas50)) <!-- 16.7.38 -->
 - Fix ps specs [#10633](https://github.com/chef/chef/pull/10633) ([mwrock](https://github.com/mwrock)) <!-- 16.7.37 -->
 - provide a registry_key example that creates a multibyte binary value [#10630](https://github.com/chef/chef/pull/10630) ([mwrock](https://github.com/mwrock)) <!-- 16.7.36 -->
 - Add additional property coerce specs to mount [#10625](https://github.com/chef/chef/pull/10625) ([tas50](https://github.com/tas50)) <!-- 16.7.35 -->
