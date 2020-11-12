@@ -166,7 +166,7 @@ class Chef
             # The current options don't match what we have, so
             # update the last matching entry with current option
             # and order will remain the same.
-            edit_fstab
+            edit_fstab(:update)
           else
             ::File.open("/etc/fstab", "a") do |fstab|
               fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
@@ -248,7 +248,7 @@ class Chef
         end
 
         # It will update or delete the entry from fstab.
-        def edit_fstab(action = :update)
+        def edit_fstab(action)
           if @current_resource.enabled
             contents = []
 
