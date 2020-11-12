@@ -1,12 +1,12 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: d890d36d350da919cf368a0873f3cec91b6eaa0d
+  revision: baa272c8fb96dc62fc9d203707df735d8ab2d30c
   branch: master
   specs:
-    omnibus (7.0.34)
+    omnibus (8.0.0)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
-      chef-sugar (>= 3.3)
+      chef-utils (>= 15.4)
       ffi-yajl (~> 2.2)
       license_scout (~> 1.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -18,11 +18,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 28a9db0795189580b0d260de670e55ddd9f073f2
+  revision: ff47ef193f3ae3283b090e04c3006da7f4cc7a2a
   branch: master
   specs:
     omnibus-software (4.0.0)
-      omnibus (>= 5.6.1)
+      omnibus (>= 6.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.390.0)
+    aws-partitions (1.392.0)
     aws-sdk-core (3.109.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -155,7 +155,6 @@ GEM
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-sugar (5.1.11)
     chef-utils (16.6.14)
     chef-vault (4.0.12)
     chef-zero (15.0.3)
@@ -205,7 +204,7 @@ GEM
       tomlrb (~> 1.2)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
-    license_scout (1.2.2)
+    license_scout (1.2.3)
       ffi-yajl (~> 2.2)
       mixlib-shellout (>= 2.2, < 4.0)
       toml-rb (>= 1, < 3)
@@ -227,11 +226,12 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.1.7)
+    mixlib-shellout (3.2.0)
       chef-utils
-    mixlib-shellout (3.1.7-universal-mingw32)
+    mixlib-shellout (3.2.0-universal-mingw32)
       chef-utils
-      win32-process (~> 0.9)
+      ffi-win32-extensions (~> 1.0.3)
+      win32-process (~> 0.8.2)
       wmi-lite (~> 1.0)
     mixlib-versioning (1.2.12)
     molinillo (0.7.0)
@@ -251,7 +251,7 @@ GEM
     octokit (4.19.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.6.5)
+    ohai (16.7.18)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -376,7 +376,7 @@ GEM
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
       rubyntlm (~> 0.6.0, >= 0.6.1)
-    winrm-elevated (1.2.2)
+    winrm-elevated (1.2.3)
       erubi (~> 1.8)
       winrm (~> 2.0)
       winrm-fs (~> 1.0)
