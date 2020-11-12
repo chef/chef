@@ -30,7 +30,7 @@ class Chef
       examples <<~DOC
       **Create a registry key**
       ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\path-to-key\Policies\System' do
+      registry_key 'HKEY_LOCAL_MACHINE\\path-to-key\\Policies\\System' do
         values [{
           name: 'EnableLUA',
           type: :dword,
@@ -39,7 +39,7 @@ class Chef
         action :create
       end
       ```
-      
+
       **Create a registry key with binary data: "\x01\x02\x03"**:
       ```ruby
       registry_key 'HKEY_CURRENT_USER\\ChefTest' do
@@ -67,7 +67,7 @@ class Chef
       **Set proxy settings to be the same as those used by Chef Infra Client**
       ```ruby
       proxy = URI.parse(Chef::Config[:http_proxy])
-      registry_key 'HKCU\Software\Microsoft\path\to\key\Internet Settings' do
+      registry_key 'HKCU\\Software\\Microsoft\\path\\to\\key\\Internet Settings' do
         values [{name: 'ProxyEnable', type: :reg_dword, data: 1},
                 {name: 'ProxyServer', data: "#{proxy.host}:#{proxy.port}"},
                 {name: 'ProxyOverride', type: :reg_string, data: <local>},
@@ -79,7 +79,7 @@ class Chef
       **Set the name of a registry key to "(Default)"**
       ```ruby
       registry_key 'Set (Default) value' do
-        key 'HKLM\Software\Test\Key\Path'
+        key 'HKLM\\Software\\Test\\Key\\Path'
         values [
           {name: '', type: :string, data: 'test'},
         ]
@@ -89,7 +89,7 @@ class Chef
 
       **Delete a registry key value**
       ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\path\to\key\AU' do
+      registry_key 'HKEY_LOCAL_MACHINE\\SOFTWARE\\path\\to\\key\\AU' do
         values [{
           name: 'NoAutoRebootWithLoggedOnUsers',
           type: :dword,
@@ -103,14 +103,13 @@ class Chef
 
       **Delete a registry key and its subkeys, recursively**
       ```ruby
-      registry_key 'HKCU\SOFTWARE\Policies\path\to\key\Themes' do
+      registry_key 'HKCU\\SOFTWARE\\Policies\\path\\to\\key\\Themes' do
         recursive true
         action :delete_key
       end
       ```
 
       Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by Chef Infra Client.
-
       DOC
 
       state_attrs :values
