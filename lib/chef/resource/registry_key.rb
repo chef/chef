@@ -27,8 +27,9 @@ class Chef
       provides(:registry_key) { true }
 
       description "Use the **registry_key** resource to create and delete registry keys in Microsoft Windows."
-      examples <<~DOC
+      examples <<~'DOC'
       **Create a registry key**
+
       ```ruby
       registry_key 'HKEY_LOCAL_MACHINE\\path-to-key\\Policies\\System' do
         values [{
@@ -41,8 +42,9 @@ class Chef
       ```
 
       **Create a registry key with binary data: "\x01\x02\x03"**:
+
       ```ruby
-      registry_key 'HKEY_CURRENT_USER\\ChefTest' do
+      registry_key 'HKEY_CURRENT_USER\ChefTest' do
         values [{
           :name => "test",
           :type => :binary,
@@ -57,7 +59,7 @@ class Chef
       In 64-bit versions of Microsoft Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Example is a re-directed key. In the following examples, because HKEY_LOCAL_MACHINE\SOFTWARE\Example is a 32-bit key, the output will be “Found 32-bit key” if they are run on a version of Microsoft Windows that is 64-bit:
 
       ```ruby
-      registry_key "HKEY_LOCAL_MACHINE\\SOFTWARE\\Example" do
+      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Example' do
         architecture :i386
         recursive true
         action :create
@@ -65,9 +67,10 @@ class Chef
       ```
 
       **Set proxy settings to be the same as those used by Chef Infra Client**
+
       ```ruby
       proxy = URI.parse(Chef::Config[:http_proxy])
-      registry_key 'HKCU\\Software\\Microsoft\\path\\to\\key\\Internet Settings' do
+      registry_key 'HKCU\Software\Microsoft\path\to\key\Internet Settings' do
         values [{name: 'ProxyEnable', type: :reg_dword, data: 1},
                 {name: 'ProxyServer', data: "#{proxy.host}:#{proxy.port}"},
                 {name: 'ProxyOverride', type: :reg_string, data: <local>},
@@ -77,9 +80,10 @@ class Chef
       ```
 
       **Set the name of a registry key to "(Default)"**
+
       ```ruby
       registry_key 'Set (Default) value' do
-        key 'HKLM\\Software\\Test\\Key\\Path'
+        key 'HKLM\Software\Test\Key\Path'
         values [
           {name: '', type: :string, data: 'test'},
         ]
@@ -88,8 +92,9 @@ class Chef
       ```
 
       **Delete a registry key value**
+
       ```ruby
-      registry_key 'HKEY_LOCAL_MACHINE\\SOFTWARE\\path\\to\\key\\AU' do
+      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\path\to\key\AU' do
         values [{
           name: 'NoAutoRebootWithLoggedOnUsers',
           type: :dword,
@@ -102,8 +107,9 @@ class Chef
       Note: If data: is not specified, you get an error: Missing data key in RegistryKey values hash
 
       **Delete a registry key and its subkeys, recursively**
+
       ```ruby
-      registry_key 'HKCU\\SOFTWARE\\Policies\\path\\to\\key\\Themes' do
+      registry_key 'HKCU\SOFTWARE\Policies\path\to\key\Themes' do
         recursive true
         action :delete_key
       end
