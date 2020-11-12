@@ -27,6 +27,91 @@ class Chef
       provides(:registry_key) { true }
 
       description "Use the **registry_key** resource to create and delete registry keys in Microsoft Windows."
+      examples <<~DOC
+      **Create a registry key**
+      ```ruby
+      registry_key 'HKEY_LOCAL_MACHINE\path-to-key\Policies\System' do
+        values [{
+          name: 'EnableLUA',
+          type: :dword,
+          data: 0
+        }]
+        action :create
+      end
+      ```
+      
+      **Create a registry key with binary data: "\x01\x02\x03"**:
+      ```ruby
+      registry_key 'HKEY_CURRENT_USER\\ChefTest' do
+        values [{
+          :name => "test",
+          :type => :binary,
+          :data => [0, 1, 2].map(&:chr).join
+        }]
+        action :create
+      end
+      ```
+
+      **Create 32-bit key in redirected wow6432 tree**
+
+      In 64-bit versions of Microsoft Windows, HKEY_LOCAL_MACHINE\SOFTWARE\Example is a re-directed key. In the following examples, because HKEY_LOCAL_MACHINE\SOFTWARE\Example is a 32-bit key, the output will be “Found 32-bit key” if they are run on a version of Microsoft Windows that is 64-bit:
+
+      ```ruby
+      registry_key "HKEY_LOCAL_MACHINE\\SOFTWARE\\Example" do
+        architecture :i386
+        recursive true
+        action :create
+      end
+      ```
+
+      **Set proxy settings to be the same as those used by Chef Infra Client**
+      ```ruby
+      proxy = URI.parse(Chef::Config[:http_proxy])
+      registry_key 'HKCU\Software\Microsoft\path\to\key\Internet Settings' do
+        values [{name: 'ProxyEnable', type: :reg_dword, data: 1},
+                {name: 'ProxyServer', data: "#{proxy.host}:#{proxy.port}"},
+                {name: 'ProxyOverride', type: :reg_string, data: <local>},
+               ]
+        action :create
+      end
+      ```
+
+      **Set the name of a registry key to "(Default)"**
+      ```ruby
+      registry_key 'Set (Default) value' do
+        key 'HKLM\Software\Test\Key\Path'
+        values [
+          {name: '', type: :string, data: 'test'},
+        ]
+        action :create
+      end
+      ```
+
+      **Delete a registry key value**
+      ```ruby
+      registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\path\to\key\AU' do
+        values [{
+          name: 'NoAutoRebootWithLoggedOnUsers',
+          type: :dword,
+          data: ''
+          }]
+        action :delete
+      end
+      ```
+
+      Note: If data: is not specified, you get an error: Missing data key in RegistryKey values hash
+
+      **Delete a registry key and its subkeys, recursively**
+      ```ruby
+      registry_key 'HKCU\SOFTWARE\Policies\path\to\key\Themes' do
+        recursive true
+        action :delete_key
+      end
+      ```
+
+      Note: Be careful when using the :delete_key action with the recursive attribute. This will delete the registry key, all of its values and all of the names, types, and data associated with them. This cannot be undone by Chef Infra Client.
+
+      DOC
 
       state_attrs :values
 
@@ -40,13 +125,12 @@ class Chef
       #   values [{
       #     :name => "ValueWithBadData",
       #     :type => :binary,
-      #     :data => [0, 1, 2].map(&:chr).join
+      #     :data => 255.chr * 1
       #   }]
       #   action :create
       # end
       #
-      # will raise Encoding::UndefinedConversionError: "\x01\x02\x03" from ASCII-8BIT to
-      # UTF-8.
+      # will raise Encoding::UndefinedConversionError: "\xFF" from ASCII-8BIT to UTF-8.
       #
       # To avoid sending data that cannot be nicely converted for json, we have
       # the values method return "safe" data if the data type is "unsafe". Known "unsafe"
