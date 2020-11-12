@@ -517,8 +517,8 @@ describe "Chef::Provider::Package - Multi" do
     end
 
     it "installs the specified version when some are out of date" do
-      current_resource.version(["1.0", "6.2"])
-      new_resource.version(["1.0", "6.3"])
+      current_resource.version(["1.0", "6.1"])
+      new_resource.version(["1.0", "6.2"])
       provider.run_action(:install)
       expect(new_resource).to be_updated
     end

@@ -96,6 +96,17 @@ describe Chef::Resource::ZypperPackage, :requires_root, :suse_only do
       expect(zypper_package.updated_by_last_action?).to be false
       expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.2-1.#{pkg_arch}$")
     end
+
+    it "multipackage installs which result in nils from the superclass" do
+      # this looks weird, it tests an internal condition of the allow_nils behavior where the arrays passed to install_package will have
+      # nil values, and ensures that doesn't wind up creating weirdness in the resulting shell_out that causes it to fail
+      preinstall("chef_rpm-1.2-1.#{pkg_arch}.rpm")
+      zypper_package.package_name(%w{chef_rpm chef_rpm})
+      zypper_package.version(["1.2", "1.10"])
+      zypper_package.run_action(:install)
+      expect(zypper_package.updated_by_last_action?).to be true
+      expect(shell_out("rpm -q --queryformat '%{NAME}-%{VERSION}-%{RELEASE}.%{ARCH}\n' chef_rpm").stdout.chomp).to match("^chef_rpm-1.10-1.#{pkg_arch}$")
+    end
   end
 
   context "with versions" do
