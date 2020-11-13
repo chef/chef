@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Performance Enhancements
 
-In Chef Infra Client 16.7 we've put a particular focus on optimizing the performance of the client. We've performaned several dozen minor optimizations that increase performance and reduce overall memory usage accross all platforms. On Windows our work has been particuarly pronounced as we've improved resource execution and Chef Infra Client installation. Chef Infra Client install times on Windows are now up to a 3x faster than previous releases. Resources which use PowerShell to make changes now execute significantly faster. This improvement will be the most noticable in Chef Infra Client runs that don't make actual system changes (no-op runs), where determining the current system state was previously resource intensive.
+In Chef Infra Client 16.7, we've put a particular focus on optimizing the performance of the client. We've created several dozen minor optimizations that increase performance and reduce overall memory usage across all platforms. On Windows, our work has been particularly pronounced as we've improved resource execution and Chef Infra Client installation. Chef Infra Client install times on Windows are now up to a 3x faster than previous releases. Resources which use PowerShell to make changes now execute significantly faster. This improvement will be the most noticeable in Chef Infra Client runs that don't make actual system changes (no-op runs), where determining the current system state was previously resource intensive.
 
 ## Windows Bootstrap Improvements
 
