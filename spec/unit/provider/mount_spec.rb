@@ -207,7 +207,8 @@ describe Chef::Provider::Mount do
     expect { provider.disable_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
   end
 
-  describe "#device_unchanged?" do
+  # Not supported on solaris because it can't cope with a LABEL device type.
+  describe "#device_unchanged?", :not_supported_on_solaris do
     it "should be true when device_type not changed" do
       expect(provider.device_unchanged?).to be_truthy
     end
