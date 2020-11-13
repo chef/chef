@@ -104,7 +104,7 @@ class Chef
             @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
         elsif !group_members_match?
-          @change_desc << "replace group members with new list of members: #{new_resource.members}"
+          @change_desc << "replace group members with new list of members: #{new_resource.members.join(', ')}"
         end
 
         !@change_desc.empty?
@@ -115,7 +115,7 @@ class Chef
       end
 
       def group_members_match?
-        new_resource.members.sort == current_resource.members.sort
+        [new_resource.members].flatten.sort == [current_resource.members].flatten.sort
       end
 
       def has_current_group_member?(member)

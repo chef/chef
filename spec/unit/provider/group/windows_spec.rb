@@ -39,6 +39,12 @@ describe Chef::Provider::Group::Windows do
   end
 
   describe "when creating the group" do
+    before do
+      @current_resource = Chef::Resource::Group.new("staff")
+      @current_resource.members %w{all your base}
+      @provider.current_resource = @current_resource
+    end
+
     it "should call @net_group.local_add" do
       expect(@net_group).to receive(:local_set_members).with([])
       expect(@net_group).to receive(:local_add)
