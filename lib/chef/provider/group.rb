@@ -104,7 +104,7 @@ class Chef
             @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
         elsif !group_members_match?
-          @change_desc << "replace group members with new list of members: #{new_resource.members.join(', ')}"
+          @change_desc << "replace group members with new list of members: #{new_resource.members.join(", ")}"
         end
 
         !@change_desc.empty?
@@ -139,7 +139,7 @@ class Chef
           if compare_group
             converge_by(["alter group #{new_resource.group_name}"] + change_desc) do
               manage_group
-              logger.info("#{new_resource} altered: #{change_desc.join(', ')}")
+              logger.info("#{new_resource} altered: #{change_desc.join(", ")}")
             end
           end
         end
