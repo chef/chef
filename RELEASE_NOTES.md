@@ -50,7 +50,7 @@ The `zypper_package` resource has been refactored to improve idempotency when sp
 
 - `pop_os` is now detected as having the `platform_family` of `debian`. Thanks for this improvement [@chasebolt](https://github.com/chasebolt)!
 - Recent `openindiana` releases are now properly detected.
-- The `Hostnamectl` plugin properly detects hostnames that contain a colon. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)
+- The `Hostnamectl` plugin properly detects hostnames that contain a colon. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)!
 - The `Zpool` plugin now properly detects ZFS zpools that include `nvme` or `xvd` drives. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)
 - The `Zpool` plugin now properly detects ZFS zpools that uses disk labels/guids instead of traditional drive designations
 
