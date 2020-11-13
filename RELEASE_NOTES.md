@@ -40,7 +40,7 @@ The `mount` resource is now idempotent on Linux systems when using a label for t
 
 ### powershell_package
 
-The `powershell_package` resource has been updated to better force connections to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Connections must be forced to use TLS 1.2 as system default cipher suite which did not include TLS 1.2 in Windows 2012-2016.
+The `powershell_package` resource has been updated to better force connections to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Connections must be forced to use TLS 1.2 as the system default cipher suite because Windows 2012-2016 did not include TLS 1.2.
 
 ### zypper_package
 
