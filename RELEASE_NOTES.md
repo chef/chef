@@ -36,7 +36,7 @@ The `ifconfig` resource has been updated to better support Linux distributions t
 
 ### mount
 
-The `mount` resource is now idempotent on Linux systems when using a label for the device name and when using network paths that end with a slash. Thanks for reporting these issue [@limitusus](https://github.com/limitusus) and [@axelrtgs](https://github.com/axelrtgs).
+The `mount` resource is now idempotent on Linux systems when using a label for the device name and when using network paths that end with a slash. Thanks for reporting these issues [@limitusus](https://github.com/limitusus) and [@axelrtgs](https://github.com/axelrtgs)!
 
 ### powershell_package
 
