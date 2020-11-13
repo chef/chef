@@ -63,15 +63,7 @@ class Chef
     def exec(script)
       FFI.ffi_lib @dll
       FFI.attach_function :execute_powershell, :ExecuteScript, [:string], :pointer
-      # This is a temporary fix for running in a Habitat environment
-      # In habitat we set CHEF_POWERSHELL_BIN so that .Net resolves our
-      # managed shim assembly from the correct location.
-      # It seems that that is preventing .Net from successfully loading GAC assemblies
-      # and can break all sorts of edge (and not so edge) scenarios. Once we are actually
-      # inside the powershell run space, we know our shim was loaded and can unset
-      # CHEF_POWERSHELL_BIN which will bypass our custom resolver logic. The real fix is
-      # to fix our resolver. Oh and OH MY GOD this was a pain to track down.
-      execution = FFI.execute_powershell("$ENV:CHEF_POWERSHELL_BIN=$NULL;#{script}").read_utf16string
+      execution = FFI.execute_powershell(script).read_utf16string
       hashed_outcome = Chef::JSONCompat.parse(execution)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
       @errors = hashed_outcome["errors"]
