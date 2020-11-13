@@ -10,6 +10,10 @@ In Chef Infra Client 16.7, we've put a particular focus on optimizing the perfor
 
 We've improved how Windows nodes are bootstrapped when using the `knife bootstrap` command. The `knife bootstrap` `--secret` flag is now respected on Windows hosts, allowing for the proper setup of nodes to use encrypted data bags. Thanks for reporting this issue [@AMC-7](https://github.com/AMC-7)! Additionally, during the bootstrap we now force connections to use TLS 1.2, preventing failures on Windows 2012-2016. Thanks for this improvement [@TimothyTitan](https://github.com/TimothyTitan)!
 
+## Chef Vault 4.1
+
+We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1. Chef Vault 4.1 properly handles escape strings in secrets and greatly improves performance for users with large numbers of secrets. Thanks for the performance work [@Annih](https://github.com/Annih)!
+
 ## New Resources
 
 ### homebrew_install
