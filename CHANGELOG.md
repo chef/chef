@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.43 -->
-## [v16.7.43](https://github.com/chef/chef/tree/v16.7.43) (2020-11-13)
+<!-- latest_release 16.7.44 -->
+## [v16.7.44](https://github.com/chef/chef/tree/v16.7.44) (2020-11-13)
 
 #### Merged Pull Requests
-- Fix group output and windows support [#10642](https://github.com/chef/chef/pull/10642) ([jaymzh](https://github.com/jaymzh))
+- pull in v0.2.1 of powershell shim that fixes .net resolver [#10644](https://github.com/chef/chef/pull/10644) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- pull in v0.2.1 of powershell shim that fixes .net resolver [#10644](https://github.com/chef/chef/pull/10644) ([mwrock](https://github.com/mwrock)) <!-- 16.7.44 -->
 - Fix group output and windows support [#10642](https://github.com/chef/chef/pull/10642) ([jaymzh](https://github.com/jaymzh)) <!-- 16.7.43 -->
 - mount: changes to fix solaris test failure [#10643](https://github.com/chef/chef/pull/10643) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.42 -->
 - Update omnibus to remove the chef-sugar dep [#10629](https://github.com/chef/chef/pull/10629) ([tas50](https://github.com/tas50)) <!-- 16.7.41 -->
