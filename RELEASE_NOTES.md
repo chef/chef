@@ -8,7 +8,7 @@ In Chef Infra Client 16.7, we've put a particular focus on optimizing the perfor
 
 ## Windows Bootstrap Improvements
 
-Bootstrapping of Windows nodes has been improved when using `knife bootstrap`. The `knife bootstrap` `--secret` flag is now respected on Windows hosts, allowing for the proper setup of nodes to use encrypted data bags. Thanks for reporting this issue [@AMC-7](https://github.com/AMC-7). Additionally during the bootstrap we now force connections to use TLS 1.2, preventing failures on Windows 2012-2016. Thanks for this improvement [@TimothyTitan](https://github.com/TimothyTitan).
+We've improved how Windows nodes are bootstrapped when using the `knife bootstrap` command. The `knife bootstrap` `--secret` flag is now respected on Windows hosts, allowing for the proper setup of nodes to use encrypted data bags. Thanks for reporting this issue [@AMC-7](https://github.com/AMC-7)! Additionally, during the bootstrap we now force connections to use TLS 1.2, preventing failures on Windows 2012-2016. Thanks for this improvement [@TimothyTitan](https://github.com/TimothyTitan)!
 
 ## New Resources
 
