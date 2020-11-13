@@ -78,7 +78,7 @@ class Chef
       # <false>:: If a change is not required
       def compare_group
         @change_desc = [ ]
-        if new_resource.gid.to_s != current_resource.gid.to_s
+        unless group_gid_match?
           @change_desc << "change gid #{current_resource.gid} to #{new_resource.gid}"
         end
 
@@ -103,11 +103,19 @@ class Chef
           unless members_to_be_removed.empty?
             @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
-        elsif new_resource.members != current_resource.members
-          @change_desc << "replace group members with new list of members"
+        elsif !group_members_match?
+          @change_desc << "replace group members with new list of members: #{new_resource.members.join(", ")}"
         end
 
         !@change_desc.empty?
+      end
+
+      def group_gid_match?
+        new_resource.gid.to_s == current_resource.gid.to_s
+      end
+
+      def group_members_match?
+        [new_resource.members].flatten.sort == [current_resource.members].flatten.sort
       end
 
       def has_current_group_member?(member)
@@ -131,7 +139,7 @@ class Chef
           if compare_group
             converge_by(["alter group #{new_resource.group_name}"] + change_desc) do
               manage_group
-              logger.info("#{new_resource} altered")
+              logger.info("#{new_resource} altered: #{change_desc.join(", ")}")
             end
           end
         end
