@@ -101,7 +101,7 @@ class Chef
           return
         end
 
-        profiles.each { |target| runner.add_target(target, opts) }
+        profiles.each { |target| runner.add_target(target) }
 
         Chef::Log.info "Running profiles from: #{profiles.inspect}"
         runner.run
