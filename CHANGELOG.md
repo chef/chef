@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.45 -->
-## [v16.7.45](https://github.com/chef/chef/tree/v16.7.45) (2020-11-14)
+<!-- latest_release 16.7.46 -->
+## [v16.7.46](https://github.com/chef/chef/tree/v16.7.46) (2020-11-14)
 
 #### Merged Pull Requests
-- Fix zypper_package CI failures [#10648](https://github.com/chef/chef/pull/10648) ([lamont-granquist](https://github.com/lamont-granquist))
+- Fix idempotency issues in build_essential on the mac [#10647](https://github.com/chef/chef/pull/10647) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix idempotency issues in build_essential on the mac [#10647](https://github.com/chef/chef/pull/10647) ([tas50](https://github.com/tas50)) <!-- 16.7.46 -->
 - Fix zypper_package CI failures [#10648](https://github.com/chef/chef/pull/10648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.45 -->
 - pull in v0.2.1 of powershell shim that fixes .net resolver [#10644](https://github.com/chef/chef/pull/10644) ([mwrock](https://github.com/mwrock)) <!-- 16.7.44 -->
 - Fix group output and windows support [#10642](https://github.com/chef/chef/pull/10642) ([jaymzh](https://github.com/jaymzh)) <!-- 16.7.43 -->
