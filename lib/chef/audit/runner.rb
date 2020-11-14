@@ -71,15 +71,15 @@ class Chef
         end
 
         {
-          "report" => true,
-          "reporter" => ["json-automate"],
-          "output" => audit_attributes["quiet"] ? ::File::NULL : STDOUT,
-          "logger" => logger,
           backend_cache: audit_attributes["inspec_backend_cache"],
           inputs: audit_attributes["attributes"],
-          waiver_file: waivers,
-          reporter_message_truncation: audit_attributes["result_message_limit"],
+          logger: logger,
+          output: audit_attributes["quiet"] ? ::File::NULL : STDOUT,
+          report: true,
+          reporter: ["json-automate"],
           reporter_backtrace_inclusion: audit_attributes["result_include_backtrace"],
+          reporter_message_truncation: audit_attributes["result_message_limit"],
+          waiver_file: waivers,
         }
       end
 
