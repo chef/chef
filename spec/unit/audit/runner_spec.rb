@@ -24,16 +24,12 @@ describe Chef::Audit::Runner do
 
   describe "#enabled?" do
     it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
-      node.default["audit"] = {}
-      node.default["audit"]["profiles"] = {}
       node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
 
       expect(runner).to be_enabled
     end
 
     it "is false if the node attributes have audit profiles and the audit cookbook is present" do
-      node.default["audit"] = {}
-      node.default["audit"]["profiles"] = {}
       node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
 
       cookbook_collection["audit"] = double(:audit_cookbook, version: "1.2.3")
@@ -42,14 +38,12 @@ describe Chef::Audit::Runner do
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
-      node.default["audit"] = {}
       node.default["audit"]["profiles"] = {}
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is present" do
-      node.default["audit"] = {}
       node.default["audit"]["profiles"] = {}
 
       cookbook_collection["audit"] = double(:audit_cookbook, version: "1.2.3")
@@ -64,7 +58,6 @@ describe Chef::Audit::Runner do
 
   describe "#inspec_opts" do
     it "accepts a string as a waiver file" do
-      node.default["audit"] = {}
       node.default["audit"][:waiver_file] = __FILE__
 
       expect(logger).not_to receive(:error)
@@ -73,7 +66,6 @@ describe Chef::Audit::Runner do
     end
 
     it "filters out non-existant waiver files" do
-      node.default["audit"] = {}
       node.default["audit"][:waiver_file] = [__FILE__, "some_other_file"]
 
       expect(logger).to receive(:error).with(/some_other_file is missing/)
