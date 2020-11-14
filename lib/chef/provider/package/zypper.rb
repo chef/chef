@@ -103,6 +103,12 @@ class Chef
               (status, name, type, version, arch, repo) = [ md[1], md[2], md[3], md[4], md[5], md[6] ]
               next if version == "Version" # header
 
+              # sometimes even though we request a specific version in the search string above and have match exact, we wind up
+              # with other versions in the ouput, particularly getting the installed version when downgrading.
+              if new_version
+                next unless version == new_version || version.start_with?("#{new_version}-")
+              end
+
               return version
             end
           end
