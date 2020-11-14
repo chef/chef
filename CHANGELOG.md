@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.44 -->
-## [v16.7.44](https://github.com/chef/chef/tree/v16.7.44) (2020-11-13)
+<!-- latest_release 16.7.45 -->
+## [v16.7.45](https://github.com/chef/chef/tree/v16.7.45) (2020-11-14)
 
 #### Merged Pull Requests
-- pull in v0.2.1 of powershell shim that fixes .net resolver [#10644](https://github.com/chef/chef/pull/10644) ([mwrock](https://github.com/mwrock))
+- Fix zypper_package CI failures [#10648](https://github.com/chef/chef/pull/10648) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix zypper_package CI failures [#10648](https://github.com/chef/chef/pull/10648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.45 -->
 - pull in v0.2.1 of powershell shim that fixes .net resolver [#10644](https://github.com/chef/chef/pull/10644) ([mwrock](https://github.com/mwrock)) <!-- 16.7.44 -->
 - Fix group output and windows support [#10642](https://github.com/chef/chef/pull/10642) ([jaymzh](https://github.com/jaymzh)) <!-- 16.7.43 -->
 - mount: changes to fix solaris test failure [#10643](https://github.com/chef/chef/pull/10643) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.42 -->
