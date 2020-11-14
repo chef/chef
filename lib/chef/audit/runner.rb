@@ -51,7 +51,7 @@ class Chef
 
       def report(report = generate_report)
         if report.empty?
-          Chef::Log.error "Audit report was not generated properly, skipped reporting"
+          logger.error "Audit report was not generated properly, skipped reporting"
           return
         end
 
@@ -65,7 +65,7 @@ class Chef
         waivers = Array(audit_attributes["waiver_file"]).select do |file|
           return true if File.exist?(file)
 
-          Chef::Log.error "The specified InSpec waiver file #{file} is missing, skipping it..."
+          logger.error "The specified InSpec waiver file #{file} is missing, skipping it..."
           false
         end
 
@@ -73,7 +73,7 @@ class Chef
           "report" => true,
           "reporter" => ["json-automate"],
           "output" => audit_attributes["quiet"] ? ::File::NULL : STDOUT,
-          "logger" => Chef::Log,
+          "logger" => logger,
           backend_cache: audit_attributes["inspec_backend_cache"],
           inputs: audit_attributes["attributes"],
           waiver_file: waivers,
@@ -93,7 +93,7 @@ class Chef
       end
 
       def generate_report(opts: inspec_opts, profiles: inspec_profiles)
-        Chef::Log.debug "Options are set to: #{opts}"
+        logger.debug "Options are set to: #{opts}"
         runner = ::Inspec::Runner.new(opts)
 
         if profiles.empty?
@@ -103,10 +103,10 @@ class Chef
 
         profiles.each { |target| runner.add_target(target) }
 
-        Chef::Log.info "Running profiles from: #{profiles.inspect}"
+        logger.info "Running profiles from: #{profiles.inspect}"
         runner.run
         r = runner.report
-        Chef::Log.debug "Audit Report #{r}"
+        logger.debug "Audit Report #{r}"
         r
 =begin
       rescue Inspec::FetcherFailure => e
@@ -120,8 +120,8 @@ class Chef
       # In case InSpec raises a runtime exception without providing a valid report,
       # we make one up and add two new fields to it: `status` and `status_message`
       def failed_report(err)
-        Chef::Log.error "InSpec has raised a runtime exception. Generating a minimal failed report."
-        Chef::Log.error err
+        logger.error "InSpec has raised a runtime exception. Generating a minimal failed report."
+        logger.error err
         {
           "platform": {
             "name": "unknown",
@@ -161,7 +161,7 @@ class Chef
       end
 
       def send_report(reporter, report)
-        Chef::Log.info "Reporting to #{reporter}"
+        logger.info "Reporting to #{reporter}"
 
         insecure = audit_attributes["insecure"]
         run_time_limit = audit_attributes["run_time_limit"]
@@ -194,16 +194,16 @@ class Chef
             }
             Chef::Audit::Reporter::ChefServer.new(opts).send_report(report)
           else
-            Chef::Log.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
+            logger.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
           end
         when "json-file"
           path = audit_attributes["json_file"]["location"]
-          Chef::Log.info "Writing report to #{path}"
+          logger.info "Writing report to #{path}"
           Chef::Audit::Reporter::JsonFile.new(file: path).send_report(report)
         when "audit-enforcer"
           Chef::Audit::Reporter::AuditEnforcer.new.send_report(report)
         else
-          Chef::Log.warn "#{reporter} is not a supported InSpec report collector"
+          logger.warn "#{reporter} is not a supported InSpec report collector"
         end
       end
     end
