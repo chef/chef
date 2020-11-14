@@ -61,12 +61,13 @@ class Chef
       end
 
       def inspec_opts
-        # TODO: this code needs to not call return
         waivers = Array(audit_attributes["waiver_file"]).select do |file|
-          return true if File.exist?(file)
-
-          logger.error "The specified InSpec waiver file #{file} is missing, skipping it..."
-          false
+          if File.exist?(file)
+            true
+          else
+            logger.error "The specified InSpec waiver file #{file} is missing, skipping it..."
+            false
+          end
         end
 
         {

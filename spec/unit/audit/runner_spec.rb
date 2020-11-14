@@ -9,19 +9,20 @@ describe Chef::Audit::Runner do
     end
   end
 
-  describe "#enabled?" do
-    let(:cookbook_collection) { Chef::CookbookCollection.new }
-    let(:event_dispatcher) { Chef::EventDispatch::Dispatcher.new }
-    let(:node) { Chef::Node.new(logger: double(:logger).as_null_object) }
-    let(:run_context) { Chef::RunContext.new(node, cookbook_collection, event_dispatcher) }
-    let(:run_status) do
-      Chef::RunStatus.new(node, event_dispatcher).tap do |rs|
-        rs.run_context = run_context
-      end
+  let(:cookbook_collection) { Chef::CookbookCollection.new }
+  let(:event_dispatcher) { Chef::EventDispatch::Dispatcher.new }
+  let(:logger) { double(:logger).as_null_object }
+  let(:node) { Chef::Node.new(logger: logger) }
+  let(:run_context) { Chef::RunContext.new(node, cookbook_collection, event_dispatcher) }
+  let(:run_status) do
+    Chef::RunStatus.new(node, event_dispatcher).tap do |rs|
+      rs.run_context = run_context
     end
+  end
 
-    let(:runner) { test_class.new(run_status) }
+  let(:runner) { test_class.new(run_status) }
 
+  describe "#enabled?" do
     it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
       node.default["audit"] = {}
       node.default["audit"]["profiles"] = {}
@@ -58,6 +59,26 @@ describe Chef::Audit::Runner do
 
     it "is false if the node attributes do not have audit attributes and the audit cookbook is not present" do
       expect(runner).not_to be_enabled
+    end
+  end
+
+  describe "#inspec_opts" do
+    it "accepts a string as a waiver file" do
+      node.default["audit"] = {}
+      node.default["audit"][:waiver_file] = __FILE__
+
+      expect(logger).not_to receive(:error)
+
+      expect(runner.inspec_opts[:waiver_file]).to eq([__FILE__])
+    end
+
+    it "filters out non-existant waiver files" do
+      node.default["audit"] = {}
+      node.default["audit"][:waiver_file] = [__FILE__, "some_other_file"]
+
+      expect(logger).to receive(:error).with(/some_other_file is missing/)
+
+      expect(runner.inspec_opts[:waiver_file]).to eq([__FILE__])
     end
   end
 end
