@@ -104,7 +104,7 @@ class Chef
               next if version == "Version" # header
 
               # sometimes even though we request a specific version in the search string above and have match exact, we wind up
-              # with other versions in the ouput, particularly getting the installed version when downgrading.
+              # with other versions in the output, particularly getting the installed version when downgrading.
               if new_version
                 next unless version == new_version || version.start_with?("#{new_version}-")
               end
