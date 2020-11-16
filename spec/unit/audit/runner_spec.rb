@@ -55,22 +55,4 @@ describe Chef::Audit::Runner do
       expect(runner).not_to be_enabled
     end
   end
-
-  describe "#inspec_opts" do
-    it "accepts a string as a waiver file" do
-      node.default["audit"][:waiver_file] = __FILE__
-
-      expect(logger).not_to receive(:error)
-
-      expect(runner.inspec_opts[:waiver_file]).to eq([__FILE__])
-    end
-
-    it "filters out non-existant waiver files" do
-      node.default["audit"][:waiver_file] = [__FILE__, "some_other_file"]
-
-      expect(logger).to receive(:error).with(/some_other_file is missing/)
-
-      expect(runner.inspec_opts[:waiver_file]).to eq([__FILE__])
-    end
-  end
 end

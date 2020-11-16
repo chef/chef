@@ -61,15 +61,6 @@ class Chef
       end
 
       def inspec_opts
-        waivers = Array(audit_attributes["waiver_file"]).select do |file|
-          if File.exist?(file)
-            true
-          else
-            logger.error "The specified InSpec waiver file #{file} is missing, skipping it..."
-            false
-          end
-        end
-
         {
           backend_cache: audit_attributes["inspec_backend_cache"],
           inputs: audit_attributes["attributes"],
@@ -79,7 +70,7 @@ class Chef
           reporter: ["json-automate"],
           reporter_backtrace_inclusion: audit_attributes["result_include_backtrace"],
           reporter_message_truncation: audit_attributes["result_message_limit"],
-          waiver_file: waivers,
+          waiver_file: Array(audit_attributes["waiver_file"]),
         }
       end
 
