@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.49 -->
-## [v16.7.49](https://github.com/chef/chef/tree/v16.7.49) (2020-11-17)
+<!-- latest_release 16.7.50 -->
+## [v16.7.50](https://github.com/chef/chef/tree/v16.7.50) (2020-11-17)
 
 #### Merged Pull Requests
-- Update fauxhai, chef-vault, and chefstyle to the latest [#10653](https://github.com/chef/chef/pull/10653) ([tas50](https://github.com/tas50))
+- Update mixlib-shellout to 3.2.2 [#10654](https://github.com/chef/chef/pull/10654) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update mixlib-shellout to 3.2.2 [#10654](https://github.com/chef/chef/pull/10654) ([tas50](https://github.com/tas50)) <!-- 16.7.50 -->
 - Update fauxhai, chef-vault, and chefstyle to the latest [#10653](https://github.com/chef/chef/pull/10653) ([tas50](https://github.com/tas50)) <!-- 16.7.49 -->
 - Remove pry-remote from the package [#10651](https://github.com/chef/chef/pull/10651) ([tas50](https://github.com/tas50)) <!-- 16.7.48 -->
 - mount: Changes to fix creating multiple entries in fstab [#10472](https://github.com/chef/chef/pull/10472) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.47 -->
