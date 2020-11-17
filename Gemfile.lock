@@ -284,9 +284,6 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    pry-remote (0.1.8)
-      pry (~> 0.9)
-      slop (~> 3.0)
     pry-stack_explorer (0.5.1)
       binding_of_caller (~> 0.7)
       pry (~> 0.13)
@@ -330,7 +327,6 @@ GEM
     rubyntlm (0.6.2)
     rubyzip (1.3.0)
     semverse (3.0.0)
-    slop (3.6.0)
     sslshake (1.3.1)
     strings (0.2.0)
       strings-ansi (~> 0.2)
@@ -442,7 +438,6 @@ DEPENDENCIES
   ohai!
   pry
   pry-byebug
-  pry-remote
   pry-stack_explorer
   rake
   rb-readline

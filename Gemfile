@@ -35,7 +35,6 @@ end
 group(:omnibus_package, :pry) do
   gem "pry"
   gem "pry-byebug"
-  gem "pry-remote"
   gem "pry-stack_explorer"
 end
 
