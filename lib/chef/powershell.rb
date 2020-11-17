@@ -34,6 +34,11 @@ class Chef
     # @param script [String] script to run
     # @return [Object] output
     def initialize(script)
+      # This Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
+      # Every merge into that repo triggers a Habitat build and promotion. Running
+      # the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
+      # the built packages and copy the binaries to distro/ruby_bin_folder. Bundle install
+      # ensures that the correct architecture binaries are installed into the path.
       @dll ||= "Chef.PowerShell.Wrapper.dll"
       exec(script)
     end
