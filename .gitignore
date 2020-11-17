@@ -86,7 +86,7 @@ ext/win32-eventlog/chef-log.man
 distro/powershell/chef/chef.psm1
 
 # tool logs
-ext/win32-eventlog/mkmf.log
+mkmf.log
 
 # ignore byebug command history file.
 .byebug_history
