@@ -1,9 +1,13 @@
-pkg_name=chef-infra-client
-pkg_origin=chef
+_chef_client_ruby="core/ruby26"
+pkg_name="chef-infra-client"
+pkg_origin="chef"
 pkg_maintainer="The Chef Maintainers <humans@chef.io>"
 pkg_description="The Chef Infra Client"
 pkg_license=('Apache-2.0')
-pkg_bin_dirs=(bin)
+pkg_bin_dirs=(
+  bin
+  vendor/bin
+)
 pkg_build_deps=(
   core/make
   core/gcc
@@ -11,13 +15,12 @@ pkg_build_deps=(
 )
 pkg_deps=(
   core/glibc
-  core/ruby26
+  $_chef_client_ruby
   core/libxml2
   core/libxslt
   core/libiconv
   core/xz
   core/zlib
-  core/bundler/1.17.3
   core/openssl
   core/cacerts
   core/libffi
@@ -52,10 +55,35 @@ do_verify() {
   return 0
 }
 
+do_setup_environment() {
+  push_runtime_env GEM_PATH "${pkg_prefix}/vendor"
+
+  set_runtime_env APPBUNDLER_ALLOW_RVM "true" # prevent appbundler from clearing out the carefully constructed runtime GEM_PATH
+  set_runtime_env SSL_CERT_FILE "$(pkg_path_for cacerts)/ssl/cert.pem"
+  set_runtime_env LANG "en_US.UTF-8"
+  set_runtime_env LC_CTYPE "en_US.UTF-8"
+}
+
 do_prepare() {
-  export OPENSSL_LIB_DIR=$(pkg_path_for openssl)/lib
-  export OPENSSL_INCLUDE_DIR=$(pkg_path_for openssl)/include
-  export SSL_CERT_FILE=$(pkg_path_for cacerts)/ssl/cert.pem
+  export GEM_HOME="${pkg_prefix}/vendor"
+  export OPENSSL_LIB_DIR="$(pkg_path_for openssl)/lib"
+  export OPENSSL_INCLUDE_DIR="$(pkg_path_for openssl)/include"
+  export SSL_CERT_FILE="$(pkg_path_for cacerts)/ssl/cert.pem"
+  export CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
+
+  ( cd "$CACHE_PATH"
+    gem install bundler -v 1.17.3
+    bundle config --local build.nokogiri "--use-system-libraries \
+        --with-zlib-dir=$(pkg_path_for zlib) \
+        --with-xslt-dir=$(pkg_path_for libxslt) \
+        --with-xml2-include=$(pkg_path_for libxml2)/include/libxml2 \
+        --with-xml2-lib=$(pkg_path_for libxml2)/lib"
+    bundle config --local jobs "$(nproc)"
+    bundle config --local without server docgen maintenance pry travis integration ci chefstyle
+    bundle config --local shebang "$(pkg_path_for "$_chef_client_ruby")/bin/ruby"
+    bundle config --local retry 5
+    bundle config --local silence_root_warning 1
+  )
 
   build_line "Setting link for /usr/bin/env to 'coreutils'"
   if [ ! -f /usr/bin/env ]; then
@@ -64,61 +92,46 @@ do_prepare() {
 }
 
 do_build() {
-  local _bundler_dir
-  local _libxml2_dir
-  local _libxslt_dir
-  local _zlib_dir
-  export CPPFLAGS
-  export GEM_HOME
-  export GEM_PATH
-  export NOKOGIRI_CONFIG
-
-  _bundler_dir=$(pkg_path_for bundler)
-  _libxml2_dir=$(pkg_path_for libxml2)
-  _libxslt_dir=$(pkg_path_for libxslt)
-  _zlib_dir=$(pkg_path_for zlib)
-
-  CPPFLAGS="${CPPFLAGS} ${CFLAGS}"
-  GEM_HOME=${pkg_prefix}/bundle
-  GEM_PATH=${_bundler_dir}:${GEM_HOME}
-  NOKOGIRI_CONFIG="--use-system-libraries \
-    --with-zlib-dir=${_zlib_dir} \
-    --with-xslt-dir=${_libxslt_dir} \
-    --with-xml2-include=${_libxml2_dir}/include/libxml2 \
-    --with-xml2-lib=${_libxml2_dir}/lib"
-
-
-  build_line "Executing bundle install inside hab-cache path. ($CACHE_PATH/chef-config)"
-  ( cd "$CACHE_PATH/chef-config" || exit_with "unable to enter hab-cache directory" 1
-    bundle config --local build.nokogiri "${NOKOGIRI_CONFIG}"
-    bundle config --local silence_root_warning 1
-    _bundle_install "${pkg_prefix}/bundle"
+  ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
+    build_line "Installing gem dependencies ..."
+    bundle install --jobs=3 --retry=3
+    build_line "Installing this project's gems ..."
+    bundle exec rake install
+    for gem in $GEM_HOME/bundler/gems/*; do
+      ( cd $gem
+        build_line "Installing gems from git repos properly ..."
+        rake install
+      )
+    done
   )
-
-  build_line "Executing bundle install inside source path. ($SRC_PATH)"
-  _bundle_install "${pkg_prefix}/bundle"
 }
 
 do_install() {
-  build_line "Copying directories from source to pkg_prefix"
-  mkdir -p "${pkg_prefix}/chef"
-  for dir in bin chef-bin chef-config chef-utils lib chef.gemspec Gemfile Gemfile.lock; do
-    cp -rv "${SRC_PATH}/${dir}" "${pkg_prefix}/chef/"
-  done
-
-  # If we generated them on install, bundler thinks our source is in $HAB_CACHE_SOURCE_PATH
-  build_line "Generating binstubs with the correct path"
-  ( cd "$pkg_prefix/chef" || exit_with "unable to enter pkg prefix directory" 1
-    _bundle_install \
-      "${pkg_prefix}/bundle" \
-      --local \
-      --quiet \
-      --binstubs "${pkg_prefix}/bin"
+  ( cd "$pkg_prefix" || exit_with "unable to enter pkg prefix directory" 1
+    export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+    build_line "** fixing binstub shebangs"
+    fix_interpreter "${pkg_prefix}/vendor/bin/*" "$_chef_client_ruby" bin/ruby
+    export BUNDLE_GEMFILE="${CACHE_PATH}/Gemfile"
+    for gem in chef-bin chef inspec-core-bin ohai; do
+      build_line "** generating binstubs for $gem with precise version pins"
+      appbundler $CACHE_PATH $pkg_prefix/bin $gem
+    done
   )
+}
 
-  build_line "Fixing bin/ruby and bin/env interpreters"
-  fix_interpreter "${pkg_prefix}/bin/*" core/coreutils bin/env
-  fix_interpreter "${pkg_prefix}/bin/*" core/ruby26 bin/ruby
+do_after() {
+  build_line "Trimming the fat ..."
+
+  # We don't need the cache of downloaded .gem files ...
+  rm -r "$pkg_prefix/vendor/cache"
+  # ... or bundler's cache of git-ref'd gems
+  rm -r "$pkg_prefix/vendor/bundler"
+  # We don't need the gem docs.
+  rm -r "$pkg_prefix/vendor/doc"
+  # We don't need to ship the test suites for every gem dependency,
+  # only Chef's for package verification.
+  find "$pkg_prefix/vendor/gems" -name spec -type d | grep -v "chef-${pkg_version}" \
+      | while read spec_dir; do rm -r "$spec_dir"; done
 }
 
 do_end() {
@@ -130,20 +143,4 @@ do_end() {
 
 do_strip() {
   return 0
-}
-
-# Helper function to wrap up some repetitive bundle install flags
-_bundle_install() {
-  local path
-  path="$1"
-  shift
-
-  bundle install ${*:-} \
-    --jobs "$(nproc)" \
-    --without development:test \
-    --path "$path" \
-    --shebang="$(pkg_path_for "core/ruby26")/bin/ruby" \
-    --no-clean \
-    --retry 5 \
-    --standalone
 }

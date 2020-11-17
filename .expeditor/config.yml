@@ -26,14 +26,6 @@ docker_images:
 pipelines:
   - verify:
       public: true
-  - verify/habitat:
-      description: >
-        A temporary pipeline to verify the habitat plans. Performs a local build,
-        tests it, then throws it away. Its steps should eventually move into the
-        "verify" pipeline (if fast enough) or this pipeline should be removed in
-        favor of learning about packaging problems after merge.
-      definition: .expeditor/verify.habitat.pipeline.yml
-      trigger: default
   - habitat/build
   - habitat/test:
       definition: .expeditor/habitat-test.pipeline.yml
@@ -106,6 +98,7 @@ subscriptions:
       - bash:.expeditor/update_dockerfile.sh
       - built_in:tag_docker_image
       - built_in:publish_rubygems
+      - built_in:promote_habitat_packages
       - built_in:notify_chefio_slack_channels
 
   # the habitat chain
