@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 506e45735fc721f07275893bebc60d67ec52a640
+  revision: d2bfdf31b717a0009e15743ea6907f44537365be
   branch: master
   specs:
-    chefstyle (1.5.1)
-      rubocop (= 1.3.0)
+    chefstyle (1.5.2)
+      rubocop (= 1.3.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -154,7 +154,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-vault (4.0.12)
+    chef-vault (4.1.0)
     chef-zero (15.0.3)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
@@ -176,7 +176,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.4.0)
+    fauxhai-ng (8.5.0)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
@@ -310,7 +310,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.0)
-    rubocop (1.3.0)
+    rubocop (1.3.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
