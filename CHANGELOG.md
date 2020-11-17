@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.47 -->
-## [v16.7.47](https://github.com/chef/chef/tree/v16.7.47) (2020-11-17)
+<!-- latest_release 16.7.48 -->
+## [v16.7.48](https://github.com/chef/chef/tree/v16.7.48) (2020-11-17)
 
 #### Merged Pull Requests
-- mount: Changes to fix creating multiple entries in fstab [#10472](https://github.com/chef/chef/pull/10472) ([antima-gupta](https://github.com/antima-gupta))
+- Remove pry-remote from the package [#10651](https://github.com/chef/chef/pull/10651) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove pry-remote from the package [#10651](https://github.com/chef/chef/pull/10651) ([tas50](https://github.com/tas50)) <!-- 16.7.48 -->
 - mount: Changes to fix creating multiple entries in fstab [#10472](https://github.com/chef/chef/pull/10472) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.47 -->
 - Fix idempotency issues in build_essential on the mac [#10647](https://github.com/chef/chef/pull/10647) ([tas50](https://github.com/tas50)) <!-- 16.7.46 -->
 - Fix zypper_package CI failures [#10648](https://github.com/chef/chef/pull/10648) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.7.45 -->
