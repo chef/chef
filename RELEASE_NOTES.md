@@ -16,10 +16,6 @@ We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1.
 
 ## New Resources
 
-### homebrew_install
-
-The new `homebrew_install` resource is used to install the Homebrew package manager on macOS systems.
-
 ## Updated Resources
 
 ### chef_client_config
@@ -40,7 +36,13 @@ The `ifconfig` resource has been updated to better support Linux distributions t
 
 ### mount
 
-The `mount` resource is now idempotent on Linux systems when using a label for the device name and when using network paths that end with a slash. Thanks for reporting these issues [@limitusus](https://github.com/limitusus) and [@axelrtgs](https://github.com/axelrtgs)!
+The `mount` resource has been updated to resolve several issues:
+
+- Idempotency failures when using labels on Linux hosts.
+- Idempotency failures when using network paths that end with a slash.
+- fstab entries being reordered instead of performing in place updates.
+
+Thanks for reporting these issues [@limitusus](https://github.com/limitusus), [@axelrtgs](https://github.com/axelrtgs), and [@scarpe01](https://github.com/scarpe01)!
 
 ### powershell_package
 
