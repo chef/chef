@@ -247,15 +247,6 @@ describe Chef::Provider::Mount::Mount do
       expect(@provider.current_resource.enabled).to be_falsey
     end
 
-    it "should set enabled to false if the mount point is not last in fstab" do
-      line_1 = "#{@new_resource.device} #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-      line_2 = "/dev/sdy1 #{@new_resource.mount_point}  ext3  defaults  1 2\n"
-      allow(::File).to receive(:foreach).with("/etc/fstab").and_yield(line_1).and_yield(line_2)
-
-      @provider.load_current_resource
-      expect(@provider.current_resource.enabled).to be_falsey
-    end
-
     it "should not mangle the mount options if the device in fstab is a symlink" do
       # expand the target path to correct specs on Windows
       target = "/dev/mapper/target"
@@ -427,9 +418,29 @@ describe Chef::Provider::Mount::Mount do
         @fstab = StringIO.new
         allow(::File).to receive(:readlines).and_return([])
         expect(::File).to receive(:open).once.with("/etc/fstab", "w").and_yield(@fstab)
-        expect(::File).to receive(:open).once.with("/etc/fstab", "a").and_yield(@fstab)
 
         @provider.enable_fs
+      end
+
+      it "should update the last matching entry if enabled is true" do
+        @new_resource.fstype("ext4")
+        @new_resource.dump(2)
+        @new_resource.pass(1)
+        allow(@current_resource).to receive(:enabled).and_return(true)
+        fstab_read = ["/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n",
+                      "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n"]
+
+        fstab_write = StringIO.new
+        allow(::File).to receive(:readlines).with("/etc/fstab").and_return(fstab_read)
+        allow(::File).to receive(:open).with("/etc/fstab", "w").and_yield(fstab_write)
+
+        @provider.enable_fs
+        expect(fstab_write.string).to eq("/dev/sdz1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdy1 /tmp/foo  ext3  defaults  1 2\n" +
+          "/dev/sdz1 /tmp/foo #{@new_resource.fstype} defaults #{@new_resource.dump} #{@new_resource.pass}\n" +
+          "/dev/sdz1 /tmp/foobar  ext3  defaults  1 2\n")
       end
     end
 

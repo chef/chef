@@ -70,10 +70,6 @@ class Chef
               @current_resource.dump($4.to_i)
               @current_resource.pass($5.to_i)
               logger.trace("Found mount #{device_fstab} to #{@new_resource.mount_point} in /etc/fstab")
-              next
-            when %r{^[/\w]+\s+#{Regexp.escape(@new_resource.mount_point)}\s+}
-              enabled = false
-              logger.trace("Found conflicting mount point #{@new_resource.mount_point} in /etc/fstab")
             end
           end
           @current_resource.enabled(enabled)
@@ -168,36 +164,19 @@ class Chef
 
           if @current_resource.enabled
             # The current options don't match what we have, so
-            # disable, then enable.
-            disable_fs
-          end
-          ::File.open("/etc/fstab", "a") do |fstab|
-            fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
-            logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
+            # update the last matching entry with current option
+            # and order will remain the same.
+            edit_fstab
+          else
+            ::File.open("/etc/fstab", "a") do |fstab|
+              fstab.puts("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+              logger.trace("#{@new_resource} is enabled at #{@new_resource.mount_point}")
+            end
           end
         end
 
         def disable_fs
-          if @current_resource.enabled
-            contents = []
-
-            found = false
-            ::File.readlines("/etc/fstab").reverse_each do |line|
-              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
-                found = true
-                logger.trace("#{@new_resource} is removed from fstab")
-                next
-              else
-                contents << line
-              end
-            end
-
-            ::File.open("/etc/fstab", "w") do |fstab|
-              contents.reverse_each { |line| fstab.puts line }
-            end
-          else
-            logger.trace("#{@new_resource} is not enabled - nothing to do")
-          end
+          edit_fstab(remove: true)
         end
 
         def network_device?
@@ -266,6 +245,35 @@ class Chef
             @current_resource.options == @new_resource.options &&
             @current_resource.dump == @new_resource.dump &&
             @current_resource.pass == @new_resource.pass
+        end
+
+        # It will update or delete the entry from fstab.
+        def edit_fstab(remove: false)
+          if @current_resource.enabled
+            contents = []
+
+            found = false
+            ::File.readlines("/etc/fstab").reverse_each do |line|
+              if !found && line =~ /^#{device_fstab_regex}\s+#{Regexp.escape(@new_resource.mount_point)}\s/
+                found = true
+                if remove
+                  logger.trace("#{@new_resource} is removed from fstab")
+                else
+                  contents << ("#{device_fstab} #{@new_resource.mount_point} #{@new_resource.fstype} #{@new_resource.options.nil? ? default_mount_options : @new_resource.options.join(",")} #{@new_resource.dump} #{@new_resource.pass}")
+                  logger.trace("#{@new_resource} is updated with new content in fstab")
+                end
+                next
+              else
+                contents << line
+              end
+            end
+
+            ::File.open("/etc/fstab", "w") do |fstab|
+              contents.reverse_each { |line| fstab.puts line }
+            end
+          else
+            logger.trace("#{@new_resource} is not enabled - nothing to do")
+          end
         end
 
       end
