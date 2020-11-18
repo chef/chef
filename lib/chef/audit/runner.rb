@@ -113,13 +113,10 @@ class Chef
         r = runner.report
         logger.debug "Audit Report #{r}"
         r
-=begin
       rescue Inspec::FetcherFailure => e
-        err = "Cannot fetch all profiles: #{profiles}. Please make sure you're authenticated and the server is reachable. #{e.message}"
-        failed_report(err)
+        failed_report("Cannot fetch all profiles: #{profiles}. Please make sure you're authenticated and the server is reachable. #{e.message}")
       rescue => e
         failed_report(e.message)
-=end
       end
 
       # In case InSpec raises a runtime exception without providing a valid report,

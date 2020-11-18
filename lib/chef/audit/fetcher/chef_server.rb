@@ -73,7 +73,7 @@ class Chef
 
           if archive.nil?
             path = @target.respond_to?(:path) ? @target.path : path
-            raise "Unable to find requested profile on path: '#{path}' on the Automate system."
+            raise Inspec::FetcherFailure, "Unable to find requested profile on path: '#{path}' on the Automate system."
           end
 
           Inspec::Log.debug("Archive stored at temporary location: #{archive.path}")
@@ -105,7 +105,7 @@ class Chef
           end
           msg = "Received HTTP error #{code}"
           Chef::Log.error msg
-          raise msg if @raise_if_unreachable
+          raise Inspec::FetcherFailure, msg
         end
 
         def to_s

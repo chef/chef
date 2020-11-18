@@ -105,7 +105,7 @@ describe Chef::Audit::Fetcher::Automate do
 
         expect {
           Chef::Audit::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
-        }.to raise_error(/No data-collector token set/)
+        }.to raise_error(Inspec::FetcherFailure, /No data-collector token set/)
       end
 
       it "includes the data collector token" do
