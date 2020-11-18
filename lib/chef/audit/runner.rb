@@ -13,22 +13,31 @@ class Chef
     class Runner < EventDispatch::Base
       extend Forwardable
 
-      attr_reader :run_status
-      def_delegators :run_status, :node, :run_context, :run_id
+      attr_accessor :node, :run_id, :recipes
       def_delegators :node, :logger
 
       def enabled?
-        cookbook_collection = run_context.cookbook_collection
+        audit_cookbook_present = recipes.include?("audit::default")
 
         logger.info("#{self.class}##{__method__}: inspec profiles? #{inspec_profiles.any?}")
-        logger.info("#{self.class}##{__method__}: audit cookbook? #{cookbook_collection.key?("audit")}")
+        logger.info("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
 
-        inspec_profiles.any? && !cookbook_collection.key?("audit")
+        inspec_profiles.any? && !audit_cookbook_present
       end
 
-      def run_completed(_node, run_status)
-        @run_status = run_status
+      def node_load_success(node)
+        self.node = node
+      end
 
+      def run_started(run_status)
+        self.run_id = run_status.run_id
+      end
+
+      def run_list_expanded(run_list_expansion)
+        self.recipes = run_list_expansion.recipes
+      end
+
+      def run_completed(_node, _run_status)
         return unless enabled?
 
         logger.info("#{self.class}##{__method__}: enabling audit mode")
@@ -36,16 +45,13 @@ class Chef
         report
       end
 
-# TODO: handle error reports
-=begin
-      # Called at the end of a failed Chef run.
-      def run_failed(exception, run_status); end
+      def run_failed(_exception, _run_status)
+        return unless enabled?
 
-      # Called after Chef client has loaded the node data.
-      # Default and override attrs from roles have been computed, but not yet applied.
-      # Normal attrs from JSON have been added to the node.
-      def node_load_completed(node, expanded_run_list, config); end
-=end
+        logger.info("#{self.class}##{__method__}: enabling audit mode")
+
+        report
+      end
 
       ### Below code adapted from audit cookbook's files/default/handler/audit_report.rb
 

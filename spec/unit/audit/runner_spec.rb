@@ -1,57 +1,48 @@
 require "spec_helper"
 
 describe Chef::Audit::Runner do
-  let(:test_class) do
-    Class.new(Chef::Audit::Runner) do
-      def initialize(run_status = nil)
-        @run_status = run_status
-      end
-    end
-  end
-
-  let(:cookbook_collection) { Chef::CookbookCollection.new }
-  let(:event_dispatcher) { Chef::EventDispatch::Dispatcher.new }
   let(:logger) { double(:logger).as_null_object }
   let(:node) { Chef::Node.new(logger: logger) }
-  let(:run_context) { Chef::RunContext.new(node, cookbook_collection, event_dispatcher) }
-  let(:run_status) do
-    Chef::RunStatus.new(node, event_dispatcher).tap do |rs|
-      rs.run_context = run_context
+
+  let(:runner) do
+    described_class.new.tap do |r|
+      r.node = node
+      r.run_id = "my_run_id"
+      r.recipes = []
     end
   end
-
-  let(:runner) { test_class.new(run_status) }
 
   describe "#enabled?" do
     it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
       node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).to be_enabled
     end
 
     it "is false if the node attributes have audit profiles and the audit cookbook is present" do
       node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-
-      cookbook_collection["audit"] = double(:audit_cookbook, version: "1.2.3")
+      runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
       node.default["audit"]["profiles"] = {}
+      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is present" do
       node.default["audit"]["profiles"] = {}
-
-      cookbook_collection["audit"] = double(:audit_cookbook, version: "1.2.3")
+      runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit attributes and the audit cookbook is not present" do
+      runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
       expect(runner).not_to be_enabled
     end
   end
