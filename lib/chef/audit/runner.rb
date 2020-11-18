@@ -85,7 +85,14 @@ class Chef
       end
 
       def inspec_profiles
-        audit_attributes["profiles"].map do |name, profile|
+        profiles = audit_attributes["profiles"]
+
+        # TODO: Custom exception class here?
+        unless profiles.respond_to?(:map) && profiles.all? { |_, p| p.respond_to?(:transform_keys) && p.respond_to?(:update) }
+          raise "Inspec profiles specified in an unrecognized format, expected a hash of hashes."
+        end
+
+        profiles.map do |name, profile|
           profile.transform_keys(&:to_sym).update(name: name)
         end
       end

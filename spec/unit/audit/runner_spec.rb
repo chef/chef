@@ -46,4 +46,46 @@ describe Chef::Audit::Runner do
       expect(runner).not_to be_enabled
     end
   end
+
+  describe "#inspec_profiles" do
+    it "returns an empty list with no profiles defined" do
+      expect(runner.inspec_profiles).to eq([])
+    end
+
+    it "converts from the attribute format to the format Inspec expects" do
+      node.default["audit"]["profiles"]["linux-baseline"] = {
+        'compliance': "user/linux-baseline",
+        'version': "2.1.0",
+      }
+
+      node.default["audit"]["profiles"]["ssh"] = {
+        'supermarket': "hardening/ssh-hardening",
+      }
+
+      expected = [
+        {
+          compliance: "user/linux-baseline",
+          name: "linux-baseline",
+          version: "2.1.0",
+        },
+        {
+          name: "ssh",
+          supermarket: "hardening/ssh-hardening",
+        },
+      ]
+
+      expect(runner.inspec_profiles).to eq(expected)
+    end
+
+    it "raises an error when the profiles are in the old audit-cookbook format" do
+      node.default["audit"]["profiles"] = [
+        {
+          name: "Windows 2019 Baseline",
+          compliance: "admin/windows-2019-baseline",
+        },
+      ]
+
+      expect { runner.inspec_profiles }.to raise_error(/Inspec profiles specified in an unrecognized format, expected a hash of hashes./)
+    end
+  end
 end
