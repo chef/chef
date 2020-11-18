@@ -136,7 +136,7 @@ class Chef
           "statistics": {
             "duration": 0.0000001,
           },
-          "version": "4.22.0",
+          "version": Inspec::VERSION,
           "status": "failed",
           "status_message": err,
         }
