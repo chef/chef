@@ -24,6 +24,7 @@ class Chef
     class User < Chef::Provider
 
       attr_accessor :user_exists, :locked
+      attr_accessor :change_desc
 
       def initialize(new_resource, run_context)
         super
@@ -107,13 +108,20 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        return true if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
-
-        %i{comment shell password uid gid}.each do |user_attrib|
-          return true if !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib).to_s != current_resource.send(user_attrib).to_s
+        @change_desc = []
+        if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
+          @change_desc << "change homedir from #{current_resource.home} to #{new_resource.home}"
         end
 
-        false
+        %i{comment shell password uid gid}.each do |user_attrib|
+          new_val = new_resource.send(user_attrib)
+          cur_val = current_resource.send(user_attrib)
+          if !new_val.nil? && new_val.to_s != cur_val.to_s
+            @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+          end
+        end
+
+        !@change_desc.empty?
       end
 
       action :create do
@@ -123,9 +131,9 @@ class Chef
             logger.info("#{new_resource} created")
           end
         elsif compare_user
-          converge_by("alter user #{new_resource.username}") do
+          converge_by(["alter user #{new_resource.username}"] + change_desc) do
             manage_user
-            logger.info("#{new_resource} altered")
+            logger.info("#{new_resource} altered, #{change_desc.join(", ")}")
           end
         end
       end
@@ -142,18 +150,18 @@ class Chef
       action :manage do
         return unless @user_exists && compare_user
 
-        converge_by("manage user #{new_resource.username}") do
+        converge_by(["manage user #{new_resource.username}"] + change_desc) do
           manage_user
-          logger.info("#{new_resource} managed")
+          logger.info("#{new_resource} managed: #{change_desc.join(", ")}")
         end
       end
 
       action :modify do
         return unless compare_user
 
-        converge_by("modify user #{new_resource.username}") do
+        converge_by(["modify user #{new_resource.username}"] + change_desc) do
           manage_user
-          logger.info("#{new_resource} modified")
+          logger.info("#{new_resource} modified: #{change_desc.join(", ")}")
         end
       end
 

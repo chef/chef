@@ -159,7 +159,7 @@ class Chef
 
         converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
           manage_group
-          logger.info("#{new_resource} managed")
+          logger.info("#{new_resource} managed: #{change_desc.join(", ")}")
         end
       end
 
@@ -168,7 +168,7 @@ class Chef
 
         converge_by(["modify group #{new_resource.group_name}"] + change_desc) do
           manage_group
-          logger.info("#{new_resource} modified")
+          logger.info("#{new_resource} modified: #{change_desc.join(", ")}")
         end
       end
 

@@ -259,6 +259,7 @@ describe Chef::Provider::User do
     it "should call manage_user if the user exists and has mismatched properties" do
       @provider.user_exists = true
       allow(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_create
     end
@@ -266,6 +267,7 @@ describe Chef::Provider::User do
     it "should set the new_resources updated flag when it creates the user if we call manage_user" do
       @provider.user_exists = true
       allow(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       allow(@provider).to receive(:manage_user).and_return(true)
       @provider.action_create
       @provider.set_updated_status
@@ -315,14 +317,16 @@ describe Chef::Provider::User do
       # @provider.stub(:manage_user).and_return(true)
     end
 
-    it "should run manage_user if the user exists and has mismatched properties" do
+    it "should call manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_manage
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
       allow(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       allow(@provider).to receive(:manage_user).and_return(true)
       @provider.action_manage
       @provider.set_updated_status
@@ -360,12 +364,14 @@ describe Chef::Provider::User do
 
     it "should run manage_user if the user exists and has mismatched properties" do
       expect(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       expect(@provider).to receive(:manage_user).and_return(true)
       @provider.action_modify
     end
 
     it "should set the new resources updated flag to true if manage_user is called" do
       allow(@provider).to receive(:compare_user).and_return(true)
+      allow(@provider).to receive(:change_desc).and_return([ ])
       allow(@provider).to receive(:manage_user).and_return(true)
       @provider.action_modify
       @provider.set_updated_status
