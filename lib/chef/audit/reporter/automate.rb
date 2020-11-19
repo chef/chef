@@ -53,6 +53,7 @@ class Chef
           full_report = truncate_controls_results(enriched_report(report), @control_results_limit)
 
           # If the Automate backend has the profile metadata for at least one profile, proceed with metadata stripping
+          # TODO: Fix hardcoded 1
           full_report = strip_profiles_meta(full_report, missing_report_shas, 1) if missing_report_shas.length < all_report_shas.length
           json_report = Chef::JSONCompat.to_json(full_report, validate_utf8: false)
 
