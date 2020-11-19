@@ -61,13 +61,20 @@ class Chef
         # <true>:: If a change is required
         # <false>:: If the users are identical
         def compare_user
+          @change_desc = []
           unless @net_user.validate_credentials(new_resource.password)
-            logger.trace("#{new_resource} password has changed")
-            return true
+            @change_desc << "update password"
           end
+
           %i{uid comment home shell full_name}.any? do |user_attrib|
-            !new_resource.send(user_attrib).nil? && new_resource.send(user_attrib) != current_resource.send(user_attrib)
+            new_val = new_resource.send(user_attrib)
+            cur_val = current_resource.send(user_attrib)
+            if !new_val.nil? && new_val != cur_val
+              @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+            end
           end
+
+          !@change_desc.empty?
         end
 
         def create_user
