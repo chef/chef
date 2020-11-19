@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.51 -->
-## [v16.7.51](https://github.com/chef/chef/tree/v16.7.51) (2020-11-17)
+<!-- latest_release 16.7.52 -->
+## [v16.7.52](https://github.com/chef/chef/tree/v16.7.52) (2020-11-19)
 
 #### Merged Pull Requests
-- update pwsh in powershell_exec to 7.1.0 and add comments explaining how to pull in updates [#10652](https://github.com/chef/chef/pull/10652) ([mwrock](https://github.com/mwrock))
+- user: Log what changed when updating a user [#10656](https://github.com/chef/chef/pull/10656) ([jaymzh](https://github.com/jaymzh))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- user: Log what changed when updating a user [#10656](https://github.com/chef/chef/pull/10656) ([jaymzh](https://github.com/jaymzh)) <!-- 16.7.52 -->
 - update pwsh in powershell_exec to 7.1.0 and add comments explaining how to pull in updates [#10652](https://github.com/chef/chef/pull/10652) ([mwrock](https://github.com/mwrock)) <!-- 16.7.51 -->
 - Update mixlib-shellout to 3.2.2 [#10654](https://github.com/chef/chef/pull/10654) ([tas50](https://github.com/tas50)) <!-- 16.7.50 -->
 - Update fauxhai, chef-vault, and chefstyle to the latest [#10653](https://github.com/chef/chef/pull/10653) ([tas50](https://github.com/tas50)) <!-- 16.7.49 -->
