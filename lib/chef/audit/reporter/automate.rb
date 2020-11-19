@@ -54,13 +54,12 @@ class Chef
 
           # If the Automate backend has the profile metadata for at least one profile, proceed with metadata stripping
           full_report = strip_profiles_meta(full_report, missing_report_shas, 1) if missing_report_shas.length < all_report_shas.length
-          json_report = full_report.to_json
+          json_report = Chef::JSONCompat.to_json(full_report, validate_utf8: false)
 
-          report_size = json_report.bytesize
           # Automate GRPC currently has a message limit of ~4MB
           # https://github.com/chef/automate/issues/1417#issuecomment-541908157
-          if report_size > 4 * 1024 * 1024
-            Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
+          if json_report.bytesize > 4 * 1024 * 1024
+            Chef::Log.warn "Compliance report size is #{(json_report.bytesize / (1024 * 1024.0)).round(2)} MB."
             Chef::Log.warn "Automate has an internal 4MB limit that is not currently configurable."
           end
 
@@ -156,7 +155,7 @@ class Chef
           meta_url = URI(@url)
           meta_url.path = "/compliance/profiles/metasearch"
           response_str = http_client(meta_url.to_s).post(nil, "{\"sha256\": #{report_shas}}", headers)
-          missing_shas = JSON.parse(response_str)["missing_sha256"]
+          missing_shas = Chef::JSONCompat.parse(response_str)["missing_sha256"]
           unless missing_shas.empty?
             Chef::Log.info "Automate is missing metadata for the following profile ids: #{missing_shas}"
           end

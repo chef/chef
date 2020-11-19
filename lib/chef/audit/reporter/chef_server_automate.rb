@@ -35,7 +35,7 @@ class Chef
 
           automate_report = truncate_controls_results(enriched_report(report), @control_results_limit)
 
-          report_size = automate_report.to_json.bytesize
+          report_size = Chef::JSONCompat.to_json(automate_report, validate_utf8: false).bytesize
           # this is set to slightly less than the oc_erchef limit
           if report_size > 900 * 1024
             Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
