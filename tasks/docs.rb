@@ -114,17 +114,6 @@ namespace :docs_site do
       fixed_arr.compact.join(", ")
     end
 
-    # build the menu entry for this resource
-    def build_menu_item(name)
-      {
-        "infra" => {
-          "title" => name,
-          "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
-          "parent" => "chef_infra/cookbook_reference/resources",
-        },
-      }
-    end
-
     # print out the human readable form of the default
     def friendly_default_value(property)
       return "The resource block's name" if property["name_property"]
@@ -274,10 +263,7 @@ namespace :docs_site do
       # These properties are set to special values for only a few resources.
       r.merge!(special_properties(name))
 
-      r["title"] = "#{name} resource"
       r["resource"] = name
-      r["aliases"] = ["/resource_#{name}.html"]
-      r["menu"] = build_menu_item(name)
       r["resource_description_list"] = build_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
@@ -310,10 +296,7 @@ namespace :docs_site do
         pp resource_data
       else
         puts "Writing out #{resource}."
-        FileUtils.mkdir_p "docs_site/#{resource}"
-        # write out the yaml contents of the hash and append a --- since this is actually a yaml
-        # block in the middle of a markdown page and the block needs an ending
-        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(YAML.dump(resource_data) + "---") }
+        File.open("docs_site/#{resource}.yaml", "w") { |f| f.write(YAML.dump(resource_data)) }
       end
     end
   end
