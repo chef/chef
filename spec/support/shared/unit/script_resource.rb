@@ -47,9 +47,9 @@ shared_examples_for "a script resource" do
   end
 
   describe "when executing guards" do
-    it "inherits exactly the :cwd, :environment, :group, :path, :user, and :umask attributes from a parent resource class" do
+    it "inherits exactly the :cwd, :domain, :environment, :group, :password, :path, :user, and :umask attributes from a parent resource class" do
       inherited_difference = Chef::Resource::Script.guard_inherited_attributes -
-        %i{cwd environment group path user umask}
+        %i{cwd domain environment group password path user umask}
 
       expect(inherited_difference).to eq([])
     end

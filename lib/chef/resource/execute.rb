@@ -661,8 +661,10 @@ class Chef
 
       set_guard_inherited_attributes(
         :cwd,
+        :domain,
         :environment,
         :group,
+        :password,
         :user,
         :umask
       )
