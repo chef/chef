@@ -166,6 +166,45 @@ class Chef
           # If we get an error it's safer to assume none of the profile shas exist in Automate
           report_shas
         end
+
+        # TODO: cleanup
+        def strip_profiles_meta(report, missing_report_shas, run_time_limit)
+          return report unless report.is_a?(Hash) && report[:profiles].is_a?(Array)
+          report[:profiles].each do |p|
+            next if missing_report_shas.include?(p[:sha256])
+            # Profile 'name' is a required property. By not sending it in the report, we make it clear to the ingestion backend that the profile metadata has been stripped from this profile in the report.
+            # Profile 'title' and 'version' are still kept for troubleshooting purposes in the backend.
+            p.delete(:name)
+            p.delete(:groups)
+            p.delete(:copyright_email)
+            p.delete(:copyright)
+            p.delete(:summary)
+            p.delete(:supports)
+            p.delete(:license)
+            p.delete(:maintainer)
+            next unless p[:controls].is_a?(Array)
+            p[:controls].each do |c|
+              c.delete(:code)
+              c.delete(:desc)
+              c.delete(:descriptions)
+              c.delete(:impact)
+              c.delete(:refs)
+              c.delete(:tags)
+              c.delete(:title)
+              c.delete(:source_location)
+              c.delete(:waiver_data) if c[:waiver_data] == {}
+              next unless c[:results].is_a?(Array)
+              c[:results].each do |r|
+                if r[:run_time].is_a?(Float) && r[:run_time] < run_time_limit
+                  r.delete(:start_time)
+                  r.delete(:run_time)
+                end
+              end
+            end
+          end
+          report[:run_time_limit] = run_time_limit
+          report
+        end
       end
     end
   end

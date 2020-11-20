@@ -286,4 +286,74 @@ describe Chef::Audit::Reporter::Automate do
       expect(truncated_report[:profiles][0][:controls][0][:results].length).to eq(1)
     end
   end
+
+  describe "#strip_profiles_meta" do
+    it 'removes the metadata from seen profiles' do
+      expected = {
+        other_checks: [],
+        profiles: [
+          {
+            attributes: [
+              {
+                name: 'syslog_pkg',
+                options: {
+                  default: 'rsyslog',
+                  description: 'syslog package...',
+                },
+              },
+            ],
+            controls: [
+              {
+                id: 'tmp-1.0',
+                results: [
+                  {
+                    code_desc: 'File /tmp should be directory',
+                    status: 'passed',
+                  },
+                ],
+              },
+              {
+                id: 'tmp-1.1',
+                results: [
+                  {
+                    code_desc: 'File /tmp should be owned by "root"',
+                    run_time: 1.228845,
+                    start_time: '2016-10-19 11:09:43 -0400',
+                    status: 'passed',
+                  },
+                  {
+                    code_desc: 'File /tmp should be owned by "root"',
+                    run_time: 1.228845,
+                    start_time: '2016-10-19 11:09:43 -0400',
+                    status: 'skipped',
+                  },
+                  {
+                    code_desc: 'File /etc/hosts is expected to be directory',
+                    message: 'expected `File /etc/hosts.directory?` to return true, got false',
+                    run_time: 1.228845,
+                    start_time: '2016-10-19 11:09:43 -0400',
+                    status: 'failed',
+                  },
+                ],
+              },
+            ],
+            sha256: '7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd',
+            title: '/tmp Compliance Profile',
+            version: '0.1.1',
+          },
+        ],
+        run_time_limit: 1.1,
+        statistics: {
+          duration: 0.032332,
+        },
+        version: '1.2.1',
+      }
+      expect(reporter.strip_profiles_meta(inspec_report, [], 1.1)).to eq(expected)
+    end
+
+    it 'does not remove the metadata from missing profiles' do
+      expected = inspec_report.merge(run_time_limit: 1.1)
+      expect(reporter.strip_profiles_meta(inspec_report, ['7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd'], 1.1)).to eq(expected)
+    end
+  end
 end
