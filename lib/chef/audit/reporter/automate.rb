@@ -47,14 +47,11 @@ class Chef
             "x-data-collector-token" => @token,
           }
 
-          all_report_shas = report.fetch(:profiles, []).map { |p| p[:sha256] }
+          all_report_shas = report[:profiles].map { |p| p[:sha256] }
           missing_report_shas = missing_automate_profiles(headers, all_report_shas)
 
           full_report = truncate_controls_results(enriched_report(report), @control_results_limit)
-
-          # If the Automate backend has the profile metadata for at least one profile, proceed with metadata stripping
-          # TODO: Fix hardcoded 1
-          full_report = strip_profiles_meta(full_report, missing_report_shas, 1) if missing_report_shas.length < all_report_shas.length
+          full_report = strip_profiles_meta(full_report, missing_report_shas, @run_time_limit)
           json_report = Chef::JSONCompat.to_json(full_report, validate_utf8: false)
 
           # Automate GRPC currently has a message limit of ~4MB
@@ -167,33 +164,28 @@ class Chef
           report_shas
         end
 
-        # TODO: cleanup
+        # Profile 'name' is a required property.
+        # By not sending it in the report, we make it clear to the ingestion backend that the profile metadata has been stripped from this profile in the report.
+        # Profile 'title' and 'version' are still kept for troubleshooting purposes in the backend.
+        SEEN_PROFILE_UNNECESSARY_FIELDS = %i{ copyright copyright_email groups license maintainer name summary supports}.freeze
+
+        SEEN_PROFILE_UNNECESSARY_CONTROL_FIELDS = %i{ code desc descriptions impact refs source_location tags title }.freeze
+
+        # TODO: This mutates the report and probably doesn't need to.
         def strip_profiles_meta(report, missing_report_shas, run_time_limit)
-          return report unless report.is_a?(Hash) && report[:profiles].is_a?(Array)
           report[:profiles].each do |p|
             next if missing_report_shas.include?(p[:sha256])
-            # Profile 'name' is a required property. By not sending it in the report, we make it clear to the ingestion backend that the profile metadata has been stripped from this profile in the report.
-            # Profile 'title' and 'version' are still kept for troubleshooting purposes in the backend.
-            p.delete(:name)
-            p.delete(:groups)
-            p.delete(:copyright_email)
-            p.delete(:copyright)
-            p.delete(:summary)
-            p.delete(:supports)
-            p.delete(:license)
-            p.delete(:maintainer)
+
+            p.delete_if { |f| SEEN_PROFILE_UNNECESSARY_FIELDS.include?(f) }
+
             next unless p[:controls].is_a?(Array)
+
             p[:controls].each do |c|
-              c.delete(:code)
-              c.delete(:desc)
-              c.delete(:descriptions)
-              c.delete(:impact)
-              c.delete(:refs)
-              c.delete(:tags)
-              c.delete(:title)
-              c.delete(:source_location)
+              c.delete_if { |f| SEEN_PROFILE_UNNECESSARY_CONTROL_FIELDS.include?(f) }
               c.delete(:waiver_data) if c[:waiver_data] == {}
+
               next unless c[:results].is_a?(Array)
+
               c[:results].each do |r|
                 if r[:run_time].is_a?(Float) && r[:run_time] < run_time_limit
                   r.delete(:start_time)
