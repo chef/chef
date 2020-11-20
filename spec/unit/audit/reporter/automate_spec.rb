@@ -158,8 +158,8 @@ describe Chef::Audit::Reporter::Automate do
   end
 
   describe "#send_report" do
-    it "sends report successfully to ChefAutomate" do
-      metasearch_stub = stub_request(:post, "https://automate.test/compliance/profiles/metasearch")
+    let!(:metasearch_stub) do
+      stub_request(:post, "https://automate.test/compliance/profiles/metasearch")
         .with(
           body: '{"sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}',
           headers: {
@@ -172,8 +172,10 @@ describe Chef::Audit::Reporter::Automate do
           status: 200,
           body: '{"missing_sha256": ["7bd598e369970002fc6f2d16d5b988027d58b044ac3fa30ae5fc1b8492e215cd"]}'
         )
+    end
 
-      report_stub = stub_request(:post, "https://automate.test/data_collector")
+    let!(:report_stub) do
+      stub_request(:post, "https://automate.test/data_collector")
         .with(
           body: enriched_report,
           headers: {
@@ -183,7 +185,9 @@ describe Chef::Audit::Reporter::Automate do
             "X-Data-Collector-Token" => token,
           }
         ).to_return(status: 200)
+    end
 
+    it "sends report successfully to ChefAutomate" do
       expect(reporter.send_report(inspec_report)).to eq(true)
 
       expect(metasearch_stub).to have_been_requested
@@ -194,6 +198,9 @@ describe Chef::Audit::Reporter::Automate do
       opts.delete(:entity_uuid)
       reporter = Chef::Audit::Reporter::Automate.new(opts)
       expect(reporter.send_report(inspec_report)).to eq(false)
+
+      expect(metasearch_stub).not_to have_been_requested
+      expect(report_stub).not_to have_been_requested
     end
   end
 
