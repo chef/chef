@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 16.7.53 -->
+## [v16.7.53](https://github.com/chef/chef/tree/v16.7.53) (2020-11-20)
 
 #### Merged Pull Requests
+- include password in guard inherited attributes [#10672](https://github.com/chef/chef/pull/10672) ([mwrock](https://github.com/mwrock))
 - Update the docs generation for the new format [#10659](https://github.com/chef/chef/pull/10659) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- include password in guard inherited attributes [#10672](https://github.com/chef/chef/pull/10672) ([mwrock](https://github.com/mwrock)) <!-- 16.7.53 -->
 - Update the docs generation for the new format [#10659](https://github.com/chef/chef/pull/10659) ([tas50](https://github.com/tas50)) <!-- 16.7.52 -->
 - user: Log what changed when updating a user [#10656](https://github.com/chef/chef/pull/10656) ([jaymzh](https://github.com/jaymzh)) <!-- 16.7.52 -->
 - update pwsh in powershell_exec to 7.1.0 and add comments explaining how to pull in updates [#10652](https://github.com/chef/chef/pull/10652) ([mwrock](https://github.com/mwrock)) <!-- 16.7.51 -->
