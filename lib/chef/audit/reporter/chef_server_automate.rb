@@ -85,7 +85,7 @@ class Chef
           end
           msg = "Received HTTP error #{code}"
           Chef::Log.error msg
-          raise msg if @raise_if_unreachable
+          raise msg
         end
       end
     end
