@@ -55,7 +55,29 @@ class Chef
 
       ### Below code adapted from audit cookbook's files/default/handler/audit_report.rb
 
+      DEPRECATED_CONFIG_VALUES = %w{
+        attributes_save
+        chef_node_attribute_enabled
+        fail_if_not_present
+        inspec_gem_source
+        inspec_version
+        interval
+        owner
+        raise_if_unreachable
+      }.freeze
+
+      def warn_for_deprecated_config_values!
+        deprecated_config_values = (audit_attributes.keys & DEPRECATED_CONFIG_VALUES)
+
+        if deprecated_config_values.any?
+          values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
+          logger.warn "audit-cookbook config values #{values} are not supported in Chef Infra's audit mode."
+        end
+      end
+
       def report(report = generate_report)
+        warn_for_deprecated_config_values!
+
         if report.empty?
           logger.error "Audit report was not generated properly, skipped reporting"
           return

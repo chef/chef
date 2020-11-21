@@ -88,4 +88,26 @@ describe Chef::Audit::Runner do
       expect { runner.inspec_profiles }.to raise_error(/Inspec profiles specified in an unrecognized format, expected a hash of hashes./)
     end
   end
+
+  describe "#warn_for_deprecated_config_values!" do
+    it "logs a warning when deprecated config values are present" do
+      node.default["audit"]["owner"] = "my_org"
+      node.default["audit"]["inspec_version"] = "90210"
+
+      expect(logger).to receive(:warn).with(/config values 'inspec_version', 'owner' are not supported/)
+
+      runner.warn_for_deprecated_config_values!
+    end
+
+    it "does not log a warning with no deprecated config values" do
+      node.default["audit"]["profiles"]["linux-baseline"] = {
+        'compliance': "user/linux-baseline",
+        'version': "2.1.0",
+      }
+
+      expect(logger).not_to receive(:warn)
+
+      runner.warn_for_deprecated_config_values!
+    end
+  end
 end

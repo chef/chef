@@ -17,15 +17,6 @@ class Chef
   module Audit
     module DefaultAttributes
       DEFAULTS = {
-        # Controls the inspec gem version to install and execution. Example values: '1.1.0', 'latest'
-        # Starting with Chef Infra Client 15, only the embedded InSpec gem can be used and this attribute will be ignored
-        "inspec_version" => nil,
-
-        # sets URI to alternate gem source
-        # example values: nil, 'https://mygem.server.com'
-        # notes: the root of the URL must host the *specs.4.8.gz source index
-        "inspec_gem_source" => nil,
-
         # If enabled, a cache is built for all backend calls. This should only be
         # disabled if you are expecting unique results from the same backend call.
         "inspec_backend_cache" => true,
@@ -45,28 +36,6 @@ class Chef
         # allow for connections to HTTPS endpoints using self-signed ssl certificates
         "insecure" => nil,
 
-        # Optional for 'chef-server-automate' reporter
-        # defaults to Chef Server org if not defined
-        "owner" => nil,
-
-        # raise exception if Automate API endpoint is unreachable
-        # while fetching profiles or posting a report
-        "raise_if_unreachable" => true,
-
-        # fail converge if downloaded profile is not present
-        # https://github.com/chef-cookbooks/audit/issues/166
-        "fail_if_not_present" => false,
-
-        "interval" => {
-          # control how often inspec scans are run, if not on every node converge
-          # notes: false value will result in running inspec scan every converge
-          "enabled" => false,
-
-          # controls how often inspec scans are run (in minutes)
-          # notes: only used if interval is enabled above
-          "time" => 1440,
-        },
-
         # controls verbosity of inspec runner
         "quiet" => true,
 
@@ -76,13 +45,6 @@ class Chef
 
         # Attributes used to run the given profiles
         "attributes" => {},
-
-        # Set this to false if you don't want ['audit']['attributes'] to be saved in the node object and stored in Chef Server or Automate. Useful if you are passing sensitive data to the inspec profile via the attributes.
-        "attributes_save" => true,
-
-        # If enabled, a hash of the Chef "node" object will be sent to InSpec in an attribute
-        # named `chef_node`
-        "chef_node_attribute_enabled" => false,
 
         # Set this to the path of a YAML waiver file you wish to apply
         # See https://www.inspec.io/docs/reference/waivers/
