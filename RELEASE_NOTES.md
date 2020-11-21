@@ -28,7 +28,11 @@ The `user` resource has been improved to provide log output of changes being mad
 
 ### group
 
-The `group` resource on Windows has been improved to provide log output of changes being made and to properly translate group SIDs to names in order to operate idempotently. Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
+The `group` resource has been improved to provide log output of changes being made.
+
+The `group` resource on Windows has been modified to properly translate group SIDs to names in order to operate idempotently.
+
+Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
 
 ### homebrew_update
 
