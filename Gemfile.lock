@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 4acb838346a77c31983ed9c7544a6a37a1227ee7
+  revision: a0ac22ca5a5561bdb44e05e00c87babacb158b4a
   branch: master
   specs:
-    ohai (16.7.18)
+    ohai (16.7.33)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -391,7 +391,7 @@ GEM
       win32-ipc (>= 0.6.0)
     win32-process (0.9.0)
       ffi (>= 1.0.0)
-    win32-service (2.1.6)
+    win32-service (2.2.0)
       ffi
       ffi-win32-extensions
     win32-taskscheduler (2.0.4)
