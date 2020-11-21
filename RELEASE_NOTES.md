@@ -22,6 +22,10 @@ We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1.
 
 The `chef_client_config` resource has been updated to no longer produce invalid `client.rb` content.
 
+### user
+
+The `user` resource has been improved to provide log output of changes being made.
+
 ### group
 
 The `group` resource on Windows has been improved to provide log output of changes being made and to properly translate group SIDs to names in order to operate idempotently. Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
