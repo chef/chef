@@ -285,7 +285,7 @@ class Chef
           # Train.unpack_target_from_uri only works for complete URIs in
           # form of proto://[user[:pass]@]host[:port]/
           # So we'll add the protocol prefix if it's not supplied.
-          uri_to_check = if URI.regexp.match(uri)
+          uri_to_check = if URI::DEFAULT_PARSER.make_regexp.match(uri)
                            uri
                          else
                            "#{default_protocol}://#{uri}"
