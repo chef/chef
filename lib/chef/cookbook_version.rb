@@ -471,7 +471,7 @@ class Chef
     end
 
     def reload_metadata!
-      if File.exists?(metadata_json_file)
+      if File.exist?(metadata_json_file)
         metadata.from_json(IO.read(metadata_json_file))
       end
     end

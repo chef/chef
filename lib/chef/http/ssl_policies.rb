@@ -92,10 +92,10 @@ class Chef
           unless config[:ssl_client_cert] && config[:ssl_client_key]
             raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
           end
-          unless ::File.exists?(config[:ssl_client_cert])
+          unless ::File.exist?(config[:ssl_client_cert])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
           end
-          unless ::File.exists?(config[:ssl_client_key])
+          unless ::File.exist?(config[:ssl_client_key])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
           end
 

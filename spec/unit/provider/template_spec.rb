@@ -50,7 +50,7 @@ describe Chef::Provider::Template do
 
   let(:content) do
     content = double("Chef::Provider::File::Content::Template", template_location: "/foo/bar/baz")
-    allow(File).to receive(:exists?).with("/foo/bar/baz").and_return(true)
+    allow(File).to receive(:exist?).with("/foo/bar/baz").and_return(true)
     content
   end
 
@@ -76,7 +76,7 @@ describe Chef::Provider::Template do
     it "stops executing when the local template source can't be found" do
       setup_normal_file
       allow(content).to receive(:template_location).and_return("/baz/bar/foo")
-      allow(File).to receive(:exists?).with("/baz/bar/foo").and_return(false)
+      allow(File).to receive(:exist?).with("/baz/bar/foo").and_return(false)
       expect { provider.run_action(:create) }.to raise_error Chef::Mixin::WhyRun::ResourceRequirements::Assertion::AssertionFailure
     end
 

@@ -516,7 +516,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when /var/chef does not exist and /var is accessible" do
             it "defaults to /var/chef" do
-              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(false)
+              allow(File).to receive(:exist?).with(ChefConfig::Config.var_chef_dir).and_return(false)
               allow(ChefConfig::Config).to receive(:path_accessible?).with(ChefConfig::Config.var_root_dir).and_return(true)
               expect(ChefConfig::Config[:cache_path]).to eq(primary_cache_path)
             end
@@ -524,7 +524,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when /var/chef does not exist and /var is not accessible" do
             it "defaults to $HOME/.chef" do
-              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(false)
+              allow(File).to receive(:exist?).with(ChefConfig::Config.var_chef_dir).and_return(false)
               allow(ChefConfig::Config).to receive(:path_accessible?).with(ChefConfig::Config.var_root_dir).and_return(false)
               expect(ChefConfig::Config[:cache_path]).to eq(secondary_cache_path)
             end
@@ -532,7 +532,7 @@ RSpec.describe ChefConfig::Config do
 
           context "when /var/chef exists and is not accessible" do
             before do
-              allow(File).to receive(:exists?).with(ChefConfig::Config.var_chef_dir).and_return(true)
+              allow(File).to receive(:exist?).with(ChefConfig::Config.var_chef_dir).and_return(true)
               allow(File).to receive(:readable?).with(ChefConfig::Config.var_chef_dir).and_return(true)
               allow(File).to receive(:writable?).with(ChefConfig::Config.var_chef_dir).and_return(false)
             end

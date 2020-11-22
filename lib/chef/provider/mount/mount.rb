@@ -42,9 +42,9 @@ class Chef
 
         def mountable?
           # only check for existence of non-remote devices
-          if device_should_exist? && !::File.exists?(device_real)
+          if device_should_exist? && !::File.exist?(device_real)
             raise Chef::Exceptions::Mount, "Device #{@new_resource.device} does not exist"
-          elsif @new_resource.mount_point != "none" && !::File.exists?(@new_resource.mount_point)
+          elsif @new_resource.mount_point != "none" && !::File.exist?(@new_resource.mount_point)
             raise Chef::Exceptions::Mount, "Mount point #{@new_resource.mount_point} does not exist"
           end
 
@@ -81,7 +81,7 @@ class Chef
           # "mount" outputs the mount points as real paths. Convert
           # the mount_point of the resource to a real path in case it
           # contains symlinks in its parents dirs.
-          real_mount_point = if ::File.exists? @new_resource.mount_point
+          real_mount_point = if ::File.exist? @new_resource.mount_point
                                ::File.realpath(@new_resource.mount_point)
                              else
                                @new_resource.mount_point

@@ -5,7 +5,7 @@ describe Chef::Provider::Mount::Linux do
   let(:run_context) do
     node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
+    Chef::RunContext.new(node, {}, events)
   end
 
   let(:new_resource) do
@@ -22,9 +22,10 @@ describe Chef::Provider::Mount::Linux do
   end
 
   before(:each) do
-    allow(::File).to receive(:exists?).with("/dev/sdz1").and_return true
-    allow(::File).to receive(:exists?).with("/tmp/foo").and_return true
-    allow(::File).to receive(:exists?).with("//192.168.11.102/Share/backup").and_return true
+    allow(::File).to receive(:exist?).with("/etc/fstab").and_return false
+    allow(::File).to receive(:exist?).with("/dev/sdz1").and_return true
+    allow(::File).to receive(:exist?).with("/tmp/foo").and_return true
+    allow(::File).to receive(:exist?).with("//192.168.11.102/Share/backup").and_return true
     allow(::File).to receive(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
     allow(::File).to receive(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end

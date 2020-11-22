@@ -125,7 +125,7 @@ describe Chef::Resource::Link do
 
   describe "when the target doesn't exist" do
     before do
-      allow(File).to receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
+      allow(File).to receive(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       allow(provider.file_class).to receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
       provider.load_current_resource
     end
@@ -152,13 +152,13 @@ describe Chef::Resource::Link do
       allow(stat).to receive(:mode).and_return(0755)
       allow(provider.file_class).to receive(:stat).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(stat)
 
-      allow(File).to receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
+      allow(File).to receive(:exist?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(true)
       allow(provider.file_class).to receive(:symlink?).with("#{CHEF_SPEC_DATA}/fofile-link").and_return(false)
     end
 
     describe "and the source does not exist" do
       before do
-        allow(File).to receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
+        allow(File).to receive(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(false)
         provider.load_current_resource
       end
 
@@ -185,7 +185,7 @@ describe Chef::Resource::Link do
 
         allow(provider.file_class).to receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        allow(File).to receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        allow(File).to receive(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
@@ -212,7 +212,7 @@ describe Chef::Resource::Link do
 
         allow(provider.file_class).to receive(:stat).with("#{CHEF_SPEC_DATA}/fofile").and_return(stat)
 
-        allow(File).to receive(:exists?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
+        allow(File).to receive(:exist?).with("#{CHEF_SPEC_DATA}/fofile").and_return(true)
         provider.load_current_resource
       end
 
@@ -336,10 +336,10 @@ describe Chef::Resource::Link do
           "#{CHEF_SPEC_DATA}/fofile-link"
         ).and_return(false)
 
-        allow(File).to receive(:exists?).with(
+        allow(File).to receive(:exist?).with(
           "#{CHEF_SPEC_DATA}/fofile-link"
         ).and_return(true)
-        allow(File).to receive(:exists?).with(
+        allow(File).to receive(:exist?).with(
           "#{CHEF_SPEC_DATA}/fofile"
         ).and_return(true)
 

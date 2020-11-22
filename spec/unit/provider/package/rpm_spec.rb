@@ -41,7 +41,7 @@ describe Chef::Provider::Package::Rpm do
   let(:rpm_q_status) { instance_double("Mixlib::ShellOut", exitstatus: rpm_q_exitstatus, stdout: rpm_q_stdout) }
 
   before(:each) do
-    allow(::File).to receive(:exist?).with("PLEASE STUB File.exists? EXACTLY").and_return(true)
+    allow(::File).to receive(:exist?).with("PLEASE STUB File.exist? EXACTLY").and_return(true)
 
     # Ensure all shell out usage is stubbed with exact arguments
     allow(provider).to receive(:shell_out_compacted!).with("PLEASE STUB YOUR SHELLOUT CALLS").and_return(nil)

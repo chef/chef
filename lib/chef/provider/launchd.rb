@@ -52,7 +52,7 @@ class Chef
       end
 
       action :delete do
-        if ::File.exists?(path)
+        if ::File.exist?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)
