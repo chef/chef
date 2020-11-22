@@ -138,9 +138,9 @@ describe Chef::Knife::CookbookDownload do
             expect(File).to receive(:exist?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
             @knife.run
             %w{attributes recipes templates}.each do |segment|
-              expect(@stderr.string).to match /downloading #{segment}/im
+              expect(@stderr.string).to match(/downloading #{segment}/im)
             end
-            expect(@stderr.string).to match /downloading foobar cookbook version 1\.0\.0/im
+            expect(@stderr.string).to match(/downloading foobar cookbook version 1\.0\.0/im)
             expect(@stderr.string).to match %r{cookbook downloaded to /var/tmp/chef/foobar-1\.0\.0}im
           end
 

@@ -17,7 +17,7 @@ describe Chef::Knife::TagCreate do
     it "can create tags on a node" do
       @knife.run
       expect(@node.tags).to eq(["happytag"])
-      expect(@stderr.string).to match /created tags happytag.+node webmonkey.example.com/i
+      expect(@stderr.string).to match(/created tags happytag.+node webmonkey.example.com/i)
     end
   end
 end

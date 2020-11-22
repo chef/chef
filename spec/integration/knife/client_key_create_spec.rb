@@ -39,7 +39,7 @@ describe "knife client key create", :workstation do
     it "creates a new client key with an expiration date" do
       date = "2017-12-31T23:59:59Z"
       knife("client key create -k new -e #{date} bah").should_succeed stderr: /^#{out}/, stdout: /.*BEGIN RSA PRIVATE KEY/
-      knife("client key show bah new").should_succeed /expiration_date:.*#{date}/
+      knife("client key show bah new").should_succeed(/expiration_date:.*#{date}/)
     end
 
     it "refuses to add an already existing key" do

@@ -152,7 +152,7 @@ describe Chef::Knife::CookbookDelete do
 
       it "should print an error" do
         @knife.available_versions
-        expect(@stderr.string).to match /error.+cannot find a cookbook named foobar/i
+        expect(@stderr.string).to match(/error.+cannot find a cookbook named foobar/i)
       end
 
       it "should return nil" do
@@ -204,7 +204,7 @@ describe Chef::Knife::CookbookDelete do
     it "should output that the cookbook was deleted" do
       allow(@knife).to receive(:delete_request)
       @knife.delete_version_without_confirmation("1.0.0")
-      expect(@stderr.string).to match /deleted cookbook\[foobar\]\[1.0.0\]/im
+      expect(@stderr.string).to match(/deleted cookbook\[foobar\]\[1.0.0\]/im)
     end
 
     describe "with --print-after" do

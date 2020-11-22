@@ -30,7 +30,7 @@ describe "knife node show", :workstation do
     end
 
     it "shows the node" do
-      knife("node show cons").should_succeed /Run List:\s*recipe\[bar\], recipe\[foo\]\n/m
+      knife("node show cons").should_succeed(/Run List:\s*recipe\[bar\], recipe\[foo\]\n/m)
     end
   end
 end

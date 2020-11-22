@@ -41,7 +41,7 @@ describe Chef::Knife::CookbookList do
         .and_return(@cookbook_data)
       @knife.run
       @cookbook_names.each do |item|
-        expect(@stdout.string).to match /#{item}\s+1\.0\.1/
+        expect(@stdout.string).to match(/#{item}\s+1\.0\.1/)
       end
     end
 
@@ -79,7 +79,7 @@ describe Chef::Knife::CookbookList do
           .and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
-          expect(@stdout.string).to match /#{item}\s+1\.0\.1\s+1\.0\.0/
+          expect(@stdout.string).to match(/#{item}\s+1\.0\.1\s+1\.0\.0/)
         end
       end
     end

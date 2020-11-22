@@ -86,8 +86,8 @@ describe Chef::Knife::SupermarketDownload do
               .with(/.+deprecated.+replaced by other_apache2.+/i)
             expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
             @knife.run
-            expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-            expect(@stderr.string).to match /cookbook save.+#{Regexp.escape(@file)}/i
+            expect(@stderr.string).to match(/downloading apache2.+version.+#{Regexp.escape(@version)}/i)
+            expect(@stderr.string).to match(/cookbook save.+#{Regexp.escape(@file)}/i)
           end
 
         end
@@ -95,8 +95,8 @@ describe Chef::Knife::SupermarketDownload do
         it "should download the latest version" do
           expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
           @knife.run
-          expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-          expect(@stderr.string).to match /cookbook save.+#{Regexp.escape(@file)}/i
+          expect(@stderr.string).to match(/downloading apache2.+version.+#{Regexp.escape(@version)}/i)
+          expect(@stderr.string).to match(/cookbook save.+#{Regexp.escape(@file)}/i)
         end
 
         context "with -f or --file" do
@@ -108,8 +108,8 @@ describe Chef::Knife::SupermarketDownload do
 
           it "should download the cookbook to the desired file" do
             @knife.run
-            expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-            expect(@stderr.string).to match /cookbook save.+#{Regexp.escape(@file)}/i
+            expect(@stderr.string).to match(/downloading apache2.+version.+#{Regexp.escape(@version)}/i)
+            expect(@stderr.string).to match(/cookbook save.+#{Regexp.escape(@file)}/i)
           end
         end
 
@@ -140,8 +140,8 @@ describe Chef::Knife::SupermarketDownload do
             .and_return(@temp_file)
           expect(FileUtils).to receive(:cp).with(@temp_file.path, @file)
           @knife.run
-          expect(@stderr.string).to match /downloading apache2.+version.+#{Regexp.escape(@version)}/i
-          expect(@stderr.string).to match /cookbook save.+#{Regexp.escape(@file)}/i
+          expect(@stderr.string).to match(/downloading apache2.+version.+#{Regexp.escape(@version)}/i)
+          expect(@stderr.string).to match(/cookbook save.+#{Regexp.escape(@file)}/i)
         end
       end
 

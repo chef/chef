@@ -30,7 +30,7 @@ describe "knife node run list set", :workstation do
     end
 
     it "sets the run list" do
-      knife("node run list set cons recipe[bar]").should_succeed /run_list:\s*recipe\[bar\]\n/m
+      knife("node run list set cons recipe[bar]").should_succeed(/run_list:\s*recipe\[bar\]\n/m)
     end
 
     it "with no role or recipe" do

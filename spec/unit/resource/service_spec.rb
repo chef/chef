@@ -62,7 +62,7 @@ describe Chef::Resource::Service do
 
   it "does not accept a regexp for the service pattern" do
     expect do
-      resource.pattern /.*/
+      resource.pattern(/.*/)
     end.to raise_error(ArgumentError)
   end
 
@@ -89,7 +89,7 @@ describe Chef::Resource::Service do
 
   it "does not accept a regexp for the init_command property" do
     expect do
-      resource.init_command /.*/
+      resource.init_command(/.*/)
     end.to raise_error(ArgumentError)
   end
 
