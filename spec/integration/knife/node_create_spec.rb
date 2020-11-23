@@ -34,7 +34,7 @@ describe "knife node create", :workstation do
 
     it "creates a new validator node" do
       knife("node create bah").should_succeed out
-      knife("node show bah").should_succeed /Node Name:   bah/
+      knife("node show bah").should_succeed(/Node Name:   bah/)
     end
 
     it "refuses to add an existing node" do

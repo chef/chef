@@ -112,7 +112,7 @@ describe Chef::Knife::UserCreate do
 
       it "prints a relevant error message" do
         expect { knife.run }.to raise_error(SystemExit)
-        expect(stderr.string).to match /You cannot pass --user-key and --prevent-keygen/
+        expect(stderr.string).to match(/You cannot pass --user-key and --prevent-keygen/)
       end
     end
 

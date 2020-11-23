@@ -188,8 +188,8 @@ class Chef
                 logger.trace("#{new_resource} writing default route #{new_resource.gateway} to #{network_file_name}")
                 if ::File.exist?(network_file_name)
                   network_file = ::Chef::Util::FileEdit.new(network_file_name)
-                  network_file.search_file_replace_line /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
-                  network_file.insert_line_if_no_match /^GATEWAY=/, "GATEWAY=#{new_resource.gateway}"
+                  network_file.search_file_replace_line(/^GATEWAY=/, "GATEWAY=#{new_resource.gateway}")
+                  network_file.insert_line_if_no_match(/^GATEWAY=/, "GATEWAY=#{new_resource.gateway}")
                   network_file.write_file
                 else
                   network_file = ::File.new(network_file_name, "w")

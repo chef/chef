@@ -30,7 +30,7 @@ describe "knife node run list remove", :workstation do
     end
 
     it "removes the item from the run list" do
-      knife("node run list remove cons recipe[bar]").should_succeed /run_list:\s*recipe\[foo\]\n/m
+      knife("node run list remove cons recipe[bar]").should_succeed(/run_list:\s*recipe\[foo\]\n/m)
     end
   end
 end

@@ -30,7 +30,7 @@ describe "knife node run list add", :workstation do
     end
 
     it "sets the run list" do
-      knife("node run list add cons recipe[foo]").should_succeed /run_list:\s*recipe\[foo\]\n/
+      knife("node run list add cons recipe[foo]").should_succeed(/run_list:\s*recipe\[foo\]\n/)
     end
   end
 
@@ -40,15 +40,15 @@ describe "knife node run list add", :workstation do
     end
 
     it "appends to the run list" do
-      knife("node run list add cons recipe[foo]").should_succeed /run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m
+      knife("node run list add cons recipe[foo]").should_succeed(/run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m)
     end
 
     it "adds to the run list before the specified item" do
-      knife("node run list add cons -b recipe[bar] recipe[foo]").should_succeed /run_list:\n\s*recipe\[foo\]\n\s*recipe\[bar\]\n/m
+      knife("node run list add cons -b recipe[bar] recipe[foo]").should_succeed(/run_list:\n\s*recipe\[foo\]\n\s*recipe\[bar\]\n/m)
     end
 
     it "adds to the run list after the specified item" do
-      knife("node run list add cons -a recipe[bar] recipe[foo]").should_succeed /run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m
+      knife("node run list add cons -a recipe[bar] recipe[foo]").should_succeed(/run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m)
     end
   end
 end

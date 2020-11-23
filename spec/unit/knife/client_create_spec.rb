@@ -81,7 +81,7 @@ describe Chef::Knife::ClientCreate do
 
         it "prints a relevant error message" do
           expect { knife.run }.to raise_error(SystemExit)
-          expect(stderr.string).to match /You cannot pass --public-key and --prevent-keygen/
+          expect(stderr.string).to match(/You cannot pass --public-key and --prevent-keygen/)
         end
       end
 
@@ -93,7 +93,7 @@ describe Chef::Knife::ClientCreate do
       it "should print a message upon creation" do
         expect(knife).to receive(:create_client)
         knife.run
-        expect(stderr.string).to match /Created client.*adam/i
+        expect(stderr.string).to match(/Created client.*adam/i)
       end
 
       it "should set the Client name" do
