@@ -53,10 +53,6 @@ class Chef
             when %r{\A#{Regexp.escape(real_mount_point)}\s+([/\w])+\[#{device_mount_regex}\]\s}
               mounted = true
               logger.trace("Bind device #{device_logstring} mounted as #{real_mount_point}")
-            # Permalink for network device mounted to an existing mount point: https://rubular.com/r/HicK63SqchPLvk
-            when %r{\A#{Regexp.escape(real_mount_point)}\s+#{device_mount_regex}\[([\/\w])+\]\s}
-              mounted = true
-              logger.trace("Network device #{device_logstring} mounted as #{real_mount_point}")
             end
           end
           @current_resource.mounted(mounted)

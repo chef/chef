@@ -24,7 +24,6 @@ describe Chef::Provider::Mount::Linux do
   before(:each) do
     allow(::File).to receive(:exists?).with("/dev/sdz1").and_return true
     allow(::File).to receive(:exists?).with("/tmp/foo").and_return true
-    allow(::File).to receive(:exists?).with("//192.168.11.102/Share/backup").and_return true
     allow(::File).to receive(:realpath).with("/dev/sdz1").and_return "/dev/sdz1"
     allow(::File).to receive(:realpath).with("/tmp/foo").and_return "/tmp/foo"
   end
@@ -93,15 +92,6 @@ describe Chef::Provider::Mount::Linux do
       expect(provider.current_resource.mounted).to be_falsey
     end
 
-    it "should set mounted true if network_device? is true and the mount point is found in the mounts list" do
-      new_resource.device "//192.168.11.102/Share/backup"
-      new_resource.fstype "cifs"
-      mount = "/tmp/foo //192.168.11.102/Share/backup[/backup] cifs rw\n"
-      mount << "#{new_resource.mount_point} #{new_resource.device} type #{new_resource.fstype}\n"
-      allow(provider).to receive(:shell_out!).and_return(double(stdout: mount))
-      provider.load_current_resource
-      expect(provider.current_resource.mounted).to be_truthy
-    end
   end
 
 end
