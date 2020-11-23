@@ -41,7 +41,6 @@ class Chef
         sensitive: true
 
       property :mount_point, String, name_property: true,
-               coerce: proc { |arg| arg.chomp("/") }, # Removed "/" from the end of str, because it was causing idempotency issue.
                description: "The directory (or path) in which the device is to be mounted. Defaults to the name of the resource block if not provided."
 
       property :device, String, identity: true,
@@ -66,7 +65,7 @@ class Chef
 
       property :options, [Array, String, nil],
         description: "An array or comma separated list of options for the mount.",
-        coerce: proc { |arg| mount_options(arg) }, # Please see #mount_options method.
+        coerce: proc { |arg| arg.is_a?(String) ? arg.split(",") : arg },
         default: %w{defaults}
 
       property :dump, [Integer, FalseClass],
@@ -93,11 +92,6 @@ class Chef
       # @todo use property to make nil a valid value for fstype
       def clear_fstype
         @fstype = nil
-      end
-
-      # Returns array of string without leading and trailing whitespace.
-      def mount_options(options)
-        (options.is_a?(String) ? options.split(",") : options).collect(&:strip)
       end
 
     end

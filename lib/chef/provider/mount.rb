@@ -175,7 +175,7 @@ class Chef
 
       # Returns the new_resource device as per device_type
       def device_fstab
-        # Removed "/" from the end of str, because it was causing idempotency issue.
+        # Removed "/" from the end of str, because it was causing idempotency issues
         device = @new_resource.device.chomp("/")
         case @new_resource.device_type
         when :device
