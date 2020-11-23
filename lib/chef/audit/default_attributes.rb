@@ -13,10 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "chef/node/attribute_collections" # for VividMash
+
 class Chef
   module Audit
+    # TODO: Just define the thing, no need for a module wrapping it.
     module DefaultAttributes
-      DEFAULTS = {
+      DEFAULTS = Chef::Node::VividMash.new(
         # If enabled, a cache is built for all backend calls. This should only be
         # disabled if you are expecting unique results from the same backend call.
         "inspec_backend_cache" => true,
@@ -78,8 +81,8 @@ class Chef
 
         # The array of results per control will be truncated at this limit to avoid large reports that cannot be
         # processed by Automate. A summary of removed results will be sent with each impacted control.
-        "control_results_limit" => 50,
-      }.freeze
+        "control_results_limit" => 50
+      )
     end
   end
 end

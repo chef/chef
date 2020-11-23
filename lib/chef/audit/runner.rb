@@ -13,7 +13,8 @@ class Chef
     class Runner < EventDispatch::Base
       extend Forwardable
 
-      attr_accessor :node, :run_id, :recipes
+      attr_accessor :run_id, :recipes
+      attr_reader :node
       def_delegators :node, :logger
 
       def enabled?
@@ -25,7 +26,12 @@ class Chef
         inspec_profiles.any? && !audit_cookbook_present
       end
 
-      def node_load_success(node)
+      def node=(node)
+        @node = node
+        node.default["audit"] = Chef::Audit::DefaultAttributes::DEFAULTS.merge(node["audit"] || {})
+      end
+
+      def node_load_completed(node, _expanded_run_list, _config)
         self.node = node
       end
 
@@ -67,7 +73,7 @@ class Chef
       }.freeze
 
       def warn_for_deprecated_config_values!
-        deprecated_config_values = (audit_attributes.keys & DEPRECATED_CONFIG_VALUES)
+        deprecated_config_values = (node["audit"].keys & DEPRECATED_CONFIG_VALUES)
 
         if deprecated_config_values.any?
           values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
@@ -83,31 +89,27 @@ class Chef
           return
         end
 
-        Array(audit_attributes["reporter"]).each do |reporter|
+        Array(node["audit"]["reporter"]).each do |reporter|
           send_report(reporter, report)
         end
       end
 
       def inspec_opts
         {
-          backend_cache: audit_attributes["inspec_backend_cache"],
-          inputs: audit_attributes["attributes"],
+          backend_cache: node["audit"]["inspec_backend_cache"],
+          inputs: node["audit"]["attributes"],
           logger: logger,
-          output: audit_attributes["quiet"] ? ::File::NULL : STDOUT,
+          output: node["audit"]["quiet"] ? ::File::NULL : STDOUT,
           report: true,
           reporter: ["json-automate"],
-          reporter_backtrace_inclusion: audit_attributes["result_include_backtrace"],
-          reporter_message_truncation: audit_attributes["result_message_limit"],
-          waiver_file: Array(audit_attributes["waiver_file"]),
+          reporter_backtrace_inclusion: node["audit"]["result_include_backtrace"],
+          reporter_message_truncation: node["audit"]["result_message_limit"],
+          waiver_file: Array(node["audit"]["waiver_file"]),
         }
       end
 
-      def audit_attributes
-        @audit_attributes ||= Chef::Audit::DefaultAttributes::DEFAULTS.merge(node["audit"] || {})
-      end
-
       def inspec_profiles
-        profiles = audit_attributes["profiles"]
+        profiles = node["audit"]["profiles"]
 
         # TODO: Custom exception class here?
         unless profiles.respond_to?(:map) && profiles.all? { |_, p| p.respond_to?(:transform_keys) && p.respond_to?(:update) }
@@ -187,9 +189,9 @@ class Chef
       def send_report(reporter, report)
         logger.info "Reporting to #{reporter}"
 
-        insecure = audit_attributes["insecure"]
-        run_time_limit = audit_attributes["run_time_limit"]
-        control_results_limit = audit_attributes["control_results_limit"]
+        insecure = node["audit"]["insecure"]
+        run_time_limit = node["audit"]["run_time_limit"]
+        control_results_limit = node["audit"]["control_results_limit"]
 
         case reporter
         when "chef-automate"
@@ -203,7 +205,7 @@ class Chef
           }
           Chef::Audit::Reporter::Automate.new(opts).send_report(report)
         when "chef-server-automate"
-          chef_url = audit_attributes["server"] || base_chef_server_url
+          chef_url = node["audit"]["server"] || base_chef_server_url
           chef_org = Chef::Config[:chef_server_url].split("/").last
           if chef_url
             url = construct_url(chef_url, File.join("organizations", chef_org, "data-collector"))
@@ -221,7 +223,7 @@ class Chef
             logger.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
           end
         when "json-file"
-          path = audit_attributes["json_file"]["location"]
+          path = node["audit"]["json_file"]["location"]
           logger.info "Writing report to #{path}"
           Chef::Audit::Reporter::JsonFile.new(file: path).send_report(report)
         when "audit-enforcer"
