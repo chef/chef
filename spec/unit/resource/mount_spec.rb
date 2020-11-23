@@ -60,7 +60,7 @@ describe Chef::Resource::Mount do
   end
 
   it "raises error when mount_point property is not set" do
-    expect { resource.mount_point nil }.to raise_error(Chef::Exceptions::ValidationFailed, "Property mount_point must be one of: String!  You passed nil.")
+    expect{ resource.mount_point nil }.to raise_error(Chef::Exceptions::ValidationFailed, "Property mount_point must be one of: String!  You passed nil.")
   end
 
   it "sets fsck_device to '-' by default" do
