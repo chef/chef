@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.54 -->
-## [v16.7.54](https://github.com/chef/chef/tree/v16.7.54) (2020-11-21)
+<!-- latest_release 16.7.55 -->
+## [v16.7.55](https://github.com/chef/chef/tree/v16.7.55) (2020-11-23)
 
 #### Merged Pull Requests
-- Update ohai and win32-service to the latest [#10673](https://github.com/chef/chef/pull/10673) ([tas50](https://github.com/tas50))
+- Avoid ambiguous regexes [#10675](https://github.com/chef/chef/pull/10675) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Avoid ambiguous regexes [#10675](https://github.com/chef/chef/pull/10675) ([tas50](https://github.com/tas50)) <!-- 16.7.55 -->
 - Update ohai and win32-service to the latest [#10673](https://github.com/chef/chef/pull/10673) ([tas50](https://github.com/tas50)) <!-- 16.7.54 -->
 - include password in guard inherited attributes [#10672](https://github.com/chef/chef/pull/10672) ([mwrock](https://github.com/mwrock)) <!-- 16.7.53 -->
 - Update the docs generation for the new format [#10659](https://github.com/chef/chef/pull/10659) ([tas50](https://github.com/tas50)) <!-- 16.7.52 -->
