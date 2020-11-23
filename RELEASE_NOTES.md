@@ -56,17 +56,24 @@ Thanks for reporting these issues [@limitusus](https://github.com/limitusus), [@
 
 The `powershell_package` resource has been updated to better force connections to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Connections must be forced to use TLS 1.2 as the system default cipher suite because Windows 2012-2016 did not include TLS 1.2.
 
+### powershell_script
+
+The `powershell_script` resource has been updated to not fail when using a `not_if` or `only_if` guard when specifying the `user` property. Thanks for reporting this issue [@Blorpy](https://github.com/Blorpy)
+
 ### zypper_package
 
 The `zypper_package` resource has been refactored to improve idempotency when specifying a version of the package to either install or downgrade.
 
 ## Ohai Improvements
 
+- The `Joyent` plugin has been removed as the Joyent public cloud was shutdown 11/2019
 - `pop_os` is now detected as having the `platform_family` of `debian`. Thanks for this improvement [@chasebolt](https://github.com/chasebolt)!
 - Recent `openindiana` releases are now properly detected.
 - The `Hostnamectl` plugin properly detects hostnames that contain a colon. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)!
 - The `Zpool` plugin now properly detects ZFS zpools that include `nvme` or `xvd` drives. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)!
 - The `Zpool` plugin now properly detects ZFS zpools that use disk labels/guids instead of traditional drive designations.
+- Performance of system configuration gathering on AIX systems has been improved
+- The `Virtualization` plugin on AIX systems now gathers a state `state` per WPAR and properly gathers LPAR names that include spaces
 
 # What's New in 16.6
 
