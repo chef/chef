@@ -2,10 +2,8 @@
 project-name: chef
 config: omnibus/omnibus.rb
 test-path: omnibus/omnibus-test.sh
-test-path-windows: omnibus/omnibus-test.ps1
 fips-platforms:
   - el-*-x86_64
-  - windows-*
 builder-to-testers-map:
   aix-7.1-powerpc:
     - aix-7.1-powerpc
@@ -15,21 +13,12 @@ builder-to-testers-map:
     - debian-10-x86_64
   debian-10-aarch64:
     - debian-10-aarch64
-  el-6-i686:
-    - el-6-i686
   el-6-x86_64:
     - el-6-x86_64
   el-7-aarch64:
     - el-7-aarch64
     - el-8-aarch64
     - amazon-2-aarch64
-  el-7-ppc64:
-    - el-7-ppc64
-  el-7-ppc64le:
-    - el-7-ppc64le
-  el-7-s390x:
-    - el-7-s390x
-    - el-8-s390x
   el-7-x86_64:
     - el-7-x86_64
     - el-8-x86_64
@@ -42,9 +31,6 @@ builder-to-testers-map:
     - mac_os_x-10.14-x86_64
     - mac_os_x-10.15-x86_64
     - mac_os_x-11.0-x86_64
-  sles-12-s390x:
-    - sles-12-s390x
-    - sles-15-s390x
   sles-12-x86_64:
     - sles-12-x86_64
     - sles-15-x86_64
@@ -61,12 +47,3 @@ builder-to-testers-map:
     - ubuntu-16.04-x86_64
     - ubuntu-18.04-x86_64
     - ubuntu-20.04-x86_64
-  windows-2012r2-i386:
-    - windows-2012r2-i386
-  windows-2012r2-x86_64:
-    - windows-2012-x86_64
-    - windows-2012r2-x86_64
-    - windows-2016-x86_64
-    - windows-2019-x86_64
-    - windows-8-x86_64
-    - windows-10-x86_64
