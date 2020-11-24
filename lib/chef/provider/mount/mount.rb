@@ -203,7 +203,7 @@ class Chef
             end
           end
           # Removed "/" from the end of str, because it was causing idempotency issue.
-          @real_device.chomp("/")
+          @real_device == "/" ? @real_device : @real_device.chomp("/")
         end
 
         def device_logstring
