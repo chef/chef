@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: a0ac22ca5a5561bdb44e05e00c87babacb158b4a
+  revision: 115f471fb35e058d009cf86cc59f8d49c602b64f
   branch: master
   specs:
-    ohai (16.7.33)
+    ohai (16.7.34)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -271,7 +271,7 @@ GEM
       net-ssh (>= 2.6.5)
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
-    parallel (1.20.0)
+    parallel (1.20.1)
     parser (2.7.2.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
