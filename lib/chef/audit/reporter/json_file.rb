@@ -9,6 +9,8 @@ class Chef
         end
 
         def send_report(report)
+          FileUtils.mkdir_p(File.dirname(@path), mode: 0700)
+
           File.write(@path, Chef::JSONCompat.to_json(report))
         end
       end

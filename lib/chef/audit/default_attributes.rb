@@ -14,6 +14,7 @@
 # limitations under the License.
 
 require "chef/node/attribute_collections" # for VividMash
+require "chef/util/path_helper"
 
 class Chef
   module Audit
@@ -53,10 +54,12 @@ class Chef
 
       "json_file" => {
         # The location of the json-file output:
-        # <chef_cache_path>/cookbooks/audit/inspec-<timestamp>.json
-        # TODO: ^^ comment is wrong
-        # TODO: Does this path work?
-        "location" => File.expand_path(Time.now.utc.strftime("../../../inspec-%Y%m%d%H%M%S.json"), __dir__),
+        # <chef_cache_path>/audit_reports/audit-<timestamp>.json
+        "location" => Chef::Util::PathHelper.join(
+          Chef::Config[:cache_path],
+          "audit_reports",
+          Time.now.utc.strftime("audit-%Y%m%d%H%M%S.json")
+        ),
       },
 
       # Control results that have a `run_time` below this limit will
