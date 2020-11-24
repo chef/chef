@@ -129,8 +129,9 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
   end
 
   # Actual tests begin here.
-  before(:all) do
+  before(:all) do |test|
     @device, @fstype = setup_device_for_mount
+    @device =  "/" if test.metadata[:skip_before]
 
     @mount_point = Dir.mktmpdir("testmount")
 
@@ -145,11 +146,18 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
   end
 
   after(:all) do
-    Dir.rmdir(@mount_point)
+    Dir.rmdir(@mount_point) if @mount_point
   end
 
   after(:each) do
     cleanup_mount(new_resource.mount_point)
+  end
+
+  describe "when device is '/'" do
+    it "should mount the filesystem if device is '/'", :skip_before do
+      new_resource.run_action(:mount)
+      mount_should_exist(new_resource.mount_point, new_resource.device)
+    end
   end
 
   describe "when the target state is a mounted filesystem" do
