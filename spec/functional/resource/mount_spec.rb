@@ -129,7 +129,7 @@ describe Chef::Resource::Mount, :requires_root, external: include_flag do
   end
 
   # Actual tests begin here.
-  before(:all) do |test|
+  before do |test|
     @device, @fstype = setup_device_for_mount
     @device = "/" if test.metadata[:skip_before]
 
