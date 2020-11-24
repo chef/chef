@@ -26,7 +26,7 @@ class Chef
 
       def node=(node)
         @node = node
-        node.default["audit"] = Chef::Audit::DefaultAttributes::DEFAULTS.merge(node["audit"] || {})
+        node.default["audit"] = Chef::Audit::DEFAULT_ATTRIBUTES.merge(node["audit"] || {})
       end
 
       def node_load_completed(node, _expanded_run_list, _config)
