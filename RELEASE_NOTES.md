@@ -1,5 +1,76 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.7
+
+## Performance Enhancements
+
+In Chef Infra Client 16.7, we've put a particular focus on optimizing the performance of the client. We've created several dozen minor optimizations that increase performance and reduce overall memory usage across all platforms. On Windows, our work has been particularly pronounced as we've improved resource execution and Chef Infra Client installation. Chef Infra Client install times on Windows are now up to 3x faster than previous releases. Resources that use PowerShell to make changes now execute significantly faster. This improvement will be the most noticeable in Chef Infra Client runs that don't make actual system changes (no-op runs), where determining the current system state was previously resource-intensive.
+
+## Windows Bootstrap Improvements
+
+We've improved how Windows nodes are bootstrapped when using the `knife bootstrap` command. The `knife bootstrap` `--secret` flag is now respected on Windows hosts, allowing for the proper setup of nodes to use encrypted data bags. Thanks for reporting this issue [@AMC-7](https://github.com/AMC-7)! Additionally, during the bootstrap we now force connections to use TLS 1.2, preventing failures on Windows 2012-2016. Thanks for this improvement [@TimothyTitan](https://github.com/TimothyTitan)!
+
+## Chef Vault 4.1
+
+We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1. Chef Vault 4.1 properly handles escape strings in secrets and greatly improves performance for users with large numbers of secrets. Thanks for the performance work [@Annih](https://github.com/Annih)!
+
+## Updated Resources
+
+### chef_client_config
+
+The `chef_client_config` resource has been updated to no longer produce invalid `client.rb` content.
+
+### user
+
+The `user` resource has been improved to provide log output of changes being made.
+
+### group
+
+The `group` resource has been improved to provide log output of changes being made and on Windows now properly translates group SIDs to names in order to operate idempotently.
+
+Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
+
+### homebrew_update
+
+The `homebrew_update` has been updated to resolve failures that would occur when running the resource.
+
+### ifconfig
+
+The `ifconfig` resource has been updated to better support Linux distributions that are derivatives of either Ubuntu or Debian. Support for setting the `BRIDGE` property on RHEL-based systems has also been added.
+
+### mount
+
+The `mount` resource has been updated to resolve several issues:
+
+- Idempotency failures when using labels on Linux hosts.
+- Idempotency failures when using network paths that end with a slash.
+- fstab entries being reordered instead of performing in-place updates.
+
+Thanks for reporting these issues [@limitusus](https://github.com/limitusus), [@axelrtgs](https://github.com/axelrtgs), and [@scarpe01](https://github.com/scarpe01)!
+
+### powershell_package
+
+The `powershell_package` resource has been updated to better force connections to use TLS 1.2 when communicating with the PowerShell Gallery on Windows Server 2012-2016. Connections must be forced to use TLS 1.2 as the system default cipher suite because Windows 2012-2016 did not include TLS 1.2.
+
+### powershell_script
+
+The `powershell_script` resource has been updated to not fail when using a `not_if` or `only_if` guard when specifying the `user` property. Thanks for reporting this issue [@Blorpy](https://github.com/Blorpy)
+
+### zypper_package
+
+The `zypper_package` resource has been refactored to improve idempotency when specifying a version of the package to either install or downgrade.
+
+## Ohai Improvements
+
+- The `Joyent` plugin has been removed as the Joyent public cloud was shutdown 11/2019
+- `pop_os` is now detected as having the `platform_family` of `debian`. Thanks for this improvement [@chasebolt](https://github.com/chasebolt)!
+- Recent `openindiana` releases are now properly detected.
+- The `Hostnamectl` plugin properly detects hostnames that contain a colon. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)!
+- The `Zpool` plugin now properly detects ZFS zpools that include `nvme` or `xvd` drives. Thanks for reporting this [@ziggythehamster](https://github.com/ziggythehamster)!
+- The `Zpool` plugin now properly detects ZFS zpools that use disk labels/guids instead of traditional drive designations.
+- Performance of system configuration gathering on AIX systems has been improved
+- The `Virtualization` plugin on AIX systems now gathers a state `state` per WPAR and properly gathers LPAR names that include spaces
+
 # What's New in 16.6
 
 ## pwsh Support
