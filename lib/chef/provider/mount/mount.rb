@@ -203,8 +203,7 @@ class Chef
             end
           end
           # Removed "/" from the end of str, because it was causing idempotency issue.
-          # On AIX, device property value can be "/"
-          !RUBY_PLATFORM.match?(/aix/i) ? @real_device.chomp("/") : @real_device
+          @real_device == "/" ? @real_device : @real_device.chomp("/")
         end
 
         def device_logstring
