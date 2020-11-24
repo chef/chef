@@ -1,8 +1,6 @@
 autoload :Inspec, "inspec"
 
 require_relative "default_attributes"
-require_relative "fetcher/automate"
-require_relative "fetcher/chef_server"
 require_relative "reporter/audit_enforcer"
 require_relative "reporter/automate"
 require_relative "reporter/chef_server_automate"
@@ -121,7 +119,22 @@ class Chef
         end
       end
 
+      def load_fetchers!
+        case node["audit"]["fetcher"]
+        when "chef-automate"
+          require_relative "fetcher/automate"
+        when "chef-server"
+          require_relative "fetcher/chef_server"
+        when nil
+          # intentionally blank
+        else
+          raise "Invalid value specified for audit mode's fetcher: '#{node["audit"]["fetcher"]}'. Valid values are 'chef-automate', 'chef-server', or nil."
+        end
+      end
+
       def generate_report(opts: inspec_opts, profiles: inspec_profiles)
+        load_fetchers!
+
         logger.debug "Options are set to: #{opts}"
         runner = ::Inspec::Runner.new(opts)
 
