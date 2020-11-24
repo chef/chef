@@ -14,8 +14,6 @@ We've improved how Windows nodes are bootstrapped when using the `knife bootstra
 
 We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1. Chef Vault 4.1 properly handles escape strings in secrets and greatly improves performance for users with large numbers of secrets. Thanks for the performance work [@Annih](https://github.com/Annih)!
 
-## New Resources
-
 ## Updated Resources
 
 ### chef_client_config
@@ -28,9 +26,7 @@ The `user` resource has been improved to provide log output of changes being mad
 
 ### group
 
-The `group` resource has been improved to provide log output of changes being made.
-
-The `group` resource on Windows has been modified to properly translate group SIDs to names in order to operate idempotently.
+The `group` resource has been improved to provide log output of changes being made and on Windows now properly translates group SIDs to names in order to operate idempotently.
 
 Thanks for these improvements [@jaymzh](https://github.com/jaymzh)!
 
