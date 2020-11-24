@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.58 -->
-## [v16.7.58](https://github.com/chef/chef/tree/v16.7.58) (2020-11-24)
+<!-- latest_release 16.7.59 -->
+## [v16.7.59](https://github.com/chef/chef/tree/v16.7.59) (2020-11-24)
 
 #### Merged Pull Requests
-- Update Ohai to 16.7.37 [#10686](https://github.com/chef/chef/pull/10686) ([tas50](https://github.com/tas50))
+- Skip appx packaging on Windows [#10650](https://github.com/chef/chef/pull/10650) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.6.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Skip appx packaging on Windows [#10650](https://github.com/chef/chef/pull/10650) ([tas50](https://github.com/tas50)) <!-- 16.7.59 -->
 - Update Ohai to 16.7.37 [#10686](https://github.com/chef/chef/pull/10686) ([tas50](https://github.com/tas50)) <!-- 16.7.58 -->
 - bump ohai, win32-service, and omnibus deps [#10685](https://github.com/chef/chef/pull/10685) ([tas50](https://github.com/tas50)) <!-- 16.7.57 -->
 - Mount: Fixes for Mount resource changes broke specs on AIX [#10671](https://github.com/chef/chef/pull/10671) ([antima-gupta](https://github.com/antima-gupta)) <!-- 16.7.56 -->
