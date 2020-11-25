@@ -223,7 +223,7 @@ class Chef
         def compare_user
           @change_desc = []
           %i{comment shell uid gid salt password admin secure_token hidden}.each do |attr|
-            if diverged?(m)
+            if diverged?(attr)
               desc = "Update #{attr}"
               unless %i{password gid secure_token hidden}.include?(attr)
                 desc << " from #{current_resource.send(attr)} to #{new_resource.send(attr)}"
