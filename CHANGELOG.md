@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.7.62 -->
+## [v16.7.62](https://github.com/chef/chef/tree/v16.7.62) (2020-11-26)
+
+#### Merged Pull Requests
+- Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.7.61 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50)) <!-- 16.7.62 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
