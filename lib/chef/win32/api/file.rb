@@ -316,6 +316,7 @@ typedef struct _REPARSE_DATA_BUFFER {
             string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
+
         class REPARSE_DATA_BUFFER_MOUNT_POINT < FFI::Struct
           layout :SubstituteNameOffset, :ushort,
             :SubstituteNameLength, :ushort,
@@ -333,14 +334,17 @@ typedef struct _REPARSE_DATA_BUFFER {
             string_pointer.read_wstring(self[:PrintNameLength] / 2)
           end
         end
+
         class REPARSE_DATA_BUFFER_GENERIC < FFI::Struct
           layout :DataBuffer, :uchar
         end
+
         class REPARSE_DATA_BUFFER_UNION < FFI::Union
           layout :SymbolicLinkReparseBuffer, REPARSE_DATA_BUFFER_SYMBOLIC_LINK,
             :MountPointReparseBuffer, REPARSE_DATA_BUFFER_MOUNT_POINT,
             :GenericReparseBuffer, REPARSE_DATA_BUFFER_GENERIC
         end
+
         class REPARSE_DATA_BUFFER < FFI::Struct
           layout :ReparseTag, :uint32,
             :ReparseDataLength, :ushort,

@@ -23,6 +23,7 @@ class Chef
     class Windows
       class NetUse
       end
+
       class Volume
       end
     end
