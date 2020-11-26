@@ -84,11 +84,13 @@ class Chef
     class InvalidPrivateKey < ArgumentError; end
     class MissingKeyAttribute < ArgumentError; end
     class KeyCommandInputError < ArgumentError; end
+
     class BootstrapCommandInputError < ArgumentError
       def initialize
         super "You cannot pass both --json-attributes and --json-attribute-file. Please pass one or none."
       end
     end
+
     class InvalidKeyArgument < ArgumentError; end
     class InvalidKeyAttribute < ArgumentError; end
     class InvalidUserAttribute < ArgumentError; end
@@ -195,6 +197,7 @@ class Chef
     class IllegalVersionConstraint < NotImplementedError; end # rubocop:disable Lint/InheritException
 
     class MetadataNotValid < StandardError; end
+
     class MetadataNotFound < StandardError
       attr_reader :install_path
       attr_reader :cookbook_name
@@ -283,6 +286,7 @@ class Chef
       end
 
     end
+
     # Exception class for collecting multiple failures. Used when running
     # delayed notifications so that chef can process each delayed
     # notification even if chef client or other notifications fail.

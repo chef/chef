@@ -317,6 +317,7 @@ class Chef
     end
 
   end
+
   class CookbookManifestVersions
 
     extend Chef::Mixin::VersionedAPIFactory
