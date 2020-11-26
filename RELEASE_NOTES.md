@@ -16,6 +16,10 @@ We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1.
 
 ## Updated Resources
 
+### build_essential
+
+The `build_essential` resource has been updated to resolve idempotency issues and greatly improve performance on macOS hosts. 
+
 ### chef_client_config
 
 The `chef_client_config` resource has been updated to no longer produce invalid `client.rb` content.
