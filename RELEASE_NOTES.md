@@ -24,10 +24,6 @@ The `build_essential` resource has been updated to resolve idempotency issues an
 
 The `chef_client_config` resource has been updated to no longer produce invalid `client.rb` content.
 
-### user
-
-The `user` resource has been improved to provide log output of changes being made.
-
 ### group
 
 The `group` resource has been improved to provide log output of changes being made and on Windows now properly translates group SIDs to names in order to operate idempotently.
@@ -59,6 +55,12 @@ The `powershell_package` resource has been updated to better force connections t
 ### powershell_script
 
 The `powershell_script` resource has been updated to not fail when using a `not_if` or `only_if` guard when specifying the `user` property. Thanks for reporting this issue [@Blorpy](https://github.com/Blorpy)
+
+### user
+
+The `user` resource has been improved to provide log output of changes being made.
+
+Thanks for this improvement [@jaymzh](https://github.com/jaymzh)!
 
 ### zypper_package
 
