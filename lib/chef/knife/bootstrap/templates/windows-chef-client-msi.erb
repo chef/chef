@@ -230,9 +230,9 @@ echo Writing validation key...
 echo Validation key written.
 @echo on
 
-<% if @config[:secret] -%>
+<% if secret -%>
 > <%= bootstrap_directory %>\encrypted_data_bag_secret (
- <%= secret %>
+ <%= encrypted_data_bag_secret %>
 )
 <% end -%>
 

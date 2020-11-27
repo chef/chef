@@ -443,6 +443,9 @@ class Chef
                   elsif current_version && !allow_downgrade && version_compare(current_version, new_version) == 1
                     logger.warn("#{new_resource} #{package_name} has installed version #{current_version}, which is newer than available version #{new_version}. Skipping...)")
                     target_version_array.push(nil)
+                  elsif version_equals?(current_version, candidate_version)
+                    logger.trace("#{new_resource} #{package_name} #{candidate_version} is already installed")
+                    target_version_array.push(nil)
                   else
                     logger.trace("#{new_resource} #{package_name} #{current_version} needs updating to #{new_version}")
                     target_version_array.push(new_version)

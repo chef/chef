@@ -65,7 +65,7 @@ describe Chef::Knife::SupermarketSearch do
         knife.name_args = ["mysql"]
         knife.run
         cookbooks_data.each do |item|
-          expect(stdout.string).to match /#{item["cookbook_name"]}\s/
+          expect(stdout.string).to match(/#{item["cookbook_name"]}\s/)
         end
       end
     end

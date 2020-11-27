@@ -87,58 +87,58 @@ describe Chef::Resource::PowershellPackageSource do
 
     context "#register" do
       it "builds a minimal command" do
-        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted'")
+        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' | Out-Null")
       end
 
       it "builds a command with trusted set to true" do
         resource.trusted(true)
-        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Trusted'")
+        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Trusted' | Out-Null")
       end
 
       it "builds a command with a publish location" do
         resource.publish_location("https://mygallery.company.co/api/v2/package")
-        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -PublishLocation 'https://mygallery.company.co/api/v2/package'")
+        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -PublishLocation 'https://mygallery.company.co/api/v2/package' | Out-Null")
       end
 
       it "builds a command with a script source location" do
         resource.script_source_location("https://mygallery.company.co/api/v2/scripts")
-        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptSourceLocation 'https://mygallery.company.co/api/v2/scripts'")
+        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptSourceLocation 'https://mygallery.company.co/api/v2/scripts' | Out-Null")
       end
 
       it "builds a command with a script publish location" do
         resource.script_publish_location("https://mygallery.company.co/api/v2/scripts/package")
-        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptPublishLocation 'https://mygallery.company.co/api/v2/scripts/package'")
+        expect(provider.build_ps_repository_command("Register", resource)).to eql("Register-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptPublishLocation 'https://mygallery.company.co/api/v2/scripts/package' | Out-Null")
       end
     end
 
     context "#set" do
       it "builds a minimal command" do
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' | Out-Null")
       end
 
       it "builds a command to change the url" do
         resource.url("https://othergallery.company.co/api/v2/")
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://othergallery.company.co/api/v2/' -InstallationPolicy 'Untrusted'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://othergallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' | Out-Null")
       end
 
       it "builds a command with trusted set to true" do
         resource.trusted(true)
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Trusted'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Trusted' | Out-Null")
       end
 
       it "builds a command with a publish location" do
         resource.publish_location("https://mygallery.company.co/api/v2/package")
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -PublishLocation 'https://mygallery.company.co/api/v2/package'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -PublishLocation 'https://mygallery.company.co/api/v2/package' | Out-Null")
       end
 
       it "builds a command with a script source location" do
         resource.script_source_location("https://mygallery.company.co/api/v2/scripts")
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptSourceLocation 'https://mygallery.company.co/api/v2/scripts'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptSourceLocation 'https://mygallery.company.co/api/v2/scripts' | Out-Null")
       end
 
       it "builds a command with a script publish location" do
         resource.script_publish_location("https://mygallery.company.co/api/v2/scripts/package")
-        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptPublishLocation 'https://mygallery.company.co/api/v2/scripts/package'")
+        expect(provider.build_ps_repository_command("Set", resource)).to eql("Set-PSRepository -Name 'MyGallery' -SourceLocation 'https://mygallery.company.co/api/v2/' -InstallationPolicy 'Untrusted' -ScriptPublishLocation 'https://mygallery.company.co/api/v2/scripts/package' | Out-Null")
       end
     end
   end
@@ -151,42 +151,42 @@ describe Chef::Resource::PowershellPackageSource do
 
     context "#register" do
       it "builds a minimal command" do
-        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$false -ProviderName 'NuGet'")
+        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$false -ProviderName 'NuGet' | Out-Null")
       end
 
       it "builds a command with trusted set to true" do
         resource.trusted(true)
-        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$true -ProviderName 'NuGet'")
+        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$true -ProviderName 'NuGet' | Out-Null")
       end
 
       it "builds a command with a different provider" do
         resource.source_name("choco")
         resource.url("https://chocolatey.org/api/v2/")
         resource.provider_name("chocolatey")
-        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey'")
+        expect(provider.build_package_source_command("Register", resource)).to eql("Register-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey' | Out-Null")
       end
     end
 
     context "#set" do
       it "builds a minimal command" do
-        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$false -ProviderName 'NuGet'")
+        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$false -ProviderName 'NuGet' | Out-Null")
       end
 
       it "builds a command to change the url" do
         resource.url("https://nuget.company.co/api/v2/")
-        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'https://nuget.company.co/api/v2/' -Trusted:$false -ProviderName 'NuGet'")
+        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'https://nuget.company.co/api/v2/' -Trusted:$false -ProviderName 'NuGet' | Out-Null")
       end
 
       it "builds a command with trusted set to true" do
         resource.trusted(true)
-        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$true -ProviderName 'NuGet'")
+        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'NuGet' -Location 'http://nuget.org/api/v2/' -Trusted:$true -ProviderName 'NuGet' | Out-Null")
       end
 
       it "builds a command with a different provider" do
         resource.source_name("choco")
         resource.url("https://chocolatey.org/api/v2/")
         resource.provider_name("chocolatey")
-        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey'")
+        expect(provider.build_package_source_command("Set", resource)).to eql("Set-PackageSource -Name 'choco' -Location 'https://chocolatey.org/api/v2/' -Trusted:$false -ProviderName 'chocolatey' | Out-Null")
       end
     end
   end
@@ -205,13 +205,13 @@ describe Chef::Resource::PowershellPackageSource do
 
   describe "#package_source_exists?" do
     it "returns true if it exists" do
-      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery' -WarningAction SilentlyContinue).Name").and_return(double("powershell_out!", stdout: "MyGallery\r\n"))
+      allow(provider).to receive(:powershell_exec!).with("(Get-PackageSource -Name 'MyGallery' -ErrorAction SilentlyContinue).Name").and_return(double("powershell_exec!", result: "MyGallery\r\n"))
       resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(true)
     end
 
     it "returns false if it doesn't exist" do
-      allow(provider).to receive(:powershell_out!).with("(Get-PackageSource -Name 'MyGallery' -WarningAction SilentlyContinue).Name").and_return(double("powershell_out!", stdout: ""))
+      allow(provider).to receive(:powershell_exec!).with("(Get-PackageSource -Name 'MyGallery' -ErrorAction SilentlyContinue).Name").and_return(double("powershell_exec!", result: ""))
       resource.source_name("MyGallery")
       expect(provider.package_source_exists?).to eql(false)
     end

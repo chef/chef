@@ -27,7 +27,7 @@ class Chef
 
       provides :execute, target_mode: true
 
-      description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use not_if and only_if to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
+      description "Use the **execute** resource to execute a single command. Commands that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence. Note: Use the **script** resource to execute a script using a specific interpreter (Ruby, Python, Perl, csh, or Bash)."
 
       examples <<~EXAMPLES
         **Run a command upon notification**:
@@ -549,11 +549,11 @@ class Chef
         desired_state: false
 
       property :user, [ String, Integer ],
-        description: "The user name of the user identity with which to launch the new process. The user name may optionally be specified with a domain, i.e. domainuser or user@my.dns.domain.com via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
+        description: "The user name of the user identity with which to launch the new process. The user name may optionally be specified with a domain, i.e. `domainuser` or `user@my.dns.domain.com` via Universal Principal Name (UPN)format. It can also be specified without a domain simply as user if the domain is instead specified using the domain property. On Windows only, if this property is specified, the password property must be specified."
 
       property :domain, String,
         introduced: "12.21",
-        description: "Windows only: The domain of the user user specified by the user property. If not specified, the user name and password specified by the user and password properties will be used to resolve that user against the domain in which the system running #{ChefUtils::Dist::Infra::PRODUCT} is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the user property."
+        description: "Windows only: The domain of the user user specified by the user property. If not specified, the username and password specified by the `user` and `password` properties will be used to resolve that user against the domain in which the system running #{ChefUtils::Dist::Infra::PRODUCT} is joined, or if that system is not joined to a domain it will resolve the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the user property."
 
       property :password, String, sensitive: true,
         introduced: "12.21",
@@ -565,7 +565,7 @@ class Chef
         default: lazy { password ? true : false }, default_description: "True if the password property is set. False otherwise."
 
       property :elevated, [ TrueClass, FalseClass ], default: false,
-        description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{ChefUtils::Dist::Infra::CLIENT} needs the 'Replace a process level token' and 'Adjust Memory Quotas for a process' permissions. The user that is running the command needs the 'Log on as a batch job' permission.\nBecause this requires a login, the user and password properties are required.",
+        description: "Determines whether the script will run with elevated permissions to circumvent User Access Control (UAC) from interactively blocking the process.\nThis will cause the process to be run under a batch login instead of an interactive login. The user running #{ChefUtils::Dist::Infra::CLIENT} needs the 'Replace a process level token' and 'Adjust Memory Quotas for a process' permissions. The user that is running the command needs the 'Log on as a batch job' permission.\nBecause this requires a login, the user and password properties are required.",
         introduced: "13.3"
 
       property :input, [String],
@@ -661,8 +661,10 @@ class Chef
 
       set_guard_inherited_attributes(
         :cwd,
+        :domain,
         :environment,
         :group,
+        :password,
         :user,
         :umask
       )

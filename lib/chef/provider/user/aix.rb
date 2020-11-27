@@ -68,7 +68,7 @@ class Chef
 
         def check_lock
           lock_info = shell_out!("lsuser", "-a", "account_locked", new_resource.username)
-          if whyrun_mode? && passwd_s.stdout.empty? && lock_info.stderr.match(/does not exist/)
+          if whyrun_mode? && passwd_s.stdout.empty? && lock_info.stderr.include?("does not exist")
             # if we're in whyrun mode and the user is not yet created we assume it would be
             return false
           end

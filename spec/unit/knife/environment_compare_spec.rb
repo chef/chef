@@ -62,7 +62,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = "summary"
       @knife.run
       @environments.each_key do |item|
-        expect(@stdout.string).to(match /#{item}/) && expect(@stdout.string.lines.count).to(be 4)
+        expect(@stdout.string).to(match(/#{item}/)) && expect(@stdout.string.lines.count).to(be 4)
       end
     end
 
@@ -79,7 +79,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:mismatch] = true
       @knife.run
       @constraints.each_value do |ver|
-        expect(@stdout.string).to match /#{ver[1]}/
+        expect(@stdout.string).to match(/#{ver[1]}/)
       end
     end
 
@@ -97,7 +97,7 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:all] = true
       @knife.run
       @constraints.each_value do |ver|
-        expect(@stdout.string).to match /#{ver[1]}/
+        expect(@stdout.string).to match(/#{ver[1]}/)
       end
     end
 

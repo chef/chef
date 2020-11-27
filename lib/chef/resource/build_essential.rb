@@ -15,7 +15,6 @@
 #
 
 require_relative "../resource"
-autoload :Plist, "plist"
 
 class Chef
   class Resource
@@ -130,8 +129,8 @@ class Chef
           pkg_label = xcode_cli_package_label
 
           # With upgrade action we should install if it's not installed or if there's an available update.
-          # `xcode_cli_package_label` will be nil if there's no update.
-          install_xcode_cli_tools(pkg_label) if !xcode_cli_installed? || xcode_cli_package_label
+          # `pkg_label` will be nil if there's no update.
+          install_xcode_cli_tools(pkg_label) if !xcode_cli_installed? || pkg_label
         else
           Chef::Log.info "The build_essential resource :upgrade action is only supported on macOS systems. Skipping..."
         end
@@ -160,14 +159,12 @@ class Chef
         end
 
         #
-        # Determine if the XCode Command Line Tools are installed by parsing the install history plist.
-        # We parse the plist data install of running pkgutil because we found that pkgutils doesn't always contain all the packages
+        # Determine if the XCode Command Line Tools are installed by checking
+        # for success from `xcode-select -p`
         #
         # @return [true, false]
         def xcode_cli_installed?
-          packages = ::Plist.parse_xml(::File.open("/Library/Receipts/InstallHistory.plist", "r"))
-          packages.select! { |package| package["displayName"].match? "Command Line Tools" }
-          !packages.empty?
+          !shell_out("xcode-select", "-p").error?
         end
 
         #

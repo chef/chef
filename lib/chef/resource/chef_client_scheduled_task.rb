@@ -30,7 +30,7 @@ class Chef
       **Setup #{ChefUtils::Dist::Infra::PRODUCT} to run using the default 30 minute cadence**:
 
       ```ruby
-        chef_client_scheduled_task "Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task"
+        chef_client_scheduled_task 'Run #{ChefUtils::Dist::Infra::PRODUCT} as a scheduled task'
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} on system start**:
@@ -44,15 +44,15 @@ class Chef
       **Run #{ChefUtils::Dist::Infra::PRODUCT} with extra options passed to the client**:
 
       ```ruby
-        chef_client_scheduled_task "Run an override recipe" do
-          daemon_options ["--override-runlist mycorp_base::default"]
+        chef_client_scheduled_task 'Run an override recipe' do
+          daemon_options ['--override-runlist mycorp_base::default']
         end
       ```
 
       **Run #{ChefUtils::Dist::Infra::PRODUCT} daily at 01:00 am, specifying a named run-list**:
 
       ```ruby
-        chef_client_scheduled_task "Run chef-client named run-list daily" do
+        chef_client_scheduled_task 'Run chef-client named run-list daily' do
           frequency 'daily'
           start_time '01:00'
           daemon_options ['-n audit_only']

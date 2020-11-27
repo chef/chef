@@ -122,8 +122,11 @@ class Chef
       # we need to be able to update fstab to conform with their wishes
       # without necessarily needing to remount the device.
       # See #6851 for more.
+      # We have to compare current resource device with device_fstab value
+      # because entry in /etc/fstab will be as per device_type.
+      # For Ex: 'LABEL=/tmp/ /mnt ext3 defaults 0 2', where 'device_type' is :label.
       def device_unchanged?
-        @current_resource.device == @new_resource.device
+        @current_resource.device == device_fstab
       end
 
       #
@@ -167,6 +170,20 @@ class Chef
           end
 
           sleep 0.1
+        end
+      end
+
+      # Returns the new_resource device as per device_type
+      def device_fstab
+        # Removed "/" from the end of str, because it was causing idempotency issue.
+        device = @new_resource.device == "/" ? @new_resource.device : @new_resource.device.chomp("/")
+        case @new_resource.device_type
+        when :device
+          device
+        when :label
+          "LABEL=#{device}"
+        when :uuid
+          "UUID=#{device}"
         end
       end
     end

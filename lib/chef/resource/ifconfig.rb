@@ -21,16 +21,59 @@ require_relative "../resource"
 
 class Chef
   class Resource
-    # @example set a static ip on eth1
-    #   ifconfig '33.33.33.80' do
-    #     device 'eth1'
-    #   end
     class Ifconfig < Chef::Resource
       unified_mode true
 
       provides :ifconfig
 
-      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems."
+      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality. Warning: This resource will not work with Fedora release 33 or later."
+      examples <<~DOC
+      **Configure a network interface with a static IP**
+
+      ```ruby
+      ifconfig '33.33.33.80' do
+        device 'eth1'
+      end
+      ```
+
+      will create the following interface configuration:
+
+      ```
+      iface eth1 inet static
+        address 33.33.33.80
+      ```
+
+      **Configure an interface to use DHCP**
+
+      ```ruby
+      ifconfig 'Set eth1 to DHCP' do
+        device 'eth1'
+        bootproto 'dhcp'
+      end
+      ```
+
+      will create the following interface configuration:
+
+      ```
+      iface eth1 inet dhcp
+      ```
+
+      **Update a static IP address with a boot protocol**
+
+      ```ruby
+      ifconfig "33.33.33.80" do
+        bootproto "dhcp"
+        device "eth1"
+      end
+      ```
+
+      will update the interface configuration from static to dhcp:
+
+      ```
+      iface eth1 inet dhcp
+        address 33.33.33.80
+      ```
+      DOC
 
       state_attrs :inet_addr, :mask
 
@@ -102,6 +145,10 @@ class Chef
       property :gateway, String,
         introduced: "14.4",
         description: "The gateway to use for the interface."
+
+      property :bridge, String,
+        introduced: "16.7",
+        description: "The bridge interface this interface is a member of on Red Hat based systems."
     end
   end
 end

@@ -29,17 +29,7 @@ class Chef
       extend Forwardable
       provides :launchd, os: "darwin"
 
-      def_delegators :new_resource, *%i{
-        backup
-        cookbook
-        group
-        label
-        mode
-        owner
-        source
-        session_type
-        type
-      }
+      def_delegators :new_resource, :backup, :cookbook, :group, :label, :mode, :owner, :source, :session_type, :type
 
       def load_current_resource
         current_resource = Chef::Resource::Launchd.new(new_resource.name)

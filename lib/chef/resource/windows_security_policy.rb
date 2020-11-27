@@ -106,11 +106,11 @@ class Chef
             MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
             NewGuestName = $security_options_hash.NewGuestName
             LockoutBadCount = $security_options_hash.LockoutBadCount
-          }) | ConvertTo-Json
+          })
         CODE
-        output = powershell_out(powershell_code)
-        current_value_does_not_exist! if output.stdout.empty?
-        state = Chef::JSONCompat.from_json(output.stdout)
+        output = powershell_exec(powershell_code)
+        current_value_does_not_exist! if output.result.empty?
+        state = output.result
 
         if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
           if state["LockoutBadCount"] == "0"
@@ -144,7 +144,7 @@ class Chef
             Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
           EOH
 
-          powershell_out!(cmd)
+          powershell_exec!(cmd)
         end
       end
     end

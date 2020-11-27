@@ -2,5 +2,9 @@ source "https://rubygems.org"
 
 gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
 
-# Specify your gem's dependencies in chef-config.gemspec
 gemspec
+
+group(:development, :test) do
+  gem "rake"
+  gem "rspec"
+end

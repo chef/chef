@@ -25,8 +25,8 @@ require "tempfile" unless defined?(Tempfile)
 autoload :OpenSSL, "openssl"
 autoload :URI, "uri"
 module Net
-  autoload :HTTP, File.expand_path("monkey_patches/net_http", __dir__)
-  autoload :HTTPClientException, File.expand_path("monkey_patches/net_http", __dir__)
+  autoload :HTTP, "net/http"
+  autoload :HTTPClientException, "net/http"
 end
 require_relative "http/basic_client"
 require_relative "config"
@@ -165,10 +165,6 @@ class Chef
       end
     rescue Exception => exception
       log_failed_request(response, return_value) unless response.nil?
-
-      if exception.respond_to?(:chef_rest_request=)
-        exception.chef_rest_request = rest_request
-      end
       raise
     end
 
@@ -204,9 +200,6 @@ class Chef
       end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
-      if e.respond_to?(:chef_rest_request=)
-        e.chef_rest_request = rest_request
-      end
       raise
     end
 
@@ -260,9 +253,6 @@ class Chef
       end
     rescue Exception => e
       log_failed_request(response, return_value) unless response.nil?
-      if e.respond_to?(:chef_rest_request=)
-        e.chef_rest_request = rest_request
-      end
       raise
     end
 

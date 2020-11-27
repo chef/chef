@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require "chef-utils"
 
 # FIXME: dynamically generate this for accuracy

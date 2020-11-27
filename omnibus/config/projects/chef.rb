@@ -103,6 +103,7 @@ package :msi do
              ProjectLocationDir: project_location_dir
 end
 
+# We don't support appx builds, and they eat a lot of time.
 package :appx do
-  signing_identity "AF21BA8C9E50AE20DA9907B6E2D4B0CC3306CA03", machine_store: true
+  skip_packager true
 end

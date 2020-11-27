@@ -93,8 +93,8 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
     end
 
     describe "script command opts switch" do
-      let(:command_opts) { {} }
-      let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", command_opts) }
+      let(:guard_interpreter) { Chef::GuardInterpreter::ResourceGuardInterpreter.new(parent_resource, "exit 0", {}) }
+      let(:resource) { guard_interpreter.instance_variable_get("@resource") }
 
       context "resource is a Script" do
         context "and guard_interpreter is a :script" do
@@ -117,9 +117,9 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
             end
           end
 
-          it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({ code: "exit 0" }).and_call_original
-            expect(guard_interpreter.evaluate).to eq(true)
+          it "assigns the comand to the resource's code property" do
+            guard_interpreter.evaluate
+            expect(resource.code).to eq("exit 0")
           end
         end
 
@@ -130,9 +130,9 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
             parent_resource
           end
 
-          it "merges to :code" do
-            expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
-            expect(guard_interpreter.evaluate).to eq(true)
+          it "assigns the comand to the resource's command property" do
+            guard_interpreter.evaluate
+            expect(resource.command).to eq("exit 0")
           end
         end
       end
@@ -144,9 +144,9 @@ describe Chef::GuardInterpreter::ResourceGuardInterpreter do
           parent_resource
         end
 
-        it "merges to :command" do
-          expect(command_opts).to receive(:merge).with({ command: "exit 0" }).and_call_original
-          expect(guard_interpreter.evaluate).to eq(true)
+        it "assigns the comand to the resource's command property" do
+          guard_interpreter.evaluate
+          expect(resource.command).to eq("exit 0")
         end
       end
 

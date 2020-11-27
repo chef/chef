@@ -3,7 +3,7 @@
 #
 # NOTE: You MUST update omnibus-software when adding new versions of
 # software here: bundle exec rake dependencies:update_omnibus_gemfile_lock
-override :rubygems, version: "3.1.2" # pin to what ships in the ruby version
+override :rubygems, version: "3.1.4" # pin to what ships in the ruby version
 override :bundler, version: "2.1.4" # pin to what ships in the ruby version
 override "libarchive", version: "3.4.3"
 override "libffi", version: "3.3"
@@ -18,7 +18,7 @@ override "ncurses", version: "5.9"
 override "nokogiri", version: "1.10.10"
 override "openssl", version: "1.0.2w"
 override "pkg-config-lite", version: "0.28-1"
-override "ruby", version: "2.7.1"
+override "ruby", version: "2.7.2"
 override "ruby-windows-devkit-bash", version: "3.1.23-4-msys-1.0.18"
 override "util-macros", version: "1.19.0"
 override "xproto", version: "7.0.28"

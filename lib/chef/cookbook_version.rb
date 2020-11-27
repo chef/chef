@@ -264,7 +264,7 @@ class Chef
       if found_pref
         manifest_records_by_path[found_pref]
       else
-        if segment == :files || segment == :templates
+        if %i{files templates}.include?(segment)
           error_message = "Cookbook '#{name}' (#{version}) does not contain a file at any of these locations:\n"
           error_locations = if filename.is_a?(Array)
                               filename.map { |name| "  #{File.join(segment.to_s, name)}" }
@@ -587,10 +587,7 @@ class Chef
     end
 
     def file_vendor
-      unless @file_vendor
-        @file_vendor = Chef::Cookbook::FileVendor.create_from_manifest(cookbook_manifest)
-      end
-      @file_vendor
+      @file_vendor ||= Chef::Cookbook::FileVendor.create_from_manifest(cookbook_manifest)
     end
 
   end

@@ -32,6 +32,7 @@ class Chef
       class WindowsBootstrapContext < BootstrapContext
         attr_accessor :config
         attr_accessor :chef_config
+        attr_accessor :secret
 
         def initialize(config, run_list, chef_config, secret = nil)
           @config       = config
@@ -49,8 +50,8 @@ class Chef
           end
         end
 
-        def secret
-          escape_and_echo(config[:secret])
+        def encrypted_data_bag_secret
+          escape_and_echo(@secret)
         end
 
         def trusted_certs_script
@@ -134,8 +135,8 @@ class Chef
             client_rb << %Q{no_proxy       "#{config[:bootstrap_no_proxy]}"\n}
           end
 
-          if config[:secret]
-            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::Config.etc_chef_dir(windows: true)}/encrypted_data_bag_secret"\n}
+          if secret
+            client_rb << %Q{encrypted_data_bag_secret "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.etc_chef_dir(windows: true))}\\\\encrypted_data_bag_secret"\n}
           end
 
           unless trusted_certs_script.empty?
@@ -254,6 +255,8 @@ class Chef
                [String] $remoteUrl,
                [String] $localPath
             )
+
+            [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
             $ProxyUrl = $env:http_proxy;
             $webClient = new-object System.Net.WebClient;

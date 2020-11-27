@@ -204,7 +204,7 @@ class Chef
             end
 
             # Skip // and /./ (pretend it's not there)
-            if exact == "" || exact == "."
+            if ["", "."].include?(exact)
               next
             end
 

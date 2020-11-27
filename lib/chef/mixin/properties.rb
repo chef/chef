@@ -135,6 +135,8 @@ class Chef
           property.emit_dsl
         end
 
+        alias :attribute :property
+
         #
         # Create a reusable property type that can be used in multiple properties
         # in different resources.

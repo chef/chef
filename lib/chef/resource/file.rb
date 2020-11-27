@@ -56,7 +56,7 @@ class Chef
       allowed_actions :create, :delete, :touch, :create_if_missing
 
       property :path, String, name_property: true,
-        description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash (/) will point to the root of the current working directory of the #{ChefUtils::Dist::Infra::CLIENT} process. This path can vary from system to system. Therefore, using a path that begins with a forward slash (/) is not recommended."
+        description: "The full path to the file, including the file name and its extension. For example: /files/file.txt. Default value: the name of the resource block. Microsoft Windows: A path that begins with a forward slash `/` will point to the root of the current working directory of the #{ChefUtils::Dist::Infra::PRODUCT} process. This path can vary from system to system. Therefore, using a path that begins with a forward slash `/` is not recommended."
 
       property :atomic_update, [ TrueClass, FalseClass ], desired_state: false, default: lazy { docker? && special_docker_files?(path) ? false : Chef::Config[:file_atomic_update] },
         default_description: "False if modifying /etc/hosts, /etc/hostname, or /etc/resolv.conf within Docker containers. Otherwise default to the client.rb 'file_atomic_update' config value.",

@@ -23,4 +23,4 @@ $:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 
 require "chef/resource_inspector"
 
-ResourceInspector.start
+Chef::ResourceInspector.start

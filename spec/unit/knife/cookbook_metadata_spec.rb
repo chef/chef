@@ -145,20 +145,20 @@ describe Chef::Knife::CookbookMetadata do
       create_metadata_rb(name: "foobar", version: "1.0.0", depends: [ "foo:bar", ">> 0.2" ])
       expect(Chef::Cookbook::Metadata).not_to receive(:validate_json)
       expect { knife.run }.to raise_error(SystemExit)
-      expect(stderr.string).to match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
+      expect(stderr.string).to match(/error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im)
     end
 
     it "should fail for obsolete format in metadata.rb (sadly)" do
       create_metadata_rb(name: "foobar", version: "1.0.0", depends: [ "foo:bar", "> 0.2", "< 1.0" ])
       expect(Chef::Cookbook::Metadata).not_to receive(:validate_json)
       expect { knife.run }.to raise_error(SystemExit)
-      expect(stderr.string).to match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
+      expect(stderr.string).to match(/error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im)
     end
 
     it "should fail for obsolete operators in metadata.json" do
       create_metadata_json(name: "foobar", version: "1.0.0", dependencies: { "foo:bar" => ">> 0.2" })
       expect { knife.run }.to raise_error(SystemExit)
-      expect(stderr.string).to match /error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im
+      expect(stderr.string).to match(/error: the cookbook 'foobar' contains invalid or obsolete metadata syntax/im)
     end
 
     it "should not fail for unknown field in metadata.rb" do

@@ -59,21 +59,21 @@ describe Chef::Knife::ConfigureClient do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
         expect(@client_file.string).to match %r{chef_server_url\s+'https\://chef\.example\.com'}
-        expect(@client_file.string).to match /validation_client_name\s+'chef-validator'/
+        expect(@client_file.string).to match(/validation_client_name\s+'chef-validator'/)
       end
 
       it "should write out the validation.pem file" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        expect(@validation_file.string).to match /foo_bar_baz/
+        expect(@validation_file.string).to match(/foo_bar_baz/)
       end
 
       it "should print information on what is being configured" do
         allow(FileUtils).to receive(:mkdir_p)
         @knife.run
-        expect(@stderr.string).to match /creating client configuration/i
-        expect(@stderr.string).to match /writing client\.rb/i
-        expect(@stderr.string).to match /writing validation\.pem/i
+        expect(@stderr.string).to match(/creating client configuration/i)
+        expect(@stderr.string).to match(/writing client\.rb/i)
+        expect(@stderr.string).to match(/writing validation\.pem/i)
       end
     end
   end

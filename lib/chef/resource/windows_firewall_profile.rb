@@ -83,11 +83,11 @@ class Chef
 
       load_current_value do |desired|
         ps_get_net_fw_profile = load_firewall_state(desired.profile)
-        output = powershell_out(ps_get_net_fw_profile)
-        if output.stdout.empty?
+        output = powershell_exec(ps_get_net_fw_profile)
+        if output.result.empty?
           current_value_does_not_exist!
         else
-          state = Chef::JSONCompat.from_json(output.stdout)
+          state = output.result
         end
 
         default_inbound_action state["default_inbound_action"]
@@ -130,7 +130,7 @@ class Chef
         unless firewall_enabled?(new_resource.profile)
           converge_by "Enable the #{new_resource.profile} Firewall Profile" do
             cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} -Enabled \"True\""
-            powershell_out!(cmd)
+            powershell_exec!(cmd)
           end
         end
       end
@@ -139,7 +139,7 @@ class Chef
         if firewall_enabled?(new_resource.profile)
           converge_by "Disable the #{new_resource.profile} Firewall Profile" do
             cmd = "Set-NetFirewallProfile -Profile #{new_resource.profile} -Enabled \"False\""
-            powershell_out!(cmd)
+            powershell_exec!(cmd)
           end
         end
       end
@@ -166,12 +166,7 @@ class Chef
                 return $true
             } else {return $false}
           CODE
-          firewall_status = powershell_out(cmd).stdout
-          if /True/.match?(firewall_status)
-            true
-          elsif /False/.match?(firewall_status)
-            false
-          end
+          powershell_exec!(cmd).result
         end
       end
 
@@ -193,7 +188,7 @@ class Chef
             allow_user_ports = $#{profile_name}.AllowUserPorts.ToString()
             allow_unicast_response = $#{profile_name}.AllowUnicastResponseToMulticast.ToString()
             display_notification = $#{profile_name}.NotifyOnListen.ToString()
-          }) | ConvertTo-Json
+          })
         EOH
       end
     end

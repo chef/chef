@@ -43,7 +43,7 @@ Super Families:
 
 * `fedora_based?` - anything of fedora lineage (fedora, redhat, centos, amazon, pidora, etc)
 * `rpm_based?`- all `fedora_based` systems plus `suse` and any future linux distros based on RPM (excluding AIX)
-* `solaris_based?`- all solaris-derived systems (opensolaris, nexentacore, omnios, smartos, etc)
+* `solaris_based?`- all solaris-derived systems (omnios, smartos, openindiana, etc)
 * `bsd_based?`- all bsd-derived systems (freebsd, netbsd, openbsd, dragonflybsd).
 
 ### Platform Helpers
@@ -64,11 +64,9 @@ The Platform helpers provide an alternative to comparing values from `node['plat
 * `linuxmint_platform?`
 * `macos_platform?`
 * `netbsd_platform?`
-* `nexentacore_platform?`
 * `omnios_platform?`
 * `openbsd_platform?`
 * `openindiana_platform?`
-* `opensolaris_platform?`
 * `opensuse_platform?`
 * `oracle_platform?`
 * `raspbian_platform?`
@@ -86,10 +84,8 @@ For compatibility with old chef-sugar code the following aliases work for backwa
 * `centos?`
 * `clearos?`
 * `linuxmint?`
-* `nexentacore?`
 * `omnios?`
 * `openindiana?`
-* `opensolaris?`
 * `opensuse?`
 * `oracle?`
 * `raspbian?`

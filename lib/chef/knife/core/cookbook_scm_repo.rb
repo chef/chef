@@ -22,7 +22,7 @@ class Chef
   class Knife
     class CookbookSCMRepo
 
-      DIRTY_REPO = /^[\s]+M/.freeze
+      DIRTY_REPO = /^\s+M/.freeze
 
       include Chef::Mixin::ShellOut
 

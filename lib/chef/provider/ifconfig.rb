@@ -126,18 +126,18 @@ class Chef
               elsif line.match(addr_regex)[3] == ""
                 @int_name = line.match(addr_regex)[1]
                 @interfaces[@int_name] = {}
-                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
+                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("mtu") && @interfaces[@int_name]["mtu"].nil?
               else
                 @int_name = "#{line.match(addr_regex)[1]}:#{line.match(addr_regex)[3]}"
                 @interfaces[@int_name] = {}
-                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /mtu/ && @interfaces[@int_name]["mtu"].nil?
+                @interfaces[@int_name]["mtu"] = (line =~ /mtu (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("mtu") && @interfaces[@int_name]["mtu"].nil?
               end
             else
-              @interfaces[@int_name]["inet_addr"] = (line =~ /inet (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /inet/ && @interfaces[@int_name]["inet_addr"].nil?
-              @interfaces[@int_name]["bcast"] = (line =~ /broadcast (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /broadcast/ && @interfaces[@int_name]["bcast"].nil?
-              @interfaces[@int_name]["mask"] = (line =~ /netmask (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /netmask/ && @interfaces[@int_name]["mask"].nil?
-              @interfaces[@int_name]["hwaddr"] = (line =~ /ether (\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /ether/ && @interfaces[@int_name]["hwaddr"].nil?
-              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line =~ /Metric:/ && @interfaces[@int_name]["metric"].nil?
+              @interfaces[@int_name]["inet_addr"] = (line =~ /inet (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("inet") && @interfaces[@int_name]["inet_addr"].nil?
+              @interfaces[@int_name]["bcast"] = (line =~ /broadcast (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("broadcast") && @interfaces[@int_name]["bcast"].nil?
+              @interfaces[@int_name]["mask"] = (line =~ /netmask (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("netmask") && @interfaces[@int_name]["mask"].nil?
+              @interfaces[@int_name]["hwaddr"] = (line =~ /ether (\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("ether") && @interfaces[@int_name]["hwaddr"].nil?
+              @interfaces[@int_name]["metric"] = (line =~ /Metric:(\S+)/ ? Regexp.last_match(1) : "nil") if line.include?("Metric:") && @interfaces[@int_name]["metric"].nil?
             end
 
             next unless @interfaces.key?(new_resource.device)
@@ -236,7 +236,7 @@ class Chef
         return unless can_generate_config?
 
         b = binding
-        template = ::ERB.new(@config_template)
+        template = ::ERB.new(@config_template, nil, "-")
         config = resource_for_config(@config_path)
         config.content(template.result(b))
         config.run_action(:create)

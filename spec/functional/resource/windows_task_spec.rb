@@ -17,15 +17,14 @@
 #
 
 require "spec_helper"
-require "chef/provider/windows_task"
 require "chef-utils/dist"
 
 describe Chef::Resource::WindowsTask, :windows_only do
   # resource.task.application_name will default to task_name unless resource.command is set
   let(:task_name) { "chef-client-functional-test" }
-  let(:new_resource) { Chef::Resource::WindowsTask.new(task_name) }
+  let(:new_resource) { Chef::Resource::WindowsTask.new(task_name, run_context) }
   let(:windows_task_provider) do
-    Chef::Provider::WindowsTask.new(new_resource, run_context)
+    new_resource.provider_for_action(:create)
   end
 
   let(:run_context) do

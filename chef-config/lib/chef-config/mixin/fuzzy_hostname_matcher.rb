@@ -20,8 +20,16 @@ module ChefConfig
   module Mixin
     module FuzzyHostnameMatcher
 
+      #
+      # Check to see if a hostname matches a match string. Used to see if hosts fall under our no_proxy config
+      #
+      # @param [String] hostname the hostname to check
+      # @param [String] matches the pattern to match
+      #
+      # @return [Boolean]
+      #
       def fuzzy_hostname_match_any?(hostname, matches)
-        if (!hostname.nil?) && (!matches.nil?)
+        if hostname && matches
           return matches.to_s.split(/\s*,\s*/).compact.any? do |m|
             fuzzy_hostname_match?(hostname, m)
           end

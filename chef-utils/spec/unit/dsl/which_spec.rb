@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -94,7 +95,7 @@ RSpec.describe ChefUtils::DSL::Which do
       end
 
       test_which("arrays with blocks", "foo1", "foo2", finds: "/dir2/foo1", others: [ "/dir1/foo2" ]) do |f|
-        raise "bad arg to block" unless f == "/dir2/foo1" || f == "/dir1/foo2"
+        raise "bad arg to block" unless ["/dir2/foo1", "/dir1/foo2"].include?(f)
 
         true
       end

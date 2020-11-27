@@ -5,21 +5,29 @@
 # 'i386-mingw32' (windows) or 'x86_64-darwin11.2.0' (unix).  Useful for
 # testing code that mixes in platform specific modules like +Chef::Mixin::Securable+
 # or +Chef::FileAccessControl+
-def platform_mock(platform = :unix)
-  allow(ChefUtils).to receive(:windows?).and_return(platform == :windows ? true : false)
-  ENV["SYSTEMDRIVE"] = (platform == :windows ? "C:" : nil)
+RSpec.configure do |c|
+  c.include(Module.new do
+    def platform_mock(platform = :unix)
+      case platform
+      when :windows
+        Chef::Config.set_defaults_for_windows
+        allow(ChefUtils).to receive(:windows?).and_return(true)
+        stub_const("ENV", ENV.to_hash.merge("SYSTEMDRIVE" => "C:"))
+        stub_const("RUBY_PLATFORM", "i386-mingw32")
+        stub_const("File::PATH_SEPARATOR", ";")
+        stub_const("File::ALT_SEPARATOR", "\\")
+      when :unix
+        Chef::Config.set_defaults_for_nix
+        allow(ChefUtils).to receive(:windows?).and_return(false)
+        stub_const("ENV", ENV.to_hash.merge("SYSTEMDRIVE" => nil))
+        stub_const("RUBY_PLATFORM", "x86_64-darwin11.2.0")
+        stub_const("File::PATH_SEPARATOR", ":")
+        stub_const("File::ALT_SEPARATOR", nil)
+      else
+        raise "#{__method__}: unrecognized platform '#{platform}', expected one of ':unix' or ':windows'"
+      end
 
-  if platform == :windows
-    Chef::Config.set_defaults_for_windows
-  else
-    Chef::Config.set_defaults_for_nix
-  end
-
-  if block_given?
-    mock_constants({ "RUBY_PLATFORM" => (platform == :windows ? "i386-mingw32" : "x86_64-darwin11.2.0"),
-                     "File::PATH_SEPARATOR" => (platform == :windows ? ";" : ":"),
-                     "File::ALT_SEPARATOR" => (platform == :windows ? "\\" : nil) }) do
-                       yield
-                     end
-  end
+      yield
+    end
+  end)
 end

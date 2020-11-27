@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 # Copyright:: Copyright 2017, Noah Kantrowitz
 # License:: Apache License, Version 2.0
 #
@@ -27,7 +28,7 @@ module ChefUtils
     #
     # @param val [String] Version string to parse.
     def initialize(val)
-      val = "" unless val
+      val ||= ""
       super(val)
       begin
         @parsed_version = ::Gem::Version.create(self)

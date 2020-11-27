@@ -1,3 +1,5 @@
+RESOURCES_TO_SKIP = ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].freeze
+
 namespace :docs_site do
 
   desc "Generate resource documentation pages in a docs_site directory"
@@ -112,17 +114,6 @@ namespace :docs_site do
       fixed_arr.compact.join(", ")
     end
 
-    # build the menu entry for this resource
-    def build_menu_item(name)
-      {
-        "infra" => {
-          "title" => name,
-          "identifier" => "chef_infra/cookbook_reference/resources/#{name} #{name}",
-          "parent" => "chef_infra/cookbook_reference/resources",
-        },
-      }
-    end
-
     # print out the human readable form of the default
     def friendly_default_value(property)
       return "The resource block's name" if property["name_property"]
@@ -157,7 +148,7 @@ namespace :docs_site do
         values = {}
         values["property"] = property["name"]
         values["ruby_type"] = friendly_types_list(property["is"])
-        values["required"] = property["required"]
+        values["required"] = !!property["required"] # right now we just want a boolean value here since the docs doesn't know what to do with an array of actions
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
         values["allowed_values"] = property["equal_to"].join(", ") unless property["equal_to"].empty?
@@ -166,11 +157,11 @@ namespace :docs_site do
       end
     end
 
-    def special_properties(name, data)
+    def special_properties(name)
       properties = {}
 
       # these package properties support passing arrays for the package name
-      properties["common_resource_functionality_multiple_packages"] = true if %w{yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
+      properties["multi_package_resource"] = true if %w{snap_package dpkg_package yum_package apt_package zypper_package homebrew_package dnf_package pacman_package homebrew_package}.include?(name)
 
       properties["common_resource_functionality_resources_common_windows_security"] = true if name == "remote_directory"
 
@@ -185,8 +176,6 @@ namespace :docs_site do
       properties["nameless_apt_update"] = true if name == "apt_update"
 
       properties["nameless_build_essential"] = true if name == "build_essential"
-
-      properties["properties_multiple_packages"] = true if %w{dnf_package package zypper_package}.include?(name)
 
       properties["properties_resources_common_windows_security"] = true if %w{cookbook_file file template remote_file directory}.include?(name)
 
@@ -224,9 +213,6 @@ namespace :docs_site do
 
       properties["unit_file_verification"] = true if name == "systemd_unit"
 
-      # these packages all provide 'package' depending on OS and we want to inject a warning / note that you can just use 'package' instead
-      properties["notes_resource_based_on_package" ] = true if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package solaris_package windows_package yum_package zypper_package}.include?(name)
-
       properties
     end
 
@@ -234,7 +220,7 @@ namespace :docs_site do
     # using the markers "Note:" for "note" sections and "Warning:" for "warning" sections.
     # TODO: has the limitation that the plain description section is assumed to come first,
     # and is followed by one or more "note"s or "warning"s sections.
-    def build_description(text)
+    def build_description(name, text)
       return [{ "markdown" => nil }] if text.nil?
 
       description_pattern = /(Note:|Warning:)?((?:(?!Note:|Warning:).)*)/m
@@ -259,6 +245,9 @@ namespace :docs_site do
         end
       end
 
+      # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
+      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package}.include?(name)
+
       description
     end
 
@@ -272,13 +261,10 @@ namespace :docs_site do
       r["resource_reference"] = true
 
       # These properties are set to special values for only a few resources.
-      r.merge!(special_properties(name, data))
+      r.merge!(special_properties(name))
 
-      r["title"] = "#{name} resource"
       r["resource"] = name
-      r["aliases"] = ["/resource_#{name}.html"]
-      r["menu"] = build_menu_item(name)
-      r["resource_description_list"] = build_description(data["description"])
+      r["resource_description_list"] = build_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
@@ -291,11 +277,11 @@ namespace :docs_site do
     end
 
     FileUtils.mkdir_p "docs_site"
-    resources = Chef::JSONCompat.parse(ResourceInspector.inspect)
+    resources = Chef::JSONCompat.parse(Chef::ResourceInspector.inspect)
 
     resources.each do |resource, data|
       # skip some resources we don't directly document
-      next if ["whyrun_safe_ruby_block", "l_w_r_p_base", "user_resource_abstract_base_class", "linux_user", "pw_user", "aix_user", "dscl_user", "solaris_user", "windows_user", "mac_user", ""].include?(resource)
+      next if RESOURCES_TO_SKIP.include?(resource)
 
       next if ENV["DEBUG"] && !(resource == ENV["DEBUG"])
 
@@ -310,10 +296,7 @@ namespace :docs_site do
         pp resource_data
       else
         puts "Writing out #{resource}."
-        FileUtils.mkdir_p "docs_site/#{resource}"
-        # write out the yaml contents of the hash and append a --- since this is actually a yaml
-        # block in the middle of a markdown page and the block needs an ending
-        File.open("docs_site/#{resource}/_index.md", "w") { |f| f.write(resource_data.to_yaml + "---") }
+        File.open("docs_site/#{resource}.yaml", "w") { |f| f.write(YAML.dump(resource_data)) }
       end
     end
   end

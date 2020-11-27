@@ -112,13 +112,7 @@ class Chef
             when ENV_PATTERN
               crontab << line unless cron_found
               next
-            when SPECIAL_PATTERN
-              if cron_found
-                cron_found = false
-                crontab << newcron
-                next
-              end
-            when CRON_PATTERN
+            when SPECIAL_PATTERN, CRON_PATTERN
               if cron_found
                 cron_found = false
                 crontab << newcron
@@ -163,12 +157,7 @@ class Chef
               next
             when ENV_PATTERN
               next if cron_found
-            when SPECIAL_PATTERN
-              if cron_found
-                cron_found = false
-                next
-              end
-            when CRON_PATTERN
+            when SPECIAL_PATTERN, CRON_PATTERN
               if cron_found
                 cron_found = false
                 next

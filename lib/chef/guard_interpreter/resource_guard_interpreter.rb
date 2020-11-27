@@ -20,18 +20,29 @@ require_relative "../guard_interpreter"
 
 class Chef
   class GuardInterpreter
-    class ResourceGuardInterpreter < DefaultGuardInterpreter
-
+    class ResourceGuardInterpreter
       def initialize(parent_resource, command, opts)
-        super(command, opts)
+        @command = command
+        @opts = opts
+
         @parent_resource = parent_resource
         @resource = get_interpreter_resource(parent_resource)
+      end
+
+      # This class used to inherit from DefaultGuardInterpreter and it responds
+      # to #output, so leave this in for potential backwards compatibility.
+      def output
+        nil
       end
 
       def evaluate
         # Add attributes inherited from the parent class
         # to the resource
         merge_inherited_attributes
+
+        @opts.each do |attribute, value|
+          @resource.send(attribute, value)
+        end
 
         # Only execute and script resources and use guard attributes.
         # The command to be executed on them are passed via different attributes.
@@ -42,9 +53,9 @@ class Chef
         # We need to make sure we check for Script first because any resource
         # that can get to here is an Execute resource.
         if @resource.is_a? Chef::Resource::Script
-          block_attributes = @command_opts.merge({ code: @command })
+          @resource.code @command
         else
-          block_attributes = @command_opts.merge({ command: @command })
+          @resource.command @command
         end
 
         # Handles cases like powershell_script where default
@@ -53,32 +64,23 @@ class Chef
         # the one attribute that causes this changes its default to be
         # the same after some period to prepare for deprecation
         if @resource.class.respond_to?(:get_default_attributes)
-          block_attributes = @resource.class.send(:get_default_attributes, @command_opts).merge(block_attributes)
+          @resource.class.send(:get_default_attributes).each do |attribute, value|
+            @resource.send(attribute, value)
+          end
         end
-
-        resource_block = block_from_attributes(block_attributes)
-        evaluate_action(nil, &resource_block)
-      end
-
-      protected
-
-      def evaluate_action(action = nil, &block)
-        @resource.instance_eval(&block)
-
-        run_action = action || @resource.action
 
         begin
           # Coerce to an array to be safe. This could happen with a legacy
           # resource or something overriding the default_action code in a
           # subclass.
-          Array(run_action).each { |action_to_run| @resource.run_action(action_to_run) }
-          resource_updated = @resource.updated
+          Array(@resource.action).each { |action_to_run| @resource.run_action(action_to_run) }
+          @resource.updated
         rescue Mixlib::ShellOut::ShellCommandFailed
-          resource_updated = nil
+          nil
         end
-
-        resource_updated
       end
+
+      private
 
       def get_interpreter_resource(parent_resource)
         if parent_resource.nil? || parent_resource.node.nil?
@@ -106,14 +108,6 @@ class Chef
         interpreter_resource
       end
 
-      def block_from_attributes(attributes)
-        Proc.new do
-          attributes.each_key do |attribute_name|
-            send(attribute_name, attributes[attribute_name]) if respond_to?(attribute_name)
-          end
-        end
-      end
-
       def merge_inherited_attributes
         inherited_attributes = []
 
@@ -121,15 +115,10 @@ class Chef
           inherited_attributes = @parent_resource.class.send(:guard_inherited_attributes)
         end
 
-        if inherited_attributes && !inherited_attributes.empty?
-          inherited_attributes.each do |attribute|
-            if @parent_resource.respond_to?(attribute) && @resource.respond_to?(attribute)
-              parent_value = @parent_resource.send(attribute)
-              child_value = @resource.send(attribute)
-              if parent_value || child_value
-                @resource.send(attribute, parent_value)
-              end
-            end
+        inherited_attributes.each do |attribute|
+          if @parent_resource.respond_to?(attribute) && @resource.respond_to?(attribute)
+            parent_value = @parent_resource.send(attribute)
+            @resource.send(attribute, parent_value)
           end
         end
       end

@@ -30,19 +30,12 @@ group(:omnibus_package) do
   gem "inspec-core", "~> 4.18"
   gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
   gem "chef-vault"
-  gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
-  gem "bcrypt_pbkdf", ">= 1.1.0.rc1" # ed25519 ssh key support done here as it's a native gem we can't put in train
 end
 
 group(:omnibus_package, :pry) do
   gem "pry"
   gem "pry-byebug"
-  gem "pry-remote"
   gem "pry-stack_explorer"
-end
-
-group(:docgen) do
-  gem "yard"
 end
 
 # Everything except AIX
@@ -58,10 +51,7 @@ end
 
 group(:development, :test) do
   gem "rake"
-  gem "rspec-core", "~> 3.5"
-  gem "rspec-mocks", "~> 3.5"
-  gem "rspec-expectations", "~> 3.5"
-  gem "rspec_junit_formatter", "~> 0.2.0"
+  gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
@@ -81,13 +71,16 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # For FFI to call into PowerShell we need the binaries and assemblies located
 # in the Ruby bindir.
 # The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
+# Every merge into that repo triggers a Habitat build and promotion. Running
+# the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
+# the built packages and copy the binaries to distro/ruby_bin_folder.
 #
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.
 if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
   instance_eval do
     ruby_exe_dir = RbConfig::CONFIG["bindir"]
-    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder", __dir__) + "/*.dll")
+    assemblies = Dir.glob(File.expand_path("distro/ruby_bin_folder/#{ENV["PROCESSOR_ARCHITECTURE"]}", __dir__) + "**/*")
     FileUtils.cp_r assemblies, ruby_exe_dir, verbose: false unless ENV["_BUNDLER_WINDOWS_DLLS_COPIED"]
     ENV["_BUNDLER_WINDOWS_DLLS_COPIED"] = "1"
   end

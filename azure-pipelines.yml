@@ -40,7 +40,7 @@ jobs:
 
     - script: |
         cd kitchen-tests
-        sudo /opt/chef/embedded/bin/bundle config set without 'omnibus_package docgen ruby_prof'
+        sudo /opt/chef/embedded/bin/bundle config set without 'omnibus_package ruby_prof'
         sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3 --path=vendor/bundle
         sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
         sudo /opt/chef/embedded/bin/berks vendor cookbooks
@@ -77,7 +77,7 @@ jobs:
     - powershell: |
         cd kitchen-tests
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        bundle config set without 'omnibus_package docgen ruby_prof'
+        bundle config set without 'omnibus_package ruby_prof'
         bundle install --jobs=3 --retry=3 --path=vendor/bundle
         gem install berkshelf --no-doc
         # berks emits a ruby warning when it loads net/http due to a previously

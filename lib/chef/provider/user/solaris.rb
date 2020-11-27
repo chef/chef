@@ -25,7 +25,7 @@ class Chef
     class User
       class Solaris < Chef::Provider::User
         provides :solaris_user
-        provides :user, os: %w{openindiana opensolaris illumos omnios solaris2 smartos}
+        provides :user, os: %w{openindiana illumos omnios solaris2 smartos}
 
         PASSWORD_FILE = "/etc/shadow".freeze
 

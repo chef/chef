@@ -8,9 +8,19 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Adam Jacob"]
   spec.email         = ["adam@chef.io"]
 
-  spec.summary       = %q{Chef's default configuration and config loading}
+  spec.summary       = %q{Chef Infra's default configuration and config loading library}
   spec.homepage      = "https://github.com/chef/chef"
   spec.license       = "Apache-2.0"
+
+  spec.required_ruby_version = ">= 2.6.0"
+
+  spec.metadata = {
+    "bug_tracker_uri" => "https://github.com/chef/chef/issues",
+    "changelog_uri" => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
+    "documentation_uri" => "https://github.com/chef/chef/tree/master/chef-config/README.md",
+    "homepage_uri" => "https://github.com/chef/chef/tree/master/chef-config",
+    "source_code_uri" => "https://github.com/chef/chef/tree/master/chef-config",
+  }
 
   spec.require_paths = ["lib"]
 
@@ -20,12 +30,6 @@ Gem::Specification.new do |spec|
   spec.add_dependency "fuzzyurl"
   spec.add_dependency "addressable"
   spec.add_dependency "tomlrb", "~> 1.2"
-
-  spec.add_development_dependency "rake"
-
-  %w{rspec-core rspec-expectations rspec-mocks}.each do |rspec|
-    spec.add_development_dependency(rspec, "~> 3.2")
-  end
 
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }

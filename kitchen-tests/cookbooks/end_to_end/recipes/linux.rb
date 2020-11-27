@@ -48,10 +48,6 @@ end
 
 ssh_known_hosts_entry "github.com"
 
-include_recipe "chef-client::delete_validation"
-include_recipe "chef-client::config"
-include_recipe "::_chef_client_trusted_certificate"
-
 include_recipe "openssh"
 
 include_recipe "nscd"
@@ -100,6 +96,9 @@ user_ulimit "tomcat" do
   rtprio_hard_limit 60
 end
 
+include_recipe "::_chef_client_config"
+include_recipe "::_chef_client_trusted_certificate"
+
 chef_client_cron "Run chef-client as a cron job"
 
 chef_client_cron "Run chef-client with base recipe" do
@@ -137,6 +136,7 @@ include_recipe "::_ohai_hint"
 include_recipe "::_openssl"
 include_recipe "::_tests"
 include_recipe "::_mount"
+include_recipe "::_ifconfig"
 
 # at the moment these do not run properly in docker
 # we need to investigate if this is a snap on docker issue or a chef issue

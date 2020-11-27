@@ -28,6 +28,7 @@ class Chef
 
         UPDATE_RC_D_ENABLED_MATCHES = %r{/rc[\dS].d/S|not installed}i.freeze
         UPDATE_RC_D_PRIORITIES = %r{/rc([\dS]).d/([SK])(\d\d)}i.freeze
+        RUNLEVELS = %w{ 1 2 3 4 5 S }.freeze
 
         def self.supports?(resource, action)
           service_script_exist?(:initd, resource.service_name)
@@ -121,7 +122,7 @@ class Chef
           priority.each do |runlevel, arguments|
             logger.trace("#{new_resource} runlevel #{runlevel}, action #{arguments[0]}, priority #{arguments[1]}")
             # if we are in a update-rc.d default startup runlevel && we start in this runlevel
-            if %w{ 1 2 3 4 5 S }.include?(runlevel) && arguments[0] == :start
+            if RUNLEVELS.include?(runlevel) && arguments[0] == :start
               enabled = true
             end
           end

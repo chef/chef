@@ -105,7 +105,7 @@ class Chef::Util::DSC
 
     def dsc_module_import_failure?(command_output)
       !! (command_output =~ /\sCimException/ &&
-        command_output =~ /ProviderOperationExecutionFailure/ &&
+        command_output.include?("ProviderOperationExecutionFailure") &&
         command_output =~ /\smodule\s+is\s+installed/)
     end
 

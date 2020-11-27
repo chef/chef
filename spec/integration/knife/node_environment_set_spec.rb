@@ -31,7 +31,7 @@ describe "knife node environment set", :workstation do
     end
 
     it "sets an environment on a node" do
-      knife("node environment set cons lisp").should_succeed /chef_environment:.*lisp/
+      knife("node environment set cons lisp").should_succeed(/chef_environment:.*lisp/)
       knife("node show cons -a chef_environment").should_succeed <<~EOM
         cons:
           chef_environment: lisp

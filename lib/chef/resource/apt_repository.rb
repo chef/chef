@@ -62,15 +62,14 @@ class Chef
         end
         ```
 
-        **Add the JuJu PPA, grab the key from the keyserver, and add source repo**:
+        **Add the JuJu PPA, grab the key from the Ubuntu keyserver, and add source repo**:
 
         ```ruby
         apt_repository 'juju' do
-          uri 'http://ppa.launchpad.net/juju/stable/ubuntu'
+          uri 'ppa:juju/stable'
           components ['main']
           distribution 'xenial'
           key 'C8068B11'
-          keyserver 'keyserver.ubuntu.com'
           action :add
           deb_src true
         end

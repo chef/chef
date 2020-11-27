@@ -54,7 +54,18 @@ class Chef
 
       def interpreter_path
         # Powershell.exe is always in "v1.0" folder (for backwards compatibility)
-        Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", interpreter)
+        # pwsh is the other interpreter and we will assume that it is on the path.
+        # It will exist in different folders depending on the installed version.
+        # There can also be multiple versions installed. Depending on how it was installed,
+        # there might be a registry entry pointing to the installation path. The key will
+        # differ depending on version and architecture. It seems best to let the PATH
+        # determine the file path to use since that will provide the same pwsh.exe one
+        # would invoke from any shell.
+        if interpreter == "powershell"
+          Chef::Util::PathHelper.join(basepath, "WindowsPowerShell", "v1.0", "#{interpreter}.exe")
+        else
+          interpreter
+        end
       end
 
       def code

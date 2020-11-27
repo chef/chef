@@ -151,6 +151,24 @@ describe Chef::Provider::Mount do
       provider.run_action(:enable)
       expect(new_resource).not_to be_updated_by_last_action
     end
+
+    it "should enable the mount if device changed" do
+      allow(current_resource).to receive(:enabled).and_return(true)
+      expect(provider).to receive(:mount_options_unchanged?).and_return(true)
+      expect(provider).to receive(:device_unchanged?).and_return(false)
+      expect(provider).to receive(:enable_fs).and_return(true)
+      provider.run_action(:enable)
+      expect(new_resource).to be_updated_by_last_action
+    end
+
+    it "should not enable the mount if device not changed" do
+      allow(current_resource).to receive(:enabled).and_return(true)
+      expect(provider).to receive(:mount_options_unchanged?).and_return(true)
+      expect(provider).to receive(:device_unchanged?).and_return(true)
+      expect(provider).not_to receive(:enable_fs)
+      provider.run_action(:enable)
+      expect(new_resource).not_to be_updated_by_last_action
+    end
   end
 
   describe "when the target state is to disable the mount" do
@@ -187,5 +205,18 @@ describe Chef::Provider::Mount do
 
   it "should delegates the disable implementation to subclasses" do
     expect { provider.disable_fs }.to raise_error(Chef::Exceptions::UnsupportedAction)
+  end
+
+  # Not supported on solaris because it can't cope with a LABEL device type.
+  describe "#device_unchanged?", :not_supported_on_solaris do
+    it "should be true when device_type not changed" do
+      expect(provider.device_unchanged?).to be_truthy
+    end
+
+    it "should be false when device_type changed" do
+      new_resource.device_type :label
+      current_resource.device_type :device
+      expect(provider.device_unchanged?).to be_falsey
+    end
   end
 end

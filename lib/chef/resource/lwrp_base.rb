@@ -63,16 +63,14 @@ class Chef
 
           Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
-          LWRPBase.loaded_lwrps[filename] = true
-
           # wire up the default resource name after the class is parsed only if we haven't declared one.
           # (this ordering is important for MapCollision deprecation warnings)
           resource_class.provides resource_name.to_sym unless Chef::ResourceResolver.includes_handler?(resource_name.to_sym, self)
 
+          LWRPBase.loaded_lwrps[filename] = resource_class
+
           resource_class
         end
-
-        alias :attribute :property
 
         # Adds +action_names+ to the list of valid actions for this resource.
         # Does not include superclass's action list when appending.
@@ -88,7 +86,7 @@ class Chef
 
         # @deprecated
         def valid_actions(*args)
-          Chef::Log.warn("`valid_actions' is deprecated, please use allowed_actions `instead'!")
+          Chef::Log.warn("`valid_actions` is deprecated, please use `allowed_actions` instead!")
           allowed_actions(*args)
         end
 

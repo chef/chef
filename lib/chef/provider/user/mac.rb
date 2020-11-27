@@ -221,7 +221,17 @@ class Chef
         end
 
         def compare_user
-          %i{comment shell uid gid salt password admin secure_token hidden}.any? { |m| diverged?(m) }
+          @change_desc = []
+          %i{comment shell uid gid salt password admin secure_token hidden}.each do |attr|
+            if diverged?(attr)
+              desc = "Update #{attr}"
+              unless %i{password gid secure_token hidden}.include?(attr)
+                desc << " from #{current_resource.send(attr)} to #{new_resource.send(attr)}"
+              end
+              @change_desc << desc
+            end
+          end
+          !@change_desc.empty?
         end
 
         def manage_user
@@ -290,9 +300,7 @@ class Chef
           end
 
           if diverged?(:hidden)
-            converge_by("alter hidden") do
-              set_hidden
-            end
+            converge_by("alter hidden") { set_hidden }
           end
 
           reload_user_plist

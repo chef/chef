@@ -416,7 +416,7 @@ describe "notifications" do
       EOM
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
-      expect(result.stdout).to match /\* log\[a, b\] action write/
+      expect(result.stdout).to match(/\* log\[a, b\] action write/)
       result.error!
     end
 

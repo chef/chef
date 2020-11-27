@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 #
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -234,19 +235,6 @@ module ChefUtils
       end
       # chef-sugar backcompat method
       alias_method :openindiana?, :openindiana_platform?
-
-      # Determine if the current node is Nexenta Core Platform aka Nexenta OS.
-      #
-      # @param [Chef::Node] node the node to check
-      # @since 15.5
-      #
-      # @return [Boolean]
-      #
-      def nexentacore_platform?(node = __getnode)
-        node["platform"] == "nexentacore"
-      end
-      # chef-sugar backcompat method
-      alias_method :nexentacore?, :nexentacore_platform?
 
       # Determine if the current node is AIX.
       #

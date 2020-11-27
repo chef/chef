@@ -27,8 +27,49 @@ class Chef
 
       provides(:systemd_unit) { true }
 
-      description "Use the **systemd_unit** resource to create, manage, and run systemd units."
+      description "Use the **systemd_unit** resource to create, manage, and run [systemd units](https://www.freedesktop.org/software/systemd/man/systemd.html#Concepts)."
       introduced "12.11"
+      examples <<~DOC
+      **Create systemd service unit file from a Hash**
+
+      ```ruby
+      systemd_unit 'etcd.service' do
+        content({Unit: {
+                  Description: 'Etcd',
+                  Documentation: ['https://coreos.com/etcd', 'man:etcd(1)'],
+                  After: 'network.target',
+                },
+                Service: {
+                  Type: 'notify',
+                  ExecStart: '/usr/local/etcd',
+                  Restart: 'always',
+                },
+                Install: {
+                  WantedBy: 'multi-user.target',
+                }})
+        action [:create, :enable]
+      end
+      ```
+
+      **Create systemd service unit file from a String**
+
+      ```ruby
+      systemd_unit 'sysstat-collect.timer' do
+        content <<~EOU
+        [Unit]
+        Description=Run system activity accounting tool every 10 minutes
+
+        [Timer]
+        OnCalendar=*:00/10
+
+        [Install]
+        WantedBy=sysstat.service
+        EOU
+
+        action [:create, :enable]
+      end
+      ```
+      DOC
 
       default_action :nothing
       allowed_actions :create, :delete,

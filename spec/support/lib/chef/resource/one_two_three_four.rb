@@ -26,7 +26,7 @@ class Chef
       end
 
       def something(arg = nil)
-        if arg == true || arg == false
+        if [true, false].include?(arg)
           @something = arg
         end
         @something

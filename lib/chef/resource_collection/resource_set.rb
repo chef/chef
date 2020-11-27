@@ -123,11 +123,7 @@ class Chef
       # * Chef::Exceptions::InvalidResourceSpecification for all invalid input.
       def validate_lookup_spec!(query_object)
         case query_object
-          when Chef::Resource
-            true
-          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH
-            true
-          when Hash
+          when Chef::Resource, SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH, Hash
             true
           when String
             raise Chef::Exceptions::InvalidResourceSpecification,
@@ -135,7 +131,7 @@ class Chef
           else
             raise Chef::Exceptions::InvalidResourceSpecification,
               "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
-              "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
+                "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
       end
 

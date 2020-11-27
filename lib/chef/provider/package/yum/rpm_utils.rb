@@ -46,7 +46,7 @@ class Chef
               lead = 0
               tail = evr.size
 
-              if /^([\d]+):/.match(evr) # rubocop:disable Performance/RedundantMatch
+              if /^(\d+):/.match(evr) # rubocop:disable Performance/RedundantMatch
                 epoch = $1.to_i
                 lead = $1.length + 1
               elsif evr[0].ord == ":".ord

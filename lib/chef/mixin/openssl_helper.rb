@@ -155,7 +155,7 @@ class Chef
       # @return [OpenSSL::PKey::DH]
       def gen_ec_priv_key(curve)
         raise TypeError, "curve must be a string" unless curve.is_a?(String)
-        raise ArgumentError, "Specified curve is not available on this system" unless curve == "prime256v1" || curve == "secp384r1" || curve == "secp521r1"
+        raise ArgumentError, "Specified curve is not available on this system" unless %w{prime256v1 secp384r1 secp521r1}.include?(curve)
 
         ::OpenSSL::PKey::EC.new(curve).generate_key
       end

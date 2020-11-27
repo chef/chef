@@ -5,7 +5,6 @@ version          "1.0.0"
 
 gem              "chef-sugar"
 
-depends          "chef-client"
 depends          "logrotate"
 depends          "multipackage"
 depends          "nscd"
@@ -23,6 +22,6 @@ supports         "opensuseleap"
 supports         "fedora"
 supports         "amazon"
 
-chef_version     ">= 14"
+chef_version     ">= 16"
 issues_url       "https://github.com/chef/chef/issues"
 source_url       "https://github.com/chef/chef"

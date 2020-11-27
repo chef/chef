@@ -33,7 +33,7 @@ shared_examples_for "mandatory field missing" do
 
     it "prints a relevant error message" do
       expect { knife.run }.to raise_error(SystemExit)
-      expect(stderr.string).to match /You must specify a #{fieldname}/
+      expect(stderr.string).to match(/You must specify a #{fieldname}/)
     end
   end
 end

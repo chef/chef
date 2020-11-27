@@ -52,7 +52,7 @@ describe Chef::Knife::SupermarketList do
     it "should display all supermarket cookbooks" do
       knife.run
       cookbooks_data.each do |item|
-        expect(stdout.string).to match /#{item["cookbook_name"]}\s/
+        expect(stdout.string).to match(/#{item["cookbook_name"]}\s/)
       end
     end
 
@@ -61,8 +61,8 @@ describe Chef::Knife::SupermarketList do
         knife.config[:with_uri] = true
         knife.run
         cookbooks_data.each do |item|
-          expect(stdout.string).to match /#{item["cookbook_name"]}\s/
-          expect(stdout.string).to match /#{item["cookbook"]}\s/
+          expect(stdout.string).to match(/#{item["cookbook_name"]}\s/)
+          expect(stdout.string).to match(/#{item["cookbook"]}\s/)
         end
       end
     end

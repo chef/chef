@@ -19,7 +19,7 @@ describe Chef::Knife::TagDelete do
       expect(@node.tags).to eq(%w{sadtag happytag})
       @knife.run
       expect(@node.tags).to eq(["happytag"])
-      expect(@stderr.string).to match /deleted.+sadtag/i
+      expect(@stderr.string).to match(/deleted.+sadtag/i)
     end
   end
 end

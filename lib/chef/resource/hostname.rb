@@ -224,7 +224,7 @@ class Chef
         else # windows
           WINDOWS_EC2_CONFIG = 'C:\Program Files\Amazon\Ec2ConfigService\Settings\config.xml'.freeze
 
-          raise "Windows hostnames cannot contain a period." if new_resource.hostname.match?(/\./)
+          raise "Windows hostnames cannot contain a period." if new_resource.hostname.include?(".")
 
           # suppress EC2 config service from setting our hostname
           if ::File.exist?(WINDOWS_EC2_CONFIG)
@@ -240,7 +240,7 @@ class Chef
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             converge_by "set hostname to #{new_resource.hostname}" do
-              powershell_out! <<~EOH
+              powershell_exec! <<~EOH
                 $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
                 $sysInfo.Rename("#{new_resource.hostname}")
               EOH

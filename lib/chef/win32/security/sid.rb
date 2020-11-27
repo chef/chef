@@ -321,7 +321,7 @@ class Chef
             while status == ERROR_MORE_DATA
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
-              if status == NERR_Success || status == ERROR_MORE_DATA
+              if [NERR_Success, ERROR_MORE_DATA].include?(status)
                 Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
