@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.62 -->
-## [v16.7.62](https://github.com/chef/chef/tree/v16.7.62) (2020-11-26)
+<!-- latest_release 16.7.63 -->
+## [v16.7.63](https://github.com/chef/chef/tree/v16.7.63) (2020-11-27)
 
 #### Merged Pull Requests
-- Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50))
+- Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
 - Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50)) <!-- 16.7.62 -->
 <!-- release_rollup -->
 
