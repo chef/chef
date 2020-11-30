@@ -31,7 +31,7 @@ $LOAD_PATH.unshift File.expand_path("../chef-utils/lib", __dir__)
 
 require "rubygems"
 require "rspec/mocks"
-
+require "rexml/document"
 require "webmock/rspec"
 
 require "chef"

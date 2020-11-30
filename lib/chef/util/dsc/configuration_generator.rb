@@ -16,36 +16,34 @@
 # limitations under the License.
 #
 
-require_relative "../powershell/cmdlet"
+require_relative "../../mixin/powershell_exec"
 
 class Chef::Util::DSC
   class ConfigurationGenerator
+    include Chef::Mixin::PowershellExec
+
     def initialize(node, config_directory)
       @node = node
       @config_directory = config_directory
     end
 
-    def configuration_document_from_script_code(code, configuration_flags, imports, shellout_flags)
+    def configuration_document_from_script_code(code, configuration_flags, imports)
       Chef::Log.trace("DSC: DSC code:\n '#{code}'")
       generated_script_path = write_document_generation_script(code, "chef_dsc", imports)
       begin
-        configuration_document_from_script_path(generated_script_path, "chef_dsc", configuration_flags, shellout_flags)
+        configuration_document_from_script_path(generated_script_path, "chef_dsc", configuration_flags)
       ensure
         ::FileUtils.rm(generated_script_path)
       end
     end
 
-    def configuration_document_from_script_path(script_path, configuration_name, configuration_flags, shellout_flags)
+    def configuration_document_from_script_path(script_path, configuration_name, configuration_flags)
       validate_configuration_name!(configuration_name)
 
-      document_generation_cmdlet = Chef::Util::Powershell::Cmdlet.new(
-        @node,
-        configuration_document_generation_code(script_path, configuration_name)
-      )
+      config_generation_code = configuration_document_generation_code(script_path, configuration_name)
+      switches_string = command_switches_string(get_merged_configuration_flags!(configuration_flags, configuration_name))
 
-      merged_configuration_flags = get_merged_configuration_flags!(configuration_flags, configuration_name)
-
-      document_generation_cmdlet.run!(merged_configuration_flags, shellout_flags)
+      powershell_exec!("#{config_generation_code} #{switches_string}")
       configuration_document_location = find_configuration_document(configuration_name)
 
       unless configuration_document_location
@@ -58,6 +56,49 @@ class Chef::Util::DSC
     end
 
     protected
+
+    def validate_switch_name!(switch_parameter_name)
+      if !!(switch_parameter_name =~ /\A[A-Za-z]+[_a-zA-Z0-9]*\Z/) == false
+        raise ArgumentError, "`#{switch_parameter_name}` is not a valid PowerShell cmdlet switch parameter name"
+      end
+    end
+
+    def escape_parameter_value(parameter_value)
+      parameter_value.gsub(/(`|'|"|#)/, '`\1')
+    end
+
+    def escape_string_parameter_value(parameter_value)
+      "'#{escape_parameter_value(parameter_value)}'"
+    end
+
+    def command_switches_string(switches)
+      command_switches = switches.map do |switch_name, switch_value|
+        if switch_name.class != Symbol
+          raise ArgumentError, "Invalid type `#{switch_name} `for PowerShell switch '#{switch_name}'. The switch must be specified as a Symbol'"
+        end
+
+        validate_switch_name!(switch_name)
+
+        switch_argument = ""
+        switch_present = true
+
+        case switch_value
+        when Numeric, Float
+          switch_argument = switch_value.to_s
+        when FalseClass
+          switch_present = false
+        when TrueClass
+        when String
+          switch_argument = escape_string_parameter_value(switch_value)
+        else
+          raise ArgumentError, "Invalid argument type `#{switch_value.class}` specified for PowerShell switch `:#{switch_name}`. Arguments to PowerShell must be of type `String`, `Numeric`, `Float`, `FalseClass`, or `TrueClass`"
+        end
+
+        switch_present ? ["-#{switch_name.to_s.downcase}", switch_argument].join(" ").strip : ""
+      end
+
+      command_switches.join(" ")
+    end
 
     # From PowerShell error help for the Configuration language element:
     #   Standard names may only contain letters (a-z, A-Z), numbers (0-9), and underscore (_).

@@ -58,10 +58,10 @@ class Chef
       end
 
       def dsc_refresh_mode_disabled?(node)
-        require_relative "../util/powershell/cmdlet"
-        cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
-        metadata = cmdlet.run!.return_value
-        metadata["RefreshMode"] == "Disabled"
+        require_relative "../powershell"
+        exec = Chef::PowerShell.new("Get-DscLocalConfigurationManager")
+        exec.error!
+        exec.result["RefreshMode"] == "Disabled"
       end
 
       def supported_powershell_version?(node, version_string)

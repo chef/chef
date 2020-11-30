@@ -75,15 +75,16 @@ class Chef
           #
 
           def self.parse(lcm_output, test_dsc_configuration)
+            lcm_output ||= ""
+            lcm_output = lcm_output.split("\n")
             test_dsc_configuration ? test_dsc_parser(lcm_output) : what_if_parser(lcm_output)
           end
 
           def self.test_dsc_parser(lcm_output)
-            lcm_output ||= ""
             current_resource = {}
 
             resources = []
-            lcm_output.lines.each do |line|
+            lcm_output.each do |line|
               op_action , op_value = line.strip.split(":")
               op_action&.strip!
               case op_action
@@ -107,11 +108,10 @@ class Chef
           end
 
           def self.what_if_parser(lcm_output)
-            lcm_output ||= ""
             current_resource = {}
 
             resources = []
-            lcm_output.lines.each do |line|
+            lcm_output.each do |line|
               op_action, op_type, info = parse_line(line)
 
               case op_action
