@@ -128,23 +128,27 @@ class Chef
           security_option = new_resource.secoption
           security_value = new_resource.secvalue
 
-          cmd = <<-EOH
-            $security_option = "#{security_option}"
-            C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\#{security_option}_Export.inf
-            if ( ($security_option -match "NewGuestName") -Or ($security_option -match "NewAdministratorName") )
-              {
-                $#{security_option}_Remediation = (Get-Content $env:TEMP\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace '#{security_option}\\s*=\\s*\\"\\w*\\"', '#{security_option} = "#{security_value}"' } | Set-Content $env:TEMP\\#{security_option}_Export.inf
-                C:\\Windows\\System32\\secedit /configure /db $env:windir\\security\\new.sdb /cfg $env:TEMP\\#{security_option}_Export.inf /areas SECURITYPOLICY
-              }
-            else
-              {
-                $#{security_option}_Remediation = (Get-Content $env:TEMP\\#{security_option}_Export.inf) | Foreach-Object { $_ -replace "#{security_option}\\s*=\\s*\\d*", "#{security_option} = #{security_value}" } | Set-Content $env:TEMP\\#{security_option}_Export.inf
-                C:\\Windows\\System32\\secedit /configure /db $env:windir\\security\\new.sdb /cfg $env:TEMP\\#{security_option}_Export.inf /areas SECURITYPOLICY
-              }
-            Remove-Item $env:TEMP\\#{security_option}_Export.inf -force
-          EOH
-
-          powershell_exec!(cmd)
+          policy_line = if security_option == 'NewAdministratorName' || security_option == 'NewGuestName'
+                          "#{security_option} = \"#{security_value}\""
+                        else
+                          "#{security_option} = #{security_value}"
+                        end
+          file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
+            content "[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n"
+            backup false
+            action :create
+          end
+          execute "Configure Security Policy for Security Option: #{security_option}" do
+            cwd Chef::Config[:file_cache_path]
+            command <<~CMD
+              C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{security_option}_temp.inf /areas SECURITYPOLICY
+            CMD
+            action :run
+          end
+          file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
+            backup false
+            action :delete
+          end
         end
       end
     end

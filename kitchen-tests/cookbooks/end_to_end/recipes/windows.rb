@@ -27,9 +27,24 @@ timezone "Pacific Standard time"
 
 include_recipe "ntp"
 
-windows_security_policy "EnableGuestAccount" do
-  secoption "EnableGuestAccount"
-  secvalue "1"
+windows_security_policy 'NewGuestName' do
+  secvalue 'down_with_guests'
+  action :set
+end
+
+windows_security_policy 'EnableGuestAccount' do
+  secvalue '1'
+  action :set
+end
+
+windows_security_policy 'LockoutBadCount' do
+  secvalue '10'
+  action :set
+end
+
+windows_security_policy 'LockoutDuration' do
+  secvalue '15'
+  action :set
 end
 
 windows_firewall_profile "Domain" do
