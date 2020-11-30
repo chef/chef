@@ -14,28 +14,28 @@ describe Chef::Audit::Runner do
 
   describe "#enabled?" do
     it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
-      node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
       runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).to be_enabled
     end
 
     it "is false if the node attributes have audit profiles and the audit cookbook is present" do
-      node.default["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
       runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
-      node.default["audit"]["profiles"] = {}
+      node.normal["audit"]["profiles"] = {}
       runner.recipes = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is present" do
-      node.default["audit"]["profiles"] = {}
+      node.normal["audit"]["profiles"] = {}
       runner.recipes = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
@@ -53,12 +53,12 @@ describe Chef::Audit::Runner do
     end
 
     it "converts from the attribute format to the format Inspec expects" do
-      node.default["audit"]["profiles"]["linux-baseline"] = {
+      node.normal["audit"]["profiles"]["linux-baseline"] = {
         'compliance': "user/linux-baseline",
         'version': "2.1.0",
       }
 
-      node.default["audit"]["profiles"]["ssh"] = {
+      node.normal["audit"]["profiles"]["ssh"] = {
         'supermarket': "hardening/ssh-hardening",
       }
 
@@ -78,7 +78,7 @@ describe Chef::Audit::Runner do
     end
 
     it "raises an error when the profiles are in the old audit-cookbook format" do
-      node.default["audit"]["profiles"] = [
+      node.normal["audit"]["profiles"] = [
         {
           name: "Windows 2019 Baseline",
           compliance: "admin/windows-2019-baseline",
@@ -91,8 +91,8 @@ describe Chef::Audit::Runner do
 
   describe "#warn_for_deprecated_config_values!" do
     it "logs a warning when deprecated config values are present" do
-      node.default["audit"]["owner"] = "my_org"
-      node.default["audit"]["inspec_version"] = "90210"
+      node.normal["audit"]["owner"] = "my_org"
+      node.normal["audit"]["inspec_version"] = "90210"
 
       expect(logger).to receive(:warn).with(/config values 'inspec_version', 'owner' are not supported/)
 
@@ -100,7 +100,7 @@ describe Chef::Audit::Runner do
     end
 
     it "does not log a warning with no deprecated config values" do
-      node.default["audit"]["profiles"]["linux-baseline"] = {
+      node.normal["audit"]["profiles"]["linux-baseline"] = {
         'compliance': "user/linux-baseline",
         'version': "2.1.0",
       }
