@@ -85,7 +85,7 @@ describe Chef::Audit::Runner do
         },
       ]
 
-      expect { runner.inspec_profiles }.to raise_error(/Inspec profiles specified in an unrecognized format, expected a hash of hashes./)
+      expect { runner.inspec_profiles }.to raise_error(/profiles specified in an unrecognized format, expected a hash of hashes./)
     end
   end
 

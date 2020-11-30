@@ -31,7 +31,7 @@ class Chef
         # Method used in order to send the inspec report to the data_collector server
         def send_report(report)
           unless @entity_uuid && @run_id
-            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to Chef Automate"
+            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to #{ChefUtils::Dist::Automate::PRODUCT}"
             return false
           end
 
@@ -57,8 +57,7 @@ class Chef
           # Automate GRPC currently has a message limit of ~4MB
           # https://github.com/chef/automate/issues/1417#issuecomment-541908157
           if json_report.bytesize > 4 * 1024 * 1024
-            Chef::Log.warn "Compliance report size is #{(json_report.bytesize / (1024 * 1024.0)).round(2)} MB."
-            Chef::Log.warn "Automate has an internal 4MB limit that is not currently configurable."
+            Chef::Log.warn "Generated report size is #{(json_report.bytesize / (1024 * 1024.0)).round(2)} MB. #{ChefUtils::Dist::Automate::PRODUCT} has an internal 4MB limit that is not currently configurable."
           end
 
           unless json_report
@@ -67,7 +66,7 @@ class Chef
           end
 
           begin
-            Chef::Log.info "Report to Chef Automate: #{@url}"
+            Chef::Log.info "Report to #{ChefUtils::Dist::Automate::PRODUCT}: #{@url}"
             Chef::Log.debug "Audit Report: #{json_report}"
             http_client.post(nil, json_report, headers)
             true
@@ -149,13 +148,13 @@ class Chef
         # Contacts the metasearch Automate API to check which of the inspec profile sha256 ids
         # passed in via `report_shas` are missing from the Automate profiles metadata database.
         def missing_automate_profiles(headers, report_shas)
-          Chef::Log.debug "Checking the Automate profiles metadata for: #{report_shas}"
+          Chef::Log.debug "Checking the #{ChefUtils::Dist::Automate::PRODUCT} profiles metadata for: #{report_shas}"
           meta_url = URI(@url)
           meta_url.path = "/compliance/profiles/metasearch"
           response_str = http_client(meta_url.to_s).post(nil, "{\"sha256\": #{report_shas}}", headers)
           missing_shas = Chef::JSONCompat.parse(response_str)["missing_sha256"]
           unless missing_shas.empty?
-            Chef::Log.info "Automate is missing metadata for the following profile ids: #{missing_shas}"
+            Chef::Log.info "#{ChefUtils::Dist::Automate::PRODUCT} is missing metadata for the following profile ids: #{missing_shas}"
           end
           missing_shas
         rescue => e

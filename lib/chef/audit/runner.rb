@@ -18,7 +18,7 @@ class Chef
       def enabled?
         audit_cookbook_present = recipes.include?("audit::default")
 
-        logger.info("#{self.class}##{__method__}: inspec profiles? #{inspec_profiles.any?}")
+        logger.info("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
         logger.info("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
 
         inspec_profiles.any? && !audit_cookbook_present
@@ -75,7 +75,7 @@ class Chef
 
         if deprecated_config_values.any?
           values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
-          logger.warn "audit-cookbook config values #{values} are not supported in Chef Infra's audit mode."
+          logger.warn "audit-cookbook config values #{values} are not supported in #{ChefUtils::Dist::Infra::PRODUCT}'s audit mode."
         end
       end
 
@@ -111,7 +111,7 @@ class Chef
 
         # TODO: Custom exception class here?
         unless profiles.respond_to?(:map) && profiles.all? { |_, p| p.respond_to?(:transform_keys) && p.respond_to?(:update) }
-          raise "Inspec profiles specified in an unrecognized format, expected a hash of hashes."
+          raise "#{Inspec::Dist::PRODUCT_NAME} profiles specified in an unrecognized format, expected a hash of hashes."
         end
 
         profiles.map do |name, profile|
@@ -159,7 +159,7 @@ class Chef
       # In case InSpec raises a runtime exception without providing a valid report,
       # we make one up and add two new fields to it: `status` and `status_message`
       def failed_report(err)
-        logger.error "InSpec has raised a runtime exception. Generating a minimal failed report."
+        logger.error "#{Inspec::Dist::PRODUCT_NAME} has raised a runtime exception. Generating a minimal failed report."
         logger.error err
         {
           "platform": {
@@ -233,7 +233,7 @@ class Chef
             }
             Chef::Audit::Reporter::ChefServer.new(opts).send_report(report)
           else
-            logger.warn "unable to determine chef-server url required by inspec report collector '#{reporter}'. Skipping..."
+            logger.warn "Unable to determine #{ChefUtils::Dist::Server::PRODUCT} url required by #{Inspec::Dist::PRODUCT_NAME} report collector '#{reporter}'. Skipping..."
           end
         when "json-file"
           path = node["audit"]["json_file"]["location"]
@@ -242,7 +242,7 @@ class Chef
         when "audit-enforcer"
           Chef::Audit::Reporter::AuditEnforcer.new.send_report(report)
         else
-          logger.warn "#{reporter} is not a supported InSpec report collector"
+          logger.warn "#{reporter} is not a supported #{Inspec::Dist::PRODUCT_NAME} report collector"
         end
       end
     end

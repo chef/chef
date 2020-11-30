@@ -51,7 +51,7 @@ class Chef
                 "No data-collector token set, which is required by the chef-automate fetcher. " \
                 "Set the `data_collector.token` configuration parameter in your client.rb " \
                 'or use the "chef-server-automate" reporter which does not require any ' \
-                "data-collector settings and uses Chef Server to fetch profiles."
+                "data-collector settings and uses #{ChefUtils::Dist::Server::PRODUCT} to fetch profiles."
             end
           end
 
@@ -61,7 +61,7 @@ class Chef
         end
 
         def to_s
-          "Chef Automate for Chef Solo Fetcher"
+          "#{ChefUtils::Dist::Automate::PRODUCT} for #{ChefUtils::Dist::Solo::PRODUCT} Fetcher"
         end
       end
     end

@@ -73,7 +73,7 @@ class Chef
 
           if archive.nil?
             path = @target.respond_to?(:path) ? @target.path : path
-            raise Inspec::FetcherFailure, "Unable to find requested profile on path: '#{path}' on the Automate system."
+            raise Inspec::FetcherFailure, "Unable to find requested profile on path: '#{path}' on the #{ChefUtils::Dist::Automate::PRODUCT} system."
           end
 
           Inspec::Log.debug("Archive stored at temporary location: #{archive.path}")
@@ -99,9 +99,9 @@ class Chef
           when /404/
             Chef::Log.error "Object does not exist on remote server."
           when /413/
-            Chef::Log.error "You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
+            Chef::Log.error "You most likely hit the erchef request size in #{ChefUtils::Dist::Server::PRODUCT} that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
           when /429/
-            Chef::Log.error "This error typically means the data sent was larger than Automate's limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
+            Chef::Log.error "This error typically means the data sent was larger than #{ChefUtils::Dist::Automate::PRODUCT}'s limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
           end
           msg = "Received HTTP error #{code}"
           Chef::Log.error msg
@@ -109,7 +109,7 @@ class Chef
         end
 
         def to_s
-          "Chef Server/Compliance Profile Loader"
+          "#{ChefUtils::Dist::Server::PRODUCT}/Compliance Profile Loader"
         end
 
         CHEF_SERVER_REPORTERS = %w{chef-server chef-server-compliance chef-server-visibility chef-server-automate}.freeze

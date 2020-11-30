@@ -29,7 +29,7 @@ class Chef
 
         def send_report(report)
           unless @entity_uuid && @run_id
-            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to Chef Automate"
+            Chef::Log.error "entity_uuid(#{@entity_uuid}) or run_id(#{@run_id}) can't be nil, not sending report to #{ChefUtils::Dist::Automate::PRODUCT}"
             return false
           end
 
@@ -38,11 +38,10 @@ class Chef
           report_size = Chef::JSONCompat.to_json(automate_report, validate_utf8: false).bytesize
           # this is set to slightly less than the oc_erchef limit
           if report_size > 900 * 1024
-            Chef::Log.warn "Compliance report size is #{(report_size / (1024 * 1024.0)).round(2)} MB."
-            Chef::Log.warn "Infra Server < 13.0 defaults to a limit of ~1MB, 13.0+ defaults to a limit of ~2MB."
+            Chef::Log.warn "Generated report size is #{(report_size / (1024 * 1024.0)).round(2)} MB. #{ChefUtils::Dist::Server::PRODUCT} < 13.0 defaults to a limit of ~1MB, 13.0+ defaults to a limit of ~2MB."
           end
 
-          Chef::Log.info "Report to Chef Automate via Chef Server: #{@url}"
+          Chef::Log.info "Report to #{ChefUtils::Dist::Automate::PRODUCT} via #{ChefUtils::Dist::Server::PRODUCT}: #{@url}"
           with_http_rescue do
             http_client.post(@url, automate_report)
             return true
@@ -79,9 +78,9 @@ class Chef
           when /404/
             Chef::Log.error "Object does not exist on remote server."
           when /413/
-            Chef::Log.error "You most likely hit the erchef request size in Chef Server that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
+            Chef::Log.error "You most likely hit the erchef request size in #{ChefUtils::Dist::Server::PRODUCT} that defaults to ~2MB. To increase this limit see audit cookbook TROUBLESHOOTING.md OR https://docs.chef.io/config_rb_server.html"
           when /429/
-            Chef::Log.error "This error typically means the data sent was larger than Automate's limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
+            Chef::Log.error "This error typically means the data sent was larger than #{ChefUtils::Dist::Automate::PRODUCT}'s limit (4 MB). Run InSpec locally to identify any controls producing large diffs."
           end
           msg = "Received HTTP error #{code}"
           Chef::Log.error msg
