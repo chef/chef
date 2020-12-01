@@ -1,15 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 <!-- latest_release 16.7.63 -->
-## [v16.7.63](https://github.com/chef/chef/tree/v16.7.63) (2020-11-27)
+## [v16.7.63](https://github.com/chef/chef/tree/v16.7.63) (2020-12-01)
 
 #### Merged Pull Requests
-- Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50))
+- Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
+- Enable git cache to speed up builds [#10689](https://github.com/chef/chef/pull/10689) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
+- replace usages of Cmdlet class with powershell_exec [#10683](https://github.com/chef/chef/pull/10683) ([mwrock](https://github.com/mwrock)) <!-- 16.7.63 -->
+- Update the Docker file to use the RHEL 7 package [#10700](https://github.com/chef/chef/pull/10700) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
 - Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
 - Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50)) <!-- 16.7.62 -->
 <!-- release_rollup -->
