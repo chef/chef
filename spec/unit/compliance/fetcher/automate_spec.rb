@@ -1,7 +1,7 @@
 require "spec_helper"
-require "chef/audit/fetcher/automate"
+require "chef/compliance/fetcher/automate"
 
-describe Chef::Audit::Fetcher::Automate do
+describe Chef::Compliance::Fetcher::Automate do
   describe ".resolve" do
     before do
       Chef::Config[:data_collector] = {
@@ -14,9 +14,9 @@ describe Chef::Audit::Fetcher::Automate do
 
     context "when target is a string" do
       it "should resolve a compliance URL" do
-        res = Chef::Audit::Fetcher::Automate.resolve("compliance://namespace/profile_name")
+        res = Chef::Compliance::Fetcher::Automate.resolve("compliance://namespace/profile_name")
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://automate.test/compliance/profiles/namespace/profile_name/tar"
         expect(res.target).to eq(expected)
       end
@@ -25,25 +25,25 @@ describe Chef::Audit::Fetcher::Automate do
         Chef::Config[:data_collector].delete(:token)
 
         expect {
-          Chef::Audit::Fetcher::Automate.resolve("compliance://namespace/profile_name")
+          Chef::Compliance::Fetcher::Automate.resolve("compliance://namespace/profile_name")
         }.to raise_error(/No data-collector token set/)
       end
 
       it "includes the data collector token" do
-        expect(Chef::Audit::Fetcher::Automate).to receive(:new).with(
+        expect(Chef::Compliance::Fetcher::Automate).to receive(:new).with(
           "https://automate.test/compliance/profiles/namespace/profile_name/tar",
           hash_including("token" => token)
         ).and_call_original
 
-        res = Chef::Audit::Fetcher::Automate.resolve("compliance://namespace/profile_name")
+        res = Chef::Compliance::Fetcher::Automate.resolve("compliance://namespace/profile_name")
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://automate.test/compliance/profiles/namespace/profile_name/tar"
         expect(res.target).to eq(expected)
       end
 
       it "returns nil with a non-compliance URL" do
-        res = Chef::Audit::Fetcher::Automate.resolve("http://github.com/chef-cookbooks/audit")
+        res = Chef::Compliance::Fetcher::Automate.resolve("http://github.com/chef-cookbooks/audit")
 
         expect(res).to eq(nil)
       end
@@ -51,51 +51,51 @@ describe Chef::Audit::Fetcher::Automate do
 
     context "when target is a hash" do
       it "should resolve a target with a version" do
-        res = Chef::Audit::Fetcher::Automate.resolve(
+        res = Chef::Compliance::Fetcher::Automate.resolve(
           compliance: "namespace/profile_name",
           version: "1.2.3"
         )
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://automate.test/compliance/profiles/namespace/profile_name/version/1.2.3/tar"
         expect(res.target).to eq(expected)
       end
 
       it "should resolve a target without a version" do
-        res = Chef::Audit::Fetcher::Automate.resolve(
+        res = Chef::Compliance::Fetcher::Automate.resolve(
           compliance: "namespace/profile_name"
         )
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://automate.test/compliance/profiles/namespace/profile_name/tar"
         expect(res.target).to eq(expected)
       end
 
       it "uses url key when present" do
-        res = Chef::Audit::Fetcher::Automate.resolve(
+        res = Chef::Compliance::Fetcher::Automate.resolve(
           compliance: "namespace/profile_name",
           version: "1.2.3",
           url: "https://profile.server.test/profiles/profile_name/1.2.3"
         )
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://profile.server.test/profiles/profile_name/1.2.3"
         expect(res.target).to eq(expected)
       end
 
       it "does not include token in the config when url key is present" do
-        expect(Chef::Audit::Fetcher::Automate).to receive(:new).with(
+        expect(Chef::Compliance::Fetcher::Automate).to receive(:new).with(
           "https://profile.server.test/profiles/profile_name/1.2.3",
           hash_including("token" => nil)
         ).and_call_original
 
-        res = Chef::Audit::Fetcher::Automate.resolve(
+        res = Chef::Compliance::Fetcher::Automate.resolve(
           compliance: "namespace/profile_name",
           version: "1.2.3",
           url: "https://profile.server.test/profiles/profile_name/1.2.3"
         )
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://profile.server.test/profiles/profile_name/1.2.3"
         expect(res.target).to eq(expected)
       end
@@ -104,25 +104,25 @@ describe Chef::Audit::Fetcher::Automate do
         Chef::Config[:data_collector].delete(:token)
 
         expect {
-          Chef::Audit::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
+          Chef::Compliance::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
         }.to raise_error(Inspec::FetcherFailure, /No data-collector token set/)
       end
 
       it "includes the data collector token" do
-        expect(Chef::Audit::Fetcher::Automate).to receive(:new).with(
+        expect(Chef::Compliance::Fetcher::Automate).to receive(:new).with(
           "https://automate.test/compliance/profiles/namespace/profile_name/tar",
           hash_including("token" => token)
         ).and_call_original
 
-        res = Chef::Audit::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
+        res = Chef::Compliance::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
 
-        expect(res).to be_kind_of(Chef::Audit::Fetcher::Automate)
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://automate.test/compliance/profiles/namespace/profile_name/tar"
         expect(res.target).to eq(expected)
       end
 
       it "returns nil with a non-profile Hash" do
-        res = Chef::Audit::Fetcher::Automate.resolve(
+        res = Chef::Compliance::Fetcher::Automate.resolve(
           profile: "namespace/profile_name",
           version: "1.2.3"
         )

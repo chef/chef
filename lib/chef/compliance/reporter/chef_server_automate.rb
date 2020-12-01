@@ -1,12 +1,12 @@
 require_relative "automate"
 
 class Chef
-  module Audit
+  module Compliance
     module Reporter
       #
       # Used to send inspec reports to Chef Automate server via Chef Server
       #
-      class ChefServerAutomate < Chef::Audit::Reporter::Automate
+      class ChefServerAutomate < Chef::Compliance::Reporter::Automate
         def initialize(opts)
           @entity_uuid           = opts[:entity_uuid]
           @run_id                = opts[:run_id]

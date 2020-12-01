@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Chef::Audit::Runner do
+describe Chef::Compliance::Runner do
   let(:logger) { double(:logger).as_null_object }
   let(:node) { Chef::Node.new(logger: logger) }
 

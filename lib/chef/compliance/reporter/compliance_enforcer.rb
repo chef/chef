@@ -1,5 +1,5 @@
 class Chef
-  module Audit
+  module Compliance
     module Reporter
       class AuditEnforcer
         class ControlFailure < StandardError; end

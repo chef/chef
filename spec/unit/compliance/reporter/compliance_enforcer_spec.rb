@@ -1,7 +1,7 @@
 require "spec_helper"
 
-describe Chef::Audit::Reporter::AuditEnforcer do
-  let(:reporter) { Chef::Audit::Reporter::AuditEnforcer.new }
+describe Chef::Compliance::Reporter::AuditEnforcer do
+  let(:reporter) { Chef::Compliance::Reporter::AuditEnforcer.new }
 
   it "does not raise error for a successful InSpec report" do
     report = {
@@ -43,6 +43,6 @@ describe Chef::Audit::Reporter::AuditEnforcer do
 
     expect {
       reporter.send_report(report)
-    }.to raise_error(Chef::Audit::Reporter::AuditEnforcer::ControlFailure, "Audit c2 has failed. Aborting chef-client run.")
+    }.to raise_error(Chef::Compliance::Reporter::AuditEnforcer::ControlFailure, "Audit c2 has failed. Aborting chef-client run.")
   end
 end

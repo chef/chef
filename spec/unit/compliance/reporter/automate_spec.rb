@@ -1,8 +1,8 @@
 require "spec_helper"
 require "json" # For .to_json
 
-describe Chef::Audit::Reporter::Automate do
-  let(:reporter) { Chef::Audit::Reporter::Automate.new(opts) }
+describe Chef::Compliance::Reporter::Automate do
+  let(:reporter) { Chef::Compliance::Reporter::Automate.new(opts) }
 
   let(:opts) do
     {
@@ -267,7 +267,7 @@ describe Chef::Audit::Reporter::Automate do
 
     it "does not send report when entity_uuid is missing" do
       opts.delete(:entity_uuid)
-      reporter = Chef::Audit::Reporter::Automate.new(opts)
+      reporter = Chef::Compliance::Reporter::Automate.new(opts)
       expect(reporter.send_report(inspec_report)).to eq(false)
     end
   end

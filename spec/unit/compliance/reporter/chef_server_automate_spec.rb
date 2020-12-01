@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe Chef::Audit::Reporter::ChefServerAutomate do
+describe Chef::Compliance::Reporter::ChefServerAutomate do
   before do
     WebMock.disable_net_connect!
 
@@ -8,7 +8,7 @@ describe Chef::Audit::Reporter::ChefServerAutomate do
     Chef::Config[:node_name] = "spec-node"
   end
 
-  let(:reporter) { Chef::Audit::Reporter::ChefServerAutomate.new(opts) }
+  let(:reporter) { Chef::Compliance::Reporter::ChefServerAutomate.new(opts) }
 
   let(:opts) do
     {

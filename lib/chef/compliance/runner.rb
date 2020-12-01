@@ -1,13 +1,13 @@
 autoload :Inspec, "inspec"
 
 require_relative "default_attributes"
-require_relative "reporter/audit_enforcer"
 require_relative "reporter/automate"
 require_relative "reporter/chef_server_automate"
+require_relative "reporter/compliance_enforcer"
 require_relative "reporter/json_file"
 
 class Chef
-  module Audit
+  module Compliance
     class Runner < EventDispatch::Base
       extend Forwardable
 
@@ -26,7 +26,7 @@ class Chef
 
       def node=(node)
         @node = node
-        node.default["audit"] = Chef::Audit::DEFAULT_ATTRIBUTES.merge(node.default["audit"])
+        node.default["audit"] = Chef::Compliance::DEFAULT_ATTRIBUTES.merge(node.default["audit"])
       end
 
       def node_load_completed(node, _expanded_run_list, _config)
@@ -44,7 +44,7 @@ class Chef
       def run_completed(_node, _run_status)
         return unless enabled?
 
-        logger.info("#{self.class}##{__method__}: enabling audit mode")
+        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -52,7 +52,7 @@ class Chef
       def run_failed(_exception, _run_status)
         return unless enabled?
 
-        logger.info("#{self.class}##{__method__}: enabling audit mode")
+        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -75,7 +75,7 @@ class Chef
 
         if deprecated_config_values.any?
           values = deprecated_config_values.sort.map { |v| "'#{v}'" }.join(", ")
-          logger.warn "audit-cookbook config values #{values} are not supported in #{ChefUtils::Dist::Infra::PRODUCT}'s audit mode."
+          logger.warn "audit cookbook config values #{values} are not supported in #{ChefUtils::Dist::Infra::PRODUCT}'s Compliance Phase."
         end
       end
 
@@ -83,7 +83,7 @@ class Chef
         warn_for_deprecated_config_values!
 
         if report.empty?
-          logger.error "Audit report was not generated properly, skipped reporting"
+          logger.error "Compliance report was not generated properly, skipped reporting"
           return
         end
 
@@ -128,7 +128,7 @@ class Chef
         when nil
           # intentionally blank
         else
-          raise "Invalid value specified for audit mode's fetcher: '#{node["audit"]["fetcher"]}'. Valid values are 'chef-automate', 'chef-server', or nil."
+          raise "Invalid value specified for Compliance Phase's fetcher: '#{node["audit"]["fetcher"]}'. Valid values are 'chef-automate', 'chef-server', or nil."
         end
       end
 
@@ -139,7 +139,7 @@ class Chef
         runner = ::Inspec::Runner.new(opts)
 
         if profiles.empty?
-          failed_report("No audit profiles are defined.")
+          failed_report("No #{Inspec::Dist::PRODUCT_NAME} profiles are defined.")
           return
         end
 
@@ -148,7 +148,7 @@ class Chef
         logger.info "Running profiles from: #{profiles.inspect}"
         runner.run
         runner.report.tap do |r|
-          logger.debug "Audit Report #{r}"
+          logger.debug "Compliance Report #{r}"
         end
       rescue Inspec::FetcherFailure => e
         failed_report("Cannot fetch all profiles: #{profiles}. Please make sure you're authenticated and the server is reachable. #{e.message}")
@@ -216,7 +216,7 @@ class Chef
             run_time_limit: run_time_limit,
             control_results_limit: control_results_limit,
           }
-          Chef::Audit::Reporter::Automate.new(opts).send_report(report)
+          Chef::Compliance::Reporter::Automate.new(opts).send_report(report)
         when "chef-server-automate"
           chef_url = node["audit"]["server"] || base_chef_server_url
           chef_org = Chef::Config[:chef_server_url].split("/").last
@@ -231,16 +231,16 @@ class Chef
               run_time_limit: run_time_limit,
               control_results_limit: control_results_limit,
             }
-            Chef::Audit::Reporter::ChefServer.new(opts).send_report(report)
+            Chef::Compliance::Reporter::ChefServer.new(opts).send_report(report)
           else
             logger.warn "Unable to determine #{ChefUtils::Dist::Server::PRODUCT} url required by #{Inspec::Dist::PRODUCT_NAME} report collector '#{reporter}'. Skipping..."
           end
         when "json-file"
           path = node["audit"]["json_file"]["location"]
-          logger.info "Writing report to #{path}"
-          Chef::Audit::Reporter::JsonFile.new(file: path).send_report(report)
+          logger.info "Writing compliance report to #{path}"
+          Chef::Compliance::Reporter::JsonFile.new(file: path).send_report(report)
         when "audit-enforcer"
-          Chef::Audit::Reporter::AuditEnforcer.new.send_report(report)
+          Chef::Compliance::Reporter::ComplianceEnforcer.new.send_report(report)
         else
           logger.warn "#{reporter} is not a supported #{Inspec::Dist::PRODUCT_NAME} report collector"
         end

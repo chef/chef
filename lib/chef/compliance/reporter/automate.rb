@@ -1,5 +1,5 @@
 class Chef
-  module Audit
+  module Compliance
     module Reporter
       #
       # Used to send inspec reports to Chef Automate via the data_collector service
@@ -67,7 +67,7 @@ class Chef
 
           begin
             Chef::Log.info "Report to #{ChefUtils::Dist::Automate::PRODUCT}: #{@url}"
-            Chef::Log.debug "Audit Report: #{json_report}"
+            Chef::Log.debug "Compliance Report: #{json_report}"
             http_client.post(nil, json_report, headers)
             true
           rescue => e

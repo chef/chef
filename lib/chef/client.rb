@@ -57,7 +57,7 @@ require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
 
-require_relative "audit/runner"
+require_relative "compliance/runner"
 
 class Chef
   # == Chef::Client
@@ -237,7 +237,7 @@ class Chef
 
         events.register(Chef::DataCollector::Reporter.new(events))
         events.register(Chef::ActionCollection.new(events))
-        events.register(Chef::Audit::Runner.new)
+        events.register(Chef::Compliance::Runner.new)
 
         run_status.run_id = request_id = Chef::RequestID.instance.request_id
 

@@ -9,7 +9,7 @@ require "plugins/inspec-compliance/lib/inspec-compliance"
 # inside of a chef-client run
 
 class Chef
-  module Audit
+  module Compliance
     module Fetcher
       class ChefServer < ::InspecPlugins::Compliance::Fetcher
         name "chef-server"

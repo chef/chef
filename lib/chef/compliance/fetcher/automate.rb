@@ -2,7 +2,7 @@ require "uri" unless defined?(URI)
 require "plugins/inspec-compliance/lib/inspec-compliance"
 
 class Chef
-  module Audit
+  module Compliance
     module Fetcher
       class Automate < ::InspecPlugins::Compliance::Fetcher
         name "chef-automate"

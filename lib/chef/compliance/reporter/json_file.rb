@@ -1,7 +1,7 @@
 require_relative "../../json_compat"
 
 class Chef
-  module Audit
+  module Compliance
     module Reporter
       class JsonFile
         def initialize(opts)

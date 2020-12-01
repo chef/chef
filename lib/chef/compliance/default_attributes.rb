@@ -17,7 +17,7 @@ require "chef/node/attribute_collections" # for VividMash
 require "chef/util/path_helper"
 
 class Chef
-  module Audit
+  module Compliance
     DEFAULT_ATTRIBUTES = Chef::Node::VividMash.new(
       # If enabled, a cache is built for all backend calls. This should only be
       # disabled if you are expecting unique results from the same backend call.
@@ -54,11 +54,11 @@ class Chef
 
       "json_file" => {
         # The location of the json-file output:
-        # <chef_cache_path>/audit_reports/audit-<timestamp>.json
+        # <chef_cache_path>/compliance_reports/compliance-<timestamp>.json
         "location" => Chef::Util::PathHelper.join(
           Chef::Config[:cache_path],
-          "audit_reports",
-          Time.now.utc.strftime("audit-%Y%m%d%H%M%S.json")
+          "compliance_reports",
+          Time.now.utc.strftime("compliance-%Y%m%d%H%M%S.json")
         ),
       },
 
