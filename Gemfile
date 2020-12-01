@@ -27,8 +27,8 @@ gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 4.18"
-  gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
+  gem "inspec-core", "~> 4.23"
+  gem "inspec-core-bin", "~> 4.23" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
@@ -58,7 +58,9 @@ end
 
 group(:chefstyle) do
   # for testing new chefstyle rules
-  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
+  # disabled until we resolve the conflict in regexp_parser deps between rubocop and inspec
+  # gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
+  gem "chefstyle", "= 1.5.2"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]

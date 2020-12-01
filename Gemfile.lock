@@ -1,17 +1,9 @@
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 2176e18262ccdaee221be8323dd2b06e04463d2b
-  branch: master
-  specs:
-    chefstyle (1.5.5)
-      rubocop (= 1.4.2)
-
-GIT
   remote: https://github.com/chef/ohai.git
-  revision: 8d1ae429422439c4123e7973fe087a7d53514f15
+  revision: 876839a6324a635f15db4118366c938bdd3d675b
   branch: master
   specs:
-    ohai (16.7.37)
+    ohai (16.8.0)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -164,6 +156,8 @@ GEM
     cheffish (16.0.12)
       chef-zero (>= 14.0)
       net-ssh
+    chefstyle (1.5.2)
+      rubocop (= 1.3.1)
     coderay (1.1.3)
     concurrent-ruby (1.1.7)
     crack (0.4.4)
@@ -176,7 +170,7 @@ GEM
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.5.0)
+    fauxhai-ng (8.6.0)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
@@ -311,7 +305,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.0)
-    rubocop (1.4.2)
+    rubocop (1.3.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
@@ -320,7 +314,7 @@ GEM
       rubocop-ast (>= 1.1.1)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (1.2.0)
+    rubocop-ast (1.3.0)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
     ruby-progressbar (1.10.1)
@@ -432,10 +426,10 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 14)
-  chefstyle!
+  chefstyle (= 1.5.2)
   fauxhai-ng
-  inspec-core (~> 4.18)
-  inspec-core-bin (~> 4.18)
+  inspec-core (~> 4.23)
+  inspec-core-bin (~> 4.23)
   ohai!
   pry
   pry-byebug
