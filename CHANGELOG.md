@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.63 -->
-## [v16.7.63](https://github.com/chef/chef/tree/v16.7.63) (2020-12-01)
+<!-- latest_release 16.7.64 -->
+## [v16.7.64](https://github.com/chef/chef/tree/v16.7.64) (2020-12-01)
 
 #### Merged Pull Requests
-- Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50))
+- Update changelog with missing updates from previous prs [#10703](https://github.com/chef/chef/pull/10703) ([nkierpiec](https://github.com/nkierpiec))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update changelog with missing updates from previous prs [#10703](https://github.com/chef/chef/pull/10703) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.7.64 -->
 - Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
 - Enable git cache to speed up builds [#10689](https://github.com/chef/chef/pull/10689) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
 - replace usages of Cmdlet class with powershell_exec [#10683](https://github.com/chef/chef/pull/10683) ([mwrock](https://github.com/mwrock)) <!-- 16.7.63 -->
