@@ -23,19 +23,18 @@ describe "chef-client with audit mode" do
   let(:chef_client) { "bundle exec #{ChefUtils::Dist::Infra::CLIENT} --minimal-ohai" }
 
   when_the_repository "has a custom profile" do
+    let(:report_file) { path_to("report_file.json") }
+
     before do
       directory "profiles/my-profile" do
         file "inspec.yml", <<~FILE
           ---
           name: my-profile
-          title: a minimal profile
         FILE
 
         directory "controls" do
           file "my_control.rb", <<~FILE
             control "my control" do
-              title "Home directory exists"
-              impact 0.0
               describe Dir.home do
                 it { should be_kind_of String }
               end
@@ -47,7 +46,9 @@ describe "chef-client with audit mode" do
       file "attributes.json", <<~FILE
         {
           "audit": {
-            "reporter": ["json-file"],
+            "json_file": {
+              "location": "#{report_file}"
+            },
             "profiles": {
               "my-profile": {
                 "path": "#{path_to("profiles/my-profile")}"
@@ -62,7 +63,7 @@ describe "chef-client with audit mode" do
       result = shell_out!("#{chef_client} --local-mode --json-attributes #{path_to("attributes.json")}", cwd: chef_dir)
       result.error!
 
-      inspec_report = JSON.parse(File.read(Dir["#{Chef::Config[:cache_path]}/audit_reports/audit-*.json"].last))
+      inspec_report = JSON.parse(File.read(report_file))
       expect(inspec_report["profiles"].length).to eq(1)
 
       profile = inspec_report["profiles"].first
