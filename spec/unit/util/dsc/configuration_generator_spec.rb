@@ -39,7 +39,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     end
 
     %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
-      it "raises an Argument error if it configuration name contains #{sym}" do
+      it "raises an ArgumentError if configuration name contains #{sym}" do
         expect do
           conf_man.send(:validate_switch_name!, "Hello#{sym}")
         end.to raise_error(ArgumentError)
@@ -50,7 +50,7 @@ describe Chef::Util::DSC::ConfigurationGenerator do
   describe "#escape_parameter_value" do
     # Is this list really complete?
     %w{` " # '}.each do |c|
-      it "escapse #{c}" do
+      it "escapes #{c}" do
         expect(conf_man.send(:escape_parameter_value, "stuff #{c}")).to eql("stuff `#{c}")
       end
     end

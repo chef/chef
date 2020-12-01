@@ -75,8 +75,7 @@ class Chef
           #
 
           def self.parse(lcm_output, test_dsc_configuration)
-            lcm_output ||= ""
-            lcm_output = lcm_output.split("\n")
+            lcm_output = String(lcm_output).split("\n")
             test_dsc_configuration ? test_dsc_parser(lcm_output) : what_if_parser(lcm_output)
           end
 

@@ -58,7 +58,7 @@ class Chef::Util::DSC
     protected
 
     def validate_switch_name!(switch_parameter_name)
-      if !!(switch_parameter_name =~ /\A[A-Za-z]+[_a-zA-Z0-9]*\Z/) == false
+      unless switch_parameter_name.match?(/\A[A-Za-z]+[_a-zA-Z0-9]*\Z/)
         raise ArgumentError, "`#{switch_parameter_name}` is not a valid PowerShell cmdlet switch parameter name"
       end
     end

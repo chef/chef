@@ -88,7 +88,7 @@ class Chef
         original_env = ENV.to_hash
 
         begin
-          ENV.update(@dsc_resource.environment || original_env)
+          ENV.update(@dsc_resource.environmen) if @dsc_resource.environment
           Dir.chdir(cwd) do
             Timeout.timeout(@dsc_resource.timeout) do
               configuration_document = generate_configuration_document(config_directory, configuration_flags)
@@ -100,8 +100,7 @@ class Chef
           raise e
         ensure
           ::FileUtils.rm_rf(config_directory)
-          ENV.clear
-          ENV.update(original_env)
+          ENV.replace(original_env)
         end
       end
 
