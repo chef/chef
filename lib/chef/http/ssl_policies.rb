@@ -70,6 +70,12 @@ class Chef
           end
 
           http_client.ca_file = config[:ssl_ca_file]
+        elsif ENV["SSL_CERT_FILE"]
+          unless ::File.exist?(ENV["SSL_CERT_FILE"])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{ENV["SSL_CERT_FILE"]} does not exist"
+          end
+
+          http_client.ca_file = ENV["SSL_CERT_FILE"]
         end
       end
 
