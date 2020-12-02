@@ -430,7 +430,6 @@ DEPENDENCIES
   cheffish (>= 14)
   chefstyle (= 1.5.2)
   fauxhai-ng
-  inspec-core (~> 4.23)
   inspec-core-bin (~> 4.23)
   ohai!
   pry

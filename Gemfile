@@ -24,8 +24,6 @@ gem "cheffish", ">= 14"
 
 gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 
-gem "inspec-core", "~> 4.23"
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
