@@ -93,6 +93,3 @@ mkmf.log
 
 # our custom dictionary pulled from https://github.com/chef/chef_dictionary/
 chef_dictionary.txt
-
-# Audit mode inspec reports with json-file reporter are put in the chef directory
-inspec-*.json
