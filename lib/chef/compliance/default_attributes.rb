@@ -21,39 +21,42 @@ class Chef
     DEFAULT_ATTRIBUTES = Chef::Node::VividMash.new(
       # If enabled, a cache is built for all backend calls. This should only be
       # disabled if you are expecting unique results from the same backend call.
+      # Under the covers, this controls :command and :file caching on Chef InSpec's
+      # Train connection.
       "inspec_backend_cache" => true,
 
-      # controls where inspec scan reports are sent
-      # possible values: 'chef-server-automate', 'chef-automate', 'json-file'
-      # notes: 'chef-automate' requires inspec version 0.27.1 or greater
-      # deprecated: 'chef-visibility' is replaced with 'chef-automate'
-      # deprecated: 'chef-compliance' is replaced with 'chef-automate'
-      # deprecated: 'chef-server-visibility' is replaced with 'chef-server-automate'
+      # Controls what is done with the resulting report after the Chef InSpec run.
+      # Accepts a single string value or an array of multiple values.
+      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer'
       "reporter" => "json-file",
 
-      # controls where inspec profiles are fetched from, Chef Automate or via Chef Server
-      # possible values: nil, 'chef-server', 'chef-automate'
+      # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
+      # in addition to the default fetch locations provided by Chef Inspec.
+      # Accepted values: nil, 'chef-server', 'chef-automate'
       "fetcher" => nil,
 
-      # allow for connections to HTTPS endpoints using self-signed ssl certificates
+      # Allow for connections to HTTPS endpoints using self-signed ssl certificates.
       "insecure" => nil,
 
-      # controls verbosity of inspec runner
+      # Controls verbosity of Chef InSpec runner.
       "quiet" => true,
 
-      # Chef Inspec Compliance profiles to be used for scan of node
+      # Chef Inspec Compliance profiles to be used for scan of node.
       # See README.md for details
       "profiles" => {},
 
-      # Attributes used to run the given profiles
+      # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
+      # These are mapped to Chef InSpec's inputs, but are named attributes here for legacy reasons.
+      # See Chef Inspec's documentation for more information: https://docs.chef.io/inspec/inputs/
       "attributes" => {},
 
-      # Set this to the path of a YAML waiver file you wish to apply
-      # See https://www.inspec.io/docs/reference/waivers/
+      # A string path or an array of paths to Chef InSpec waiver files.
+      # See Chef Inspec's documentation for more information: https://docs.chef.io/inspec/waivers/
       "waiver_file" => nil,
 
       "json_file" => {
-        # The location of the json-file output:
+        # The location on disk that Chef InSpec's json reports are saved to when using the
+        # 'json-file' reporter. Defaults to:
         # <chef_cache_path>/compliance_reports/compliance-<timestamp>.json
         "location" => Chef::Util::PathHelper.join(
           Chef::Config[:cache_path],
@@ -64,24 +67,22 @@ class Chef
 
       # Control results that have a `run_time` below this limit will
       # be stripped of the `start_time` and `run_time` fields to
-      # reduce the size of the reports being sent to Automate
+      # reduce the size of the reports being sent to Chef Automate.
       "run_time_limit" => 1.0,
 
       # A control result message that exceeds this character limit will be truncated.
       # This helps keep reports to a reasonable size. On rare occasions, we've seen messages exceeding 9 MB in size,
       # causing the report to not be ingested in the backend because of the 4 MB report size rpc limitation.
-      # InSpec will append this text at the end of any truncated messages: `[Truncated to 10000 characters]`
-      # Requires InSpec 4.18.114 or newer (bundled with Chef Infra Client starting with version 16.0.303)
+      # Chef InSpec will append this text at the end of any truncated messages: `[Truncated to 10000 characters]`
       "result_message_limit" => 10000,
 
-      # When an InSpec resource throws an exception (e.g. permission denied), results will contain a short error message and a
-      # detailed ruby stacktrace of the error. This attribute instructs InSpec not to include the detailed stacktrace in order
+      # When a Chef InSpec resource throws an exception, results will contain a short error message and a
+      # detailed ruby stacktrace of the error. This attribute instructs Chef InSpec not to include the detailed stacktrace in order
       # to keep the overall report to a manageable size.
-      # Requires InSpec 4.18.114 or newer (bundled with Chef Infra Client starting with version 16.0.303)
       "result_include_backtrace" => false,
 
       # The array of results per control will be truncated at this limit to avoid large reports that cannot be
-      # processed by Automate. A summary of removed results will be sent with each impacted control.
+      # processed by Chef Automate. A summary of removed results will be sent with each impacted control.
       "control_results_limit" => 50
     )
   end
