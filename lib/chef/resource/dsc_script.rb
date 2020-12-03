@@ -29,7 +29,14 @@ class Chef
       unified_mode true
       provides :dsc_script
 
-      description "Many DSC resources are comparable to built-in #{ChefUtils::Dist::Infra::PRODUCT} resources. For example, both DSC and #{ChefUtils::Dist::Infra::PRODUCT} have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a resource in #{ChefUtils::Dist::Infra::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{ChefUtils::Dist::Infra::PRODUCT} recipe."
+      description <<~DESC
+        Many DSC resources are comparable to built-in #{ChefUtils::Dist::Infra::PRODUCT} resources. For example, both DSC and #{ChefUtils::Dist::Infra::PRODUCT}
+        have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a
+        resource in #{ChefUtils::Dist::Infra::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important
+        task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{ChefUtils::Dist::Infra::PRODUCT} recipe.
+
+        Warning: The **dsc_script** resource may not be used with the 32 bit Chef Infra client. It must be executed from a 64 bit Chef Infra client.
+      DESC
 
       default_action :run
 
