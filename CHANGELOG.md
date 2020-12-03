@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.67 -->
-## [v16.7.67](https://github.com/chef/chef/tree/v16.7.67) (2020-12-03)
+<!-- latest_release 16.7.68 -->
+## [v16.7.68](https://github.com/chef/chef/tree/v16.7.68) (2020-12-03)
 
 #### Merged Pull Requests
-- Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins))
+- only test dsc_script on 64 bit and document that it will fail on 32 bit clients [#10708](https://github.com/chef/chef/pull/10708) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- only test dsc_script on 64 bit and document that it will fail on 32 bit clients [#10708](https://github.com/chef/chef/pull/10708) ([mwrock](https://github.com/mwrock)) <!-- 16.7.68 -->
 - Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins)) <!-- 16.7.67 -->
 - Allow remote_file consider certificates stored under /etc/chef/trusted_certs [#10704](https://github.com/chef/chef/pull/10704) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.7.66 -->
 - Pin our InSpec version and use Chefstyle from rubygems for now [#10702](https://github.com/chef/chef/pull/10702) ([tas50](https://github.com/tas50)) <!-- 16.7.65 -->
