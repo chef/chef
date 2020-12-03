@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.7.66 -->
-## [v16.7.66](https://github.com/chef/chef/tree/v16.7.66) (2020-12-02)
+<!-- latest_release 16.7.67 -->
+## [v16.7.67](https://github.com/chef/chef/tree/v16.7.67) (2020-12-03)
 
 #### Merged Pull Requests
-- Allow remote_file consider certificates stored under /etc/chef/trusted_certs [#10704](https://github.com/chef/chef/pull/10704) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins)) <!-- 16.7.67 -->
 - Allow remote_file consider certificates stored under /etc/chef/trusted_certs [#10704](https://github.com/chef/chef/pull/10704) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.7.66 -->
 - Pin our InSpec version and use Chefstyle from rubygems for now [#10702](https://github.com/chef/chef/pull/10702) ([tas50](https://github.com/tas50)) <!-- 16.7.65 -->
 - Update changelog with missing updates from previous prs [#10703](https://github.com/chef/chef/pull/10703) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.7.64 -->
