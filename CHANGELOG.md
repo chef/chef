@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.0 -->
-## [v16.8.0](https://github.com/chef/chef/tree/v16.8.0) (2020-12-04)
+<!-- latest_release 16.8.1 -->
+## [v16.8.1](https://github.com/chef/chef/tree/v16.8.1) (2020-12-04)
 
 #### Merged Pull Requests
-- Switch back to chefstyle from github [#10709](https://github.com/chef/chef/pull/10709) ([tas50](https://github.com/tas50))
+- only run dsc_script functional tests on 64 bit ruby [#10710](https://github.com/chef/chef/pull/10710) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- only run dsc_script functional tests on 64 bit ruby [#10710](https://github.com/chef/chef/pull/10710) ([mwrock](https://github.com/mwrock)) <!-- 16.8.1 -->
 - Switch back to chefstyle from github [#10709](https://github.com/chef/chef/pull/10709) ([tas50](https://github.com/tas50)) <!-- 16.8.0 -->
 - only test dsc_script on 64 bit and document that it will fail on 32 bit clients [#10708](https://github.com/chef/chef/pull/10708) ([mwrock](https://github.com/mwrock)) <!-- 16.7.68 -->
 - Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins)) <!-- 16.7.67 -->
