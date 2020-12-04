@@ -57,9 +57,7 @@ end
 
 group(:chefstyle) do
   # for testing new chefstyle rules
-  # disabled until we resolve the conflict in regexp_parser deps between rubocop and inspec
-  # gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
-  gem "chefstyle", "= 1.5.2"
+  gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
 
 instance_eval(ENV["GEMFILE_MOD"]) if ENV["GEMFILE_MOD"]
