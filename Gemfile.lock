@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 876839a6324a635f15db4118366c938bdd3d675b
+  revision: 3ef9243c91c67a529bff67dc6a30e356c80b9d2b
   branch: master
   specs:
-    ohai (16.8.0)
+    ohai (16.8.1)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -234,9 +234,9 @@ GEM
       regexp_parser (~> 1.5)
       uri_template (~> 0.7)
     libyajl2 (1.2.0)
-    license-acceptance (2.1.2)
+    license-acceptance (2.1.13)
       pastel (~> 0.7)
-      tomlrb (~> 1.2)
+      tomlrb (>= 1.2, < 3.0)
       tty-box (~> 0.6)
       tty-prompt (~> 0.20)
     little-plugger (1.1.4)
