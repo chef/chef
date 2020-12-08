@@ -87,9 +87,9 @@ class Chef
         description: "Ensure that sensitive resource data is not logged by the #{ChefUtils::Dist::Infra::CLIENT}.",
         default: lazy { pfx_password ? true : false }, skip_docs: true
 
-      property :exportable, Integer,
-        description: "Ensure that imported pfx certificate is exportable. Please provide '1' if you want the certificate to be exportable."
-        default: 0
+      property :exportable, [TrueClass, FalseClass],
+        description: "Ensure that imported pfx certificate is exportable. Please provide 'true' if you want the certificate to be exportable.",
+        default: false
 
       action :create do
         description "Creates or updates a certificate."
@@ -166,8 +166,9 @@ class Chef
         end
 
         def add_pfx_cert
+          exportable = new_resource.exportable ? 1 : 0
           store = ::Win32::Certstore.open(new_resource.store_name)
-          store.add_pfx(new_resource.source, new_resource.pfx_password, new_resource.exportable)
+          store.add_pfx(new_resource.source, new_resource.pfx_password, exportable)
         end
 
         def delete_cert
