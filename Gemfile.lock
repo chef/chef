@@ -340,7 +340,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.0.1)
     tomlrb (1.2.9)
-    train-core (3.3.27)
+    train-core (3.4.1)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
