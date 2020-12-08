@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.2 -->
-## [v16.8.2](https://github.com/chef/chef/tree/v16.8.2) (2020-12-07)
+<!-- latest_release 16.8.3 -->
+## [v16.8.3](https://github.com/chef/chef/tree/v16.8.3) (2020-12-08)
 
 #### Merged Pull Requests
-- Update license-acceptance gem to 2.1.13 [#10714](https://github.com/chef/chef/pull/10714) ([tas50](https://github.com/tas50))
+- Update Train to 3.4.1 [#10716](https://github.com/chef/chef/pull/10716) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Train to 3.4.1 [#10716](https://github.com/chef/chef/pull/10716) ([tas50](https://github.com/tas50)) <!-- 16.8.3 -->
 - Update license-acceptance gem to 2.1.13 [#10714](https://github.com/chef/chef/pull/10714) ([tas50](https://github.com/tas50)) <!-- 16.8.2 -->
 - only run dsc_script functional tests on 64 bit ruby [#10710](https://github.com/chef/chef/pull/10710) ([mwrock](https://github.com/mwrock)) <!-- 16.8.1 -->
 - Switch back to chefstyle from github [#10709](https://github.com/chef/chef/pull/10709) ([tas50](https://github.com/tas50)) <!-- 16.8.0 -->
