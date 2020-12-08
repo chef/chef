@@ -289,7 +289,7 @@ class Chef
           opts[:port] = port unless port.nil?
           opts[:logger] = Chef::Log.with_child(subsystem: "net/ssh") if Chef::Log.level == :trace
           unless config[:host_key_verify]
-            opts[:verify_host_key] = false
+            opts[:verify_host_key] = :never
             opts[:user_known_hosts_file] = "/dev/null"
           end
           if ssh_config[:keepalive]
