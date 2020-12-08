@@ -89,7 +89,8 @@ class Chef
 
       property :exportable, [TrueClass, FalseClass],
         description: "Ensure that imported pfx certificate is exportable. Please provide 'true' if you want the certificate to be exportable.",
-        default: false
+        default: false,
+        introduced: "16.8"
 
       action :create do
         description "Creates or updates a certificate."
