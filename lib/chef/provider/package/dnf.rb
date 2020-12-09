@@ -34,6 +34,7 @@ class Chef
         allow_nils
         use_multipackage_api
         use_package_name_for_source
+        installed_version_satisfies_version_constraints
 
         # all rhel variants >= 8 will use DNF
         provides :package, platform_family: "rhel", platform_version: ">= 8"
@@ -69,6 +70,16 @@ class Chef
           current_resource.version(get_current_versions)
 
           current_resource
+        end
+
+        def load_after_resource
+          # force the installed version array to repopulate
+          @installed_version = []
+          @after_resource = Chef::Resource::DnfPackage.new(new_resource.name)
+          after_resource.package_name(new_resource.package_name)
+          after_resource.version(get_current_versions)
+
+          after_resource
         end
 
         def define_resource_requirements
@@ -208,9 +219,9 @@ class Chef
         def installed_version(index)
           @installed_version ||= []
           @installed_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, version: safe_version_array[index], arch: safe_arch_array[index], options: options)
                                         else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
                                         end
           @installed_version[index]
         end
