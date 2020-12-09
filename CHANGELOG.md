@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.5 -->
-## [v16.8.5](https://github.com/chef/chef/tree/v16.8.5) (2020-12-09)
+<!-- latest_release 16.8.6 -->
+## [v16.8.6](https://github.com/chef/chef/tree/v16.8.6) (2020-12-09)
 
 #### Merged Pull Requests
-- windows_certificate: Add exportable option to pfx certificate [#10711](https://github.com/chef/chef/pull/10711) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update all deps to the latest [#10720](https://github.com/chef/chef/pull/10720) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update all deps to the latest [#10720](https://github.com/chef/chef/pull/10720) ([tas50](https://github.com/tas50)) <!-- 16.8.6 -->
 - windows_certificate: Add exportable option to pfx certificate [#10711](https://github.com/chef/chef/pull/10711) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.8.5 -->
 - Fix for deprecation warning in knife ssh [#10717](https://github.com/chef/chef/pull/10717) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.8.4 -->
 - only run systemd unit tests on linux [#10718](https://github.com/chef/chef/pull/10718) ([mwrock](https://github.com/mwrock)) <!-- 16.8.3 -->
