@@ -98,7 +98,7 @@ describe "chef-client" do
 
       it "should load .chef/knife.rb when -z is specified" do
         # On Solaris shell_out will invoke /bin/sh which doesn't understand how to correctly update ENV['PWD']
-        result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(""), env: {})
+        result = shell_out("#{chef_client} -z -o 'x::default'", cwd: path_to(""), env: { "PWD" => nil })
         # FATAL: Configuration error NoMethodError: undefined method `xxx' for nil:NilClass
         expect(result.stdout).to include("xxx")
       end
