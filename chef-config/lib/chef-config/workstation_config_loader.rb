@@ -142,6 +142,8 @@ module ChefConfig
     def working_directory
       if ChefUtils.windows?
         env["CD"]
+      elsif ChefUtils.solaris2?
+        Dir.pwd
       else
         env["PWD"]
       end || Dir.pwd
