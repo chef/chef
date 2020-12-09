@@ -360,7 +360,7 @@ GEM
     tty-prompt (0.22.0)
       pastel (~> 0.8)
       tty-reader (~> 0.8)
-    tty-reader (0.8.0)
+    tty-reader (0.9.0)
       tty-cursor (~> 0.7)
       tty-screen (~> 0.8)
       wisper (~> 2.0)
