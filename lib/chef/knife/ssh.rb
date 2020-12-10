@@ -27,6 +27,7 @@ class Chef
         require "net/ssh" unless defined?(Net::SSH)
         require "net/ssh/multi"
         require "readline"
+        require "tty-prompt"
         require_relative "../exceptions"
         require_relative "../search/query"
         require_relative "../util/path_helper"
@@ -385,6 +386,7 @@ class Chef
               end
 
               ch.on_extended_data do |_, _type, data|
+                raise ArgumentError if data.eql?("sudo: no tty present and no askpass program specified\n")
                 stderr += data
               end
 
