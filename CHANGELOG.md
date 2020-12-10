@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.7 -->
-## [v16.8.7](https://github.com/chef/chef/tree/v16.8.7) (2020-12-10)
+<!-- latest_release 16.8.8 -->
+## [v16.8.8](https://github.com/chef/chef/tree/v16.8.8) (2020-12-10)
 
 #### Merged Pull Requests
-- Fix failing tests on Solaris / Enable Solaris builds again [#10719](https://github.com/chef/chef/pull/10719) ([mwrock](https://github.com/mwrock))
+- hostname: Avoid erroring out when hostname is not set on mac [#10724](https://github.com/chef/chef/pull/10724) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.7.61 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- hostname: Avoid erroring out when hostname is not set on mac [#10724](https://github.com/chef/chef/pull/10724) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.8.8 -->
 - Fix failing tests on Solaris / Enable Solaris builds again [#10719](https://github.com/chef/chef/pull/10719) ([mwrock](https://github.com/mwrock)) <!-- 16.8.7 -->
 - Update all deps to the latest [#10720](https://github.com/chef/chef/pull/10720) ([tas50](https://github.com/tas50)) <!-- 16.8.6 -->
 - windows_certificate: Add exportable option to pfx certificate [#10711](https://github.com/chef/chef/pull/10711) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.8.5 -->
