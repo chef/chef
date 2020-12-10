@@ -14,7 +14,7 @@ The `hostname` resource has been updated to prevent failures when the default sy
 
 ### remote_file
 
-The `remote_file` resource has been updated to use certificates located in Chef Infra Client's `trusted_certificates` directory. Thanks for reporting this issue [@carguel](https://github.com/carguel/)
+The `remote_file` resource has been updated to use certificates located in Chef Infra Client's `trusted_certificates` directory. Thanks for reporting this issue [@carguel](https://github.com/carguel/)!
 
 ### windows_certificate
 
