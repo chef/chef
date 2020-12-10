@@ -18,7 +18,7 @@ The `remote_file` resource has been updated to use certificates located in Chef 
 
 ### windows_certificate
 
-The `windows_certificate` has been updated with a new `exportable` property that marks pfx as exportable in the certificate store.
+The `windows_certificate` has been updated with a new `exportable` property that marks PFX files as exportable in the certificate store.
 
 ## Ohai Improvements
 
