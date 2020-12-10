@@ -4,7 +4,7 @@ This file holds "in progress" release notes for the current release under develo
 
 ## Updated Resources
 
-### dsc_resourse / dsc_script
+### dsc_resource / dsc_script
 
 The `dsc_resourse` and `dsc_script` resources have been updated to use the `powershell_exec` helper for significantly improved performance executing the PowerShell commands.
 
