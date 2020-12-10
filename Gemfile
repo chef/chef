@@ -27,7 +27,7 @@ gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core-bin", "~> 4.23" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
