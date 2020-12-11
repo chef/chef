@@ -434,6 +434,8 @@ class Chef
               case action
               when :upgrade
                 if current_version.nil?
+                  # with installed_version_satisfies_version_constraints there may be a package installed, but it fails the user's
+                  # requested new_resource.version constraints
                   logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
                   target_version_array.push(candidate_version)
                 elsif version_equals?(current_version, new_version)
@@ -467,6 +469,8 @@ class Chef
                     target_version_array.push(new_version)
                   end
                 elsif current_version.nil?
+                  # with installed_version_satisfies_version_constraints there may be a package installed, but it fails the user's
+                  # requested new_resource.version constraints
                   logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
                 else

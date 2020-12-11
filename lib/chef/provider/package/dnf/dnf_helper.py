@@ -98,6 +98,9 @@ def query(command):
         q = q.available()
 
     if 'epoch' in command:
+        # We assume that any glob is "*" so just omit the filter since the dnf libraries have no
+        # epoch__glob filter.  That means "?" wildcards in epochs will fail.  The workaround is to
+        # not use the version filter here but to put the version with all the globs in the package name.
         if not dnf.util.is_glob_pattern(command['epoch']):
             q = q.filterm(epoch=int(command['epoch']))
     if 'version' in command:
