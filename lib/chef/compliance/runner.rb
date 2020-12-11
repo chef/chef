@@ -210,30 +210,26 @@ class Chef
       end
 
       def reporter(reporter_type)
-        insecure = node["audit"]["insecure"]
-        run_time_limit = node["audit"]["run_time_limit"]
-        control_results_limit = node["audit"]["control_results_limit"]
-
         case reporter_type
         when "chef-automate"
           opts = {
+            control_results_limit: node["audit"]["control_results_limit"],
             entity_uuid: node["chef_guid"],
-            run_id: run_id,
+            insecure: node["audit"]["insecure"],
             node_info: node_info,
-            insecure: insecure,
-            run_time_limit: run_time_limit,
-            control_results_limit: control_results_limit,
+            run_id: run_id,
+            run_time_limit: node["audit"]["run_time_limit"],
           }
           Chef::Compliance::Reporter::Automate.new(opts)
         when "chef-server-automate"
           opts = {
+            control_results_limit: node["audit"]["control_results_limit"],
             entity_uuid: node["chef_guid"],
-            run_id: run_id,
+            insecure: node["audit"]["insecure"],
             node_info: node_info,
-            insecure: insecure,
+            run_id: run_id,
+            run_time_limit: node["audit"]["run_time_limit"],
             url: chef_server_automate_url,
-            run_time_limit: run_time_limit,
-            control_results_limit: control_results_limit,
           }
           Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
         when "json-file"
