@@ -131,11 +131,6 @@ describe Chef::Compliance::Runner do
         expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
         expect(reporter.url).to eq(URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
       end
-
-      xit "returns nil with no 'server' attribute or chef_server_url configured" do
-        Chef::Config[:chef_server_url] = nil
-        expect(runner.reporter("chef-server-automate")).to be_nil
-      end
     end
 
     it "returns nil for unexpected reporter value" do

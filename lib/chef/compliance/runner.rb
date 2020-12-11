@@ -226,22 +226,16 @@ class Chef
           }
           Chef::Compliance::Reporter::Automate.new(opts)
         when "chef-server-automate"
-          url = chef_server_automate_url
-          if url
-            opts = {
-              entity_uuid: node["chef_guid"],
-              run_id: run_id,
-              node_info: node_info,
-              insecure: insecure,
-              url: url,
-              run_time_limit: run_time_limit,
-              control_results_limit: control_results_limit,
-            }
-            Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
-          else
-            logger.warn "Unable to determine #{ChefUtils::Dist::Server::PRODUCT} url required by #{Inspec::Dist::PRODUCT_NAME} report collector 'chef-server-automate'. Skipping..."
-            nil
-          end
+          opts = {
+            entity_uuid: node["chef_guid"],
+            run_id: run_id,
+            node_info: node_info,
+            insecure: insecure,
+            url: chef_server_automate_url,
+            run_time_limit: run_time_limit,
+            control_results_limit: control_results_limit,
+          }
+          Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
         when "json-file"
           path = node["audit"]["json_file"]["location"]
           logger.info "Writing compliance report to #{path}"
