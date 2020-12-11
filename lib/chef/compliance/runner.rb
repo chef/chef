@@ -61,7 +61,6 @@ class Chef
 
       DEPRECATED_CONFIG_VALUES = %w{
         attributes_save
-        chef_node_attribute_enabled
         fail_if_not_present
         inspec_gem_source
         inspec_version
@@ -93,9 +92,15 @@ class Chef
       end
 
       def inspec_opts
+        inputs = node["audit"]["attributes"].to_h
+        if node["audit"]["chef_node_attribute_enabled"]
+          inputs["chef_node"] = node.to_h
+          inputs["chef_node"]["chef_environment"] = node.chef_environment
+        end
+
         {
           backend_cache: node["audit"]["inspec_backend_cache"],
-          inputs: node["audit"]["attributes"],
+          inputs: inputs,
           logger: logger,
           output: node["audit"]["quiet"] ? ::File::NULL : STDOUT,
           report: true,
