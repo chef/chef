@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.8.10 -->
+## [v16.8.10](https://github.com/chef/chef/tree/v16.8.10) (2020-12-11)
+
+#### Merged Pull Requests
+- Bump libarchive to 3.5.0 [#10730](https://github.com/chef/chef/pull/10730) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.8.9 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Bump libarchive to 3.5.0 [#10730](https://github.com/chef/chef/pull/10730) ([tas50](https://github.com/tas50)) <!-- 16.8.10 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
