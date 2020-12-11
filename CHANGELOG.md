@@ -1,40 +1,38 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.9 -->
-## [v16.8.9](https://github.com/chef/chef/tree/v16.8.9) (2020-12-10)
-
-#### Merged Pull Requests
-- Update to InSpec 4.24 [#10726](https://github.com/chef/chef/pull/10726) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.7.61 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update to InSpec 4.24 [#10726](https://github.com/chef/chef/pull/10726) ([tas50](https://github.com/tas50)) <!-- 16.8.9 -->
-- hostname: Avoid erroring out when hostname is not set on mac [#10724](https://github.com/chef/chef/pull/10724) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.8.8 -->
-- Fix failing tests on Solaris / Enable Solaris builds again [#10719](https://github.com/chef/chef/pull/10719) ([mwrock](https://github.com/mwrock)) <!-- 16.8.7 -->
-- Update all deps to the latest [#10720](https://github.com/chef/chef/pull/10720) ([tas50](https://github.com/tas50)) <!-- 16.8.6 -->
-- windows_certificate: Add exportable option to pfx certificate [#10711](https://github.com/chef/chef/pull/10711) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.8.5 -->
-- Fix for deprecation warning in knife ssh [#10717](https://github.com/chef/chef/pull/10717) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.8.4 -->
-- only run systemd unit tests on linux [#10718](https://github.com/chef/chef/pull/10718) ([mwrock](https://github.com/mwrock)) <!-- 16.8.3 -->
-- Update Train to 3.4.1 [#10716](https://github.com/chef/chef/pull/10716) ([tas50](https://github.com/tas50)) <!-- 16.8.3 -->
-- Update license-acceptance gem to 2.1.13 [#10714](https://github.com/chef/chef/pull/10714) ([tas50](https://github.com/tas50)) <!-- 16.8.2 -->
-- only run dsc_script functional tests on 64 bit ruby [#10710](https://github.com/chef/chef/pull/10710) ([mwrock](https://github.com/mwrock)) <!-- 16.8.1 -->
-- Switch back to chefstyle from github [#10709](https://github.com/chef/chef/pull/10709) ([tas50](https://github.com/tas50)) <!-- 16.8.0 -->
-- only test dsc_script on 64 bit and document that it will fail on 32 bit clients [#10708](https://github.com/chef/chef/pull/10708) ([mwrock](https://github.com/mwrock)) <!-- 16.7.68 -->
-- Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins)) <!-- 16.7.67 -->
-- Allow remote_file consider certificates stored under /etc/chef/trusted_certs [#10704](https://github.com/chef/chef/pull/10704) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 16.7.66 -->
-- Pin our InSpec version and use Chefstyle from rubygems for now [#10702](https://github.com/chef/chef/pull/10702) ([tas50](https://github.com/tas50)) <!-- 16.7.65 -->
-- Update changelog with missing updates from previous prs [#10703](https://github.com/chef/chef/pull/10703) ([nkierpiec](https://github.com/nkierpiec)) <!-- 16.7.64 -->
-- Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
-- Enable git cache to speed up builds [#10689](https://github.com/chef/chef/pull/10689) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
-- replace usages of Cmdlet class with powershell_exec [#10683](https://github.com/chef/chef/pull/10683) ([mwrock](https://github.com/mwrock)) <!-- 16.7.63 -->
-- Update the Docker file to use the RHEL 7 package [#10700](https://github.com/chef/chef/pull/10700) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
-- Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50)) <!-- 16.7.63 -->
-- Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50)) <!-- 16.7.62 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.8.9](https://github.com/chef/chef/tree/v16.8.9) (2020-12-11)
+
+#### Merged Pull Requests
+- Resolve new spacing offenses in RuboCop 1.4 [#10691](https://github.com/chef/chef/pull/10691) ([tas50](https://github.com/tas50))
+- Use URI::DEFAULT_PARSER.make_regexp instead of URI.regexp [#10674](https://github.com/chef/chef/pull/10674) ([tas50](https://github.com/tas50))
+- Update the Docker file to use the RHEL 7 package [#10700](https://github.com/chef/chef/pull/10700) ([tas50](https://github.com/tas50))
+- replace usages of Cmdlet class with powershell_exec [#10683](https://github.com/chef/chef/pull/10683) ([mwrock](https://github.com/mwrock))
+- Enable git cache to speed up builds [#10689](https://github.com/chef/chef/pull/10689) ([tas50](https://github.com/tas50))
+- Add back macOS builds to the omnibus pipeline [#10701](https://github.com/chef/chef/pull/10701) ([tas50](https://github.com/tas50))
+- Update changelog with missing updates from previous prs [#10703](https://github.com/chef/chef/pull/10703) ([nkierpiec](https://github.com/nkierpiec))
+- Pin our InSpec version and use Chefstyle from rubygems for now [#10702](https://github.com/chef/chef/pull/10702) ([tas50](https://github.com/tas50))
+- Allow remote_file consider certificates stored under /etc/chef/trusted_certs [#10704](https://github.com/chef/chef/pull/10704) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- Add new Compliance Phase replicating the functionality previously in the audit cookbook [#10547](https://github.com/chef/chef/pull/10547) ([phiggins](https://github.com/phiggins))
+- only test dsc_script on 64 bit and document that it will fail on 32 bit clients [#10708](https://github.com/chef/chef/pull/10708) ([mwrock](https://github.com/mwrock))
+- Switch back to chefstyle from github [#10709](https://github.com/chef/chef/pull/10709) ([tas50](https://github.com/tas50))
+- only run dsc_script functional tests on 64 bit ruby [#10710](https://github.com/chef/chef/pull/10710) ([mwrock](https://github.com/mwrock))
+- Update license-acceptance gem to 2.1.13 [#10714](https://github.com/chef/chef/pull/10714) ([tas50](https://github.com/tas50))
+- Update Train to 3.4.1 [#10716](https://github.com/chef/chef/pull/10716) ([tas50](https://github.com/tas50))
+- only run systemd unit tests on linux [#10718](https://github.com/chef/chef/pull/10718) ([mwrock](https://github.com/mwrock))
+- Fix for deprecation warning in knife ssh [#10717](https://github.com/chef/chef/pull/10717) ([kapilchouhan99](https://github.com/kapilchouhan99))
+- windows_certificate: Add exportable option to pfx certificate [#10711](https://github.com/chef/chef/pull/10711) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Update all deps to the latest [#10720](https://github.com/chef/chef/pull/10720) ([tas50](https://github.com/tas50))
+- Fix failing tests on Solaris / Enable Solaris builds again [#10719](https://github.com/chef/chef/pull/10719) ([mwrock](https://github.com/mwrock))
+- hostname: Avoid erroring out when hostname is not set on mac [#10724](https://github.com/chef/chef/pull/10724) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update to InSpec 4.24 [#10726](https://github.com/chef/chef/pull/10726) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.7.61](https://github.com/chef/chef/tree/v16.7.61) (2020-11-26)
 
 #### Merged Pull Requests
@@ -138,7 +136,6 @@
 - Skip appx packaging on Windows [#10650](https://github.com/chef/chef/pull/10650) ([tas50](https://github.com/tas50))
 - Bump omnibus / omnibus-software to the latest [#10690](https://github.com/chef/chef/pull/10690) ([tas50](https://github.com/tas50))
 - Resolve NameError running mac_user resource [#10692](https://github.com/chef/chef/pull/10692) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.6.14](https://github.com/chef/chef/tree/v16.6.14) (2020-10-14)
 
