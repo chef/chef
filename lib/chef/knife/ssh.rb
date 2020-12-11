@@ -27,7 +27,6 @@ class Chef
         require "net/ssh" unless defined?(Net::SSH)
         require "net/ssh/multi"
         require "readline"
-        require "tty-prompt"
         require_relative "../exceptions"
         require_relative "../search/query"
         require_relative "../util/path_helper"
