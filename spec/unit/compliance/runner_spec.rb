@@ -134,7 +134,7 @@ describe Chef::Compliance::Runner do
     end
 
     it "returns nil for unexpected reporter value" do
-      expect(logger).to receive(:warn).with("'tacos' is not a supported Chef InSpec report collector")
+      expect(logger).to receive(:warn).with("'tacos' is not a supported reporter for Chef Infra Client's Compliance Phase")
 
       expect(runner.reporter("tacos")).to be_nil
     end
