@@ -110,4 +110,31 @@ describe Chef::Compliance::Runner do
       runner.warn_for_deprecated_config_values!
     end
   end
+
+  describe "#reporter" do
+    context "chef-server-automate reporter" do
+      it "uses the correct URL when 'server' attribute is set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+        node.normal["audit"]["server"] = "https://server_attribute_url.example.com/application/sub_application"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://server_attribute_url.example.com/application/sub_application/organizations/my_org/data-collector"))
+      end
+
+      it "falls back to chef_server_url for URL when 'server' attribute is not set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
+      end
+    end
+
+    it "fails with unexpected reporter value" do
+      expect { runner.reporter("tacos") }.to raise_error(/'tacos' is not a supported reporter for Compliance Phase/)
+    end
+  end
 end

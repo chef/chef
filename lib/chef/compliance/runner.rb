@@ -178,6 +178,8 @@ class Chef
 
       # extracts relevant node data
       def node_info
+        chef_server_uri = URI(Chef::Config[:chef_server_url])
+
         runlist_roles = node.run_list.select { |item| item.type == :role }.map(&:name)
         runlist_recipes = node.run_list.select { |item| item.type == :recipe }.map(&:name)
         {
@@ -199,51 +201,60 @@ class Chef
         }
       end
 
-      def send_report(reporter, report)
-        logger.info "Reporting to #{reporter}"
+      def send_report(reporter_type, report)
+        logger.info "Reporting to #{reporter_type}"
 
-        insecure = node["audit"]["insecure"]
-        run_time_limit = node["audit"]["run_time_limit"]
-        control_results_limit = node["audit"]["control_results_limit"]
+        reporter = reporter(reporter_type)
 
-        case reporter
+        reporter.send_report(report) if reporter
+      end
+
+      def reporter(reporter_type)
+        case reporter_type
         when "chef-automate"
           opts = {
+            control_results_limit: node["audit"]["control_results_limit"],
             entity_uuid: node["chef_guid"],
-            run_id: run_id,
+            insecure: node["audit"]["insecure"],
             node_info: node_info,
-            insecure: insecure,
-            run_time_limit: run_time_limit,
-            control_results_limit: control_results_limit,
+            run_id: run_id,
+            run_time_limit: node["audit"]["run_time_limit"],
           }
-          Chef::Compliance::Reporter::Automate.new(opts).send_report(report)
+          Chef::Compliance::Reporter::Automate.new(opts)
         when "chef-server-automate"
-          chef_url = node["audit"]["server"] || base_chef_server_url
-          chef_org = Chef::Config[:chef_server_url].split("/").last
-          if chef_url
-            url = construct_url(chef_url, File.join("organizations", chef_org, "data-collector"))
-            opts = {
-              entity_uuid: node["chef_guid"],
-              run_id: run_id,
-              node_info: node_info,
-              insecure: insecure,
-              url: url,
-              run_time_limit: run_time_limit,
-              control_results_limit: control_results_limit,
-            }
-            Chef::Compliance::Reporter::ChefServer.new(opts).send_report(report)
-          else
-            logger.warn "Unable to determine #{ChefUtils::Dist::Server::PRODUCT} url required by #{Inspec::Dist::PRODUCT_NAME} report collector '#{reporter}'. Skipping..."
-          end
+          opts = {
+            control_results_limit: node["audit"]["control_results_limit"],
+            entity_uuid: node["chef_guid"],
+            insecure: node["audit"]["insecure"],
+            node_info: node_info,
+            run_id: run_id,
+            run_time_limit: node["audit"]["run_time_limit"],
+            url: chef_server_automate_url,
+          }
+          Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
         when "json-file"
           path = node["audit"]["json_file"]["location"]
           logger.info "Writing compliance report to #{path}"
-          Chef::Compliance::Reporter::JsonFile.new(file: path).send_report(report)
+          Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
-          Chef::Compliance::Reporter::ComplianceEnforcer.new.send_report(report)
+          Chef::Compliance::Reporter::ComplianceEnforcer.new
         else
-          logger.warn "#{reporter} is not a supported #{Inspec::Dist::PRODUCT_NAME} report collector"
+          raise "'#{reporter_type}' is not a supported reporter for Compliance Phase."
         end
+      end
+
+      def chef_server_automate_url
+        url = if node["audit"]["server"]
+                URI(node["audit"]["server"])
+              else
+                URI(Chef::Config[:chef_server_url]).tap do |u|
+                  u.path = ""
+                end
+              end
+
+        org = Chef::Config[:chef_server_url].split("/").last
+        url.path = File.join(url.path, "organizations/#{org}/data-collector")
+        url
       end
     end
   end
