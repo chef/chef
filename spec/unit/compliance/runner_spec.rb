@@ -110,4 +110,37 @@ describe Chef::Compliance::Runner do
       runner.warn_for_deprecated_config_values!
     end
   end
+
+  describe "#send_report" do
+    before do
+      Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+    end
+
+    it "uses the correct URL when 'server' attribute is set for chef-server-automate reporter" do
+      node.normal["audit"]["server"] = "https://server_attribute_url.example.com/application/sub_application"
+      report = { fake_report: true }
+
+      reporter = double(:chef_server_automate_reporter)
+      expect(reporter).to receive(:send_report).with(report)
+
+      expected_opts = hash_including(url: URI("https://server_attribute_url.example.com/application/sub_application/organizations/my_org/data-collector"))
+
+      expect(Chef::Compliance::Reporter::ChefServerAutomate).to receive(:new).with(expected_opts).and_return(reporter)
+
+      runner.send_report("chef-server-automate", report)
+    end
+
+    it "falls back to chef_server_url for URL when 'server' attribute is not set for chef-server-automate reporter" do
+      report = { fake_report: true }
+
+      reporter = double(:chef_server_automate_reporter)
+      expect(reporter).to receive(:send_report).with(report)
+
+      expected_opts = hash_including(url: URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
+
+      expect(Chef::Compliance::Reporter::ChefServerAutomate).to receive(:new).with(expected_opts).and_return(reporter)
+
+      runner.send_report("chef-server-automate", report)
+    end
+  end
 end

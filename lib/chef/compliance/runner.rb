@@ -178,6 +178,8 @@ class Chef
 
       # extracts relevant node data
       def node_info
+        chef_server_uri = URI(Chef::Config[:chef_server_url])
+
         runlist_roles = node.run_list.select { |item| item.type == :role }.map(&:name)
         runlist_recipes = node.run_list.select { |item| item.type == :recipe }.map(&:name)
         {
@@ -218,10 +220,8 @@ class Chef
           }
           Chef::Compliance::Reporter::Automate.new(opts).send_report(report)
         when "chef-server-automate"
-          chef_url = node["audit"]["server"] || base_chef_server_url
-          chef_org = Chef::Config[:chef_server_url].split("/").last
-          if chef_url
-            url = construct_url(chef_url, File.join("organizations", chef_org, "data-collector"))
+          url = chef_server_automate_url
+          if url
             opts = {
               entity_uuid: node["chef_guid"],
               run_id: run_id,
@@ -231,7 +231,7 @@ class Chef
               run_time_limit: run_time_limit,
               control_results_limit: control_results_limit,
             }
-            Chef::Compliance::Reporter::ChefServer.new(opts).send_report(report)
+            Chef::Compliance::Reporter::ChefServerAutomate.new(opts).send_report(report)
           else
             logger.warn "Unable to determine #{ChefUtils::Dist::Server::PRODUCT} url required by #{Inspec::Dist::PRODUCT_NAME} report collector '#{reporter}'. Skipping..."
           end
@@ -244,6 +244,20 @@ class Chef
         else
           logger.warn "#{reporter} is not a supported #{Inspec::Dist::PRODUCT_NAME} report collector"
         end
+      end
+
+      def chef_server_automate_url
+        url = if node["audit"]["server"]
+                URI(node["audit"]["server"])
+              else
+                URI(Chef::Config[:chef_server_url]).tap do |u|
+                  u.path = ""
+                end
+              end
+
+        org = Chef::Config[:chef_server_url].split("/").last
+        url.path = File.join(url.path, "organizations/#{org}/data-collector")
+        url
       end
     end
   end
