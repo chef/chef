@@ -385,6 +385,8 @@ class Chef
               end
 
               ch.on_extended_data do |_, _type, data|
+                raise ArgumentError if data.eql?("sudo: no tty present and no askpass program specified\n")
+
                 stderr += data
               end
 
