@@ -133,10 +133,8 @@ describe Chef::Compliance::Runner do
       end
     end
 
-    it "returns nil for unexpected reporter value" do
-      expect(logger).to receive(:warn).with("'tacos' is not a supported reporter for Chef Infra Client's Compliance Phase")
-
-      expect(runner.reporter("tacos")).to be_nil
+    it "fails with unexpected reporter value" do
+      expect { runner.reporter("tacos") }.to raise_error(/'tacos' is not a supported reporter for Compliance Phase/)
     end
   end
 end

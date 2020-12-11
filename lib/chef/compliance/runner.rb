@@ -239,8 +239,7 @@ class Chef
         when "audit-enforcer"
           Chef::Compliance::Reporter::ComplianceEnforcer.new
         else
-          logger.warn "'#{reporter_type}' is not a supported reporter for Compliance Phase."
-          nil
+          raise "'#{reporter_type}' is not a supported reporter for Compliance Phase."
         end
       end
 
