@@ -7,6 +7,8 @@ class Chef
       # Used to send inspec reports to Chef Automate server via Chef Server
       #
       class ChefServerAutomate < Chef::Compliance::Reporter::Automate
+        attr_reader :url
+
         def initialize(opts)
           @entity_uuid           = opts[:entity_uuid]
           @run_id                = opts[:run_id]

@@ -111,36 +111,37 @@ describe Chef::Compliance::Runner do
     end
   end
 
-  describe "#send_report" do
-    before do
-      Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+  describe "#reporter" do
+    context "chef-server-automate reporter" do
+      it "uses the correct URL when 'server' attribute is set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+        node.normal["audit"]["server"] = "https://server_attribute_url.example.com/application/sub_application"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://server_attribute_url.example.com/application/sub_application/organizations/my_org/data-collector"))
+      end
+
+      it "falls back to chef_server_url for URL when 'server' attribute is not set" do
+        Chef::Config[:chef_server_url] = "https://chef_config_url.example.com/my_org"
+
+        reporter = runner.reporter("chef-server-automate")
+
+        expect(reporter).to be_kind_of(Chef::Compliance::Reporter::ChefServerAutomate)
+        expect(reporter.url).to eq(URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
+      end
+
+      xit "returns nil with no 'server' attribute or chef_server_url configured" do
+        Chef::Config[:chef_server_url] = nil
+        expect(runner.reporter("chef-server-automate")).to be_nil
+      end
     end
 
-    it "uses the correct URL when 'server' attribute is set for chef-server-automate reporter" do
-      node.normal["audit"]["server"] = "https://server_attribute_url.example.com/application/sub_application"
-      report = { fake_report: true }
+    it "returns nil for unexpected reporter value" do
+      expect(logger).to receive(:warn).with("'tacos' is not a supported Chef InSpec report collector")
 
-      reporter = double(:chef_server_automate_reporter)
-      expect(reporter).to receive(:send_report).with(report)
-
-      expected_opts = hash_including(url: URI("https://server_attribute_url.example.com/application/sub_application/organizations/my_org/data-collector"))
-
-      expect(Chef::Compliance::Reporter::ChefServerAutomate).to receive(:new).with(expected_opts).and_return(reporter)
-
-      runner.send_report("chef-server-automate", report)
-    end
-
-    it "falls back to chef_server_url for URL when 'server' attribute is not set for chef-server-automate reporter" do
-      report = { fake_report: true }
-
-      reporter = double(:chef_server_automate_reporter)
-      expect(reporter).to receive(:send_report).with(report)
-
-      expected_opts = hash_including(url: URI("https://chef_config_url.example.com/organizations/my_org/data-collector"))
-
-      expect(Chef::Compliance::Reporter::ChefServerAutomate).to receive(:new).with(expected_opts).and_return(reporter)
-
-      runner.send_report("chef-server-automate", report)
+      expect(runner.reporter("tacos")).to be_nil
     end
   end
 end
