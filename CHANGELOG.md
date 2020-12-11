@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.12 -->
-## [v16.8.12](https://github.com/chef/chef/tree/v16.8.12) (2020-12-11)
+<!-- latest_release 16.8.13 -->
+## [v16.8.13](https://github.com/chef/chef/tree/v16.8.13) (2020-12-11)
 
 #### Merged Pull Requests
-- Update libiconv to 1.16 [#10731](https://github.com/chef/chef/pull/10731) ([tas50](https://github.com/tas50))
+- Raise error and retry with PTY on sudo password prompt [#10728](https://github.com/chef/chef/pull/10728) ([rveznaver](https://github.com/rveznaver))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.9 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Raise error and retry with PTY on sudo password prompt [#10728](https://github.com/chef/chef/pull/10728) ([rveznaver](https://github.com/rveznaver)) <!-- 16.8.13 -->
 - Update libiconv to 1.16 [#10731](https://github.com/chef/chef/pull/10731) ([tas50](https://github.com/tas50)) <!-- 16.8.12 -->
 - Update openSSL to 1.0.2x [#10732](https://github.com/chef/chef/pull/10732) ([tas50](https://github.com/tas50)) <!-- 16.8.11 -->
 - Bump libarchive to 3.5.0 [#10730](https://github.com/chef/chef/pull/10730) ([tas50](https://github.com/tas50)) <!-- 16.8.10 -->
