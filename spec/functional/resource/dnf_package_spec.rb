@@ -931,7 +931,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(dnf_package.updated_by_last_action?).to be false
       end
 
-      it "with a full version pin in the name it downgrdes the package" do
+      it "with a full version pin in the name it downgrades the package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         dnf_package.package_name("chef_rpm")
         dnf_package.version("1.2-1")
@@ -953,7 +953,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(dnf_package.updated_by_last_action?).to be false
       end
 
-      it "with a partial (no release) version pin in the name it downgrdes the package" do
+      it "with a partial (no release) version pin in the name it downgrades the package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         dnf_package.package_name("chef_rpm")
         dnf_package.version("1.2")
@@ -974,7 +974,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(dnf_package.updated_by_last_action?).to be false
       end
 
-      it "with a full version pin in the name it downgrdes the package" do
+      it "with a full version pin in the name it downgrades the package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         dnf_package.package_name("chef_rpm-1.2-1")
         dnf_package.run_action(:upgrade)
@@ -994,7 +994,7 @@ describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
         expect(dnf_package.updated_by_last_action?).to be false
       end
 
-      it "with a partial (no release) version pin in the name it downgrdes the package" do
+      it "with a partial (no release) version pin in the name it downgrades the package" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         dnf_package.package_name("chef_rpm-1.2")
         dnf_package.run_action(:upgrade)
