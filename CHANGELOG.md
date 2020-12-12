@@ -1,23 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.14 -->
-## [v16.8.14](https://github.com/chef/chef/tree/v16.8.14) (2020-12-11)
-
-#### Merged Pull Requests
-- Fix broken code in compliance runner&#39;s send_report. [#10733](https://github.com/chef/chef/pull/10733) ([phiggins](https://github.com/phiggins))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.8.9 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix broken code in compliance runner&#39;s send_report. [#10733](https://github.com/chef/chef/pull/10733) ([phiggins](https://github.com/phiggins)) <!-- 16.8.14 -->
-- Raise error and retry with PTY on sudo password prompt [#10728](https://github.com/chef/chef/pull/10728) ([rveznaver](https://github.com/rveznaver)) <!-- 16.8.13 -->
-- Update libiconv to 1.16 [#10731](https://github.com/chef/chef/pull/10731) ([tas50](https://github.com/tas50)) <!-- 16.8.12 -->
-- Update openSSL to 1.0.2x [#10732](https://github.com/chef/chef/pull/10732) ([tas50](https://github.com/tas50)) <!-- 16.8.11 -->
-- Bump libarchive to 3.5.0 [#10730](https://github.com/chef/chef/pull/10730) ([tas50](https://github.com/tas50)) <!-- 16.8.10 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.8.14](https://github.com/chef/chef/tree/v16.8.14) (2020-12-12)
+
+#### Merged Pull Requests
+- Bump libarchive to 3.5.0 [#10730](https://github.com/chef/chef/pull/10730) ([tas50](https://github.com/tas50))
+- Update openSSL to 1.0.2x [#10732](https://github.com/chef/chef/pull/10732) ([tas50](https://github.com/tas50))
+- Update libiconv to 1.16 [#10731](https://github.com/chef/chef/pull/10731) ([tas50](https://github.com/tas50))
+- Raise error and retry with PTY on sudo password prompt [#10728](https://github.com/chef/chef/pull/10728) ([rveznaver](https://github.com/rveznaver))
+- Fix broken code in compliance runner&#39;s send_report. [#10733](https://github.com/chef/chef/pull/10733) ([phiggins](https://github.com/phiggins))
+<!-- latest_stable_release -->
+
 ## [v16.8.9](https://github.com/chef/chef/tree/v16.8.9) (2020-12-11)
 
 #### Merged Pull Requests
@@ -43,7 +41,6 @@
 - Fix failing tests on Solaris / Enable Solaris builds again [#10719](https://github.com/chef/chef/pull/10719) ([mwrock](https://github.com/mwrock))
 - hostname: Avoid erroring out when hostname is not set on mac [#10724](https://github.com/chef/chef/pull/10724) ([lamont-granquist](https://github.com/lamont-granquist))
 - Update to InSpec 4.24 [#10726](https://github.com/chef/chef/pull/10726) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.7.61](https://github.com/chef/chef/tree/v16.7.61) (2020-11-26)
 
