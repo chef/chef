@@ -8,18 +8,20 @@ Chef consumes Ohai from GitHub as both a runtime dependency and a testing depend
 
 ### Create a new stable branch of Ohai
 
-On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b 15-stable`. You'll then want to edit the Expeditor config.yml file to update the branch configs like this:
+1. Edit the Expeditor config for the new branch, which you'll create shortly:
 
-https://github.com/chef/ohai/commit/ad208165619425dd7886b2de3f168b49ded25146
+    - Example config change commit: https://github.com/chef/ohai/commit/1ad8c5946606a7f08ffb841e3682ae2d4991077f
 
-With the expeditor config complete push the branch `git push --set-upstream origin 15-stable`
+2. On your local machine fork the current master branch to a new stable branch. For example: `git checkout -b 16-stable`.
+
+3. Push the branch `git push --set-upstream origin 16-stable`
 
 ### Bump Ohai master to the new major version
 
-Create a PR which:
+Starting from the master branch create a PR which:
 
 - Edits the `VERSION` file in the root of the repository to the new major release
-- Updates the `chef-config` dependency to allow for the new major release of Chef Infra in `ohai.gemspec`
+- Updates the `chef-config` and `chef-utils` dependencies to allow for the new major release of Chef Infra in `ohai.gemspec`
 
 ## Fork Chef master to a stable branch
 
