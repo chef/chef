@@ -17,6 +17,7 @@
 # limitations under the License.
 
 require_relative "../resource"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Resource
@@ -43,7 +44,7 @@ class Chef
                         LSAAnonymousNameLookup
                         EnableAdminAccount
                         EnableGuestAccount
-                       }
+                      }
       description "Use the **windows_security_policy** resource to set a security policy on the Microsoft Windows platform."
       introduced "16.0"
 
@@ -83,6 +84,58 @@ class Chef
       description: "Policy value to be set for policy name."
 
       load_current_value do |desired|
+        current_state = load_security_options
+
+        if desired.secoption == "ResetLockoutCount"
+          if desired.secvalue.to_i > 30
+            raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than 30 minutes"
+          end
+        end
+        if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
+          if current_state["LockoutBadCount"] == "0"
+            raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+          else
+            secvalue current_state[desired.secoption.to_s]
+          end
+        else
+          secvalue current_state[desired.secoption.to_s]
+        end
+      end
+
+      action :set do
+        converge_if_changed :secvalue do
+          security_option = new_resource.secoption
+          security_value = new_resource.secvalue
+
+          file = Tempfile.new(["#{security_option}", ".inf"])
+          if security_option == "LockoutBadCount"
+            cmd = "net accounts /lockoutthreshold:#{security_value}"
+          elsif security_option == "ResetLockoutCount"
+            cmd = "net accounts /lockoutwindow:#{security_value}"
+          elsif security_option == "LockoutDuration"
+            cmd = "net accounts /lockoutduration:#{security_value}"
+          elsif security_option == "NewAdministratorName" || security_option == "NewGuestName"
+            policy_line = "#{security_option} = \"#{security_value}\""
+            file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+            file.close
+            file_path = file.path.gsub("/", '\\')
+            cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+          else
+            policy_line = "#{security_option} = #{security_value}"
+            file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
+            file.close
+            file_path = file.path.gsub("/", '\\')
+            cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
+          end
+          powershell_out!(cmd)
+          file.unlink
+        end
+      end
+
+      private
+
+      # Loads powershell to get current state on security options
+      def load_security_options
         powershell_code = <<-CODE
           C:\\Windows\\System32\\secedit /export /cfg $env:TEMP\\secopts_export.inf | Out-Null
           # cspell:disable-next-line
@@ -106,50 +159,10 @@ class Chef
             MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
             NewGuestName = $security_options_hash.NewGuestName
             LockoutBadCount = $security_options_hash.LockoutBadCount
-          })
+          }) | ConvertTo-Json
         CODE
-        output = powershell_exec(powershell_code)
-        current_value_does_not_exist! if output.result.empty?
-        state = output.result
-
-        if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
-          if state["LockoutBadCount"] == "0"
-            raise Chef::Exceptions::ValidationFailed.new "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
-          else
-            secvalue state[desired.secoption.to_s]
-          end
-        else
-          secvalue state[desired.secoption.to_s]
-        end
-      end
-
-      action :set do
-        converge_if_changed :secvalue do
-          security_option = new_resource.secoption
-          security_value = new_resource.secvalue
-
-          policy_line = if security_option == 'NewAdministratorName' || security_option == 'NewGuestName'
-                          "#{security_option} = \"#{security_value}\""
-                        else
-                          "#{security_option} = #{security_value}"
-                        end
-          file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
-            content "[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n"
-            backup false
-            action :create
-          end
-          execute "Configure Security Policy for Security Option: #{security_option}" do
-            cwd Chef::Config[:file_cache_path]
-            command <<~CMD
-              C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{security_option}_temp.inf /areas SECURITYPOLICY
-            CMD
-            action :run
-          end
-          file "#{Chef::Config[:file_cache_path]}\\#{security_option}_temp.inf" do
-            backup false
-            action :delete
-          end
-        end
+        output = powershell_out(powershell_code)
+        Chef::JSONCompat.from_json(output.stdout)
       end
     end
   end
