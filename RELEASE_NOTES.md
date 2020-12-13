@@ -1,5 +1,52 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.8.14
+
+- Updated openSSL to 1.0.2x to resolve [CVE-2020-1971](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1971).
+- Updated libarchive to 3.5.0, which powers the `archive_file` resource. This new release resolves extraction failures and better handles symlinks in archives.
+- `knife ssh` with the `--sudo` flag will no longer silently fail. Thanks for the fix [@rveznaver](https://github.com/rveznaver)!
+- Resolve failures running the Compliance Phase introduced in the 16.8.9 release. Thanks for reporting this issue [@axelrtgs](https://github.com/axelrtgs)!
+
+# What's New in 16.8
+
+## Chef InSpec 4.24
+
+Chef InSpec has been updated to 4.24.8 including the following improvements:
+
+- An unset `HOME environment variable will not cause execution failures
+- You can use wildcards in `platform-name` and `release` in InSpec profiles
+- The support for arrays in the `WMI` resource, so it can return multiple objects
+- The `package` resource on Windows properly escapes package names
+- The `grub_conf` resource succeeds even if without a `menuentry` in the grub config
+- Loaded plugins won't try to re-load themselves
+
+## Updated Resources
+
+### dsc_resource / dsc_script
+
+The `dsc_resource` and `dsc_script` resources have been updated to use the `powershell_exec` helper for significantly improved performance executing the PowerShell commands.
+
+### hostname
+
+The `hostname` resource has been updated to prevent failures when the default system hostname is set on macOS hosts.
+
+### remote_file
+
+The `remote_file` resource has been updated to use certificates located in Chef Infra Client's `trusted_certificates` directory. Thanks for reporting this issue [@carguel](https://github.com/carguel/)!
+
+### windows_certificate
+
+The `windows_certificate` has been updated with a new `exportable` property that marks PFX files as exportable in the certificate store.
+
+## Ohai Improvements
+
+- A new optional `Grub2` plugin can be enabled to expose GRUB2 environment variables.
+- Linode cloud detection has been improved.
+
+## Platform Packages
+
+We are once again building packages for Solaris on Sparc and x86 platforms.
+
 # What's New in 16.7
 
 ## Performance Enhancements
@@ -18,7 +65,7 @@ We've updated the release of `chef-vault` bundled with Chef Infra Client to 4.1.
 
 ### build_essential
 
-The `build_essential` resource has been updated to resolve idempotency issues and greatly improve performance on macOS hosts. 
+The `build_essential` resource has been updated to resolve idempotency issues and greatly improve performance on macOS hosts.
 
 ### chef_client_config
 

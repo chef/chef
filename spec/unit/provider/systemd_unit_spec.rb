@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Provider::SystemdUnit do
+describe Chef::Provider::SystemdUnit, :linux_only do
 
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }

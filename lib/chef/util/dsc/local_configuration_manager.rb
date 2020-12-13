@@ -16,25 +16,27 @@
 # limitations under the License.
 #
 
-require_relative "../powershell/cmdlet"
+require_relative "../../mixin/powershell_exec"
 require_relative "lcm_output_parser"
 
 class Chef::Util::DSC
   class LocalConfigurationManager
+    include Chef::Mixin::PowershellExec
+
     def initialize(node, configuration_path)
       @node = node
       @configuration_path = configuration_path
       clear_execution_time
     end
 
-    def test_configuration(configuration_document, shellout_flags)
-      status = run_configuration_cmdlet(configuration_document, false, shellout_flags)
-      log_dsc_exception(status.stderr) unless status.succeeded?
-      configuration_update_required?(status.return_value)
+    def test_configuration(configuration_document)
+      status = run_configuration_cmdlet(configuration_document, false)
+      log_dsc_exception(status.errors.join("\n")) if status.error?
+      configuration_update_required?(status.result)
     end
 
-    def set_configuration(configuration_document, shellout_flags)
-      run_configuration_cmdlet(configuration_document, true, shellout_flags)
+    def set_configuration(configuration_document)
+      run_configuration_cmdlet(configuration_document, true)
     end
 
     def last_operation_execution_time_seconds
@@ -45,7 +47,7 @@ class Chef::Util::DSC
 
     private
 
-    def run_configuration_cmdlet(configuration_document, apply_configuration, shellout_flags)
+    def run_configuration_cmdlet(configuration_document, apply_configuration)
       Chef::Log.trace("DSC: Calling DSC Local Config Manager to #{apply_configuration ? "set" : "test"} configuration document.")
 
       start_operation_timing
@@ -53,11 +55,12 @@ class Chef::Util::DSC
 
       begin
         save_configuration_document(configuration_document)
-        cmdlet = ::Chef::Util::Powershell::Cmdlet.new(@node, lcm_command(apply_configuration))
+        cmd = lcm_command(apply_configuration)
+        Chef::Log.trace("DSC: Calling DSC Local Config Manager with:\n#{cmd}")
+
+        status = powershell_exec(cmd)
         if apply_configuration
-          status = cmdlet.run!({}, shellout_flags)
-        else
-          status = cmdlet.run({}, shellout_flags)
+          status.error!
         end
       ensure
         end_operation_timing
@@ -77,7 +80,7 @@ class Chef::Util::DSC
         ps4_base_command
       else
         if ps_version_gte_5?
-          "#{common_command_prefix} Test-DscConfiguration -path #{@configuration_path} | format-list"
+          "#{common_command_prefix} Test-DscConfiguration -path #{@configuration_path} | format-list | Out-String"
         else
           ps4_base_command + " -whatif; if (! $?) { exit 1 }"
         end
@@ -100,7 +103,7 @@ class Chef::Util::DSC
     end
 
     def whatif_not_supported?(dsc_exception_output)
-      !! (dsc_exception_output.gsub(/[\r\n]+/, "").gsub(/\s+/, " ") =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
+      !! (dsc_exception_output.gsub(/[\n]+/, "").gsub(/\s+/, " ") =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
     end
 
     def dsc_module_import_failure?(command_output)

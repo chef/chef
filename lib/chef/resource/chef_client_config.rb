@@ -110,7 +110,7 @@ class Chef
       property :config_directory, String,
         description: "The directory to store the client.rb in.",
         default: ChefConfig::Config.etc_chef_dir,
-        default_description: "`/etc/chef/` on *nix-like systems and `C:\chef\` on Windows"
+        default_description: "`/etc/chef/` on *nix-like systems and `C:\\chef\\` on Windows"
 
       property :user, String,
         description: "The user that should own the client.rb file and the configuration directory if it needs to be created. Note: The configuration directory will not be created if it already exists, which allows you to further control the setup of that directory outside of this resource."

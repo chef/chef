@@ -26,6 +26,7 @@ describe "HTTP SSL Policy" do
     Chef::Config[:ssl_client_key]  = nil
     Chef::Config[:ssl_ca_path]     = nil
     Chef::Config[:ssl_ca_file]     = nil
+    ENV["SSL_CERT_FILE"]           = nil
   end
 
   let(:unconfigured_http_client) { Net::HTTP.new("example.com", 443) }
@@ -70,6 +71,16 @@ describe "HTTP SSL Policy" do
       it "should set the CA file if that is set in the configuration" do
         Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + "/ssl/5e707473.0"
         expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/ssl/5e707473.0")
+      end
+
+      it "should set the custom CA file if SSL_CERT_FILE environment variable is set" do
+        ENV["SSL_CERT_FILE"] = CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem"
+        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem")
+      end
+
+      it "raises a ConfigurationError if SSL_CERT_FILE environment variable is set to a file that does not exist" do
+        ENV["SSL_CERT_FILE"] = "/dev/null/nothing_here"
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
       end
     end
 

@@ -27,10 +27,11 @@ Gem::Specification.new do |s|
   s.add_dependency "mixlib-shellout", ">= 3.1.1", "< 4.0"
   s.add_dependency "mixlib-archive", ">= 0.4", "< 2.0"
   s.add_dependency "ohai", "~> 16.0"
+  s.add_dependency "inspec-core", "~> 4.23"
 
   s.add_dependency "ffi", ">= 1.9.25"
   s.add_dependency "ffi-yajl", "~> 2.2"
-  s.add_dependency "net-ssh", ">= 4.2", "< 7"
+  s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0"
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support

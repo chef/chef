@@ -131,18 +131,18 @@ class Chef
             # darwin
             declare_resource(:execute, "set HostName via scutil") do
               command "/usr/sbin/scutil --set HostName #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
+              not_if { shell_out("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
               notifies :reload, "ohai[reload hostname]"
             end
             declare_resource(:execute, "set ComputerName via scutil") do
               command "/usr/sbin/scutil --set ComputerName  #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname }
+              not_if { shell_out("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname }
               notifies :reload, "ohai[reload hostname]"
             end
             shortname = new_resource.hostname[/[^\.]*/]
             declare_resource(:execute, "set LocalHostName via scutil") do
               command "/usr/sbin/scutil --set LocalHostName #{shortname}"
-              not_if { shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
+              not_if { shell_out("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
               notifies :reload, "ohai[reload hostname]"
             end
           when linux?

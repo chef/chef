@@ -23,10 +23,12 @@ require_relative "../pwsh"
 # powershell_exec is initialized with a string that should be set to the script
 # to run and also takes an optional interpreter argument which must be either
 # :powershell (Windows PowerShell which is the default) or :pwsh (PowerShell
-# Core). It will return a Chef::PowerShell object that provides 4 methods:
+# Core). It will return a Chef::PowerShell object that provides 5 methods:
 #
 # .result - returns a hash representing the results returned by executing the
 #           PowerShell script block
+# .verbose - this is an array of string containing any messages written to the
+#           PowerShell verbose stream during execution
 # .errors - this is an array of string containing any messages written to the
 #           PowerShell error stream during execution
 # .error? - returns true if there were error messages written to the PowerShell

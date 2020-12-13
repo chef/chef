@@ -64,7 +64,10 @@ class Chef
       # Creates a new object of class TTY::Prompt
       # with interrupt as exit so that it can be terminated with status code.
       def prompt
-        @prompt ||= TTY::Prompt.new(interrupt: :exit)
+        @prompt ||= begin
+          require "tty-prompt"
+          TTY::Prompt.new(interrupt: :exit)
+        end
       end
 
       # pastel.decorate is a lightweight replacement for highline.color
