@@ -108,13 +108,14 @@ class Chef
           security_value = new_resource.secvalue
 
           file = Tempfile.new(["#{security_option}", ".inf"])
-          if security_option == "LockoutBadCount"
-            cmd = "net accounts /lockoutthreshold:#{security_value}"
-          elsif security_option == "ResetLockoutCount"
-            cmd = "net accounts /lockoutwindow:#{security_value}"
-          elsif security_option == "LockoutDuration"
-            cmd = "net accounts /lockoutduration:#{security_value}"
-          elsif security_option == "NewAdministratorName" || security_option == "NewGuestName"
+          case security_option
+          when "LockoutBadCount"
+            cmd = "net accounts /LockoutThreshold:#{security_value}"
+          when "ResetLockoutCount"
+            cmd = "net accounts /LockoutWindow:#{security_value}"
+          when "LockoutDuration"
+            cmd = "net accounts /LockoutDuration:#{security_value}"
+          when "NewAdministratorName", "NewGuestName"
             policy_line = "#{security_option} = \"#{security_value}\""
             file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
             file.close
