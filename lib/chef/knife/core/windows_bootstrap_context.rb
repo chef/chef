@@ -140,7 +140,7 @@ class Chef
           end
 
           unless trusted_certs_script.empty?
-            client_rb << %Q{trusted_certs_dir "#{ChefConfig::Config.etc_chef_dir(windows: true)}/trusted_certs"\n}
+            client_rb << %Q{trusted_certs_dir "#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.etc_chef_dir(windows: true))}\\\\trusted_certs"\n}
           end
 
           if chef_config[:fips]
