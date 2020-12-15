@@ -246,7 +246,7 @@ namespace :docs_site do
       end
 
       # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
-      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package}.include?(name)
+      description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package pacman_package freebsd_package}.include?(name)
 
       description
     end
