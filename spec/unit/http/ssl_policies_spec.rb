@@ -101,19 +101,31 @@ describe "HTTP SSL Policy" do
       it "raises ConfigurationError if the certificate file doesn't exist" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
         Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError, /ssl_client_cert .* does not exist/)
       end
 
-      it "raises ConfigurationError if the certificate file doesn't exist" do
+      it "raises ConfigurationError if the private key file doesn't exist" do
         Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
         Chef::Config[:ssl_client_key]  = "/dev/null/nothing_here"
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError, /ssl_client_key .* does not exist/)
       end
 
       it "raises a ConfigurationError if one of :ssl_client_cert and :ssl_client_key is set but not both" do
         Chef::Config[:ssl_client_cert] = "/dev/null/nothing_here"
         Chef::Config[:ssl_client_key]  = nil
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError, /configure ssl_client_cert and ssl_client_key together/)
+      end
+
+      it "raises a ConfigurationError with a bad cert file" do
+        Chef::Config[:ssl_client_cert] = __FILE__
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file '#{__FILE__}'/)
+      end
+
+      it "raises a ConfigurationError with a bad key file" do
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
+        Chef::Config[:ssl_client_key]  = __FILE__
+        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading key file '#{__FILE__}'/)
       end
 
       it "configures the HTTP client's cert and private key" do
