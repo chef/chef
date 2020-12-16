@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.19 -->
-## [v16.8.19](https://github.com/chef/chef/tree/v16.8.19) (2020-12-16)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Update train to 3.4.4 [#10745](https://github.com/chef/chef/pull/10745) ([tas50](https://github.com/tas50))
+- Remove old test script. [#10746](https://github.com/chef/chef/pull/10746) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove old test script. [#10746](https://github.com/chef/chef/pull/10746) ([phiggins](https://github.com/phiggins)) <!-- 16.8.19 -->
 - Update train to 3.4.4 [#10745](https://github.com/chef/chef/pull/10745) ([tas50](https://github.com/tas50)) <!-- 16.8.19 -->
 - locale: Update the locale-gen timeout to 1800s [#10743](https://github.com/chef/chef/pull/10743) ([tas50](https://github.com/tas50)) <!-- 16.8.18 -->
 - Add audit cookbook&#39;s chef_node_attribute_enabled to Compliance Phase. [#10735](https://github.com/chef/chef/pull/10735) ([phiggins](https://github.com/phiggins)) <!-- 16.8.17 -->
