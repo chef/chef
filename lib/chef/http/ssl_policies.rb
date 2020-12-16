@@ -87,7 +87,7 @@ class Chef
         if config.trusted_certs_dir
           certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
           certs.each do |cert_file|
-            cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
+            cert = OpenSSL::X509::Certificate.new(File.binread(cert_file))
             add_trusted_cert(cert)
           end
         end
@@ -105,8 +105,8 @@ class Chef
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
           end
 
-          http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-          http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
+          http_client.cert = OpenSSL::X509::Certificate.new(::File.binread(config[:ssl_client_cert]))
+          http_client.key = OpenSSL::PKey::RSA.new(::File.binread(config[:ssl_client_key]))
         end
       end
 

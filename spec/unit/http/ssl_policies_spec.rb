@@ -122,6 +122,20 @@ describe "HTTP SSL Policy" do
         expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
         expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
       end
+
+      it "configures the HTTP client's cert and private key with a DER encoded cert" do
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec-der.cert"
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
+        expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
+        expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
+      end
+
+      it "configures the HTTP client's cert and private key with a DER encoded key" do
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec-der.key"
+        expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
+        expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
+      end
     end
 
     context "when additional certs are located in the trusted_certs dir" do
