@@ -1,8 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release -->
+<!-- latest_release 16.8.15 -->
+## [v16.8.15](https://github.com/chef/chef/tree/v16.8.15) (2020-12-16)
+
+#### Merged Pull Requests
+- knife bootstrap: Windows Trusted cert path slashes fix [#10740](https://github.com/chef/chef/pull/10740) ([axelrtgs](https://github.com/axelrtgs))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.8.14 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- knife bootstrap: Windows Trusted cert path slashes fix [#10740](https://github.com/chef/chef/pull/10740) ([axelrtgs](https://github.com/axelrtgs)) <!-- 16.8.15 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
