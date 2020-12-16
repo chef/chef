@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.8.16 -->
-## [v16.8.16](https://github.com/chef/chef/tree/v16.8.16) (2020-12-16)
+<!-- latest_release 16.8.17 -->
+## [v16.8.17](https://github.com/chef/chef/tree/v16.8.17) (2020-12-16)
 
 #### Merged Pull Requests
-- Improve our automated resource documentation generation [#10739](https://github.com/chef/chef/pull/10739) ([tas50](https://github.com/tas50))
+- Add audit cookbook&#39;s chef_node_attribute_enabled to Compliance Phase. [#10735](https://github.com/chef/chef/pull/10735) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add audit cookbook&#39;s chef_node_attribute_enabled to Compliance Phase. [#10735](https://github.com/chef/chef/pull/10735) ([phiggins](https://github.com/phiggins)) <!-- 16.8.17 -->
 - Improve our automated resource documentation generation [#10739](https://github.com/chef/chef/pull/10739) ([tas50](https://github.com/tas50)) <!-- 16.8.16 -->
 - knife bootstrap: Windows Trusted cert path slashes fix [#10740](https://github.com/chef/chef/pull/10740) ([axelrtgs](https://github.com/axelrtgs)) <!-- 16.8.15 -->
 <!-- release_rollup -->
