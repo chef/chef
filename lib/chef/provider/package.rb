@@ -53,7 +53,7 @@ class Chef
       # [ this may arguably be useful for all package providers and it greatly simplifies the logic
       #   in the superclass that gets executed, so maybe this should always be used now? ]
       #
-      subclass_directive :installed_version_satisfies_version_constraints
+      subclass_directive :use_magic_version
 
       #
       # Hook that subclasses use to populate the candidate_version(s)
@@ -434,7 +434,7 @@ class Chef
               case action
               when :upgrade
                 if current_version.nil?
-                  # with installed_version_satisfies_version_constraints there may be a package installed, but it fails the user's
+                  # with use_magic_version there may be a package installed, but it fails the user's
                   # requested new_resource.version constraints
                   logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
                   target_version_array.push(candidate_version)
@@ -457,7 +457,7 @@ class Chef
                 end
 
               when :install
-                if new_version && !installed_version_satisfies_version_constraints?
+                if new_version && !use_magic_version?
                   if version_requirement_satisfied?(current_version, new_version)
                     logger.trace("#{new_resource} #{package_name} #{current_version} satisfies #{new_version} requirement")
                     target_version_array.push(nil)
@@ -469,7 +469,7 @@ class Chef
                     target_version_array.push(new_version)
                   end
                 elsif current_version.nil?
-                  # with installed_version_satisfies_version_constraints there may be a package installed, but it fails the user's
+                  # with use_magic_version there may be a package installed, but it fails the user's
                   # requested new_resource.version constraints
                   logger.trace("#{new_resource} #{package_name} not installed, installing #{candidate_version}")
                   target_version_array.push(candidate_version)
@@ -531,8 +531,8 @@ class Chef
             each_package do |package_name, new_version, current_version, candidate_version|
               next if new_version.nil? || current_version.nil?
 
-              if installed_version_satisfies_version_constraints?
-                if !current_version && candidate_version.nil?
+              if use_magic_version?
+                if !magic_version && candidate_version.nil?
                   missing.push(package_name)
                 end
               else
@@ -551,7 +551,7 @@ class Chef
       def each_package
         package_name_array.each_with_index do |package_name, i|
           candidate_version = candidate_version_array[i]
-          current_version = current_version_array[i]
+          current_version = use_magic_version? ? magic_version[i] : current_version_array[i]
           new_version = new_version_array[i]
           yield package_name, new_version, current_version, candidate_version
         end
