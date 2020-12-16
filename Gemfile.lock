@@ -8,7 +8,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 3ef9243c91c67a529bff67dc6a30e356c80b9d2b
+  revision: 1ad8c5946606a7f08ffb841e3682ae2d4991077f
   branch: master
   specs:
     ohai (16.8.1)
@@ -223,7 +223,7 @@ GEM
       inspec-core (= 4.24.8)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    json (2.3.1)
+    json (2.4.0)
     libyajl2 (1.2.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -331,7 +331,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.0.1)
     tomlrb (1.2.9)
-    train-core (3.4.1)
+    train-core (3.4.4)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -348,7 +348,7 @@ GEM
       tty-cursor (~> 0.7)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
-    tty-prompt (0.22.0)
+    tty-prompt (0.23.0)
       pastel (~> 0.8)
       tty-reader (~> 0.8)
     tty-reader (0.9.0)
