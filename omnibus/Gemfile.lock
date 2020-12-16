@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: e8951da8c2b52524116a87af3cf632d9c799a435
+  revision: d13ae1686e8b54e065ce2a3f27585a2890f1abec
   branch: master
   specs:
     omnibus (8.0.9)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.405.0)
+    aws-partitions (1.407.0)
     aws-sdk-core (3.110.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -41,9 +41,9 @@ GEM
     aws-sdk-kms (1.39.0)
       aws-sdk-core (~> 3, >= 3.109.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.86.0)
+    aws-sdk-s3 (1.86.2)
       aws-sdk-core (~> 3, >= 3.109.0)
-      aws-sdk-kms (~> 1)
+      aws-sdk-kms (~> 1.26)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.2)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -195,7 +195,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
-    json (2.3.1)
+    json (2.4.0)
     kitchen-vagrant (1.7.2)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
@@ -251,7 +251,7 @@ GEM
     octokit (4.19.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.7.37)
+    ohai (16.8.1)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -313,7 +313,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.4.1)
+    train-core (3.4.4)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -330,7 +330,7 @@ GEM
       tty-cursor (~> 0.7)
     tty-color (0.6.0)
     tty-cursor (0.7.1)
-    tty-prompt (0.22.0)
+    tty-prompt (0.23.0)
       pastel (~> 0.8)
       tty-reader (~> 0.8)
     tty-reader (0.9.0)
