@@ -128,7 +128,7 @@ class Chef
             file_path = file.path.gsub("/", '\\')
             cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
           end
-          powershell_out!(cmd)
+          shell_out!(cmd)
           file.unlink
         end
       end
@@ -160,10 +160,9 @@ class Chef
             MinimumPasswordAge = $security_options_hash.MinimumPasswordAge
             NewGuestName = $security_options_hash.NewGuestName
             LockoutBadCount = $security_options_hash.LockoutBadCount
-          }) | ConvertTo-Json
+          })
         CODE
-        output = powershell_out(powershell_code)
-        Chef::JSONCompat.from_json(output.stdout)
+        powershell_exec(powershell_code).result
       end
     end
   end
