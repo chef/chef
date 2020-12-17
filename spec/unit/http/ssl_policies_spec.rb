@@ -39,54 +39,44 @@ describe "HTTP SSL Policy" do
 
     let(:ssl_policy) { Chef::HTTP::DefaultSSLPolicy.new(unconfigured_http_client) }
 
-    describe "when configured with :ssl_verify_mode set to :verify peer" do
-      before do
-        Chef::Config[:ssl_verify_mode] = :verify_peer
-      end
-
-      it "sets the OpenSSL verify mode to verify_peer" do
-        expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
-      end
-
-      it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
-        Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
-      end
-
-      it "should set the CA path if that is set in the configuration" do
-        Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
-        expect(http_client.ca_path).to eq(File.join(CHEF_SPEC_DATA, "ssl"))
-      end
-
-      it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
-        Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
-      end
-
-      it "should set the CA file if that is set in the configuration" do
-        Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + "/ssl/5e707473.0"
-        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/ssl/5e707473.0")
-      end
-
-      it "should set the custom CA file if SSL_CERT_FILE environment variable is set" do
-        ENV["SSL_CERT_FILE"] = CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem"
-        expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem")
-      end
-
-      it "raises a ConfigurationError if SSL_CERT_FILE environment variable is set to a file that does not exist" do
-        ENV["SSL_CERT_FILE"] = "/dev/null/nothing_here"
-        expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
-      end
+    it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
+      Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
+      expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
     end
 
-    describe "when configured with :ssl_verify_mode set to :verify peer" do
-      before do
-        Chef::Config[:ssl_verify_mode] = :verify_none
-      end
+    it "should set the CA path if that is set in the configuration" do
+      Chef::Config[:ssl_ca_path] = File.join(CHEF_SPEC_DATA, "ssl")
+      expect(http_client.ca_path).to eq(File.join(CHEF_SPEC_DATA, "ssl"))
+    end
 
-      it "sets the OpenSSL verify mode to :verify_none" do
-        expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
-      end
+    it "raises a ConfigurationError if :ssl_ca_file is set to a file that does not exist" do
+      Chef::Config[:ssl_ca_file] = "/dev/null/nothing_here"
+      expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "should set the CA file if that is set in the configuration" do
+      Chef::Config[:ssl_ca_file] = CHEF_SPEC_DATA + "/ssl/5e707473.0"
+      expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/ssl/5e707473.0")
+    end
+
+    it "should set the custom CA file if SSL_CERT_FILE environment variable is set" do
+      ENV["SSL_CERT_FILE"] = CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem"
+      expect(http_client.ca_file).to eq(CHEF_SPEC_DATA + "/trusted_certs/intermediate.pem")
+    end
+
+    it "raises a ConfigurationError if SSL_CERT_FILE environment variable is set to a file that does not exist" do
+      ENV["SSL_CERT_FILE"] = "/dev/null/nothing_here"
+      expect { http_client }.to raise_error(Chef::Exceptions::ConfigurationError)
+    end
+
+    it "sets the OpenSSL verify mode to verify_peer when configured with :ssl_verify_mode set to :verify_peer" do
+      Chef::Config[:ssl_verify_mode] = :verify_peer
+      expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
+    end
+
+    it "sets the OpenSSL verify mode to :verify_none when configured with :ssl_verify_mode set to :verify_none" do
+      Chef::Config[:ssl_verify_mode] = :verify_none
+      expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
     end
 
     describe "when configured with a client certificate" do
