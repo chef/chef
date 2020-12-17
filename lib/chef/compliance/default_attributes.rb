@@ -83,7 +83,11 @@ class Chef
 
       # The array of results per control will be truncated at this limit to avoid large reports that cannot be
       # processed by Chef Automate. A summary of removed results will be sent with each impacted control.
-      "control_results_limit" => 50
+      "control_results_limit" => 50,
+
+      # If enabled, a hash representation of the Chef Infra node object will be sent to Chef InSpec in an input
+      # named `chef_node`.
+      "chef_node_attribute_enabled" => false
     )
   end
 end

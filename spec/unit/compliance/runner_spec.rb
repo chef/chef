@@ -137,4 +137,32 @@ describe Chef::Compliance::Runner do
       expect { runner.reporter("tacos") }.to raise_error(/'tacos' is not a supported reporter for Compliance Phase/)
     end
   end
+
+  describe "#inspec_opts" do
+    it "does not include chef_node in inputs by default" do
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+        "nachos" => "dinner",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+      expect(inputs.key?("chef_node")).to eq(false)
+    end
+
+    it "includes chef_node in inputs with chef_node_attribute_enabled set" do
+      node.normal["audit"]["chef_node_attribute_enabled"] = true
+      node.normal["audit"]["attributes"] = {
+        "tacos" => "lunch",
+        "nachos" => "dinner",
+      }
+
+      inputs = runner.inspec_opts[:inputs]
+
+      expect(inputs["tacos"]).to eq("lunch")
+      expect(inputs["chef_node"]["audit"]["reporter"]).to eq("json-file")
+      expect(inputs["chef_node"]["chef_environment"]).to eq("_default")
+    end
+  end
 end
