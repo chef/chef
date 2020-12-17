@@ -131,17 +131,14 @@ describe "HTTP SSL Policy" do
     end
 
     context "when additional certs are located in the trusted_certs dir" do
-      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt") }
-      let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
-
-      let(:additional_pem_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "opscode.pem") }
-      let(:additional_pem) { OpenSSL::X509::Certificate.new(File.read(additional_pem_path)) }
-
       before do
         Chef::Config.trusted_certs_dir = File.join(CHEF_SPEC_DATA, "trusted_certs")
       end
 
       it "enables verification of self-signed certificates" do
+        path = File.join(CHEF_SPEC_DATA, "trusted_certs", "example.crt")
+        self_signed_crt = OpenSSL::X509::Certificate.new(File.binread(path))
+
         expect(http_client.cert_store.verify(self_signed_crt)).to be_truthy
       end
 
@@ -154,17 +151,18 @@ describe "HTTP SSL Policy" do
         # If the machine running the test doesn't have ruby SSL configured correctly,
         # then the root cert also has to be loaded for the test to succeed.
         # The system under test **SHOULD** do both of these things.
+        path = File.join(CHEF_SPEC_DATA, "trusted_certs", "opscode.pem")
+        additional_pem = OpenSSL::X509::Certificate.new(File.binread(path))
+
         expect(http_client.cert_store.verify(additional_pem)).to be_truthy
       end
 
-      context "and some certs are duplicates" do
-        it "skips duplicate certs" do
-          # For whatever reason, OpenSSL errors out when adding a
-          # cert you already have to the certificate store.
-          ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
-          ssl_policy.set_custom_certs
-          ssl_policy.set_custom_certs # should not raise an error
-        end
+      it "skips duplicate certs" do
+        # For whatever reason, OpenSSL errors out when adding a
+        # cert you already have to the certificate store.
+        ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
+        ssl_policy.set_custom_certs
+        ssl_policy.set_custom_certs # should not raise an error
       end
 
       context "with a bad cert file" do
