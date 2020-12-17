@@ -29,15 +29,13 @@ describe "HTTP SSL Policy" do
     ENV["SSL_CERT_FILE"]           = nil
   end
 
-  let(:unconfigured_http_client) { Net::HTTP.new("example.com") }
   let(:http_client) do
-    ssl_policy.apply
-    unconfigured_http_client
+    ssl_policy_class.apply_to(Net::HTTP.new("example.com"))
   end
 
   describe Chef::HTTP::DefaultSSLPolicy do
 
-    let(:ssl_policy) { Chef::HTTP::DefaultSSLPolicy.new(unconfigured_http_client) }
+    let(:ssl_policy_class) { Chef::HTTP::DefaultSSLPolicy }
 
     it "raises a ConfigurationError if :ssl_ca_path is set to a path that doesn't exist" do
       Chef::Config[:ssl_ca_path] = "/dev/null/nothing_here"
@@ -163,6 +161,7 @@ describe "HTTP SSL Policy" do
         it "skips duplicate certs" do
           # For whatever reason, OpenSSL errors out when adding a
           # cert you already have to the certificate store.
+          ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
           ssl_policy.set_custom_certs
           ssl_policy.set_custom_certs # should not raise an error
         end
@@ -178,6 +177,7 @@ describe "HTTP SSL Policy" do
         end
 
         it "raises ConfigurationError" do
+          ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
           expect { ssl_policy.set_custom_certs }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file/)
         end
       end
@@ -186,7 +186,7 @@ describe "HTTP SSL Policy" do
 
   describe Chef::HTTP::APISSLPolicy do
 
-    let(:ssl_policy) { Chef::HTTP::APISSLPolicy.new(unconfigured_http_client) }
+    let(:ssl_policy_class) { Chef::HTTP::APISSLPolicy }
 
     it "sets the OpenSSL verify mode to verify_peer when configured with :ssl_verify_mode set to :verify_peer" do
       Chef::Config[:ssl_verify_mode] = :verify_peer
@@ -206,7 +206,7 @@ describe "HTTP SSL Policy" do
 
   describe Chef::HTTP::VerifyPeerSSLPolicy do
 
-    let(:ssl_policy) { Chef::HTTP::VerifyPeerSSLPolicy.new(unconfigured_http_client) }
+    let(:ssl_policy_class) { Chef::HTTP::VerifyPeerSSLPolicy }
 
     it "sets the OpenSSL verify mode to verify_peer" do
       expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_PEER)
@@ -216,7 +216,7 @@ describe "HTTP SSL Policy" do
 
   describe Chef::HTTP::VerifyNoneSSLPolicy do
 
-    let(:ssl_policy) { Chef::HTTP::VerifyNoneSSLPolicy.new(unconfigured_http_client) }
+    let(:ssl_policy_class) { Chef::HTTP::VerifyNoneSSLPolicy }
 
     it "sets the OpenSSL verify mode to verify_peer" do
       expect(http_client.verify_mode).to eq(OpenSSL::SSL::VERIFY_NONE)
