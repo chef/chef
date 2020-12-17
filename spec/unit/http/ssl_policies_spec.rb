@@ -29,7 +29,7 @@ describe "HTTP SSL Policy" do
     ENV["SSL_CERT_FILE"]           = nil
   end
 
-  let(:unconfigured_http_client) { Net::HTTP.new("example.com", 443) }
+  let(:unconfigured_http_client) { Net::HTTP.new("example.com") }
   let(:http_client) do
     ssl_policy.apply
     unconfigured_http_client
