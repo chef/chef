@@ -53,6 +53,11 @@ class Chef
       # [ this may arguably be useful for all package providers and it greatly simplifies the logic
       #   in the superclass that gets executed, so maybe this should always be used now? ]
       #
+      # note that when using this feature that the current_resource.version must be loaded with the
+      # correct currently installed version, without doing the filtering -- for reporting and for
+      # correctly displaying version upgrades.  that means there are 3 different arrays which must be
+      # loaded by the subclass:  candidate_version, magic_version and current_resource.version.
+      #
       subclass_directive :use_magic_version
 
       #
