@@ -89,8 +89,8 @@ class Chef
           certs.each do |cert_file|
             cert = begin
               OpenSSL::X509::Certificate.new(::File.binread(cert_file))
-            rescue OpenSSL::X509::CertificateError => e
-              raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{cert_file}', original error '#{e.class}: #{e.message}'"
+                   rescue OpenSSL::X509::CertificateError => e
+                     raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{cert_file}', original error '#{e.class}: #{e.message}'"
             end
             add_trusted_cert(cert)
           end
