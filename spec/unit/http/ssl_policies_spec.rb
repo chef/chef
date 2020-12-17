@@ -164,20 +164,17 @@ describe "HTTP SSL Policy" do
         ssl_policy.set_custom_certs
         ssl_policy.set_custom_certs # should not raise an error
       end
+    end
 
-      context "with a bad cert file" do
-        around do |example|
-          bad_cert_file = File.join(Chef::Config.trusted_certs_dir, "bad_cert_file.crt")
-          File.write(bad_cert_file, File.read(__FILE__))
-          example.run
-        ensure
-          FileUtils.rm(bad_cert_file)
-        end
+    it "raises ConfigurationError with a bad cert file in the trusted_certs dir" do
+      ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
 
-        it "raises ConfigurationError" do
-          ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
-          expect { ssl_policy.set_custom_certs }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file/)
-        end
+      Dir.mktmpdir do |dir|
+        bad_cert_file = File.join(dir, "bad_cert_file.crt")
+        File.binwrite(bad_cert_file, File.read(__FILE__))
+
+        Chef::Config.trusted_certs_dir = dir
+        expect { ssl_policy.set_custom_certs }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file/)
       end
     end
   end
