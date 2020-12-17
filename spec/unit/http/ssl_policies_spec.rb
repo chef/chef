@@ -31,7 +31,6 @@ describe "HTTP SSL Policy" do
 
   let(:unconfigured_http_client) { Net::HTTP.new("example.com", 443) }
   let(:http_client) do
-    unconfigured_http_client.use_ssl = true
     ssl_policy.apply
     unconfigured_http_client
   end
@@ -43,10 +42,6 @@ describe "HTTP SSL Policy" do
     describe "when configured with :ssl_verify_mode set to :verify peer" do
       before do
         Chef::Config[:ssl_verify_mode] = :verify_peer
-      end
-
-      it "configures the HTTP client to use SSL when given a URL with the https protocol" do
-        expect(http_client.use_ssl?).to be_truthy
       end
 
       it "sets the OpenSSL verify mode to verify_peer" do
