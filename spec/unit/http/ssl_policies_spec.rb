@@ -116,7 +116,7 @@ describe "HTTP SSL Policy" do
       end
 
       it "configures the HTTP client's cert and private key with a DER encoded cert" do
-        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec-der.cert"
+        Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/binary/chef-rspec-der.cert"
         Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec.key"
         expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
         expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
@@ -124,7 +124,7 @@ describe "HTTP SSL Policy" do
 
       it "configures the HTTP client's cert and private key with a DER encoded key" do
         Chef::Config[:ssl_client_cert] = CHEF_SPEC_DATA + "/ssl/chef-rspec.cert"
-        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/chef-rspec-der.key"
+        Chef::Config[:ssl_client_key]  = CHEF_SPEC_DATA + "/ssl/binary/chef-rspec-der.key"
         expect(http_client.cert.to_s).to eq(OpenSSL::X509::Certificate.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.cert")).to_s)
         expect(http_client.key.to_s).to eq(OpenSSL::PKey::RSA.new(IO.read(CHEF_SPEC_DATA + "/ssl/chef-rspec.key")).to_s)
       end
@@ -164,17 +164,24 @@ describe "HTTP SSL Policy" do
         ssl_policy.set_custom_certs
         ssl_policy.set_custom_certs # should not raise an error
       end
-    end
 
-    it "raises ConfigurationError with a bad cert file in the trusted_certs dir" do
-      ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
+      it "raises ConfigurationError with a bad cert file in the trusted_certs dir" do
+        ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
 
-      Dir.mktmpdir do |dir|
-        bad_cert_file = File.join(dir, "bad_cert_file.crt")
-        File.binwrite(bad_cert_file, File.read(__FILE__))
+        Dir.mktmpdir do |dir|
+          bad_cert_file = File.join(dir, "bad_cert_file.crt")
+          File.write(bad_cert_file, File.read(__FILE__))
 
-        Chef::Config.trusted_certs_dir = dir
-        expect { ssl_policy.set_custom_certs }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file/)
+          Chef::Config.trusted_certs_dir = dir
+          expect { ssl_policy.set_custom_certs }.to raise_error(Chef::Exceptions::ConfigurationError, /Error reading cert file/)
+        end
+      end
+
+      it "works with binary certs" do
+        Chef::Config.trusted_certs_dir = File.join(CHEF_SPEC_DATA, "ssl", "binary")
+
+        ssl_policy = ssl_policy_class.new(Net::HTTP.new("example.com"))
+        ssl_policy.set_custom_certs
       end
     end
   end
