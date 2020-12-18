@@ -1,8 +1,5 @@
 # Documentation available at https://expeditor.chef.io/docs/getting-started/
 ---
-# the name we use for this project when interacting with expeditor chatbot
-project:
-  alias: chef-16
 
 # The name of the product keys for this product (from mixlib-install)
 product_key:
@@ -50,11 +47,11 @@ github:
   # for building.
   release_branch:
     - master:
+        version_constraint: 17*
+    - chef-16:
         version_constraint: 16*
     - chef-15:
         version_constraint: 15*
-    - chef-14:
-        version_constraint: 14*
 
 changelog:
   rollup_header: Changes not yet released to stable
