@@ -8,12 +8,12 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1ad8c5946606a7f08ffb841e3682ae2d4991077f
+  revision: e1b27c497fb3409d7dab49fbf115c8b0a70c1403
   branch: master
   specs:
-    ohai (16.8.1)
-      chef-config (>= 12.8, < 17)
-      chef-utils (>= 16.0, < 17)
+    ohai (17.0.0)
+      chef-config (>= 12.8, < 18)
+      chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
       ipaddress
@@ -54,7 +54,7 @@ PATH
       net-sftp (>= 2.1.2, < 4.0)
       net-ssh (>= 5.1, < 7)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 16.0)
+      ohai (~> 17.0)
       pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
@@ -92,7 +92,7 @@ PATH
       net-sftp (>= 2.1.2, < 4.0)
       net-ssh (>= 5.1, < 7)
       net-ssh-multi (~> 1.2, >= 1.2.1)
-      ohai (~> 16.0)
+      ohai (~> 17.0)
       pastel
       plist (~> 3.2)
       proxifier (~> 1.0)
@@ -223,7 +223,7 @@ GEM
       inspec-core (= 4.24.8)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    json (2.4.0)
+    json (2.4.1)
     libyajl2 (1.2.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -363,7 +363,7 @@ GEM
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
-    webmock (3.10.0)
+    webmock (3.11.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
