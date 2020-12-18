@@ -49,6 +49,8 @@ Once you've forked to a new stable branch such as `chef-15` you'll want to creat
 
 Example PR for Chef 15: https://github.com/chef/chef/pull/9236
 
+Note: Make sure you're making this PR against the new stable branch and not master!
+
 ## Bump master for the new major release
 
 Create a PR that performs the following:
