@@ -7,8 +7,8 @@ class Chef
       class Automate < ::InspecPlugins::Compliance::Fetcher
         name "chef-automate"
 
-        # it positions itself before `compliance` fetcher
-        # only load it, if you want to use audit cookbook in Chef Solo with Chef Automate
+        # Positions this fetcher before Chef InSpec's `compliance` fetcher.
+        # Only load this file if you want to use Compliance Phase in Chef Solo with Chef Automate.
         priority 502
 
         CONFIG = {
