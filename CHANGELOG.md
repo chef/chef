@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.9.1 -->
-## [v16.9.1](https://github.com/chef/chef/tree/v16.9.1) (2020-12-18)
+<!-- latest_release 16.9.2 -->
+## [v16.9.2](https://github.com/chef/chef/tree/v16.9.2) (2020-12-18)
 
 #### Merged Pull Requests
-- Fix failures in ssl handler [#10751](https://github.com/chef/chef/pull/10751) ([phiggins](https://github.com/phiggins))
+- Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins)) <!-- 16.9.2 -->
 - Fix failures in ssl handler [#10751](https://github.com/chef/chef/pull/10751) ([phiggins](https://github.com/phiggins)) <!-- 16.9.1 -->
 - Cleanup bootstrap&#39;s trusted_certs_dir tests. [#10754](https://github.com/chef/chef/pull/10754) ([phiggins](https://github.com/phiggins)) <!-- 16.9.0 -->
 - Remove old test script. [#10746](https://github.com/chef/chef/pull/10746) ([phiggins](https://github.com/phiggins)) <!-- 16.8.19 -->
