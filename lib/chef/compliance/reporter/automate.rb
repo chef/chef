@@ -36,8 +36,7 @@ class Chef
           end
 
           unless @url && @token
-            Chef::Log.warn "data_collector.token and data_collector.server_url must be defined in client.rb!"
-            Chef::Log.warn "Further information: https://github.com/chef-cookbooks/audit#direct-reporting-to-chef-automate"
+            Chef::Log.warn "data_collector.token and data_collector.server_url must be defined in client.rb! Further information: https://docs.chef.io/chef_compliance_phase/#direct-reporting-to-chef-automate"
             return false
           end
 
