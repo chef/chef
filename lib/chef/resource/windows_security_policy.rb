@@ -91,15 +91,10 @@ class Chef
             raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than 30 minutes"
           end
         end
-        if desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration"
-          if current_state["LockoutBadCount"] == "0"
-            raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
-          else
-            secvalue current_state[desired.secoption.to_s]
-          end
-        else
-          secvalue current_state[desired.secoption.to_s]
+        if (desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"
+          raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
         end
+        secvalue current_state[desired.secoption.to_s]
       end
 
       action :set do
