@@ -9,7 +9,7 @@ GIT
 GIT
   remote: https://github.com/chef/ohai.git
   revision: 1ad8c5946606a7f08ffb841e3682ae2d4991077f
-  branch: master
+  branch: 16-stable
   specs:
     ohai (16.8.1)
       chef-config (>= 12.8, < 17)
@@ -223,7 +223,7 @@ GEM
       inspec-core (= 4.24.8)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    json (2.4.0)
+    json (2.4.1)
     libyajl2 (1.2.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -363,7 +363,7 @@ GEM
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.1.5)
-    webmock (3.10.0)
+    webmock (3.11.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
