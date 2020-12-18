@@ -48,6 +48,8 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
 
   let(:logger) { double("Mixlib::Log::Child").as_null_object }
   before do
+    WebMock.disable_net_connect!
+
     @gem_env = Chef::Provider::Package::Rubygems::CurrentGemEnvironment.new
     allow(@gem_env).to receive(:logger).and_return(logger)
   end
