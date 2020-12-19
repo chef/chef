@@ -390,22 +390,6 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen: Ubuntu 16.04"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1604
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      UBUNTU: "16.04"
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: "Kitchen: Ubuntu 18.04"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
