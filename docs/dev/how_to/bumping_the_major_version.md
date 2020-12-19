@@ -57,5 +57,4 @@ Create a PR that performs the following:
 
 - Update the version in the VERSION file
 - Update chef.gemspec to point to the new ohai major release
-- Update .expeditor/config.yml to include the new version_constraints you setup on your stable branch and an updated project alias
 - run `rake dependencies:update`
