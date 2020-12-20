@@ -292,6 +292,7 @@ class Chef
             source ::File.expand_path("support/cron.d.erb", __dir__)
             local true
             mode new_resource.mode
+            sensitive new_resource.sensitive
             variables(
               name: sanitized_name,
               predefined_value: new_resource.predefined_value,
