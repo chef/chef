@@ -472,21 +472,13 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
-
     let(:rendered_template) do
       knife.merge_configs
       knife.render_template
     end
 
     before do
-      Chef::Config[:trusted_certs_dir] = trusted_certs_dir
-      allow(IO).to receive(:read).and_call_original
-      allow(IO).to receive(:read).with(File.expand_path(Chef::Config[:validation_key])).and_return("")
-    end
-
-    def certificates
-      Dir[File.join(trusted_certs_dir, "*.{crt,pem}")]
+      Chef::Config[:trusted_certs_dir] = Chef::Util::PathHelper.cleanpath(File.join(CHEF_SPEC_DATA, "trusted_certs"))
     end
 
     it "creates /etc/chef/trusted_certs" do
@@ -494,27 +486,23 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "copies the certificates in the directory" do
-      certificates.each do |cert|
-        expect(IO).to receive(:read).with(File.expand_path(cert))
-      end
+      certificates = Dir[File.join(Chef::Config[:trusted_certs_dir], "*.{crt,pem}")]
 
       certificates.each do |cert|
         expect(rendered_template).to match(%r{cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'})
       end
     end
 
-    context "when :trusted_cets_dir is empty" do
-      let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs_empty")) }
-      it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+    it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+      Dir.mktmpdir do |dir|
+        Chef::Config[:trusted_certs_dir] = dir
         expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
       end
     end
-
   end
 
   context "when doing fips things" do
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
 
     before do
       Chef::Config[:knife][:bootstrap_template] = template_file

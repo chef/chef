@@ -77,9 +77,9 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "vim"
+homebrew_package "nethack"
 
-homebrew_package "vim" do
+homebrew_package "nethack" do
   action :purge
 end
 
