@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.9.2 -->
-## [v16.9.2](https://github.com/chef/chef/tree/v16.9.2) (2020-12-18)
+<!-- latest_release 16.9.3 -->
+## [v16.9.3](https://github.com/chef/chef/tree/v16.9.3) (2020-12-20)
 
 #### Merged Pull Requests
-- Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins))
+- Fixed cron_d resource ignoring sensitive property in Chef 16 [#10768](https://github.com/chef/chef/pull/10768) ([axl89](https://github.com/axl89))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fixed cron_d resource ignoring sensitive property in Chef 16 [#10768](https://github.com/chef/chef/pull/10768) ([axl89](https://github.com/axl89)) <!-- 16.9.3 -->
 - Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins)) <!-- 16.9.2 -->
 - Fix failures in ssl handler [#10751](https://github.com/chef/chef/pull/10751) ([phiggins](https://github.com/phiggins)) <!-- 16.9.1 -->
 - Cleanup bootstrap&#39;s trusted_certs_dir tests. [#10754](https://github.com/chef/chef/pull/10754) ([phiggins](https://github.com/phiggins)) <!-- 16.9.0 -->
