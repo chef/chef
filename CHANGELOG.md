@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 15.14.2 -->
-## [v15.14.2](https://github.com/chef/chef/tree/v15.14.2) (2020-12-20)
+<!-- latest_release 15.14.3 -->
+## [v15.14.3](https://github.com/chef/chef/tree/v15.14.3) (2020-12-21)
 
 #### Merged Pull Requests
-- Fixed cron_d resource ignoring sensitive property in Chef 15 [#10769](https://github.com/chef/chef/pull/10769) ([axl89](https://github.com/axl89))
+- Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50)) <!-- 15.14.3 -->
 - Fixed cron_d resource ignoring sensitive property in Chef 15 [#10769](https://github.com/chef/chef/pull/10769) ([axl89](https://github.com/axl89)) <!-- 15.14.2 -->
 - Fix Chef-15 Habitat Builds [#10460](https://github.com/chef/chef/pull/10460) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.14.1 -->
 <!-- release_rollup -->
