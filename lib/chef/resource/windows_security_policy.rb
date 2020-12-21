@@ -94,6 +94,7 @@ class Chef
         if (desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"
           raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
         end
+
         secvalue current_state[desired.secoption.to_s]
       end
 
