@@ -60,7 +60,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
       expect(Dir).to receive(:[]).with("/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb").and_return(gem_files)
     end
     expect(loader).to receive(:find_subcommands_via_dirglob).and_return({})
-    expect(loader.subcommand_files.select { |file| file =~ /knife-ec2/ }.sort).to eq(gem_files)
+    expect(loader.subcommand_files.select { |file| file.include?("knife-ec2") }.sort).to eq(gem_files)
   end
 
   it "finds files using a dirglob when rubygems is not available" do
