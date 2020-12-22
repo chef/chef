@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.3 -->
-## [v17.0.3](https://github.com/chef/chef/tree/v17.0.3) (2020-12-20)
+<!-- latest_release 17.0.4 -->
+## [v17.0.4](https://github.com/chef/chef/tree/v17.0.4) (2020-12-22)
 
 #### Merged Pull Requests
-- Fixed cron_d resource ignoring sensitive property in Chef 17 [#10767](https://github.com/chef/chef/pull/10767) ([axl89](https://github.com/axl89))
+- Pull in the new FFI we need for M1 Macs [#10772](https://github.com/chef/chef/pull/10772) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in the new FFI we need for M1 Macs [#10772](https://github.com/chef/chef/pull/10772) ([tas50](https://github.com/tas50)) <!-- 17.0.4 -->
 - Fixed cron_d resource ignoring sensitive property in Chef 17 [#10767](https://github.com/chef/chef/pull/10767) ([axl89](https://github.com/axl89)) <!-- 17.0.3 -->
 - Remove EOL RHEL 6 32bit builds [#10721](https://github.com/chef/chef/pull/10721) ([tas50](https://github.com/tas50)) <!-- 17.0.2 -->
 - Chef 17: Assume Rubygems 1.8 in the rubygems provider / specs [#10379](https://github.com/chef/chef/pull/10379) ([tas50](https://github.com/tas50)) <!-- 17.0.1 -->
