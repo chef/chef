@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 4beb76511e5e3e414bb88942c75f107eb56a9aa1
+  revision: d50b12c4b789910ce39bcfbee8b59cf793ca6b0b
   branch: master
   specs:
-    chefstyle (1.5.7)
-      rubocop (= 1.5.2)
+    chefstyle (1.5.8)
+      rubocop (= 1.6.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -178,9 +178,9 @@ GEM
       multipart-post (>= 1.2, < 3)
     fauxhai-ng (8.6.0)
       net-ssh
-    ffi (1.13.1)
-    ffi (1.13.1-x64-mingw32)
-    ffi (1.13.1-x86-mingw32)
+    ffi (1.14.2)
+    ffi (1.14.2-x64-mingw32)
+    ffi (1.14.2-x86-mingw32)
     ffi-libarchive (1.0.4)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -284,9 +284,9 @@ GEM
     public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
-    rake (13.0.1)
+    rake (13.0.3)
     rb-readline (0.5.5)
-    regexp_parser (2.0.0)
+    regexp_parser (2.0.1)
     rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -304,7 +304,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.4)
-    rubocop (1.5.2)
+    rubocop (1.6.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
@@ -342,7 +342,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.2.2)
       winrm-fs (~> 1.0)
-    tty-box (0.6.0)
+    tty-box (0.7.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-cursor (~> 0.7)
