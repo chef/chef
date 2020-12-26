@@ -320,7 +320,7 @@ describe Chef::Knife::Bootstrap do
 
     context "with bootstrap_attribute options" do
       let(:jsonfile) do
-        file = Tempfile.new (["node", ".json"])
+        file = Tempfile.new(["node", ".json"])
         File.open(file.path, "w") { |f| f.puts '{"foo":{"bar":"baz"}}' }
         file
       end

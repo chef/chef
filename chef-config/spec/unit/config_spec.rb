@@ -225,7 +225,7 @@ RSpec.describe ChefConfig::Config do
   end
 
   describe "#var_chef_path" do
-    let (:dirname) { ChefUtils::Dist::Infra::DIR_SUFFIX }
+    let(:dirname) { ChefUtils::Dist::Infra::DIR_SUFFIX }
 
     context "on unix", :unix_only do
       it "var_chef_dir is /var/chef" do

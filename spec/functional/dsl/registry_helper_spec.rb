@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Resource::RegistryKey, :windows_only do
 
-  before (:all) do
+  before(:all) do
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
     ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root', Win32::Registry::KEY_ALL_ACCESS) do |reg|

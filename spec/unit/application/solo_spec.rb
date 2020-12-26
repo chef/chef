@@ -202,7 +202,7 @@ describe Chef::Application::Solo do
       expect(Chef::Config).to receive(:find_chef_repo_path).and_return(root_path)
       app.reconfigure
       expect(Chef::Config.key?(:chef_repo_path)).to be_truthy
-      expect(Chef::Config[:chef_repo_path]).to eq (root_path)
+      expect(Chef::Config[:chef_repo_path]).to eq(root_path)
     end
 
     it "runs chef-client in local mode" do
