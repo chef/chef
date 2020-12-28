@@ -42,7 +42,7 @@ class Chef
 
             result["name"] = node["name"] || node.name
             result["chef_environment"] = node["chef_environment"]
-            ip = (node["cloud"] && node["cloud"]["public_ipv4_addrs"].first) || node["ipaddress"]
+            ip = (node["cloud"] && node["cloud"]["public_ipv4_addrs"]&.first) || node["ipaddress"]
             fqdn = (node["cloud"] && node["cloud"]["public_hostname"]) || node["fqdn"]
             result["ip"] = ip if ip
             result["fqdn"] = fqdn if fqdn
