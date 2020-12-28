@@ -18,13 +18,14 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
+require_relative "core/formatting_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
     class NodeShow < Knife
 
-      include Knife::Core::NodeFormattingOptions
+      include Knife::Core::FormattingOptions
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
