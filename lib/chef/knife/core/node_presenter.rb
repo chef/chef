@@ -23,31 +23,6 @@ class Chef
   class Knife
     module Core
 
-      # This module may be included into a knife subcommand class to automatically
-      # add configuration options used by the NodePresenter
-      module NodeFormattingOptions
-        # @private
-        # Would prefer to do this in a rational way, but can't be done b/c of
-        # Mixlib::CLI's design :(
-        def self.included(includer)
-          includer.class_eval do
-            option :medium_output,
-              short: "-m",
-              long: "--medium",
-              boolean: true,
-              default: false,
-              description: "Include normal attributes in the output"
-
-            option :long_output,
-              short: "-l",
-              long: "--long",
-              boolean: true,
-              default: false,
-              description: "Include all attributes in the output"
-          end
-        end
-      end
-
       # A customized presenter for Chef::Node objects. Supports variable-length
       # output formats for displaying node data
       class NodePresenter < GenericPresenter
