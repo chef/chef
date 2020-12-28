@@ -38,7 +38,7 @@ class Chef
 
         # if we're passed something that looks like a filesystem path, with no source, use it
         #  - require at least one '/' in the path to avoid gem_package "foo" breaking if a file named 'foo' exists in the cwd
-        if new_resource.source.nil? && new_resource.package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(new_resource.package_name)
+        if new_resource.source.nil? && new_resource.package_name.include?(::File::SEPARATOR) && ::File.exist?(new_resource.package_name)
           Chef::Log.trace("No package source specified, but #{new_resource.package_name} exists on the filesystem, copying to package source")
           new_resource.source(new_resource.package_name)
         end

@@ -161,9 +161,9 @@ class Chef
               case line
               when /^#{Regexp.escape(var_name)}="(\w+)"/
                 enabled_state_found!
-                if $1 =~ /^yes$/i
+                if $1.casecmp?("yes")
                   current_resource.enabled true
-                elsif $1 =~ /^(no|none)$/i
+                elsif $1.casecmp?("no") || $1.casecmp?("none")
                   current_resource.enabled false
                 end
               end

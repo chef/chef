@@ -103,7 +103,7 @@ class Chef::Util::DSC
     end
 
     def whatif_not_supported?(dsc_exception_output)
-      !! (dsc_exception_output.gsub(/[\n]+/, "").gsub(/\s+/, " ") =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
+      !! (dsc_exception_output.gsub(/\n+/, "").gsub(/\s+/, " ") =~ /A parameter cannot be found that matches parameter name 'Whatif'/i)
     end
 
     def dsc_module_import_failure?(command_output)
