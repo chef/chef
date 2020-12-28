@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.9 -->
-## [v17.0.9](https://github.com/chef/chef/tree/v17.0.9) (2020-12-28)
+<!-- latest_release 17.0.10 -->
+## [v17.0.10](https://github.com/chef/chef/tree/v17.0.10) (2020-12-28)
 
 #### Merged Pull Requests
-- Refactor the code for windows_security_policy resource [#10699](https://github.com/chef/chef/pull/10699) ([chef-davin](https://github.com/chef-davin))
+- Fix knife status json output for EC2 instance with no public IP. [#10781](https://github.com/chef/chef/pull/10781) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix knife status json output for EC2 instance with no public IP. [#10781](https://github.com/chef/chef/pull/10781) ([phiggins](https://github.com/phiggins)) <!-- 17.0.10 -->
 - Refactor the code for windows_security_policy resource [#10699](https://github.com/chef/chef/pull/10699) ([chef-davin](https://github.com/chef-davin)) <!-- 17.0.9 -->
 - Cleanup some more disabled style cops [#10780](https://github.com/chef/chef/pull/10780) ([tas50](https://github.com/tas50)) <!-- 17.0.8 -->
 - Resolve Lint/ParenthesesAsGroupedExpression warnings [#10779](https://github.com/chef/chef/pull/10779) ([tas50](https://github.com/tas50)) <!-- 17.0.7 -->
