@@ -18,15 +18,9 @@ Lint/AssignmentInCondition:
   Enabled: false
 Lint/AmbiguousBlockAssociation:
   Enabled: false
-Lint/RedundantSplatExpansion:
-  Enabled: false
 Lint/ShadowingOuterLocalVariable:
   Enabled: false
-Lint/EmptyWhen:
-  Enabled: false
 Lint/IneffectiveAccessModifier:
-  Enabled: false
-Lint/ShadowedException:
   Enabled: false
 
 # set additional paths

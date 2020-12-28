@@ -88,6 +88,7 @@ class Chef::Util::DSC
         when FalseClass
           switch_present = false
         when TrueClass
+          # nothing
         when String
           switch_argument = escape_string_parameter_value(switch_value)
         else
