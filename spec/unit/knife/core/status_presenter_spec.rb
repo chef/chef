@@ -30,13 +30,13 @@ describe Chef::Knife::Core::StatusPresenter do
     let(:result) { JSON.parse(presenter.summarize_json([node])).first }
 
     it "uses the first of public_ipv4_addrs when present" do
-      node.automatic_attrs["cloud"] = {"public_ipv4_addrs" => ["2.2.2.2"]}
+      node.automatic_attrs["cloud"] = { "public_ipv4_addrs" => ["2.2.2.2"] }
 
       expect(result["ip"]).to eq("2.2.2.2")
     end
 
     it "falls back to ipaddress when public_ipv4_addrs is empty" do
-      node.automatic_attrs["cloud"] = {"public_ipv4_addrs" => []}
+      node.automatic_attrs["cloud"] = { "public_ipv4_addrs" => [] }
 
       expect(result["ip"]).to eq("127.0.0.1")
     end
