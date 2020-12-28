@@ -58,6 +58,9 @@ class Chef
       # correctly displaying version upgrades.  that means there are 3 different arrays which must be
       # loaded by the subclass:  candidate_version, magic_version and current_resource.version.
       #
+      # NOTE: magic_version is a terrible name, but I couldn't think of anything better, at least this
+      #       way it stands out clearly.
+      #
       subclass_directive :use_magic_version
 
       #
