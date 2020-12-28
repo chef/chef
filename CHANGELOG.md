@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.5 -->
-## [v17.0.5](https://github.com/chef/chef/tree/v17.0.5) (2020-12-22)
+<!-- latest_release 17.0.6 -->
+## [v17.0.6](https://github.com/chef/chef/tree/v17.0.6) (2020-12-28)
 
 #### Merged Pull Requests
-- Remove support for Ubuntu 16.04 [#10765](https://github.com/chef/chef/pull/10765) ([tas50](https://github.com/tas50))
+- Misc minor perf bumps [#10773](https://github.com/chef/chef/pull/10773) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Misc minor perf bumps [#10773](https://github.com/chef/chef/pull/10773) ([tas50](https://github.com/tas50)) <!-- 17.0.6 -->
 - Remove support for Ubuntu 16.04 [#10765](https://github.com/chef/chef/pull/10765) ([tas50](https://github.com/tas50)) <!-- 17.0.5 -->
 - Pull in the new FFI we need for M1 Macs [#10772](https://github.com/chef/chef/pull/10772) ([tas50](https://github.com/tas50)) <!-- 17.0.4 -->
 - Fixed cron_d resource ignoring sensitive property in Chef 17 [#10767](https://github.com/chef/chef/pull/10767) ([axl89](https://github.com/axl89)) <!-- 17.0.3 -->
