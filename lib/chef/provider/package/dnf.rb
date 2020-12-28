@@ -225,22 +225,22 @@ class Chef
         def magical_version(index)
           @magical_version ||= []
           @magical_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, version: safe_version_array[index], arch: safe_arch_array[index], options: options)
-                                        else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
-                                        end
+                                        python_helper.package_query(:whatinstalled, available_version(index).name, version: safe_version_array[index], arch: safe_arch_array[index], options: options)
+                                      else
+                                        python_helper.package_query(:whatinstalled, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
+                                      end
           @magical_version[index]
         end
 
-         def current_version(index)
-           @current_version ||= []
-           @current_version[index] ||= if new_resource.source
-                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
-                                         else
-                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
-                                         end
-           @current_version[index]
-         end
+        def current_version(index)
+          @current_version ||= []
+          @current_version[index] ||= if new_resource.source
+                                        python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
+                                      else
+                                        python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
+                                      end
+          @current_version[index]
+        end
 
         # cache flushing is accomplished by simply restarting the python helper.  this produces a roughly
         # 15% hit to the runtime of installing/removing/upgrading packages.  correctly using multipackage
