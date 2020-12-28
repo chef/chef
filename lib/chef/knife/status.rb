@@ -68,11 +68,11 @@ class Chef
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_by_mins]
-          hidemins = config[:hide_by_mins].to_i
+          hide_by_mins = config[:hide_by_mins].to_i
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - hidemins * 60)} TO #{time}]"
+          @query << "NOT ohai_time:[#{(time - hide_by_mins * 60)} TO #{time}]"
         end
 
         @query = @query.empty? ? "*:*" : @query
