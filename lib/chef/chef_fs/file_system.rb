@@ -292,7 +292,7 @@ class Chef
                     end
                   end
                 else
-                  ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                  ui.output("Not deleting extra entry #{dest_path} (purge is off)") if ui
                 end
               end
 

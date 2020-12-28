@@ -12,8 +12,6 @@ Lint/UselessAssignment:
   Enabled: false
 Lint/DeprecatedClassMethods:
   Enabled: false
-Lint/ParenthesesAsGroupedExpression:
-  Enabled: false
 Lint/AmbiguousRegexpLiteral:
   Enabled: false
 Lint/AssignmentInCondition:

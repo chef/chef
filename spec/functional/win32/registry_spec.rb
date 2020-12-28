@@ -322,7 +322,7 @@ describe "Chef::Win32::Registry", :windows_only do
   end
 
   describe "delete_key" do
-    before (:all) do
+    before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
       ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg["Apple", Win32::Registry::REG_MULTI_SZ] = %w{Red Juicy}
