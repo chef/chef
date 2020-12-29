@@ -99,7 +99,7 @@ steps:
 - label: "Functional CentOS 7 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - yum install -y crontabs e2fsprogs util-linux
+    - yum install -y crontabs e2fsprogs
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -169,7 +169,7 @@ steps:
 - label: "Functional Fedora :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - yum install -y crontabs e2fsprogs util-linux
+    - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
