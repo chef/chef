@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.14 -->
-## [v17.0.14](https://github.com/chef/chef/tree/v17.0.14) (2020-12-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Removed unused rubygems from the omnibus overrides file [#10788](https://github.com/chef/chef/pull/10788) ([tas50](https://github.com/tas50))
+- Don&#39;t install util-linux into the containers in CI [#10787](https://github.com/chef/chef/pull/10787) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t install util-linux into the containers in CI [#10787](https://github.com/chef/chef/pull/10787) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Removed unused rubygems from the omnibus overrides file [#10788](https://github.com/chef/chef/pull/10788) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Stop updating bundler in CI [#10786](https://github.com/chef/chef/pull/10786) ([tas50](https://github.com/tas50)) <!-- 17.0.13 -->
 - Fix dnf_package version and arch property support and idempotency [#9847](https://github.com/chef/chef/pull/9847) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.12 -->
