@@ -409,11 +409,11 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen: Ubuntu 20.10"
+- label: "Kitchen: Ubuntu 21.04"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2010
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2104
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
