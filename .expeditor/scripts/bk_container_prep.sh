@@ -1,6 +1,13 @@
 # This script gets a container ready to run our various tests in BuildKite
 
-echo "--- preparing..."
+echo "--- Container Config..."
+
+echo "ruby version:"
+ruby -v
+echo "bundler version:"
+bundler -v
+
+echo "--- Preparing Container..."
 
 export FORCE_FFI_YAJL="ext"
 export CHEF_LICENSE="accept-no-persist"
