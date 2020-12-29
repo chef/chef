@@ -20,7 +20,6 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
@@ -33,13 +32,6 @@ verifier:
   format: progress
 
 platforms:
-- name: amazonlinux
-  driver:
-    image: dokken/amazonlinux
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
 - name: amazonlinux-2
   driver:
     image: dokken/amazonlinux-2
