@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.11 -->
-## [v17.0.11](https://github.com/chef/chef/tree/v17.0.11) (2020-12-29)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Cleanup knife status [#10782](https://github.com/chef/chef/pull/10782) ([phiggins](https://github.com/phiggins))
+- Stub http requests in rubygems tests. [#10761](https://github.com/chef/chef/pull/10761) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stub http requests in rubygems tests. [#10761](https://github.com/chef/chef/pull/10761) ([phiggins](https://github.com/phiggins)) <!-- 17.0.11 -->
 - Cleanup knife status [#10782](https://github.com/chef/chef/pull/10782) ([phiggins](https://github.com/phiggins)) <!-- 17.0.11 -->
 - Fix knife status json output for EC2 instance with no public IP. [#10781](https://github.com/chef/chef/pull/10781) ([phiggins](https://github.com/phiggins)) <!-- 17.0.10 -->
 - Refactor the code for windows_security_policy resource [#10699](https://github.com/chef/chef/pull/10699) ([chef-davin](https://github.com/chef-davin)) <!-- 17.0.9 -->
