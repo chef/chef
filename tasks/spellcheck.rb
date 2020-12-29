@@ -17,12 +17,7 @@
 
 namespace :spellcheck do
   task run: :prereqs do
-    sh 'cspell "**/*"'
-  end
-
-  desc "List the unique unrecognized words in the project."
-  task unknown_words: :prereqs do
-    sh 'cspell "**/*" --wordsOnly --no-summary | sort | uniq'
+    sh 'cspell lint --no-progress "**/*"'
   end
 
   task prereqs: %i{cspell_check config_check fetch_common}
