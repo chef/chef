@@ -8,7 +8,7 @@ echo $PRETTY_NAME
 echo "ruby version:"
 ruby -v
 echo "bundler version:"
-bundler -v
+bundle -v
 
 echo "--- Preparing Container..."
 

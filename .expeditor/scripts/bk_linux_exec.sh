@@ -32,9 +32,9 @@ echo "--- Config information"
 echo "!!!! RUBY VERSION !!!!"
 ruby --version
 echo "!!!! BUNDLER LOCATION !!!!"
-which bundler
+which bundle
 echo "!!!! BUNDLER VERSION !!!!"
-bundler -v
+bundle -v
 echo "!!!! DOCKER VERSION !!!!"
 docker version
 echo "!!!! DOCKER STATUS !!!!"
