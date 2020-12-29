@@ -55,6 +55,14 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
+- name: debian-11
+  driver:
+    image: dokken/debian-11
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
 - name: centos-6
   driver:
     image: dokken/centos-6

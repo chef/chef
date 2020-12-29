@@ -470,6 +470,21 @@ steps:
         privileged: true
         single-use: true
 
+- label: "Kitchen: Debian 11"
+  commands:
+    - .expeditor/scripts/bk_linux_exec.sh
+    - cd kitchen-tests
+    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-11
+  artifact_paths:
+    - $PWD/.kitchen/logs/kitchen.log
+  env:
+      KITCHEN_YAML: kitchen.yml
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
 - label: "Kitchen: CentOS 6"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
