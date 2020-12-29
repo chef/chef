@@ -11,11 +11,8 @@ if [ -f /etc/debian_version ]; then
   touch /etc/network/interfaces
 fi
 
-# make sure we have the omnibus_overrides specified version of rubygems / bundler
-echo "--- Install proper bundler"
-gem uninstall bundler -a -x || true
-gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
-bundle --version
+
+# remove default bundler config if there is one
 rm -f .bundle/config
 
 echo "+++ Run tests"
