@@ -12,7 +12,7 @@ $Plan = 'chef-infra-client'
 
 Write-Host "--- :8ball: :windows: Verifying $Plan"
 
-powershell -File "./scripts/ci/ensure-minimum-viable-hab.ps1"
+powershell -File "./.expeditor/scripts/ensure-minimum-viable-hab.ps1"
 if (-not $?) { throw "Could not ensure the minimum hab version required is installed." }
 
 Write-Host "--- :key: Generating fake origin key"
