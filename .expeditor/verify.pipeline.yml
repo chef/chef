@@ -244,8 +244,8 @@ steps:
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - gem install bundler -v 2.1.4 # match Ruby 2.7 bundler
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake style
   expeditor:
@@ -255,8 +255,8 @@ steps:
 
 - label: "Integration :ruby: 2.6"
   commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - gem install bundler -v 2.1.4 # match Ruby 2.7 bundler
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
@@ -267,10 +267,10 @@ steps:
 
 - label: "Functional :ruby: 2.6"
   commands:
+    - gem install bundler -v 2.1.4 # match Ruby 2.7 bundler
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales net-tools # needed for functional tests to pass
-    - gem install bundler -v 2.1.4 # match Ruby 2.7 bundler
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
@@ -281,8 +281,8 @@ steps:
 
 - label: "Unit :ruby: 2.6"
   commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - gem install bundler -v 2.1.4 # match Ruby 2.7 bundler
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs

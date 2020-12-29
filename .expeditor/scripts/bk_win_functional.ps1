@@ -8,8 +8,6 @@ Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyC
 $ErrorActionPreference = 'Stop'
 
 Write-Output "--- Enable Ruby 2.7"
-ruby -v
-if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 
 Write-Output "Add Uru to Environment PATH"
 $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
@@ -19,6 +17,8 @@ Write-Output "Register Installed Ruby Version 2.7 With Uru"
 Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -ArgumentList 'admin add C:\ruby27\bin' -Wait
 uru 271
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
+ruby -v
+if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 
 Write-Output "--- configure winrm"
 winrm quickconfig -q
