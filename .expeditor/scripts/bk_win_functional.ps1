@@ -24,7 +24,8 @@ Write-Output "--- configure winrm"
 winrm quickconfig -q
 
 Write-Output "--- bundle install"
-bundle install --jobs=3 --retry=3 --without omnibus_package
+bundle config set --local without 'omnibus_package'
+bundle install --jobs=3 --retry=3
 if (-not $?) { throw "Unable to install gem dependencies" }
 
 Write-Output "+++ bundle exec rake spec:functional"
