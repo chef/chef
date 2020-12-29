@@ -19,478 +19,298 @@ require "spec_helper"
 require "chef/mixin/powershell_exec"
 require "chef/resource/windows_certificate"
 
-module WindowsCertificateHelper
+describe Chef::Resource::WindowsCertificate, :windows_only do
   include Chef::Mixin::PowershellExec
 
-  def create_store(store)
-    path = "Cert:\\LocalMachine\\" + store
-    command = <<~EOC
-      New-Item -Path #{path}
+  def create_store
+    powershell_exec <<~EOC
+      New-Item -Path Cert:\\LocalMachine\\#{store}
     EOC
-    powershell_exec(command)
   end
 
-  def cleanup(store)
-    path = "Cert:\\LocalMachine\\" + store
-    command = <<~EOC
-      Remove-Item -Path #{path} -Recurse
+  def delete_store
+    powershell_exec <<~EOC
+      Remove-Item -Path Cert:\\LocalMachine\\#{store} -Recurse
     EOC
-    powershell_exec(command)
   end
 
-  def no_of_certificates
-    path = "Cert:\\LocalMachine\\" + store
-    # Seems weird that we have to call dir twice right?
-    # The powershell pki module cache the last dir in module session state
-    # Issuing dir with a different arg (-Force) seems to refresh that state.
-    command = <<~EOC
-      dir #{path} -Force | Out-Null
-      (dir #{path} | measure).Count
+  def certificate_count
+    powershell_exec(<<~EOC).result.to_i
+      (Get-ChildItem -Force -Path Cert:\\LocalMachine\\#{store} | measure).Count
     EOC
-    powershell_exec(command).result.to_i
   end
-end
 
-describe Chef::Resource::WindowsCertificate, :windows_only do
-  include WindowsCertificateHelper
-
-  let(:stdout) { StringIO.new }
-  let(:username) { "ChefFunctionalTest" }
-  let(:node) { Chef::Node.new }
-  let(:events) { Chef::EventDispatch::Dispatcher.new }
-  let(:run_context) { Chef::RunContext.new(node, {}, events) }
-  let(:new_resource) { Chef::Resource::WindowsCertificate.new(username, run_context) }
   let(:password) { "P@ssw0rd!" }
   let(:store) { "Chef-Functional-Test" }
-  let(:certificate_path) { File.expand_path(File.join(CHEF_SPEC_DATA, "windows_certificates")) }
-  let(:cer_path) { File.join(certificate_path, "test.cer") }
-  let(:base64_path) { File.join(certificate_path, "base64_test.cer") }
-  let(:pem_path) { File.join(certificate_path, "test.pem") }
-  let(:p7b_path) { File.join(certificate_path, "test.p7b") }
-  let(:pfx_path) { File.join(certificate_path, "test.pfx") }
-  let(:out_path) { File.join(certificate_path, "testout.pem") }
+  let(:cer_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.cer") }
+  let(:base64_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "base64_test.cer") }
+  let(:pem_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.pem") }
+  let(:p7b_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.p7b") }
+  let(:pfx_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "test.pfx") }
   let(:tests_thumbprint) { "e45a4a7ff731e143cf20b8bfb9c7c4edd5238bb3" }
-  let(:other_cer_path) { File.join(certificate_path, "othertest.cer") }
+  let(:other_cer_path) { File.join(CHEF_SPEC_DATA, "windows_certificates", "othertest.cer") }
   let(:others_thumbprint) { "6eae1deefaf59daf1a97c9ceeff39c98b3da38cb" }
   let(:p7b_thumbprint) { "f867e25b928061318ed2c36ca517681774b06260" }
   let(:p7b_nested_thumbprint) { "dc395eae6be5b69951b8b6e1090cfc33df30d2cd" }
 
-  before do
-    opts = { store_name: store }
-    key = :store_name
-    to_be = ["TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER",
-             "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING",
-             "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST",
-             "DISALLOWED"]
+  let(:resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+    Chef::Resource::WindowsCertificate.new("ChefFunctionalTest", run_context).tap do |r|
+      r.store_name = store
+    end
+  end
 
-    # Byepassing the validation so that we may create a custom store
+  before do
+    # Bypass validation of the store name so we can use a fake test store.
     allow_any_instance_of(Chef::Mixin::ParamsValidate)
       .to receive(:_pv_equal_to)
-      .with(opts, key, to_be)
+      .with({ store_name: store }, :store_name, anything)
       .and_return(true)
 
-    # Creating a custom store for the testing
-    create_store(store)
-
-    allow(Chef::Log).to receive(:info) do |msg|
-      stdout.puts(msg)
-    end
+    create_store
   end
 
-  after { cleanup(store) }
+  after { delete_store }
 
-  subject(:win_certificate) do
-    new_resource.store_name = store
-    new_resource
-  end
-
-  it "Initially there are no certificates" do
-    expect(no_of_certificates).to eq(0)
-  end
-
-  describe "action :create" do
-    before do
-      win_certificate.source = cer_path
-      win_certificate.run_action(:create)
+  describe "action: create" do
+    it "starts with no certificates" do
+      expect(certificate_count).to eq(0)
     end
 
-    context "Adding a certificate" do
-      it "Imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
+    it "can add a certificate idempotently" do
+      resource.source = cer_path
+      resource.run_action(:create)
 
-      it "Converges while addition" do
-        expect(win_certificate).to be_updated_by_last_action
-      end
+      expect(certificate_count).to eq(1)
+      expect(resource).to be_updated_by_last_action
+
+      # Adding the cert again should have no effect
+      resource.run_action(:create)
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
+
+      # Adding the cert again with a different format should have no effect
+      resource.source = pem_path
+      resource.run_action(:create)
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
+
+      # Adding another cert should work correctly
+      resource.source = other_cer_path
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(2)
+      expect(resource).to be_updated_by_last_action
     end
 
-    context "Again adding the same certificate" do
-      before do
-        win_certificate.run_action(:create)
-      end
-      it "Does not imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Idempotent: Does not converge while addition" do
-        expect(no_of_certificates).to eq(1)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
+    it "can add a base64 encoded certificate idempotently" do
+      resource.source = base64_path
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(1)
+
+      resource.run_action(:create)
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
     end
 
-    context "Again adding the same certificate of other format" do
-      before do
-        win_certificate.source = pem_path
-        win_certificate.run_action(:create)
-      end
-      it "Does not imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Idempotent: Does not converge while addition" do
-        expect(no_of_certificates).to eq(1)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
+    it "can add a PEM certificate idempotently" do
+      resource.source = pem_path
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(1)
+
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
     end
 
-    context "Adding another certificate" do
-      before do
-        win_certificate.source = other_cer_path
-        win_certificate.run_action(:create)
-      end
-      it "Imports certificate into store" do
-        expect(no_of_certificates).to eq(2)
-      end
-      it "Converges while addition" do
-        expect(no_of_certificates).to eq(2)
-        expect(win_certificate).to be_updated_by_last_action
-      end
-    end
-  end
+    it "can add a P7B certificate idempotently" do
+      resource.source = p7b_path
+      resource.run_action(:create)
 
-  describe "Works for various formats" do
-    context "Adds CER" do
-      before do
-        win_certificate.source = cer_path
-        win_certificate.run_action(:create)
-      end
-      it "Imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Idempotent: Does not converge while adding again" do
-        win_certificate.run_action(:create)
-        expect(no_of_certificates).to eq(1)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
+      # A P7B cert includes nested certs
+      expect(certificate_count).to eq(3)
+
+      resource.run_action(:create)
+
+      expect(resource).not_to be_updated_by_last_action
+      expect(certificate_count).to eq(3)
     end
 
-    context "Adds Base64 Encoded CER" do
-      before do
-        win_certificate.source = base64_path
-        win_certificate.run_action(:create)
-      end
-      it "Imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Idempotent: Does not converge while adding again" do
-        win_certificate.run_action(:create)
-        expect(no_of_certificates).to eq(1)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
+    it "can add a PFX certificate idempotently with a valid password" do
+      resource.source = pfx_path
+      resource.pfx_password = password
+      resource.run_action(:create)
+
+      expect(certificate_count).to eq(1)
+
+      resource.run_action(:create)
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
     end
 
-    context "Adds PEM" do
-      before do
-        win_certificate.source = pem_path
-        win_certificate.run_action(:create)
-      end
-      it "Imports certificate into store" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Idempotent: Does not converge while adding again" do
-        win_certificate.run_action(:create)
-        expect(no_of_certificates).to eq(1)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
-    end
+    it "raises an error when adding a PFX certificate with an invalid password" do
+      resource.source = pfx_path
+      resource.pfx_password = "Invalid password"
 
-    context "Adds P7B" do
-      before do
-        win_certificate.source = p7b_path
-        win_certificate.run_action(:create)
-      end
-      it "Imports certificate into store" do
-        expect(no_of_certificates).not_to eq(0)
-      end
-      it "Idempotent: Does not converge while adding again" do
-        win_certificate.run_action(:create)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
-      it "Nested certificates are also imported" do
-        expect(no_of_certificates).to eq(3)
-      end
-    end
-
-    context "Adds PFX" do
-      context "With valid password" do
-        before do
-          win_certificate.source = pfx_path
-          win_certificate.pfx_password = password
-          win_certificate.run_action(:create)
-        end
-        it "Imports certificate into store" do
-          expect(no_of_certificates).to eq(1)
-        end
-        it "Idempotent: Does not converge while adding again" do
-          win_certificate.run_action(:create)
-          expect(no_of_certificates).to eq(1)
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
-      end
-
-      context "With Invalid password" do
-        before do
-          win_certificate.source = pfx_path
-          win_certificate.pfx_password = "Invalid password"
-        end
-        it "Raises an error" do
-          expect { win_certificate.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
-        end
-      end
+      expect { resource.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
     end
   end
 
   describe "action: verify" do
-    context "When a certificate is not present" do
+    it "fails with no certificates in the store" do
+      expect(Chef::Log).to receive(:info).with("Certificate not found")
+
+      resource.source = tests_thumbprint
+      resource.run_action(:verify)
+
+      expect(resource).not_to be_updated_by_last_action
+    end
+
+    context "with a certificate in the store" do
       before do
-        win_certificate.source = tests_thumbprint
-        win_certificate.run_action(:verify)
+        resource.source = cer_path
+        resource.run_action(:create)
       end
-      it "Initial check if certificate is not present" do
-        expect(no_of_certificates).to eq(0)
+
+      it "succeeds with a valid thumbprint" do
+        expect(Chef::Log).to receive(:info).with("Certificate is valid")
+
+        resource.source = tests_thumbprint
+        resource.run_action(:verify)
+
+        expect(resource).not_to be_updated_by_last_action
       end
-      it "Displays correct message" do
-        expect(stdout.string.strip).to eq("Certificate not found")
-      end
-      it "Does not converge while verifying" do
-        expect(win_certificate).not_to be_updated_by_last_action
+
+      it "fails with an invalid thumbprint" do
+        expect(Chef::Log).to receive(:info).with("Certificate not found")
+
+        resource.source = others_thumbprint
+        resource.run_action(:verify)
+
+        expect(resource).not_to be_updated_by_last_action
       end
     end
 
-    context "When a certificate is present" do
+    context "with a nested certificate in the store" do
       before do
-        win_certificate.source = cer_path
-        win_certificate.run_action(:create)
+        resource.source = p7b_path
+        resource.run_action(:create)
       end
 
-      context "For a valid thumbprint" do
-        before do
-          win_certificate.source = tests_thumbprint
-          win_certificate.run_action(:verify)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(1)
-        end
-        it "Displays correct message" do
-          expect(stdout.string.strip).to eq("Certificate is valid")
-        end
-        it "Does not converge while verifying" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
+      it "succeeds with the main certificate's thumbprint" do
+        expect(Chef::Log).to receive(:info).with("Certificate is valid")
+
+        resource.source = p7b_thumbprint
+        resource.run_action(:verify)
+
+        expect(resource).not_to be_updated_by_last_action
       end
 
-      context "For an invalid thumbprint" do
-        before do
-          win_certificate.source = others_thumbprint
-          win_certificate.run_action(:verify)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(1)
-        end
-        it "Displays correct message" do
-          expect(stdout.string.strip).to eq("Certificate not found")
-        end
-        it "Does not converge while verifying" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
-      end
-    end
+      it "succeeds with the nested certificate's thumbprint" do
+        expect(Chef::Log).to receive(:info).with("Certificate is valid")
 
-    context "When multiple certificates are present" do
-      before do
-        win_certificate.source = p7b_path
-        win_certificate.run_action(:create)
+        resource.source = p7b_nested_thumbprint
+        resource.run_action(:verify)
+
+        expect(resource).not_to be_updated_by_last_action
       end
 
-      context "With main certificate's thumbprint" do
-        before do
-          win_certificate.source = p7b_thumbprint
-          win_certificate.run_action(:verify)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(3)
-        end
-        it "Displays correct message" do
-          expect(stdout.string.strip).to eq("Certificate is valid")
-        end
-        it "Does not converge while verifying" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
-      end
+      it "fails with an invalid thumbprint" do
+        expect(Chef::Log).to receive(:info).with("Certificate not found")
 
-      context "With nested certificate's thumbprint" do
-        before do
-          win_certificate.source = p7b_nested_thumbprint
-          win_certificate.run_action(:verify)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(3)
-        end
-        it "Displays correct message" do
-          expect(stdout.string.strip).to eq("Certificate is valid")
-        end
-        it "Does not converge while verifying" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
-      end
+        resource.source = others_thumbprint
+        resource.run_action(:verify)
 
-      context "For an invalid thumbprint" do
-        before do
-          win_certificate.source = others_thumbprint
-          win_certificate.run_action(:verify)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(3)
-        end
-        it "Displays correct message" do
-          expect(stdout.string.strip).to eq("Certificate not found")
-        end
-        it "Does not converge while verifying" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
+        expect(resource).not_to be_updated_by_last_action
       end
     end
   end
 
   describe "action: fetch" do
-    context "When a certificate is not present" do
-      before do
-        win_certificate.source = tests_thumbprint
-        win_certificate.run_action(:fetch)
-      end
-      it "Initial check if certificate is not present" do
-        expect(no_of_certificates).to eq(0)
-      end
-      it "Does not show any content" do
-        expect(stdout.string.strip).to be_empty
-      end
-      it "Does not converge while fetching" do
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
+    it "does nothing with no certificates in the store" do
+      expect(Chef::Log).not_to receive(:info)
+
+      resource.source = tests_thumbprint
+      resource.run_action(:fetch)
+
+      expect(resource).not_to be_updated_by_last_action
     end
 
-    context "When a certificate is present" do
+    context "with a certificate in the store" do
       before do
-        win_certificate.source = cer_path
-        win_certificate.run_action(:create)
+        resource.source = cer_path
+        resource.run_action(:create)
       end
 
-      after do
-        if File.exist?(out_path)
-          File.delete(out_path)
+      it "succeeds with a valid thumbprint" do
+        resource.source = tests_thumbprint
+
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "test.pem")
+          expect(Chef::Log).to receive(:info).with("Certificate export in #{path}")
+
+          resource.cert_path = path
+          resource.run_action(:fetch)
+
+          expect(File.exist?(path)).to be_truthy
         end
+
+        expect(resource).not_to be_updated_by_last_action
       end
 
-      context "For a valid thumbprint" do
-        before do
-          win_certificate.source = tests_thumbprint
-          win_certificate.cert_path = out_path
-          win_certificate.run_action(:fetch)
-        end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(1)
-        end
-        it "Stores Certificate content at given path" do
-          expect(File.exist?(out_path)).to be_truthy
-        end
-        it "Does not converge while fetching" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
-      end
+      it "fails with an invalid thumbprint" do
+        expect(Chef::Log).not_to receive(:info)
 
-      context "For an invalid thumbprint" do
-        before do
-          win_certificate.source = others_thumbprint
-          win_certificate.cert_path = out_path
-          win_certificate.run_action(:fetch)
+        resource.source = others_thumbprint
+
+        Dir.mktmpdir do |dir|
+          path = File.join(dir, "test.pem")
+
+          resource.cert_path = path
+          resource.run_action(:fetch)
+
+          expect(File.exist?(path)).to be_falsy
         end
-        it "Initial check if certificate is present" do
-          expect(no_of_certificates).to eq(1)
-        end
-        it "Does not show any content" do
-          expect(stdout.string.strip).to be_empty
-        end
-        it "Does not store certificate content at given path" do
-          expect(File.exist?(out_path)).to be_falsy
-        end
-        it "Does not converge while fetching" do
-          expect(win_certificate).not_to be_updated_by_last_action
-        end
+
+        expect(resource).not_to be_updated_by_last_action
       end
     end
   end
 
   describe "action: delete" do
-    context "When a certificate is not present" do
-      before do
-        win_certificate.source = tests_thumbprint
-        win_certificate.run_action(:delete)
-      end
-      it "Initial check if certificate is not present" do
-        expect(no_of_certificates).to eq(0)
-      end
-      it "Does not delete any certificate" do
-        expect(stdout.string.strip).to be_empty
-      end
+    it "does nothing when attempting to delete a certificate that doesn't exist" do
+      expect(Chef::Log).to receive(:debug).with("Certificate not found")
+
+      resource.source = tests_thumbprint
+      resource.run_action(:delete)
     end
 
-    context "When a certificate is present" do
-      before do
-        win_certificate.source = cer_path
-        win_certificate.run_action(:create)
-      end
-      before { win_certificate.source = tests_thumbprint }
-      it "Initial check if certificate is present" do
-        expect(no_of_certificates).to eq(1)
-      end
-      it "Deletes the certificate" do
-        win_certificate.run_action(:delete)
-        expect(no_of_certificates).to eq(0)
-      end
-      it "Converges while deleting" do
-        win_certificate.run_action(:delete)
-        expect(win_certificate).to be_updated_by_last_action
-      end
-      it "Idempotent: Does not converge while deleting again" do
-        win_certificate.run_action(:delete)
-        win_certificate.run_action(:delete)
-        expect(no_of_certificates).to eq(0)
-        expect(win_certificate).not_to be_updated_by_last_action
-      end
-      it "Deletes the valid certificate" do
-        # Add another certificate"
-        win_certificate.source = other_cer_path
-        win_certificate.run_action(:create)
-        expect(no_of_certificates).to eq(2)
+    it "deletes an existing certificate while leaving other certificates alone" do
+      # Add two certs
+      resource.source = cer_path
+      resource.run_action(:create)
 
-        # Delete previously added certificate
-        win_certificate.source = tests_thumbprint
-        win_certificate.run_action(:delete)
-        expect(no_of_certificates).to eq(1)
+      resource.source = other_cer_path
+      resource.run_action(:create)
 
-        # Verify another certificate still exists
-        win_certificate.source = others_thumbprint
-        win_certificate.run_action(:verify)
-        expect(stdout.string.strip).to eq("Certificate is valid")
-      end
+      # Delete the first cert added
+      resource.source = tests_thumbprint
+      resource.run_action(:delete)
+
+      expect(certificate_count).to eq(1)
+      expect(resource).to be_updated_by_last_action
+
+      resource.run_action(:delete)
+      expect(certificate_count).to eq(1)
+      expect(resource).not_to be_updated_by_last_action
+
+      # Verify second cert still exists
+      expect(Chef::Log).to receive(:info).with("Certificate is valid")
+      resource.source = others_thumbprint
+      resource.run_action(:verify)
     end
   end
 end
