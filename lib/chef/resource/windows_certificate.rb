@@ -69,7 +69,7 @@ class Chef
         description: "The password to access the source if it is a pfx file."
 
       property :private_key_acl, Array,
-        description: "An array of 'domain\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
+        description: "An array of 'domain\\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
 
       property :store_name, String,
         description: "The certificate store to manipulate.",
