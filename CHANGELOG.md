@@ -1,8 +1,9 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.0.12 -->
+## [v17.0.12](https://github.com/chef/chef/tree/v17.0.12) (2020-12-29)
 
 #### Merged Pull Requests
+- Fix dnf_package version and arch property support and idempotency [#9847](https://github.com/chef/chef/pull/9847) ([lamont-granquist](https://github.com/lamont-granquist))
 - Stub http requests in rubygems tests. [#10761](https://github.com/chef/chef/pull/10761) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
@@ -10,6 +11,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix dnf_package version and arch property support and idempotency [#9847](https://github.com/chef/chef/pull/9847) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.12 -->
 - Stub http requests in rubygems tests. [#10761](https://github.com/chef/chef/pull/10761) ([phiggins](https://github.com/phiggins)) <!-- 17.0.11 -->
 - Cleanup knife status [#10782](https://github.com/chef/chef/pull/10782) ([phiggins](https://github.com/phiggins)) <!-- 17.0.11 -->
 - Fix knife status json output for EC2 instance with no public IP. [#10781](https://github.com/chef/chef/pull/10781) ([phiggins](https://github.com/phiggins)) <!-- 17.0.10 -->
