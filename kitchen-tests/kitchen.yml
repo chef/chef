@@ -130,9 +130,9 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
-- name: ubuntu-20.10
+- name: ubuntu-21.04
   driver:
-    image: dokken/ubuntu-20.10
+    image: dokken/ubuntu-21.04
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update
