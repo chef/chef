@@ -2,6 +2,9 @@
 
 echo "--- Container Config..."
 
+source /etc/os-release
+echo $PRETTY_NAME
+
 echo "ruby version:"
 ruby -v
 echo "bundler version:"
