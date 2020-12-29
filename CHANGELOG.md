@@ -3,6 +3,7 @@
 ## Unreleased
 
 #### Merged Pull Requests
+- Replace Ubuntu 20.10 testing with 21.04 [#10790](https://github.com/chef/chef/pull/10790) ([tas50](https://github.com/tas50))
 - Remove Test Kitchen tests for Amazon Linux 201X [#10789](https://github.com/chef/chef/pull/10789) ([tas50](https://github.com/tas50))
 - Ensure we can still install RHEL 7 GCC on RHEL 6 in testing [#10723](https://github.com/chef/chef/pull/10723) ([tas50](https://github.com/tas50))
 - Don&#39;t install util-linux into the containers in CI [#10787](https://github.com/chef/chef/pull/10787) ([tas50](https://github.com/tas50))
@@ -12,6 +13,7 @@
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Replace Ubuntu 20.10 testing with 21.04 [#10790](https://github.com/chef/chef/pull/10790) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Remove Test Kitchen tests for Amazon Linux 201X [#10789](https://github.com/chef/chef/pull/10789) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Ensure we can still install RHEL 7 GCC on RHEL 6 in testing [#10723](https://github.com/chef/chef/pull/10723) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Don&#39;t install util-linux into the containers in CI [#10787](https://github.com/chef/chef/pull/10787) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
