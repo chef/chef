@@ -84,7 +84,7 @@ class Chef
           all_nodes << node
         end
 
-        all_nodes.sort_by! {|n| n["ohai_time"] || 0 }
+        all_nodes.sort_by! { |n| n["ohai_time"] || 0 }
         all_nodes.reverse! if config[:sort_reverse] || config[:sort_status_reverse]
 
         output(all_nodes)
