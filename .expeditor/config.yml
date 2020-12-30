@@ -157,3 +157,51 @@ subscriptions:
   - workload: ruby_gem_published:ffi-libarchive-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:plist-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ffi-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-ssh-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-prompt-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-screen-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:tty-table-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:pastel-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:erubis-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:bcrypt_pbkdf-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:ed25519-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:addressable-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:proxifier-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:syslog-logger-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:uuidtools-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:iniparse-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:net-sftp-*
+    actions:
+      - bash:.expeditor/update_dep.sh
