@@ -309,11 +309,7 @@ class Chef
         # @raise [OpenSSL::PKCS12::PKCS12Error] When incorrect password is provided for PFX certificate
         #
         def fetch_cert_object(ext)
-          contents = if binary_cert?
-                       ::File.binread(new_resource.source)
-                     else
-                       ::File.read(new_resource.source)
-                     end
+          contents = ::File.binread(new_resource.source)
 
           case ext
           when ".pfx"
@@ -328,12 +324,6 @@ class Chef
           else
             OpenSSL::X509::Certificate.new(contents)
           end
-        end
-
-        # @return [Boolean] Whether the certificate file is binary encoded or not
-        #
-        def binary_cert?
-          shell_out!("file -b --mime-encoding #{new_resource.source}").stdout.strip == "binary"
         end
 
         # Imports the certificate object into cert store
