@@ -16,10 +16,10 @@ The importance of our release notes cannot be understated. As developers, we und
 
 #### Overall Release Notes Structure
 
-1. `New Resources`: If we ship new resources, we want to make sure to brag about those resources. Use this section to give the elevator pitch for the new resource, including an example of how it might be used if available.
-2. `Updated Resources`: It's important to let users know about new functionality in resources they may already be using. Cover any important bug fixes or new properties/actions here.
-3. `Major new features`: Document new features with a high level bullet. This is a great opportunity to show off our work and sell users on new workflows.
-4. `Updated InSpec Releases`: We should always call out the updated Chef InSpec release and include a description of new functionality.
+1. `Major new features`: Document new features with a high level bullet. This is a great opportunity to show off our work and sell users on new workflows.
+2. `Updated InSpec Releases`: We should always call out the updated Chef InSpec release and include a description of new functionality.
+3. `New Resources`: If we ship new resources, we want to make sure to brag about those resources. Use this section to give the elevator pitch for the new resource, including an example of how it might be used if available.
+4. `Updated Resources`: It's important to let users know about new functionality in resources they may already be using. Cover any important bug fixes or new properties/actions here.
 5. `Security Updates`: Call out any updated components we are shipping and include links to the CVEs if available.
 
 ### Update the Docs Site
@@ -29,7 +29,7 @@ If there are any new or updated resources, the docs site will need to be updated
 #### Resource Documentation Automation
 
 1. Run `rake docs_site:resources` to generate content to a `docs_site` directory
-2. Compare the relevant generated files with the docs site content in the `chef_master/source` directory. The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
+2. Compare the relevant generated files to the content in the `content/resources` directory within the [chef-web-docs repo](https://github.com/chef/chef-web-docs/). The generated files are missing some content, such as action descriptions, and don't have perfect formatting, so this is a bit of an art form.
 
 ## Release Chef Infra Client
 
@@ -37,11 +37,11 @@ If there are any new or updated resources, the docs site will need to be updated
 
 Chef employees can promote a build to stable from Slack. This is done with expeditor using a chatops command in the following format:
 
-`/expeditor promote chef/chef:master 15.1.9`
+`/expeditor promote chef/chef:master 17.1.9`
 
 or for a previous release branch:
 
-`/expeditor promote chef/chef:chef-14 14.13.9`
+`/expeditor promote chef/chef:chef-16 16.13.9`
 
 ### Announce the Build
 
