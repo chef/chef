@@ -15,26 +15,22 @@
 # limitations under the License.
 #
 
-require_relative "../user"
+require "spec_helper"
 
-class Chef
-  class Resource
-    class User
-      class WindowsUser < Chef::Resource::User
-        unified_mode true
+describe Chef::Resource::User::WindowsUser, "#uid" do
+  let(:resource) { Chef::Resource::User::WindowsUser.new("notarealuser") }
 
-        provides :windows_user
-        provides :user, os: "windows"
+  it "allows a string" do
+    resource.uid "100"
+    expect(resource.uid).to eql(100)
+  end
 
-        property :full_name, String,
-          description: "The full name of the user.",
-          introduced: "14.6"
+  it "allows an integer" do
+    resource.uid 100
+    expect(resource.uid).to eql(100)
+  end
 
-        # Override the property from the parent class to coerce to integer.
-        property :uid, [ String, Integer, NilClass ], # nil for backwards compat
-          description: "The numeric user identifier.",
-          coerce: proc { |n| n && Integer(n) rescue n }
-      end
-    end
+  it "does not allow a hash" do
+    expect { resource.uid({ woot: "i found it" }) }.to raise_error(ArgumentError)
   end
 end
