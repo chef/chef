@@ -67,10 +67,12 @@ class Chef
         default: false
 
       property :uid, [ String, Integer, NilClass ], # nil for backwards compat
-        description: "The numeric user identifier."
+        description: "The numeric user identifier.",
+        coerce: proc { |n| n && Integer(n) }
 
       property :gid, [ String, Integer, NilClass ], # nil for backwards compat
-        description: "The numeric group identifier."
+        description: "The numeric group identifier.",
+        coerce: proc { |n| n && Integer(n) }
 
       alias_method :group, :gid
     end

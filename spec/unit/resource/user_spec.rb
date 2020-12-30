@@ -85,7 +85,7 @@ end
 
     it "allows a string" do
       resource.send(attrib, "100")
-      expect(resource.send(attrib)).to eql("100")
+      expect(resource.send(attrib)).to eql(100)
     end
 
     it "allows an integer" do
@@ -94,7 +94,7 @@ end
     end
 
     it "does not allow a hash" do
-      expect { resource.send(attrib, { woot: "i found it" }) }.to raise_error(ArgumentError)
+      expect { resource.send(attrib, { woot: "i found it" }) }.to raise_error(TypeError)
     end
   end
 
