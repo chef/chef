@@ -18,13 +18,13 @@
 
 require_relative "../knife"
 require_relative "core/status_presenter"
-require_relative "core/node_presenter"
+require_relative "core/formatting_options"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
     class Status < Knife
-      include Knife::Core::NodeFormattingOptions
+      include Knife::Core::FormattingOptions
 
       deps do
         require_relative "../search/query"
@@ -68,11 +68,11 @@ class Chef
         append_to_query("chef_environment:#{config[:environment]}") if config[:environment]
 
         if config[:hide_by_mins]
-          hidemins = config[:hide_by_mins].to_i
+          hide_by_mins = config[:hide_by_mins].to_i
           time = Time.now.to_i
           # AND NOT is not valid lucene syntax, so don't use append_to_query
           @query << " " unless @query.empty?
-          @query << "NOT ohai_time:[#{(time - hidemins * 60)} TO #{time}]"
+          @query << "NOT ohai_time:[#{(time - hide_by_mins * 60)} TO #{time}]"
         end
 
         @query = @query.empty? ? "*:*" : @query
@@ -84,13 +84,10 @@ class Chef
           all_nodes << node
         end
 
-        output(all_nodes.sort do |n1, n2|
-          if config[:sort_reverse] || config[:sort_status_reverse]
-            (n2["ohai_time"] || 0) <=> (n1["ohai_time"] || 0)
-          else
-            (n1["ohai_time"] || 0) <=> (n2["ohai_time"] || 0)
-          end
-        end)
+        all_nodes.sort_by! {|n| n["ohai_time"] || 0 }
+        all_nodes.reverse! if config[:sort_reverse] || config[:sort_status_reverse]
+
+        output(all_nodes)
       end
 
     end

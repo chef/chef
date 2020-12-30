@@ -18,6 +18,7 @@
 
 require_relative "../knife"
 require_relative "core/node_presenter"
+require_relative "core/formatting_options"
 
 class Chef
   class Knife
@@ -32,7 +33,7 @@ class Chef
         require_relative "../search/query"
       end
 
-      include Knife::Core::NodeFormattingOptions
+      include Knife::Core::FormattingOptions
 
       banner "knife search INDEX QUERY (options)"
 
