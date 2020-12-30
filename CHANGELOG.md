@@ -1,20 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.15 -->
-## [v17.0.15](https://github.com/chef/chef/tree/v17.0.15) (2020-12-29)
+<!-- latest_release 17.0.16 -->
+## [v17.0.16](https://github.com/chef/chef/tree/v17.0.16) (2020-12-30)
 
 #### Merged Pull Requests
-- Fix escaping in doc string. [#10793](https://github.com/chef/chef/pull/10793) ([phiggins](https://github.com/phiggins))
-- Add Test Kitchen testing for Debian 11 [#10791](https://github.com/chef/chef/pull/10791) ([tas50](https://github.com/tas50))
-- Replace Ubuntu 20.10 testing with 21.04 [#10790](https://github.com/chef/chef/pull/10790) ([tas50](https://github.com/tas50))
-- Remove Test Kitchen tests for Amazon Linux 201X [#10789](https://github.com/chef/chef/pull/10789) ([tas50](https://github.com/tas50))
-- Ensure we can still install RHEL 7 GCC on RHEL 6 in testing [#10723](https://github.com/chef/chef/pull/10723) ([tas50](https://github.com/tas50))
-- Don&#39;t install util-linux into the containers in CI [#10787](https://github.com/chef/chef/pull/10787) ([tas50](https://github.com/tas50))
+- Consolidate Windows cert tests to improve CI runtime [#10794](https://github.com/chef/chef/pull/10794) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Consolidate Windows cert tests to improve CI runtime [#10794](https://github.com/chef/chef/pull/10794) ([phiggins](https://github.com/phiggins)) <!-- 17.0.16 -->
 - Fix escaping in doc string. [#10793](https://github.com/chef/chef/pull/10793) ([phiggins](https://github.com/phiggins)) <!-- 17.0.15 -->
 - Add Test Kitchen testing for Debian 11 [#10791](https://github.com/chef/chef/pull/10791) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
 - Replace Ubuntu 20.10 testing with 21.04 [#10790](https://github.com/chef/chef/pull/10790) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
