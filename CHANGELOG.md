@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 16.9.4 -->
-## [v16.9.4](https://github.com/chef/chef/tree/v16.9.4) (2020-12-30)
+<!-- latest_release 16.9.5 -->
+## [v16.9.5](https://github.com/chef/chef/tree/v16.9.5) (2020-12-30)
 
 #### Merged Pull Requests
-- Resolve build / test failures now that Chef 16 is the stable relase [#10759](https://github.com/chef/chef/pull/10759) ([tas50](https://github.com/tas50))
+- Various testing backports from master [#10796](https://github.com/chef/chef/pull/10796) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Various testing backports from master [#10796](https://github.com/chef/chef/pull/10796) ([tas50](https://github.com/tas50)) <!-- 16.9.5 -->
 - Resolve build / test failures now that Chef 16 is the stable relase [#10759](https://github.com/chef/chef/pull/10759) ([tas50](https://github.com/tas50)) <!-- 16.9.4 -->
 - Fixed cron_d resource ignoring sensitive property in Chef 16 [#10768](https://github.com/chef/chef/pull/10768) ([axl89](https://github.com/axl89)) <!-- 16.9.3 -->
 - Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins)) <!-- 16.9.2 -->
