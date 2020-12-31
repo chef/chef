@@ -63,4 +63,13 @@ Gem::Specification.new do |s|
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
     Dir.glob("*.gemspec") +
     Dir.glob("tasks/rspec.rb")
+
+  s.metadata = {
+    "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
+    "changelog_uri"     => "https://github.com/chef/chef/blob/master/CHANGELOG.md",
+    "documentation_uri" => "https://docs.chef.io/",
+    "homepage_uri"      => "https://www.chef.io",
+    "mailing_list_uri"  => "https://discourse.chef.io/",
+    "source_code_uri"   => "https://github.com/chef/chef/",
+  }
 end
