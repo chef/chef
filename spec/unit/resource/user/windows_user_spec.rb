@@ -1,3 +1,4 @@
+#
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -12,8 +13,24 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+#
 
-module ChefConfig
-  CHEFCONFIG_ROOT = File.expand_path("..", __dir__)
-  VERSION = "17.0.17".freeze
+require "spec_helper"
+
+describe Chef::Resource::User::WindowsUser, "#uid" do
+  let(:resource) { Chef::Resource::User::WindowsUser.new("notarealuser") }
+
+  it "allows a string" do
+    resource.uid "100"
+    expect(resource.uid).to eql(100)
+  end
+
+  it "allows an integer" do
+    resource.uid 100
+    expect(resource.uid).to eql(100)
+  end
+
+  it "does not allow a hash" do
+    expect { resource.uid({ woot: "i found it" }) }.to raise_error(ArgumentError)
+  end
 end
