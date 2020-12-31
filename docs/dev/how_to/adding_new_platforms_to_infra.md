@@ -50,7 +50,7 @@ Ohai powers all system configuration detection for Chef Infra Client. New distri
 
 ### Bento Boxes
 
-COMING SOON!
+Bento boxes are used by the kitchen-vagrant driver by customers for cookbook testing. When we add a new platform we need to make sure that customers can use it in their testing processes. The [bento repository](https://github.com/chef/bento/) contains packer templates for each platform / platform version, a [builds.yml](https://github.com/chef/bento/blob/master/builds.yml) file which defines the systems to build, and a ruby application which helps with building systems. Bento boxes are generally build for VirtualBox, VMware Fusion, Parallels Desktop, and Hyper-V so you will need both a macOS and Windows system to build all the systems. Once this is complete you can use the `bento upload` command to push these to Vagrant Cloud. You'll need to be added to the Bento Vagrant Cloud org, which #releng-support can assist you with.
 
 ### Fauxhai Dumps
 
