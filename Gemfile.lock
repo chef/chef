@@ -31,7 +31,6 @@ PATH
     chef (17.0.17)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
-      bundler (>= 1.10)
       chef-config (= 17.0.17)
       chef-utils (= 17.0.17)
       chef-vault
@@ -68,7 +67,6 @@ PATH
     chef (17.0.17-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc1)
-      bundler (>= 1.10)
       chef-config (= 17.0.17)
       chef-utils (= 17.0.17)
       chef-vault
