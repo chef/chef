@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 5b47418dbd6ce864d1ffa1279156107bfc5fc1f6
+  revision: a226b7d33c2119003dc47839e8c5559a22bf5ab9
   branch: master
   specs:
-    chefstyle (1.5.8)
+    chefstyle (1.5.9)
       rubocop (= 1.7.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: e1b27c497fb3409d7dab49fbf115c8b0a70c1403
+  revision: b90f861bb77d0364f208947e57a6579c7eb78fae
   branch: master
   specs:
-    ohai (17.0.0)
+    ohai (17.0.3)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -38,7 +38,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.4.0)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (>= 1.9.25)
+      ffi (>= 1.9.25, < 1.14.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -74,7 +74,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.4.0)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (>= 1.9.25)
+      ffi (>= 1.9.25, < 1.14.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -146,7 +146,7 @@ GEM
     bcrypt_pbkdf (1.1.0.rc2)
     bcrypt_pbkdf (1.1.0.rc2-x64-mingw32)
     bcrypt_pbkdf (1.1.0.rc2-x86-mingw32)
-    binding_of_caller (0.8.0)
+    binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
@@ -176,9 +176,7 @@ GEM
       multipart-post (>= 1.2, < 3)
     fauxhai-ng (8.6.0)
       net-ssh
-    ffi (1.14.2)
-    ffi (1.14.2-x64-mingw32)
-    ffi (1.14.2-x86-mingw32)
+    ffi (1.13.1)
     ffi-libarchive (1.0.4)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -268,7 +266,7 @@ GEM
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    plist (3.5.0)
+    plist (3.6.0)
     proxifier (1.0.3)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -276,8 +274,8 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    pry-stack_explorer (0.5.1)
-      binding_of_caller (~> 0.7)
+    pry-stack_explorer (0.6.0)
+      binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.6)
     rack (2.2.3)
@@ -314,7 +312,7 @@ GEM
     rubocop-ast (1.3.0)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
-    ruby-progressbar (1.10.1)
+    ruby-progressbar (1.11.0)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.2)
     rubyzip (1.3.0)
