@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.18 -->
-## [v17.0.18](https://github.com/chef/chef/tree/v17.0.18) (2020-12-31)
+<!-- latest_release 17.0.19 -->
+## [v17.0.19](https://github.com/chef/chef/tree/v17.0.19) (2020-12-31)
 
 #### Merged Pull Requests
-- Remove the runtime dep on bundler [#10801](https://github.com/chef/chef/pull/10801) ([tas50](https://github.com/tas50))
+- Update bcrypt_pbkdf to support Ruby 3 [#10804](https://github.com/chef/chef/pull/10804) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update bcrypt_pbkdf to support Ruby 3 [#10804](https://github.com/chef/chef/pull/10804) ([tas50](https://github.com/tas50)) <!-- 17.0.19 -->
 - Remove the runtime dep on bundler [#10801](https://github.com/chef/chef/pull/10801) ([tas50](https://github.com/tas50)) <!-- 17.0.18 -->
 - Coerce uid to integer in Windows user resource. [#10803](https://github.com/chef/chef/pull/10803) ([phiggins](https://github.com/phiggins)) <!-- 17.0.17 -->
 - Consolidate Windows cert tests to improve CI runtime [#10794](https://github.com/chef/chef/pull/10794) ([phiggins](https://github.com/phiggins)) <!-- 17.0.16 -->
