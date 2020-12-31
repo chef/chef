@@ -54,4 +54,4 @@ Bento boxes are used by the kitchen-vagrant driver by customers for cookbook tes
 
 ### Fauxhai Dumps
 
-COMING SOON!
+Fauxhai is used by ChefSpec for unit testing of cookbooks and we also use it directly in `chef/chef` to test the helpers in the `chef-utils` gem. When we add support for new platforms we need to make sure we update the Fauxhai dumps as well. The [fauxhai repository](https://github.com/chefspec/fauxhai/) contains the actual dump files, and the [fauxhai_generator](https://github.com/chefspec/fauxhai_generator) repository contains a `kitchen.yml` file with a custom provisioner for gathering dump data. These spins up hosts in AWS and gathers their dumps. Keep in mind this only works on Linux hosts and sometimes it requires tracking down custom AMIs. You can see how messy this gets by looking at the values in the `kitchen.yml`. Running this driver using `bundle exec kitchen test FOO` will dump a file locally. You'll then need to use a json sorting tool to sort this JSON. Once it's sorted stick it in the appropriate directory in the Fauxhai project, run `rake documentation:update_platforms` to generate the `PLATFORMS.md` file and commit the change. 
