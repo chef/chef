@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.21 -->
-## [v17.0.21](https://github.com/chef/chef/tree/v17.0.21) (2020-12-31)
+<!-- latest_release 17.0.22 -->
+## [v17.0.22](https://github.com/chef/chef/tree/v17.0.22) (2020-12-31)
 
 #### Merged Pull Requests
-- Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10807](https://github.com/chef/chef/pull/10807) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10808](https://github.com/chef/chef/pull/10808) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10808](https://github.com/chef/chef/pull/10808) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.22 -->
 - Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10807](https://github.com/chef/chef/pull/10807) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.21 -->
 - Remove the evals in the omnibus gemfile for Dependabot [#10805](https://github.com/chef/chef/pull/10805) ([tas50](https://github.com/tas50)) <!-- 17.0.20 -->
 - Update bcrypt_pbkdf to support Ruby 3 [#10804](https://github.com/chef/chef/pull/10804) ([tas50](https://github.com/tas50)) <!-- 17.0.19 -->
