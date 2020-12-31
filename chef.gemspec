@@ -35,7 +35,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0"
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
-  s.add_dependency "bcrypt_pbkdf", "= 1.1.0.rc1" # ed25519 ssh key support
+  s.add_dependency "bcrypt_pbkdf", "= 1.1.0.rc2" # ed25519 ssh key support
   s.add_dependency "highline", ">= 1.6.9", "< 3"
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
   s.add_dependency "tty-screen", "~> 0.6" # knife list

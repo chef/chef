@@ -47,9 +47,9 @@ GEM
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.2)
       aws-eventstream (~> 1, >= 1.0.2)
-    bcrypt_pbkdf (1.1.0.rc1)
-    bcrypt_pbkdf (1.1.0.rc1-x64-mingw32)
-    bcrypt_pbkdf (1.1.0.rc1-x86-mingw32)
+    bcrypt_pbkdf (1.1.0.rc2)
+    bcrypt_pbkdf (1.1.0.rc2-x64-mingw32)
+    bcrypt_pbkdf (1.1.0.rc2-x86-mingw32)
     berkshelf (7.1.0)
       chef (>= 15.7.32)
       chef-config
@@ -66,7 +66,7 @@ GEM
     builder (3.2.4)
     chef (16.7.61)
       addressable
-      bcrypt_pbkdf (= 1.1.0.rc1)
+      bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
       chef-config (= 16.7.61)
       chef-utils (= 16.7.61)
@@ -102,7 +102,7 @@ GEM
       uuidtools (~> 2.1.5)
     chef (16.7.61-universal-mingw32)
       addressable
-      bcrypt_pbkdf (= 1.1.0.rc1)
+      bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
       chef-config (= 16.7.61)
       chef-utils (= 16.7.61)
