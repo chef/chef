@@ -1,4 +1,6 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
+This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
+
 <!-- latest_release 15.14.3 -->
 ## [v15.14.3](https://github.com/chef/chef/tree/v15.14.3) (2020-12-21)
 
