@@ -1,15 +1,16 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
-<!-- latest_release 17.0.16 -->
-## [v17.0.16](https://github.com/chef/chef/tree/v17.0.16) (2020-12-30)
+<!-- latest_release 17.0.17 -->
+## [v17.0.17](https://github.com/chef/chef/tree/v17.0.17) (2020-12-31)
 
 #### Merged Pull Requests
-- Consolidate Windows cert tests to improve CI runtime [#10794](https://github.com/chef/chef/pull/10794) ([phiggins](https://github.com/phiggins))
+- Coerce uid to integer in Windows user resource. [#10803](https://github.com/chef/chef/pull/10803) ([phiggins](https://github.com/phiggins))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Coerce uid to integer in Windows user resource. [#10803](https://github.com/chef/chef/pull/10803) ([phiggins](https://github.com/phiggins)) <!-- 17.0.17 -->
 - Consolidate Windows cert tests to improve CI runtime [#10794](https://github.com/chef/chef/pull/10794) ([phiggins](https://github.com/phiggins)) <!-- 17.0.16 -->
 - Fix escaping in doc string. [#10793](https://github.com/chef/chef/pull/10793) ([phiggins](https://github.com/phiggins)) <!-- 17.0.15 -->
 - Add Test Kitchen testing for Debian 11 [#10791](https://github.com/chef/chef/pull/10791) ([tas50](https://github.com/tas50)) <!-- 17.0.14 -->
