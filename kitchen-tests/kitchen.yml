@@ -20,7 +20,6 @@ lifecycle:
     - remote: echo "Chef container's Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
-    - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
@@ -33,13 +32,6 @@ verifier:
   format: progress
 
 platforms:
-- name: amazonlinux
-  driver:
-    image: dokken/amazonlinux
-    pid_one_command: /sbin/init
-    intermediate_instructions:
-      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-
 - name: amazonlinux-2
   driver:
     image: dokken/amazonlinux-2
@@ -63,13 +55,22 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
 
+- name: debian-11
+  driver:
+    image: dokken/debian-11
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
 - name: centos-6
   driver:
     image: dokken/centos-6
     pid_one_command: /sbin/init
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
-      - RUN yum install -y centos-release-scl
+      - RUN wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+      - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=http://vault.centos.org/centos/6/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
       - RUN yum install -y devtoolset-7
       - RUN scl enable devtoolset-7 bash
 
@@ -137,9 +138,9 @@ platforms:
       - RUN /usr/bin/apt-get update
       - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
 
-- name: ubuntu-20.10
+- name: ubuntu-21.04
   driver:
-    image: dokken/ubuntu-20.10
+    image: dokken/ubuntu-21.04
     pid_one_command: /bin/systemd
     intermediate_instructions:
       - RUN /usr/bin/apt-get update

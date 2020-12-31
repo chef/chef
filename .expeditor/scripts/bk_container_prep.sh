@@ -1,6 +1,16 @@
 # This script gets a container ready to run our various tests in BuildKite
 
-echo "--- preparing..."
+echo "--- Container Config..."
+
+source /etc/os-release
+echo $PRETTY_NAME
+
+echo "ruby version:"
+ruby -v
+echo "bundler version:"
+bundle -v
+
+echo "--- Preparing Container..."
 
 export FORCE_FFI_YAJL="ext"
 export CHEF_LICENSE="accept-no-persist"
@@ -11,11 +21,7 @@ if [ -f /etc/debian_version ]; then
   touch /etc/network/interfaces
 fi
 
-# make sure we have the omnibus_overrides specified version of rubygems / bundler
-echo "--- Install proper bundler"
-gem uninstall bundler -a -x || true
-gem install bundler -v $(grep :bundler omnibus_overrides.rb | cut -d'"' -f2)
-bundle --version
+# remove default bundler config if there is one
 rm -f .bundle/config
 
 echo "+++ Run tests"
