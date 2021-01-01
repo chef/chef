@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.24 -->
-## [v17.0.24](https://github.com/chef/chef/tree/v17.0.24) (2020-12-31)
+<!-- latest_release 17.0.25 -->
+## [v17.0.25](https://github.com/chef/chef/tree/v17.0.25) (2021-01-01)
 
 #### Merged Pull Requests
-- Add gemspec metadata [#10809](https://github.com/chef/chef/pull/10809) ([tas50](https://github.com/tas50))
+- Pin ffi for now to prevent i386 windows failures [#10810](https://github.com/chef/chef/pull/10810) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pin ffi for now to prevent i386 windows failures [#10810](https://github.com/chef/chef/pull/10810) ([tas50](https://github.com/tas50)) <!-- 17.0.25 -->
 - Add gemspec metadata [#10809](https://github.com/chef/chef/pull/10809) ([tas50](https://github.com/tas50)) <!-- 17.0.24 -->
 - Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10806](https://github.com/chef/chef/pull/10806) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.23 -->
 - Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10808](https://github.com/chef/chef/pull/10808) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.22 -->
