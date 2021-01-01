@@ -44,7 +44,7 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 70])
+            pkg_info = shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 1])
             pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 
