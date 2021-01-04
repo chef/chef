@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.7 -->
-## [v16.9.7](https://github.com/chef/chef/tree/v16.9.7) (2020-12-31)
+<!-- latest_release 16.9.8 -->
+## [v16.9.8](https://github.com/chef/chef/tree/v16.9.8) (2021-01-04)
 
 #### Merged Pull Requests
-- More CI backports from master [#10799](https://github.com/chef/chef/pull/10799) ([tas50](https://github.com/tas50))
+- Add gemspec metadata [#10818](https://github.com/chef/chef/pull/10818) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add gemspec metadata [#10818](https://github.com/chef/chef/pull/10818) ([tas50](https://github.com/tas50)) <!-- 16.9.8 -->
 - More CI backports from master [#10799](https://github.com/chef/chef/pull/10799) ([tas50](https://github.com/tas50)) <!-- 16.9.7 -->
 - Fix knife status json output for EC2 instance with no public IP [#10798](https://github.com/chef/chef/pull/10798) ([tas50](https://github.com/tas50)) <!-- 16.9.6 -->
 - Various testing backports from master [#10796](https://github.com/chef/chef/pull/10796) ([tas50](https://github.com/tas50)) <!-- 16.9.5 -->
