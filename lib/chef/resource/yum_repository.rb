@@ -50,6 +50,11 @@ class Chef
 
       # http://linux.die.net/man/5/yum.conf as well as
       # http://dnf.readthedocs.io/en/latest/conf_ref.html
+      property :reposdir, String,
+        description: "The directory where the Yum repository files should be stored",
+        default: "/etc/yum.repos.d/",
+        introduced: "16.9"
+
       property :baseurl, [String, Array],
         description: "URL to the directory where the Yum repository's `repodata` directory lives. Can be an `http://`, `https://` or a `ftp://` URLs. You can specify multiple URLs in one `baseurl` statement."
 
