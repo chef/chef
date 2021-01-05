@@ -22,6 +22,7 @@ Starting from the master branch create a PR which:
 
 - Edits the `VERSION` file in the root of the repository to the new major release
 - Updates the `chef-config` and `chef-utils` dependencies to allow for the new major release of Chef Infra in `ohai.gemspec`
+- Update the `chef-config` and `chef-utils` deps in the Gemfile to point the the yet to be created chef-XYZ stable branch in the `chef/chef` repo. Note: This is going to fail for now. We have to start somewhere.
 
 ## Update chef/chef
 
