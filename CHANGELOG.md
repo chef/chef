@@ -2,43 +2,41 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.16 -->
-## [v16.9.16](https://github.com/chef/chef/tree/v16.9.16) (2021-01-05)
-
-#### Merged Pull Requests
-- Add a new `reposdir` property in the `yum_repository` resource [#10831](https://github.com/chef/chef/pull/10831) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.8.14 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Add a new `reposdir` property in the `yum_repository` resource [#10831](https://github.com/chef/chef/pull/10831) ([tas50](https://github.com/tas50)) <!-- 16.9.16 -->
-- Update Nokogiri to 1.11.0 [#10828](https://github.com/chef/chef/pull/10828) ([tas50](https://github.com/tas50)) <!-- 16.9.15 -->
-- Update Ohai to 16.8.2 and pin chefstyle [#10824](https://github.com/chef/chef/pull/10824) ([tas50](https://github.com/tas50)) <!-- 16.9.14 -->
-- Coerce uid to integer in Windows user resource. [#10820](https://github.com/chef/chef/pull/10820) ([tas50](https://github.com/tas50)) <!-- 16.9.13 -->
-- Fix dnf_package version and arch property support and idempotency [#10826](https://github.com/chef/chef/pull/10826) ([tas50](https://github.com/tas50)) <!-- 16.9.12 -->
-- Fix homebrew_cask for the new syntax [#10825](https://github.com/chef/chef/pull/10825) ([tas50](https://github.com/tas50)) <!-- 16.9.11 -->
-- Remove the evals in the omnibus gemfile for Dependabot [#10821](https://github.com/chef/chef/pull/10821) ([tas50](https://github.com/tas50)) <!-- 16.9.10 -->
-- Update bcrypt_pbkdf to support Ruby 3 [#10819](https://github.com/chef/chef/pull/10819) ([tas50](https://github.com/tas50)) <!-- 16.9.9 -->
-- Add gemspec metadata [#10818](https://github.com/chef/chef/pull/10818) ([tas50](https://github.com/tas50)) <!-- 16.9.8 -->
-- More CI backports from master [#10799](https://github.com/chef/chef/pull/10799) ([tas50](https://github.com/tas50)) <!-- 16.9.7 -->
-- Fix knife status json output for EC2 instance with no public IP [#10798](https://github.com/chef/chef/pull/10798) ([tas50](https://github.com/tas50)) <!-- 16.9.6 -->
-- Various testing backports from master [#10796](https://github.com/chef/chef/pull/10796) ([tas50](https://github.com/tas50)) <!-- 16.9.5 -->
-- Resolve build / test failures now that Chef 16 is the stable relase [#10759](https://github.com/chef/chef/pull/10759) ([tas50](https://github.com/tas50)) <!-- 16.9.4 -->
-- Fixed cron_d resource ignoring sensitive property in Chef 16 [#10768](https://github.com/chef/chef/pull/10768) ([axl89](https://github.com/axl89)) <!-- 16.9.3 -->
-- Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins)) <!-- 16.9.2 -->
-- Fix failures in ssl handler [#10751](https://github.com/chef/chef/pull/10751) ([phiggins](https://github.com/phiggins)) <!-- 16.9.1 -->
-- Cleanup bootstrap&#39;s trusted_certs_dir tests. [#10754](https://github.com/chef/chef/pull/10754) ([phiggins](https://github.com/phiggins)) <!-- 16.9.0 -->
-- Remove old test script. [#10746](https://github.com/chef/chef/pull/10746) ([phiggins](https://github.com/phiggins)) <!-- 16.8.19 -->
-- Update train to 3.4.4 [#10745](https://github.com/chef/chef/pull/10745) ([tas50](https://github.com/tas50)) <!-- 16.8.19 -->
-- locale: Update the locale-gen timeout to 1800s [#10743](https://github.com/chef/chef/pull/10743) ([tas50](https://github.com/tas50)) <!-- 16.8.18 -->
-- Add audit cookbook&#39;s chef_node_attribute_enabled to Compliance Phase. [#10735](https://github.com/chef/chef/pull/10735) ([phiggins](https://github.com/phiggins)) <!-- 16.8.17 -->
-- Improve our automated resource documentation generation [#10739](https://github.com/chef/chef/pull/10739) ([tas50](https://github.com/tas50)) <!-- 16.8.16 -->
-- knife bootstrap: Windows Trusted cert path slashes fix [#10740](https://github.com/chef/chef/pull/10740) ([axelrtgs](https://github.com/axelrtgs)) <!-- 16.8.15 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.9.16](https://github.com/chef/chef/tree/v16.9.16) (2021-01-05)
+
+#### Merged Pull Requests
+- knife bootstrap: Windows Trusted cert path slashes fix [#10740](https://github.com/chef/chef/pull/10740) ([axelrtgs](https://github.com/axelrtgs))
+- Improve our automated resource documentation generation [#10739](https://github.com/chef/chef/pull/10739) ([tas50](https://github.com/tas50))
+- Add audit cookbook&#39;s chef_node_attribute_enabled to Compliance Phase. [#10735](https://github.com/chef/chef/pull/10735) ([phiggins](https://github.com/phiggins))
+- locale: Update the locale-gen timeout to 1800s [#10743](https://github.com/chef/chef/pull/10743) ([tas50](https://github.com/tas50))
+- Update train to 3.4.4 [#10745](https://github.com/chef/chef/pull/10745) ([tas50](https://github.com/tas50))
+- Remove old test script. [#10746](https://github.com/chef/chef/pull/10746) ([phiggins](https://github.com/phiggins))
+- Cleanup bootstrap&#39;s trusted_certs_dir tests. [#10754](https://github.com/chef/chef/pull/10754) ([phiggins](https://github.com/phiggins))
+- Fix failures in ssl handler [#10751](https://github.com/chef/chef/pull/10751) ([phiggins](https://github.com/phiggins))
+- Update links to Compliance Phase documentation in log messages. [#10755](https://github.com/chef/chef/pull/10755) ([phiggins](https://github.com/phiggins))
+- Fixed cron_d resource ignoring sensitive property in Chef 16 [#10768](https://github.com/chef/chef/pull/10768) ([axl89](https://github.com/axl89))
+- Resolve build / test failures now that Chef 16 is the stable relase [#10759](https://github.com/chef/chef/pull/10759) ([tas50](https://github.com/tas50))
+- Various testing backports from master [#10796](https://github.com/chef/chef/pull/10796) ([tas50](https://github.com/tas50))
+- Fix knife status json output for EC2 instance with no public IP [#10798](https://github.com/chef/chef/pull/10798) ([tas50](https://github.com/tas50))
+- More CI backports from master [#10799](https://github.com/chef/chef/pull/10799) ([tas50](https://github.com/tas50))
+- Add gemspec metadata [#10818](https://github.com/chef/chef/pull/10818) ([tas50](https://github.com/tas50))
+- Update bcrypt_pbkdf to support Ruby 3 [#10819](https://github.com/chef/chef/pull/10819) ([tas50](https://github.com/tas50))
+- Remove the evals in the omnibus gemfile for Dependabot [#10821](https://github.com/chef/chef/pull/10821) ([tas50](https://github.com/tas50))
+- Fix homebrew_cask for the new syntax [#10825](https://github.com/chef/chef/pull/10825) ([tas50](https://github.com/tas50))
+- Fix dnf_package version and arch property support and idempotency [#10826](https://github.com/chef/chef/pull/10826) ([tas50](https://github.com/tas50))
+- Coerce uid to integer in Windows user resource. [#10820](https://github.com/chef/chef/pull/10820) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.8.2 and pin chefstyle [#10824](https://github.com/chef/chef/pull/10824) ([tas50](https://github.com/tas50))
+- Update Nokogiri to 1.11.0 [#10828](https://github.com/chef/chef/pull/10828) ([tas50](https://github.com/tas50))
+- Add a new `reposdir` property in the `yum_repository` resource [#10831](https://github.com/chef/chef/pull/10831) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.8.14](https://github.com/chef/chef/tree/v16.8.14) (2020-12-12)
 
 #### Merged Pull Requests
@@ -47,7 +45,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Update libiconv to 1.16 [#10731](https://github.com/chef/chef/pull/10731) ([tas50](https://github.com/tas50))
 - Raise error and retry with PTY on sudo password prompt [#10728](https://github.com/chef/chef/pull/10728) ([rveznaver](https://github.com/rveznaver))
 - Fix broken code in compliance runner&#39;s send_report. [#10733](https://github.com/chef/chef/pull/10733) ([phiggins](https://github.com/phiggins))
-<!-- latest_stable_release -->
 
 ## [v16.8.9](https://github.com/chef/chef/tree/v16.8.9) (2020-12-11)
 
