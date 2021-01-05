@@ -1,17 +1,9 @@
 GIT
-  remote: https://github.com/chef/chefstyle.git
-  revision: 4beb76511e5e3e414bb88942c75f107eb56a9aa1
-  branch: master
-  specs:
-    chefstyle (1.5.7)
-      rubocop (= 1.5.2)
-
-GIT
   remote: https://github.com/chef/ohai.git
-  revision: 1ad8c5946606a7f08ffb841e3682ae2d4991077f
+  revision: 1779bc553112ba6bf44e9ac1a03fe3109f4a3145
   branch: 16-stable
   specs:
-    ohai (16.8.1)
+    ohai (16.8.2)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -148,7 +140,7 @@ GEM
     bcrypt_pbkdf (1.1.0.rc2)
     bcrypt_pbkdf (1.1.0.rc2-x64-mingw32)
     bcrypt_pbkdf (1.1.0.rc2-x86-mingw32)
-    binding_of_caller (0.8.0)
+    binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
     byebug (11.1.3)
@@ -166,17 +158,20 @@ GEM
     cheffish (16.0.12)
       chef-zero (>= 14.0)
       net-ssh
+    chefstyle (1.5.9)
+      rubocop (= 1.7.0)
     coderay (1.1.3)
     concurrent-ruby (1.1.7)
-    crack (0.4.4)
-    debug_inspector (0.0.3)
+    crack (0.4.5)
+      rexml
+    debug_inspector (1.0.0)
     diff-lcs (1.3)
     ed25519 (1.2.4)
     erubi (1.10.0)
     erubis (2.7.0)
     faraday (1.0.1)
       multipart-post (>= 1.2, < 3)
-    fauxhai-ng (8.6.0)
+    fauxhai-ng (8.7.0)
       net-ssh
     ffi (1.13.1)
     ffi (1.13.1-x64-mingw32)
@@ -223,7 +218,7 @@ GEM
       inspec-core (= 4.24.8)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
-    json (2.4.1)
+    json (2.5.1)
     libyajl2 (1.2.0)
     license-acceptance (2.1.13)
       pastel (~> 0.7)
@@ -265,12 +260,12 @@ GEM
       net-ssh-gateway (>= 1.2.0)
     nori (2.6.0)
     parallel (1.20.1)
-    parser (2.7.2.0)
+    parser (3.0.0.0)
       ast (~> 2.4.1)
     parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
-    plist (3.5.0)
+    plist (3.6.0)
     proxifier (1.0.3)
     pry (0.13.1)
       coderay (~> 1.1)
@@ -278,15 +273,15 @@ GEM
     pry-byebug (3.9.0)
       byebug (~> 11.0)
       pry (~> 0.13.0)
-    pry-stack_explorer (0.5.1)
-      binding_of_caller (~> 0.7)
+    pry-stack_explorer (0.6.0)
+      binding_of_caller (~> 1.0)
       pry (~> 0.13)
     public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
     rake (13.0.1)
     rb-readline (0.5.5)
-    regexp_parser (2.0.0)
+    regexp_parser (2.0.3)
     rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
@@ -304,7 +299,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.4)
-    rubocop (1.5.2)
+    rubocop (1.7.0)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
@@ -313,10 +308,10 @@ GEM
       rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 2.0)
-    rubocop-ast (1.3.0)
+    rubocop-ast (1.4.0)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
-    ruby-progressbar (1.10.1)
+    ruby-progressbar (1.11.0)
     ruby-shadow (2.5.0)
     rubyntlm (0.6.2)
     rubyzip (1.3.0)
@@ -342,7 +337,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.2.2)
       winrm-fs (~> 1.0)
-    tty-box (0.6.0)
+    tty-box (0.7.0)
       pastel (~> 0.8)
       strings (~> 0.2.0)
       tty-cursor (~> 0.7)
@@ -424,7 +419,7 @@ DEPENDENCIES
   chef-utils!
   chef-vault
   cheffish (>= 14)
-  chefstyle!
+  chefstyle (= 1.5.9)
   fauxhai-ng
   inspec-core-bin (~> 4.24)
   ohai!
