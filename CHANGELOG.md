@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.27 -->
-## [v17.0.27](https://github.com/chef/chef/tree/v17.0.27) (2021-01-05)
+<!-- latest_release 17.0.28 -->
+## [v17.0.28](https://github.com/chef/chef/tree/v17.0.28) (2021-01-05)
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.11.0 [#10829](https://github.com/chef/chef/pull/10829) ([tas50](https://github.com/tas50))
+- Add a new `reposdir` property in the `yum_repository` resource [#10830](https://github.com/chef/chef/pull/10830) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a new `reposdir` property in the `yum_repository` resource [#10830](https://github.com/chef/chef/pull/10830) ([tas50](https://github.com/tas50)) <!-- 17.0.28 -->
 - Update Nokogiri to 1.11.0 [#10829](https://github.com/chef/chef/pull/10829) ([tas50](https://github.com/tas50)) <!-- 17.0.27 -->
 - Fix homebrew_cask for the new syntax [#10822](https://github.com/chef/chef/pull/10822) ([tas50](https://github.com/tas50)) <!-- 17.0.26 -->
 - Pin ffi for now to prevent i386 windows failures [#10810](https://github.com/chef/chef/pull/10810) ([tas50](https://github.com/tas50)) <!-- 17.0.25 -->
