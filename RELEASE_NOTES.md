@@ -40,7 +40,7 @@ The `yum_repository` resource has been updated with a new `reposdir` property to
 
 ## Security
 
-- The bundled Nokogiri Ruby gem has been updated to resolve [CVE-2020-26247](https://nvd.nist.gov/vuln/detail/CVE-2020-26247)
+- The bundled Nokogiri Ruby gem has been updated to resolve [CVE-2020-26247](https://nvd.nist.gov/vuln/detail/CVE-2020-26247).
 
 # What's New in 16.8.14
 
