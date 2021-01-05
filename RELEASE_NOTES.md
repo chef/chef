@@ -28,7 +28,7 @@ The allowed execution time for the `locale-gen` command in the `locale` resource
 
 ### plist / macosx_service / osx_profile / macos_userdefaults
 
-Parsing of plist files has been improved in the `plist`, `macosx_service`, `osx_profile` and `macos_userdefaults` resources thanks to updates to the plist gem by [@reitermarkus](https://github.com/reitermarkus) and [@tboyko](https://github.com/tboyko).
+Parsing of plist files has been improved in the `plist`, `macosx_service`, `osx_profile`, and `macos_userdefaults` resources thanks to updates to the plist gem by [@reitermarkus](https://github.com/reitermarkus) and [@tboyko](https://github.com/tboyko).
 
 ### user
 
