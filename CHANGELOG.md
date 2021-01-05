@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.13 -->
-## [v16.9.13](https://github.com/chef/chef/tree/v16.9.13) (2021-01-05)
+<!-- latest_release 16.9.14 -->
+## [v16.9.14](https://github.com/chef/chef/tree/v16.9.14) (2021-01-05)
 
 #### Merged Pull Requests
-- Coerce uid to integer in Windows user resource. [#10820](https://github.com/chef/chef/pull/10820) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.8.2 and pin chefstyle [#10824](https://github.com/chef/chef/pull/10824) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.8.2 and pin chefstyle [#10824](https://github.com/chef/chef/pull/10824) ([tas50](https://github.com/tas50)) <!-- 16.9.14 -->
 - Coerce uid to integer in Windows user resource. [#10820](https://github.com/chef/chef/pull/10820) ([tas50](https://github.com/tas50)) <!-- 16.9.13 -->
 - Fix dnf_package version and arch property support and idempotency [#10826](https://github.com/chef/chef/pull/10826) ([tas50](https://github.com/tas50)) <!-- 16.9.12 -->
 - Fix homebrew_cask for the new syntax [#10825](https://github.com/chef/chef/pull/10825) ([tas50](https://github.com/tas50)) <!-- 16.9.11 -->
