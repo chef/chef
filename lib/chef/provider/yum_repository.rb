@@ -33,7 +33,7 @@ class Chef
       def load_current_resource; end
 
       action :create do
-        declare_resource(:template, "/etc/yum.repos.d/#{new_resource.repositoryid}.repo") do
+        declare_resource(:template, ::File.join(new_resource.reposdir, "#{new_resource.repositoryid}.repo")) do
           if template_available?(new_resource.source)
             source new_resource.source
           else
@@ -81,7 +81,7 @@ class Chef
           only_if "yum repolist all | grep -P '^#{new_resource.repositoryid}([ \t]|$)'"
         end
 
-        declare_resource(:file, "/etc/yum.repos.d/#{new_resource.repositoryid}.repo") do
+        declare_resource(:file, ::File.join(new_resource.reposdir, "#{new_resource.repositoryid}.repo")) do
           action :delete
           notifies :create, "ruby_block[package-cache-reload-#{new_resource.repositoryid}]", :immediately
         end
