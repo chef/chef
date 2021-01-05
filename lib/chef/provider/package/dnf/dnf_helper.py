@@ -98,14 +98,27 @@ def query(command):
         q = q.available()
 
     if 'epoch' in command:
-        q = q.filterm(epoch=int(command['epoch']))
+        # We assume that any glob is "*" so just omit the filter since the dnf libraries have no
+        # epoch__glob filter.  That means "?" wildcards in epochs will fail.  The workaround is to
+        # not use the version filter here but to put the version with all the globs in the package name.
+        if not dnf.util.is_glob_pattern(command['epoch']):
+            q = q.filterm(epoch=int(command['epoch']))
     if 'version' in command:
-        q = q.filterm(version__glob=command['version'])
+        if dnf.util.is_glob_pattern(command['version']):
+            q = q.filterm(version__glob=command['version'])
+        else:
+            q = q.filterm(version=command['version'])
     if 'release' in command:
-        q = q.filterm(release__glob=command['release'])
+        if dnf.util.is_glob_pattern(command['release']):
+            q = q.filterm(release__glob=command['release'])
+        else:
+            q = q.filterm(release=command['release'])
 
     if 'arch' in command:
-        q = q.filterm(arch__glob=command['arch'])
+        if dnf.util.is_glob_pattern(command['arch']):
+            q = q.filterm(arch__glob=command['arch'])
+        else:
+            q = q.filterm(arch=command['arch'])
 
     # only apply the default arch query filter if it returns something
     archq = q.filter(arch=[ 'noarch', hawkey.detect_arch() ])
@@ -170,4 +183,4 @@ try:
             raise RuntimeError("bad command")
 finally:
     if base is not None:
-        base.closeRpmDB()
+        base.close()
