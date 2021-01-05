@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.15 -->
-## [v16.9.15](https://github.com/chef/chef/tree/v16.9.15) (2021-01-05)
+<!-- latest_release 16.9.16 -->
+## [v16.9.16](https://github.com/chef/chef/tree/v16.9.16) (2021-01-05)
 
 #### Merged Pull Requests
-- Update Nokogiri to 1.11.0 [#10828](https://github.com/chef/chef/pull/10828) ([tas50](https://github.com/tas50))
+- Add a new `reposdir` property in the `yum_repository` resource [#10831](https://github.com/chef/chef/pull/10831) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add a new `reposdir` property in the `yum_repository` resource [#10831](https://github.com/chef/chef/pull/10831) ([tas50](https://github.com/tas50)) <!-- 16.9.16 -->
 - Update Nokogiri to 1.11.0 [#10828](https://github.com/chef/chef/pull/10828) ([tas50](https://github.com/tas50)) <!-- 16.9.15 -->
 - Update Ohai to 16.8.2 and pin chefstyle [#10824](https://github.com/chef/chef/pull/10824) ([tas50](https://github.com/tas50)) <!-- 16.9.14 -->
 - Coerce uid to integer in Windows user resource. [#10820](https://github.com/chef/chef/pull/10820) ([tas50](https://github.com/tas50)) <!-- 16.9.13 -->
