@@ -1,5 +1,43 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+# What's New in 16.9
+
+## Knife Improvements
+
+- The `knife bootstrap` command now properly formats the `trusted_certs_dir` configuration value on Windows hosts. Thanks for this fix [@axelrtgs](https://github.com/axelrtgs)
+- The `knife bootstrap` command now only specifies the ssh option `-o IdentitiesOnly=yes` if keys are present. Thanks for this fix [@drbrain](https://github.com/drbrain)
+- The `knife status` command with the `-F json` flag no longer fails if cloud nodes have no public IP
+
+## Updated Resources
+
+### cron_d
+
+The `cron_d` resource now respects the use of the `sensitive` property. Thanks for this fix [@axl89](https://github.com/axl89)!
+
+### dnf
+
+The `dnf` resource has received a large number of improvements to provide improved idempotency and to better handle uses of the `version` and `arch` properties. Thanks for reporting these issues [@epilatow](https://github.com/epilatow) and [@Blorpy](https://github.com/Blorpy)!
+
+### homebrew_cask
+
+The `homebrew_cask` resource has been updated to work with the latest command syntax requirements in the `brew` command. Thanks for reporting this issue [@bcg62](https://github.com/bcg62)!
+
+### locale
+
+The allowed execution time for the `locale-gen` command in the `locale` resource has been extended to 1800 seconds to make sure the Chef Infra Client run doesn't fail before the command completes on slower systems. Thanks for reporting this issue [@janskarvall](https://github.com/janskarvall)!
+
+### plist / macosx_service / osx_profile / macos_userdefaults
+
+Parsing of plist files has been improved in the `plist`, `macosx_service`, `osx_profile` and `macos_userdefaults` resources thanks to updates to the plist gem by [@reitermarkus](https://github.com/reitermarkus) and [@tboyko](https://github.com/tboyko).
+
+### user
+
+The `user` resource on Windows hosts now properly handles `uid` values passed as strings instead of integers. Thanks for reporting this issue [@jaymzh](https://github.com/jaymzh)!
+
+## Security
+
+- The bundled Nokogiri Ruby gem has been updated to resolve [CVE-2020-26247](https://nvd.nist.gov/vuln/detail/CVE-2020-26247)
+
 # What's New in 16.8.14
 
 - Updated openSSL to 1.0.2x to resolve [CVE-2020-1971](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-1971).
