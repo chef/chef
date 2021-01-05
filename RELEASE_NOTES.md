@@ -5,7 +5,7 @@ This file holds "in progress" release notes for the current release under develo
 ## Knife Improvements
 
 - The `knife bootstrap` command now properly formats the `trusted_certs_dir` configuration value on Windows hosts. Thanks for this fix [@axelrtgs](https://github.com/axelrtgs)!
-- The `knife bootstrap` command now only specifies the ssh option `-o IdentitiesOnly=yes` if keys are present. Thanks for this fix [@drbrain](https://github.com/drbrain)
+- The `knife bootstrap` command now only specifies the ssh option `-o IdentitiesOnly=yes` if keys are present. Thanks for this fix [@drbrain](https://github.com/drbrain)!
 - The `knife status` command with the `-F json` flag no longer fails if cloud nodes have no public IP
 
 ## Updated Resources
