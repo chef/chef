@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 457df26b59259183d2918e802ffb79de9a134e27
+  revision: 869ef4e1ece0d53c267b8ca0b4b86e2644ef7693
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.410.0)
+    aws-partitions (1.414.0)
     aws-sdk-core (3.110.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -41,9 +41,9 @@ GEM
     aws-sdk-kms (1.40.0)
       aws-sdk-core (~> 3, >= 3.109.0)
       aws-sigv4 (~> 1.1)
-    aws-sdk-s3 (1.86.2)
+    aws-sdk-s3 (1.87.0)
       aws-sdk-core (~> 3, >= 3.109.0)
-      aws-sdk-kms (~> 1.26)
+      aws-sdk-kms (~> 1)
       aws-sigv4 (~> 1.1)
     aws-sigv4 (1.2.2)
       aws-eventstream (~> 1, >= 1.0.2)
@@ -173,9 +173,9 @@ GEM
     faraday (1.1.0)
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
-    ffi (1.14.1)
-    ffi (1.14.1-x64-mingw32)
-    ffi (1.14.1-x86-mingw32)
+    ffi (1.14.2)
+    ffi (1.14.2-x64-mingw32)
+    ffi (1.14.2-x86-mingw32)
     ffi-libarchive (1.0.4)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -195,7 +195,7 @@ GEM
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     jmespath (1.4.0)
-    json (2.4.1)
+    json (2.5.1)
     kitchen-vagrant (1.7.2)
       test-kitchen (>= 1.4, < 3)
     libyajl2 (1.2.0)
@@ -272,13 +272,13 @@ GEM
       multipart-post (>= 2.0.0)
       rainbow
       zhexdump (>= 0.0.2)
-    plist (3.5.0)
+    plist (3.6.0)
     proxifier (1.0.3)
     public_suffix (4.0.6)
     rack (2.2.3)
     rainbow (3.0.0)
     retryable (3.0.5)
-    ruby-progressbar (1.10.1)
+    ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.2)
     rubyntlm (0.6.2)
     rubyzip (2.3.0)
