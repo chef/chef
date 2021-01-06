@@ -4327,26 +4327,6 @@ Ruby has been updated to from 2.4.4 to 2.4.5 to resolve multiple CVEs as well as
 
 # What's New in 13.9.4
 
-## Security Updates
-
-Ruby has been updated to 2.4.4
-
-- CVE-2017-17742: HTTP response splitting in WEBrick
-- CVE-2018-6914: Unintentional file and directory creation with directory traversal in tempfile and tmpdir
-- CVE-2018-8777: DoS by large request in WEBrick
-- CVE-2018-8778: Buffer under-read in String#unpack
-- CVE-2018-8779: Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
-- CVE-2018-8780: Unintentional directory traversal by poisoned NUL byte in Dir
-- Multiple vulnerabilities in RubyGems
-
-Nokogiri has been updated to 1.8.2
-
-- [MRI] Behavior in libxml2 has been reverted which caused CVE-2018-8048 (loofah gem), CVE-2018-3740 (sanitize gem), and CVE-2018-3741 (rails-html-sanitizer gem).
-
-OpenSSL has been updated to 1.0.2o
-
-- CVE-2018-0739: Constructed ASN.1 types with a recursive definition could exceed the stack.
-
 ## Platform Updates
 
 As Debian 7 is now end of life we will no longer produce Debian 7 chef-client packages.
@@ -4369,7 +4349,27 @@ The whitelist of DMI IDs is now user configurable using the `additional_dmi_ids`
 
 The Filesystem2 functionality has been backported to BSD systems to provide a consistent filesystem format.
 
-# What's New in 13.9.1:
+## Security Updates
+
+### Ruby updated to 2.4.4
+
+- CVE-2017-17742: HTTP response splitting in WEBrick
+- CVE-2018-6914: Unintentional file and directory creation with directory traversal in tempfile and tmpdir
+- CVE-2018-8777: DoS by large request in WEBrick
+- CVE-2018-8778: Buffer under-read in String#unpack
+- CVE-2018-8779: Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
+- CVE-2018-8780: Unintentional directory traversal by poisoned NUL byte in Dir
+- Multiple vulnerabilities in RubyGems
+
+### Nokogiri updated to 1.8.2
+
+- Behavior in libxml2 has been reverted which caused CVE-2018-8048 (loofah gem), CVE-2018-3740 (sanitize gem), and CVE-2018-3741 (rails-html-sanitizer gem).
+
+### OpenSSL updated to 1.0.2o
+
+- CVE-2018-0739: Constructed ASN.1 types with a recursive definition could exceed the stack.
+
+# What's New in 13.9.1
 
 ## Platform Additions
 
