@@ -55,7 +55,7 @@ The `yum_repository` resource has been updated with a new `reposdir` property to
 
 Chef InSpec has been updated to 4.24.8 including the following improvements:
 
-- An unset `HOME environment variable will not cause execution failures
+- An unset `HOME` environment variable will not cause execution failures
 - You can use wildcards in `platform-name` and `release` in InSpec profiles
 - The support for arrays in the `WMI` resource, so it can return multiple objects
 - The `package` resource on Windows properly escapes package names
@@ -2405,7 +2405,7 @@ The `windows_task` resource now supports the Start When Available option with a 
 
 ### locale
 
-The `locale` resource now allows setting all possible LC_- environmental variables.
+The `locale` resource now allows setting all possible LC_* environmental variables.
 
 ### directory
 
@@ -4375,7 +4375,7 @@ The Filesystem2 functionality has been backported to BSD systems to provide a co
 
 Enable Ubuntu-18.04 and Debian-9 tested chef-client packages.
 
-# What's New in 13.9
+# What's New in 13.9.0
 
 - On Windows, the installer now correctly re-extracts files during repair mode
 - The mount resource will now not create duplicate entries when the device type differs
@@ -4446,7 +4446,7 @@ action :add do
 end
 ```
 
-## Ohai Release Notes 13.9
+### Ohai Improvements
 
 - Fix uptime parsing on AIX
 - Fix Softlayer cloud detection
