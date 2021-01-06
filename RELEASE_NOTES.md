@@ -4636,19 +4636,19 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` p
 ### Properties
 
 - `ethtool_opts`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   **Platforms:*- Fedora, RHEL, Amazon Linux A string containing arguments to ethtool. The string will be wrapped in double quotes, so ensure that any needed quotes in the property are surrounded by single quotes
 
 - `bonding_opts`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   **Platforms:*- Fedora, RHEL, Amazon Linux A string containing configuration parameters for the bonding device.
 
 - `master`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   **Platforms:*- Fedora, RHEL, Amazon Linux The channel bonding interface that this interface is linked to.
 
 - `slave`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   **Platforms:*- Fedora, RHEL, Amazon Linux Whether the interface is controlled by the channel bonding interface defined by `master`, above.
 
 ## Chef Vault is now included
@@ -4666,7 +4666,7 @@ The `remote_file` resource now supports the use of credentials on Windows when a
 The following properties are new for the `remote_file` resource:
 
 - `remote_user`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   _Windows only:_ The user name of a user with access to the remote file specified by the `source` property. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `remote_domain` attribute. Note that this property is ignored if `source` is not a UNC path. If this property is specified, the `remote_password` property **must*- be specified.
 
 - `remote_password`<br>
@@ -5036,7 +5036,7 @@ The behavior of `gem_package` and `chef_gem` is now to always apply the `Chef::C
 
 This should enable easier setup of rubygems mirrors particularly in "airgapped" environments through the use of the global config variable. It also means that an admin may force all rubygems.org traffic to an internal mirror, while still being able to consume external cookbooks which have resources which add other mirrors unchanged (in a non-airgapped environment).
 
-In the case where a resource must force the use of only the specified source(s), then the `include_default_source` property has been added -- setting it to false will remove the `Chef::Config[:rubygems_url]` setting from the list of sources for that resource.
+In the case where a resource must force the use of only the specified source(s), then the `include_default_source` property has been added -* setting it to false will remove the `Chef::Config[:rubygems_url]` setting from the list of sources for that resource.
 
 The behavior of the `clear_sources` property is now to only add `--clear-sources` and has no magic side effects on the source options.
 
@@ -5440,7 +5440,7 @@ Chef::ReservedNames::Win32::Security.get_account_right('<user>').include?('SeAss
 The following properties are new or updated for the `execute`, `script`, `batch`, and `powershell_script` resources and any resources derived from them:
 
 - `user`<br>
-  **Ruby types:*- String<br>
+  **Ruby types:** String<br>
   The user name of the user identity with which to launch the new process. Default value: `nil`. The user name may optionally be specified with a domain, i.e. `domain\user` or `user@my.dns.domain.com` via Universal Principal Name (UPN) format. It can also be specified without a domain simply as `user` if the domain is instead specified using the `domain` attribute. On Windows only, if this property is specified, the `password` property **must*- be specified.
 
 - `password`<br>
