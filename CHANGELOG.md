@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.14.9 -->
-## [v15.14.9](https://github.com/chef/chef/tree/v15.14.9) (2021-01-06)
+<!-- latest_release 15.14.10 -->
+## [v15.14.10](https://github.com/chef/chef/tree/v15.14.10) (2021-01-06)
 
 #### Merged Pull Requests
-- Fix homebrew_cask for the new syntax [#10845](https://github.com/chef/chef/pull/10845) ([tas50](https://github.com/tas50))
+- locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50)) <!-- 15.14.10 -->
 - Fix homebrew_cask for the new syntax [#10845](https://github.com/chef/chef/pull/10845) ([tas50](https://github.com/tas50)) <!-- 15.14.9 -->
 - Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10842](https://github.com/chef/chef/pull/10842) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.8 -->
 - Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10843](https://github.com/chef/chef/pull/10843) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
