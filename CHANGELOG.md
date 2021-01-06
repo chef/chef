@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.14.11 -->
-## [v15.14.11](https://github.com/chef/chef/tree/v15.14.11) (2021-01-06)
+<!-- latest_release 15.15.0 -->
+## [v15.15.0](https://github.com/chef/chef/tree/v15.15.0) (2021-01-06)
 
 #### Merged Pull Requests
-- Update InSpec 4.24.8, chef-vault 4.1, mixlibshellout 3.2, plist 3.6 [#10846](https://github.com/chef/chef/pull/10846) ([tas50](https://github.com/tas50))
+- Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth)) <!-- 15.15.0 -->
 - Update InSpec 4.24.8, chef-vault 4.1, mixlibshellout 3.2, plist 3.6 [#10846](https://github.com/chef/chef/pull/10846) ([tas50](https://github.com/tas50)) <!-- 15.14.11 -->
 - locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50)) <!-- 15.14.10 -->
 - Fix homebrew_cask for the new syntax [#10845](https://github.com/chef/chef/pull/10845) ([tas50](https://github.com/tas50)) <!-- 15.14.9 -->
