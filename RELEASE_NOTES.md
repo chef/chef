@@ -1079,22 +1079,22 @@ The `knife-acl` gem is now part of Chef Infra Client. This gives you the ability
 ## YAML Recipes
 
 We added support for writing recipes in YAML to provide a low-code syntax for simple use cases. To write recipes in YAML, Chef resources and any user-defined parameters can be added as elements in a `resources` hash, such as the example below:
-​
+
 ```yaml
 ---
 resources:
-  * type: "package"
+  - type: "package"
     name: "httpd"
-  * type: "template"
+  - type: "template"
     name: "/var/www/html/index.html"
     source: "index.html.erb"
-  * type: "service"
+  - type: "service"
     name: "httpd"
     action:
-      * enable
-      * start
+      - enable
+      - start
 ```
-​
+
 This implementation is restrictive and does not support arbitrary Ruby code, helper functions, or attributes. However, if the need for additional customization arises, YAML recipes can be automatically converted into the DSL via the `knife yaml convert` command.
 
 ## Custom Resource Improvements
@@ -2186,6 +2186,7 @@ Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance
 ## Ohai 15.2
 
 Ohai has been updated to 15.2 with the following changes:
+
   - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
   - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all installed versions of packages, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
   - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
@@ -4057,7 +4058,7 @@ Ruby has been updated to version 2.5 bringing a 10% performance improvement and 
 
 ### InSpec 2.0
 
-InSpec has been updated to the 2.0 release. InSpec 2.0 brings compliance automation to the cloud, with new resource types specifically built for AWS and Azure clouds. Along with these changes are major speed improvements and quality of life updates. Please visit <https://www.inspec.io/> for more information.
+InSpec has been updated to the 2.0 release. InSpec 2.0 brings compliance automation to the cloud, with new resource types specifically built for AWS and Azure clouds. Along with these changes are major speed improvements and quality of life updates. Please visit <https://docs.chef.io/inspec/> for more information.
 
 ### Policyfile Hoisting
 
@@ -4323,7 +4324,7 @@ Ruby has been updated to from 2.4.4 to 2.4.5 to resolve multiple CVEs as well as
 
 - CVE-2018-1000201: DLL loading issue which can be hijacked on Windows OS
 
-# What's New in 13.9.X:
+# What's New in 13.9.4
 
 ## Security Updates
 
@@ -4373,7 +4374,7 @@ The Filesystem2 functionality has been backported to BSD systems to provide a co
 
 Enable Ubuntu-18.04 and Debian-9 tested chef-client packages.
 
-# What's New in 13.9:
+# What's New in 13.9
 
 - On Windows, the installer now correctly re-extracts files during repair mode
 - The mount resource will now not create duplicate entries when the device type differs
@@ -4444,14 +4445,15 @@ action :add do
 end
 ```
 
-# Ohai Release Notes 13.9:
+## Ohai Release Notes 13.9
 
 - Fix uptime parsing on AIX
 - Fix Softlayer cloud detection
 - Use the current Azure metadata endpoint
 - Correctly detect macOS guests on VMware and VirtualBox
+- Please see the [Ohai Changelog](https://github.com/chef/ohai/blob/master/CHANGELOG.md) for the complete list of changes.
 
-# What's New in 13.8:
+# What's New in 13.8
 
 ## Revert attributes changes from 13.7
 
