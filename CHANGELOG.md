@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.14.6 -->
-## [v15.14.6](https://github.com/chef/chef/tree/v15.14.6) (2021-01-06)
+<!-- latest_release 15.14.7 -->
+## [v15.14.7](https://github.com/chef/chef/tree/v15.14.7) (2021-01-06)
 
 #### Merged Pull Requests
-- Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10841](https://github.com/chef/chef/pull/10841) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10841](https://github.com/chef/chef/pull/10841) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
 - Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50)) <!-- 15.14.6 -->
 - Add gemspec metadata [#10838](https://github.com/chef/chef/pull/10838) ([tas50](https://github.com/tas50)) <!-- 15.14.5 -->
 - Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50)) <!-- 15.14.4 -->
