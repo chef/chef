@@ -97,7 +97,7 @@ class Chef
         # @raise [Mixlib::ShellOut::ShellCommandFailed] not a supported language or locale
         #
         def generate_locales
-          shell_out!("locale-gen #{unavailable_locales.join(" ")}")
+          shell_out!("locale-gen #{unavailable_locales.join(" ")}", timeout: 1800)
         end
 
         # Updates system locale by appropriately writing them in /etc/locale.conf
