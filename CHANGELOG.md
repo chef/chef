@@ -2,10 +2,11 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 15.14.8 -->
+## [v15.14.8](https://github.com/chef/chef/tree/v15.14.8) (2021-01-06)
 
 #### Merged Pull Requests
+- Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10842](https://github.com/chef/chef/pull/10842) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10843](https://github.com/chef/chef/pull/10843) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
@@ -13,6 +14,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10842](https://github.com/chef/chef/pull/10842) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.8 -->
 - Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10843](https://github.com/chef/chef/pull/10843) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
 - Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10841](https://github.com/chef/chef/pull/10841) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
 - Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50)) <!-- 15.14.6 -->
