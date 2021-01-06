@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.14.5 -->
-## [v15.14.5](https://github.com/chef/chef/tree/v15.14.5) (2021-01-06)
+<!-- latest_release 15.14.6 -->
+## [v15.14.6](https://github.com/chef/chef/tree/v15.14.6) (2021-01-06)
 
 #### Merged Pull Requests
-- Add gemspec metadata [#10838](https://github.com/chef/chef/pull/10838) ([tas50](https://github.com/tas50))
+- Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50)) <!-- 15.14.6 -->
 - Add gemspec metadata [#10838](https://github.com/chef/chef/pull/10838) ([tas50](https://github.com/tas50)) <!-- 15.14.5 -->
 - Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50)) <!-- 15.14.4 -->
 - Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50)) <!-- 15.14.3 -->
