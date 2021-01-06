@@ -59,7 +59,7 @@ class Chef
 
         unless casked?
           converge_by("install cask #{new_resource.cask_name} #{new_resource.options}") do
-            shell_out!("#{new_resource.homebrew_path} cask install #{new_resource.cask_name} #{new_resource.options}",
+            shell_out!("#{new_resource.homebrew_path} install --cask #{new_resource.cask_name} #{new_resource.options}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -74,7 +74,7 @@ class Chef
 
         if casked?
           converge_by("uninstall cask #{new_resource.cask_name}") do
-            shell_out!("#{new_resource.homebrew_path} cask uninstall #{new_resource.cask_name}",
+            shell_out!("#{new_resource.homebrew_path} uninstall --cask #{new_resource.cask_name}",
               user: new_resource.owner,
               env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
               cwd: ::Dir.home(new_resource.owner))
@@ -92,7 +92,7 @@ class Chef
         # @return [Boolean]
         def casked?
           unscoped_name = new_resource.cask_name.split("/").last
-          shell_out!("#{new_resource.homebrew_path} cask list 2>/dev/null",
+          shell_out!("#{new_resource.homebrew_path} list --cask 2>/dev/null",
             user: new_resource.owner,
             env:  { "HOME" => ::Dir.home(new_resource.owner), "USER" => new_resource.owner },
             cwd: ::Dir.home(new_resource.owner)).stdout.split.include?(unscoped_name)
