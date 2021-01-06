@@ -1,17 +1,19 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
+
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.14.3 -->
-## [v15.14.3](https://github.com/chef/chef/tree/v15.14.3) (2020-12-21)
+<!-- latest_release 15.14.4 -->
+## [v15.14.4](https://github.com/chef/chef/tree/v15.14.4) (2021-01-06)
 
 #### Merged Pull Requests
-- Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50))
+- Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.14.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50)) <!-- 15.14.4 -->
 - Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50)) <!-- 15.14.3 -->
 - Fixed cron_d resource ignoring sensitive property in Chef 15 [#10769](https://github.com/chef/chef/pull/10769) ([axl89](https://github.com/axl89)) <!-- 15.14.2 -->
 - Fix Chef-15 Habitat Builds [#10460](https://github.com/chef/chef/pull/10460) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.14.1 -->
