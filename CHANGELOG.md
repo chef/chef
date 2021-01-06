@@ -2,33 +2,31 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.15.0 -->
-## [v15.15.0](https://github.com/chef/chef/tree/v15.15.0) (2021-01-06)
-
-#### Merged Pull Requests
-- Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.14.0 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth)) <!-- 15.15.0 -->
-- Update InSpec 4.24.8, chef-vault 4.1, mixlibshellout 3.2, plist 3.6 [#10846](https://github.com/chef/chef/pull/10846) ([tas50](https://github.com/tas50)) <!-- 15.14.11 -->
-- locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50)) <!-- 15.14.10 -->
-- Fix homebrew_cask for the new syntax [#10845](https://github.com/chef/chef/pull/10845) ([tas50](https://github.com/tas50)) <!-- 15.14.9 -->
-- Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10842](https://github.com/chef/chef/pull/10842) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.8 -->
-- Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10843](https://github.com/chef/chef/pull/10843) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
-- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10841](https://github.com/chef/chef/pull/10841) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.14.7 -->
-- Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50)) <!-- 15.14.6 -->
-- Add gemspec metadata [#10838](https://github.com/chef/chef/pull/10838) ([tas50](https://github.com/tas50)) <!-- 15.14.5 -->
-- Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50)) <!-- 15.14.4 -->
-- Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50)) <!-- 15.14.3 -->
-- Fixed cron_d resource ignoring sensitive property in Chef 15 [#10769](https://github.com/chef/chef/pull/10769) ([axl89](https://github.com/axl89)) <!-- 15.14.2 -->
-- Fix Chef-15 Habitat Builds [#10460](https://github.com/chef/chef/pull/10460) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.14.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.15.0](https://github.com/chef/chef/tree/v15.15.0) (2021-01-06)
+
+#### Merged Pull Requests
+- Fix Chef-15 Habitat Builds [#10460](https://github.com/chef/chef/pull/10460) ([christopher-snapp](https://github.com/christopher-snapp))
+- Fixed cron_d resource ignoring sensitive property in Chef 15 [#10769](https://github.com/chef/chef/pull/10769) ([axl89](https://github.com/axl89))
+- Bump openssl, libarchive, libiconv, and libffi to the latest [#10771](https://github.com/chef/chef/pull/10771) ([tas50](https://github.com/tas50))
+- Update Nokogiri to 1.11.0 [#10837](https://github.com/chef/chef/pull/10837) ([tas50](https://github.com/tas50))
+- Add gemspec metadata [#10838](https://github.com/chef/chef/pull/10838) ([tas50](https://github.com/tas50))
+- Remove the evals in the omnibus gemfile for Dependabot [#10839](https://github.com/chef/chef/pull/10839) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `457df26` to `869ef4e` in /omnibus [#10841](https://github.com/chef/chef/pull/10841) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump test-kitchen from 2.8.0 to 2.9.0 in /omnibus [#10843](https://github.com/chef/chef/pull/10843) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus from `d13ae16` to `44f1303` in /omnibus [#10842](https://github.com/chef/chef/pull/10842) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Fix homebrew_cask for the new syntax [#10845](https://github.com/chef/chef/pull/10845) ([tas50](https://github.com/tas50))
+- locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50))
+- Update InSpec 4.24.8, chef-vault 4.1, mixlibshellout 3.2, plist 3.6 [#10846](https://github.com/chef/chef/pull/10846) ([tas50](https://github.com/tas50))
+- Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth))
+<!-- latest_stable_release -->
+
 ## [v15.14.0](https://github.com/chef/chef/tree/v15.14.0) (2020-09-11)
 
 #### Merged Pull Requests
@@ -46,7 +44,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Update openssl to 1.0.2w and bump other deps to current [#10415](https://github.com/chef/chef/pull/10415) ([tas50](https://github.com/tas50))
 - Add SLES 15 S390x builds [#10417](https://github.com/chef/chef/pull/10417) ([tas50](https://github.com/tas50))
 - Add Chef Infra Client 15.14 release notes [#10419](https://github.com/chef/chef/pull/10419) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v15.13.8](https://github.com/chef/chef/tree/v15.13.8) (2020-07-29)
 
