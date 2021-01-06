@@ -2187,10 +2187,10 @@ Packages will no longer be built for Ubuntu 14.04 as Canonical ended maintenance
 
 Ohai has been updated to 15.2 with the following changes:
 
-  - Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
-  - A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all installed versions of packages, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
-  - The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
-  - Arch running on ARM processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
+- Improved detection of Openstack including proper detection of Windows nodes running on Openstack when fetching metadata. Thanks [@jjustice6](https://github.com/jjustice6).
+- A new `other_versions` field has been added to the Packages plugin when the node is using RPM. This allows you to see all installed versions of packages, not just the latest version. Thanks [@jjustice6](https://github.com/jjustice6).
+- The Linux Network plugin has been improved to not mark interfaces down if `stp_state` is marked as down. Thanks [@josephmilla](https://github.com/josephmilla).
+- Arch running on ARM processors is now detected as the `arm` platform. Thanks [@BackSlasher](https://github.com/BackSlasher).
 
 ## Chef InSpec 4.10.4
 
@@ -2242,35 +2242,36 @@ Our experimental Target Mode received a large number of updates in Chef Infra Cl
 
 Ohai has been updated to 15.1 with the following changes:
 
-  - The `Shard` plugin properly uses the machine's `machinename`, `serial`, and `uuid` attributes to generate the shard value. The plugin also no longer throws an exception on macOS hosts. Thanks [@michel-slm](https://github.com/michel-slm) for these fixes.
-  - The `Virtualbox` plugin has been enhanced to gather information on running guests, storage, and networks when VirtualBox is installed on a node. Thanks [@freakinhippie](https://github.com/freakinhippie) for this new capability.
-  - Ohai no longer fails to gather interface information on Solaris in some rare conditions. Thanks [@devoptimist](https://github.com/devoptimist) for this fix.
+- The `Shard` plugin properly uses the machine's `machinename`, `serial`, and `uuid` attributes to generate the shard value. The plugin also no longer throws an exception on macOS hosts. Thanks [@michel-slm](https://github.com/michel-slm) for these fixes.
+- The `Virtualbox` plugin has been enhanced to gather information on running guests, storage, and networks when VirtualBox is installed on a node. Thanks [@freakinhippie](https://github.com/freakinhippie) for this new capability.
+- Ohai no longer fails to gather interface information on Solaris in some rare conditions. Thanks [@devoptimist](https://github.com/devoptimist) for this fix.
 
 ## Chef InSpec 4.6.4
 
 Chef InSpec has been updated from 4.3.2 to 4.6.4 with the following changes:
 
-  - InSpec `Attributes` have now been renamed to `Inputs` to avoid confusion with Chef Infra attributes.
-  - A new InSpec plugin type of `Input` has been added for defining new input types. See the [InSpec Plugins documentation](https://github.com/inspec/inspec/blob/master/docs/dev/plugins.md#implementing-input-plugins) for more information on writing these plugins.
-  - InSpec no longer prints errors to the stdout when passing `--format json`.
-  - When fetching profiles from GitHub, the URL can now include periods.
-  - The performance of InSpec startup has been improved.
+- InSpec `Attributes` have now been renamed to `Inputs` to avoid confusion with Chef Infra attributes.
+- A new InSpec plugin type of `Input` has been added for defining new input types. See the [InSpec Plugins documentation](https://github.com/inspec/inspec/blob/master/docs/dev/plugins.md#implementing-input-plugins) for more information on writing these plugins.
+- InSpec no longer prints errors to the stdout when passing `--format json`.
+- When fetching profiles from GitHub, the URL can now include periods.
+- The performance of InSpec startup has been improved.
 
 # What's New in 15.0.300
 
 This release includes critical bugfixes for the 15.0 release:
-  - Fix `knife bootstrap` over SSH when `requiretty` is configured on the host.
-  - Added the `--chef-license` CLI flag to `chef-apply` and `chef-solo` commands.
+- Fix `knife bootstrap` over SSH when `requiretty` is configured on the host.
+- Added the `--chef-license` CLI flag to `chef-apply` and `chef-solo` commands.
 
 # What's New in 15.0.298
 
 This release includes critical bugfixes for the 15.0 release:
-  - Allow accepting the license on non-interactive Windows sessions
-  - Resolve license acceptance failures on Windows 2012 R2
-  - Improve some `knife` and `chef-client` help text
-  - Properly handle session_timeout default value in `knife bootstrap`
-  - Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
-  - Resolve failures using the ca_trust_file option with `knife bootstrap`
+
+- Allow accepting the license on non-interactive Windows sessions
+- Resolve license acceptance failures on Windows 2012 R2
+- Improve some `knife` and `chef-client` help text
+- Properly handle session_timeout default value in `knife bootstrap`
+- Avoid failures due to Train::Transports::SSHFailed class not being loaded in `knife bootstrap`
+- Resolve failures using the ca_trust_file option with `knife bootstrap`
 
 # What's New in 15.0.293
 
@@ -2771,7 +2772,7 @@ The following platforms have reached EOL status and are no longer packaged or te
 - SUSE Linux Enterprise Server (SLES) 11
 - Ubuntu 14.04
 
-See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms.html#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
+See Chef's [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for more information on when Chef ends support for an OS release.
 
 ## Updated Resources
 
