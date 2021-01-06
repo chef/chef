@@ -4454,7 +4454,21 @@ end
 - Correctly detect macOS guests on VMware and VirtualBox
 - Please see the [Ohai Changelog](https://github.com/chef/ohai/blob/master/CHANGELOG.md) for the complete list of changes.
 
-# What's New in 13.8
+## What's New in 13.8.5
+
+This is a small bug fix release to resolve two issues we found in the
+13.8 release:
+
+- chef-client run failures due to a failure in a newer version of the FFI gem on RHEL 6.x and 7.x
+- knife failures when running `knife cookbook site install` to install a deprecated cookbook that has no replacement
+
+## What's New in 13.8.3
+
+This is a small bug fix release that updates Ohai to properly detect and
+poll SoftLayer metadata now that SoftLayer no longer supports TLS
+1.0/1.1. This update is only necessary if you're running on Softlayer.
+
+## What's New in 13.8
 
 ## Revert attributes changes from 13.7
 
