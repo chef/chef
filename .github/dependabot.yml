@@ -7,3 +7,19 @@ updates:
     time: "06:00"
     timezone: America/Los_Angeles
   open-pull-requests-limit: 10
+- package-ecosystem: bundler
+  target_branch: "chef-16"
+  directory: "/omnibus"
+  schedule:
+    interval: daily
+    time: "06:00"
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 10
+- package-ecosystem: bundler
+  target_branch: "chef-15"
+  directory: "/omnibus"
+  schedule:
+    interval: daily
+    time: "06:00"
+    timezone: America/Los_Angeles
+  open-pull-requests-limit: 10
