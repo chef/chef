@@ -4279,6 +4279,7 @@ The ``ohai`` resource's unused ``ohai_name`` property has been deprecated. This 
 ### Ruby 2.4.5
 
 Ruby has been updated to from 2.4.4 to 2.4.5 to resolve multiple CVEs as well as bugs:
+
 - [CVE-2018-16396](https://www.ruby-lang.org/en/news/2018/10/17/not-propagated-taint-flag-in-some-formats-of-pack-cve-2018-16396/)
 - [CVE-2018-16395](https://www.ruby-lang.org/en/news/2018/10/17/openssl-x509-name-equality-check-does-not-work-correctly-cve-2018-16395/)
 
@@ -4527,7 +4528,7 @@ The chocolatey cookbook's chocolatey_package resource originally contained an :u
 - OpenSSL has been upgraded to 1.0.2n to resolve CVE-2017-3738, CVE-2017-3737, CVE-2017-3736, and CVE-2017-3735.
 - Ruby has been upgraded to 2.4.3 to resolve CVE-2017-17405
 
-## Ohai 13.7 Release Notes:
+## Ohai 13.7 Release Notes
 
 ### Network Tunnel Information
 
@@ -4545,7 +4546,7 @@ The EC2 plugin has been updated to properly detect the new AWS hypervisor used i
 
 The mdadm plugin has been updated to properly handle arrays with more than 10 disks and to properly handle journal and spare drives in the disk counts
 
-# What's New in 13.6.4:
+# What's New in 13.6.4
 
 ## Bugfixes
 
@@ -4556,7 +4557,7 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 - OpenSSL has been upgraded to 1.0.2m to resolve CVE-2017-3735 and CVE-2017-3736
 - RubyGems has been upgraded to 2.6.14 to resolve CVE-2017-0903
 
-# What's New in 13.6:
+# What's New in 13.6
 
 ## `deploy` Resource Is Deprecated
 
@@ -4576,13 +4577,13 @@ It's no longer possible to create data bags named `node`, `role`, `client`, or `
 
 If both dnf and yum were installed, in some circumstances the yum provider might choose to run dnf, which is not what we intended it to do. It now properly runs yum, all the time.
 
-## Ohai 13.6 Release Notes:
+## Ohai 13.6 Release Notes
 
 ### Critical Plugins
 
 Users can now specify a list of plugins which are `critical`. Critical plugins will cause Ohai to fail if they do not run successfully (and thus cause a Chef run using Ohai to fail). The syntax for this is:
 
-```
+```ruby
 ohai.critical_plugins << :Filesystem
 ```
 
@@ -4602,7 +4603,7 @@ The Packages plugin now supports gathering packages data on Amazon Linux
 
 In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and cloud_v2 plugins. To maintain compatibility with users of the previous V2 plugins we write data to both locations. We had originally planned to continue writing data to both locations until Chef Infra Client 15. Instead due to the large amount of duplicate node data this introduces we are updating OHAI-11 and OHAI-12 deprecations to remove node['cloud_v2'] and node['filesystem2'] with the release of Chef 14 in April 2018.
 
-# What's New in 13.5:
+# What's New in 13.5
 
 ## Mount's password property is now marked as sensitive
 
@@ -4614,7 +4615,7 @@ Previously, the resource would accept any date that was formatted correctly in t
 
 ## InSpec updated to 1.39.1
 
-## Ohai 13.5 Release Notes:
+## Ohai 13.5 Release Notes
 
 ### Correctly detect IPv6 routes ending in ::
 
@@ -4624,7 +4625,7 @@ Previously we would ignore routes that ended `::`, and now we properly detect th
 
 Debug logs will show the length of time each plugin takes to run, making debugging of long ohai runs easier.
 
-# What's New in 13.4:
+# What's New in 13.4
 
 ## Security release of Ruby
 
