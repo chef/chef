@@ -4115,12 +4115,12 @@ OpenSSL has been updated to 1.0.2o to resolve [CVE-2018-0739](https://cve.mitre.
 
 Ruby has been updated to 2.5.1 to resolve the following vulnerabilities:
 
-- [cve-2017-17742](https://www.ruby-lang.org/en/news/2018/03/28/http-response-splitting-in-webrick-cve-2017-17742/)
-- [cve-2018-6914](https://www.ruby-lang.org/en/news/2018/03/28/unintentional-file-and-directory-creation-with-directory-traversal-cve-2018-6914/)
-- [cve-2018-8777](https://www.ruby-lang.org/en/news/2018/03/28/large-request-dos-in-webrick-cve-2018-8777/)
-- [cve-2018-8778](https://www.ruby-lang.org/en/news/2018/03/28/buffer-under-read-unpack-cve-2018-8778/)
-- [cve-2018-8779](https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-unixsocket-cve-2018-8779/)
-- [cve-2018-8780](https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-dir-cve-2018-8780/)
+- [CVE-2017-17742](https://www.ruby-lang.org/en/news/2018/03/28/http-response-splitting-in-webrick-cve-2017-17742/)
+- [CVE-2018-6914](https://www.ruby-lang.org/en/news/2018/03/28/unintentional-file-and-directory-creation-with-directory-traversal-cve-2018-6914/)
+- [CVE-2018-8777](https://www.ruby-lang.org/en/news/2018/03/28/large-request-dos-in-webrick-cve-2018-8777/)
+- [CVE-2018-8778](https://www.ruby-lang.org/en/news/2018/03/28/buffer-under-read-unpack-cve-2018-8778/)
+- [CVE-2018-8779](https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-unixsocket-cve-2018-8779/)
+- [CVE-2018-8780](https://www.ruby-lang.org/en/news/2018/03/28/poisoned-nul-byte-dir-cve-2018-8780/)
 - [Multiple vulnerabilities in rubygems](https://www.ruby-lang.org/en/news/2018/02/17/multiple-vulnerabilities-in-rubygems/)
 
 ## Breaking Changes
@@ -4227,12 +4227,13 @@ OpenSSL has been updated to 1.0.2r in order to resolve [CVE-2019-1559](https://c
 ### RubyGems
 
 RubyGems has been updated to 2.7.9 in order to resolve the following CVEs:
-  - [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
-  - [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
-  - [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
-  - [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
-  - [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
-  - [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
+
+- [CVE-2019-8320](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8320): Delete directory using symlink when decompressing tar
+- [CVE-2019-8321](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8321): Escape sequence injection vulnerability in verbose
+- [CVE-2019-8322](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8322): Escape sequence injection vulnerability in gem owner
+- [CVE-2019-8323](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8323): Escape sequence injection vulnerability in API response handling
+- [CVE-2019-8324](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8324): Installing a malicious gem may lead to arbitrary code execution
+- [CVE-2019-8325](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-8325): Escape sequence injection vulnerability in errors
 
 # What's New in 13.12.3
 
@@ -4481,7 +4482,7 @@ Per <https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1> , th
 
 ## Security Updates
 
-- Updated libxml2 to 2.9.7; fixes: CVE-2017-15412
+- Updated libxml2 to 2.9.7; fixes: [CVE-2017-15412](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-15412)
 
 # What's New in 13.7
 
@@ -4525,8 +4526,8 @@ The chocolatey cookbook's chocolatey_package resource originally contained an :u
 
 ## Security Updates
 
-- OpenSSL has been upgraded to 1.0.2n to resolve CVE-2017-3738, CVE-2017-3737, CVE-2017-3736, and CVE-2017-3735.
-- Ruby has been upgraded to 2.4.3 to resolve CVE-2017-17405
+- OpenSSL has been upgraded to 1.0.2n to resolve [CVE-2017-3738](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3738), [CVE-2017-3737](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3737), [CVE-2017-3736](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3736), and [CVE-2017-3735](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3735).
+- Ruby has been upgraded to 2.4.3 to resolve [CVE-2017-17405](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-17405)
 
 ## Ohai 13.7 Release Notes
 
@@ -4554,8 +4555,8 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 
 ## Security Updates
 
-- OpenSSL has been upgraded to 1.0.2m to resolve CVE-2017-3735 and CVE-2017-3736
-- RubyGems has been upgraded to 2.6.14 to resolve CVE-2017-0903
+- OpenSSL has been upgraded to 1.0.2m to resolve [CVE-2017-3735](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3735) and [CVE-2017-3736](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3736)
+- RubyGems has been upgraded to 2.6.14 to resolve [CVE-2017-0903](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0903)
 
 # What's New in 13.6
 
@@ -4631,19 +4632,19 @@ Debug logs will show the length of time each plugin takes to run, making debuggi
 
 Chef Client 13.4 includes Ruby 2.4.2 to fix the following CVEs:
 
-- CVE-2017-0898
-- CVE-2017-10784
-- CVE-2017-14033
-- CVE-2017-14064
+- [CVE-2017-0898](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0898)
+- [CVE-2017-10784](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-10784)
+- [CVE-2017-14033](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-14033)
+- [CVE-2017-14064](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-14064)
 
 ## Security release of RubyGems
 
 Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
 
-- CVE-2017-0899
-- CVE-2017-0900
-- CVE-2017-0901
-- CVE-2017-0902
+- [CVE-2017-0899](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0899)
+- [CVE-2017-0900](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0900)
+- [CVE-2017-0901](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0901)
+- [CVE-2017-0902](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0902)
 
 ## Ifconfig provider on Red Hat now supports additional properties
 
