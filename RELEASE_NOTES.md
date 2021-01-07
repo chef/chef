@@ -3703,7 +3703,7 @@ The execute resource has also been updated with a new property `default_env` tha
 
 ## Small Size on Disk
 
-Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1\. Enjoy the extra disk space.
+Chef now bundles the inspec-core and train-core gems, which omit many cloud dependencies not needed within the Chef client. This change reduces the install size of a typical system by ~22% and the number of files within that installation by ~20% compared to Chef 14.1. Enjoy the extra disk space.
 
 ## Virtualization detection on AWS
 
@@ -3859,7 +3859,7 @@ Use the rhsm_subscription resource to add or remove Red Hat Subscription Manager
 
 ### sudo
 
-Use the sudo resource to add or remove individual sudo entries using `sudoers.d` files. Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the `#includedir` directive introduced in version 1.7.2\. This resource does not enforce installation of the required sudo version. Supported releases of Ubuntu, Debian, SuSE, and RHEL (6+) all support this feature. This resource was ported from the `sudo` community cookbook.
+Use the sudo resource to add or remove individual sudo entries using `sudoers.d` files. Sudo version 1.7.2 or newer is required to use the sudo resource, as it relies on the `#includedir` directive introduced in version 1.7.2. This resource does not enforce installation of the required sudo version. Supported releases of Ubuntu, Debian, SuSE, and RHEL (6+) all support this feature. This resource was ported from the `sudo` community cookbook.
 
 ### swap_file
 
@@ -4153,7 +4153,7 @@ The Chef Solo `-r` flag has been removed as it was deprecated and replaced with 
 
 ### node.set and node.set_unless attribute levels removal
 
-`node.set` and `node.set_unless` were deprecated in Chef 12 and have been removed in Chef 14\. To replicate this same functionality users should use `node.normal` and `node.normal_unless`, although we highly recommend reading our [attribute documentation](https://docs.chef.io/attributes) to make sure `normal` is in fact the your desired attribute level.
+`node.set` and `node.set_unless` were deprecated in Chef 12 and have been removed in Chef 14. To replicate this same functionality users should use `node.normal` and `node.normal_unless`, although we highly recommend reading our [attribute documentation](https://docs.chef.io/attributes) to make sure `normal` is in fact the your desired attribute level.
 
 ### chocolatey_package :uninstall Action
 
@@ -4355,12 +4355,12 @@ The Filesystem2 functionality has been backported to BSD systems to provide a co
 
 ### Ruby updated to 2.4.4
 
-- CVE-2017-17742: HTTP response splitting in WEBrick
-- CVE-2018-6914: Unintentional file and directory creation with directory traversal in tempfile and tmpdir
-- CVE-2018-8777: DoS by large request in WEBrick
-- CVE-2018-8778: Buffer under-read in String#unpack
-- CVE-2018-8779: Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
-- CVE-2018-8780: Unintentional directory traversal by poisoned NUL byte in Dir
+- [CVE-2017-17742](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-17742/): HTTP response splitting in WEBrick
+- [CVE-2018-6914](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-6914/): Unintentional file and directory creation with directory traversal in tempfile and tmpdir
+- [CVE-2018-8777](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8777/): DoS by large request in WEBrick
+- [CVE-2018-8778](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8778/): Buffer under-read in String#unpack
+- [CVE-2018-8779](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8779/): Unintentional socket creation by poisoned NUL byte in UNIXServer and UNIXSocket
+- [CVE-2018-8780](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2018-8780/): Unintentional directory traversal by poisoned NUL byte in Dir
 - Multiple vulnerabilities in RubyGems
 
 ### Nokogiri updated to 1.8.2
@@ -4474,7 +4474,7 @@ poll SoftLayer metadata now that SoftLayer no longer supports TLS
 
 ## Revert attributes changes from 13.7
 
-Per <https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1> , there was a regression in how arrays and hashes were handled in 13.7\. In 13.8, we've reverted to the same code as 13.6.
+Per <https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1> , there was a regression in how arrays and hashes were handled in 13.7. In 13.8, we've reverted to the same code as 13.6.
 
 ## Continuing work on `windows_task`
 
