@@ -4492,7 +4492,7 @@ We've spent a considerable amount of time testing and fixing the `windows_task` 
 
 ## Credentials handling
 
-Previously, chef on the workstation used `knife.rb` or `config.rb` to handle credentials. This didn't do a great job when interacting with multiple Chef servers, leading to the need for tools like `knife_block`. We've added support for a credentials file that can contain configuration for many Chef servers (or organizations), and we've made it easy to indicate which account you mean to use.
+Previously, the `knife` CLI used `knife.rb` or `config.rb` to handle credentials. This didn't do a great job when interacting with multiple Chef servers, leading to the need for tools like `knife_block`. We've added support for a credentials file that can contain configuration for many Chef servers (or organizations), and we've made it easy to indicate which account you mean to use.
 
 ## New deprecations
 
