@@ -4642,11 +4642,11 @@ Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
 - [CVE-2017-0901](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0901)
 - [CVE-2017-0902](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0902)
 
-## Ifconfig provider on Red Hat now supports additional properties
+### Ifconfig provider on Red Hat now supports additional properties
 
 It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` properties on interfaces on Red Hat compatible systems. See <https://access.redhat.com/documentation/en-US/Red_Hat_Enterprise_Linux/6/html/Deployment_Guide/s1-networkscripts-interfaces.html> for further information
 
-### Properties
+#### Properties
 
 - `ethtool_opts`<br>
   **Ruby types:** String<br>
@@ -4664,17 +4664,17 @@ It is now possible to set `ETHTOOL_OPTS`, `BONDING_OPTS`, `MASTER` and `SLAVE` p
   **Ruby types:** String<br>
   **Platforms:*- Fedora, RHEL, Amazon Linux Whether the interface is controlled by the channel bonding interface defined by `master`, above.
 
-## Chef Vault is now included
+### Chef Vault is now included
 
 Chef Client 13.4 now includes the `chef-vault` gem, making it easier for users of chef-vault to use their encrypted items.
 
-## Windows `remote_file` resource with alternate credentials
+### Windows `remote_file` resource with alternate credentials
 
 The `remote_file` resource now supports the use of credentials on Windows when accessing a remote UNC path on Windows such as `\\myserver\myshare\mydirectory\myfile.txt`. This allows access to the file at that path location even if the Chef client process identity does not have permission to access the file. The new properties `remote_user`, `remote_domain`, and `remote_password` may be used to specify credentials with access to the remote file so that it may be read.
 
 **Note**: This feature is mainly used for accessing files between two nodes in different domains and having different user accounts. In case the two nodes are in same domain, `remote_file` resource does not need `remote_user` and `remote_password` specified because the user has the same access on both systems through the domain.
 
-### Properties
+#### Properties
 
 The following properties are new for the `remote_file` resource:
 
@@ -4690,7 +4690,7 @@ The following properties are new for the `remote_file` resource:
   **Ruby types*- String<br>
   _Windows only:_ The domain of the user user specified by the `remote_user` property. Default value: `nil`. If not specified, the user and password properties specified by the `remote_user` and `remote_password` properties will be used to authenticate that user against the domain in which the system hosting the UNC path specified via `source` is joined, or if that system is not joined to a domain it will authenticate the user as a local account on that system. An alternative way to specify the domain is to leave this property unspecified and specify the domain as part of the `remote_user` property.
 
-### Examples
+#### Examples
 
 Accessing file from a (different) domain account
 
@@ -4734,20 +4734,20 @@ remote_file "E://domain_test.txt"  do
 end
 ```
 
-## windows_path resource
+### windows_path resource
 
 `windows_path` resource has been moved to core chef from windows cookbook. Use the `windows_path` resource to manage the path environment variable on Microsoft Windows.
 
-### Actions
+#### Actions
 
 - `:add` - Add an item to the system path
 - `:remove` - Remove an item from the system path
 
-### Properties
+#### Properties
 
 - `path` - Name attribute. The name of the value to add to the system path
 
-### Examples
+#### Examples
 
 Add Sysinternals to the system path
 
@@ -4765,13 +4765,13 @@ windows_path 'C:\7-Zip' do
 end
 ```
 
-## Ohai Release Notes 13.4
+### Ohai 13.4
 
-### Windows EC2 Detection
+#### Windows EC2 Detection
 
 Detection of nodes running in EC2 has been greatly improved and should now detect nodes 100% of the time including nodes that have been migrated to EC2 or were built with custom AMIs.
 
-### Azure Metadata Endpoint Detection
+#### Azure Metadata Endpoint Detection
 
 Ohai now polls the new Azure metadata endpoint, giving us additional configuration details on nodes running in Azure
 
@@ -4834,7 +4834,7 @@ Sample data now available under azure:
 }
 ```
 
-### Package Plugin Supports Arch Linux
+#### Package Plugin Supports Arch Linux
 
 The Packages plugin has been updated to include package information on Arch Linux systems.
 
