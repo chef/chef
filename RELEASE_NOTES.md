@@ -4622,16 +4622,18 @@ Debug logs will show the length of time each plugin takes to run, making debuggi
 
 ## What's New in 13.4.24
 
-## Security release of Ruby
+### Security
 
-Chef Client 13.4 includes Ruby 2.4.2 to fix the following CVEs:
+This release includes Ruby 2.4.2 to fix the following CVEs:
 
 - [CVE-2017-0898](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0898)
 - [CVE-2017-10784](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-10784)
 - [CVE-2017-14033](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-14033)
 - [CVE-2017-14064](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-14064)
 
-## Security release of RubyGems
+## What's New in 13.4.19
+
+### Security release of RubyGems
 
 Chef Client 13.4 includes RubyGems 2.6.13 to fix the following CVEs:
 
@@ -4836,7 +4838,7 @@ Sample data now available under azure:
 
 The Packages plugin has been updated to include package information on Arch Linux systems.
 
-# What's New in 13.3:
+## What's New in 13.3
 
 ## Unprivileged Symlink Creation on Windows
 
