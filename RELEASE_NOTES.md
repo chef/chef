@@ -4498,21 +4498,21 @@ Previously, chef on the workstation used `knife.rb` or `config.rb` to handle cre
 
 ### `erl_call` Resource
 
-We introduced `erl_call` to help us to manage CouchDB servers back in the olden times of Chef. Since then, we've noticed that no-one uses it, and so `erl_call` will be removed in Chef 14\. Foodcritic rule FC105 has been introduced to detect usage of erl_call.
+We introduced `erl_call` to help us to manage CouchDB servers back in the olden times of Chef. Since then, we've noticed that no-one uses it, and so `erl_call` will be removed in Chef 14. Foodcritic rule [FC105(http://www.foodcritic.io/#FC105) has been introduced to detect usage of erl_call.
 
 ### epic_fail
 
-The original name for the ignore_failure property in resources was epic_fail. Our documentation hasn't referred to epic_fail for years and out of the 3500 cookbooks on the Supermarket only one uses epic_fail. In Chef 14 we will remove the epic_fail property entirely. Foodcritic rule FC107 has been introduced to detect usage of epic_fail.
+The original name for the ignore_failure property in resources was epic_fail. Our documentation hasn't referred to epic_fail for years and out of the 3500 cookbooks on the Supermarket only one uses epic_fail. In Chef 14 we will remove the epic_fail property entirely. Foodcritic rule [FC107](http://www.foodcritic.io/#FC107) has been introduced to detect usage of epic_fail.
 
 ### Legacy Mixins
 
-In Chef 14 several legacy legacy mixins will be removed. Usage of these mixins has resulted in deprecation warnings for several years. They were traditionally used in some HWRPs, but are rarely found in code available on the Supermarket. Foodcritic rules FC097, FC098, FC099, FC100, and FC102 have been introduced to detect these mixins.
+In Chef 14 several legacy mixins will be removed. Usage of these mixins has resulted in deprecation warnings for several years. They were traditionally used in some HWRPs, but are rarely found in code available on the Supermarket. Foodcritic rules [FC097](http://www.foodcritic.io/#FC097), [FC098](http://www.foodcritic.io/#FC098), [FC099](http://www.foodcritic.io/#FC099), [FC100](http://www.foodcritic.io/#FC100), and [FC102](http://www.foodcritic.io/#FC102) have been introduced to detect these mixins:
 
-- Chef::Mixin::LanguageIncludeAttribute
-- Chef::Mixin::RecipeDefinitionDSLCore
-- Chef::Mixin::LanguageIncludeRecipe
-- Chef::Mixin::Language
-- Chef::DSL::Recipe::FullDSL
+- `Chef::Mixin::LanguageIncludeAttribute`
+- `Chef::Mixin::RecipeDefinitionDSLCore`
+- `Chef::Mixin::LanguageIncludeRecipe`
+- `Chef::Mixin::Language`
+- `Chef::DSL::Recipe::FullDSL`
 
 ### :uninstall action in chocolatey_package
 
