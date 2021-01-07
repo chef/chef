@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mash"
+require_relative "../mash"
 
-require "chef/mixin/deep_merge"
+require_relative "../mixin/deep_merge"
 
-require "chef/role"
-require "chef/server_api"
-require "chef/json_compat"
+require_relative "../role"
+require_relative "../server_api"
+require_relative "../json_compat"
 
 class Chef
   class RunList
@@ -64,7 +64,7 @@ class Chef
 
       def initialize(environment, run_list_items, source = nil)
         @environment = environment
-        @missing_roles_with_including_role = Array.new
+        @missing_roles_with_including_role = []
 
         @run_list_items = run_list_items.dup
         @source = source
@@ -102,6 +102,7 @@ class Chef
       # nil         if the role does not exist
       def inflate_role(role_name, included_by)
         return false if applied_role?(role_name) # Prevent infinite loops
+
         applied_role(role_name)
         fetch_role(role_name, included_by)
       end
@@ -112,7 +113,7 @@ class Chef
       end
 
       def applied_role?(role_name)
-        @applied_roles.has_key?(role_name)
+        @applied_roles.key?(role_name)
       end
 
       # Returns an array of role names that were expanded; this
@@ -140,17 +141,19 @@ class Chef
       end
 
       def errors
-        @missing_roles_with_including_role.map { |item| item.first }
+        @missing_roles_with_including_role.map(&:first)
       end
 
       def to_json(*a)
-        Chef::JSONCompat.to_json(to_hash, *a)
+        Chef::JSONCompat.to_json(to_h, *a)
       end
 
-      def to_hash
-        seen_items = { :recipe => {}, :role => {} }
-        { :id => @environment, :run_list => convert_run_list_trace("top level", seen_items) }
+      def to_h
+        seen_items = { recipe: {}, role: {} }
+        { id: @environment, run_list: convert_run_list_trace("top level", seen_items) }
       end
+
+      alias_method :to_hash, :to_h
 
       private
 
@@ -185,12 +188,12 @@ class Chef
           seen_items[item.type][item.name] = true
           case item.type
             when :recipe
-              { :type => "recipe", :name => item.name, :version => item.version, :skipped => !!skipped }
+              { type: "recipe", name: item.name, version: item.version, skipped: !!skipped }
             when :role
               error = @role_errors[item.name]
               missing = @all_missing_roles[item.name]
-              { :type => :role, :name => item.name, :children => (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
-                :missing => missing, :error => error, :skipped => skipped }
+              { type: :role, name: item.name, children: (missing || error || skipped) ? [] : convert_run_list_trace(item.to_s, seen_items),
+                missing: missing, error: error, skipped: skipped }
           end
         end
       end
@@ -217,7 +220,7 @@ class Chef
 
       def fetch_role(name, included_by)
         Chef::Role.from_hash(rest.get("roles/#{name}"))
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         if e.message == '404 "Not Found"'
           role_not_found(name, included_by)
         else

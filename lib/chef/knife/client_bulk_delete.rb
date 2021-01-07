@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,20 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class ClientBulkDelete < Knife
 
       deps do
-        require "chef/api_client_v1"
-        require "chef/json_compat"
+        require_relative "../api_client_v1"
       end
 
       option :delete_validators,
-       :short => "-D",
-       :long => "--delete-validators",
-       :description => "Force deletion of clients if they're validators"
+        short: "-D",
+        long: "--delete-validators",
+        description: "Force deletion of clients if they're validators."
 
       banner "knife client bulk delete REGEX (options)"
 
@@ -45,7 +44,8 @@ class Chef
         clients_to_delete = {}
         validators_to_delete = {}
         all_clients.each do |name, client|
-          next unless name =~ matcher
+          next unless name&.match?(matcher)
+
           if client.validator
             validators_to_delete[client.name] = client
           else

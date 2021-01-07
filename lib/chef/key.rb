@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/mixin/params_validate"
-require "chef/exceptions"
-require "chef/server_api"
+require_relative "json_compat"
+require_relative "mixin/params_validate"
+require_relative "exceptions"
+require_relative "server_api"
 
 class Chef
   # Class for interacting with a chef key object. Can be used to create new keys,
@@ -46,7 +46,7 @@ class Chef
       # Actor that the key is for, either a client or a user.
       @actor = actor
 
-      unless actor_field_name == "user" || actor_field_name == "client"
+      unless %w{user client}.include?(actor_field_name)
         raise Chef::Exceptions::InvalidKeyArgument, "the second argument to initialize must be either 'user' or 'client'"
       end
 
@@ -77,23 +77,24 @@ class Chef
 
     def actor(arg = nil)
       set_or_return(:actor, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    :kind_of => String)
+        kind_of: String)
     end
 
     def public_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set the public_key if create_key is true" if !arg.nil? && @create_key
+
       set_or_return(:public_key, arg,
-                    :kind_of => String)
+        kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key, arg,
-                    :kind_of => String)
+        kind_of: String)
     end
 
     def delete_public_key
@@ -106,16 +107,17 @@ class Chef
 
     def create_key(arg = nil)
       raise Chef::Exceptions::InvalidKeyAttribute, "you cannot set create_key to true if the public_key field exists" if arg == true && !@public_key.nil?
+
       set_or_return(:create_key, arg,
-                    :kind_of => [TrueClass, FalseClass])
+        kind_of: [TrueClass, FalseClass])
     end
 
     def expiration_date(arg = nil)
       set_or_return(:expiration_date, arg,
-                    :regex => /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
+        regex: /^(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z|infinity)$/)
     end
 
-    def to_hash
+    def to_h
       result = {
         @actor_field_name => @actor,
       }
@@ -127,8 +129,10 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def create
@@ -140,7 +144,7 @@ class Chef
       # defaults the key name to the fingerprint of the key
       if @name.nil?
         # if they didn't pass a public_key,
-        #then they must supply a name because we can't generate a fingerprint
+        # then they must supply a name because we can't generate a fingerprint
         unless @public_key.nil?
           @name = fingerprint
         else
@@ -155,7 +159,7 @@ class Chef
       result = chef_rest.post("#{api_base}/#{@actor}/keys", payload)
       # append the private key to the current key if the server returned one,
       # since the POST endpoint just returns uri and private_key if needed.
-      new_key = self.to_hash
+      new_key = to_h
       new_key["private_key"] = result["private_key"] if result["private_key"]
       Chef::Key.from_hash(new_key)
     end
@@ -175,17 +179,17 @@ class Chef
       # to @name.
       put_name = @name if put_name.nil?
 
-      new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_hash)
+      new_key = chef_rest.put("#{api_base}/#{@actor}/keys/#{put_name}", to_h)
       # if the server returned a public_key, remove the create_key field, as we now have a key
       if new_key["public_key"]
-        self.delete_create_key
+        delete_create_key
       end
-      Chef::Key.from_hash(self.to_hash.merge(new_key))
+      Chef::Key.from_hash(to_h.merge(new_key))
     end
 
     def save
       create
-    rescue Net::HTTPServerException => e
+    rescue Net::HTTPClientException => e
       if e.response.code == "409"
         update
       else
@@ -203,9 +207,9 @@ class Chef
 
     class << self
       def from_hash(key_hash)
-        if key_hash.has_key?("user")
+        if key_hash.key?("user")
           key = Chef::Key.new(key_hash["user"], "user")
-        elsif key_hash.has_key?("client")
+        elsif key_hash.key?("client")
           key = Chef::Key.new(key_hash["client"], "client")
         else
           raise Chef::Exceptions::MissingKeyAttribute, "The hash passed to from_hash does not contain the key 'user' or 'client'. Please pass a hash that defines one of those keys."
@@ -222,19 +226,14 @@ class Chef
         Chef::Key.from_hash(Chef::JSONCompat.from_json(json))
       end
 
-      def json_create(json)
-        Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Key#from_json or one of the load_by methods.")
-        Chef::Key.from_json(json)
-      end
-
       def list_by_user(actor, inflate = false)
         keys = Chef::ServerAPI.new(Chef::Config[:chef_server_root]).get("users/#{actor}/keys")
-        self.list(keys, actor, :load_by_user, inflate)
+        list(keys, actor, :load_by_user, inflate)
       end
 
       def list_by_client(actor, inflate = false)
         keys = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("clients/#{actor}/keys")
-        self.list(keys, actor, :load_by_client, inflate)
+        list(keys, actor, :load_by_client, inflate)
       end
 
       def load_by_user(actor, key_name)
@@ -253,7 +252,7 @@ class Chef
           OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.n),
           OpenSSL::ASN1::Integer.new(openssl_key_object.public_key.e),
         ])
-        OpenSSL::Digest::SHA1.hexdigest(data_string.to_der).scan(/../).join(":")
+        OpenSSL::Digest.hexdigest("SHA1", data_string.to_der).scan(/../).join(":")
       end
 
       def list(keys, actor, load_method_symbol, inflate)

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,63 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/apt"
+require_relative "package"
 
 class Chef
   class Resource
     class AptPackage < Chef::Resource::Package
-      resource_name :apt_package
-      provides :package, os: "linux", platform_family: [ "debian" ]
+      unified_mode true
 
-      property :default_release, String, desired_state: false
+      provides :apt_package, target_mode: true
+      provides :package, platform_family: "debian", target_mode: true
+      examples <<~DOC
+      **Install a package using package manager**:
+
+      ```ruby
+      apt_package 'name of package' do
+        action :install
+      end
+      ```
+
+      **Install a package without specifying the default action**:
+
+      ```ruby
+      apt_package 'name of package'
+      ```
+
+      **Install multiple packages at once**:
+
+      ```ruby
+      apt_package %(package1 package2 package3)
+      ```
+
+      **Install without using recommend packages as a dependency**:
+
+      ```ruby
+      package 'apache2' do
+        options '--no-install-recommends'
+      end
+      ```
+      DOC
+
+      description "Use the **apt_package** resource to manage packages on Debian and Ubuntu platforms."
+
+      property :default_release, String,
+        description: "The default release. For example: `stable`.",
+        desired_state: false
+
+      property :overwrite_config_files, [TrueClass, FalseClass],
+        introduced: "14.0",
+        description: "Overwrite existing configuration files with those supplied by the package, if prompted by APT.",
+        default: false
+
+      property :response_file, String,
+        description: "The direct path to the file used to pre-seed a package.",
+        desired_state: false
+
+      property :response_file_variables, Hash,
+        description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
+        default: lazy { {} }, desired_state: false
 
     end
   end

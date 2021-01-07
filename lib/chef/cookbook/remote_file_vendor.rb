@@ -1,6 +1,5 @@
-#
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +15,7 @@
 # limitations under the License.
 #
 
-require "chef/cookbook/file_vendor"
+require_relative "file_vendor"
 
 class Chef
   class Cookbook
@@ -30,7 +29,7 @@ class Chef
 
       def initialize(manifest, rest)
         @manifest = manifest
-        @cookbook_name = @manifest[:cookbook_name] || @manifest[:name]
+        @cookbook_name = @manifest.name
         @rest = rest
       end
 
@@ -38,14 +37,15 @@ class Chef
       # Chef::Config.cookbook_path file hierarchy for the requested
       # file.
       def get_filename(filename)
-        if filename =~ /([^\/]+)\/(.+)$/
+        if filename =~ %r{([^/]+)/(.+)$}
           segment = $1
         else
           raise "get_filename: Cannot determine segment/filename for incoming filename #{filename}"
         end
 
-        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest[segment]
-        found_manifest_record = @manifest[segment].find { |manifest_record| manifest_record[:path] == filename }
+        raise "No such segment #{segment} in cookbook #{@cookbook_name}" unless @manifest.files_for(segment)
+
+        found_manifest_record = @manifest.files_for(segment).find { |manifest_record| manifest_record[:path] == filename }
         raise "No such file #{filename} in #{@cookbook_name}" unless found_manifest_record
 
         cache_filename = File.join("cookbooks", @cookbook_name, found_manifest_record["path"])
@@ -55,7 +55,7 @@ class Chef
         validate_cached_copy(cache_filename)
 
         current_checksum = nil
-        if Chef::FileCache.has_key?(cache_filename)
+        if Chef::FileCache.key?(cache_filename)
           current_checksum = Chef::CookbookVersion.checksum_cookbook_file(Chef::FileCache.load(cache_filename, false))
         end
 
@@ -65,17 +65,15 @@ class Chef
         if current_checksum != found_manifest_record["checksum"]
           raw_file = @rest.streaming_request(found_manifest_record[:url])
 
-          Chef::Log.debug("Storing updated #{cache_filename} in the cache.")
+          Chef::Log.trace("Storing updated #{cache_filename} in the cache.")
           Chef::FileCache.move_to(raw_file.path, cache_filename)
         else
-          Chef::Log.debug("Not fetching #{cache_filename}, as the cache is up to date.")
-          Chef::Log.debug("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record['checksum']})")
+          Chef::Log.trace("Not fetching #{cache_filename}, as the cache is up to date.")
+          Chef::Log.trace("Current checksum: #{current_checksum}; manifest checksum: #{found_manifest_record["checksum"]})")
         end
 
-        full_path_cache_filename = Chef::FileCache.load(cache_filename, false)
-
         # return the filename, not the contents (second argument= false)
-        full_path_cache_filename
+        Chef::FileCache.load(cache_filename, false)
       end
 
       def validate_cached_copy(cache_filename)

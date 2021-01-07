@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/guard_interpreter/default_guard_interpreter"
-require "chef/guard_interpreter/resource_guard_interpreter"
+require_relative "guard_interpreter/default_guard_interpreter"
+require_relative "guard_interpreter/resource_guard_interpreter"
 
 class Chef
   class GuardInterpreter

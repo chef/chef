@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,22 +98,8 @@ describe Chef::Runner do
     run_context.resource_collection << first_resource
   end
 
-  context "when we fall through to old Chef::Platform resolution" do
-    let(:provider_resolver) { Chef::ProviderResolver.new(node, first_resource, nil) }
-    before do
-      # set up old Chef::Platform resolution instead of provider_resolver
-      Chef::Platform.set(
-        :resource => :cat,
-        :provider => Chef::Provider::SnakeOil
-      )
-      allow(Chef::ProviderResolver).to receive(:new).and_return(provider_resolver)
-      allow(provider_resolver).to receive(:maybe_dynamic_provider_resolution).with(first_resource, anything()).and_return(nil)
-    end
-
-    it "should use the platform provider if it has one" do
-      expect(Chef::Platform).to receive(:find_provider_for_node).with(node, first_resource).and_call_original
-      runner.converge
-    end
+  it "runner sets up a pointer back to itself in the run_context" do
+    expect(runner).to eql(run_context.runner)
   end
 
   context "when we are doing dynamic provider resolution" do
@@ -125,8 +111,7 @@ describe Chef::Runner do
 
     it "should use the provider specified by the resource (if it has one)" do
       provider = Chef::Provider::Easy.new(run_context.resource_collection[0], run_context)
-      # Expect provider to be called twice, because will fall back to old provider lookup
-      expect(run_context.resource_collection[0]).to receive(:provider).twice.and_return(Chef::Provider::Easy)
+      expect(run_context.resource_collection[0]).to receive(:provider).once.and_return(Chef::Provider::Easy)
       expect(Chef::Provider::Easy).to receive(:new).once.and_return(provider)
       runner.converge
     end
@@ -140,25 +125,26 @@ describe Chef::Runner do
 
     it "should raise exceptions as thrown by a provider" do
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
     it "should not raise exceptions thrown by providers if the resource has ignore_failure set to true" do
       allow(run_context.resource_collection[0]).to receive(:ignore_failure).and_return(true)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).once.and_raise(ArgumentError)
+      expect(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
+      expect(provider).to receive(:action_sell).once.and_raise(ArgumentError)
       expect { runner.converge }.not_to raise_error
     end
 
     it "should retry with the specified delay if retries are specified" do
-      first_resource.retries 3
+      num_retries = 3
+      allow(run_context.resource_collection[0]).to receive(:retries).and_return(num_retries)
       provider = Chef::Provider::SnakeOil.new(run_context.resource_collection[0], run_context)
-      allow(Chef::Provider::SnakeOil).to receive(:new).once.and_return(provider)
-      allow(provider).to receive(:action_sell).and_raise(ArgumentError)
-      expect(first_resource).to receive(:sleep).with(2).exactly(3).times
+      expect(Chef::Provider::SnakeOil).to receive(:new).exactly(num_retries + 1).times.and_return(provider)
+      expect(provider).to receive(:action_sell).exactly(num_retries + 1).times.and_raise(ArgumentError)
+      expect(run_context.resource_collection[0]).to receive(:sleep).with(2).exactly(num_retries).times
       expect { runner.converge }.to raise_error(ArgumentError)
     end
 
@@ -271,10 +257,10 @@ describe Chef::Runner do
       end
       expect(exception).to be_a(Chef::Exceptions::MultipleFailures)
 
-      expected_message = <<-E
-Multiple failures occurred:
-* FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
-* FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+      expected_message = <<~E
+        Multiple failures occurred:
+        * FailureProvider::ChefClientFail occurred in delayed notification: [explode] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
+        * FailureProvider::ChefClientFail occurred in delayed notification: [explode again] (dynamically defined) had an error: FailureProvider::ChefClientFail: chef had an error of some sort
       E
       expect(exception.message).to eq(expected_message)
 
@@ -308,7 +294,7 @@ Multiple failures occurred:
       # execution, and schedule delayed actions :second and :third on the first
       # resource. The duplicate actions should "collapse" to a single notification
       # and order should be preserved.
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first first second third})
     end
 
     it "executes delayed notifications in the order they were declared" do
@@ -334,7 +320,7 @@ Multiple failures occurred:
       third_resource.notifies(:third_action, first_resource, :delayed)
 
       runner.converge
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first first second third})
     end
 
     it "does not fire notifications if the resource was not updated by the last action executed" do
@@ -360,7 +346,7 @@ Multiple failures occurred:
       runner.converge
 
       # All of the resources should only fire once:
-      expect(SnitchyProvider.all_actions_called).to eq([:first, :second, :third])
+      expect(SnitchyProvider.all_actions_called).to eq(%i{first second third})
 
       # all of the resources should be marked as updated for reporting purposes
       expect(first_resource).to be_updated

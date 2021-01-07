@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -138,7 +138,7 @@ describe Chef::RunContext do
       expect(node).to receive(:loaded_recipe).with(:ancient, "aliens")
       expect do
         run_context.include_recipe("ancient::aliens")
-      # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
+        # In CHEF-5120, this becomes a Chef::Exceptions::MissingCookbookDependency error:
       end.to raise_error(Chef::Exceptions::CookbookNotFound)
     end
 
@@ -184,7 +184,7 @@ describe Chef::RunContext do
 
   describe "handling reboot requests" do
     let(:expected) do
-      { :reason => "spec tests require a reboot" }
+      { reason: "spec tests require a reboot" }
     end
 
     it "stores and deletes the reboot request" do

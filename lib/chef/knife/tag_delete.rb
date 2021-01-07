@@ -18,21 +18,21 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class TagDelete < Knife
 
       deps do
-        require "chef/node"
+        require_relative "../node"
       end
 
       banner "knife tag delete NODE TAG ..."
 
       def run
         name = @name_args[0]
-        tags = @name_args[1..-1]
+        tags = @name_args[1..]
 
         if name.nil? || tags.nil? || tags.empty?
           show_usage
@@ -41,7 +41,7 @@ class Chef
         end
 
         node = Chef::Node.load name
-        deleted_tags = Array.new
+        deleted_tags = []
         tags.each do |tag|
           unless node.tags.delete(tag).nil?
             deleted_tags << tag

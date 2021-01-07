@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist <lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   let(:stdin) { StringIO.new }
   let(:ui) { Chef::Knife::UI.new(stdout, stderr, stdin, {}) }
 
-  let(:knife_config) { {} }
+  let(:config) { {} }
 
   let(:chef_config) { {} }
 
@@ -34,15 +34,15 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
   let(:rest) { double("Chef::ServerAPI") }
 
   let(:client_builder) do
-    client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(knife_config: knife_config, chef_config: chef_config, ui: ui)
+    client_builder = Chef::Knife::Bootstrap::ClientBuilder.new(config: config, chef_config: chef_config, ui: ui)
     allow(client_builder).to receive(:rest).and_return(rest)
     allow(client_builder).to receive(:node_name).and_return(node_name)
     client_builder
   end
 
   context "#sanity_check!" do
-    let(:response_404) { OpenStruct.new(:code => "404") }
-    let(:exception_404) { Net::HTTPServerException.new("404 not found", response_404) }
+    let(:response_404) { OpenStruct.new(code: "404") }
+    let(:exception_404) { Net::HTTPClientException.new("404 not found", response_404) }
 
     context "in cases where the prompting fails" do
       before do
@@ -160,7 +160,7 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     it "adds tags to the node when given" do
       tag_receiver = []
 
-      knife_config[:tags] = %w{foo bar}
+      config[:tags] = %w{foo bar}
       allow(node).to receive(:run_list).with([])
       allow(node).to receive(:tags).and_return(tag_receiver)
       client_builder.run
@@ -168,34 +168,34 @@ describe Chef::Knife::Bootstrap::ClientBuilder do
     end
 
     it "builds a node when the run_list is a string" do
-      knife_config[:run_list] = "role[base],role[app]"
+      config[:run_list] = "role[base],role[app]"
       expect(node).to receive(:run_list).with(["role[base]", "role[app]"])
       client_builder.run
     end
 
     it "builds a node when the run_list is an Array" do
-      knife_config[:run_list] = ["role[base]", "role[app]"]
+      config[:run_list] = ["role[base]", "role[app]"]
       expect(node).to receive(:run_list).with(["role[base]", "role[app]"])
       client_builder.run
     end
 
     it "builds a node with first_boot_attributes if they're given" do
-      knife_config[:first_boot_attributes] = { :baz => :quux }
-      expect(node).to receive(:normal_attrs=).with({ :baz => :quux })
+      config[:first_boot_attributes] = { baz: :quux }
+      expect(node).to receive(:normal_attrs=).with({ baz: :quux })
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end
 
     it "builds a node with an environment if its given" do
-      knife_config[:environment] = "production"
+      config[:environment] = "production"
       expect(node).to receive(:environment).with("production")
       expect(node).to receive(:run_list).with([])
       client_builder.run
     end
 
     it "builds a node with policy_name and policy_group when given" do
-      knife_config[:policy_name] = "my-app"
-      knife_config[:policy_group] = "staging"
+      config[:policy_name] = "my-app"
+      config[:policy_group] = "staging"
 
       expect(node).to receive(:run_list).with([])
       expect(node).to receive(:policy_name=).with("my-app")

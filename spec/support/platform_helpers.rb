@@ -1,5 +1,6 @@
 require "fcntl"
 require "chef/mixin/shell_out"
+require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
 
 class ShellHelpers
@@ -23,14 +24,16 @@ class DependencyProc < Proc
 end
 
 def ruby_64bit?
-  !!(RbConfig::CONFIG["host_cpu"] =~ /x86_64/)
+  RbConfig::CONFIG["host_cpu"].include?("x86_64")
 end
 
 def ruby_32bit?
-  !!(RbConfig::CONFIG["host_cpu"] =~ /i686/)
+  RbConfig::CONFIG["host_cpu"].include?("i686")
 end
 
 def windows?
+  # NOTE this deliberately does not use ChefUtils.windows? because otherwise it would
+  # pick up the node out of tests, while this tests the hosts running the specs.
   !!(RUBY_PLATFORM =~ /mswin|mingw|windows/)
 end
 
@@ -43,32 +46,35 @@ require "wmi-lite/wmi" if windows?
 
 def windows_domain_joined?
   return false unless windows?
+
   wmi = WmiLite::Wmi.new
   computer_system = wmi.first_of("Win32_ComputerSystem")
   computer_system["partofdomain"]
 end
 
-def windows_win2k3?
+def windows_2012r2?
   return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of("Win32_OperatingSystem")
-  (host["version"] && host["version"].start_with?("5.2"))
+
+  (win32_os_version && win32_os_version.start_with?("6.3"))
 end
 
-def windows_2008r2_or_later?
+def windows_gte_10?
   return false unless windows?
-  wmi = WmiLite::Wmi.new
-  host = wmi.first_of("Win32_OperatingSystem")
-  version = host["version"]
-  return false unless version
-  components = version.split(".").map do |component|
-    component.to_i
+
+  Gem::Requirement.new(">= 10").satisfied_by?(Gem::Version.new(win32_os_version))
+end
+
+def win32_os_version
+  @win32_os_version ||= begin
+    wmi = WmiLite::Wmi.new
+    host = wmi.first_of("Win32_OperatingSystem")
+    host["version"]
   end
-  components.length >= 2 && components[0] >= 6 && components[1] >= 1
 end
 
 def windows_powershell_dsc?
   return false unless windows?
+
   supports_dsc = false
   begin
     wmi = WmiLite::Wmi.new("root/microsoft/windows/desiredstateconfiguration")
@@ -79,35 +85,19 @@ def windows_powershell_dsc?
   supports_dsc
 end
 
-def windows_nano_server?
-  require "chef/platform/query_helpers"
-  Chef::Platform.windows_nano_server?
+def windows_user_right?(right)
+  return false unless windows?
+
+  require "chef/win32/security"
+  Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
-def mac_osx_106?
-  if File.exists? "/usr/bin/sw_vers"
-    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
-    result.stdout.each_line do |line|
-      if line =~ /^ProductVersion:\s10.6.*$/
-        return true
-      end
-    end
-  end
-
-  false
+def macos_1013?
+  macos? && Gem::Requirement.new("~> 10.13.0").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
 end
 
-def mac_osx?
-  if File.exists? "/usr/bin/sw_vers"
-    result = ShellHelpers.shell_out("/usr/bin/sw_vers")
-    result.stdout.each_line do |line|
-      if line =~ /^ProductName:\sMac OS X.*$/
-        return true
-      end
-    end
-  end
-
-  false
+def macos_gte_1014?
+  macos? && Gem::Requirement.new(">= 10.14").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
 end
 
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
@@ -120,26 +110,52 @@ def windows32?
   windows? && !windows64?
 end
 
-# def jruby?
-
 def unix?
   !windows?
 end
 
 def linux?
-  !!(RUBY_PLATFORM =~ /linux/)
+  RUBY_PLATFORM.include?("linux")
 end
 
-def os_x?
-  !!(RUBY_PLATFORM =~ /darwin/)
+def macos?
+  RUBY_PLATFORM.include?("darwin")
 end
 
 def solaris?
-  !!(RUBY_PLATFORM =~ /solaris/)
+  RUBY_PLATFORM.include?("solaris")
 end
 
 def freebsd?
-  !!(RUBY_PLATFORM =~ /freebsd/)
+  RUBY_PLATFORM.include?("freebsd")
+end
+
+def intel_64bit?
+  !!(ohai[:kernel][:machine] == "x86_64")
+end
+
+def rhel?
+  !!(ohai[:platform_family] == "rhel")
+end
+
+def rhel6?
+  rhel? && !!(ohai[:platform_version].to_i == 6)
+end
+
+def opensuse?
+  suse? && !!(ohai[:platform_version].to_i >= 15)
+end
+
+def rhel7?
+  rhel? && !!(ohai[:platform_version].to_i == 7)
+end
+
+def rhel8?
+  rhel? && !!(ohai[:platform_version].to_i == 8)
+end
+
+def rhel_gte_8?
+  rhel? && !!(ohai[:platform_version].to_i >= 8)
 end
 
 def debian_family?
@@ -147,7 +163,7 @@ def debian_family?
 end
 
 def aix?
-  !!(RUBY_PLATFORM =~ /aix/)
+  RUBY_PLATFORM.include?("aix")
 end
 
 def wpar?
@@ -158,36 +174,35 @@ def supports_cloexec?
   Fcntl.const_defined?("F_SETFD") && Fcntl.const_defined?("FD_CLOEXEC")
 end
 
-DEV_NULL = windows? ? "NUL" : "/dev/null"
-
 def selinux_enabled?
   # This code is currently copied from lib/chef/util/selinux to make
   # specs independent of product.
   selinuxenabled_path = which("selinuxenabled")
   if selinuxenabled_path
-    cmd = Mixlib::ShellOut.new(selinuxenabled_path, :returns => [0, 1])
+    cmd = Mixlib::ShellOut.new(selinuxenabled_path, returns: [0, 1])
     cmd_result = cmd.run_command
     case cmd_result.exitstatus
     when 1
-      return false
+      false
     when 0
-      return true
+      true
     else
       raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
     end
   else
     # We assume selinux is not enabled if selinux utils are not
     # installed.
-    return false
+    false
   end
 end
 
 def suse?
-  File.exists?("/etc/SuSE-release")
+  !!(ohai[:platform_family] == "suse")
 end
 
 def root?
   return false if windows?
+
   Process.euid == 0
 end
 
@@ -207,12 +222,33 @@ def fips?
   ENV["CHEF_FIPS"] == "1"
 end
 
-class GCEDetector
-  extend Ohai::Mixin::GCEMetadata
+class HttpHelper
+  extend Ohai::Mixin::HttpHelper
+  def self.logger
+    Chef::Log
+  end
 end
 
 def gce?
-  GCEDetector.can_metadata_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
+  HttpHelper.can_socket_connect?(Ohai::Mixin::GCEMetadata::GCE_METADATA_ADDR, 80)
 rescue SocketError
+  false
+end
+
+def ifconfig?
+  which("ifconfig")
+end
+
+def choco_installed?
+  result = ShellHelpers.shell_out("choco --version")
+  result.stderr.empty?
+rescue
+  false
+end
+
+def pwsh_installed?
+  result = ShellHelpers.shell_out("pwsh.exe --version")
+  result.stderr.empty?
+rescue
   false
 end

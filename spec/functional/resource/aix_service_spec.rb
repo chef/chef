@@ -1,7 +1,6 @@
-# encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 shared_examples "src service" do
@@ -77,12 +75,21 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   include Chef::Mixin::ShellOut
 
   def get_user_id
-    shell_out("id -u #{ENV['USER']}").stdout.chomp
+    shell_out("id -u #{ENV["USER"]}").stdout.chomp
+  end
+
+  let(:run_context) do
+    node = Chef::Node.new
+    node.default[:platform] = ohai[:platform]
+    node.default[:platform_version] = ohai[:platform_version]
+    node.default[:os] = ohai[:os]
+    events = Chef::EventDispatch::Dispatcher.new
+    Chef::RunContext.new(node, {}, events)
   end
 
   describe "When service is a subsystem" do
     before(:all) do
-      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      script_dir = File.join(__dir__, "/../assets/")
       shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q")
     end
 
@@ -110,7 +117,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   # Cannot run this test on a WPAR
   describe "When service is a group", :not_wpar do
     before(:all) do
-      script_dir = File.join(File.dirname(__FILE__), "/../assets/")
+      script_dir = File.join(__dir__, "/../assets/")
       shell_out!("mkssys -s ctestsys -p #{script_dir}/testchefsubsys -u #{get_user_id} -S -n 15 -f 9 -R -Q -G ctestgrp")
     end
 

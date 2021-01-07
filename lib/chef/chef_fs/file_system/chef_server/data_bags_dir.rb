@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/data_bag_dir"
+require_relative "rest_list_dir"
+require_relative "data_bag_dir"
 
 class Chef
   module ChefFS
@@ -30,16 +30,14 @@ class Chef
           end
 
           def children
-            begin
-              @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
-            rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout getting children: #{e}")
-            rescue Net::HTTPServerException => e
-              if e.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-              else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error getting children: #{e}")
-              end
+            @children ||= root.get_json(api_path).keys.sort.map { |entry| make_child_entry(entry, true) }
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout getting children: #{e}")
+          rescue Net::HTTPClientException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error getting children: #{e}")
             end
           end
 
@@ -52,7 +50,7 @@ class Chef
               rest.post(api_path, { "name" => name })
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating child '#{name}': #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "409"
                 raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self, e, "Cannot create #{name} under #{path}: already exists")
               else

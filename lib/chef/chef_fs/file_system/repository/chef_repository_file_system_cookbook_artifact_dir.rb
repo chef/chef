@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
+require_relative "chef_repository_file_system_cookbook_dir"
 
 class Chef
   module ChefFS
@@ -25,11 +25,11 @@ class Chef
         class ChefRepositoryFileSystemCookbookArtifactDir < ChefRepositoryFileSystemCookbookDir
           # Override from parent
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
             cookbook_name, _dash, identifier = name.rpartition("-")
             # KLUDGE: We shouldn't have to use instance_variable_set
             loader.instance_variable_set(:@cookbook_name, cookbook_name)
-            loader.load_cookbooks
+            loader.load!
             cookbook_version = loader.cookbook_version
             cookbook_version.identifier = identifier
             cookbook_version

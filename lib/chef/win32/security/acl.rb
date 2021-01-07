@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/ace"
-require "ffi"
+require_relative "../security"
+require_relative "ace"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32
@@ -45,10 +45,11 @@ class Chef
 
         def ==(other)
           return false if length != other.length
+
           0.upto(length - 1) do |i|
             return false if self[i] != other[i]
           end
-          return true
+          true
         end
 
         def pointer
@@ -88,7 +89,7 @@ class Chef
         end
 
         def to_s
-          "[#{self.collect { |ace| ace.to_s }.join(", ")}]"
+          "[#{collect(&:to_s).join(", ")}]"
         end
 
         def self.align_dword(size)

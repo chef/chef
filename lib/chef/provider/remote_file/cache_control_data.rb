@@ -3,7 +3,7 @@
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Copyright:: Copyright 2013-2016, Jesse Campbell
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,11 +19,11 @@
 # limitations under the License.
 #
 
-require "stringio"
-require "chef/file_cache"
-require "chef/json_compat"
-require "chef/digester"
-require "chef/exceptions"
+require "stringio" unless defined?(StringIO)
+require_relative "../../file_cache"
+require_relative "../../json_compat"
+require_relative "../../digester"
+require_relative "../../exceptions"
 
 class Chef
   class Provider
@@ -146,14 +146,14 @@ class Chef
 
         def load_json_data
           path = sanitized_cache_file_path(sanitized_cache_file_basename)
-          if Chef::FileCache.has_key?(path)
+          if Chef::FileCache.key?(path)
             Chef::FileCache.load(path)
           else
             old_path = sanitized_cache_file_path(sanitized_cache_file_basename_md5)
-            if Chef::FileCache.has_key?(old_path)
+            if Chef::FileCache.key?(old_path)
               # We found an old cache control data file. We started using sha256 instead of md5
               # to name these. Upgrade the file to the new name.
-              Chef::Log.debug("Found old cache control data file at #{old_path}. Moving to #{path}.")
+              Chef::Log.trace("Found old cache control data file at #{old_path}. Moving to #{path}.")
               Chef::FileCache.load(old_path).tap do |data|
                 Chef::FileCache.store(path, data)
                 Chef::FileCache.delete(old_path)

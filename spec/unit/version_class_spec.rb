@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,7 +105,7 @@ describe Chef::Version do
       a = %w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1}.map do |s|
         Chef::Version.new(s)
       end
-      got = a.sort.map { |v| v.to_s }
+      got = a.sort.map(&:to_s)
       expect(got).to eq(%w{0.0.0 0.0.1 0.1.0 0.1.1 1.0.0 1.1.0 1.1.1})
     end
 
@@ -113,7 +113,7 @@ describe Chef::Version do
       a = %w{9.8.7 1.0.0 1.2.3 4.4.6 4.5.6 0.8.6 4.5.5 5.9.8 3.5.7}.map do |s|
         Chef::Version.new(s)
       end
-      got = a.sort.map { |v| v.to_s }
+      got = a.sort.map(&:to_s)
       expect(got).to eq(%w{0.8.6 1.0.0 1.2.3 3.5.7 4.4.6 4.5.5 4.5.6 5.9.8 9.8.7})
     end
 
@@ -160,9 +160,9 @@ describe Chef::Version do
        [ "1.2.2", :<=, "1.2.1", false ],
        [ "1.2.2", :<, "1.2.1", false ],
       ].each do |spec|
-        it "(#{spec.first(3).join(' ')}) should be #{spec[3]}" do
+        it "(#{spec.first(3).join(" ")}) should be #{spec[3]}" do
           got = Chef::Version.new(spec[0]).send(spec[1],
-                                                Chef::Version.new(spec[2]))
+            Chef::Version.new(spec[2]))
           expect(got).to eq(spec[3])
         end
       end

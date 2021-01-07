@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala <jdm@chef.io>
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,8 +20,8 @@ require "chef"
 require "chef/util/powershell/ps_credential"
 
 describe Chef::Util::Powershell::PSCredential do
-  let (:username) { "foo" }
-  let (:password) { "ThIsIsThEpAsSwOrD" }
+  let(:username) { "foo" }
+  let(:password) { "ThIsIsThEpAsSwOrD" }
 
   context "when username and password are provided" do
     let(:ps_credential) { Chef::Util::Powershell::PSCredential.new(username, password) }
@@ -29,8 +29,9 @@ describe Chef::Util::Powershell::PSCredential do
       it "should create the script to create a PSCredential when calling" do
         allow(ps_credential).to receive(:encrypt).with(password).and_return("encrypted")
         expect(ps_credential.to_psobject).to eq(
-        "New-Object System.Management.Automation.PSCredential("\
-            "'#{username}',('encrypted' | ConvertTo-SecureString))")
+          "New-Object System.Management.Automation.PSCredential("\
+              "'#{username}',('encrypted' | ConvertTo-SecureString))"
+        )
       end
     end
 

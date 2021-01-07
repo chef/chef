@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/wide_string"
-require "chef/win32/api/unicode"
+require_relative "../mixin/wide_string"
+require_relative "api/unicode"
 
 class Chef
   module ReservedNames::Win32
@@ -40,13 +40,19 @@ module FFI
         last_char = nil
         while last_char != "\000\000"
           length += 1
-          last_char = self.get_bytes(0, length * 2)[-2..-1]
+          last_char = get_bytes(0, length * 2)[-2..]
         end
 
         num_wchars = length
       end
 
-      wide_to_utf8(self.get_bytes(0, num_wchars * 2))
+      wide_to_utf8(get_bytes(0, num_wchars * 2))
+    end
+
+    def read_utf16string
+      offset = 0
+      offset += 2 while get_bytes(offset, 2) != "\x00\x00"
+      get_bytes(0, offset).force_encoding("utf-16le").encode("utf-8")
     end
   end
 end

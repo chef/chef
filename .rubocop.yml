@@ -1,6 +1,32 @@
 AllCops:
+  TargetRubyVersion: 2.6
   Exclude:
     - "spec/data/**/*"
     - "vendor/**/*"
     - "pkg/**/*"
     - "chef-config/pkg/**/*"
+    - "habitat/**/*"
+Security/Eval:
+  Enabled: false
+Lint/UselessAssignment:
+  Enabled: false
+Lint/DeprecatedClassMethods:
+  Enabled: false
+Lint/AmbiguousRegexpLiteral:
+  Enabled: false
+Lint/AssignmentInCondition:
+  Enabled: false
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+Lint/IneffectiveAccessModifier:
+  Enabled: false
+
+# set additional paths
+Chef/Ruby/UnlessDefinedRequire:
+  Include:
+    - 'lib/**/*'
+    - 'chef-bin/**/*'
+    - 'chef-config/lib/**/*'
+    - 'chef-utils/lib/**/*'

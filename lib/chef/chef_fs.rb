@@ -1,4 +1,4 @@
-require "chef/platform"
+require_relative "platform"
 
 #
 # ChefFS was designed to be a near-1:1 translation between Chef server endpoints
@@ -53,7 +53,7 @@ require "chef/platform"
 class Chef
   module ChefFS
     def self.windows?
-      Chef::Platform.windows?
+      ChefUtils.windows?
     end
   end
 end

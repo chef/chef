@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,58 +17,43 @@
 # limitations under the License.
 #
 
-require "chef/resource/execute"
-require "chef/provider/script"
+require_relative "execute"
 
 class Chef
   class Resource
     class Script < Chef::Resource::Execute
-      # Chef-13: go back to using :name as the identity attr
-      identity_attr :command
+      unified_mode true
+
+      provides :script
+
+      identity_attr :name
+
+      description "Use the **script** resource to execute scripts using a specified interpreter, such as Bash, csh, Perl, Python, or Ruby."\
+                  " This resource may also use any of the actions and properties that are available to the **execute** resource. Commands"\
+                  " that are executed with this resource are (by their nature) not idempotent, as they are typically unique to the"\
+                  " environment in which they are run. Use `not_if` and `only_if` to guard this resource for idempotence."
 
       def initialize(name, run_context = nil)
         super
-        # Chef-13: the command variable should be initialized to nil
-        @command = name
-        @code = nil
-        @interpreter = nil
-        @flags = nil
+        @command = nil
         @default_guard_interpreter = :default
       end
 
+      # FIXME: remove this and use an execute sub-resource instead of inheriting from Execute
       def command(arg = nil)
-        unless arg.nil?
-          # Chef-13: change this to raise if the user is trying to set a value here
-          Chef::Log.warn "Specifying command attribute on a script resource is a coding error, use the 'code' attribute, or the execute resource"
-          Chef::Log.warn "This attribute is deprecated and must be fixed or this code will fail on Chef 13"
-        end
         super
+        unless arg.nil?
+          raise Chef::Exceptions::Script, "Do not use the command property on a #{resource_name} resource, use the 'code' property instead."
+        end
       end
 
-      def code(arg = nil)
-        set_or_return(
-          :code,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :code, String, required: true,
+        description: "A quoted string of code to be executed."
 
-      def interpreter(arg = nil)
-        set_or_return(
-          :interpreter,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :interpreter, String
 
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
+      property :flags, String,
+        description: "One or more command line flags that are passed to the interpreter when a command is invoked."
     end
   end
 end

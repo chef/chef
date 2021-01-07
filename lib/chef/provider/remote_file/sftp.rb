@@ -16,11 +16,14 @@
 # limitations under the License.
 #
 
-require "uri"
-require "tempfile"
-require "net/sftp"
-require "chef/provider/remote_file"
-require "chef/file_content_management/tempfile"
+autoload :URI, "uri"
+autoload :CGI, "cgi"
+autoload :Tempfile, "tempfile"
+module Net
+  autoload :SFTP, "net/sftp"
+end
+require_relative "../remote_file"
+require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider
@@ -47,7 +50,7 @@ class Chef
         end
 
         def user
-          URI.unescape(uri.user)
+          CGI.unescape(uri.user)
         end
 
         def fetch
@@ -58,11 +61,11 @@ class Chef
 
         def sftp
           host = port ? "#{hostname}:#{port}" : hostname
-          @sftp ||= Net::SFTP.start(host, user, :password => pass)
+          @sftp ||= Net::SFTP.start(host, user, password: pass)
         end
 
         def pass
-          URI.unescape(uri.password)
+          CGI.unescape(uri.password)
         end
 
         def validate_path!

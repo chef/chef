@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,7 @@
 require "spec_helper"
 describe Chef::Resource::DscResource do
   let(:dsc_test_resource_name) { "DSCTest" }
+  let(:dsc_test_resource_module_version) { "2.7.2" }
   let(:dsc_test_property_name) { :DSCTestProperty }
   let(:dsc_test_property_value) { "DSCTestValue" }
   let(:dsc_test_reboot_action) { :reboot_now }
@@ -39,26 +40,31 @@ describe Chef::Resource::DscResource do
       expect(dsc_test_resource.action).to eq([:run])
     end
 
-    it "has an ed_actions attribute with only the `:run` and `:nothing` attributes" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq([:run, :nothing].to_set)
+    it "has an ed_actions property with only the `:run` and `:nothing` properties" do
+      expect(dsc_test_resource.allowed_actions.to_set).to eq(%i{run nothing}.to_set)
     end
 
-    it "allows the resource attribute to be set" do
+    it "allows the resource property to be set" do
       dsc_test_resource.resource(dsc_test_resource_name)
       expect(dsc_test_resource.resource).to eq(dsc_test_resource_name)
     end
 
-    it "allows the module_name attribute to be set" do
+    it "allows the module_name property to be set" do
       dsc_test_resource.module_name(dsc_test_resource_name)
       expect(dsc_test_resource.module_name).to eq(dsc_test_resource_name)
     end
 
-    it "allows the reboot_action attribute to be set" do
+    it "allows the module_version property to be set" do
+      dsc_test_resource.module_version(dsc_test_resource_module_version)
+      expect(dsc_test_resource.module_version).to eq(dsc_test_resource_module_version)
+    end
+
+    it "allows the reboot_action property to be set" do
       dsc_test_resource.reboot_action(dsc_test_reboot_action)
       expect(dsc_test_resource.reboot_action).to eq(dsc_test_reboot_action)
     end
 
-    it "allows the timeout attribute to be set" do
+    it "allows the timeout property to be set" do
       dsc_test_resource.timeout(dsc_test_timeout)
       expect(dsc_test_resource.timeout).to eq(dsc_test_timeout)
     end
@@ -87,7 +93,7 @@ describe Chef::Resource::DscResource do
       end
     end
 
-    context "Powershell DSL methods" do
+    context "PowerShell DSL methods" do
       it "responds to :ps_credential" do
         expect(dsc_test_resource.respond_to?(:ps_credential)).to be true
       end

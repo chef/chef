@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -32,15 +33,15 @@ describe "knife role delete", :workstation do
     end
 
     it "deletes a role" do
-      knife("role delete car", input: "Y").should_succeed <<EOM
-Do you really want to delete car? (Y/N) Deleted role[car]
-EOM
+      knife("role delete car", input: "Y").should_succeed <<~EOM
+        Do you really want to delete car? (Y/N) Deleted role[car]
+      EOM
 
-      knife("role list").should_succeed <<EOM
-cat
-cdr
-cons
-EOM
+      knife("role list").should_succeed <<~EOM
+        cat
+        cdr
+        cons
+      EOM
     end
 
   end

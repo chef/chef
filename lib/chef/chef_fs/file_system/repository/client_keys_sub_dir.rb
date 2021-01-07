@@ -1,6 +1,6 @@
 #
 # Author:: Jordan Running (<jr@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/client_key"
-require "chef/chef_fs/data_handler/client_key_data_handler"
-require "chef/chef_fs/file_system/repository/directory"
+require_relative "client_key"
+require_relative "../../data_handler/client_key_data_handler"
+require_relative "directory"
 
 class Chef
   module ChefFS

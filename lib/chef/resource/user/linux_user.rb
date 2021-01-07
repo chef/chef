@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,25 +15,16 @@
 # limitations under the License.
 #
 
-require "chef/resource/user"
+require_relative "../user"
 
 class Chef
   class Resource
     class User
       class LinuxUser < Chef::Resource::User
-        resource_name :linux_user
+        unified_mode true
 
         provides :linux_user
         provides :user, os: "linux"
-
-        def initialize(name, run_context = nil)
-          super
-          @supports = {
-            manage_home: false,
-            non_unique: false,
-          }
-          @manage_home = false
-        end
 
       end
     end

@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,22 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/provider/directory"
-require "chef/mixin/securable"
+require_relative "../resource"
+require_relative "../mixin/securable"
 
 class Chef
   class Resource
     class Directory < Chef::Resource
+      unified_mode true
 
-      identity_attr :path
+      provides :directory
+
+      description "Use the **directory** resource to manage a directory, which is a hierarchy"\
+                  " of folders that comprises all of the information stored on a computer."\
+                  " The root directory is the top-level, under which the rest of the directory"\
+                  " is organized. The directory resource uses the name property to specify the"\
+                  " path to a location in a directory. Typically, permission to access that"\
+                  " location in the directory is required."
 
       state_attrs :group, :mode, :owner
 
@@ -35,28 +42,12 @@ class Chef
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context = nil)
-        super
-        @path = name
-        @recursive = false
-      end
+      property :path, String, name_property: true,
+               description: "The path to the directory. Using a fully qualified path is recommended, but is not always required."
 
-      def recursive(arg = nil)
-        set_or_return(
-          :recursive,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def path(arg = nil)
-        set_or_return(
-          :path,
-          arg,
-          :kind_of => String
-        )
-      end
-
+      property :recursive, [ TrueClass, FalseClass ],
+        description: "Create or delete parent directories recursively. For the owner, group, and mode properties, the value of this property applies only to the leaf directory.",
+        default: false
     end
   end
 end

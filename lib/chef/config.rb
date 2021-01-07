@@ -4,7 +4,7 @@
 # Author:: AJ Christensen (<aj@chef.io>)
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/log"
+require_relative "log"
 require "chef-config/logger"
 
 # DI our logger into ChefConfig before we load the config. Some defaults are
@@ -28,7 +28,8 @@ require "chef-config/logger"
 ChefConfig.logger = Chef::Log
 
 require "chef-config/config"
-require "chef/platform/query_helpers"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+require_relative "platform/query_helpers"
 
 # Ohai::Config defines its own log_level and log_location. When loaded, it will
 # override the default ChefConfig::Config values. We save them here before
@@ -48,15 +49,14 @@ class Chef
 
   # We re-open ChefConfig::Config to add additional settings. Generally,
   # everything should go in chef-config so it's shared with whoever uses that.
-  # We make execeptions to that rule when:
+  # We make exceptions to that rule when:
   # * The functionality isn't likely to be useful outside of Chef
   # * The functionality makes use of a dependency we don't want to add to chef-config
   class Config
 
     default :event_loggers do
       evt_loggers = []
-      if ChefConfig.windows? && !(Chef::Platform.windows_server_2003? ||
-          Chef::Platform.windows_nano_server?)
+      if ChefUtils.windows?
         evt_loggers << :win_evt
       end
       evt_loggers
@@ -75,7 +75,7 @@ class Chef
     # by redefining the config_attr_writer to not warn for these options.
     #
     # REMOVEME once the warnings for these configurables are removed from Ohai.
-    [ :log_level, :log_location ].each do |option|
+    %i{log_level log_location}.each do |option|
       config_attr_writer option do |value|
         value
       end

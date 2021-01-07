@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -33,30 +34,30 @@ describe "knife client delete", :workstation do
     end
 
     it "deletes a client" do
-      knife("client delete car", input: "Y").should_succeed <<EOM
-Do you really want to delete car? (Y/N) Deleted client[car]
-EOM
+      knife("client delete car", input: "Y").should_succeed <<~EOM
+        Do you really want to delete car? (Y/N) Deleted client[car]
+      EOM
 
-      knife("client list").should_succeed <<EOM
-car-validator
-cat
-cdr
-chef-validator
-chef-webui
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        car-validator
+        cat
+        cdr
+        chef-validator
+        chef-webui
+        cons
+      EOM
     end
 
     it "refuses to delete a validator normally" do
-      knife("client delete car-validator", input: "Y").should_fail exit_code: 2, stdout: "Do you really want to delete car-validator? (Y/N) ", stderr: <<EOM
-FATAL: You must specify --delete-validators to delete the validator client car-validator
-EOM
+      knife("client delete car-validator", input: "Y").should_fail exit_code: 2, stdout: "Do you really want to delete car-validator? (Y/N) ", stderr: <<~EOM
+        FATAL: You must specify --delete-validators to delete the validator client car-validator
+      EOM
     end
 
     it "deletes a validator correctly" do
-      knife("client delete car-validator -D", input: "Y").should_succeed <<EOM
-Do you really want to delete car-validator? (Y/N) Deleted client[car-validator]
-EOM
+      knife("client delete car-validator -D", input: "Y").should_succeed <<~EOM
+        Do you really want to delete car-validator? (Y/N) Deleted client[car-validator]
+      EOM
     end
 
   end

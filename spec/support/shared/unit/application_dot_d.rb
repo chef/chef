@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,14 +33,19 @@ shared_examples_for "an application that loads a dot d" do
     # make sure that we are correctly globbing.
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../../data/client.d_00")) end
+        File.join(__dir__, "../../../data/client.d_00")
+      )
+    end
 
     it "loads the configuration in order" do
+      etc_chef_client_rb = Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/client.rb")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_return("foo 0")
       expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_return("bar 0")
-      allow(app).to receive(:apply_config).with(anything(), Chef::Config.platform_specific_path("/etc/chef/client.rb")).and_call_original.ordered
+      expect(IO).to receive(:read).with(Pathname.new("#{client_d_dir}/02-strings.rb").cleanpath.to_s).and_return("strings 0")
+      allow(app).to receive(:apply_config).with("", etc_chef_client_rb) # for chef-client managed nodes running this spec
       expect(app).to receive(:apply_config).with("foo 0", Pathname.new("#{client_d_dir}/00-foo.rb").cleanpath.to_s).and_call_original.ordered
       expect(app).to receive(:apply_config).with("bar 0", Pathname.new("#{client_d_dir}/01-bar.rb").cleanpath.to_s).and_call_original.ordered
+      expect(app).to receive(:apply_config).with("strings 0", Pathname.new("#{client_d_dir}/02-strings.rb").cleanpath.to_s).and_call_original.ordered
       app.reconfigure
     end
   end
@@ -48,7 +53,9 @@ shared_examples_for "an application that loads a dot d" do
   context "when client_d_dir is set to a directory without configuration" do
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../data/client.d_01")) end
+        File.join(__dir__, "../../data/client.d_01")
+      )
+    end
 
     # client.d_01 has a nested folder with a rb file that if
     # executed, would raise an exception. If it is executed,
@@ -64,7 +71,9 @@ shared_examples_for "an application that loads a dot d" do
     # foo.rb as a directory should be ignored
     let(:client_d_dir) do
       Chef::Util::PathHelper.cleanpath(
-      File.join(File.dirname(__FILE__), "../../data/client.d_02")) end
+        File.join(__dir__, "../../data/client.d_02")
+      )
+    end
 
     it "does not raise an exception" do
       expect { app.reconfigure }.not_to raise_error

@@ -7,9 +7,6 @@
 # Required chef files here:
 require "chef/config"
 
-# Required spec files here:
-require "spec_helper"
-
 # Basic config. Nothing fancy.
 shared_context "default config options" do
   before do

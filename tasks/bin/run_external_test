@@ -1,47 +1,39 @@
-#!/bin/bash
+#!/usr/bin/env ruby
 
-# Fail fast (e) and echo commands (vx)
-set -evx
+# This script helps to test external gems in the content of the current
+# Chef install. We want to make sure that the external gems will still function
+# once we release Chef so we run *their* specs against the current contents
+# of the chef / ohai repos. It let's us know if we need to update downstream
+# gems or fix regressions in chef *before* we release.
 
-# Arguments
-TEST_GEM=$1
-shift
+$:.unshift(File.expand_path("../../lib", __dir__))
 
-PROJECT_ROOT=$(pwd)
-PROJECT_BUNDLE_PATH=${BUNDLE_PATH:-$(grep BUNDLE_PATH: $PROJECT_ROOT/.bundle/config | cut -d' ' -f2-)}
-if [ -n "$PROJECT_BUNDLE_PATH" ]; then
-  PROJECT_BUNDLE_PATH=$PROJECT_ROOT/$PROJECT_BUNDLE_PATH
-fi
+require "tmpdir"
+require "bundler"
+require "chef/mixin/shell_out"
 
-TEST_GEM_ROOT=$(bundle show $TEST_GEM)
+include Chef::Mixin::ShellOut
 
-# Make a copy of the original Gemfile and stitch in our Gemfile.lock
-TEST_GEMFILE=$TEST_GEM_ROOT/Gemfile
-MODIFIED_TEST_GEMFILE=$TEST_GEMFILE.externaltest
-cat <<EOM > $MODIFIED_TEST_GEMFILE
-require_relative "$PROJECT_ROOT/tasks/gemfile_util"
-GemfileUtil.include_locked_gemfile(self, "$PROJECT_ROOT/Gemfile", gems: ["$TEST_GEM"] + "$TEST_WITH_GEMS".split(/\s+/))
-$TEST_GEM_OVERRIDES
-EOM
-cat $TEST_GEMFILE >> $MODIFIED_TEST_GEMFILE
-if [ -f $TEST_GEMFILE.lock ]; then
-  cp $TEST_GEMFILE.lock $MODIFIED_TEST_GEMFILE.lock
-elif [ -f $MODIFIED_TEST_GEMFILE.lock ]; then
-  rm -f $MODIFIED_TEST_GEMFILE.lock
-fi
+github_repo = ARGV.shift
+git_thing = ARGV.shift
 
-# Run the bundle install
-cd $TEST_GEM_ROOT
-export BUNDLE_GEMFILE=$MODIFIED_TEST_GEMFILE
-# Don't read from the project .bundle/config, just our env vars
-export BUNDLE_IGNORE_CONFIG=true
-# Use the top level bundle cache so we don't have to reinstall their packages
-if [ -n "$PROJECT_BUNDLE_PATH" ]; then
-  export BUNDLE_PATH=$PROJECT_BUNDLE_PATH
-fi
-export BUNDLE_FROZEN=
-bundle install
-export BUNDLE_FROZEN=true
+build_dir = Dir.pwd
 
-bundle config
-bundle exec $@
+env = {
+  "GEMFILE_MOD" => "gem 'chef', path: '#{build_dir}'; " \
+    "gem 'ohai', git: 'https://github.com/chef/ohai.git', branch: 'master'",
+  "CHEF_LICENSE" => "accept-no-persist",
+}
+
+Dir.mktmpdir("chef-external-test") do |dir|
+  git_url = "https://github.com/#{github_repo}"
+  Dir.rmdir dir
+  shell_out!("git clone #{git_url} #{dir}", live_stream: STDOUT)
+  Dir.chdir(dir) do
+    shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
+    Bundler.with_unbundled_env do
+      shell_out!("bundle install --jobs=3 --retry=3", live_stream: STDOUT, env: env)
+      shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT, env: env)
+    end
+  end
+end

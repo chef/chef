@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,39 +16,39 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookShow < Knife
 
       deps do
-        require "chef/json_compat"
-        require "uri"
-        require "chef/cookbook_version"
+        require_relative "../json_compat"
+        require "uri" unless defined?(URI)
+        require_relative "../cookbook_version"
       end
 
       banner "knife cookbook show COOKBOOK [VERSION] [PART] [FILENAME] (options)"
 
       option :fqdn,
-       :short => "-f FQDN",
-       :long => "--fqdn FQDN",
-       :description => "The FQDN of the host to see the file for"
+        short: "-f FQDN",
+        long: "--fqdn FQDN",
+        description: "The FQDN of the host to see the file for."
 
       option :platform,
-       :short => "-p PLATFORM",
-       :long => "--platform PLATFORM",
-       :description => "The platform to see the file for"
+        short: "-p PLATFORM",
+        long: "--platform PLATFORM",
+        description: "The platform to see the file for."
 
       option :platform_version,
-       :short => "-V VERSION",
-       :long => "--platform-version VERSION",
-       :description => "The platform version to see the file for"
+        short: "-V VERSION",
+        long: "--platform-version VERSION",
+        description: "The platform version to see the file for."
 
       option :with_uri,
-        :short => "-w",
-        :long => "--with-uri",
-        :description => "Show corresponding URIs"
+        short: "-w",
+        long: "--with-uri",
+        description: "Show corresponding URIs."
 
       def run
         cookbook_name, cookbook_version, segment, filename = @name_args
@@ -57,14 +57,14 @@ class Chef
 
         case @name_args.length
         when 4 # We are showing a specific file
-          node = Hash.new
-          node[:fqdn] = config[:fqdn] if config.has_key?(:fqdn)
-          node[:platform] = config[:platform] if config.has_key?(:platform)
-          node[:platform_version] = config[:platform_version] if config.has_key?(:platform_version)
+          node = {}
+          node[:fqdn] = config[:fqdn] if config.key?(:fqdn)
+          node[:platform] = config[:platform] if config.key?(:platform)
+          node[:platform_version] = config[:platform_version] if config.key?(:platform_version)
 
           class << node
             def attribute?(name) # rubocop:disable Lint/NestedMethodDefinition
-              has_key?(name)
+              key?(name)
             end
           end
 
@@ -76,9 +76,13 @@ class Chef
           pretty_print(temp_file.read)
 
         when 3 # We are showing a specific part of the cookbook
-          output(cookbook.manifest[segment])
-        when 2 # We are showing the whole cookbook data
-          output(cookbook)
+          if segment == "metadata"
+            output(cookbook.metadata)
+          else
+            output(cookbook.files_for(segment))
+          end
+        when 2 # We are showing the whole cookbook
+          output(cookbook.display)
         when 1 # We are showing the cookbook versions (all of them)
           env           = config[:environment]
           api_endpoint  = env ? "environments/#{env}/cookbooks/#{cookbook_name}" : "cookbooks/#{cookbook_name}"

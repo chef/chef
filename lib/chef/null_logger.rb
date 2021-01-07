@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,26 +27,21 @@ class Chef
   # probably expected a real logger and not this "fake" one.
   class NullLogger
 
-    def fatal(message, &block)
-    end
+    def fatal(message, &block); end
 
-    def error(message, &block)
-    end
+    def error(message, &block); end
 
-    def warn(message, &block)
-    end
+    def warn(message, &block); end
 
-    def info(message, &block)
-    end
+    def info(message, &block); end
 
-    def debug(message, &block)
-    end
+    def debug(message, &block); end
 
-    def add(severity, message = nil, progname = nil)
-    end
+    def trace(message, &block); end
 
-    def <<(message)
-    end
+    def add(severity, message = nil, progname = nil); end
+
+    def <<(message); end
 
     def fatal?
       false
@@ -65,6 +60,10 @@ class Chef
     end
 
     def debug?
+      false
+    end
+
+    def trace?
       false
     end
 

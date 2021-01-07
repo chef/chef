@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/user"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_group"
+require_relative "../user"
+if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
+  require_relative "../../util/windows/net_group"
 end
 
 class Chef
@@ -30,26 +30,37 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @net_group = Chef::Util::Windows::NetGroup.new(@new_resource.group_name)
+          @net_group = Chef::Util::Windows::NetGroup.new(new_resource.group_name)
+        end
+
+        def group_members_match?
+          sorted_members_sids = new_resource.members.map { |x| lookup_account_name(x) }.sort
+          sorted_current_sids = current_resource.members.sort
+          Chef::Log.debug("#{new_resource.name}: current_members: #{sorted_current_sids} vs new_members #{sorted_members_sids}")
+          sorted_members_sids == sorted_current_sids
+        end
+
+        def group_gid_match?
+          true
         end
 
         def load_current_resource
-          @current_resource = Chef::Resource::Group.new(@new_resource.name)
-          @current_resource.group_name(@new_resource.group_name)
+          @current_resource = Chef::Resource::Group.new(new_resource.name)
+          current_resource.group_name(new_resource.group_name)
 
           members = nil
           begin
             members = @net_group.local_get_members
-          rescue => e
+          rescue
             @group_exists = false
-            Chef::Log.debug("#{@new_resource} group does not exist")
+            logger.trace("#{new_resource} group does not exist")
           end
 
           if members
-            @current_resource.members(members)
+            current_resource.members(members)
           end
 
-          @current_resource
+          current_resource
         end
 
         def create_group
@@ -58,10 +69,10 @@ class Chef
         end
 
         def manage_group
-          if @new_resource.append
+          if new_resource.append
             members_to_be_added = [ ]
-            @new_resource.members.each do |member|
-              members_to_be_added << member if ! has_current_group_member?(member) && validate_member!(member)
+            new_resource.members.each do |member|
+              members_to_be_added << member if !has_current_group_member?(member) && validate_member!(member)
             end
 
             # local_add_members will raise ERROR_MEMBER_IN_ALIAS if a
@@ -69,19 +80,20 @@ class Chef
             @net_group.local_add_members(members_to_be_added) unless members_to_be_added.empty?
 
             members_to_be_removed = [ ]
-            @new_resource.excluded_members.each do |member|
-              member_sid = lookup_account_name(member)
+            new_resource.excluded_members.each do |member|
+              lookup_account_name(member)
               members_to_be_removed << member if has_current_group_member?(member)
             end
             @net_group.local_delete_members(members_to_be_removed) unless members_to_be_removed.empty?
-          else
-            @net_group.local_set_members(@new_resource.members)
+          elsif !group_members_match?
+            @net_group.local_set_members(new_resource.members)
           end
+          @net_group.local_group_set_info(new_resource.comment) if new_resource.comment
         end
 
         def has_current_group_member?(member)
           member_sid = lookup_account_name(member)
-          @current_resource.members.include?(member_sid)
+          current_resource.members.include?(member_sid)
         end
 
         def remove_group
@@ -89,7 +101,7 @@ class Chef
         end
 
         def locally_qualified_name(account_name)
-          account_name.include?("\\") ? account_name : "#{ENV['COMPUTERNAME']}\\#{account_name}"
+          account_name.include?("\\") ? account_name : "#{ENV["COMPUTERNAME"]}\\#{account_name}"
         end
 
         def validate_member!(member)
@@ -97,12 +109,10 @@ class Chef
         end
 
         def lookup_account_name(account_name)
-          begin
-            Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name(account_name))[1].to_s
-          rescue Chef::Exceptions::Win32APIError
-            Chef::Log.warn("SID for '#{locally_qualified_name(account_name)}' could not be found")
-            ""
-          end
+          Chef::ReservedNames::Win32::Security.lookup_account_name(locally_qualified_name(account_name))[1].to_s
+        rescue Chef::Exceptions::Win32APIError
+          logger.warn("SID for '#{locally_qualified_name(account_name)}' could not be found")
+          ""
         end
 
       end

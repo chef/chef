@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/node"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "node"
+require_relative "directory"
+require_relative "../exceptions"
+require_relative "../../../win32/security" if ChefUtils.windows?
 
 class Chef
   module ChefFS
@@ -29,6 +30,27 @@ class Chef
 
           def make_child_entry(child_name)
             Node.new(child_name, self)
+          end
+
+          def create_child(child_name, file_contents = nil)
+            child = super
+            File.chmod(0600, child.file_path)
+            if ChefUtils.windows?
+              read_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_READ
+              write_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE
+              administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
+              owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
+              dacl = Chef::ReservedNames::Win32::Security::ACL.create([
+                Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, read_mask),
+                Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, write_mask),
+                Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, read_mask),
+                Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, write_mask),
+              ])
+              so = Chef::ReservedNames::Win32::Security::SecurableObject.new(child.file_path)
+              so.owner = owner
+              so.set_dacl(dacl, false)
+            end
+            child
           end
         end
       end

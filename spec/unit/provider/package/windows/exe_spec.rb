@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock <matt@mattwrock.com>
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 require "spec_helper"
 require "chef/provider/package/windows/exe"
 
-unless Chef::Platform.windows?
+unless ChefUtils.windows?
   class Chef
     module ReservedNames::Win32
       class File
@@ -99,7 +99,7 @@ describe Chef::Provider::Package::Windows::Exe do
       end
     end
 
-    it "returns the version attribute if given" do
+    it "returns the version property if given" do
       new_resource.version("v55555")
       expect(provider.package_version).to eql("v55555")
     end
@@ -117,7 +117,7 @@ describe Chef::Provider::Package::Windows::Exe do
     context "no version given and one package installed with unquoted uninstall string" do
       it "removes installed package and quotes uninstall string" do
         allow(::File).to receive(:exist?).with("uninst_dir/uninst_file").and_return(true)
-        expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir\/uninst_file\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+        expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir/uninst_file\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
         provider.remove_package
       end
     end
@@ -126,7 +126,7 @@ describe Chef::Provider::Package::Windows::Exe do
       it "removes installed package and quotes uninstall string" do
         new_resource.timeout = 300
         allow(::File).to receive(:exist?).with("uninst_dir/uninst_file").and_return(true)
-        expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir\/uninst_file\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, :timeout => 300, :returns => [0])
+        expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir/uninst_file\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, default_env: false, timeout: 300, returns: [0, 3010])
         provider.remove_package
       end
     end
@@ -148,15 +148,15 @@ describe Chef::Provider::Package::Windows::Exe do
       context "version given and installed" do
         it "removes given version" do
           new_resource.version("v2")
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir2\/uninst_file2\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir2/uninst_file2\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
           provider.remove_package
         end
       end
 
       context "no version given" do
         it "removes both versions" do
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir1\/uninst_file1\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
-          expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"uninst_dir2\/uninst_file2\" \/S \/NCRC & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir1/uninst_file1\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"uninst_dir2/uninst_file2\" /S /NCRC & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
           provider.remove_package
         end
       end
@@ -167,7 +167,7 @@ describe Chef::Provider::Package::Windows::Exe do
     let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :nsis, uninstall_entry) }
 
     it "calls installer with the correct flags" do
-      expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"#{Regexp.quote(new_resource.source)}\" \/S \/NCRC  & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"#{Regexp.quote(new_resource.source)}\" /S /NCRC  & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
       provider.install_package
     end
   end
@@ -176,7 +176,7 @@ describe Chef::Provider::Package::Windows::Exe do
     let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :installshield, uninstall_entry) }
 
     it "calls installer with the correct flags" do
-      expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"#{Regexp.quote(new_resource.source)}\" \/s \/sms  & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"#{Regexp.quote(new_resource.source)}\" /s /sms  & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
       provider.install_package
     end
   end
@@ -185,7 +185,7 @@ describe Chef::Provider::Package::Windows::Exe do
     let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :inno, uninstall_entry) }
 
     it "calls installer with the correct flags" do
-      expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"#{Regexp.quote(new_resource.source)}\" \/VERYSILENT \/SUPPRESSMSGBOXES \/NORESTART  & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"#{Regexp.quote(new_resource.source)}\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART  & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
       provider.install_package
     end
   end
@@ -194,7 +194,7 @@ describe Chef::Provider::Package::Windows::Exe do
     let(:provider) { Chef::Provider::Package::Windows::Exe.new(new_resource, :wise, uninstall_entry) }
 
     it "calls installer with the correct flags" do
-      expect(provider).to receive(:shell_out!).with(/start \"\" \/wait \"#{Regexp.quote(new_resource.source)}\" \/s  & exit %%%%ERRORLEVEL%%%%/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{start \"\" /wait \"#{Regexp.quote(new_resource.source)}\" /s  & exit %%%%ERRORLEVEL%%%%}, kind_of(Hash))
       provider.install_package
     end
   end

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -29,7 +30,7 @@ describe "knife node show", :workstation do
     end
 
     it "shows the node" do
-      knife("node show cons").should_succeed /Run List:\s*recipe\[bar\], recipe\[foo\]\n/m
+      knife("node show cons").should_succeed(/Run List:\s*recipe\[bar\], recipe\[foo\]\n/m)
     end
   end
 end

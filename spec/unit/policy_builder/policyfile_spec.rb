@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -70,8 +70,44 @@ describe Chef::PolicyBuilder::Policyfile do
     }
   end
 
-  let(:policyfile_default_attributes) { { "policyfile_default_attr" => "policyfile_default_value" } }
-  let(:policyfile_override_attributes) { { "policyfile_override_attr" => "policyfile_override_value" } }
+  let(:policyfile_default_attributes) do
+    {
+        "policyfile_default_attr" => "policyfile_default_value",
+        "top_level_attr" => "hat",
+        "baseline_attr" => {
+          "one" => 1,
+          "two" => 2,
+          "deep" => {
+              "three" => 3,
+              "four" => [4],
+              "five" => [5],
+          },
+        },
+        "policy_group_value" => {
+          "baseline_attr" => {
+            "one" => 111,
+          },
+        },
+      }
+  end
+
+  let(:policyfile_override_attributes) do
+    {
+       "policyfile_override_attr" => "policyfile_override_value",
+       "baseline_attr" => {
+         "deep" => {
+           "three" => 333 },
+       },
+       "policy_group_value" => {
+         "top_level_attr" => "cat",
+         "baseline_attr" => {
+           "deep" => {
+             "four" => [444],
+           },
+         },
+       },
+    }
+  end
 
   let(:policyfile_run_list) { ["recipe[example1::default]", "recipe[example2::server]"] }
 
@@ -100,8 +136,8 @@ describe Chef::PolicyBuilder::Policyfile do
     http = double("Chef::ServerAPI")
     server_url = "https://api.opscode.com/organizations/example"
     Chef::Config[:chef_server_url] = server_url
-    expect(Chef::ServerAPI).to receive(:new).with(server_url).and_return(http)
-    expect(policy_builder.http_api).to eq(http)
+    expect(Chef::ServerAPI).to receive(:new).with(server_url, version_class: Chef::CookbookManifestVersions).and_return(http)
+    expect(policy_builder.api_service).to eq(http)
   end
 
   describe "reporting unsupported features" do
@@ -150,7 +186,7 @@ describe Chef::PolicyBuilder::Policyfile do
 
   describe "loading policy data" do
 
-    let(:http_api) { double("Chef::ServerAPI") }
+    let(:api_service) { double("Chef::ServerAPI") }
 
     let(:configured_environment) { nil }
 
@@ -172,7 +208,7 @@ describe Chef::PolicyBuilder::Policyfile do
     before do
       Chef::Config[:policy_document_native_api] = false
       Chef::Config[:deployment_group] = "example-policy-stage"
-      allow(policy_builder).to receive(:http_api).and_return(http_api)
+      allow(policy_builder).to receive(:api_service).and_return(api_service)
     end
 
     describe "when using compatibility mode (policy_document_native_api == false)" do
@@ -182,12 +218,12 @@ describe Chef::PolicyBuilder::Policyfile do
       end
 
       context "when the deployment group cannot be loaded" do
-        let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+        let(:error404) { Net::HTTPClientException.new("404 message", :body) }
 
         before do
-          expect(http_api).to receive(:get).
-            with("data/policyfiles/example-policy-stage").
-            and_raise(error404)
+          expect(api_service).to receive(:get)
+            .with("data/policyfiles/example-policy-stage")
+            .and_raise(error404)
         end
 
         it "raises an error" do
@@ -212,7 +248,7 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:policy_relative_url) { "data/policyfiles/example-policy-stage" }
 
         before do
-          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+          expect(api_service).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
         end
 
         it "fetches the policy file from a data bag item" do
@@ -253,7 +289,7 @@ describe Chef::PolicyBuilder::Policyfile do
         let(:policy_relative_url) { "policy_groups/policy-stage/policies/example" }
 
         before do
-          expect(http_api).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
+          expect(api_service).to receive(:get).with(policy_relative_url).and_return(parsed_policyfile_json)
         end
 
         it "fetches the policy file from a data bag item" do
@@ -328,6 +364,56 @@ describe Chef::PolicyBuilder::Policyfile do
           policy_builder.validate_policyfile
         end
 
+      end
+
+      describe "#build_node" do
+
+        let(:node) do
+          node = Chef::Node.new
+          node.name(node_name)
+          node
+        end
+
+        before do
+          allow(policy_builder).to receive(:node).and_return(node)
+        end
+
+        context "when the run is successful" do
+          let(:run_list) do
+            ["recipe[test::default]",
+             "recipe[test::other]"]
+          end
+
+          let(:version_hash) do
+            {
+              "version" => "0.1.0",
+              "identifier" => "012345678",
+            }
+          end
+
+          let(:run_list_for_data_collector) do
+            {
+              id: "_policy_node",
+              run_list: [
+               { type: "recipe", name: "test::default", skipped: false, version: nil },
+               { type: "recipe", name: "test::other", skipped: false, version: nil },
+              ],
+            }
+          end
+
+          before do
+            allow(policy_builder).to receive(:run_list)
+              .and_return(run_list)
+            allow(policy_builder).to receive(:cookbook_lock_for)
+              .and_return(version_hash)
+          end
+
+          it "sends the run_list_expanded event" do
+            policy_builder.build_node
+            expect(policy_builder.run_list_expansion_ish.to_hash)
+              .to eq(run_list_for_data_collector)
+          end
+        end
       end
 
       describe "building the node object" do
@@ -488,6 +574,10 @@ describe Chef::PolicyBuilder::Policyfile do
               expect(Chef::Config[:policy_group]).to eq("policy_group_from_node_json")
               expect(node.policy_name).to eq("policy_name_from_node_json")
               expect(node.policy_group).to eq("policy_group_from_node_json")
+              expect(node.automatic_attrs[:policy_name]).to eq("policy_name_from_node_json")
+              expect(node.automatic_attrs[:policy_group]).to eq("policy_group_from_node_json")
+              expect(node.automatic_attrs[:chef_environment]).to eq("policy_group_from_node_json")
+
             end
 
           end
@@ -537,6 +627,7 @@ describe Chef::PolicyBuilder::Policyfile do
           it "create node.automatic_attrs[:recipes]" do
             expect(node.automatic_attrs[:recipes]).to eq(["example1::default", "example2::server"])
           end
+
         end
 
         context "when a named run_list is given" do
@@ -586,6 +677,42 @@ describe Chef::PolicyBuilder::Policyfile do
           end
 
         end
+
+        describe "hoisting attribute values" do
+          context "with no policy group set" do
+            it "does not hoist policy_group specific attributes" do
+              expect( node["top_level_attr"] ).to eql("hat")
+              expect( node["baseline_attr"]["one"] ).to eql(1)
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["three"] ).to eql(333)
+              expect( node["baseline_attr"]["deep"]["four"] ).to eql([4])
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+          end
+
+          context "with a policy group set" do
+            before do
+              Chef::Config[:policy_group] = "policy_group_value"
+              policy_builder.finish_load_node(node)
+              policy_builder.build_node
+            end
+
+            it "hoists default attributes" do
+              expect( node["top_level_attr"] ).to eql("cat")
+              expect( node["baseline_attr"]["one"]).to eql(111)
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+
+            it "hoists override attributes" do
+              expect( node["top_level_attr"] ).to eql("cat")
+              expect( node["baseline_attr"]["two"] ).to eql(2)
+              expect( node["baseline_attr"]["deep"]["three"] ).to eql(333)
+              expect( node["baseline_attr"]["deep"]["four"] ).to eql([444])
+              expect( node["baseline_attr"]["deep"]["five"] ).to eql([5])
+            end
+          end
+        end
       end
 
       describe "fetching the desired cookbook set" do
@@ -611,14 +738,14 @@ describe Chef::PolicyBuilder::Policyfile do
         shared_examples "fetching cookbooks when they don't exist" do
           context "and a cookbook is missing" do
 
-            let(:error404) { Net::HTTPServerException.new("404 message", :body) }
+            let(:error404) { Net::HTTPClientException.new("404 message", :body) }
 
             before do
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
-              expect(http_api).to receive(:get).with(cookbook1_url).
-                and_raise(error404)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_raise(error404)
             end
 
             it "raises an error indicating which cookbook is missing" do
@@ -636,9 +763,9 @@ describe Chef::PolicyBuilder::Policyfile do
               policy_builder.finish_load_node(node)
               policy_builder.build_node
 
-              allow(Chef::CookbookSynchronizer).to receive(:new).
-                with(expected_cookbook_hash, events).
-                and_return(cookbook_synchronizer)
+              allow(Chef::CookbookSynchronizer).to receive(:new)
+                .with(expected_cookbook_hash, events)
+                .and_return(cookbook_synchronizer)
             end
 
             after do
@@ -687,15 +814,15 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(http_api).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_data)
-              expect(http_api).to receive(:get).with(cookbook2_url).
-                and_return(example2_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_return(example1_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook2_url)
+                .and_return(example2_cookbook_data)
 
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
-                and_return(example1_cookbook_object)
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
-                and_return(example2_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data)
+                .and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data)
+                .and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"
@@ -720,15 +847,15 @@ describe Chef::PolicyBuilder::Policyfile do
           context "when the cookbooks exist on the server" do
 
             before do
-              expect(http_api).to receive(:get).with(cookbook1_url).
-                and_return(example1_cookbook_data)
-              expect(http_api).to receive(:get).with(cookbook2_url).
-                and_return(example2_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook1_url)
+                .and_return(example1_cookbook_data)
+              expect(api_service).to receive(:get).with(cookbook2_url)
+                .and_return(example2_cookbook_data)
 
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data).
-                and_return(example1_cookbook_object)
-              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data).
-                and_return(example2_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example1_cookbook_data)
+                .and_return(example1_cookbook_object)
+              expect(Chef::CookbookVersion).to receive(:from_cb_artifact_data).with(example2_cookbook_data)
+                .and_return(example2_cookbook_object)
             end
 
             include_examples "fetching cookbooks when they exist"

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/error"
-require "chef/win32/memory"
-require "chef/win32/unicode"
-require "chef/exceptions"
+require_relative "api/error"
+require_relative "memory"
+require_relative "unicode"
+require_relative "../exceptions"
 
 class Chef
   module ReservedNames::Win32
@@ -50,7 +50,7 @@ class Chef
 
         # Extract the string
         begin
-          return buffer.read_pointer.read_wstring(num_chars)
+          buffer.read_pointer.read_wstring(num_chars)
         ensure
           Chef::ReservedNames::Win32::Memory.local_free(buffer.read_pointer)
         end

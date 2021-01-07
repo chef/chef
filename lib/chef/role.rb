@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,22 +18,20 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/run_list"
-require "chef/mash"
-require "chef/json_compat"
-require "chef/server_api"
-require "chef/search/query"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "run_list"
+require_relative "mash"
+require_relative "json_compat"
+require_relative "server_api"
+require_relative "search/query"
 
 class Chef
   class Role
 
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
-
-    attr_accessor :chef_server_rest
 
     # Create a new Chef::Role object.
     def initialize(chef_server_rest: nil)
@@ -57,7 +55,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 
@@ -65,7 +63,7 @@ class Chef
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -88,12 +86,12 @@ class Chef
     end
 
     def active_run_list_for(environment)
-      @env_run_lists.has_key?(environment) ? environment : "_default"
+      @env_run_lists.key?(environment) ? environment : "_default"
     end
 
     # Per environment run lists
     def env_run_lists(env_run_lists = nil)
-      if !env_run_lists.nil?
+      unless env_run_lists.nil?
         unless env_run_lists.key?("_default")
           msg = "_default key is required in env_run_lists.\n"
           msg << "(env_run_lists: #{env_run_lists.inspect})"
@@ -108,7 +106,7 @@ class Chef
     alias :env_run_list :env_run_lists
 
     def env_run_lists_add(env_run_lists = nil)
-      if !env_run_lists.nil?
+      unless env_run_lists.nil?
         env_run_lists.each { |k, v| @env_run_lists[k] = Chef::RunList.new(*Array(v)) }
       end
       @env_run_lists
@@ -120,7 +118,7 @@ class Chef
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -128,14 +126,14 @@ class Chef
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
-    def to_hash
+    def to_h
       env_run_lists_without_default = @env_run_lists.dup
       env_run_lists_without_default.delete("_default")
-      result = {
+      {
         "name" => @name,
         "description" => @description,
         "json_class" => self.class.name,
@@ -143,20 +141,21 @@ class Chef
         "override_attributes" => @override_attributes,
         "chef_type" => "role",
 
-        #Render to_json correctly for run_list items (both run_list and evn_run_lists)
-        #so malformed json does not result
-        "run_list" => run_list.run_list.map { |item| item.to_s },
+        # Render to_json correctly for run_list items (both run_list and evn_run_lists)
+        # so malformed json does not result
+        "run_list" => run_list.run_list.map(&:to_s),
         "env_run_lists" => env_run_lists_without_default.inject({}) do |accumulator, (k, v)|
-          accumulator[k] = v.map { |x| x.to_s }
+          accumulator[k] = v.map(&:to_s)
           accumulator
         end,
       }
-      result
     end
+
+    alias_method :to_hash, :to_h
 
     # Serialize this object as a hash
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def update_from!(o)
@@ -168,12 +167,6 @@ class Chef
       self
     end
 
-    # Create a Chef::Role from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Role#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       role = new
       role.name(o["name"])
@@ -183,7 +176,7 @@ class Chef
 
       # _default run_list is in 'run_list' for newer clients, and
       # 'recipes' for older clients.
-      env_run_list_hash = { "_default" => (o.has_key?("run_list") ? o["run_list"] : o["recipes"]) }
+      env_run_list_hash = { "_default" => (o.key?("run_list") ? o["run_list"] : o["recipes"]) }
 
       # Clients before 0.10 do not include env_run_lists, so only
       # merge if it's there.
@@ -198,7 +191,7 @@ class Chef
     # Get the list of all roles from the API.
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:role) do |n|
           response[n.name] = n unless n.nil?
         end
@@ -230,8 +223,9 @@ class Chef
     def save
       begin
         chef_server_rest.put("roles/#{@name}", self)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         chef_server_rest.post("roles", self)
       end
       self
@@ -254,18 +248,19 @@ class Chef
       paths = Array(Chef::Config[:role_path])
       paths.each do |path|
         roles_files = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "**"))
-        js_files = roles_files.select { |file| file.match(/\/#{name}\.json$/) }
-        rb_files = roles_files.select { |file| file.match(/\/#{name}\.rb$/) }
+        js_files = roles_files.select { |file| file.match(%r{/#{name}\.json$}) }
+        rb_files = roles_files.select { |file| file.match(%r{/#{name}\.rb$}) }
         if js_files.count > 1 || rb_files.count > 1
           raise Chef::Exceptions::DuplicateRole, "Multiple roles of same type found named #{name}"
         end
+
         js_path, rb_path = js_files.first, rb_files.first
 
-        if js_path && File.exists?(js_path)
+        if js_path && File.exist?(js_path)
           # from_json returns object.class => json_class in the JSON.
           hsh = Chef::JSONCompat.parse(IO.read(js_path))
           return from_hash(hsh)
-        elsif rb_path && File.exists?(rb_path)
+        elsif rb_path && File.exist?(rb_path)
           role = Chef::Role.new
           role.name(name)
           role.from_file(rb_path)

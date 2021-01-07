@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/data_bag_secret_options"
+require_relative "../knife"
+require_relative "data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require "chef/data_bag"
-        require "chef/encrypted_data_bag_item"
+        require_relative "../data_bag"
+        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag create BAG [ITEM] (options)"
@@ -49,13 +49,16 @@ class Chef
           exit(1)
         end
 
-        # create the data bag
+        # Verify if the data bag exists
         begin
+          rest.get("data/#{@data_bag_name}")
+          ui.info("Data bag #{@data_bag_name} already exists")
+        rescue Net::HTTPClientException => e
+          raise unless /^404/.match?(e.to_s)
+
+          # if it doesn't exists, try to create it
           rest.post("data", { "name" => @data_bag_name })
           ui.info("Created data_bag[#{@data_bag_name}]")
-        rescue Net::HTTPServerException => e
-          raise unless e.to_s =~ /^409/
-          ui.info("Data bag #{@data_bag_name} already exists")
         end
 
         # if an item is specified, create it, as well

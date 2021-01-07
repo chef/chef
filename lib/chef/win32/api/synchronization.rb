@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32
@@ -56,8 +56,8 @@ HANDLE WINAPI CreateMutex(
   _In_opt_  LPCTSTR lpName
 );
 =end
-        safe_attach_function :CreateMutexW, [ :LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR ], :HANDLE
-        safe_attach_function :CreateMutexA, [ :LPSECURITY_ATTRIBUTES, :BOOL, :LPCTSTR ], :HANDLE
+        safe_attach_function :CreateMutexW, %i{LPSECURITY_ATTRIBUTES BOOL LPCTSTR}, :HANDLE
+        safe_attach_function :CreateMutexA, %i{LPSECURITY_ATTRIBUTES BOOL LPCTSTR}, :HANDLE
 
 =begin
 DWORD WINAPI WaitForSingleObject(
@@ -65,7 +65,7 @@ DWORD WINAPI WaitForSingleObject(
   _In_  DWORD dwMilliseconds
 );
 =end
-        safe_attach_function :WaitForSingleObject, [ :HANDLE, :DWORD ], :DWORD
+        safe_attach_function :WaitForSingleObject, %i{HANDLE DWORD}, :DWORD
 
 =begin
 BOOL WINAPI ReleaseMutex(
@@ -81,8 +81,8 @@ HANDLE WINAPI OpenMutex(
   _In_  LPCTSTR lpName
 );
 =end
-        safe_attach_function :OpenMutexW, [ :DWORD, :BOOL, :LPCTSTR ], :HANDLE
-        safe_attach_function :OpenMutexA, [ :DWORD, :BOOL, :LPCTSTR ], :HANDLE
+        safe_attach_function :OpenMutexW, %i{DWORD BOOL LPCTSTR}, :HANDLE
+        safe_attach_function :OpenMutexA, %i{DWORD BOOL LPCTSTR}, :HANDLE
       end
     end
   end

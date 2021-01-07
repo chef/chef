@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 
 # I love you Merb (lib/merb-core/server.rb)
 
-require "chef/config"
-require "chef/run_lock"
-require "etc"
+require_relative "config"
+require_relative "run_lock"
+require "etc" unless defined?(Etc)
 
 class Chef
   class Daemon

@@ -2,8 +2,7 @@
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Chef Software Inc.
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,62 +17,67 @@
 # limitations under the License.
 #
 
-require "etc"
-require "chef/mixin/homebrew_user"
+require "etc" unless defined?(Etc)
+require_relative "../../mixin/homebrew_user"
 
 class Chef
   class Provider
     class Package
       class Homebrew < Chef::Provider::Package
+        allow_nils
+        use_multipackage_api
 
-        provides :package, os: "darwin", override: true
+        provides :package, os: "darwin"
         provides :homebrew_package
 
         include Chef::Mixin::HomebrewUser
 
         def load_current_resource
-          self.current_resource = Chef::Resource::Package.new(new_resource.name)
+          @current_resource = Chef::Resource::HomebrewPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
-          current_resource.version(current_installed_version)
-          Chef::Log.debug("#{new_resource} current version is #{current_resource.version}") if current_resource.version
-
-          @candidate_version = candidate_version
-
-          Chef::Log.debug("#{new_resource} candidate version is #{@candidate_version}") if @candidate_version
+          current_resource.version(get_current_versions)
+          logger.trace("#{new_resource} current package version(s): #{current_resource.version}") if current_resource.version
 
           current_resource
         end
 
-        def install_package(name, version)
-          unless current_resource.version == version
-            brew("install", new_resource.options, name)
+        def candidate_version
+          package_name_array.map do |package_name|
+            available_version(package_name)
           end
         end
 
-        def upgrade_package(name, version)
-          current_version = current_resource.version
-
-          if current_version.nil? || current_version.empty?
-            install_package(name, version)
-          elsif current_version != version
-            brew("upgrade", new_resource.options, name)
+        def get_current_versions
+          package_name_array.map do |package_name|
+            installed_version(package_name)
           end
         end
 
-        def remove_package(name, version)
-          if current_resource.version
-            brew("uninstall", new_resource.options, name)
-          end
+        def install_package(names, versions)
+          brew_cmd_output("install", options, names.compact)
+        end
+
+        # upgrades are a bit harder in homebrew than other package formats. If you try to
+        # brew upgrade a package that isn't installed it will fail so if a user specifies
+        # the action of upgrade we need to figure out which packages need to be installed
+        # and which packages can be upgrades. We do this by checking if brew_info has an entry
+        # via the installed_version helper.
+        def upgrade_package(names, versions)
+          # @todo when we no longer support Ruby 2.6 this can be simplified to be a .filter_map
+          upgrade_pkgs = names.select { |x| x if installed_version(x) }.compact
+          install_pkgs = names.select { |x| x unless installed_version(x) }.compact
+
+          brew_cmd_output("upgrade", options, upgrade_pkgs) unless upgrade_pkgs.empty?
+          brew_cmd_output("install", options, install_pkgs) unless install_pkgs.empty?
+        end
+
+        def remove_package(names, versions)
+          brew_cmd_output("uninstall", options, names.compact)
         end
 
         # Homebrew doesn't really have a notion of purging, do a "force remove"
-        def purge_package(name, version)
-          new_resource.options((new_resource.options || "") << " --force").strip
-          remove_package(name, version)
-        end
-
-        def brew(*args)
-          get_response_from_command("brew #{args.join(' ')}")
+        def purge_package(names, versions)
+          brew_cmd_output("uninstall", "--force", options, names.compact)
         end
 
         # We implement a querying method that returns the JSON-as-Hash
@@ -83,9 +87,50 @@ class Chef
         # information, but that is not any more robust than using the
         # command-line interface that returns the same thing.
         #
-        # https://github.com/Homebrew/homebrew/wiki/Querying-Brew
+        # https://docs.brew.sh/Querying-Brew
+        #
+        # @returns [Hash] a hash of package information where the key is the package name
         def brew_info
-          @brew_info ||= Chef::JSONCompat.from_json(brew("info", "--json=v1", new_resource.package_name)).first
+          @brew_info ||= begin
+            command_array = ["info", "--json=v1"].concat package_name_array
+            # convert the array of hashes into a hash where the key is the package name
+
+            cmd_output = brew_cmd_output(command_array, allow_failure: true)
+
+            if cmd_output.empty?
+              # we had some kind of failure so we need to iterate through each package to find them
+              package_name_array.each_with_object({}) do |package_name, hsh|
+                cmd_output = brew_cmd_output("info", "--json=v1", package_name, allow_failure: true)
+                if cmd_output.empty?
+                  hsh[package_name] = {}
+                else
+                  json = Chef::JSONCompat.from_json(cmd_output).first
+                  hsh[json["name"]] = json
+                end
+              end
+            else
+              Hash[Chef::JSONCompat.from_json(cmd_output).collect { |pkg| [pkg["name"], pkg] }]
+            end
+          end
+        end
+
+        #
+        # Return the package information given a package name or package alias
+        #
+        # @param [String] name_or_alias The name of the package or its alias
+        #
+        # @return [Hash] Package information
+        #
+        def package_info(package_name)
+          # return the package hash if it's in the brew info hash
+          return brew_info[package_name] if brew_info[package_name]
+
+          # check each item in the hash to see if we were passed an alias
+          brew_info.each_value do |p|
+            return p if p["full_name"] == package_name || p["aliases"].include?(package_name)
+          end
+
+          {}
         end
 
         # Some packages (formula) are "keg only" and aren't linked,
@@ -94,15 +139,20 @@ class Chef
         # "current" (as in latest). Otherwise, we will use the version
         # that brew thinks is linked as the current version.
         #
-        def current_installed_version
-          if brew_info["keg_only"]
-            if brew_info["installed"].empty?
+        # @param [String] package name
+        #
+        # @returns [String] package version
+        def installed_version(i)
+          p_data = package_info(i)
+
+          if p_data["keg_only"]
+            if p_data["installed"].empty?
               nil
             else
-              brew_info["installed"].last["version"]
+              p_data["installed"].last["version"]
             end
           else
-            brew_info["linked_keg"]
+            p_data["linked_keg"]
           end
         end
 
@@ -115,19 +165,33 @@ class Chef
         # forward project.
         #
         # https://github.com/Homebrew/homebrew/wiki/Acceptable-Formulae#stable-versions
-        def candidate_version
-          brew_info["versions"]["stable"]
+        #
+        # @param [String] package name
+        #
+        # @returns [String] package version
+        def available_version(i)
+          p_data = package_info(i)
+
+          # nothing is available
+          return nil if p_data.empty?
+
+          p_data["versions"]["stable"]
         end
 
-        private
-
-        def get_response_from_command(command)
+        def brew_cmd_output(*command, **options)
           homebrew_uid = find_homebrew_uid(new_resource.respond_to?(:homebrew_user) && new_resource.homebrew_user)
           homebrew_user = Etc.getpwuid(homebrew_uid)
 
-          Chef::Log.debug "Executing '#{command}' as user '#{homebrew_user.name}'"
+          logger.trace "Executing 'brew #{command.join(" ")}' as user '#{homebrew_user.name}'"
+
+          # allow the calling method to decide if the cmd should raise or not
+          # brew_info uses this when querying out available package info since a bad
+          # package name will raise and we want to surface a nil available package so that
+          # the package provider can magically handle that
+          shell_out_cmd = options[:allow_failure] ? :shell_out : :shell_out!
+
           # FIXME: this 1800 second default timeout should be deprecated
-          output = shell_out_with_timeout!(command, :timeout => 1800, :user => homebrew_uid, :environment => { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
+          output = send(shell_out_cmd, "brew", *command, timeout: 1800, user: homebrew_uid, environment: { "HOME" => homebrew_user.dir, "RUBYOPT" => nil, "TMPDIR" => nil })
           output.stdout.chomp
         end
 

@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,24 +25,32 @@ describe Chef::Knife::UI do
   before do
     @out, @err, @in = StringIO.new, StringIO.new, StringIO.new
     @config = {
-      :verbosity => 0,
-      :yes => nil,
-      :format => "summary",
+      verbosity: 0,
+      yes: nil,
+      format: "summary",
+      field_separator: ".",
     }
     @ui = Chef::Knife::UI.new(@out, @err, @in, @config)
-    Chef::Config[:treat_deprecation_warnings_as_errors] = false
+  end
+
+  class TestObject < OpenStruct
+    def self.from_hash(hsh)
+      new(hsh)
+    end
   end
 
   describe "edit" do
     ruby_for_json = { "foo" => "bar" }
+    ruby_from_json = TestObject.from_hash(ruby_for_json)
     json_from_ruby = "{\n  \"foo\": \"bar\"\n}"
     json_from_editor = "{\n  \"bar\": \"foo\"\n}"
-    ruby_from_editor = { "bar" => "foo" }
+    ruby_from_editor = TestObject.from_hash({ "bar" => "foo" })
     my_editor = "veeeye"
     temp_path = "/tmp/bar/baz"
 
-    let(:subject) { @ui.edit_data(ruby_for_json, parse_output) }
+    let(:subject) { @ui.edit_data(ruby_for_json, parse_output, object_class: klass) }
     let(:parse_output) { false }
+    let(:klass) { nil }
 
     context "when editing is disabled" do
       before do
@@ -56,17 +64,18 @@ describe Chef::Knife::UI do
       end
       context "when parse_output is true" do
         let(:parse_output) { true }
+        let(:klass) { TestObject }
         it "returns a ruby object" do
-          expect(subject).to eql(ruby_for_json)
+          expect(subject).to eql(ruby_from_json)
         end
-
-        it "gives a deprecation error" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = true
-          expect { subject }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /Auto inflation of JSON data is deprecated./
+        context "but no object class is provided" do
+          let(:klass) { nil }
+          it "raises an error" do
+            expect { subject }.to raise_error ArgumentError,
+              /Please pass in the object class to hydrate or use #edit_hash/
+          end
         end
       end
-
     end
 
     context "when editing is enabled" do
@@ -93,6 +102,7 @@ describe Chef::Knife::UI do
         end
         context "when parse_output is true" do
           let(:parse_output) { true }
+          let(:klass) { TestObject }
           it "returns an edited ruby object" do
             expect(subject).to eql(ruby_from_editor)
           end
@@ -144,6 +154,7 @@ describe Chef::Knife::UI do
 
         context "when parse_output is true" do
           let(:parse_output) { true }
+          let(:klass) { TestObject }
           it "returns an edited ruby object" do
             expect(subject).to eql(ruby_from_editor)
           end
@@ -160,12 +171,12 @@ describe Chef::Knife::UI do
   describe "format_list_for_display" do
     it "should print the full hash if --with-uri is true" do
       @ui.config[:with_uri] = true
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq({ :marcy => :playground })
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq({ marcy: :playground })
     end
 
     it "should print only the keys if --with-uri is false" do
       @ui.config[:with_uri] = false
-      expect(@ui.format_list_for_display({ :marcy => :playground })).to eq([ :marcy ])
+      expect(@ui.format_list_for_display({ marcy: :playground })).to eq([ :marcy ])
     end
   end
 
@@ -200,10 +211,10 @@ describe Chef::Knife::UI do
 
     it "formats hashes appropriately" do
       @ui.output({ "hi" => "a", "lo" => "b" })
-      expect(@out.string).to eq <<EOM
-hi: a
-lo: b
-EOM
+      expect(@out.string).to eq <<~EOM
+        hi: a
+        lo: b
+      EOM
     end
 
     it "formats empty hashes appropriately" do
@@ -213,10 +224,10 @@ EOM
 
     it "formats arrays appropriately" do
       @ui.output(%w{a b})
-      expect(@out.string).to eq <<EOM
-a
-b
-EOM
+      expect(@out.string).to eq <<~EOM
+        a
+        b
+      EOM
     end
 
     it "formats empty arrays appropriately" do
@@ -236,75 +247,75 @@ EOM
 
     it "formats nested arrays appropriately" do
       @ui.output([ %w{a b}, %w{c d}])
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 
-c
-d
-EOM
+        c
+        d
+      EOM
     end
 
     it "formats nested arrays with single- and empty subarrays appropriately" do
       @ui.output([ %w{a b}, [ "c" ], [], %w{d e}])
-      expect(@out.string).to eq <<EOM
-a
-b
+      expect(@out.string).to eq <<~EOM
+        a
+        b
 
-c
+        c
 
 
-d
-e
-EOM
+        d
+        e
+      EOM
     end
 
     it "formats arrays of hashes with extra lines in between for readability" do
       @ui.output([ { "a" => "b", "c" => "d" }, { "x" => "y" }, { "m" => "n", "o" => "p" }])
-      expect(@out.string).to eq <<EOM
-a: b
-c: d
+      expect(@out.string).to eq <<~EOM
+        a: b
+        c: d
 
-x: y
+        x: y
 
-m: n
-o: p
-EOM
+        m: n
+        o: p
+      EOM
     end
 
     it "formats hashes with empty array members appropriately" do
       @ui.output({ "a" => [], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
+      EOM
     end
 
     it "formats hashes with single-member array values appropriately" do
       @ui.output({ "a" => [ "foo" ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a: foo
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a: foo
+        b: c
+      EOM
     end
 
     it "formats hashes with array members appropriately" do
       @ui.output({ "a" => %w{foo bar}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-  bar
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+          bar
+        b: c
+      EOM
     end
 
     it "formats hashes with single-member nested array values appropriately" do
       @ui.output({ "a" => [ [ "foo" ] ], "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  foo
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a:
+          foo
+        b: c
+      EOM
     end
 
     it "formats hashes with nested array values appropriately" do
@@ -316,20 +327,20 @@ EOM
 
     it "formats hashes with hash values appropriately" do
       @ui.output({ "a" => { "aa" => "bb", "cc" => "dd" }, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-  aa: bb
-  cc: dd
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a:
+          aa: bb
+          cc: dd
+        b: c
+      EOM
     end
 
     it "formats hashes with empty hash values appropriately" do
       @ui.output({ "a" => {}, "b" => "c" })
-      expect(@out.string).to eq <<EOM
-a:
-b: c
-EOM
+      expect(@out.string).to eq <<~EOM
+        a:
+        b: c
+      EOM
     end
   end
 
@@ -347,7 +358,7 @@ EOM
 
   describe "format_for_display" do
     it "should return the raw data" do
-      input = { :gi => :go }
+      input = { gi: :go }
       expect(@ui.format_for_display(input)).to eq(input)
     end
 
@@ -377,10 +388,31 @@ EOM
       end
 
       it "should return the name attribute" do
-        allow_any_instance_of(Chef::Node).to receive(:name).and_return("chef.localdomain")
         input = Chef::Node.new
+        input.name("chef.localdomain")
         @ui.config[:attribute] = "name"
         expect(@ui.format_for_display(input)).to eq( { "chef.localdomain" => { "name" => "chef.localdomain" } })
+      end
+
+      it "should return a 'class' attribute and not the node.class" do
+        input = Chef::Node.new
+        input.default["class"] = "classy!"
+        @ui.config[:attribute] = "class"
+        expect(@ui.format_for_display(input)).to eq( { nil => { "class" => "classy!" } } )
+      end
+
+      it "should return the chef_environment attribute" do
+        input = Chef::Node.new
+        input.chef_environment = "production-partner-load-integration-preview-testing"
+        @ui.config[:attribute] = "chef_environment"
+        expect(@ui.format_for_display(input)).to eq( { nil => { "chef_environment" => "production-partner-load-integration-preview-testing" } } )
+      end
+
+      it "works with arrays" do
+        input = Chef::Node.new
+        input.default["array"] = %w{zero one two}
+        @ui.config[:attribute] = "array.1"
+        expect(@ui.format_for_display(input)).to eq( { nil => { "array.1" => "one" } } )
       end
 
       it "returns nil when given an attribute path that isn't a name or attribute" do
@@ -388,6 +420,15 @@ EOM
         non_existing_path = "nope.nada.nothingtoseehere"
         @ui.config[:attribute] = non_existing_path
         expect(@ui.format_for_display(input)).to eq({ "sample-data-bag-item" => { non_existing_path => nil } })
+      end
+
+      describe "when --field-separator is passed" do
+        it "honors that separator" do
+          input = { "keys" => { "with spaces" => { "open" => { "doors" => { "with many.dots" => "when asked" } } } } }
+          @ui.config[:field_separator] = ";"
+          @ui.config[:attribute] = "keys;with spaces;open;doors;with many.dots"
+          expect(@ui.format_for_display(input)).to eq({ nil => { "keys;with spaces;open;doors;with many.dots" => "when asked" } })
+        end
       end
     end
 
@@ -439,9 +480,9 @@ EOM
 
     context "when running on Windows" do
       before(:each) do
-        stdout = double("StringIO", :tty? => true)
+        stdout = double("StringIO", tty?: true)
         allow(@ui).to receive(:stdout).and_return(stdout)
-        allow(ChefConfig).to receive(:windows?) { true }
+        allow(ChefUtils).to receive(:windows?) { true }
         Chef::Config.reset
       end
 
@@ -462,6 +503,23 @@ EOM
 
       it "should not have color set to false by default" do
         expect(@ui.color?).to eql(false)
+      end
+    end
+  end
+
+  describe "color" do
+    context "when ui.color? => true" do
+      it "returns colored output" do
+        skip "doesn't work on systems that don't correctly have terminals setup for color"
+        expect(@ui).to receive(:color?).and_return(true)
+        expect(@ui.color("a_bus_is", :yellow)).to eql("\e[33ma_bus_is\e[0m")
+      end
+    end
+
+    context "when ui.color? => false" do
+      it "returns plain output" do
+        expect(@ui).to receive(:color?).and_return(false)
+        expect(@ui.color("a_bus_is", :yellow)).to eql("a_bus_is")
       end
     end
   end
@@ -590,7 +648,7 @@ EOM
       out = StringIO.new
       allow(@ui).to receive(:stdout).and_return(out)
       allow(@ui).to receive(:stdin).and_return(StringIO.new(" \n"))
-      expect(@ui.ask_question("your chef server URL? ", :default => "http://localhost:4000")).to eq("http://localhost:4000")
+      expect(@ui.ask_question("your chef server URL? ", default: "http://localhost:4000")).to eq("http://localhost:4000")
       expect(out.string).to eq("your chef server URL? [http://localhost:4000] ")
     end
   end

@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,16 +20,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/log"
-require "mixlib/authentication/signedheaderauth"
+require_relative "../log"
+module Mixlib
+  module Authentication
+    autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
+  end
+end
 
 class Chef
   class HTTP
     class AuthCredentials
       attr_reader :client_name, :key
 
-      def initialize(client_name = nil, key = nil)
-        @client_name, @key = client_name, key
+      def initialize(client_name = nil, key = nil, use_ssh_agent: false)
+        @client_name = client_name
+        @key = key
+        @use_ssh_agent = use_ssh_agent
       end
 
       def sign_requests?
@@ -38,7 +44,8 @@ class Chef
 
       def signature_headers(request_params = {})
         raise ArgumentError, "Cannot sign the request without a client name, check that :node_name is assigned" if client_name.nil?
-        Chef::Log.debug("Signing the request as #{client_name}")
+
+        Chef::Log.trace("Signing the request as #{client_name}")
 
         # params_in = {:http_method => :GET, :path => "/clients", :body => "", :host => "localhost"}
         request_params                 = request_params.dup
@@ -48,8 +55,8 @@ class Chef
         host = request_params.delete(:host) || "localhost"
 
         sign_obj = Mixlib::Authentication::SignedHeaderAuth.signing_object(request_params)
-        signed = sign_obj.sign(key).merge({ :host => host })
-        signed.inject({}) { |memo, kv| memo["#{kv[0].to_s.upcase}"] = kv[1]; memo }
+        signed = sign_obj.sign(key, use_ssh_agent: @use_ssh_agent).merge({ host: host })
+        signed.inject({}) { |memo, kv| memo[(kv[0].to_s.upcase).to_s] = kv[1]; memo }
       end
 
     end

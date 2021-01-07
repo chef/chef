@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_create_base"
+require_relative "../knife"
+require_relative "key_create_base"
 
 class Chef
   class Knife
@@ -29,6 +29,12 @@ class Chef
     # @attr_reader [String] actor the name of the client that this key is for
     class ClientKeyCreate < Knife
       include Chef::Knife::KeyCreateBase
+
+      banner "knife client key create CLIENT (options)"
+
+      deps do
+        require_relative "key_create"
+      end
 
       attr_reader :actor
 

@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,24 +18,27 @@
 
 require "spec_helper"
 
-describe Chef::Provider::AptUpdate do
-  let(:new_resource) { Chef::Resource::AptUpdate.new("update") }
+describe "Chef::Provider::AptUpdate" do
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:collection) { double("resource collection") }
+  let(:new_resource) { Chef::Resource::AptUpdate.new("update", run_context) }
+  let(:provider) { new_resource.provider_for_action(:update) }
 
   let(:config_dir) { Dir.mktmpdir("apt_update_apt_conf_d") }
   let(:config_file) { File.join(config_dir, "15update-stamp") }
   let(:stamp_dir) { Dir.mktmpdir("apt_update_periodic") }
 
   before do
-    stub_const("Chef::Provider::AptUpdate::APT_CONF_DIR", config_dir)
-    stub_const("Chef::Provider::AptUpdate::STAMP_DIR", stamp_dir)
+    new_resource.class.send(:remove_const, :APT_CONF_DIR)
+    new_resource.class.send(:const_set, :APT_CONF_DIR, config_dir)
+    new_resource.class.send(:remove_const, :STAMP_DIR)
+    new_resource.class.send(:const_set, :STAMP_DIR, stamp_dir)
+    node.automatic["platform_family"] = "debian"
   end
 
-  let(:provider) do
-    node = Chef::Node.new
-    events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, events)
-    Chef::Provider::AptUpdate.new(new_resource, run_context)
-  end
+  let(:apt_update_cmd) { %w{apt-get -q update} }
 
   it "responds to load_current_resource" do
     expect(provider).to respond_to(:load_current_resource)
@@ -45,7 +48,7 @@ describe Chef::Provider::AptUpdate do
     before do
       FileUtils.rmdir config_dir
       expect(File.exist?(config_dir)).to be false
-      allow_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
+      allow_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
     end
 
     it "should create the directory" do
@@ -64,7 +67,7 @@ describe Chef::Provider::AptUpdate do
   describe "#action_update" do
     it "should update the apt cache" do
       provider.load_current_resource
-      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
       provider.run_action(:update)
       expect(new_resource).to be_updated_by_last_action
     end
@@ -79,14 +82,14 @@ describe Chef::Provider::AptUpdate do
 
     it "should run if the time stamp is old" do
       expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 86_500)
-      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
+      expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
       provider.run_action(:periodic)
       expect(new_resource).to be_updated_by_last_action
     end
 
     it "should not run if the time stamp is new" do
       expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now)
-      expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out!).with("apt-get -q update", anything())
+      expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
       provider.run_action(:periodic)
       expect(new_resource).to_not be_updated_by_last_action
     end
@@ -98,14 +101,14 @@ describe Chef::Provider::AptUpdate do
 
       it "should run if the time stamp is old" do
         expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 500)
-        expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out!).with("apt-get -q update", anything())
+        expect_any_instance_of(Chef::Provider::Execute).to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
         provider.run_action(:periodic)
         expect(new_resource).to be_updated_by_last_action
       end
 
       it "should not run if the time stamp is new" do
         expect(File).to receive(:mtime).with("#{stamp_dir}/update-success-stamp").and_return(Time.now - 300)
-        expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out!).with("apt-get -q update", anything())
+        expect_any_instance_of(Chef::Provider::Execute).not_to receive(:shell_out_compacted!).with(*apt_update_cmd, anything)
         provider.run_action(:periodic)
         expect(new_resource).to_not be_updated_by_last_action
       end

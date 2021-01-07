@@ -1,6 +1,6 @@
 #
 # Author:: Christopher Webber (<cwebber@chef.io>)
-# Copyright:: Copyright (c) 2014 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,46 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/cookbook_site_unshare"
+require_relative "../knife"
 
 class Chef
   class Knife
-    class SupermarketUnshare < Knife::CookbookSiteUnshare
-      # Handle the subclassing (knife doesn't do this :()
-      dependency_loaders.concat(superclass.dependency_loaders)
-      options.merge!(superclass.options)
+    class SupermarketUnshare < Knife
 
-      banner "knife supermarket unshare COOKBOOK (options)"
+      deps do
+        require_relative "../json_compat"
+      end
+
+      banner "knife supermarket unshare COOKBOOK"
       category "supermarket"
+
+      option :supermarket_site,
+        short: "-m SUPERMARKET_SITE",
+        long: "--supermarket-site SUPERMARKET_SITE",
+        description: "The URL of the Supermarket site.",
+        default: "https://supermarket.chef.io"
+
+      def run
+        @cookbook_name = @name_args[0]
+        if @cookbook_name.nil?
+          show_usage
+          ui.fatal "You must provide the name of the cookbook to unshare"
+          exit 1
+        end
+
+        confirm "Do you really want to unshare all versions of the cookbook #{@cookbook_name}"
+
+        begin
+          rest.delete "#{config[:supermarket_site]}/api/v1/cookbooks/#{@name_args[0]}"
+        rescue Net::HTTPClientException => e
+          raise e unless /Forbidden/.match?(e.message)
+
+          ui.error "Forbidden: You must be the maintainer of #{@cookbook_name} to unshare it."
+          exit 1
+        end
+
+        ui.info "Unshared all versions of the cookbook #{@cookbook_name}"
+      end
     end
   end
 end

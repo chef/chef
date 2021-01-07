@@ -1,58 +1,102 @@
-# Contributing to Chef
+# Contributing to Chef Projects
 
-We are glad you want to contribute to Chef!
+We're glad you want to contribute to a Chef project! This document will help answer common questions you may have during your first contribution.
 
-We utilize **Github Issues** for issue tracking and contributions. You can contribute in two ways:
+## Submitting Issues
 
-1. Reporting an issue or making a feature request [here](#issues).
-2. Adding features or fixing bugs yourself and contributing your code to Chef.
+Not every contribution comes in the form of code. Submitting, confirming, and triaging issues is an important task for any project. At Chef we use GitHub to track all project issues.
+
+If you are familiar with Chef and know the component that is causing you a problem, you can file an issue in the corresponding GitHub project. All of our Open Source Software can be found in our [Chef GitHub organization](https://github.com/chef/). All projects include GitHub issue templates to help gather information needed for a thorough review.
+
+We ask you not to submit security concerns via GitHub. For details on submitting potential security issues please see <https://www.chef.io/security/>
+
+In addition to GitHub issues, we also utilize a feedback site that helps our product team track and rank feature requests. If you have a feature request, this is an excellent place to start <https://www.chef.io/feedback/>
 
 ## Contribution Process
 
-We have a 3 step process that utilizes **Github Issues**:
+We have a 3 step process for contributions:
 
-1. Sign or be added to an existing [Contributor License Agreement (CLA)](https://supermarket.chef.io/become-a-contributor).
-2. Create a Github Pull Request.
-3. Do [Code Review](#cr) with the **Chef Engineering Team** or **Chef Core Committers** on the pull request.
+1. Commit changes to a git branch, making sure to sign-off those changes for the [Developer Certificate of Origin](#developer-certification-of-origin-dco).
+2. Create a GitHub Pull Request for your change, following the instructions in the pull request template.
+3. Perform a [Code Review](#code-review-process) with the project maintainers on the pull request.
 
-### Chef Pull Requests
+### Pull Request Requirements
 
-Chef is built to last. We strive to ensure high quality throughout the Chef experience. In order to ensure this, we require a couple of things for all pull requests to Chef:
+Chef Projects are built to last. We strive to ensure high quality throughout the experience. In order to ensure this, we require that all pull requests to Chef projects meet these specifications:
 
-1. **Tests:** To ensure high quality code and protect against future regressions, we require all the code in Chef to have at least unit test coverage. See the [spec/unit](https://github.com/chef/chef/tree/master/spec/unit) directory for the existing tests and use `bundle exec rake spec` to run them.
-2. **Green Travis Run:** We use [Travis CI](https://travis-ci.org/) in order to run our tests continuously on all the pull requests. We require the Travis runs to succeed on every pull request before being merged.
+1. **Tests:** To ensure high quality code and protect against future regressions, we require all the code in Chef Projects to have at least unit test coverage. We use [RSpec](http://rspec.info/) for unit testing.
+2. **Green CI Tests:** We use [Buildkite](https://buildkite.com/chef-oss) to test all pull requests. We require these test runs to succeed on every pull request before being merged.
 
-### Chef Code Review Process
+### Code Review Process
 
-The Chef Code Review process happens on Github pull requests. See [this article](https://help.github.com/articles/using-pull-requests) if you're not familiar with Github Pull Requests.
+Code review takes place in GitHub pull requests. See [this article](https://help.github.com/articles/about-pull-requests/) if you're not familiar with GitHub Pull Requests.
 
-Once you open a pull request, the **Chef Engineering Team** or **Chef Core Committers** will review your code and respond to you with any feedback they might have. The process at this point is as follows:
+Once you open a pull request, project maintainers will review your code and respond to your pull request with any feedback they might have. The process at this point is as follows:
 
-1. 2 thumbs-ups are required from the **Chef Engineering Team** or **Chef Core Committers** for all merges.
-2. When ready, your pull request will be tagged with label `Ready For Merge`.
-3. Your patch will be merged into `master` including necessary documentation updates and you will be included in `CHANGELOG.md`. Our goal is to have patches merged in 2 weeks after they are marked to be merged.
+1. Two or more members of the owners, approvers, or reviewers groups must approve your PR. See the [Chef Infra OSS Project](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md) for a list of all members.
+2. Your change will be merged into the project's `master` branch
+3. Our Expeditor bot will automatically increment the version and update the project's changelog with your contribution. For projects that ship as a package, Expeditor will kick off a build which will publish the package to the project's `current` channel.
 
-If you would like to learn about when your code will be available in a release of Chef, read more about [Chef Release Cycles](#chef-release-cycles).
+If you would like to learn about when your code will be available in a release of Chef, read more about [Chef Release Cycles](#release-cycles).
 
-### Contributor License Agreement (CLA)
+### Developer Certification of Origin (DCO)
 
 Licensing is very important to open source projects. It helps ensure the software continues to be available under the terms that the author desired.
 
 Chef uses [the Apache 2.0 license](https://github.com/chef/chef/blob/master/LICENSE) to strike a balance between open contribution and allowing you to use the software however you would like to.
 
-The license tells you what rights you have that are provided by the copyright holder. It is important that the contributor fully understands what rights they are licensing and agrees to them. Sometimes the copyright holder isn't the contributor, such as when the contributor is doing work for a company.
+The license tells you what rights you have that are provided by the copyright holder. It is important that the contributor fully understands what rights they are licensing and agrees to them. Sometimes the copyright holder isn't the contributor, such as when the contributor is doing work on behalf of a company.
 
-To make a good faith effort to ensure these criteria are met, Chef requires an Individual CLA or a Corporate CLA for contributions. This agreement helps ensure you are aware of the terms of the license you are contributing your copyrighted works under, which helps to prevent the inclusion of works in the projects that the contributor does not hold the rights to share.
+To make a good faith effort to ensure these criteria are met, Chef requires the Developer Certificate of Origin (DCO) process to be followed.
 
-It only takes a few minutes to complete a CLA, and you retain the copyright to your contribution.
+The DCO is an attestation attached to every contribution made by every developer. In the commit message of the contribution, the developer simply adds a Signed-off-by statement and thereby agrees to the DCO, which you can find below or at <http://developercertificate.org/>.
 
-You can complete our [Individual CLA](https://supermarket.chef.io/icla-signatures/new) online. If you're contributing on behalf of your employer and they retain the copyright for your works, have your employer fill out our [Corporate CLA](https://supermarket.chef.io/ccla-signatures/new) instead.
+```
+Developer's Certificate of Origin 1.1
+
+By making a contribution to this project, I certify that:
+
+(a) The contribution was created in whole or in part by me and I
+    have the right to submit it under the open source license
+    indicated in the file; or
+
+(b) The contribution is based upon previous work that, to the
+    best of my knowledge, is covered under an appropriate open
+    source license and I have the right under that license to
+    submit that work with modifications, whether created in whole
+    or in part by me, under the same open source license (unless
+    I am permitted to submit under a different license), as
+    Indicated in the file; or
+
+(c) The contribution was provided directly to me by some other
+    person who certified (a), (b) or (c) and I have not modified
+    it.
+
+(d) I understand and agree that this project and the contribution
+    are public and that a record of the contribution (including
+    all personal information I submit with it, including my
+    sign-off) is maintained indefinitely and may be redistributed
+    consistent with this project or the open source license(s)
+    involved.
+```
+
+For more information on the change see the Chef Blog post [Introducing Developer Certificate of Origin](https://blog.chef.io/2016/09/19/introducing-developer-certificate-of-origin/)
+
+#### DCO Sign-Off Methods
+
+The DCO requires a sign-off message in the following format appear on each commit in the pull request:
+
+```
+Signed-off-by: Julia Child <juliachild@chef.io>
+```
+
+The DCO text can either be manually added to your commit body, or you can add either **-s** or **--signoff** to your usual git commit commands. If you are using the GitHub UI to make a change you can add the sign-off message directly to the commit message when creating the pull request. If you forget to add the sign-off you can also amend a previous commit with the sign-off by running **git commit --amend -s**. If you've pushed your changes to GitHub already you'll need to force push your branch after this with **git push -f**.
 
 ### Chef Obvious Fix Policy
 
-Small contributions such as fixing spelling errors, where the content is small enough to not be considered intellectual property, can be submitted by a contributor as a patch, without a CLA.
+Small contributions, such as fixing spelling errors, where the content is small enough to not be considered intellectual property, can be submitted without signing the contribution for the DCO.
 
-As a rule of thumb, changes are obvious fixes if they do not introduce any new functionality or creative thinking. As long as the change does not affect functionality, some likely examples include the following:
+As a rule of thumb, changes are obvious fixes if they do not introduce any new functionality or creative thinking. Assuming the change does not affect functionality, some common obvious fix examples include the following:
 
 - Spelling / grammar fixes
 - Typo correction, white space and formatting changes
@@ -67,40 +111,21 @@ As a rule of thumb, changes are obvious fixes if they do not introduce any new f
 ```
 ------------------------------------------------------------------------
 commit 370adb3f82d55d912b0cf9c1d1e99b132a8ed3b5
-Author: danielsdeleo <dan@chef.io>
-Date:   Wed Sep 18 11:44:40 2013 -0700
+Author: Julia Child <juliachild@chef.io>
+Date:   Wed Sep 18 11:44:40 2015 -0700
 
-  Fix typo in config file docs.
+  Fix typo in the README.
 
   Obvious fix.
 
 ------------------------------------------------------------------------
 ```
 
-## Chef Issue Tracking
+## Release Cycles
 
-Chef Issue Tracking is handled using Github Issues.
+Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. The packages are built with our [Omnibus](https://github.com/chef/omnibus) packing project.
 
-If you are familiar with Chef and know the component that is causing you a problem or if you have a feature request on a specific component you can file an issue in the corresponding Github project. All of our Open Source Software can be found in our [Github organization](https://github.com/chef/).
-
-There is also a listing of the various Chef products and where to file issues that can be found in the Chef docs in the [community contributions section](https://docs.chef.io/community_contributions.html#issues-and-bug-reports).
-
-Otherwise you can file your issue in the [Chef project](https://github.com/chef/chef/issues) and we will make sure it gets filed against the appropriate project.
-
-### Useful Github Queries
-
-Contributions go through a review process to improve code quality and avoid regressions. Managing a large number of contributions requires a workflow to provide queues for work such as triage, code review, and merging. A semi-formal process has evolved over the life of the project. Chef maintains this process pending community development and acceptance of an [RFC](https://github.com/chef/chef-rfc). These queries will help track contributions through this process:
-
-- [Issues that are not assigned to a team](https://github.com/chef/chef/issues?q=is%3Aopen+-label%3AAIX+-label%3ABSD+-label%3Awindows+-label%3A%22Chef+Core%22++-label%3A%22Dev+Tools%22+-label%3AUbuntu+-label%3A%22Enterprise+Linux%22+-label%3A%22Ready+For+Merge%22+-label%3AMac+-label%3ASolaris+)
-- [Untriaged Issues](https://github.com/chef/chef/issues?q=is%3Aopen+is%3Aissue+-label%3ABug+-label%3AEnhancement+-label%3A%22Tech+Cleanup%22+-label%3A%22Ready+For+Merge%22)
-- [PRs to be Reviewed](https://github.com/chef/chef/labels/Pending%20Maintainer%20Review)
-- [Suitable for First Contribution](https://github.com/chef/chef/labels/Easy)
-
-## Chef Release Cycles
-
-Our primary shipping vehicle is operating system specific packages that includes all the requirements of Chef. We call these [Omnibus packages](https://github.com/chef/omnibus)
-
-We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly recommend using Chef packages since they are the only combination of native libraries & gems required by Chef that we test throughly.
+We also release our software as gems to [Rubygems](https://rubygems.org/) but we strongly recommend using Chef packages since they are the only combination of native libraries & gems required by Chef that we test thoroughly.
 
 Our version numbering roughly follows [Semantic Versioning](http://semver.org/) standard. Our standard version numbers look like X.Y.Z which mean:
 
@@ -108,9 +133,9 @@ Our version numbering roughly follows [Semantic Versioning](http://semver.org/) 
 - Y is a minor release, which adds both new features and bug fixes
 - Z is a patch release, which adds just bug fixes
 
-After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor releaae. All merges to master trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shiping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
+After shipping a release of Chef we bump the `Minor` version by one to start development of the next minor release. All merges to master trigger an increment of the `Patch` version, and a build through our internal testing pipeline. We do a `Minor` release approximately every month, which consist of shipping one of the already auto-incremented and tested `Patch` versions. For example after shipping 12.10.24, we incremented Chef to 12.11.0\. From there 18 commits where merged bringing the version to 12.11.18, which we shipped as an omnibus package.
 
-Announcements of releases are made to the [chef mailing list](https://discourse.chef.io/c/chef-release) when they are available.
+Announcements of releases are made to the [chef mailing list](https://discourse.chef.io/c/chef-release) when they are available and are mirrored to the #announcements channel on the [Chef Community Slack](https://community-slack.chef.io/).
 
 ## Chef Community
 
@@ -123,4 +148,5 @@ Also here are some additional pointers to some awesome Chef content:
 
 - [Chef Docs](https://docs.chef.io/)
 - [Learn Chef](https://learn.chef.io/)
-- [Chef Inc.](https://www.chef.io/)
+- [Chef Software Inc. Website](https://www.chef.io/)
+- [Chef Project Website](https://www.chef.sh/)

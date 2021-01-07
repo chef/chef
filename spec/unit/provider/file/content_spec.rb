@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ describe Chef::Provider::File::Content do
   end
 
   let(:new_resource) do
-    double("Chef::Provider::File::Resource (new)", :name => "seattle.txt", :path => resource_path)
+    double("Chef::Provider::File::Resource (new)", name: "seattle.txt", path: resource_path)
   end
 
   let(:run_context) do
@@ -50,7 +50,7 @@ describe Chef::Provider::File::Content do
     Chef::Provider::File::Content.new(new_resource, current_resource, run_context)
   end
 
-  describe "when the resource has a content attribute set" do
+  describe "when the resource has a content property set" do
 
     before do
       allow(new_resource).to receive(:content).and_return("Do do do do, do do do do, do do do do, do do do do")
@@ -100,7 +100,7 @@ describe Chef::Provider::File::Content do
 
   end
 
-  describe "when the resource does not have a content attribute set" do
+  describe "when the resource does not have a content property set" do
 
     before do
       allow(new_resource).to receive(:content).and_return(nil)

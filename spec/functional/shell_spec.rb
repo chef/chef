@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,15 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/version"
 require "chef/shell"
-require "chef/mixin/command/unix"
 
 describe Shell do
 
   # chef-shell's unit tests are by necessity very mock-heavy, and frequently do
   # not catch cases where chef-shell fails to boot because of changes in
   # chef/client.rb
-  describe "smoke tests", :unix_only => true do
-    include Chef::Mixin::Command::Unix
+  describe "smoke tests", unix_only: true do
 
     TIMEOUT = 300
 
@@ -79,53 +76,34 @@ describe Shell do
     end
 
     def run_chef_shell_with(options)
-      case ohai[:platform]
-      when "aix"
-        config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-        path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-        output = ""
-        status = popen4("#{path_to_chef_shell} -c #{config} #{options}", :waitlast => true) do |pid, stdin, stdout, stderr|
-          read_until(stdout, "chef (#{Chef::VERSION})>")
-          yield stdout, stdin if block_given?
-          stdin.write("'done'\n")
-          output = read_until(stdout, '=> "done"')
-          stdin.print("exit\n")
-          flush_output(stdout)
-        end
+      # Windows ruby installs don't (always?) have PTY,
+      # so hide the require here
 
-        [output, status.exitstatus]
-      else
-        # Windows ruby installs don't (always?) have PTY,
-        # so hide the require here
-        begin
-          require "pty"
-          config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
-          path_to_chef_shell = File.expand_path("../../../bin/chef-shell", __FILE__)
-          reader, writer, pid = PTY.spawn("#{path_to_chef_shell} -c #{config} #{options}")
-          read_until(reader, "chef (#{Chef::VERSION})>")
-          yield reader, writer if block_given?
-          writer.puts('"done"')
-          output = read_until(reader, '=> "done"')
-          writer.print("exit\n")
-          flush_output(reader)
-          writer.close
+      require "pty"
+      config = File.expand_path("shef-config.rb", CHEF_SPEC_DATA)
+      reader, writer, pid = PTY.spawn("bundle exec chef-shell --no-multiline --no-singleline --no-colorize -c #{config} #{options}")
+      read_until(reader, "chef (#{Chef::VERSION})>")
+      yield reader, writer if block_given?
+      writer.puts('"done"')
+      output = read_until(reader, '=> "done"')
+      writer.print("exit\n")
+      flush_output(reader)
+      writer.close
 
-          exitstatus = wait_or_die(pid)
+      exitstatus = wait_or_die(pid)
 
-          [output, exitstatus]
-        rescue PTY::ChildExited => e
-          [output, e.status]
-        end
-      end
+      [output, exitstatus]
+    rescue PTY::ChildExited => e
+      [output, e.status]
     end
 
-    it "boots correctly with -lauto" do
+    it "boots correctly with -lauto", :executables do
       output, exitstatus = run_chef_shell_with("-lauto")
       expect(output).to include("done")
       expect(exitstatus).to eq(0)
     end
 
-    it "sets the log_level from the command line" do
+    it "sets the log_level from the command line", :executables do
       output, exitstatus = run_chef_shell_with("-lfatal") do |out, keyboard|
         show_log_level_code = %q[puts "===#{Chef::Log.level}==="]
         keyboard.puts(show_log_level_code)
@@ -135,7 +113,25 @@ describe Shell do
       expect(exitstatus).to eq(0)
     end
 
-    it "sets the override_runlist from the command line" do
+    context "on solo mode" do
+      it "starts correctly", :executables do
+        output, exitstatus = run_chef_shell_with("--solo")
+        expect(output).to include("done")
+        expect(exitstatus).to eq(0)
+      end
+
+      it "should be able to use the API", :executables do
+        output, exitstatus = run_chef_shell_with("-s") do |out, keyboard|
+          simple_api_get = "api.get('data')"
+          keyboard.puts(simple_api_get)
+          read_until(out, simple_api_get)
+        end
+        expect(output).to include("{}")
+        expect(exitstatus).to eq(0)
+      end
+    end
+
+    it "sets the override_runlist from the command line", :executables do
       output, exitstatus = run_chef_shell_with("-o 'override::foo,override::bar'") do |out, keyboard|
         show_recipes_code = %q[puts "#{node["recipes"].inspect}"]
         keyboard.puts(show_recipes_code)

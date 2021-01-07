@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/win32/api"
-require "chef/win32/error"
-require "pathname"
+require_relative "../../exceptions"
+require_relative "../api"
+require_relative "../error"
+require "pathname" unless defined?(Pathname)
 
 class Chef
   module ReservedNames::Win32
@@ -44,7 +44,7 @@ UINT MsiOpenPackage(
   _Out_  MSIHANDLE *hProduct
 );
 =end
-        safe_attach_function :msi_open_package, :MsiOpenPackageExA, [ :string, :int, :pointer ], :int
+        safe_attach_function :msi_open_package, :MsiOpenPackageExA, %i{string int pointer}, :int
 
 =begin
 UINT MsiGetProductProperty(
@@ -54,7 +54,7 @@ UINT MsiGetProductProperty(
   _Inout_  DWORD *pcchValueBuf
 );
 =end
-        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        safe_attach_function :msi_get_product_property, :MsiGetProductPropertyA, %i{pointer pointer pointer pointer}, :int
 
 =begin
 UINT MsiGetProductInfo(
@@ -64,7 +64,7 @@ UINT MsiGetProductInfo(
   _Inout_  DWORD *pcchValueBuf
 );
 =end
-        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, [ :pointer, :pointer, :pointer, :pointer ], :int
+        safe_attach_function :msi_get_product_info, :MsiGetProductInfoA, %i{pointer pointer pointer pointer}, :int
 
 =begin
 UINT MsiCloseHandle(
@@ -107,7 +107,7 @@ UINT MsiCloseHandle(
           end
 
           msi_close_handle(pkg_ptr.read_pointer)
-          return buffer.chomp(0.chr)
+          buffer.chomp(0.chr)
         end
 
         # Opens a Microsoft Installer (MSI) file from an absolute path and returns a pointer to a handle
@@ -124,7 +124,7 @@ UINT MsiCloseHandle(
           else
             raise Chef::Exceptions::Package, "msi_open_package: unexpected status #{status}: #{Chef::ReservedNames::Win32::Error.format_message(status)}"
           end
-          return pkg_ptr
+          pkg_ptr
         end
 
         # All installed product_codes should have a VersionString

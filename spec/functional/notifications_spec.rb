@@ -26,7 +26,7 @@ describe "Notifications" do
 
   before do
     # By default, every provider will do nothing
-    p = Chef::Provider.new(nil, run_context)
+    p = Chef::Provider.new(Chef::Resource.new("lies"), run_context)
     allow_any_instance_of(Chef::Resource).to receive(:provider_for_action).and_return(p)
     allow(p).to receive(:run_action)
   end

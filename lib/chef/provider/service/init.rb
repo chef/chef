@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/service/simple"
-require "chef/mixin/command"
-require "chef/platform/service_helpers"
+require_relative "simple"
+require_relative "../../platform/service_helpers"
 
 class Chef
   class Provider
@@ -30,7 +29,7 @@ class Chef
         provides :service, os: "!windows"
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def initialize(new_resource, run_context)
@@ -57,7 +56,7 @@ class Chef
           if @new_resource.start_command
             super
           else
-            shell_out_with_systems_locale!("#{default_init_command} start")
+            shell_out!("#{default_init_command} start", default_env: false)
           end
         end
 
@@ -65,7 +64,7 @@ class Chef
           if @new_resource.stop_command
             super
           else
-            shell_out_with_systems_locale!("#{default_init_command} stop")
+            shell_out!("#{default_init_command} stop", default_env: false)
           end
         end
 
@@ -73,7 +72,7 @@ class Chef
           if @new_resource.restart_command
             super
           elsif supports[:restart]
-            shell_out_with_systems_locale!("#{default_init_command} restart")
+            shell_out!("#{default_init_command} restart", default_env: false)
           else
             stop_service
             sleep 1
@@ -85,7 +84,7 @@ class Chef
           if @new_resource.reload_command
             super
           elsif supports[:reload]
-            shell_out_with_systems_locale!("#{default_init_command} reload")
+            shell_out!("#{default_init_command} reload", default_env: false)
           end
         end
       end

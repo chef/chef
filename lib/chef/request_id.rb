@@ -1,5 +1,5 @@
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "securerandom"
-require "singleton"
+require "securerandom" unless defined?(SecureRandom)
+require "singleton" unless defined?(Singleton)
 
 class Chef
   class RequestID

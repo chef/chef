@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
+require_relative "chef_repository_file_system_cookbook_dir"
 
 class Chef
   module ChefFS
@@ -25,14 +25,15 @@ class Chef
         class ChefRepositoryFileSystemVersionedCookbookDir < ChefRepositoryFileSystemCookbookDir
           # Override from parent
           def cookbook_version
-            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, parent.chefignore)
+            loader = Chef::Cookbook::CookbookVersionLoader.new(file_path, chefignore)
             # We need the canonical cookbook name if we are using versioned cookbooks, but we don't
             # want to spend a lot of time adding code to the main Chef libraries
             canonical_name = canonical_cookbook_name(File.basename(file_path))
             raise "When versioned_cookbooks mode is on, cookbook #{file_path} must match format <cookbook_name>-x.y.z" unless canonical_name
+
             # KLUDGE: We shouldn't have to use instance_variable_set
             loader.instance_variable_set(:@cookbook_name, canonical_name)
-            loader.load_cookbooks
+            loader.load!
             loader.cookbook_version
           end
         end

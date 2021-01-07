@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,36 +16,17 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class UserEdit < Knife
 
       deps do
-        require "chef/user_v1"
-        require "chef/json_compat"
+        require_relative "../user_v1"
       end
 
       banner "knife user edit USER (options)"
-
-      def osc_11_warning
-        <<-EOF
-The Chef Server you are using does not support the username field.
-This means it is an Open Source 11 Server.
-knife user edit for Open Source 11 Server is being deprecated.
-Open Source 11 Server user commands now live under the knife oc_user namespace.
-For backwards compatibility, we will forward this request to knife osc_user edit.
-If you are using an Open Source 11 Server, please use that command to avoid this warning.
-EOF
-      end
-
-      def run_osc_11_user_edit
-        # run osc_user_create with our input
-        ARGV.delete("user")
-        ARGV.unshift("osc_user")
-        Chef::Knife.run(ARGV, Chef::Application::Knife.options)
-      end
 
       def run
         @user_name = @name_args[0]
@@ -57,23 +38,13 @@ EOF
         end
 
         original_user = Chef::UserV1.load(@user_name).to_hash
-        # DEPRECATION NOTE
-        # Remove this if statement and corrosponding code post OSC 11 support.
-        #
-        # if username is nil, we are in the OSC 11 case,
-        # forward to deprecated command
-        if original_user["username"].nil?
-          ui.warn(osc_11_warning)
-          run_osc_11_user_edit
-        else # EC / CS 12 user create
-          edited_user = edit_hash(original_user)
-          if original_user != edited_user
-            user = Chef::UserV1.from_hash(edited_user)
-            user.update
-            ui.msg("Saved #{user}.")
-          else
-            ui.msg("User unchanged, not saving.")
-          end
+        edited_user = edit_hash(original_user)
+        if original_user != edited_user
+          user = Chef::UserV1.from_hash(edited_user)
+          user.update
+          ui.msg("Saved #{user}.")
+        else
+          ui.msg("User unchanged, not saving.")
         end
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/data_handler/acl_data_handler"
-require "chef/chef_fs/file_system/repository/base_file"
+require_relative "../../data_handler/acl_data_handler"
+require_relative "base_file"
 
 class Chef
   module ChefFS
@@ -32,7 +32,7 @@ class Chef
           end
 
           def bare_name
-            if name == "organization" && parent.kind_of?(AclDir)
+            if name == "organization" && parent.is_a?(AclDir)
               "organization.json"
             else
               name

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "tiny_server"
 
 describe Chef::Knife::Exec do
   before(:each) do
-    @server = TinyServer::Manager.new #(:debug => true)
+    @server = TinyServer::Manager.new # (:debug => true)
     @server.start
   end
 
@@ -49,7 +49,7 @@ describe Chef::Knife::Exec do
     code = "$output.puts nodes.all"
     @knife.config[:exec] = code
     @knife.run
-    expect($output.string).to match(%r{node\[ohai-world\]})
+    expect($output.string).to match(/node\[ohai-world\]/)
   end
 
 end

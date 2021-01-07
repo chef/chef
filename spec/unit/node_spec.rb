@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "ostruct"
 
 describe Chef::Node do
 
-  let(:node) { Chef::Node.new() }
+  let(:node) { Chef::Node.new }
   let(:platform_introspector) { node }
 
   it_behaves_like "a platform introspector"
@@ -52,8 +52,8 @@ describe Chef::Node do
 
   describe "when the node does not exist on the server" do
     before do
-      response = OpenStruct.new(:code => "404")
-      exception = Net::HTTPServerException.new("404 not found", response)
+      response = OpenStruct.new(code: "404")
+      exception = Net::HTTPClientException.new("404 not found", response)
       allow(Chef::Node).to receive(:load).and_raise(exception)
       node.name("created-node")
     end
@@ -103,7 +103,7 @@ describe Chef::Node do
     end
 
     it "should always have a string for name" do
-      expect { node.name(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.name({}) }.to raise_error(ArgumentError)
     end
 
     it "cannot be blank" do
@@ -126,7 +126,7 @@ describe Chef::Node do
     end
 
     it "should disallow non-strings" do
-      expect { node.chef_environment(Hash.new) }.to raise_error(ArgumentError)
+      expect { node.chef_environment({}) }.to raise_error(ArgumentError)
       expect { node.chef_environment(42) }.to raise_error(ArgumentError)
     end
 
@@ -162,7 +162,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_name(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_name({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_name(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -186,7 +186,7 @@ describe Chef::Node do
       expect { node.policy_group = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqurstuvwxyz0123456789-_:." }.to_not raise_error
     end
 
-    it "sets an environment with chef_environment(something)" do
+    it "sets a policy_group with policy_group(something)" do
       node.policy_group("staging")
       expect(node.policy_group).to eq("staging")
     end
@@ -198,7 +198,7 @@ describe Chef::Node do
     end
 
     it "disallows non-strings" do
-      expect { node.policy_group(Hash.new) }.to raise_error(Chef::Exceptions::ValidationFailed)
+      expect { node.policy_group({}) }.to raise_error(Chef::Exceptions::ValidationFailed)
       expect { node.policy_group(42) }.to raise_error(Chef::Exceptions::ValidationFailed)
     end
 
@@ -238,27 +238,31 @@ describe Chef::Node do
       expect(node["battles"]["people"].attribute?("snozzberry")).to eq(false)
     end
 
-    it "does not allow you to set an attribute via method_missing" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect { node.sunshine = "is bright" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    it "does not allow modification of node attributes via hash methods" do
+      node.default["h4sh"] = { foo: "bar" }
+      expect { node["h4sh"].delete("foo") }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
     end
 
-    it "should allow you get get an attribute via method_missing" do
+    it "does not allow modification of node attributes via array methods" do
       Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      node.default.sunshine = "is bright"
-      expect(node.sunshine).to eql("is bright")
+      node.default["array"] = []
+      expect { node["array"] << "boom" }.to raise_error(Chef::Exceptions::ImmutableAttributeModification)
+    end
+
+    it "returns merged immutable attributes for arrays" do
+      node.default["array"] = []
+      expect( node["array"].class ).to eql(Chef::Node::ImmutableArray)
+    end
+
+    it "returns merged immutable attributes for hashes" do
+      node.default["h4sh"] = {}
+      expect( node["h4sh"].class ).to eql(Chef::Node::ImmutableMash)
     end
 
     describe "normal attributes" do
       it "should allow you to set an attribute with set, without pre-declaring a hash" do
         node.normal[:snoopy][:is_a_puppy] = true
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
-      end
-
-      it "should allow you to set an attribute with set_unless with method_missing but emit a deprecation warning" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.normal_unless.snoopy.is_a_puppy = false
-        expect(node[:snoopy][:is_a_puppy]).to eq(false)
       end
 
       it "should allow you to set an attribute with set_unless" do
@@ -293,30 +297,38 @@ describe Chef::Node do
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
       end
 
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.normal.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
-      end
-
-      it "should let you use tag as a convience method for the tags attribute" do
+      it "should let you use tag as a convince method for the tags attribute" do
         node.normal["tags"] = %w{one two}
         node.tag("three", "four")
         expect(node["tags"]).to eq(%w{one two three four})
       end
 
-      it "set is a deprecated alias for normal" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:log_deprecation).with(/set is deprecated/)
-        node.set[:snoopy][:is_a_puppy] = true
-        expect(node[:snoopy][:is_a_puppy]).to eq(true)
+      it "normal_unless sets a value even if default or override attrs are set" do
+        node.default[:decontamination] = true
+        node.override[:decontamination] = false
+        node.normal_unless[:decontamination] = "foo"
+        expect(node.normal[:decontamination]).to eql("foo")
       end
 
-      it "set_unless is a deprecated alias for normal_unless" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        expect(Chef).to receive(:log_deprecation).with(/set_unless is deprecated/)
-        node.set_unless[:snoopy][:is_a_puppy] = false
-        expect(node[:snoopy][:is_a_puppy]).to eq(false)
+      it "default_unless sets a value even if normal or override attrs are set" do
+        node.normal[:decontamination] = true
+        node.override[:decontamination] = false
+        node.default_unless[:decontamination] = "foo"
+        expect(node.default[:decontamination]).to eql("foo")
+      end
+
+      it "override_unless sets a value even if default or normal attrs are set" do
+        node.default[:decontamination] = true
+        node.normal[:decontamination] = false
+        node.override_unless[:decontamination] = "foo"
+        expect(node.override[:decontamination]).to eql("foo")
+      end
+
+      it "consume_attributes does not exhibit chef/chef/issues/6302 bug" do
+        node.normal["a"]["r1"] = nil
+        node.consume_attributes({ "a" => { "r2" => nil } })
+        expect(node["a"]["r1"]).to be_nil
+        expect(node["a"]["r2"]).to be_nil
       end
     end
 
@@ -356,12 +368,6 @@ describe Chef::Node do
         node.env_default["a"]["r1"]["g"]["u"] = "u1"
         node.default_unless["a"]["r1"]["g"]["r"] = "r"
         expect(node["a"]["r1"]["g"]["u"]).to eql("u1")
-      end
-
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.default.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
       end
 
       it "default_unless correctly resets the deep merge cache" do
@@ -420,12 +426,6 @@ describe Chef::Node do
         node.override[:snoopy][:is_a_puppy] = true
         expect(node[:snoopy][:is_a_puppy]).to eq(true)
       end
-
-      it "auto-vivifies attributes created via method syntax" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        node.override.fuu.bahrr.baz = "qux"
-        expect(node.fuu.bahrr.baz).to eq("qux")
-      end
     end
 
     describe "globally deleting attributes" do
@@ -436,7 +436,7 @@ describe Chef::Node do
           node.override["mysql"]["server"]["port"] = 3456
         end
 
-        it "deletes all the values and returns the value with the highest precidence" do
+        it "deletes all the values and returns the value with the highest precedence" do
           expect( node.rm("mysql", "server", "port") ).to eql(3456)
           expect( node["mysql"]["server"]["port"] ).to be_nil
           expect( node["mysql"]["server"] ).to eql({})
@@ -527,7 +527,7 @@ describe Chef::Node do
           expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
         end
 
-        it "returns nil for the combined attribues" do
+        it "returns nil for the combined attributes" do
           expect( node.rm_default("mysql", "server", "port") ).to eql(3456)
           expect( node["mysql"]["server"]["port"] ).to eql(nil)
         end
@@ -633,7 +633,7 @@ describe Chef::Node do
         expect( node["mysql"]["server"] ).to eql({ "data_dir" => "/my_raid_volume/lib/mysql" })
       end
 
-      it "replaces a value at the cookbook sub-level of the atributes only" do
+      it "replaces a value at the cookbook sub-level of the attributes only" do
         node.default["mysql"]["server"]["port"] = 2345
         node.default["mysql"]["server"]["service_name"] = "fancypants-sql"
         node.role_default["mysql"]["server"]["port"] = 1234
@@ -756,21 +756,20 @@ describe Chef::Node do
     # In Chef-12.0 there is a deep_merge cache on the top level attribute which had a bug
     # where it cached node[:foo] separate from node['foo'].  These tests exercise those edge conditions.
     #
-    # https://github.com/opscode/chef/issues/2700
-    # https://github.com/opscode/chef/issues/2712
-    # https://github.com/opscode/chef/issues/2745
+    # https://github.com/chef/chef/issues/2700
+    # https://github.com/chef/chef/issues/2712
+    # https://github.com/chef/chef/issues/2745
     #
     describe "deep merge attribute cache edge conditions" do
       it "does not error with complicated attribute substitution" do
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["chef_attribute_hell"]["attr1"] = "attribute1"
-        node.default["chef_attribute_hell"]["attr2"] = "#{node.chef_attribute_hell.attr1}/attr2"
-        expect { node.default["chef_attribute_hell"]["attr3"] = "#{node.chef_attribute_hell.attr2}/attr3" }.not_to raise_error
+        node.default["chef_attribute_hell"]["attr2"] = "#{node[:chef_attribute_hell][:attr1]}/attr2"
+        expect { node.default["chef_attribute_hell"]["attr3"] = "#{node[:chef_attribute_hell][:attr2]}/attr3" }.not_to raise_error
       end
 
       it "caches both strings and symbols correctly" do
         node.force_default[:solr][:version] = "4.10.2"
-        node.force_default[:solr][:data_dir] = "/opt/solr-#{node['solr'][:version]}/example/solr"
+        node.force_default[:solr][:data_dir] = "/opt/solr-#{node["solr"][:version]}/example/solr"
         node.force_default[:solr][:xms] = "512M"
         expect(node[:solr][:xms]).to eql("512M")
         expect(node["solr"][:xms]).to eql("512M")
@@ -779,8 +778,8 @@ describe Chef::Node do
       it "method interpolation syntax also works" do
         Chef::Config[:treat_deprecation_warnings_as_errors] = false
         node.default["passenger"]["version"]     = "4.0.57"
-        node.default["passenger"]["root_path"]   = "passenger-#{node['passenger']['version']}"
-        node.default["passenger"]["root_path_2"] = "passenger-#{node.passenger['version']}"
+        node.default["passenger"]["root_path"]   = "passenger-#{node["passenger"]["version"]}"
+        node.default["passenger"]["root_path_2"] = "passenger-#{node[:passenger]["version"]}"
         expect(node["passenger"]["root_path_2"]).to eql("passenger-4.0.57")
         expect(node[:passenger]["root_path_2"]).to eql("passenger-4.0.57")
       end
@@ -792,9 +791,9 @@ describe Chef::Node do
     end
 
     it "should allow you to iterate over attributes with each_attribute" do
-      node.default.sunshine = "is bright"
-      node.default.canada = "is a nice place"
-      seen_attributes = Hash.new
+      node.default["sunshine"] = "is bright"
+      node.default["canada"] = "is a nice place"
+      seen_attributes = {}
       node.each_attribute do |a, v|
         seen_attributes[a] = v
       end
@@ -853,7 +852,7 @@ describe Chef::Node do
   describe "consuming json" do
 
     before do
-      @ohai_data = { :platform => "foo", :platform_version => "bar" }
+      @ohai_data = { platform: "foo", platform_version: "bar" }
     end
 
     it "consumes the run list portion of a collection of attributes and returns the remainder" do
@@ -941,11 +940,28 @@ describe Chef::Node do
       expect(node["one"].to_hash).to eq({ "two" => { "three" => "forty-two" } })
     end
 
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node["platform_version"]).to be_kind_of(Chef::VersionString)
+    end
+  end
+
+  describe "merging ohai data" do
+    before do
+      @ohai_data = { platform: "foo", platform_version: "bar" }
+    end
+
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      node.consume_ohai_data({ "platform_version" => "6.3" })
+      expect(node["platform_version"]).to be_kind_of(Chef::VersionString)
+      expect(node["platform_version"] =~ "~> 6.1").to be true
+    end
   end
 
   describe "preparing for a chef client run" do
     before do
-      @ohai_data = { :platform => "foobuntu", :platform_version => "23.42" }
+      @ohai_data = { platform: "foobuntu", platform_version: "23.42" }
     end
 
     it "sets its platform according to platform detection" do
@@ -965,6 +981,13 @@ describe Chef::Node do
       node.consume_external_attrs(@ohai_data, { "foo" => "bar" })
       node.expand!
       expect(node.normal_attrs).to eq({ "foo" => "bar", "tags" => [] })
+    end
+
+    it "converts the platform_version to a Chef::VersionString" do
+      node.consume_external_attrs(@ohai_data, {})
+      expect(node.automatic_attrs[:platform_version]).to be_a_kind_of(Chef::VersionString)
+      expect(node[:platform_version]).to be_a_kind_of(Chef::VersionString)
+      expect(node[:platform_version] =~ "~> 23.6").to be true
     end
 
   end
@@ -1089,12 +1112,12 @@ describe Chef::Node do
     before do
       node.chef_environment = "rspec"
       @expansion = Chef::RunList::RunListExpansion.new("rspec", [])
-      @expansion.default_attrs.replace({ :default => "from role", :d_role => "role only" })
-      @expansion.override_attrs.replace({ :override => "from role", :o_role => "role only" })
+      @expansion.default_attrs.replace({ default: "from role", d_role: "role only" })
+      @expansion.override_attrs.replace({ override: "from role", o_role: "role only" })
 
       @environment = Chef::Environment.new
-      @environment.default_attributes = { :default => "from env", :d_env => "env only" }
-      @environment.override_attributes = { :override => "from env", :o_env => "env only" }
+      @environment.default_attributes = { default: "from env", d_env: "env only" }
+      @environment.override_attributes = { override: "from env", o_env: "env only" }
       allow(Chef::Environment).to receive(:load).and_return(@environment)
       node.apply_expansion_attributes(@expansion)
     end
@@ -1153,16 +1176,16 @@ describe Chef::Node do
 
   describe "roles" do
     it "should allow you to query whether or not it has a recipe applied with role?" do
-      node.run_list << "role[sunrise]"
+      node.automatic["roles"] = %w{sunrise}
       expect(node.role?("sunrise")).to eql(true)
       expect(node.role?("not at home")).to eql(false)
     end
 
     it "should allow you to set roles with arguments" do
-      node.run_list << "role[one]"
-      node.run_list << "role[two]"
+      node.automatic["roles"] = %w{one two}
       expect(node.role?("one")).to eql(true)
       expect(node.role?("two")).to eql(true)
+      expect(node.role?("three")).to eql(false)
     end
   end
 
@@ -1189,7 +1212,7 @@ describe Chef::Node do
       expect(node.name).to eql("test.example.com-short")
       expect(node["sunshine"]).to eql("in")
       expect(node["something"]).to eql("else")
-      expect(node.run_list).to eq(["operations-master", "operations-monitoring"])
+      expect(node.run_list).to eq(%w{operations-master operations-monitoring})
     end
 
     it "should raise an exception if the file cannot be found or read" do
@@ -1208,7 +1231,7 @@ describe Chef::Node do
       node.run_list << "role[leninist]"
       node.run_list << "recipe[stalinist]"
 
-      @example = Chef::Node.new()
+      @example = Chef::Node.new
       @example.name("newname")
       @example.chef_environment("prod")
       @example.default_attrs = { "alpha" => { "bravo" => "charlie", "delta" => "echo" } }
@@ -1262,7 +1285,7 @@ describe Chef::Node do
   end
 
   describe "converting to or from json" do
-    it "should serialize itself as json", :json => true do
+    it "should serialize itself as json", json: true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(node)
       expect(json).to match(/json_class/)
@@ -1274,16 +1297,16 @@ describe Chef::Node do
       expect(json).to match(/run_list/)
     end
 
-    it "should serialize valid json with a run list", :json => true do
-      #This test came about because activesupport mucks with Chef json serialization
-      #Test should pass with and without Activesupport
+    it "should serialize valid json with a run list", json: true do
+      # This test came about because activesupport mucks with Chef json serialization
+      # Test should pass with and without Activesupport
       node.run_list << { "type" => "role", "name" => "Cthulu" }
       node.run_list << { "type" => "role", "name" => "Hastur" }
       json = Chef::JSONCompat.to_json(node)
       expect(json).to match(/\"run_list\":\[\"role\[Cthulu\]\",\"role\[Hastur\]\"\]/)
     end
 
-    it "should serialize the correct run list", :json => true do
+    it "should serialize the correct run list", json: true do
       node.run_list << "role[marxist]"
       node.run_list << "role[leninist]"
       node.override_runlist << "role[stalinist]"
@@ -1308,7 +1331,7 @@ describe Chef::Node do
       expect(node_for_json["default"]["env default"]).to eq("env default")
     end
 
-    it "should deserialize itself from json", :json => true do
+    it "should deserialize itself from json", json: true do
       node.from_file(File.expand_path("nodes/test.example.com.rb", CHEF_SPEC_DATA))
       json = Chef::JSONCompat.to_json(node)
       serialized_node = Chef::Node.from_hash(Chef::JSONCompat.parse(json))
@@ -1354,6 +1377,7 @@ describe Chef::Node do
 
         expect(round_tripped_node.policy_name).to eq("my-application")
         expect(round_tripped_node.policy_group).to eq("staging")
+        expect(round_tripped_node.chef_environment).to eq("staging")
       end
 
     end
@@ -1384,8 +1408,8 @@ describe Chef::Node do
     describe "list" do
       describe "inflated" do
         it "should return a hash of node names and objects" do
-          n1 = double("Chef::Node", :name => "one")
-          allow(n1).to receive(:kind_of?).with(Chef::Node) { true }
+          n1 = double("Chef::Node", name: "one")
+          allow(n1).to receive(:is_a?).with(Chef::Node) { true }
           expect(@query).to receive(:search).with(:node).and_yield(n1)
           r = Chef::Node.list(true)
           expect(r["one"]).to eq(n1)
@@ -1438,8 +1462,8 @@ describe Chef::Node do
       it "should create if it cannot update" do
         node.name("monkey")
         allow(node).to receive(:data_for_save).and_return({})
-        exception = double("404 error", :code => "404")
-        expect(@rest).to receive(:put).and_raise(Net::HTTPServerException.new("foo", exception))
+        exception = double("404 error", code: "404")
+        expect(@rest).to receive(:put).and_raise(Net::HTTPClientException.new("foo", exception))
         expect(@rest).to receive(:post).with("nodes", {})
         node.save
       end
@@ -1459,17 +1483,16 @@ describe Chef::Node do
         end
       end
 
-      context "with whitelisted attributes configured" do
-        it "should only save whitelisted attributes (and subattributes)" do
-          Chef::Config[:automatic_attribute_whitelist] = [
+      context "with allowed attributes configured" do
+        it "should only save allowed attributes (and subattributes)" do
+          Chef::Config[:allowed_default_attributes] = [
             ["filesystem", "/dev/disk0s2"],
             "network/interfaces/eth0",
           ]
 
-          data = {
-            "automatic" => {
+          node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
               "network" => {
@@ -1478,12 +1501,13 @@ describe Chef::Node do
                   "eth1" => {},
                 },
               },
-            },
-            "default" => {}, "normal" => {}, "override" => {}
-          }
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
 
           selected_data = {
-            "automatic" => {
+            "default" => {
               "filesystem" => {
                 "/dev/disk0s2" => { "size" => "10mb" },
               },
@@ -1493,22 +1517,20 @@ describe Chef::Node do
                 },
               },
             },
-            "default" => {}, "normal" => {}, "override" => {}
+            "automatic" => {}, "normal" => {}, "override" => {}
           }
 
           node.name("picky-monkey")
-          allow(node).to receive(:for_json).and_return(data)
-          expect(@rest).to receive(:put).with("nodes/picky-monkey", selected_data).and_return("foo")
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
           node.save
         end
 
-        it "should save false-y whitelisted attributes" do
-          Chef::Config[:default_attribute_whitelist] = [
+        it "should save false-y allowed attributes" do
+          Chef::Config[:allowed_default_attributes] = [
             "foo/bar/baz",
           ]
 
-          data = {
-            "default" => {
+          node.default = {
               "foo" => {
                 "bar" => {
                   "baz" => false,
@@ -1517,8 +1539,11 @@ describe Chef::Node do
                   "stuff" => true,
                 },
               },
-            },
-          }
+            }
+
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
 
           selected_data = {
             "default" => {
@@ -1531,31 +1556,186 @@ describe Chef::Node do
           }
 
           node.name("falsey-monkey")
-          allow(node).to receive(:for_json).and_return(data)
-          expect(@rest).to receive(:put).with("nodes/falsey-monkey", selected_data).and_return("foo")
+          expect(@rest).to receive(:put).with("nodes/falsey-monkey", hash_including(selected_data)).and_return("foo")
           node.save
         end
 
-        it "should not save any attributes if the whitelist is empty" do
-          Chef::Config[:automatic_attribute_whitelist] = []
+        it "should not save any attributes if the allowed is empty" do
+          Chef::Config[:allowed_default_attributes] = []
 
-          data = {
-            "automatic" => {
+          node.default = {
               "filesystem" => {
-                "/dev/disk0s2"   => { "size" => "10mb" },
+                "/dev/disk0s2" => { "size" => "10mb" },
                 "map - autohome" => { "size" => "10mb" },
               },
-            },
-            "default" => {}, "normal" => {}, "override" => {}
-          }
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
 
           selected_data = {
             "automatic" => {}, "default" => {}, "normal" => {}, "override" => {}
           }
 
           node.name("picky-monkey")
-          allow(node).to receive(:for_json).and_return(data)
-          expect(@rest).to receive(:put).with("nodes/picky-monkey", selected_data).and_return("foo")
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
+          node.save
+        end
+      end
+
+      context "with deprecated whitelist attributes configured" do
+        it "should only save allowed attributes (and subattributes)" do
+          Chef::Config[:default_attribute_whitelist] = [
+            ["filesystem", "/dev/disk0s2"],
+            "network/interfaces/eth0",
+          ]
+
+          node.default = {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                  "eth1" => {},
+                },
+              },
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
+
+          selected_data = {
+            "default" => {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                },
+              },
+            },
+            "automatic" => {}, "normal" => {}, "override" => {}
+          }
+
+          node.name("picky-monkey")
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
+          node.save
+        end
+      end
+
+      context "with deprecated blacklist attributes configured" do
+        it "should only save non-blocklisted attributes (and subattributes)" do
+          Chef::Config[:default_attribute_blacklist] = [
+            ["filesystem", "/dev/disk0s2"],
+            "network/interfaces/eth0",
+          ]
+
+          node.default = {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                  "eth1" => {},
+                },
+              },
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
+
+          selected_data = {
+            "default" => {
+              "filesystem" => {
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth1" => {},
+                },
+              },
+            },
+            "automatic" => {}, "normal" => {}, "override" => {}
+          }
+          node.name("picky-monkey")
+          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
+          node.save
+        end
+      end
+
+      context "with blocklisted attributes configured" do
+        it "should only save non-blocklisted attributes (and subattributes)" do
+          Chef::Config[:blocked_default_attributes] = [
+            ["filesystem", "/dev/disk0s2"],
+            "network/interfaces/eth0",
+          ]
+
+          node.default = {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth0" => {},
+                  "eth1" => {},
+                },
+              },
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
+
+          selected_data = {
+            "default" => {
+              "filesystem" => {
+                "map - autohome" => { "size" => "10mb" },
+              },
+              "network" => {
+                "interfaces" => {
+                  "eth1" => {},
+                },
+              },
+            },
+            "automatic" => {}, "normal" => {}, "override" => {}
+          }
+          node.name("picky-monkey")
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
+          node.save
+        end
+
+        it "should save all attributes if the blocklist is empty" do
+          Chef::Config[:blocked_default_attributes] = []
+
+          node.default = {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+            }
+          node.automatic = {}
+          node.normal = {}
+          node.override = {}
+
+          selected_data = {
+            "default" => {
+              "filesystem" => {
+                "/dev/disk0s2" => { "size" => "10mb" },
+                "map - autohome" => { "size" => "10mb" },
+              },
+            },
+            "automatic" => {}, "normal" => {}, "override" => {}
+          }
+
+          node.name("picky-monkey")
+          expect(@rest).to receive(:put).with("nodes/picky-monkey", hash_including(selected_data)).and_return("foo")
           node.save
         end
       end
@@ -1593,11 +1773,11 @@ describe Chef::Node do
           end
 
           let(:http_exception) do
-            begin
-              response.error!
-            rescue => e
-              e
-            end
+
+            response.error!
+          rescue => e
+            e
+
           end
 
           let(:trimmed_node) do
@@ -1608,55 +1788,9 @@ describe Chef::Node do
 
           end
 
-          context "on Chef Client 13 and later" do
-
-            # Though we normally attempt to provide compatibility with chef
-            # server one major version back, policyfiles were beta when we
-            # added the policyfile attributes to the node JSON, therefore
-            # policyfile users need to be on 12.3 minimum when upgrading Chef
-            # Client to 13+
-            it "lets the 400 pass through", chef: ">= 13" do
-              expect { node.save }.to raise_error(http_exception)
-            end
-
-          end
-
-          context "when the node exists" do
-
-            it "falls back to saving without policyfile attributes" do
-              expect(@rest).to receive(:put).with("nodes/example-node", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:put).with("nodes/example-node", trimmed_node).and_return(@node)
-              expect { node.save }.to_not raise_error
-            end
-
-          end
-
-          context "when the node doesn't exist" do
-
-            let(:response_404) do
-              Net::HTTPResponse.send(:response_class, "404").new("1.0", "404", "Not Found")
-            end
-
-            let(:http_exception_404) do
-              begin
-                response_404.error!
-              rescue => e
-                e
-              end
-            end
-
-            it "falls back to saving without policyfile attributes" do
-              expect(@rest).to receive(:put).with("nodes/example-node", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:put).with("nodes/example-node", trimmed_node).and_raise(http_exception_404)
-              expect(@rest).to receive(:post).with("nodes", trimmed_node).and_return(@node)
-              node.save
-            end
-
-            it "creates the node without policyfile attributes" do
-              expect(@rest).to receive(:post).with("nodes", node.for_json).and_raise(http_exception)
-              expect(@rest).to receive(:post).with("nodes", trimmed_node).and_return(@node)
-              node.create
-            end
+          it "lets the 400 pass through" do
+            expect(@rest).to receive(:put).and_raise(http_exception)
+            expect { node.save }.to raise_error(http_exception)
           end
 
         end
@@ -1681,4 +1815,140 @@ describe Chef::Node do
     end
   end
 
+  describe "path tracking via __path__" do
+    it "works through hash keys" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "works through the default level" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node.default["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    it "works through arrays" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node["foo"][0].__path__).to eql(["foo", 0])
+      expect(node["foo"][0]["bar"].__path__).to eql(["foo", 0, "bar"])
+    end
+
+    it "works through arrays at the default level" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node.default["foo"][0].__path__).to eql(["foo", 0])
+      expect(node.default["foo"][0]["bar"].__path__).to eql(["foo", 0, "bar"])
+    end
+
+    # if we set __path__ in the initializer we'd get this wrong, this is why we
+    # update the path on every #[] or #[]= operator
+    it "works on access when the node has been rearranged" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      a = node.default["foo"]
+      node.default["fizz"] = a
+      expect(node["fizz"]["bar"].__path__).to eql(%w{fizz bar})
+      expect(node["foo"]["bar"].__path__).to eql(%w{foo bar})
+    end
+
+    # We have a problem because the __path__ is stored on in each node, but the
+    # node can be wired up at multiple locations in the tree via pointers.  One
+    # solution would be to deep-dup the value in `#[]=(key, value)` and fix the
+    # __path__ on all the dup'd nodes.  The problem is that this would create an
+    # unusual situation where after assignment, you couldn't mutate the thing you
+    # hand a handle on.  I'm not entirely positive this behavior is the correct
+    # thing to support, but it is more hash-like (although if we start with a hash
+    # then convert_value does its thing and we *do* get dup'd on assignment).  This
+    # behavior likely makes any implementation of a deep merge cache built over the
+    # top of __path__ tracking have edge conditions where it will fail.
+    #
+    # Removing this support would be a breaking change.  The test is included here
+    # because it seems most likely that someone would break this behavior while trying
+    # to fix __path__ behavior.
+    it "does not dup in the background when a node is assigned" do
+      # get a handle on a vividmash (can't be a hash or else we convert_value it)
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      a = node.default["foo"]
+      # assign that somewhere else in the tree
+      node.default["fizz"] = a
+      # now update the source
+      a["duptest"] = true
+      # the tree should have been updated
+      expect(node.default["fizz"]["duptest"]).to be true
+      expect(node["fizz"]["duptest"]).to be true
+    end
+  end
+
+  describe "root tracking via __root__" do
+    it "works through hash keys" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node["foo"]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through the default level" do
+      node.default["foo"] = { "bar" => { "baz" => "qux" } }
+      expect(node.default["foo"]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through arrays" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node["foo"][0].__root__).to eql(node.attributes)
+      expect(node["foo"][0]["bar"].__root__).to eql(node.attributes)
+    end
+
+    it "works through arrays at the default level" do
+      node.default["foo"] = [ { "bar" => { "baz" => "qux" } } ]
+      expect(node.default["foo"][0].__root__).to eql(node.attributes)
+      expect(node.default["foo"][0]["bar"].__root__).to eql(node.attributes)
+    end
+  end
+
+  describe "ways of abusing Chef 12 node state" do
+    # these tests abuse the top_level_breadcrumb state in Chef 12
+    it "derived attributes work correctly" do
+      node.default["v1"] = 1
+      expect(node["a"]).to eql(nil)
+      node.default["a"] = node["v1"]
+      expect(node["a"]).to eql(1)
+    end
+
+    it "works when saving nodes to variables" do
+      a = node.default["a"]
+      expect(node["a"]).to eql({})
+      node.default["b"] = 0
+      a["key"] = 1
+
+      expect(node["a"]["key"]).to eql(1)
+    end
+  end
+
+  describe "when abusing the deep merge cache" do
+    # https://github.com/chef/chef/issues/7738
+    it "do not corrupt VividMashes that are part of the merge set and not the merge_onto set" do
+      # need to have a merge two-deep (not at the top-level) between at least two default (or two override)
+      # levels where the lowest priority one is the one that is going to be corrupted
+      node.default["foo"]["bar"]["baz"] = "fizz"
+      node.env_default["foo"]["bar"]["quux"] = "buzz"
+      node.default["foo"]["bar"].tap do |bar|
+        bar["test"] = "wrong"
+        # this triggers a deep merge
+        node["foo"]["bar"]["test"]
+        # this should correctly write and dirty the cache so the next read does another deep merge on the correct __root__
+        bar["test"] = "right"
+      end
+      expect(node["foo"]["bar"]["test"]).to eql("right")
+    end
+
+    it "do not corrupt VividMashes that are part of the merge set and not the merge_onto set (when priorities are reversed)" do
+      # need to have a merge two-deep (not at the top-level) between at least two default (or two override)
+      # levels where the *HIGHEST* priority one is the one that is going to be corrupted
+      node.env_default["foo"]["bar"]["baz"] = "fizz"
+      node.default["foo"]["bar"]["quux"] = "buzz"
+      node.env_default["foo"]["bar"].tap do |bar|
+        bar["test"] = "wrong"
+        # this triggers a deep merge
+        node["foo"]["bar"]["test"]
+        # this should correctly write and dirty the cache so the next read does another deep merge on the correct __root__
+        bar["test"] = "right"
+      end
+      expect(node["foo"]["bar"]["test"]).to eql("right")
+    end
+  end
 end

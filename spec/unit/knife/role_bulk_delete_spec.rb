@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,15 +23,15 @@ describe Chef::Knife::RoleBulkDelete do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::RoleBulkDelete.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = ["."]
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:confirm).and_return(true)
-    @roles = Hash.new
+    @roles = {}
     %w{dev staging production}.each do |role_name|
-      role = Chef::Role.new()
+      role = Chef::Role.new
       role.name(role_name)
       allow(role).to receive(:destroy).and_return(true)
       @roles[role_name] = role

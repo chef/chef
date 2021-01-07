@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,27 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
+require_relative "package"
 
 class Chef
   class Resource
     class DpkgPackage < Chef::Resource::Package
-      resource_name :dpkg_package
-      provides :dpkg_package, os: "linux"
+      unified_mode true
 
-      property :source, [ String, Array, nil ]
+      provides :dpkg_package
+
+      description "Use the **dpkg_package** resource to manage packages for the dpkg platform. When a package is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources."
+
+      property :source, [ String, Array, nil ],
+        description: "The path to a package in the local file system."
+
+      property :response_file, String,
+        description: "The direct path to the file used to pre-seed a package.",
+        desired_state: false
+
+      property :response_file_variables, Hash,
+        description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
+        default: lazy { {} }, desired_state: false
     end
   end
 end

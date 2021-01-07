@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/formatters/error_inspectors/api_error_formatting"
+require_relative "api_error_formatting"
 
 class Chef
   module Formatters
@@ -35,7 +35,7 @@ class Chef
 
         def add_explanation(error_description)
           case exception
-          when Net::HTTPServerException, Net::HTTPFatalError
+          when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when EOFError
             describe_eof_error(error_description)
@@ -56,13 +56,13 @@ class Chef
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error", <<-E)
-This client is not authorized to read some of the information required to
-access its cookbooks (HTTP 403).
+            error_description.section("Authorization Error", <<~E)
+              This client is not authorized to read some of the information required to
+              access its cookbooks (HTTP 403).
 
-To access its cookbooks, a client needs to be able to read its environment and
-all of the cookbooks in its expanded run list.
-E
+              To access its cookbooks, a client needs to be able to read its environment and
+              all of the cookbooks in its expanded run list.
+            E
             error_description.section("Expanded Run List:", expanded_run_list_ul)
             error_description.section("Server Response:", format_rest_error)
           when Net::HTTPPreconditionFailed
@@ -115,12 +115,12 @@ E
               explanation << "Error message: #{error_reasons["message"]}\n"
             end
 
-            explanation << <<EOM
-You might be able to resolve this issue with:
-  1-) Removing cookbook versions that depend on deleted cookbooks.
-  2-) Removing unused cookbook versions.
-  3-) Pinning exact cookbook versions using environments.
-EOM
+            explanation << <<~EOM
+              You might be able to resolve this issue with:
+                1-) Removing cookbook versions that depend on deleted cookbooks.
+                2-) Removing unused cookbook versions.
+                3-) Pinning exact cookbook versions using environments.
+            EOM
             error_description.section("Cookbook dependency resolution error:", explanation)
           end
 
@@ -143,14 +143,15 @@ EOM
           # "{\"error\":[\"{\\\"non_existent_cookbooks\\\":[\\\"nope\\\"],\\\"cookbooks_with_no_versions\\\":[],\\\"message\\\":\\\"Run list contains invalid items: no such cookbook nope.\\\"}\"]}"
 
           wrapped_error_message = attempt_json_parse(exception.response.body)
-          unless wrapped_error_message.kind_of?(Hash) && wrapped_error_message.key?("error")
+          unless wrapped_error_message.is_a?(Hash) && wrapped_error_message.key?("error")
             return wrapped_error_message.to_s
           end
 
           error_description = Array(wrapped_error_message["error"]).first
-          if error_description.kind_of?(Hash)
+          if error_description.is_a?(Hash)
             return error_description
           end
+
           attempt_json_parse(error_description)
         end
 

@@ -1,7 +1,7 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,14 +17,14 @@
 # limitations under the License.
 #
 
-require "chef/mixin/command"
-require "chef/provider"
+require_relative "../provider"
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
   class Provider
     class Service < Chef::Provider
-
-      include Chef::Mixin::Command
+      include Chef::Platform::ServiceHelpers
+      extend Chef::Platform::ServiceHelpers
 
       def supports
         @supports ||= new_resource.supports.dup
@@ -33,10 +33,6 @@ class Chef
       def initialize(new_resource, run_context)
         super
         @enabled = nil
-      end
-
-      def whyrun_supported?
-        true
       end
 
       def load_current_resource
@@ -51,21 +47,21 @@ class Chef
       # XXX?: the #nil? check below will likely fail if this is a cloned resource or if
       # we just run multiple actions.
       def load_new_resource_state
-        if @new_resource.enabled.nil?
-          @new_resource.enabled(@current_resource.enabled)
+        if new_resource.enabled.nil?
+          new_resource.enabled(current_resource.enabled)
         end
-        if @new_resource.running.nil?
-          @new_resource.running(@current_resource.running)
+        if new_resource.running.nil?
+          new_resource.running(current_resource.running)
         end
-        if @new_resource.masked.nil?
-          @new_resource.masked(@current_resource.masked)
+        if new_resource.masked.nil?
+          new_resource.masked(current_resource.masked)
         end
       end
 
       # subclasses should override this if they do implement user services
       def user_services_requirements
         requirements.assert(:all_actions) do |a|
-          a.assertion { @new_resource.user.nil? }
+          a.assertion { new_resource.user.nil? }
           a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support user services"
         end
       end
@@ -76,7 +72,7 @@ class Chef
 
       def define_resource_requirements
         requirements.assert(:reload) do |a|
-          a.assertion { supports[:reload] || @new_resource.reload_command }
+          a.assertion { supports[:reload] || new_resource.reload_command }
           a.failure_message Chef::Exceptions::UnsupportedAction, "#{self} does not support :reload"
           # if a service is not declared to support reload, that won't
           # typically change during the course of a run - so no whyrun
@@ -84,98 +80,98 @@ class Chef
         end
       end
 
-      def action_enable
-        if @current_resource.enabled
-          Chef::Log.debug("#{@new_resource} already enabled - nothing to do")
+      action :enable do
+        if current_resource.enabled
+          logger.trace("#{new_resource} already enabled - nothing to do")
         else
-          converge_by("enable service #{@new_resource}") do
+          converge_by("enable service #{new_resource}") do
             enable_service
-            Chef::Log.info("#{@new_resource} enabled")
+            logger.info("#{new_resource} enabled")
           end
         end
         load_new_resource_state
-        @new_resource.enabled(true)
+        new_resource.enabled(true)
       end
 
-      def action_disable
-        if @current_resource.enabled
-          converge_by("disable service #{@new_resource}") do
+      action :disable do
+        if current_resource.enabled
+          converge_by("disable service #{new_resource}") do
             disable_service
-            Chef::Log.info("#{@new_resource} disabled")
+            logger.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{@new_resource} already disabled - nothing to do")
+          logger.trace("#{new_resource} already disabled - nothing to do")
         end
         load_new_resource_state
-        @new_resource.enabled(false)
+        new_resource.enabled(false)
       end
 
-      def action_mask
-        if @current_resource.masked
-          Chef::Log.debug("#{@new_resource} already masked - nothing to do")
+      action :mask do
+        if current_resource.masked
+          logger.trace("#{new_resource} already masked - nothing to do")
         else
-          converge_by("mask service #{@new_resource}") do
+          converge_by("mask service #{new_resource}") do
             mask_service
-            Chef::Log.info("#{@new_resource} masked")
+            logger.info("#{new_resource} masked")
           end
         end
         load_new_resource_state
-        @new_resource.masked(true)
+        new_resource.masked(true)
       end
 
-      def action_unmask
-        if @current_resource.masked
-          converge_by("unmask service #{@new_resource}") do
+      action :unmask do
+        if current_resource.masked
+          converge_by("unmask service #{new_resource}") do
             unmask_service
-            Chef::Log.info("#{@new_resource} unmasked")
+            logger.info("#{new_resource} unmasked")
           end
         else
-          Chef::Log.debug("#{@new_resource} already unmasked - nothing to do")
+          logger.trace("#{new_resource} already unmasked - nothing to do")
         end
         load_new_resource_state
-        @new_resource.masked(false)
+        new_resource.masked(false)
       end
 
-      def action_start
-        unless @current_resource.running
-          converge_by("start service #{@new_resource}") do
+      action :start do
+        unless current_resource.running
+          converge_by("start service #{new_resource}") do
             start_service
-            Chef::Log.info("#{@new_resource} started")
+            logger.info("#{new_resource} started")
           end
         else
-          Chef::Log.debug("#{@new_resource} already running - nothing to do")
+          logger.trace("#{new_resource} already running - nothing to do")
         end
         load_new_resource_state
-        @new_resource.running(true)
+        new_resource.running(true)
       end
 
-      def action_stop
-        if @current_resource.running
-          converge_by("stop service #{@new_resource}") do
+      action :stop do
+        if current_resource.running
+          converge_by("stop service #{new_resource}") do
             stop_service
-            Chef::Log.info("#{@new_resource} stopped")
+            logger.info("#{new_resource} stopped")
           end
         else
-          Chef::Log.debug("#{@new_resource} already stopped - nothing to do")
+          logger.trace("#{new_resource} already stopped - nothing to do")
         end
         load_new_resource_state
-        @new_resource.running(false)
+        new_resource.running(false)
       end
 
-      def action_restart
-        converge_by("restart service #{@new_resource}") do
+      action :restart do
+        converge_by("restart service #{new_resource}") do
           restart_service
-          Chef::Log.info("#{@new_resource} restarted")
+          logger.info("#{new_resource} restarted")
         end
         load_new_resource_state
-        @new_resource.running(true)
+        new_resource.running(true)
       end
 
-      def action_reload
-        if @current_resource.running
-          converge_by("reload service #{@new_resource}") do
+      action :reload do
+        if current_resource.running
+          converge_by("reload service #{new_resource}") do
             reload_service
-            Chef::Log.info("#{@new_resource} reloaded")
+            logger.info("#{new_resource} reloaded")
           end
         end
         load_new_resource_state
@@ -216,17 +212,17 @@ class Chef
       protected
 
       def default_init_command
-        if @new_resource.init_command
-          @new_resource.init_command
-        elsif self.instance_variable_defined?(:@init_command)
+        if new_resource.init_command
+          new_resource.init_command
+        elsif instance_variable_defined?(:@init_command)
           @init_command
         end
       end
 
       def custom_command_for_action?(action)
         method_name = "#{action}_command".to_sym
-        @new_resource.respond_to?(method_name) &&
-          !!@new_resource.send(method_name)
+        new_resource.respond_to?(method_name) &&
+          !!new_resource.send(method_name)
       end
 
       module ServicePriorityInit
@@ -239,20 +235,20 @@ class Chef
         # Linux
         #
 
-        require "chef/chef_class"
-        require "chef/provider/service/systemd"
-        require "chef/provider/service/insserv"
-        require "chef/provider/service/redhat"
-        require "chef/provider/service/arch"
-        require "chef/provider/service/gentoo"
-        require "chef/provider/service/upstart"
-        require "chef/provider/service/debian"
-        require "chef/provider/service/invokercd"
+        require_relative "../chef_class"
+        require_relative "service/systemd"
+        require_relative "service/insserv"
+        require_relative "service/redhat"
+        require_relative "service/arch"
+        require_relative "service/gentoo"
+        require_relative "service/upstart"
+        require_relative "service/debian"
+        require_relative "service/invokercd"
 
         Chef.set_provider_priority_array :service, [ Systemd, Arch ], platform_family: "arch"
         Chef.set_provider_priority_array :service, [ Systemd, Gentoo ], platform_family: "gentoo"
         Chef.set_provider_priority_array :service, [ Systemd, Upstart, Insserv, Debian, Invokercd ], platform_family: "debian"
-        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: %w{rhel fedora suse}
+        Chef.set_provider_priority_array :service, [ Systemd, Insserv, Redhat ], platform_family: "rpm_based"
       end
     end
   end

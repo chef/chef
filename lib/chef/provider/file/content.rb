@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/file_content_management/content_base"
-require "chef/file_content_management/tempfile"
+require_relative "../../file_content_management/content_base"
+require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider

@@ -1,7 +1,7 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/log"
+require_relative "../json_compat"
+require_relative "../log"
 
 class Chef
   class HTTP
@@ -46,7 +46,8 @@ class Chef
         # temporary hack, skip processing if return_value is false
         # needed to keep conditional get stuff working correctly.
         return [http_response, rest_request, return_value] if return_value == false
-        if http_response["content-type"] =~ /json/
+
+        if /json/.match?(http_response["content-type"])
           if http_response.body.nil?
             return_value = nil
           elsif raw_output
@@ -60,8 +61,11 @@ class Chef
           end
           [http_response, rest_request, return_value]
         else
-          Chef::Log.debug("Expected JSON response, but got content-type '#{http_response['content-type']}'")
-          return [http_response, rest_request, http_response.body.to_s]
+          Chef::Log.trace("Expected JSON response, but got content-type '#{http_response["content-type"]}'")
+          if http_response.body
+            Chef::Log.trace("Response body contains:\n#{http_response.body.length < 256 ? http_response.body : http_response.body[0..256] + " [...truncated...]"}")
+          end
+          [http_response, rest_request, http_response.body.to_s]
         end
       end
 

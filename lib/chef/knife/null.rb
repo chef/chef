@@ -3,8 +3,10 @@ class Chef
     class Null < Chef::Knife
       banner "knife null"
 
-      def run
-      end
+      # setting the category to deprecated keeps it out of help
+      category "deprecated"
+
+      def run; end
     end
   end
 end

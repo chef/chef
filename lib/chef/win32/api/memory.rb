@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32
@@ -56,7 +56,7 @@ HLOCAL WINAPI LocalAlloc(
   __in  SIZE_T uBytes
 );
 =end
-        safe_attach_function :LocalAlloc, [ :UINT, :SIZE_T ], :pointer
+        safe_attach_function :LocalAlloc, %i{UINT SIZE_T}, :pointer
 
 =begin
 UINT WINAPI LocalFlags(
@@ -79,7 +79,7 @@ HLOCAL WINAPI LocalReAlloc(
   __in  UINT uFlags
 );
 =end
-        safe_attach_function :LocalReAlloc, [ :pointer, :SIZE_T, :UINT ], :pointer
+        safe_attach_function :LocalReAlloc, %i{pointer SIZE_T UINT}, :pointer
 
 =begin
 UINT WINAPI LocalSize(
@@ -95,9 +95,9 @@ UINT WINAPI LocalSize(
         ffi_lib FFI::Library::LIBC
         safe_attach_function :malloc, [:size_t], :pointer
         safe_attach_function :calloc, [:size_t], :pointer
-        safe_attach_function :realloc, [:pointer, :size_t], :pointer
+        safe_attach_function :realloc, %i{pointer size_t}, :pointer
         safe_attach_function :free, [:pointer], :void
-        safe_attach_function :memcpy, [:pointer, :pointer, :size_t], :pointer
+        safe_attach_function :memcpy, %i{pointer pointer size_t}, :pointer
 
       end
     end

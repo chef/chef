@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,21 +20,26 @@ require "spec_helper"
 
 describe Chef::Resource::Bash do
 
-  before(:each) do
-    @resource = Chef::Resource::Bash.new("fakey_fakerton")
+  let(:resource) { Chef::Resource::Bash.new("fakey_fakerton") }
+
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
-  it "should create a new Chef::Resource::Bash" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Bash)
+  it "has a resource name of :bash" do
+    expect(resource.resource_name).to eql(:bash)
   end
 
-  it "should have a resource name of :bash" do
-    expect(@resource.resource_name).to eql(:bash)
+  it "has an interpreter of bash" do
+    expect(resource.interpreter).to eql("bash")
   end
 
-  it "should have an interpreter of bash" do
-    expect(@resource.interpreter).to eql("bash")
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
+  end
+
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
   end
 
 end

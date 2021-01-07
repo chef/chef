@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ describe Chef::Application::Solo do
     allow(app).to receive(:configure_chef).and_return(true)
     allow(app).to receive(:configure_logging).and_return(true)
     allow(app).to receive(:trap)
+    allow(app).to receive(:cli_arguments).and_return([])
 
     Chef::Config[:json_attribs] = false
     Chef::Config[:solo] = true
@@ -49,11 +50,6 @@ describe Chef::Application::Solo do
         expect(Chef::Config[:solo]).to be_truthy
       end
 
-      it "should set audit-mode to :disabled" do
-        app.reconfigure
-        expect(Chef::Config[:audit_mode]).to be :disabled
-      end
-
       describe "when configured to not fork the client process" do
         before do
           Chef::Config[:client_fork] = false
@@ -68,18 +64,13 @@ describe Chef::Application::Solo do
           end
 
           it "should terminate with message" do
-            expect(Chef::Application).to receive(:fatal!).with(
-              "Unforked chef-client interval runs are disabled in Chef 12.
-Configuration settings:
-  interval  = 600 seconds
-Enable chef-client interval runs by setting `:client_fork = true` in your config file or adding `--fork` to your command line options."
-            )
+            expect(Chef::Application).to receive(:fatal!).with(/interval runs are (disabled|not supported)/)
             app.reconfigure
           end
         end
       end
 
-      describe "when in daemonized mode and no interval has been set" do
+      describe "when in daemonized mode and no interval has been set", :unix_only do
         before do
           Chef::Config[:daemonize] = true
         end
@@ -93,13 +84,13 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       describe "when the json_attribs configuration option is specified" do
         let(:json_attribs) { { "a" => "b" } }
-        let(:config_fetcher) { double(Chef::ConfigFetcher, :fetch_json => json_attribs) }
+        let(:config_fetcher) { double(Chef::ConfigFetcher, fetch_json: json_attribs) }
         let(:json_source) { "https://foo.com/foo.json" }
 
         before do
           Chef::Config[:json_attribs] = json_source
-          expect(Chef::ConfigFetcher).to receive(:new).with(json_source).
-            and_return(config_fetcher)
+          expect(Chef::ConfigFetcher).to receive(:new).with(json_source)
+            .and_return(config_fetcher)
         end
 
         it "reads the JSON attributes from the specified source" do
@@ -130,7 +121,7 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
 
       it "fetches the recipe_url first when both json_attribs and recipe_url are specified" do
         json_attribs = { "a" => "b" }
-        config_fetcher = instance_double("Chef::ConfigFetcher", :fetch_json => json_attribs)
+        config_fetcher = instance_double("Chef::ConfigFetcher", fetch_json: json_attribs)
 
         Chef::Config[:json_attribs] = "https://foo.com/foo.json"
         Chef::Config[:recipe_url] = "http://icanhas.cheezburger.com/lolcats"
@@ -173,6 +164,8 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
   end
 
   context "in local mode" do
+    let(:root_path) { windows? ? "C:/var/chef" : "/var/chef" }
+
     before do
       Chef::Config[:solo_legacy_mode] = false
     end
@@ -203,20 +196,13 @@ Enable chef-client interval runs by setting `:client_fork = true` in your config
         app.reconfigure
         expect(ARGV.include?("--ez")).to be_falsey
       end
-
-      it "replaces -r with --recipe-url" do
-        ARGV.push("-r", "http://junglist.gen.nz/recipes.tgz")
-        app.reconfigure
-        expect(ARGV.include?("-r")).to be_falsey
-        expect(ARGV.include?("--recipe-url")).to be_truthy
-      end
     end
 
     it "sets the repo path" do
-      expect(Chef::Config).to receive(:find_chef_repo_path).and_return("/var/chef")
+      expect(Chef::Config).to receive(:find_chef_repo_path).and_return(root_path)
       app.reconfigure
-      expect(Chef::Config.has_key?(:chef_repo_path)).to be_truthy
-      expect(Chef::Config[:chef_repo_path]).to eq ("/var/chef")
+      expect(Chef::Config.key?(:chef_repo_path)).to be_truthy
+      expect(Chef::Config[:chef_repo_path]).to eq(root_path)
     end
 
     it "runs chef-client in local mode" do

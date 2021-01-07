@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleBulkDelete < Knife
 
       deps do
-        require "chef/role"
-        require "chef/json_compat"
+        require_relative "../role"
+        require_relative "../json_compat"
       end
 
       banner "knife role bulk delete REGEX (options)"
@@ -40,7 +40,8 @@ class Chef
         matcher = /#{@name_args[0]}/
         roles_to_delete = {}
         all_roles.each do |name, role|
-          next unless name =~ matcher
+          next unless name&.match?(matcher)
+
           roles_to_delete[role.name] = role
         end
 

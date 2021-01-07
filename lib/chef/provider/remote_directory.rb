@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/provider/directory"
-require "chef/resource/file"
-require "chef/resource/directory"
-require "chef/resource/cookbook_file"
-require "chef/mixin/file_class"
-require "chef/platform/query_helpers"
-require "chef/util/path_helper"
-require "chef/deprecation/warnings"
-require "chef/deprecation/provider/remote_directory"
+require_relative "directory"
+require_relative "../resource/file"
+require_relative "../resource/directory"
+require_relative "../resource/cookbook_file"
+require_relative "../mixin/file_class"
+require_relative "../platform/query_helpers"
+require_relative "../util/path_helper"
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider
@@ -36,9 +34,9 @@ class Chef
 
       provides :remote_directory
 
-      def_delegators :@new_resource, :purge, :path, :source, :cookbook, :cookbook_name
-      def_delegators :@new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
-      def_delegators :@new_resource, :rights, :mode, :group, :owner
+      def_delegators :new_resource, :purge, :path, :source, :cookbook, :cookbook_name
+      def_delegators :new_resource, :files_rights, :files_mode, :files_group, :files_owner, :files_backup
+      def_delegators :new_resource, :rights, :mode, :group, :owner
 
       # The overwrite property on the resource.  Delegates to new_resource but can be mutated.
       #
@@ -48,8 +46,6 @@ class Chef
         @overwrite = new_resource.overwrite if @overwrite.nil?
         !!@overwrite
       end
-
-      attr_accessor :managed_files
 
       # Hash containing keys of the paths for all the files that we sync, plus all their
       # parent directories.
@@ -62,8 +58,8 @@ class Chef
 
       # Handle action :create.
       #
-      def action_create
-        super
+      action :create do
+        super()
 
         # Transfer files
         files_to_transfer.each do |cookbook_file_relative_path|
@@ -77,7 +73,7 @@ class Chef
 
       # Handle action :create_if_missing.
       #
-      def action_create_if_missing
+      action :create_if_missing do
         # if this action is called, ignore the existing overwrite flag
         @overwrite = false
         action_create
@@ -106,7 +102,7 @@ class Chef
         if purge
           Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(path), "**", "*"), ::File::FNM_DOTMATCH).sort!.reverse!.each do |file|
             # skip '.' and '..'
-            next if [".", ".."].include?(Pathname.new(file).basename().to_s)
+            next if [".", ".."].include?(Pathname.new(file).basename.to_s)
 
             # Clean the path.  This is required because of the ::File.join
             file = Chef::Util::PathHelper.cleanpath(file)
@@ -115,7 +111,7 @@ class Chef
             next if managed_files.include?(file)
 
             if ::File.directory?(file)
-              if !Chef::Platform.windows? && file_class.symlink?(file.dup)
+              if !ChefUtils.windows? && file_class.symlink?(file.dup)
                 # Unix treats dir symlinks as files
                 purge_file(file)
               else
@@ -151,11 +147,11 @@ class Chef
         new_resource.updated_by_last_action(true) if res.updated?
       end
 
-      # Get the files to tranfer.  This returns files in lexicographical sort order.
+      # Get the files to transfer.  This returns files in lexicographical sort order.
       #
       # FIXME: it should do breadth-first, see CHEF-5080 (please use a performant sort)
       #
-      # @return Array<String> The list of files to transfer
+      # @return [Array<String>] The list of files to transfer
       # @api private
       #
       def files_to_transfer
@@ -212,7 +208,7 @@ class Chef
         # Set the sensitivity level
         res.sensitive(new_resource.sensitive)
         res.source(::File.join(source, relative_source_path))
-        if Chef::Platform.windows? && files_rights
+        if ChefUtils.windows? && files_rights
           files_rights.each_pair do |permission, *args|
             res.rights(permission, *args)
           end
@@ -248,8 +244,8 @@ class Chef
       def directory_resource(dir)
         res = Chef::Resource::Directory.new(dir, run_context)
         res.cookbook_name = resource_cookbook
-        if Chef::Platform.windows? && rights
-          # rights are only meant to be applied to the toppest-level directory;
+        if ChefUtils.windows? && rights
+          # rights are only meant to be applied to the most top-level directory;
           # Windows will handle inheritance.
           if dir == path
             rights.each do |r|
@@ -267,16 +263,6 @@ class Chef
 
         res
       end
-
-      #
-      # Add back deprecated methods and aliases that are internally unused and should be removed in Chef-13
-      #
-      extend Chef::Deprecation::Warnings
-      include Chef::Deprecation::Provider::RemoteDirectory
-      add_deprecation_warnings_for(Chef::Deprecation::Provider::RemoteDirectory.instance_methods)
-
-      alias_method :resource_for_directory, :directory_resource
-      add_deprecation_warnings_for([:resource_for_directory])
 
     end
   end

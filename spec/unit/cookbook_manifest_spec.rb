@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -81,11 +81,6 @@ describe Chef::CookbookManifest do
       expect(cookbook_manifest.frozen_version?).to be(false)
     end
 
-    it "delegates `segment_filenames' to cookbook_version" do
-      expect(cookbook_version).to receive(:segment_filenames).with(:recipes).and_return([])
-      expect(cookbook_manifest.segment_filenames(:recipes)).to eq([])
-    end
-
   end
 
   context "when given an empty cookbook" do
@@ -94,22 +89,14 @@ describe Chef::CookbookManifest do
       {
         "chef_type" => "cookbook_version",
 
-        "name"          => "tatft-1.2.3",
-        "version"       => "1.2.3",
+        "name" => "tatft-1.2.3",
+        "version" => "1.2.3",
         "cookbook_name" => "tatft",
-        "metadata"      => metadata,
+        "metadata" => metadata,
 
         "frozen?" => false,
 
-        "recipes" => [],
-        "definitions" => [],
-        "libraries" => [],
-        "attributes" => [],
-        "files" => [],
-        "templates" => [],
-        "resources" => [],
-        "providers" => [],
-        "root_files" => [],
+        "all_files" => [],
       }
     end
 
@@ -123,30 +110,34 @@ describe Chef::CookbookManifest do
 
     let(:cookbook_root) { File.join(CHEF_SPEC_DATA, "cb_version_cookbooks", "tatft") }
 
-    let(:attribute_filenames)   { Dir[File.join(cookbook_root, "attributes", "**", "*.rb")] }
-    let(:definition_filenames)  { Dir[File.join(cookbook_root, "definitions", "**", "*.rb")] }
-    let(:file_filenames)        { Dir[File.join(cookbook_root, "files", "**", "*.tgz")] }
-    let(:recipe_filenames)      { Dir[File.join(cookbook_root, "recipes", "**", "*.rb")] }
-    let(:template_filenames)    { Dir[File.join(cookbook_root, "templates", "**", "*.erb")] }
-    let(:library_filenames)     { Dir[File.join(cookbook_root, "libraries", "**", "*.rb")] }
-    let(:resource_filenames)    { Dir[File.join(cookbook_root, "resources", "**", "*.rb")] }
-    let(:provider_filenames)    { Dir[File.join(cookbook_root, "providers", "**", "*.rb")] }
-    let(:root_filenames)        { Array(File.join(cookbook_root, "README.rdoc")) }
-    let(:metadata_filenames)    { Array(File.join(cookbook_root, "metadata.json")) }
+    let(:all_files) { Dir[File.join(cookbook_root, "**", "**")].reject { |f| File.directory? f } }
 
     let(:match_md5) { /[0-9a-f]{32}/ }
 
-    def map_to_file_specs(paths)
+    def map_to_file_specs(paths, full: false)
       paths.map do |path|
 
         relative_path = Pathname.new(path).relative_path_from(Pathname.new(cookbook_root)).to_s
 
+        parts = relative_path.split("/")
+        name = if %w{templates files}.include?(parts[0]) && parts.length == 3
+                 File.join(parts[0], parts[2])
+               elsif parts.length == 1
+                 "root_files/#{parts[0]}"
+               else
+                 relative_path
+               end
+
         {
-          "name"        => File.basename(path),
-          "path"        => relative_path,
-          "checksum"    => Chef::Digester.generate_md5_checksum_for_file(path),
+          "name" => name,
+          "path" => relative_path,
+          "checksum" => Chef::Digester.generate_md5_checksum_for_file(path),
           "specificity" => "default",
-        }
+        }.tap do |fp|
+          if full
+            fp["full_path"] = path
+          end
+        end
       end
     end
 
@@ -154,47 +145,41 @@ describe Chef::CookbookManifest do
       {
         "chef_type" => "cookbook_version",
 
-        "name"          => "tatft-1.2.3",
-        "version"       => "1.2.3",
+        "name" => "tatft-1.2.3",
+        "version" => "1.2.3",
         "cookbook_name" => "tatft",
-        "metadata"      => metadata,
+        "metadata" => metadata,
 
         "frozen?" => false,
 
-        "recipes"     => map_to_file_specs(recipe_filenames),
-        "definitions" => map_to_file_specs(definition_filenames),
-        "libraries"   => map_to_file_specs(library_filenames),
-        "attributes"  => map_to_file_specs(attribute_filenames),
-        "files"       => map_to_file_specs(file_filenames),
-        "templates"   => map_to_file_specs(template_filenames),
-        "resources"   => map_to_file_specs(resource_filenames),
-        "providers"   => map_to_file_specs(provider_filenames),
-        "root_files"  => map_to_file_specs(root_filenames),
+        "all_files" => map_to_file_specs(all_files),
       }
     end
 
     before do
-      cookbook_version.attribute_filenames   = attribute_filenames
-      cookbook_version.definition_filenames  = definition_filenames
-      cookbook_version.file_filenames        = file_filenames
-      cookbook_version.recipe_filenames      = recipe_filenames
-      cookbook_version.template_filenames    = template_filenames
-      cookbook_version.library_filenames     = library_filenames
-      cookbook_version.resource_filenames    = resource_filenames
-      cookbook_version.provider_filenames    = provider_filenames
-      cookbook_version.root_filenames        = root_filenames
-      cookbook_version.metadata_filenames    = metadata_filenames
+      cookbook_version.all_files = all_files
     end
 
     it "converts the CookbookVersion to a ruby Hash representation" do
       cookbook_manifest_hash = cookbook_manifest.to_hash
 
       expect(cookbook_manifest_hash.keys).to match_array(expected_hash.keys)
-      cookbook_manifest_hash.each do |key, value|
+      cookbook_manifest_hash.each_key do |key|
         expect(cookbook_manifest_hash[key]).to eq(expected_hash[key])
       end
     end
 
+    context ".each_file" do
+      it "yields all the files" do
+        files = map_to_file_specs(all_files, full: true)
+        expect(cookbook_manifest.to_enum(:each_file)).to match_array(files)
+      end
+
+      it "excludes certain file parts" do
+        files = map_to_file_specs(all_files, full: true).reject { |f| seg = f["name"].split("/")[0]; %w{ files templates }.include?(seg) }
+        expect(cookbook_manifest.to_enum(:each_file, excluded_parts: %w{ files templates })).to match_array(files)
+      end
+    end
   end
 
   describe "providing upstream URLs for save" do

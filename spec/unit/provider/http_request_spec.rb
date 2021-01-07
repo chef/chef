@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -73,7 +73,7 @@ describe Chef::Provider::HttpRequest do
       end
 
       it "should inflate a message block at runtime" do
-        allow(@new_resource).to receive(:message).and_return(lambda { "return" })
+        @new_resource.message(lambda { "return" })
         expect(@http).to receive(:put).with("http://www.opscode.com/", "return", {})
         @provider.run_action(:put)
         expect(@new_resource).to be_updated

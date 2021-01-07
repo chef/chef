@@ -5,7 +5,7 @@
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,8 +21,8 @@
 # limitations under the License.
 #
 
-require "openssl"
-require "chef/util/path_helper"
+autoload :OpenSSL, "openssl"
+require_relative "../util/path_helper"
 
 class Chef
   class HTTP
@@ -62,12 +62,20 @@ class Chef
           unless ::File.exist?(config[:ssl_ca_path])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_path #{config[:ssl_ca_path]} does not exist"
           end
+
           http_client.ca_path = config[:ssl_ca_path]
         elsif config[:ssl_ca_file]
           unless ::File.exist?(config[:ssl_ca_file])
             raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{config[:ssl_ca_file]} does not exist"
           end
+
           http_client.ca_file = config[:ssl_ca_file]
+        elsif ENV["SSL_CERT_FILE"]
+          unless ::File.exist?(ENV["SSL_CERT_FILE"])
+            raise Chef::Exceptions::ConfigurationError, "The configured ssl_ca_file #{ENV["SSL_CERT_FILE"]} does not exist"
+          end
+
+          http_client.ca_file = ENV["SSL_CERT_FILE"]
         end
       end
 
@@ -77,27 +85,41 @@ class Chef
           http_client.cert_store.set_default_paths
         end
         if config.trusted_certs_dir
-          certs = Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
+          certs = Dir.glob(::File.join(Chef::Util::PathHelper.escape_glob_dir(config.trusted_certs_dir), "*.{crt,pem}"))
           certs.each do |cert_file|
-            cert = OpenSSL::X509::Certificate.new(File.read(cert_file))
+            cert = begin
+              OpenSSL::X509::Certificate.new(::File.binread(cert_file))
+                   rescue OpenSSL::X509::CertificateError => e
+                     raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{cert_file}', original error '#{e.class}: #{e.message}'"
+            end
             add_trusted_cert(cert)
           end
         end
       end
 
       def set_client_credentials
-        if config[:ssl_client_cert] || config[:ssl_client_key]
-          unless config[:ssl_client_cert] && config[:ssl_client_key]
-            raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
-          end
-          unless ::File.exists?(config[:ssl_client_cert])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
-          end
-          unless ::File.exists?(config[:ssl_client_key])
-            raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
-          end
-          http_client.cert = OpenSSL::X509::Certificate.new(::File.read(config[:ssl_client_cert]))
-          http_client.key = OpenSSL::PKey::RSA.new(::File.read(config[:ssl_client_key]))
+        return unless config[:ssl_client_cert] || config[:ssl_client_key]
+
+        unless config[:ssl_client_cert] && config[:ssl_client_key]
+          raise Chef::Exceptions::ConfigurationError, "You must configure ssl_client_cert and ssl_client_key together"
+        end
+        unless ::File.exists?(config[:ssl_client_cert])
+          raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_cert #{config[:ssl_client_cert]} does not exist"
+        end
+        unless ::File.exists?(config[:ssl_client_key])
+          raise Chef::Exceptions::ConfigurationError, "The configured ssl_client_key #{config[:ssl_client_key]} does not exist"
+        end
+
+        begin
+          http_client.cert = OpenSSL::X509::Certificate.new(::File.binread(config[:ssl_client_cert]))
+        rescue OpenSSL::X509::CertificateError => e
+          raise Chef::Exceptions::ConfigurationError, "Error reading cert file '#{config[:ssl_client_cert]}', original error '#{e.class}: #{e.message}'"
+        end
+
+        begin
+          http_client.key = OpenSSL::PKey::RSA.new(::File.binread(config[:ssl_client_key]))
+        rescue OpenSSL::PKey::RSAError => e
+          raise Chef::Exceptions::ConfigurationError, "Error reading key file '#{config[:ssl_client_key]}', original error '#{e.class}: #{e.message}'"
         end
       end
 
@@ -123,6 +145,24 @@ class Chef
         elsif config[:ssl_verify_mode] == :verify_none
           http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
         end
+      end
+    end
+
+    # This policy is used when we want to explicitly turn on verification
+    # for a specific request regardless of the API Policy. For example, when
+    # doing a `remote_file` where the user specified `verify_mode :verify_peer`
+    class VerifyPeerSSLPolicy < DefaultSSLPolicy
+      def set_verify_mode
+        http_client.verify_mode = OpenSSL::SSL::VERIFY_PEER
+      end
+    end
+
+    # This policy is used when we want to explicitly turn off verification
+    # for a specific request regardless of the API Policy. For example, when
+    # doing a `remote_file` where the user specified `verify_mode :verify_none`
+    class VerifyNoneSSLPolicy < DefaultSSLPolicy
+      def set_verify_mode
+        http_client.verify_mode = OpenSSL::SSL::VERIFY_NONE
       end
     end
 

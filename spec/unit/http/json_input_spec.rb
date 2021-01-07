@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "chef/http/json_input"
 
 describe Chef::HTTP::JSONInput do
 
-  let(:json_encoder) { described_class.new() }
+  let(:json_encoder) { described_class.new }
 
   let(:url) { URI.parse("http://example.com") }
   let(:headers) { {} }

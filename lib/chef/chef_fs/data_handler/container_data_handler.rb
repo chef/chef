@@ -1,4 +1,4 @@
-require "chef/chef_fs/data_handler/data_handler_base"
+require_relative "data_handler_base"
 
 class Chef
   module ChefFS
@@ -12,7 +12,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "containername"
+          key == "containername"
         end
 
         # Verify that the JSON hash for this type has a key that matches its name.
@@ -24,7 +24,7 @@ class Chef
         def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["containername"] != base_name
-            yield("Name in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['containername']}')")
+            yield("Name in #{entry.path_for_printing} must be '#{base_name}' (is '#{object["containername"]}')")
           end
         end
 

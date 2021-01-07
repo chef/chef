@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/acl_dir"
-require "chef/chef_fs/file_system/chef_server/cookbooks_acl_dir"
-require "chef/chef_fs/file_system/chef_server/policies_acl_dir"
-require "chef/chef_fs/file_system/chef_server/acl_entry"
-require "chef/chef_fs/data_handler/acl_data_handler"
+require_relative "../base_fs_dir"
+require_relative "acl_dir"
+require_relative "cookbooks_acl_dir"
+require_relative "policies_acl_dir"
+require_relative "acl_entry"
+require_relative "../../data_handler/acl_data_handler"
 
 class Chef
   module ChefFS
     module FileSystem
       module ChefServer
         class AclsDir < BaseFSDir
-          ENTITY_TYPES = %w{clients containers cookbook_artifacts cookbooks data_bags environments groups nodes policies policy_groups roles} # we don't read sandboxes, so we don't read their acls
+          ENTITY_TYPES = %w{clients containers cookbook_artifacts cookbooks data_bags environments groups nodes policies policy_groups roles}.freeze # we don't read sandboxes, so we don't read their acls
 
           def data_handler
             @data_handler ||= Chef::ChefFS::DataHandler::AclDataHandler.new
@@ -60,7 +60,7 @@ class Chef
                   AclDir.new(entity_type, self)
                 end
               end
-              @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHINGATALL/_acl
+              @children << AclEntry.new("organization.json", self, true) # the org acl is retrieved as GET /organizations/ORGNAME/ANYTHING/_acl
             end
             @children
           end

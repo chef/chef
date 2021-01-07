@@ -1,6 +1,6 @@
 #--
 # Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,15 +20,13 @@ class Chef
     module NotifyingBlock
 
       def notifying_block(&block)
-        begin
-          subcontext = subcontext_block(&block)
-          Chef::Runner.new(subcontext).converge
-        ensure
-          # recipes don't have a new_resource
-          if respond_to?(:new_resource)
-            if subcontext && subcontext.resource_collection.any?(&:updated?)
-              new_resource.updated_by_last_action(true)
-            end
+        subcontext = subcontext_block(&block)
+        Chef::Runner.new(subcontext).converge
+      ensure
+        # recipes don't have a new_resource
+        if respond_to?(:new_resource)
+          if subcontext && subcontext.resource_collection.any?(&:updated?)
+            new_resource.updated_by_last_action(true)
           end
         end
       end

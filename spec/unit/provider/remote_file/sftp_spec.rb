@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::Provider::RemoteFile::SFTP do
-  #built out dependencies
+  # built out dependencies
   let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
   end
@@ -117,20 +117,20 @@ describe Chef::Provider::RemoteFile::SFTP do
     end
 
     context "and the URI specifies an alternate port" do
-      let(:uri) { URI.parse("ftp://conan:cthu1hu@opscode.com:8021/seattle.txt") }
+      let(:uri) { URI.parse("sftp://conan:cthu1hu@opscode.com:8021/seattle.txt") }
 
       it "should connect on an alternate port when one is provided" do
-        expect(Net::SFTP).to receive(:start).with("opscode.com:8021", "conan", :password => "cthu1hu")
+        expect(Net::SFTP).to receive(:start).with("opscode.com:8021", "conan", password: "cthu1hu")
         fetcher.fetch
       end
 
     end
 
     context "and the uri specifies a nested path" do
-      let(:uri) { URI.parse("ftp://conan:cthu1hu@opscode.com/the/whole/path/seattle.txt") }
+      let(:uri) { URI.parse("sftp://conan:cthu1hu@opscode.com/the/whole/path/seattle.txt") }
 
       it "should fetch the file from the correct path" do
-        expect(sftp).to receive(:download!).with("the/whole/path/seattle.txt", "/tmp/somedir/remote-file-sftp-backend-spec-test")
+        expect(sftp).to receive(:download!).with("/the/whole/path/seattle.txt", "/tmp/somedir/remote-file-sftp-backend-spec-test")
         fetcher.fetch
       end
     end

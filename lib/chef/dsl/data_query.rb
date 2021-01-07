@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,18 +16,18 @@
 # limitations under the License.
 #
 
-require "chef/search/query"
-require "chef/data_bag"
-require "chef/data_bag_item"
-require "chef/encrypted_data_bag_item"
-require "chef/encrypted_data_bag_item/check_encrypted"
+require_relative "../search/query"
+Chef.autoload :DataBag, File.expand_path("../data_bag", __dir__)
+Chef.autoload :DataBagItem, File.expand_path("../data_bag_item", __dir__)
+require_relative "../encrypted_data_bag_item"
+require_relative "../encrypted_data_bag_item/check_encrypted"
 
 class Chef
   module DSL
 
-    # ==Chef::DSL::DataQuery
-    # Provides DSL for querying data from the chef-server via search or data
-    # bag.
+    # Provides DSL helper methods for querying the search interface, data bag
+    # interface or node interface.
+    #
     module DataQuery
       include Chef::EncryptedDataBagItem::CheckEncrypted
 
@@ -38,7 +38,7 @@ class Chef
         if Kernel.block_given? || args.length >= 4
           Chef::Search::Query.new.search(*args, &block)
         else
-          results = Array.new
+          results = []
           Chef::Search::Query.new.search(*args) do |o|
             results << o
           end
@@ -80,10 +80,24 @@ class Chef
         raise
       end
 
+      #
+      # Note that this is mixed into the Universal DSL so access to the node needs to be done
+      # through the run_context and not accessing the node method directly, since the node method
+      # is not as universal as the run_context.
+      #
+
+      # True if all the tags are set on the node.
+      #
+      # @param [Array<String>] tags to check against
+      # @return boolean
+      #
+      def tagged?(*tags)
+        tags.each do |tag|
+          return false unless run_context.node.tags.include?(tag)
+        end
+        true
+      end
+
     end
   end
 end
-
-# **DEPRECATED**
-# This used to be part of chef/mixin/language. Load the file to activate the deprecation code.
-require "chef/mixin/language"

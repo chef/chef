@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
+require "tiny_server"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/list"
@@ -22,7 +24,21 @@ require "chef/knife/list"
 describe "redirection", :workstation do
   include IntegrationSupport
   include KnifeSupport
-  include AppServerSupport
+
+  def start_tiny_server(real_chef_server_url, **server_opts)
+    @server = TinyServer::Manager.new(**server_opts)
+    @server.start
+    @api = TinyServer::API.instance
+    @api.clear
+
+    @api.get("/roles", 302, nil, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}/roles" }) do
+    end
+  end
+
+  def stop_tiny_server
+    @server.stop
+    @server = @api = nil
+  end
 
   include_context "default config options"
 
@@ -30,18 +46,14 @@ describe "redirection", :workstation do
     before { role "x", {} }
 
     context "and another server redirects to it with 302" do
-      before :each do
+      before(:each) do
         real_chef_server_url = Chef::Config.chef_server_url
-        Chef::Config.chef_server_url = "http://localhost:9018"
-        app = lambda do |env|
-          [302, { "Content-Type" => "text", "Location" => "#{real_chef_server_url}#{env['PATH_INFO']}" }, ["302 found"] ]
-        end
-        @redirector_server, @redirector_server_thread = start_app_server(app, 9018)
+        Chef::Config.chef_server_url = "http://localhost:9000"
+        start_tiny_server(real_chef_server_url)
       end
 
-      after :each do
-        @redirector_server.shutdown if @redirector_server
-        @redirector_thread.kill if @redirector_thread
+      after(:each) do
+        stop_tiny_server
       end
 
       it "knife list /roles returns the role" do

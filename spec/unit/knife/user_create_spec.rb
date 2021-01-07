@@ -1,7 +1,7 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,25 +38,6 @@ describe Chef::Knife::UserCreate do
     allow(knife.ui).to receive(:warn)
   end
 
-  # delete this once OSC11 support is gone
-  context "when only one name_arg is passed" do
-    before do
-      knife.name_args = ["some_user"]
-      allow(knife).to receive(:run_osc_11_user_create).and_raise(SystemExit)
-    end
-
-    it "displays the osc warning" do
-      expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
-
-    it "calls knife osc_user create" do
-      expect(knife).to receive(:run_osc_11_user_create)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
-
-  end
-
   context "when USERNAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
     it_should_behave_like "mandatory field missing" do
@@ -64,17 +45,6 @@ describe Chef::Knife::UserCreate do
       let(:fieldname) { "username" }
     end
   end
-
-  # uncomment once OSC11 support is gone,
-  # pending doesn't work for shared_examples_for by default
-  #
-  # context "when DISPLAY_NAME isn't specified" do
-  #   # from spec/support/shared/unit/knife_shared.rb
-  #   it_should_behave_like "mandatory field missing" do
-  #     let(:name_args) { ['some_user'] }
-  #     let(:fieldname) { 'display name' }
-  #   end
-  # end
 
   context "when FIRST_NAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
@@ -142,7 +112,7 @@ describe Chef::Knife::UserCreate do
 
       it "prints a relevant error message" do
         expect { knife.run }.to raise_error(SystemExit)
-        expect(stderr.string).to match /You cannot pass --user-key and --prevent-keygen/
+        expect(stderr.string).to match(/You cannot pass --user-key and --prevent-keygen/)
       end
     end
 

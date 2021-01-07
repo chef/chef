@@ -9,7 +9,7 @@ describe Chef::Util::Editor do
     end
 
     it "makes a copy of an Array" do
-      array = Array.new
+      array = []
       editor = described_class.new(array)
       expect(editor.lines).to_not be(array)
     end

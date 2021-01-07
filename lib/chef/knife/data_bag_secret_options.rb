@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "mixlib/cli"
-require "chef/config"
-require "chef/encrypted_data_bag_item/check_encrypted"
+require "mixlib/cli" unless defined?(Mixlib::CLI)
+require_relative "../config"
+require_relative "../encrypted_data_bag_item/check_encrypted"
 
 class Chef
   class Knife
@@ -34,24 +34,19 @@ class Chef
       # are provided.
 
       def self.included(base)
-        base.option :secret,
-               :short => "-s SECRET",
-               :long  => "--secret ",
-               :description => "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'",
-               # Need to store value from command line in separate variable - knife#merge_configs populates same keys
-               # on config object from
-               :proc => Proc.new { |s| set_cl_secret(s) }
+        base.option :cl_secret,
+          long: "--secret SECRET",
+          description: "The secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret'."
 
-        base.option :secret_file,
-               :long => "--secret-file SECRET_FILE",
-               :description => "A file containing the secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret_file'",
-               :proc => Proc.new { |sf| set_cl_secret_file(sf) }
+        base.option :cl_secret_file,
+          long: "--secret-file SECRET_FILE",
+          description: "A file containing the secret key to use to encrypt data bag item values. Can also be defaulted in your config with the key 'secret_file'."
 
         base.option :encrypt,
-               :long => "--encrypt",
-               :description => "If 'secret' or 'secret_file' is present in your config, then encrypt data bags using it",
-               :boolean => true,
-               :default => false
+          long: "--encrypt",
+          description: "If 'secret' or 'secret_file' is present in your config, then encrypt data bags using it.",
+          boolean: true,
+          default: false
       end
 
       def encryption_secret_provided?
@@ -65,27 +60,27 @@ class Chef
       def read_secret
         # Moving the non 'compile-time' requires into here to speed up knife command loading
         # IE, if we are not running 'knife data bag *' we don't need to load 'chef/encrypted_data_bag_item'
-        require "chef/encrypted_data_bag_item"
+        require_relative "../encrypted_data_bag_item"
 
-        if has_cl_secret?
-          config[:secret]
-        elsif has_cl_secret_file?
-          Chef::EncryptedDataBagItem.load_secret(config[:secret_file])
-        elsif secret = knife_config[:secret]
+        if config[:cl_secret]
+          config[:cl_secret]
+        elsif config[:cl_secret_file]
+          Chef::EncryptedDataBagItem.load_secret(config[:cl_secret_file])
+        elsif secret = config[:secret]
           secret
         else
-          secret_file = knife_config[:secret_file]
+          secret_file = config[:secret_file]
           Chef::EncryptedDataBagItem.load_secret(secret_file)
         end
       end
 
       def validate_secrets
-        if has_cl_secret? && has_cl_secret_file?
+        if config[:cl_secret] && config[:cl_secret_file]
           ui.fatal("Please specify only one of --secret, --secret-file")
           exit(1)
         end
 
-        if knife_config[:secret] && knife_config[:secret_file]
+        if config[:secret] && config[:secret_file]
           ui.fatal("Please specify only one of 'secret' or 'secret_file' in your config file")
           exit(1)
         end
@@ -95,45 +90,30 @@ class Chef
 
       ##
       # Determine if the user has specified an appropriate secret for encrypting data bag items.
-      # @returns boolean
+      # @return boolean
       def base_encryption_secret_provided?(need_encrypt_flag = true)
         validate_secrets
 
-        return true if has_cl_secret? || has_cl_secret_file?
+        return true if config[:cl_secret] || config[:cl_secret_file]
 
         if need_encrypt_flag
           if config[:encrypt]
-            unless knife_config[:secret] || knife_config[:secret_file]
+            unless config[:secret] || config[:secret_file]
               ui.fatal("No secret or secret_file specified in config, unable to encrypt item.")
               exit(1)
             end
             return true
           end
           return false
-        elsif knife_config[:secret] || knife_config[:secret_file]
+        elsif config[:secret] || config[:secret_file]
           # Certain situations (show and bootstrap) don't need a --encrypt flag to use the config file secret
           return true
         end
-        return false
-      end
-
-      def has_cl_secret?
-        Chef::Config[:knife].has_key?(:cl_secret)
-      end
-
-      def self.set_cl_secret(s)
-        Chef::Config[:knife][:cl_secret] = s
-      end
-
-      def has_cl_secret_file?
-        Chef::Config[:knife].has_key?(:cl_secret_file)
-      end
-
-      def self.set_cl_secret_file(sf)
-        Chef::Config[:knife][:cl_secret_file] = sf
+        false
       end
 
       def knife_config
+        Chef.deprecated(:knife_bootstrap_apis, "The `knife_config` bootstrap helper has been deprecated, use the properly merged `config` helper instead")
         Chef::Config.key?(:knife) ? Chef::Config[:knife] : {}
       end
 

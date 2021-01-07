@@ -30,7 +30,7 @@ shared_context "using Win32::Service" do
     end
 
     # Delete the test_service_file if it exists
-    if File.exists?(test_service_file)
+    if File.exist?(test_service_file)
       File.delete(test_service_file)
     end
   end
@@ -39,11 +39,11 @@ shared_context "using Win32::Service" do
 
   let(:test_service) do
     {
-      :service_name => "spec-service",
-      :service_display_name => "Spec Test Service",
-      :service_description => "Service for testing Chef::Application::WindowsServiceManager.",
-      :service_file_path => File.expand_path(File.join(File.dirname(__FILE__), "../../platforms/win32/spec_service.rb")),
-      :delayed_start => true,
+      service_name: "spec-service",
+      service_display_name: "Spec Test Service",
+      service_description: "Service for testing Chef::Application::WindowsServiceManager.",
+      service_file_path: File.expand_path(File.join(__dir__, "../../platforms/win32/spec_service.rb")),
+      delayed_start: true,
     }
   end
 
@@ -52,6 +52,6 @@ shared_context "using Win32::Service" do
   # for the file it creates under SYSTEM temp directory
 
   let(:test_service_file) do
-    "#{ENV['SystemDrive']}\\windows\\temp\\spec_service_file"
+    "#{ENV["SystemDrive"]}\\windows\\temp\\spec_service_file"
   end
 end

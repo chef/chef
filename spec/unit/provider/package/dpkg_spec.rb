@@ -31,29 +31,28 @@ describe Chef::Provider::Package::Dpkg do
   let(:provider) { Chef::Provider::Package::Dpkg.new(new_resource, run_context) }
 
   let(:dpkg_deb_version) { "1.11.4" }
-  let(:dpkg_deb_status) { status = double(:stdout => "#{package}\t#{dpkg_deb_version}", :exitstatus => 0) }
+  let(:dpkg_deb_status) { status = double(stdout: "#{package}\t#{dpkg_deb_version}", exitstatus: 0) }
   let(:dpkg_s_version) { "1.11.4-1ubuntu1" }
   let(:dpkg_s_status) do
-    stdout = <<-DPKG_S
-Package: #{package}
-Status: install ok installed
-Priority: important
-Section: web
-Installed-Size: 1944
-Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
-Architecture: amd64
-Version: #{dpkg_s_version}
-Config-Version: #{dpkg_s_version}
-Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
-Conflicts: wget-ssl
+    stdout = <<~DPKG_S
+      Package: #{package}
+      Status: install ok installed
+      Priority: important
+      Section: web
+      Installed-Size: 1944
+      Maintainer: Ubuntu Core developers <ubuntu-devel-discuss@lists.ubuntu.com>
+      Architecture: amd64
+      Version: #{dpkg_s_version}
+      Config-Version: #{dpkg_s_version}
+      Depends: libc6 (>= 2.8~20080505), libssl0.9.8 (>= 0.9.8f-5)
+      Conflicts: wget-ssl
     DPKG_S
-    status = double(:stdout => stdout, :exitstatus => 1)
+    status = double(stdout: stdout, exitstatus: 1)
   end
 
   before(:each) do
-    allow(provider).to receive(:shell_out!).with("dpkg-deb -W #{source}", timeout: 900).and_return(dpkg_deb_status)
-    allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0, 1]).and_return(double(stdout: "", exitstatus: 1))
-    allow(::File).to receive(:exist?).with(source).and_return(true)
+    allow(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", source, timeout: 900).and_return(dpkg_deb_status)
+    allow(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, timeout: 900, returns: [0, 1]).and_return(double(stdout: "", exitstatus: 1))
   end
 
   describe "#define_resource_requirements" do
@@ -104,6 +103,9 @@ Conflicts: wget-ssl
   end
 
   describe "when loading the current resource state" do
+    before(:each) do
+      allow(::File).to receive(:exist?).with(source).and_return(true)
+    end
 
     it "should create a current resource with the name of the new_resource" do
       provider.load_current_resource
@@ -112,8 +114,8 @@ Conflicts: wget-ssl
 
     describe "gets the source package version from dpkg-deb" do
       def check_version(version)
-        status = double(:stdout => "wget\t#{version}", :exitstatus => 0)
-        expect(provider).to receive(:shell_out!).with("dpkg-deb -W #{source}", timeout: 900).and_return(status)
+        status = double(stdout: "wget\t#{version}", exitstatus: 0)
+        expect(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", source, timeout: 900).and_return(status)
         provider.load_current_resource
         expect(provider.current_resource.package_name).to eq(["wget"])
         expect(provider.candidate_version).to eq([version])
@@ -165,34 +167,34 @@ Conflicts: wget-ssl
     end
 
     it "should return the current version installed if found by dpkg" do
-      allow(provider).to receive(:shell_out!).with("dpkg -s #{package}", timeout: 900, returns: [0, 1]).and_return(dpkg_s_status)
+      allow(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, timeout: 900, returns: [0, 1]).and_return(dpkg_s_status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq(["1.11.4-1ubuntu1"])
     end
 
     it "on new debian/ubuntu we get an exit(1) and no stdout from dpkg -s for uninstalled" do
       dpkg_s_status = double(
-        exitstatus: 1, stdout: "", stderr: <<-EOF
-dpkg-query: package '#{package}' is not installed and no information is available
-Use dpkg --info (= dpkg-deb --info) to examine archive files,
-and dpkg --contents (= dpkg-deb --contents) to list their contents.
+        exitstatus: 1, stdout: "", stderr: <<~EOF
+          dpkg-query: package '#{package}' is not installed and no information is available
+          Use dpkg --info (= dpkg-deb --info) to examine archive files,
+          and dpkg --contents (= dpkg-deb --contents) to list their contents.
         EOF
       )
-      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
+      expect(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq([nil])
     end
 
     it "on old debian/ubuntu we get an exit(0) and we get info on stdout from dpkg -s for uninstalled" do
       dpkg_s_status = double(
-        exitstatus: 0, stderr: "", stdout: <<-EOF
-Package: #{package}
-Status: unknown ok not-installed
-Priority: extra
-Section: ruby
+        exitstatus: 0, stderr: "", stdout: <<~EOF
+          Package: #{package}
+          Status: unknown ok not-installed
+          Priority: extra
+          Section: ruby
         EOF
       )
-      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
+      expect(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, returns: [0, 1], timeout: 900).and_return(dpkg_s_status)
       provider.load_current_resource
       expect(provider.current_resource.version).to eq([nil])
     end
@@ -201,21 +203,25 @@ Section: ruby
       dpkg_s_status = double(
         exitstatus: 3, stderr: "i am very, very angry with you.  i'm very, very cross.  go to your room.", stdout: ""
       )
-      expect(provider).to receive(:shell_out!).with("dpkg -s #{package}", returns: [0, 1], timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      expect(provider).to receive(:shell_out_compacted!).with("dpkg", "-s", package, returns: [0, 1], timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
 
     it "should raise an exception if dpkg-deb -W fails to run" do
-      status = double(:stdout => "", :exitstatus => -1)
-      expect(provider).to receive(:shell_out_with_timeout!).with("dpkg-deb -W /tmp/wget_1.11.4-1ubuntu1_amd64.deb").and_raise(Mixlib::ShellOut::ShellCommandFailed)
+      status = double(stdout: "", exitstatus: -1)
+      expect(provider).to receive(:shell_out_compacted!).with("dpkg-deb", "-W", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb", timeout: 900).and_raise(Mixlib::ShellOut::ShellCommandFailed)
       expect { provider.load_current_resource }.to raise_error(Mixlib::ShellOut::ShellCommandFailed)
     end
   end
 
   describe Chef::Provider::Package::Dpkg, "install and upgrade" do
+    before(:each) do
+      allow(::File).to receive(:exist?).with(source).and_return(true)
+    end
+
     it "should run dpkg -i with the package source" do
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -i", nil, "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "dpkg", "-i", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.load_current_resource
       provider.run_action(:install)
@@ -224,7 +230,7 @@ Section: ruby
     it "should run dpkg -i if the package is a path and the source is nil" do
       new_resource.name "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -i", nil, "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "dpkg", "-i", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.run_action(:install)
     end
@@ -232,7 +238,7 @@ Section: ruby
     it "should run dpkg -i if the package is a path and the source is nil for an upgrade" do
       new_resource.name "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -i", nil, "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "dpkg", "-i", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.run_action(:upgrade)
     end
@@ -240,7 +246,7 @@ Section: ruby
     it "should run dpkg -i with the package source and options if specified" do
       new_resource.options "--force-yes"
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -i", "--force-yes", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
+        "dpkg", "-i", "--force-yes", "/tmp/wget_1.11.4-1ubuntu1_amd64.deb"
       )
       provider.run_action(:install)
     end
@@ -254,14 +260,14 @@ Section: ruby
   describe Chef::Provider::Package::Dpkg, "remove and purge" do
     it "should run dpkg -r to remove the package" do
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -r", nil, "wget"
+        "dpkg", "-r", "wget"
       )
       provider.remove_package(["wget"], ["1.11.4-1ubuntu1"])
     end
 
     it "should run dpkg -r to remove the package with options if specified" do
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -r", "--force-yes", "wget"
+        "dpkg", "-r", "--force-yes", "wget"
       )
       allow(new_resource).to receive(:options).and_return("--force-yes")
 
@@ -270,18 +276,39 @@ Section: ruby
 
     it "should run dpkg -P to purge the package" do
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -P", nil, "wget"
+        "dpkg", "-P", "wget"
       )
       provider.purge_package(["wget"], ["1.11.4-1ubuntu1"])
     end
 
     it "should run dpkg -P to purge the package with options if specified" do
       expect(provider).to receive(:run_noninteractive).with(
-        "dpkg -P", "--force-yes", "wget"
+        "dpkg", "-P", "--force-yes", "wget"
       )
       allow(new_resource).to receive(:options).and_return("--force-yes")
 
       provider.purge_package(["wget"], ["1.11.4-1ubuntu1"])
+    end
+  end
+
+  describe "when given a response file" do
+    it_behaves_like "given a response file" do
+      before do
+        @provider = Chef::Provider::Package::Dpkg.new(new_resource, run_context)
+      end
+      let(:new_resource) do
+        new_resource = Chef::Resource::DpkgPackage.new("wget", run_context)
+        new_resource.response_file("wget.response")
+        new_resource.cookbook_name = "wget"
+        new_resource
+      end
+      let(:path) { "preseed/wget" }
+      let(:tmp_path) { "/tmp/preseed/wget" }
+      let(:package_name) { "wget" }
+      let(:package_version) { "1.11.4" }
+      let(:response) { "wget.response" }
+      let(:tmp_preseed_path) { "/tmp/preseed/wget/wget-1.11.4.seed" }
+      let(:preseed_path) { "/preseed--wget--wget-1.11.4.seed" }
     end
   end
 end

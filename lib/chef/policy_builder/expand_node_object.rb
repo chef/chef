@@ -3,7 +3,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,12 +19,12 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/server_api"
-require "chef/run_context"
-require "chef/config"
-require "chef/node"
-require "chef/chef_class"
+require_relative "../log"
+require_relative "../server_api"
+require_relative "../run_context"
+require_relative "../config"
+require_relative "../node"
+require_relative "../chef_class"
 
 class Chef
   module PolicyBuilder
@@ -68,66 +68,48 @@ class Chef
         Chef.set_run_context(run_context)
       end
 
-      def setup_run_context(specific_recipes = nil)
-        if Chef::Config[:solo_legacy_mode]
-          Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
-          cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
-          cl.load_cookbooks
-          cookbook_collection = Chef::CookbookCollection.new(cl)
-          cookbook_collection.validate!
-          cookbook_collection.install_gems(events)
+      # This not only creates the run_context but this is where we kick off
+      # compiling the entire expanded run_list, loading all the libraries, resources,
+      # attribute files and recipes, and constructing the entire resource collection.
+      # (FIXME: break up creating the run_context and compiling the cookbooks)
+      #
+      def setup_run_context(specific_recipes = nil, run_context = nil)
+        run_context ||= Chef::RunContext.new
+        run_context.events = events
+        run_context.node = node
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
-        else
-          Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
-          cookbook_hash = sync_cookbooks
-          cookbook_collection = Chef::CookbookCollection.new(cookbook_hash)
-          cookbook_collection.validate!
-          cookbook_collection.install_gems(events)
+        cookbook_collection =
+          if Chef::Config[:solo_legacy_mode]
+            Chef::Cookbook::FileVendor.fetch_from_disk(Chef::Config[:cookbook_path])
+            cl = Chef::CookbookLoader.new(Chef::Config[:cookbook_path])
+            cl.load_cookbooks
+            Chef::CookbookCollection.new(cl)
+          else
+            Chef::Cookbook::FileVendor.fetch_from_remote(api_service)
+            cookbook_hash = sync_cookbooks
+            Chef::CookbookCollection.new(cookbook_hash)
+          end
 
-          run_context = Chef::RunContext.new(node, cookbook_collection, @events)
-        end
+        cookbook_collection.validate!
+        cookbook_collection.install_gems(events)
 
-        # TODO: this is really obviously not the place for this
-        # FIXME: need same edits
+        run_context.cookbook_collection = cookbook_collection
+
+        # TODO: move this into the cookbook_compilation_start hook
         setup_chef_class(run_context)
 
-        # TODO: this is not the place for this. It should be in Runner or
-        # CookbookCompiler or something.
+        events.cookbook_compilation_start(run_context)
+
         run_context.load(@run_list_expansion)
         if specific_recipes
           specific_recipes.each do |recipe_file|
             run_context.load_recipe_file(recipe_file)
           end
         end
+
+        events.cookbook_compilation_complete(run_context)
+
         run_context
-      end
-
-      # DEPRECATED: As of Chef 12.5, chef selects either policyfile mode or
-      # "expand node" mode dynamically, based on the content of the node
-      # object, first boot JSON, and config. This happens in
-      # PolicyBuilder::Dynamic, which selects the implementation during
-      # #load_node and then delegates to either ExpandNodeObject or Policyfile
-      # implementations as appropriate. Tools authors should update their code
-      # to create a PolicyBuilder::Dynamc policy builder and allow it to select
-      # the proper implementation.
-      def load_node
-        Chef.log_deprecation("ExpandNodeObject#load_node is deprecated. Please use Chef::PolicyBuilder::Dynamic instead of using ExpandNodeObject directly")
-
-        events.node_load_start(node_name, config)
-        Chef::Log.debug("Building node object for #{node_name}")
-
-        @node =
-          if Chef::Config[:solo_legacy_mode]
-            Chef::Node.build(node_name)
-          else
-            Chef::Node.find_or_create(node_name)
-          end
-        finish_load_node(node)
-        node
-      rescue Exception => e
-        events.node_load_failed(node_name, e, config)
-        raise
       end
 
       def finish_load_node(node)
@@ -157,7 +139,7 @@ class Chef
         expand_run_list
 
         Chef::Log.info("Run List is [#{node.run_list}]")
-        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(', ')}]")
+        Chef::Log.info("Run List expands to [#{@expanded_run_list_with_versions.join(", ")}]")
 
         events.node_load_completed(node, @expanded_run_list_with_versions, Chef::Config)
         events.run_list_expanded(@run_list_expansion)
@@ -197,12 +179,12 @@ class Chef
       # === Returns
       # Hash:: The hash of cookbooks with download URLs as given by the server
       def sync_cookbooks
-        Chef::Log.debug("Synchronizing cookbooks")
+        Chef::Log.trace("Synchronizing cookbooks")
 
         begin
           events.cookbook_resolution_start(@expanded_run_list_with_versions)
           cookbook_hash = api_service.post("environments/#{node.chef_environment}/cookbook_versions",
-                                           { :run_list => @expanded_run_list_with_versions })
+            { run_list: @expanded_run_list_with_versions })
 
           cookbook_hash = cookbook_hash.inject({}) do |memo, (key, value)|
             memo[key] = Chef::CookbookVersion.from_hash(value)
@@ -232,7 +214,7 @@ class Chef
       # override_runlist was provided. Chef::Client uses this to decide whether
       # to do the final node save at the end of the run or not.
       def temporary_policy?
-        !node.override_runlist.empty?
+        node.override_runlist_set?
       end
 
       ########################################
@@ -240,9 +222,9 @@ class Chef
       ########################################
 
       def setup_run_list_override
-        runlist_override_sanity_check!
-        unless override_runlist.empty?
-          node.override_runlist(*override_runlist)
+        unless override_runlist.nil?
+          runlist_override_sanity_check!
+          node.override_runlist = override_runlist
           Chef::Log.warn "Run List override has been provided."
           Chef::Log.warn "Original Run List: [#{node.primary_runlist}]"
           Chef::Log.warn "Overridden Run List: [#{node.run_list}]"
@@ -253,7 +235,7 @@ class Chef
       def runlist_override_sanity_check!
         # Convert to array and remove whitespace
         if override_runlist.is_a?(String)
-          @override_runlist = override_runlist.split(",").map { |e| e.strip }
+          @override_runlist = override_runlist.split(",").map(&:strip)
         end
         @override_runlist = [override_runlist].flatten.compact
         override_runlist.map! do |item|
@@ -266,7 +248,8 @@ class Chef
       end
 
       def api_service
-        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url])
+        @api_service ||= Chef::ServerAPI.new(config[:chef_server_url],
+          { version_class: Chef::CookbookManifestVersions })
       end
 
       def config

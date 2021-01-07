@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -31,20 +32,20 @@ describe "knife role show", :workstation do
       role "cat", {}
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "shows a cookbook" do
-      knife("role show cons").should_succeed <<EOM
-chef_type:           role
-default_attributes:
-description:         
-env_run_lists:
-json_class:          Chef::Role
-name:                cons
-override_attributes:
-run_list:
-EOM
+      knife("role show cons").should_succeed <<~EOM
+        chef_type:           role
+        default_attributes:
+        description:         
+        env_run_lists:
+        json_class:          Chef::Role
+        name:                cons
+        override_attributes:
+        run_list:
+      EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
 
   end
 end

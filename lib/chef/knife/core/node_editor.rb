@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Jordan Running (<jr@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/node"
+require_relative "../../json_compat"
+require_relative "../../node"
 
 class Chef
   class Knife

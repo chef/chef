@@ -1,4 +1,4 @@
-require "chef/chef_fs/data_handler/data_handler_base"
+require_relative "data_handler_base"
 
 class Chef
   module ChefFS
@@ -28,18 +28,18 @@ class Chef
 
         # Verify that the JSON hash for this type has a key that matches its name.
         #
-        # @param object [Object] JSON hash of the object
+        # @param object_data [Object] JSON hash of the object
         # @param entry [Chef::ChefFS::FileSystem::BaseFSObject] filesystem object we are verifying
         # @yield  [s] callback to handle errors
         # @yieldparam [s<string>] error message
         def verify_integrity(object_data, entry)
           name, revision = name_and_revision(entry.name)
           if object_data["name"] != name
-            yield("Object name '#{object_data['name']}' doesn't match entry '#{name}'.")
+            yield("Object name '#{object_data["name"]}' doesn't match entry '#{name}'.")
           end
 
           if object_data["revision_id"] != revision
-            yield("Object revision ID '#{object_data['revision_id']}' doesn't match entry '#{revision}'.")
+            yield("Object revision ID '#{object_data["revision_id"]}' doesn't match entry '#{revision}'.")
           end
         end
       end

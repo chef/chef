@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,34 @@
 # limitations under the License.
 #
 
+#
+# example of a NodeMap entry for the user resource (as typed on the DSL):
+#
+#  :user=>
+#  [{:klass=>Chef::Resource::User::AixUser, :os=>"aix"},
+#   {:klass=>Chef::Resource::User::DsclUser, :os=>"darwin"},
+#   {:klass=>Chef::Resource::User::PwUser, :os=>"freebsd"},
+#   {:klass=>Chef::Resource::User::LinuxUser, :os=>"linux"},
+#   {:klass=>Chef::Resource::User::SolarisUser,
+#    :os=>["omnios", "solaris2"]},
+#   {:klass=>Chef::Resource::User::WindowsUser, :os=>"windows"}],
+#
+# the entries in the array are pre-sorted into priority order (blocks/platform_version/platform/platform_family/os/none) so that
+# the first entry's :klass that matches the filter is returned when doing a get.
+#
+# note that as this examples show filter values may be a scalar string or an array of scalar strings.
+#
+# XXX: confusingly, in the *_priority_map the :klass may be an array of Strings of class names
+#
+
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+
 class Chef
   class NodeMap
+    COLLISION_WARNING = <<~EOH.gsub(/\s+/, " ").strip
+      %{type_caps} %{key} built into %{client_name} is being overridden by the %{type} from a cookbook. Please upgrade your cookbook
+        or remove the cookbook from your run_list.
+    EOH
 
     #
     # Set a key/value pair on the map with a filter.  The filter must be true
@@ -26,24 +52,42 @@ class Chef
     # @param key [Object] Key to store
     # @param value [Object] Value associated with the key
     # @param filters [Hash] Node filter options to apply to key retrieval
+    # @param chef_version [String] version constraint to match against the running Chef::VERSION
     #
     # @yield [node] Arbitrary node filter as a block which takes a node argument
     #
     # @return [NodeMap] Returns self for possible chaining
     #
-    def set(key, value, platform: nil, platform_version: nil, platform_family: nil, os: nil, on_platform: nil, on_platforms: nil, canonical: nil, override: nil, &block)
-      Chef.log_deprecation("The on_platform option to node_map has been deprecated") if on_platform
-      Chef.log_deprecation("The on_platforms option to node_map has been deprecated") if on_platforms
-      platform ||= on_platform || on_platforms
-      filters = {}
-      filters[:platform] = platform if platform
-      filters[:platform_version] = platform_version if platform_version
-      filters[:platform_family] = platform_family if platform_family
-      filters[:os] = os if os
-      new_matcher = { value: value, filters: filters }
+    def set(key, klass, platform: nil, platform_version: nil, platform_family: nil, os: nil, override: nil, chef_version: nil, target_mode: nil, &block)
+      new_matcher = { klass: klass }
+      new_matcher[:platform] = platform if platform
+      new_matcher[:platform_version] = platform_version if platform_version
+      new_matcher[:platform_family] = platform_family if platform_family
+      new_matcher[:os] = os if os
       new_matcher[:block] = block if block
-      new_matcher[:canonical] = canonical if canonical
       new_matcher[:override] = override if override
+      new_matcher[:target_mode] = target_mode
+
+      if chef_version && Chef::VERSION !~ chef_version
+        return map
+      end
+
+      # Check if the key is already present and locked, unless the override is allowed.
+      # The checks to see if we should reject, in order:
+      # 1. Core override mode is not set.
+      # 2. The key exists.
+      # 3. At least one previous `provides` is now locked.
+      if map[key] && map[key].any? { |matcher| matcher[:locked] } && !map[key].any? { |matcher| matcher[:cookbook_override].is_a?(String) ? Chef::VERSION =~ matcher[:cookbook_override] : matcher[:cookbook_override] }
+        # If we ever use locked mode on things other than the resource and provider handler maps, this probably needs a tweak.
+        type_of_thing = if klass < Chef::Resource
+                          "resource"
+                        elsif klass < Chef::Provider
+                          "provider"
+                        else
+                          klass.superclass.to_s
+                        end
+        Chef::Log.warn( COLLISION_WARNING % { type: type_of_thing, key: key, type_caps: type_of_thing.capitalize, client_name: ChefUtils::Dist::Infra::PRODUCT } )
+      end
 
       # The map is sorted in order of preference already; we just need to find
       # our place in it (just before the first value with the same preference level).
@@ -51,7 +95,10 @@ class Chef
       map[key] ||= []
       map[key].each_with_index do |matcher, index|
         cmp = compare_matchers(key, new_matcher, matcher)
-        insert_at ||= index if cmp && cmp <= 0
+        if cmp && cmp <= 0
+          insert_at = index
+          break
+        end
       end
       if insert_at
         map[key].insert(insert_at, new_matcher)
@@ -68,14 +115,16 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
-    # @return [Object] Value
+    # @return [Object] Class
     #
-    def get(node, key, canonical: nil)
-      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      list(node, key, canonical: canonical).first
+    def get(node, key)
+      return nil unless map.key?(key)
+
+      map[key].map do |matcher|
+        return matcher[:klass] if node_matches?(node, matcher)
+      end
+      nil
     end
 
     #
@@ -85,134 +134,194 @@ class Chef
     # @param node [Chef::Node] The Chef::Node object for the run, or `nil` to
     #   ignore all filters.
     # @param key [Object] Key to look up
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
-    # @return [Object] Value
+    # @return [Object] Class
     #
-    def list(node, key, canonical: nil)
-      raise ArgumentError, "first argument must be a Chef::Node" unless node.is_a?(Chef::Node) || node.nil?
-      return [] unless map.has_key?(key)
+    def list(node, key)
+      return [] unless map.key?(key)
+
       map[key].select do |matcher|
-        node_matches?(node, matcher) && canonical_matches?(canonical, matcher)
-      end.map { |matcher| matcher[:value] }
+        node_matches?(node, matcher)
+      end.map { |matcher| matcher[:klass] }
     end
 
-    # Seriously, don't use this, it's nearly certain to change on you
-    # @return remaining
-    # @api private
-    def delete_canonical(key, value)
-      remaining = map[key]
-      if remaining
-        remaining.delete_if { |matcher| matcher[:canonical] && Array(matcher[:value]) == Array(value) }
-        if remaining.empty?
-          map.delete(key)
-          remaining = nil
+    # Remove a class from all its matchers in the node_map, will remove mappings completely if its the last matcher left
+    #
+    # Note that this leaks the internal structure out a bit, but the main consumer of this (poise/halite) cares only about
+    # the keys in the returned Hash.
+    #
+    # @param klass [Class] the class to seek and destroy
+    #
+    # @return [Hash] deleted entries in the same format as the @map
+    def delete_class(klass)
+      raise "please use a Class type for the klass argument" unless klass.is_a?(Class)
+
+      deleted = {}
+      map.each do |key, matchers|
+        deleted_matchers = []
+        matchers.delete_if do |matcher|
+          # because matcher[:klass] may be a string (which needs to die), coerce both to strings to compare somewhat canonically
+          if matcher[:klass].to_s == klass.to_s
+            deleted_matchers << matcher
+            true
+          end
+        end
+        deleted[key] = deleted_matchers unless deleted_matchers.empty?
+        map.delete(key) if matchers.empty?
+      end
+      deleted
+    end
+
+    # Check if this map has been locked.
+    #
+    # @api internal
+    # @since 14.2
+    # @return [Boolean]
+    def locked?
+      if defined?(@locked)
+        @locked
+      else
+        false
+      end
+    end
+
+    # Set this map to locked mode. This is used to prevent future overwriting
+    # of existing names.
+    #
+    # @api internal
+    # @since 14.2
+    # @return [void]
+    def lock!
+      map.each do |key, matchers|
+        matchers.each do |matcher|
+          matcher[:locked] = true
         end
       end
-      remaining
+      @locked = true
     end
 
-    protected
+    private
+
+    def platform_family_query_helper?(node, m)
+      method = "#{m}?".to_sym
+      ChefUtils::DSL::PlatformFamily.respond_to?(method) && ChefUtils::DSL::PlatformFamily.send(method, node)
+    end
 
     #
     # Succeeds if:
     # - no negative matches (!value)
     # - at least one positive match (value or :all), or no positive filters
     #
-    def matches_black_white_list?(node, filters, attribute)
+    def matches_block_allow_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
+
       filter_values = Array(filters[attribute])
       value = node[attribute]
 
-      # Split the blacklist and whitelist
-      blacklist, whitelist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
+      # Split the blocklist and allowlist
+      blocklist, allowlist = filter_values.partition { |v| v.is_a?(String) && v.start_with?("!") }
 
-      # If any blacklist value matches, we don't match
-      return false if blacklist.any? { |v| v[1..-1] == value }
+      if attribute == :platform_family
+        # If any blocklist value matches, we don't match
+        return false if blocklist.any? { |v| v[1..] == value || platform_family_query_helper?(node, v[1..]) }
 
-      # If the whitelist is empty, or anything matches, we match.
-      whitelist.empty? || whitelist.any? { |v| v == :all || v == value }
+        # If the allowlist is empty, or anything matches, we match.
+        allowlist.empty? || allowlist.any? { |v| v == :all || v == value || platform_family_query_helper?(node, v) }
+      else
+        # If any blocklist value matches, we don't match
+        return false if blocklist.any? { |v| v[1..] == value }
+
+        # If the allowlist is empty, or anything matches, we match.
+        allowlist.empty? || allowlist.any? { |v| v == :all || v == value }
+      end
     end
 
     def matches_version_list?(node, filters, attribute)
       # It's super common for the filter to be nil.  Catch that so we don't
       # spend any time here.
-      return true if !filters[attribute]
+      return true unless filters[attribute]
+
       filter_values = Array(filters[attribute])
       value = node[attribute]
 
       filter_values.empty? ||
         Array(filter_values).any? do |v|
-          Chef::VersionConstraint::Platform.new(v).include?(value)
+          Gem::Requirement.new(v).satisfied_by?(Gem::Version.new(value))
         end
     end
 
+    # Succeeds if:
+    # - we are in target mode, and the target_mode filter is true
+    # - we are not in target mode
+    #
+    def matches_target_mode?(filters)
+      return true unless Chef::Config.target_mode?
+
+      !!filters[:target_mode]
+    end
+
     def filters_match?(node, filters)
-      matches_black_white_list?(node, filters, :os) &&
-        matches_black_white_list?(node, filters, :platform_family) &&
-        matches_black_white_list?(node, filters, :platform) &&
-        matches_version_list?(node, filters, :platform_version)
+      matches_block_allow_list?(node, filters, :os) &&
+        matches_block_allow_list?(node, filters, :platform_family) &&
+        matches_block_allow_list?(node, filters, :platform) &&
+        matches_version_list?(node, filters, :platform_version) &&
+        matches_target_mode?(filters)
     end
 
     def block_matches?(node, block)
       return true if block.nil?
+
       block.call node
     end
 
     def node_matches?(node, matcher)
-      return true if !node
-      filters_match?(node, matcher[:filters]) && block_matches?(node, matcher[:block])
+      return true unless node
+
+      filters_match?(node, matcher) && block_matches?(node, matcher[:block])
     end
 
-    def canonical_matches?(canonical, matcher)
-      return true if canonical.nil?
-      !!canonical == !!matcher[:canonical]
-    end
-
+    #
+    # "provides" lines with identical filters sort by class name (ascending).
+    #
     def compare_matchers(key, new_matcher, matcher)
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:block] }
+      cmp = compare_matcher_properties(new_matcher[:block], matcher[:block])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_version] }
+
+      cmp = compare_matcher_properties(new_matcher[:platform_version], matcher[:platform_version])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform] }
+
+      cmp = compare_matcher_properties(new_matcher[:platform], matcher[:platform])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:platform_family] }
+
+      cmp = compare_matcher_properties(new_matcher[:platform_family], matcher[:platform_family])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:filters][:os] }
+
+      cmp = compare_matcher_properties(new_matcher[:os], matcher[:os])
       return cmp if cmp != 0
-      cmp = compare_matcher_properties(new_matcher, matcher) { |m| m[:override] }
+
+      cmp = compare_matcher_properties(new_matcher[:override], matcher[:override])
       return cmp if cmp != 0
+
       # If all things are identical, return 0
       0
     end
 
-    def compare_matcher_properties(new_matcher, matcher)
-      a = yield(new_matcher)
-      b = yield(matcher)
+    def compare_matcher_properties(a, b)
+      # falsity comparisons here handle both "nil" and "false"
+      return 1 if !a && b
+      return -1 if !b && a
+      return 0 if !a && !b
 
-      # Check for blcacklists ('!windows'). Those always come *after* positive
-      # whitelists.
+      # Check for blocklists ('!windows'). Those always come *after* positive
+      # allowlists.
       a_negated = Array(a).any? { |f| f.is_a?(String) && f.start_with?("!") }
       b_negated = Array(b).any? { |f| f.is_a?(String) && f.start_with?("!") }
-      if a_negated != b_negated
-        return 1 if a_negated
-        return -1 if b_negated
-      end
+      return 1 if a_negated && !b_negated
+      return -1 if b_negated && !a_negated
 
-      # We treat false / true and nil / not-nil with the same comparison
-      a = nil if a == false
-      b = nil if b == false
-      cmp = a <=> b
-      # This is the case where one is non-nil, and one is nil. The one that is
-      # nil is "greater" (i.e. it should come last).
-      if cmp.nil?
-        return 1 if a.nil?
-        return -1 if b.nil?
-      end
-      cmp
+      a <=> b
     end
 
     def map

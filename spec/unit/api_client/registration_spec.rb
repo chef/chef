@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,11 +38,11 @@ describe Chef::ApiClient::Registration do
   let(:http_mock) { double("Chef::ServerAPI mock") }
 
   let(:expected_post_data) do
-    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
+    { name: client_name, admin: false, public_key: generated_public_key.to_pem }
   end
 
   let(:expected_put_data) do
-    { :name => client_name, :admin => false, :public_key => generated_public_key.to_pem }
+    { name: client_name, admin: false, public_key: generated_public_key.to_pem }
   end
 
   let(:server_v10_response) do
@@ -61,7 +61,7 @@ describe Chef::ApiClient::Registration do
   end
 
   let(:response_409) { Net::HTTPConflict.new("1.1", "409", "Conflict") }
-  let(:exception_409) { Net::HTTPServerException.new("409 conflict", response_409) }
+  let(:exception_409) { Net::HTTPClientException.new("409 conflict", response_409) }
 
   let(:generated_private_key_pem) { IO.read(File.expand_path("ssl/private_key.pem", CHEF_SPEC_DATA)) }
   let(:generated_private_key) { OpenSSL::PKey::RSA.new(generated_private_key_pem) }
@@ -98,7 +98,7 @@ describe Chef::ApiClient::Registration do
   it "has an HTTP client configured with validator credentials" do
     expect(registration.http_api).to be_a_kind_of(Chef::ServerAPI)
     expect(registration.http_api.options[:client_name]).to eq("test-validator")
-    auth = registration.http_api.middlewares.find { |klass| klass.kind_of? Chef::HTTP::Authenticator }
+    auth = registration.http_api.middlewares.find { |klass| klass.is_a? Chef::HTTP::Authenticator }
     expect(auth.client_name).to eq("test-validator")
   end
 
@@ -108,28 +108,28 @@ describe Chef::ApiClient::Registration do
     end
 
     it "posts a locally generated public key to the server to create a client" do
-      expect(http_mock).to receive(:post).
-        with("clients", expected_post_data).
-        and_return(create_with_pkey_response)
+      expect(http_mock).to receive(:post)
+        .with("clients", expected_post_data)
+        .and_return(create_with_pkey_response)
       expect(registration.run.public_key).to eq(create_with_pkey_response["chef_key"]["public_key"])
       expect(OpenSSL::PKey::RSA.new(registration.private_key).to_s).to eq(OpenSSL::PKey::RSA.new(generated_private_key_pem).to_s)
     end
 
     it "puts a locally generated public key to the server to update a client" do
-      expect(http_mock).to receive(:post).
-        with("clients", expected_post_data).
-        and_raise(exception_409)
-      expect(http_mock).to receive(:put).
-        with("clients/#{client_name}", expected_put_data).
-        and_return(update_with_pkey_response)
+      expect(http_mock).to receive(:post)
+        .with("clients", expected_post_data)
+        .and_raise(exception_409)
+      expect(http_mock).to receive(:put)
+        .with("clients/#{client_name}", expected_put_data)
+        .and_return(update_with_pkey_response)
       expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
       expect(OpenSSL::PKey::RSA.new(registration.private_key).to_s).to eq(OpenSSL::PKey::RSA.new(generated_private_key_pem).to_s)
     end
 
     it "writes the generated private key to disk" do
-      expect(http_mock).to receive(:post).
-        with("clients", expected_post_data).
-        and_return(create_with_pkey_response)
+      expect(http_mock).to receive(:post)
+        .with("clients", expected_post_data)
+        .and_return(create_with_pkey_response)
       registration.run
       expect(OpenSSL::PKey::RSA.new(IO.read(key_location)).to_s).to eq(OpenSSL::PKey::RSA.new(generated_private_key_pem).to_s)
     end
@@ -137,9 +137,9 @@ describe Chef::ApiClient::Registration do
     context "and the client already exists on a Chef 11 server" do
       it "requests a new key from the server and saves it" do
         expect(http_mock).to receive(:post).and_raise(exception_409)
-        expect(http_mock).to receive(:put).
-          with("clients/#{client_name}", expected_put_data).
-          and_return(update_with_pkey_response)
+        expect(http_mock).to receive(:put)
+          .with("clients/#{client_name}", expected_put_data)
+          .and_return(update_with_pkey_response)
         expect(registration.run.public_key).to eq(update_with_pkey_response["public_key"].to_pem)
         expect(OpenSSL::PKey::RSA.new(registration.private_key).to_s).to eq(OpenSSL::PKey::RSA.new(generated_private_key_pem).to_s)
       end
@@ -148,11 +148,11 @@ describe Chef::ApiClient::Registration do
     context "when local key generation is disabled" do
 
       let(:expected_post_data) do
-        { :name => client_name, :admin => false }
+        { name: client_name, admin: false }
       end
 
       let(:expected_put_data) do
-        { :name => client_name, :admin => false, :private_key => true }
+        { name: client_name, admin: false, private_key: true }
       end
 
       before do
@@ -161,9 +161,9 @@ describe Chef::ApiClient::Registration do
       end
 
       it "creates a new ApiClient on the server using the validator identity" do
-        expect(http_mock).to receive(:post).
-          with("clients", expected_post_data).
-          and_return(server_v10_response)
+        expect(http_mock).to receive(:post)
+          .with("clients", expected_post_data)
+          .and_return(server_v10_response)
         expect(registration.run.private_key).to eq(server_v10_response["private_key"])
         expect(registration.private_key).to eq("--begin rsa key etc--")
       end
@@ -171,9 +171,9 @@ describe Chef::ApiClient::Registration do
       context "and the client already exists on a Chef 11 server" do
         it "requests a new key from the server and saves it" do
           expect(http_mock).to receive(:post).and_raise(exception_409)
-          expect(http_mock).to receive(:put).
-            with("clients/#{client_name}", expected_put_data).
-            and_return(server_v11_response)
+          expect(http_mock).to receive(:put)
+            .with("clients/#{client_name}", expected_put_data)
+            .and_return(server_v11_response)
           expect(registration.run).to eq(server_v11_response)
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end
@@ -181,11 +181,11 @@ describe Chef::ApiClient::Registration do
 
       context "and the client already exists on a Chef 10 server" do
         it "requests a new key from the server and saves it" do
-          expect(http_mock).to receive(:post).with("clients", expected_post_data).
-            and_raise(exception_409)
-          expect(http_mock).to receive(:put).
-            with("clients/#{client_name}", expected_put_data).
-            and_return(server_v10_response)
+          expect(http_mock).to receive(:post).with("clients", expected_post_data)
+            .and_raise(exception_409)
+          expect(http_mock).to receive(:put)
+            .with("clients/#{client_name}", expected_put_data)
+            .and_return(server_v10_response)
           expect(registration.run.private_key).to eq(server_v10_response["private_key"])
           expect(registration.private_key).to eq("--begin rsa key etc--")
         end

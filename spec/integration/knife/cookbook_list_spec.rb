@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/cookbook_list"
@@ -35,19 +36,19 @@ describe "knife cookbook list", :workstation do
     end
 
     it "knife cookbook list shows all the cookbooks" do
-      knife("cookbook list").should_succeed <<EOM
-x   1.0.0
-y   0.6.5
-z   0.6.5
-EOM
+      knife("cookbook list").should_succeed <<~EOM
+        x   1.0.0
+        y   0.6.5
+        z   0.6.5
+      EOM
     end
 
     it "knife cookbook list -a shows all the versions of all the cookbooks" do
-      knife("cookbook list -a").should_succeed <<EOM
-x   1.0.0  0.6.5  0.6.0
-y   0.6.5  0.6.0
-z   0.6.5
-EOM
+      knife("cookbook list -a").should_succeed <<~EOM
+        x   1.0.0  0.6.5  0.6.0
+        y   0.6.5  0.6.0
+        z   0.6.5
+      EOM
     end
 
   end

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/file"
+require_relative "../file"
 
 class Chef
   module ReservedNames::Win32
@@ -34,6 +34,7 @@ class Chef
         # http://msdn.microsoft.com/en-us/library/windows/desktop/aa363788(v=vs.85).aspx
         def initialize(file_name)
           raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
+
           @file_info = retrieve_file_info(file_name)
         end
 

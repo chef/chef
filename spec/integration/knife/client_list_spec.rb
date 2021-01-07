@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -33,15 +34,15 @@ describe "knife client list", :workstation do
     end
 
     it "lists the clients" do
-      knife("client list").should_succeed <<EOM
-car
-car-validator
-cat
-cdr
-chef-validator
-chef-webui
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        car
+        car-validator
+        cat
+        cdr
+        chef-validator
+        chef-webui
+        cons
+      EOM
     end
 
   end

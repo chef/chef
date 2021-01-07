@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,12 +28,12 @@ describe Chef::Knife::RoleEnvRunListSet do
 
     @knife = Chef::Knife::RoleEnvRunListSet.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "will", "QA", "role[owen]", "role[mauntel]" ]
     allow(@knife).to receive(:output).and_return(true)
 
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     @role.name("will")
     allow(@role).to receive(:save).and_return(true)
 
@@ -44,10 +44,10 @@ describe Chef::Knife::RoleEnvRunListSet do
 
   describe "run" do
 
-#    it "should display all the things" do
-#      @knife.run
-#      @role.to_json.should == 'show all the things'
-#    end
+    #    it "should display all the things" do
+    #      @knife.run
+    #      @role.to_json.should == 'show all the things'
+    #    end
 
     it "should load the node" do
       expect(Chef::Role).to receive(:load).with("will").and_return(@role)

@@ -1,6 +1,0 @@
-suites:
-  - name: default
-    run_list:
-      - recipe[chocolatey::default]
-      - recipe[chocolatey_test::default]
-    includes: [windows-2012r2]

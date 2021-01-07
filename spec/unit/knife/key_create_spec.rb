@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,9 +44,9 @@ describe "key create commands that inherit knife" do
 
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyCreate with the correct args" do
-          expect(Chef::Knife::KeyCreate).to receive(:new).
-            with("charmander", command.actor_field_name, command.ui, command.config).
-            and_return(service_object)
+          expect(Chef::Knife::KeyCreate).to receive(:new)
+            .with("charmander", command.actor_field_name, command.ui, command.config)
+            .and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -84,7 +84,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 0wIDAQAB
 -----END PUBLIC KEY-----"
   end
-  let(:config) { Hash.new }
+  let(:config) { {} }
   let(:actor) { "charmander" }
   let(:ui) { instance_double("Chef::Knife::UI") }
 
@@ -207,7 +207,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
         end
       end # when the server returns a private key
     end # when the command is run
-  end #key create run command"
+  end # key create run command"
 
   context "when actor_field_name is 'user'" do
     it_should_behave_like "key create run command" do

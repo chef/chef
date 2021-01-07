@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,14 +22,13 @@ require "chef/mixin/unformatter"
 class Chef::UnformatterTest
   include Chef::Mixin::Unformatter
 
-  def foo
-  end
+  def foo; end
 
 end
 
 describe Chef::Mixin::Unformatter do
-  let (:unformatter) { Chef::UnformatterTest.new }
-  let (:message) { "Test Message" }
+  let(:unformatter) { Chef::UnformatterTest.new }
+  let(:message) { "Test Message" }
 
   describe "#write" do
     context "with a timestamp" do

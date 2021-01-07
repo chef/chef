@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodeFromFile < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
-        require "chef/knife/core/object_loader"
+        require_relative "../node"
+        require_relative "../json_compat"
+        require_relative "core/object_loader"
       end
 
       banner "knife node from file FILE (options)"

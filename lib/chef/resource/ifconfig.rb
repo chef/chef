@@ -17,131 +17,138 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class Ifconfig < Chef::Resource
+      unified_mode true
 
-      identity_attr :device
+      provides :ifconfig
+
+      description "Use the **ifconfig** resource to manage interfaces on Unix and Linux systems. Note: This resource requires the ifconfig binary to be present on the system and may require additional packages to be installed first. On Ubuntu 18.04 or later you will need to install the `ifupdown` package, which disables the built in Netplan functionality. Warning: This resource will not work with Fedora release 33 or later."
+      examples <<~DOC
+      **Configure a network interface with a static IP**
+
+      ```ruby
+      ifconfig '33.33.33.80' do
+        device 'eth1'
+      end
+      ```
+
+      will create the following interface configuration:
+
+      ```
+      iface eth1 inet static
+        address 33.33.33.80
+      ```
+
+      **Configure an interface to use DHCP**
+
+      ```ruby
+      ifconfig 'Set eth1 to DHCP' do
+        device 'eth1'
+        bootproto 'dhcp'
+      end
+      ```
+
+      will create the following interface configuration:
+
+      ```
+      iface eth1 inet dhcp
+      ```
+
+      **Update a static IP address with a boot protocol**
+
+      ```ruby
+      ifconfig "33.33.33.80" do
+        bootproto "dhcp"
+        device "eth1"
+      end
+      ```
+
+      will update the interface configuration from static to dhcp:
+
+      ```
+      iface eth1 inet dhcp
+        address 33.33.33.80
+      ```
+      DOC
 
       state_attrs :inet_addr, :mask
 
       default_action :add
       allowed_actions :add, :delete, :enable, :disable
 
-      def initialize(name, run_context = nil)
-        super
-        @target = name
-        @hwaddr = nil
-        @mask = nil
-        @inet_addr = nil
-        @bcast = nil
-        @mtu = nil
-        @metric = nil
-        @device = nil
-        @onboot = nil
-        @network = nil
-        @bootproto = nil
-        @onparent = nil
-      end
+      property :target, String,
+        name_property: true,
+        description: "The IP address that is to be assigned to the network interface. If not specified we'll use the resource's name."
 
-      def target(arg = nil)
-        set_or_return(
-          :target,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :hwaddr, String,
+        description: "The hardware address for the network interface."
 
-      def device(arg = nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :mask, String,
+        description: "The decimal representation of the network mask. For example: `255.255.255.0`."
 
-      def hwaddr(arg = nil)
-        set_or_return(
-          :hwaddr,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :family, String, default: "inet",
+        introduced: "14.0",
+        description: "Networking family option for Debian-based systems; for example: `inet` or `inet6`."
 
-      def inet_addr(arg = nil)
-        set_or_return(
-          :inet_addr,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :inet_addr, String,
+        description: "The Internet host address for the network interface."
 
-      def bcast(arg = nil)
-        set_or_return(
-          :bcast,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :bcast, String,
+        description: "The broadcast address for a network interface. On some platforms this property is not set using ifconfig, but instead is added to the startup configuration file for the network interface."
 
-      def mask(arg = nil)
-        set_or_return(
-          :mask,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :mtu, String,
+        description: "The maximum transmission unit (MTU) for the network interface."
 
-      def mtu(arg = nil)
-        set_or_return(
-          :mtu,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :metric, String,
+        description: "The routing metric for the interface."
 
-      def metric(arg = nil)
-        set_or_return(
-          :metric,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :device, String,
+        identity: true,
+        description: "The network interface to be configured."
 
-      def onboot(arg = nil)
-        set_or_return(
-          :onboot,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :onboot, String,
+        description: "Bring up the network interface on boot."
 
-      def network(arg = nil)
-        set_or_return(
-          :network,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :network, String,
+        description: "The address for the network interface."
 
-      def bootproto(arg = nil)
-        set_or_return(
-          :bootproto,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :bootproto, String,
+        description: "The boot protocol used by a network interface."
 
-      def onparent(arg = nil)
-        set_or_return(
-          :onparent,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :onparent, String,
+        description: "Bring up the network interface when its parent interface is brought up."
+
+      property :ethtool_opts, String,
+        introduced: "13.4",
+        description: "Options to be passed to ethtool(8). For example: `-A eth0 autoneg off rx off tx off`."
+
+      property :bonding_opts, String,
+        introduced: "13.4",
+        description: "Bonding options to pass via `BONDING_OPTS` on RHEL and CentOS. For example: `mode=active-backup miimon=100`."
+
+      property :master, String,
+        introduced: "13.4",
+        description: "Specifies the channel bonding interface to which the Ethernet interface is linked."
+
+      property :slave, String,
+        introduced: "13.4",
+        description: "When set to `yes`, this device is controlled by the channel bonding interface that is specified via the `master` property."
+
+      property :vlan, String,
+        introduced: "14.4",
+        description: "The VLAN to assign the interface to."
+
+      property :gateway, String,
+        introduced: "14.4",
+        description: "The gateway to use for the interface."
+
+      property :bridge, String,
+        introduced: "16.7",
+        description: "The bridge interface this interface is a member of on Red Hat based systems."
     end
-
   end
 end

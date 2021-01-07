@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,7 +36,7 @@ describe Chef::ApiClientV1 do
   end
 
   it "only allows string values for the name" do
-    expect { @client.name Hash.new }.to raise_error(ArgumentError)
+    expect { @client.name({}) }.to raise_error(ArgumentError)
   end
 
   it "has an admin flag attribute" do
@@ -50,7 +50,7 @@ describe Chef::ApiClientV1 do
 
   it "allows only boolean values for the admin flag" do
     expect { @client.admin(false) }.not_to raise_error
-    expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.admin({}) }.to raise_error(ArgumentError)
   end
 
   it "has an create_key flag attribute" do
@@ -64,7 +64,7 @@ describe Chef::ApiClientV1 do
 
   it "allows only boolean values for the create_key flag" do
     expect { @client.create_key(false) }.not_to raise_error
-    expect { @client.create_key(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.create_key({}) }.to raise_error(ArgumentError)
   end
 
   it "has a 'validator' flag attribute" do
@@ -78,7 +78,7 @@ describe Chef::ApiClientV1 do
 
   it "allows only boolean values for the 'validator' flag" do
     expect { @client.validator(false) }.not_to raise_error
-    expect { @client.validator(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.validator({}) }.to raise_error(ArgumentError)
   end
 
   it "has a public key attribute" do
@@ -88,7 +88,7 @@ describe Chef::ApiClientV1 do
 
   it "accepts only String values for the public key" do
     expect { @client.public_key "" }.not_to raise_error
-    expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.public_key({}) }.to raise_error(ArgumentError)
   end
 
   it "has a private key attribute" do
@@ -98,7 +98,7 @@ describe Chef::ApiClientV1 do
 
   it "accepts only String values for the private key" do
     expect { @client.private_key "" }.not_to raise_error
-    expect { @client.private_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.private_key({}) }.to raise_error(ArgumentError)
   end
 
   describe "when serializing to JSON" do
@@ -312,25 +312,25 @@ describe Chef::ApiClientV1 do
     context "and the client does not exist on the server" do
       before do
         @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
-        @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
+        @a_404_exception = Net::HTTPClientException.new("404 not found exception", @a_404_response)
 
         expect(@http_client).to receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
 
       it "raises a 404 error" do
-        expect { Chef::ApiClientV1.reregister("lost-my-key") }.to raise_error(Net::HTTPServerException)
+        expect { Chef::ApiClientV1.reregister("lost-my-key") }.to raise_error(Net::HTTPClientException)
       end
     end
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => "406") }
-    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+    let(:response_406) { OpenStruct.new(code: "406") }
+    let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
     let(:payload) do
       {
-        :name => "some_name",
-        :validator => true,
-        :admin => true,
+        name: "some_name",
+        validator: true,
+        admin: true,
       }
     end
 
@@ -389,7 +389,7 @@ describe Chef::ApiClientV1 do
             end
 
             it "updates the client with only the name" do
-              expect(rest). to receive(:put).with("clients/some_name", { :name => "some_name" }).and_return({ :name => "some_name" })
+              expect(rest). to receive(:put).with("clients/some_name", { name: "some_name" }).and_return({ name: "some_name" })
               @client.update
             end
           end
@@ -437,7 +437,7 @@ describe Chef::ApiClientV1 do
     describe "reregister" do
       context "when server API V0 is valid on the Chef Server receiving the request" do
         it "creates a new object via the API" do
-          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ :private_key => true })).and_return({})
+          expect(@client.chef_rest_v0).to receive(:put).with("clients/#{@client.name}", payload.merge({ private_key: true })).and_return({})
           @client.reregister
         end
       end # when server API V0 is valid on the Chef Server receiving the request

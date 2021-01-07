@@ -1,6 +1,5 @@
-
-# Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+#
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,28 +15,233 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/provider/package"
-require "chef/resource/yum_package"
-require "chef/mixin/get_source_from_package"
-require "chef/provider/package/yum/rpm_utils"
-require "chef/provider/package/yum/yum_cache"
+require_relative "../package"
+require_relative "../../resource/yum_package"
+require_relative "../../mixin/which"
+require_relative "../../mixin/shell_out"
+require_relative "../../mixin/get_source_from_package"
+require_relative "yum/python_helper"
+require_relative "yum/version"
+# the stubs in the YumCache class are still an external API
+require_relative "yum/yum_cache"
 
 class Chef
   class Provider
     class Package
       class Yum < Chef::Provider::Package
-
-        provides :package, platform_family: %w{rhel fedora}
-        provides :yum_package, os: "linux"
-
+        extend Chef::Mixin::Which
+        extend Chef::Mixin::ShellOut
         include Chef::Mixin::GetSourceFromPackage
 
-        def initialize(new_resource, run_context)
-          super
+        allow_nils
+        use_multipackage_api
+        use_package_name_for_source
 
-          @yum = YumCache.instance
-          @yum.yum_binary = yum_binary
+        provides :package, platform_family: "fedora_derived"
+
+        provides :yum_package
+
+        #
+        # Most of the magic in this class happens in the python helper script.  The ruby side of this
+        # provider knows only enough to translate Chef-style new_resource name+package+version into
+        # a request to the python side.  The python side is then responsible for knowing everything
+        # about RPMs and what is installed and what is available.  The ruby side of this class should
+        # remain a lightweight translation layer to translate Chef requests into RPC requests to
+        # python.  This class knows nothing about how to compare RPM versions, and does not maintain
+        # any cached state of installed/available versions and should be kept that way.
+        #
+        def python_helper
+          @python_helper ||= PythonHelper.instance
+        end
+
+        def load_current_resource
+          flushcache if new_resource.flush_cache[:before]
+
+          @current_resource = Chef::Resource::YumPackage.new(new_resource.name)
+          current_resource.package_name(new_resource.package_name)
+          current_resource.version(get_current_versions)
+
+          current_resource
+        end
+
+        def define_resource_requirements
+          requirements.assert(:install, :upgrade, :remove, :purge) do |a|
+            a.assertion { !new_resource.source || ::File.exist?(new_resource.source) }
+            a.failure_message Chef::Exceptions::Package, "Package #{new_resource.package_name} not found: #{new_resource.source}"
+            a.whyrun "assuming #{new_resource.source} would have previously been created"
+          end
+
+          super
+        end
+
+        def candidate_version
+          package_name_array.each_with_index.map do |pkg, i|
+            available_version(i).version_with_arch
+          end
+        end
+
+        def get_current_versions
+          package_name_array.each_with_index.map do |pkg, i|
+            installed_version(i).version_with_arch
+          end
+        end
+
+        def install_package(names, versions)
+          method = nil
+          methods = []
+          names.each_with_index do |n, i|
+            next if n.nil?
+
+            av = available_version(i)
+            name = av.name # resolve the name via the available/candidate version
+            iv = python_helper.package_query(:whatinstalled, av.name_with_arch, options: options)
+
+            method = "install"
+
+            # If this is a package like the kernel that can be installed multiple times, we'll skip over this logic
+            if new_resource.allow_downgrade && version_gt?(iv.version_with_arch, av.version_with_arch) && !python_helper.install_only_packages(name)
+              # We allow downgrading only in the event of single-package
+              # rules where the user explicitly allowed it
+              method = "downgrade"
+            end
+
+            methods << method
+          end
+
+          # We could split this up into two commands if we wanted to, but
+          # for now, just don't support this.
+          if methods.uniq.length > 1
+            raise Chef::Exceptions::Package, "Multipackage rule has a mix of upgrade and downgrade packages. Cannot proceed."
+          end
+
+          if new_resource.source
+            yum(options, "-y", method, new_resource.source)
+          else
+            resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
+            yum(options, "-y", method, resolved_names)
+          end
+          flushcache
+        end
+
+        # yum upgrade does not work on uninstalled packaged, while install will upgrade
+        alias upgrade_package install_package
+
+        def remove_package(names, versions)
+          resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
+          yum(options, "-y", "remove", resolved_names)
+          flushcache
+        end
+
+        alias purge_package remove_package
+
+        action :flush_cache do
+          flushcache
+        end
+
+        # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a not_if `yum versionlock | grep '^pattern`` kind of approach
+        def lock_package(names, versions)
+          yum("-d0", "-e0", "-y", options, "versionlock", "add", resolved_package_lock_names(names))
+        end
+
+        # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
+        # support to lock / unlock.  The best solution is to write an execute resource which does a only_if `yum versionlock | grep '^pattern`` kind of approach
+        def unlock_package(names, versions)
+          # yum versionlock delete on rhel6 needs the glob nonsense in the following command
+          yum("-d0", "-e0", "-y", options, "versionlock", "delete", resolved_package_lock_names(names).map { |n| "*:#{n}-*" })
+        end
+
+        private
+
+        # this will resolve things like `/usr/bin/perl` or virtual packages like `mysql` -- it will not work (well? at all?) with globs that match multiple packages
+        def resolved_package_lock_names(names)
+          names.each_with_index.map do |name, i|
+            unless name.nil?
+              if installed_version(i).version.nil?
+                available_version(i).name
+              else
+                installed_version(i).name
+              end
+            end
+          end
+        end
+
+        def locked_packages
+          @locked_packages ||=
+            begin
+              locked = yum("versionlock", "list")
+              locked.stdout.each_line.map do |line|
+                line.sub(/-[^-]*-[^-]*$/, "").split(":").last.strip
+              end
+            end
+        end
+
+        def packages_all_locked?(names, versions)
+          resolved_package_lock_names(names).all? { |n| locked_packages.include? n }
+        end
+
+        def packages_all_unlocked?(names, versions)
+          !resolved_package_lock_names(names).any? { |n| locked_packages.include? n }
+        end
+
+        def version_gt?(v1, v2)
+          return false if v1.nil? || v2.nil?
+
+          python_helper.compare_versions(v1, v2) == 1
+        end
+
+        def version_equals?(v1, v2)
+          return false if v1.nil? || v2.nil?
+
+          python_helper.compare_versions(v1, v2) == 0
+        end
+
+        def version_compare(v1, v2)
+          return false if v1.nil? || v2.nil?
+
+          python_helper.compare_versions(v1, v2)
+        end
+
+        def resolve_source_to_version_obj
+          shell_out!("rpm -qp --queryformat '%{NAME} %{EPOCH} %{VERSION} %{RELEASE} %{ARCH}\n' #{new_resource.source}").stdout.each_line do |line|
+            # this is another case of committing the sin of doing some lightweight mangling of RPM versions in ruby -- but the output of the rpm command
+            # does not match what the yum library accepts.
+            case line
+              when /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/
+                return Version.new($1, "#{$2 == "(none)" ? "0" : $2}:#{$3}-#{$4}", $5)
+            end
+          end
+        end
+
+        # @return Array<Version>
+        def available_version(index)
+          @available_version ||= []
+
+          @available_version[index] ||= if new_resource.source
+                                          resolve_source_to_version_obj
+                                        else
+                                          python_helper.package_query(:whatavailable, package_name_array[index], version: safe_version_array[index], arch: safe_arch_array[index], options: options)
+                                        end
+
+          @available_version[index]
+        end
+
+        # @return Array<Version>
+        def installed_version(index)
+          @installed_version ||= []
+          @installed_version[index] ||= if new_resource.source
+                                          python_helper.package_query(:whatinstalled, available_version(index).name, arch: safe_arch_array[index], options: options)
+                                        else
+                                          python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
+                                        end
+          @installed_version[index]
+        end
+
+        # cache flushing is accomplished by simply restarting the python helper.  this produces a roughly
+        # 15% hit to the runtime of installing/removing/upgrading packages.  correctly using multipackage
+        # array installs (and the multipackage cookbook) can produce 600% improvements in runtime.
+        def flushcache
+          python_helper.restart
         end
 
         def yum_binary
@@ -48,415 +252,27 @@ class Chef
             end
         end
 
-        # Extra attributes
-        #
+        def yum(*args)
+          shell_out!(yum_binary, *args)
+        end
 
-        def arch_for_name(n)
-          if @new_resource.respond_to?("arch")
-            @new_resource.arch
-          elsif @arch
-            idx = package_name_array.index(n)
-            as_array(@arch)[idx]
+        def safe_version_array
+          if new_resource.version.is_a?(Array)
+            new_resource.version
+          elsif new_resource.version.nil?
+            package_name_array.map { nil }
           else
-            nil
+            [ new_resource.version ]
           end
         end
 
-        def arch
-          if @new_resource.respond_to?("arch")
-            @new_resource.arch
+        def safe_arch_array
+          if new_resource.arch.is_a?(Array)
+            new_resource.arch
+          elsif new_resource.arch.nil?
+            package_name_array.map { nil }
           else
-            nil
-          end
-        end
-
-        def set_arch(arch)
-          if @new_resource.respond_to?("arch")
-            @new_resource.arch(arch)
-          end
-        end
-
-        def flush_cache
-          if @new_resource.respond_to?("flush_cache")
-            @new_resource.flush_cache
-          else
-            { :before => false, :after => false }
-          end
-        end
-
-        # Helpers
-        #
-
-        def yum_arch(arch)
-          arch ? ".#{arch}" : nil
-        end
-
-        def yum_command(command)
-          command = "#{yum_binary} #{command}"
-          Chef::Log.debug("#{@new_resource}: yum command: \"#{command}\"")
-          status = shell_out_with_timeout(command, { :timeout => Chef::Config[:yum_timeout] })
-
-          # This is fun: rpm can encounter errors in the %post/%postun scripts which aren't
-          # considered fatal - meaning the rpm is still successfully installed. These issue
-          # cause yum to emit a non fatal warning but still exit(1). As there's currently no
-          # way to suppress this behavior and an exit(1) will break a Chef run we make an
-          # effort to trap these and re-run the same install command - it will either fail a
-          # second time or succeed.
-          #
-          # A cleaner solution would have to be done in python and better hook into
-          # yum/rpm to handle exceptions as we see fit.
-          if status.exitstatus == 1
-            status.stdout.each_line do |l|
-              # rpm-4.4.2.3 lib/psm.c line 2182
-              if l =~ %r{^error: %(post|postun)\(.*\) scriptlet failed, exit status \d+$}
-                Chef::Log.warn("#{@new_resource} caught non-fatal scriptlet issue: \"#{l}\". Can't trust yum exit status " +
-                               "so running install again to verify.")
-                status = shell_out_with_timeout(command, { :timeout => Chef::Config[:yum_timeout] })
-                break
-              end
-            end
-          end
-
-          if status.exitstatus > 0
-            command_output = "STDOUT: #{status.stdout}\nSTDERR: #{status.stderr}"
-            raise Chef::Exceptions::Exec, "#{command} returned #{status.exitstatus}:\n#{command_output}"
-          end
-        end
-
-        # Standard Provider methods for Parent
-        #
-
-        def load_current_resource
-          if flush_cache[:before]
-            @yum.reload
-          end
-
-          if @new_resource.options
-            repo_control = []
-            @new_resource.options.split.each do |opt|
-              if opt =~ %r{--(enable|disable)repo=.+}
-                repo_control << opt
-              end
-            end
-
-            if repo_control.size > 0
-              @yum.enable_extra_repo_control(repo_control.join(" "))
-            else
-              @yum.disable_extra_repo_control
-            end
-          else
-            @yum.disable_extra_repo_control
-          end
-
-          # At this point package_name could be:
-          #
-          # 1) a package name, eg: "foo"
-          # 2) a package name.arch, eg: "foo.i386"
-          # 3) or a dependency, eg: "foo >= 1.1"
-
-          # Check if we have name or name+arch which has a priority over a dependency
-          package_name_array.each_with_index do |n, index|
-            unless @yum.package_available?(n)
-              # If they aren't in the installed packages they could be a dependency
-              dep = parse_dependency(n, new_version_array[index])
-              if dep
-                if @new_resource.package_name.is_a?(Array)
-                  @new_resource.package_name(package_name_array - [n] + [dep.first])
-                  @new_resource.version(new_version_array - [new_version_array[index]] + [dep.last]) if dep.last
-                else
-                  @new_resource.package_name(dep.first)
-                  @new_resource.version(dep.last) if dep.last
-                end
-              end
-            end
-          end
-
-          @current_resource = Chef::Resource::YumPackage.new(@new_resource.name)
-          @current_resource.package_name(@new_resource.package_name)
-
-          installed_version = []
-          @candidate_version = []
-          @arch = []
-          if @new_resource.source
-            unless ::File.exists?(@new_resource.source)
-              raise Chef::Exceptions::Package, "Package #{@new_resource.name} not found: #{@new_resource.source}"
-            end
-
-            Chef::Log.debug("#{@new_resource} checking rpm status")
-            shell_out_with_timeout!("rpm -qp --queryformat '%{NAME} %{VERSION}-%{RELEASE}\n' #{@new_resource.source}", :timeout => Chef::Config[:yum_timeout]).stdout.each_line do |line|
-              case line
-              when /([\w\d_.-]+)\s([\w\d_.-]+)/
-                @current_resource.package_name($1)
-                @new_resource.version($2)
-              end
-            end
-            @candidate_version << @new_resource.version
-            installed_version << @yum.installed_version(@current_resource.package_name, arch)
-          else
-
-            package_name_array.each_with_index do |pkg, idx|
-              # Don't overwrite an existing arch
-              if arch
-                name, parch = pkg, arch
-              else
-                name, parch = parse_arch(pkg)
-                # if we parsed an arch from the name, update the name
-                # to be just the package name.
-                if parch
-                  if @new_resource.package_name.is_a?(Array)
-                    @new_resource.package_name[idx] = name
-                  else
-                    @new_resource.package_name(name)
-                    # only set the arch if it's a single package
-                    set_arch(parch)
-                  end
-                end
-              end
-
-              if @new_resource.version
-                new_resource =
-                  "#{@new_resource.package_name}-#{@new_resource.version}#{yum_arch(parch)}"
-              else
-                new_resource = "#{@new_resource.package_name}#{yum_arch(parch)}"
-              end
-              Chef::Log.debug("#{@new_resource} checking yum info for #{new_resource}")
-              installed_version << @yum.installed_version(name, parch)
-              @candidate_version << @yum.candidate_version(name, parch)
-              @arch << parch
-            end
-          end
-
-          if installed_version.size == 1
-            @current_resource.version(installed_version[0])
-            @candidate_version = @candidate_version[0]
-            @arch = @arch[0]
-          else
-            @current_resource.version(installed_version)
-          end
-
-          Chef::Log.debug("#{@new_resource} installed version: #{installed_version || "(none)"} candidate version: " +
-                          "#{@candidate_version || "(none)"}")
-
-          @current_resource
-        end
-
-        def install_remote_package(name, version)
-          # Work around yum not exiting with an error if a package doesn't exist
-          # for CHEF-2062
-          all_avail = as_array(name).zip(as_array(version)).any? do |n, v|
-            @yum.version_available?(n, v, arch_for_name(n))
-          end
-          method = log_method = nil
-          methods = []
-          if all_avail
-            # More Yum fun:
-            #
-            # yum install of an old name+version will exit(1)
-            # yum install of an old name+version+arch will exit(0) for some reason
-            #
-            # Some packages can be installed multiple times like the kernel
-            as_array(name).zip(as_array(version)).each do |n, v|
-              method = "install"
-              log_method = "installing"
-              idx = package_name_array.index(n)
-              unless @yum.allow_multi_install.include?(n)
-                if RPMVersion.parse(current_version_array[idx]) > RPMVersion.parse(v)
-                  # We allow downgrading only in the evenit of single-package
-                  # rules where the user explicitly allowed it
-                  if allow_downgrade
-                    method = "downgrade"
-                    log_method = "downgrading"
-                  else
-                    # we bail like yum when the package is older
-                    raise Chef::Exceptions::Package, "Installed package #{n}-#{current_version_array[idx]} is newer " +
-                      "than candidate package #{n}-#{v}"
-                  end
-                end
-              end
-              # methods don't count for packages we won't be touching
-              next if RPMVersion.parse(current_version_array[idx]) == RPMVersion.parse(v)
-              methods << method
-            end
-
-            # We could split this up into two commands if we wanted to, but
-            # for now, just don't support this.
-            if methods.uniq.length > 1
-              raise Chef::Exceptions::Package, "Multipackage rule #{name} has a mix of upgrade and downgrade packages. Cannot proceed."
-            end
-
-            repos = []
-            pkg_string_bits = []
-            as_array(name).zip(as_array(version)).each do |n, v|
-              idx = package_name_array.index(n)
-              a = arch_for_name(n)
-              s = ""
-              unless v == current_version_array[idx]
-                s = "#{n}-#{v}#{yum_arch(a)}"
-                repo = @yum.package_repository(n, v, a)
-                repos << "#{s} from #{repo} repository"
-                pkg_string_bits << s
-              end
-            end
-            pkg_string = pkg_string_bits.join(" ")
-            Chef::Log.info("#{@new_resource} #{log_method} #{repos.join(' ')}")
-            yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} #{method} #{pkg_string}")
-          else
-            raise Chef::Exceptions::Package, "Version #{version} of #{name} not found. Did you specify both version " +
-              "and release? (version-release, e.g. 1.84-10.fc6)"
-          end
-        end
-
-        def install_package(name, version)
-          if @new_resource.source
-            yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} localinstall #{@new_resource.source}")
-          else
-            install_remote_package(name, version)
-          end
-
-          if flush_cache[:after]
-            @yum.reload
-          else
-            @yum.reload_installed
-          end
-        end
-
-        # Keep upgrades from trying to install an older candidate version. Can happen when a new
-        # version is installed then removed from a repository, now the older available version
-        # shows up as a viable install candidate.
-        #
-        # Can be done in upgrade_package but an upgraded from->to log message slips out
-        #
-        # Hacky - better overall solution? Custom compare in Package provider?
-        def action_upgrade
-          # Could be uninstalled or have no candidate
-          if @current_resource.version.nil? || !candidate_version_array.any?
-            super
-          elsif candidate_version_array.zip(current_version_array).any? do |c, i|
-                  RPMVersion.parse(c) > RPMVersion.parse(i)
-                end
-            super
-          else
-            Chef::Log.debug("#{@new_resource} is at the latest version - nothing to do")
-          end
-        end
-
-        def upgrade_package(name, version)
-          install_package(name, version)
-        end
-
-        def remove_package(name, version)
-          if version
-            remove_str = as_array(name).zip(as_array(version)).map do |n, v|
-              a = arch_for_name(n)
-              "#{[n, v].join('-')}#{yum_arch(a)}"
-            end.join(" ")
-          else
-            remove_str = as_array(name).map do |n|
-              a = arch_for_name(n)
-              "#{n}#{yum_arch(a)}"
-            end.join(" ")
-          end
-          yum_command("-d0 -e0 -y#{expand_options(@new_resource.options)} remove #{remove_str}")
-
-          if flush_cache[:after]
-            @yum.reload
-          else
-            @yum.reload_installed
-          end
-        end
-
-        def purge_package(name, version)
-          remove_package(name, version)
-        end
-
-        private
-
-        def parse_arch(package_name)
-          # Allow for foo.x86_64 style package_name like yum uses in it's output
-          #
-          if package_name =~ %r{^(.*)\.(.*)$}
-            new_package_name = $1
-            new_arch = $2
-            # foo.i386 and foo.beta1 are both valid package names or expressions of an arch.
-            # Ensure we don't have an existing package matching package_name, then ensure we at
-            # least have a match for the new_package+new_arch before we overwrite. If neither
-            # then fall through to standard package handling.
-            old_installed = @yum.installed_version(package_name)
-            old_candidate = @yum.candidate_version(package_name)
-            new_installed = @yum.installed_version(new_package_name, new_arch)
-            new_candidate = @yum.candidate_version(new_package_name, new_arch)
-            if (old_installed.nil? && old_candidate.nil?) && (new_installed || new_candidate)
-              Chef::Log.debug("Parsed out arch #{new_arch}, new package name is #{new_package_name}")
-              return new_package_name, new_arch
-            end
-          end
-          return package_name, nil
-        end
-
-        # If we don't have the package we could have been passed a 'whatprovides' feature
-        #
-        # eg: yum install "perl(Config)"
-        #     yum install "mtr = 2:0.71-3.1"
-        #     yum install "mtr > 2:0.71"
-        #
-        # We support resolving these out of the Provides data imported from yum-dump.py and
-        # matching them up with an actual package so the standard resource handling can apply.
-        #
-        # There is currently no support for filename matching.
-        def parse_dependency(name, version)
-          # Transform the package_name into a requirement
-
-          # If we are passed a version or a version constraint we have to assume it's a requirement first. If it can't be
-          # parsed only yum_require.name will be set and @new_resource.version will be left intact
-          if version
-            require_string = "#{name} #{version}"
-          else
-            # Transform the package_name into a requirement, might contain a version, could just be
-            # a match for virtual provides
-            require_string = name
-          end
-          yum_require = RPMRequire.parse(require_string)
-          # and gather all the packages that have a Provides feature satisfying the requirement.
-          # It could be multiple be we can only manage one
-          packages = @yum.packages_from_require(yum_require)
-
-          if packages.empty?
-            # Don't bother if we are just ensuring a package is removed - we don't need Provides data
-            actions = Array(@new_resource.action)
-            unless actions.size == 1 && (actions[0] == :remove || actions[0] == :purge)
-              Chef::Log.debug("#{@new_resource} couldn't match #{@new_resource.package_name} in " +
-                            "installed Provides, loading available Provides - this may take a moment")
-              @yum.reload_provides
-              packages = @yum.packages_from_require(yum_require)
-            end
-          end
-
-          unless packages.empty?
-            new_package_name = packages.first.name
-            new_package_version = packages.first.version.to_s
-            debug_msg = "#{name}: Unable to match package '#{name}' but matched #{packages.size} "
-            debug_msg << (packages.size == 1 ? "package" : "packages")
-            debug_msg << ", selected '#{new_package_name}' version '#{new_package_version}'"
-            Chef::Log.debug(debug_msg)
-
-            # Ensure it's not the same package under a different architecture
-            unique_names = []
-            packages.each do |pkg|
-              unique_names << "#{pkg.name}-#{pkg.version.evr}"
-            end
-            unique_names.uniq!
-
-            if unique_names.size > 1
-              Chef::Log.warn("#{@new_resource} matched multiple Provides for #{@new_resource.package_name} " +
-                             "but we can only use the first match: #{new_package_name}. Please use a more " +
-                             "specific version.")
-            end
-
-            if yum_require.version.to_s.nil?
-              new_package_version = nil
-            end
-
-            [new_package_name, new_package_version]
+            [ new_resource.arch ]
           end
         end
 

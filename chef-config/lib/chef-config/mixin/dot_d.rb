@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +14,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef-config/path_helper"
+require_relative "../path_helper"
 
 module ChefConfig
   module Mixin
     module DotD
+      # Find available configuration files in a `.d/` style include directory.
+      # Make sure we exclude anything that's not a file so we avoid directories ending in .rb (just in case)
+      #
+      # @api internal
+      # @param path [String] Base .d/ path to load from.
+      # @return [Array<String>]
+      def find_dot_d(path)
+        Dir["#{PathHelper.escape_glob_dir(path)}/*.rb"].select { |entry| File.file?(entry) }.sort
+      end
+
+      # Load configuration from a `.d/` style include directory.
+      #
+      # @api internal
+      # @param path [String] Base .d/ path to load from.
+      # @return [void]
       def load_dot_d(path)
-        dot_d_files =
-          begin
-            entries = Array.new
-            entries << Dir.glob(File.join(
-              ChefConfig::PathHelper.escape_glob_dir(path), "*.rb"))
-            entries.flatten.select do |entry|
-              File.file?(entry)
-            end
-          end
-        dot_d_files.sort.map do |conf|
+        find_dot_d(path).each do |conf|
           apply_config(IO.read(conf), conf)
         end
       end

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ Chef::Knife::DataBagFromFile.load_deps
 
 describe Chef::Knife::DataBagFromFile do
   before :each do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
     Chef::Config[:node_name] = "webmonkey.example.com"
     FileUtils.mkdir_p([db_folder, db_folder2])
     db_file.write(Chef::JSONCompat.to_json(plain_data))
@@ -77,7 +77,8 @@ describe Chef::Knife::DataBagFromFile do
       "id" => "item_name",
       "greeting" => "hello",
       "nested" => { "a1" => [1, 2, 3], "a2" => { "b1" => true } },
-  } end
+  }
+  end
   let(:enc_data) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(plain_data, secret) }
 
   let(:rest) { double("Chef::ServerAPI") }

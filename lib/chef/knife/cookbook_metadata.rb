@@ -1,7 +1,6 @@
 #
-#
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,29 +16,29 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookMetadata < Knife
 
       deps do
-        require "chef/cookbook_loader"
-        require "chef/cookbook/metadata"
+        require_relative "../cookbook_loader"
+        require_relative "../cookbook/metadata"
       end
 
       banner "knife cookbook metadata COOKBOOK (options)"
 
       option :cookbook_path,
-        :short => "-o PATH:PATH",
-        :long => "--cookbook-path PATH:PATH",
-        :description => "A colon-separated path to look for cookbooks in",
-        :proc => lambda { |o| o.split(":") }
+        short: "-o PATH:PATH",
+        long: "--cookbook-path PATH:PATH",
+        description: "A colon-separated path to look for cookbooks in.",
+        proc: lambda { |o| o.split(":") }
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Generate metadata for all cookbooks, rather than just a single cookbook"
+        short: "-a",
+        long: "--all",
+        description: "Generate metadata for all cookbooks, rather than just a single cookbook."
 
       def run
         config[:cookbook_path] ||= Chef::Config[:cookbook_path]
@@ -47,7 +46,7 @@ class Chef
         if config[:all]
           cl = Chef::CookbookLoader.new(config[:cookbook_path])
           cl.load_cookbooks
-          cl.each do |cname, cookbook|
+          cl.each_key do |cname|
             generate_metadata(cname.to_s)
           end
         else
@@ -63,7 +62,7 @@ class Chef
       def generate_metadata(cookbook)
         Array(config[:cookbook_path]).reverse_each do |path|
           file = File.expand_path(File.join(path, cookbook, "metadata.rb"))
-          if File.exists?(file)
+          if File.exist?(file)
             generate_metadata_from_file(cookbook, file)
           else
             validate_metadata_json(path, cookbook)
@@ -80,7 +79,7 @@ class Chef
         File.open(json_file, "w") do |f|
           f.write(Chef::JSONCompat.to_json_pretty(md))
         end
-        Chef::Log.debug("Generated #{json_file}")
+        Chef::Log.trace("Generated #{json_file}")
       rescue Exceptions::ObsoleteDependencySyntax, Exceptions::InvalidVersionConstraint => e
         ui.stderr.puts "ERROR: The cookbook '#{cookbook}' contains invalid or obsolete metadata syntax."
         ui.stderr.puts "in #{file}:"

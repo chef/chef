@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
@@ -25,12 +25,12 @@ class Chef
       attr_accessor :cookbook_name, :version
 
       deps do
-        require "chef/cookbook_version"
+        require_relative "../cookbook_version"
       end
 
-      option :all, :short => "-a", :long => "--all", :boolean => true, :description => "delete all versions"
+      option :all, short: "-a", long: "--all", boolean: true, description: "Delete all versions of the cookbook."
 
-      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
+      option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store."
 
       banner "knife cookbook delete COOKBOOK VERSION (options)"
 
@@ -45,7 +45,7 @@ class Chef
           delete_without_explicit_version
         elsif @cookbook_name.nil?
           show_usage
-          ui.fatal("You must provide the name of the cookbook to delete")
+          ui.fatal("You must provide the name of the cookbook to delete.")
           exit(1)
         end
       end
@@ -88,9 +88,9 @@ class Chef
         @available_versions ||= rest.get("cookbooks/#{@cookbook_name}").map do |name, url_and_version|
           url_and_version["versions"].map { |url_by_version| url_by_version["version"] }
         end.flatten
-      rescue Net::HTTPServerException => e
-        if e.to_s =~ /^404/
-          ui.error("Cannot find a cookbook named #{@cookbook_name} to delete")
+      rescue Net::HTTPClientException => e
+        if /^404/.match?(e.to_s)
+          ui.error("Cannot find a cookbook named #{@cookbook_name} to delete.")
           nil
         else
           raise
@@ -106,7 +106,7 @@ class Chef
         end
         valid_responses[(available_versions.size + 1).to_s] = :all
         question << "#{available_versions.size + 1}. All versions\n\n"
-        responses = ask_question(question).split(",").map { |response| response.strip }
+        responses = ask_question(question).split(",").map(&:strip)
 
         if responses.empty?
           ui.error("No versions specified, exiting")

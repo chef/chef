@@ -15,21 +15,28 @@
 # limitations under the License.
 #
 
-require "singleton"
-require "pp"
-require "etc"
-require "mixlib/cli"
+module Mixlib
+  module Authentication
+    autoload :Log, "mixlib/authentication"
+  end
+end
+require "singleton" unless defined?(Singleton)
+require "pp" unless defined?(PP)
+require "etc" unless defined?(Etc)
+require "mixlib/cli" unless defined?(Mixlib::CLI)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
-require "chef"
-require "chef/version"
-require "chef/client"
-require "chef/config"
-require "chef/config_fetcher"
+require_relative "../chef"
+require_relative "version"
+require_relative "client"
+require_relative "config"
+require_relative "config_fetcher"
 
-require "chef/shell/shell_session"
-require "chef/shell/ext"
-require "chef/json_compat"
-require "chef/util/path_helper"
+require_relative "shell/shell_session"
+require_relative "workstation_config_loader"
+require_relative "shell/ext"
+require_relative "json_compat"
+require_relative "util/path_helper"
 
 # = Shell
 # Shell is Chef in an IRB session. Shell can interact with a Chef server via the
@@ -40,7 +47,6 @@ module Shell
   LEADERS[Chef::Node]   = ":attributes"
 
   class << self
-    attr_accessor :client_type
     attr_accessor :options
     attr_accessor :env
     attr_writer   :editor
@@ -60,7 +66,18 @@ module Shell
     # to get access to the main object before irb starts.
     ::IRB.setup(nil)
 
+    irb_conf[:USE_COLORIZE] = options.config[:use_colorize]
+    irb_conf[:USE_SINGLELINE] = options.config[:use_singleline]
+    irb_conf[:USE_MULTILINE] = options.config[:use_multiline]
+    pp irb_conf[:USE_MULTILINE]
+
     irb = IRB::Irb.new
+
+    if solo_mode?
+      # Setup the mocked ChefServer
+      Chef::Config.local_mode = true
+      Chef::LocalMode.setup_server_connectivity
+    end
 
     init(irb.context.main)
 
@@ -74,6 +91,13 @@ module Shell
     catch(:IRB_EXIT) do
       irb.eval_input
     end
+  ensure
+    # We destroy the mocked ChefServer
+    Chef::LocalMode.destroy_server_connectivity if solo_mode?
+  end
+
+  def self.solo_mode?
+    Chef::Config[:solo]
   end
 
   def self.setup_logger
@@ -91,7 +115,7 @@ module Shell
   end
 
   # Set the irb_conf object to something other than IRB.conf
-  # usful for testing.
+  # useful for testing.
   def self.irb_conf=(conf_hash)
     @irb_conf = conf_hash
   end
@@ -107,12 +131,14 @@ module Shell
     irb_conf[:IRB_RC] = lambda do |conf|
       m = conf.main
 
-      conf.prompt_c       = "chef#{leader(m)} > "
+      conf.prompt_c       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} > "
       conf.return_format  = " => %s \n"
-      conf.prompt_i       = "chef#{leader(m)} (#{Chef::VERSION})> "
-      conf.prompt_n       = "chef#{leader(m)} ?> "
-      conf.prompt_s       = "chef#{leader(m)}%l> "
+      conf.prompt_i       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} (#{Chef::VERSION})> "
+      conf.prompt_n       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)} ?> "
+      conf.prompt_s       = "#{ChefUtils::Dist::Infra::EXEC}#{leader(m)}%l> "
       conf.use_tracer     = false
+      conf.instance_variable_set(:@use_multiline, false)
+      conf.instance_variable_set(:@use_singleline, false)
     end
   end
 
@@ -124,6 +150,7 @@ module Shell
   def self.session
     unless client_type.instance.node_built?
       puts "Session type: #{client_type.session_type}"
+      client_type.instance.json_configuration = @json_attribs
       client_type.instance.reset!
     end
     client_type.instance
@@ -144,11 +171,10 @@ module Shell
 
     puts "run `help' for help, `exit' or ^D to quit."
     puts
-    puts "Ohai2u#{greeting}!"
   end
 
   def self.greeting
-    " #{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
+    "#{Etc.getlogin}@#{Shell.session.node["fqdn"]}"
   rescue NameError, ArgumentError
     ""
   end
@@ -167,8 +193,9 @@ module Shell
 
   def self.client_type
     type = Shell::StandAloneSession
-    type = Shell::SoloSession   if Chef::Config[:shell_solo]
-    type = Shell::ClientSession if Chef::Config[:client]
+    type = Shell::SoloSession         if solo_mode?
+    type = Shell::SoloLegacySession   if Chef::Config[:solo_legacy_shell]
+    type = Shell::ClientSession       if Chef::Config[:client]
     type = Shell::DoppelGangerSession if Chef::Config[:doppelganger]
     type
   end
@@ -190,85 +217,109 @@ module Shell
       @footer
     end
 
-    banner("chef-shell #{Chef::VERSION}\n\nUsage: chef-shell [NAMED_CONF] (OPTIONS)")
+    banner("#{ChefUtils::Dist::Infra::SHELL} #{Chef::VERSION}\n\nUsage: #{ChefUtils::Dist::Infra::SHELL} [NAMED_CONF] (OPTIONS)")
 
-    footer(<<-FOOTER)
-When no CONFIG is specified, chef-shell attempts to load a default configuration file:
-* If a NAMED_CONF is given, chef-shell will load ~/.chef/NAMED_CONF/chef_shell.rb
-* If no NAMED_CONF is given chef-shell will load ~/.chef/chef_shell.rb if it exists
-* chef-shell falls back to loading /etc/chef/client.rb or /etc/chef/solo.rb if -z or
-  -s options are given and no chef_shell.rb can be found.
-FOOTER
+    footer(<<~FOOTER)
+      When no CONFIG is specified, #{ChefUtils::Dist::Infra::SHELL} attempts to load a default configuration file:
+      * If a NAMED_CONF is given, #{ChefUtils::Dist::Infra::SHELL} will load ~/#{ChefUtils::Dist::Infra::USER_CONF_DIR}/NAMED_CONF/#{ChefUtils::Dist::Infra::SHELL_CONF}
+      * If no NAMED_CONF is given #{ChefUtils::Dist::Infra::SHELL} will load ~/#{ChefUtils::Dist::Infra::USER_CONF_DIR}/#{ChefUtils::Dist::Infra::SHELL_CONF} if it exists
+      * If no #{ChefUtils::Dist::Infra::SHELL_CONF} can be found, #{ChefUtils::Dist::Infra::SHELL} falls back to load:
+            #{ChefConfig::Config.etc_chef_dir}/client.rb if -z option is given.
+            #{ChefConfig::Config.etc_chef_dir}/solo.rb   if --solo-legacy-mode option is given.
+            #{ChefUtils::Dist::Infra::USER_CONF_DIR}/config.rb     if -s option is given.
+            #{ChefUtils::Dist::Infra::USER_CONF_DIR}/knife.rb      if -s option is given.
+    FOOTER
+
+    option :use_multiline,
+      long: "--[no-]multiline",
+      default: true,
+      description: "[Do not] use multiline editor module"
+
+    option :use_singleline,
+      long: "--[no-]singleline",
+      default: true,
+      description: "[Do not] use singleline editor module"
+
+    option :use_colorize,
+      long: "--[no-]colorize",
+      default: true,
+      description: "[Do not] use colorization"
 
     option :config_file,
-      :short => "-c CONFIG",
-      :long  => "--config CONFIG",
-      :description => "The configuration file to use"
+      short: "-c CONFIG",
+      long: "--config CONFIG",
+      description: "The configuration file to use"
 
     option :help,
-      :short        => "-h",
-      :long         => "--help",
-      :description  => "Show this message",
-      :on           => :tail,
-      :boolean      => true,
-      :proc         => proc { print_help }
+      short: "-h",
+      long: "--help",
+      description: "Show this message",
+      on: :tail,
+      boolean: true,
+      proc: proc { print_help }
 
     option :log_level,
-      :short  => "-l LOG_LEVEL",
-      :long   => "--log-level LOG_LEVEL",
-      :description => "Set the logging level",
-      :proc         => proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
+      short: "-l LOG_LEVEL",
+      long: "--log-level LOG_LEVEL",
+      description: "Set the logging level",
+      proc: proc { |level| Chef::Config.log_level = level.to_sym; Shell.setup_logger }
 
     option :standalone,
-      :short        => "-a",
-      :long         => "--standalone",
-      :description  => "standalone session",
-      :default      => true,
-      :boolean      => true
+      short: "-a",
+      long: "--standalone",
+      description: "Standalone session",
+      default: true,
+      boolean: true
 
-    option :shell_solo,
-      :short        => "-s",
-      :long         => "--solo",
-      :description  => "chef-solo session",
-      :boolean      => true,
-      :proc         => proc { Chef::Config[:solo] = true }
+    option :solo_shell,
+      short: "-s",
+      long: "--solo",
+      description: "#{ChefUtils::Dist::Solo::PRODUCT} session",
+      boolean: true,
+      proc: proc { Chef::Config[:solo] = true }
 
     option :client,
-      :short        => "-z",
-      :long         => "--client",
-      :description  => "chef-client session",
-      :boolean      => true
+      short: "-z",
+      long: "--client",
+      description: "#{ChefUtils::Dist::Infra::PRODUCT} session",
+      boolean: true
+
+    option :solo_legacy_shell,
+      long: "--solo-legacy-mode",
+      description: "#{ChefUtils::Dist::Solo::PRODUCT} legacy session",
+      boolean: true,
+      proc: proc { Chef::Config[:solo_legacy_mode] = true }
 
     option :json_attribs,
-      :short => "-j JSON_ATTRIBS",
-      :long => "--json-attributes JSON_ATTRIBS",
-      :description => "Load attributes from a JSON file or URL",
-      :proc => nil
+      short: "-j JSON_ATTRIBS",
+      long: "--json-attributes JSON_ATTRIBS",
+      description: "Load attributes from a JSON file or URL",
+      proc: nil
 
     option :chef_server_url,
-      :short => "-S CHEFSERVERURL",
-      :long => "--server CHEFSERVERURL",
-      :description => "The chef server URL",
-      :proc => nil
+      short: "-S CHEFSERVERURL",
+      long: "--server CHEFSERVERURL",
+      description: "The #{ChefUtils::Dist::Server::PRODUCT} URL",
+      proc: nil
 
     option :version,
-      :short        => "-v",
-      :long         => "--version",
-      :description  => "Show chef version",
-      :boolean      => true,
-      :proc         => lambda { |v| puts "Chef: #{::Chef::VERSION}" },
-      :exit         => 0
+      short: "-v",
+      long: "--version",
+      description: "Show #{ChefUtils::Dist::Infra::PRODUCT} version",
+      boolean: true,
+      proc: lambda { |v| puts "#{ChefUtils::Dist::Infra::PRODUCT}: #{::Chef::VERSION}" },
+      exit: 0
 
     option :override_runlist,
-      :short        => "-o RunlistItem,RunlistItem...",
-      :long         => "--override-runlist RunlistItem,RunlistItem...",
-      :description  => "Replace current run list with specified items",
-      :proc         => lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
+      short: "-o RunlistItem,RunlistItem...",
+      long: "--override-runlist RunlistItem,RunlistItem...",
+      description: "Replace current run list with specified items",
+      proc: lambda { |items| items.split(",").map { |item| Chef::RunList::RunListItem.new(item) } }
 
     option :skip_cookbook_sync,
-      :long           => "--[no-]skip-cookbook-sync",
-      :description    => "Use cached cookbooks without overwriting local differences from the server",
-      :boolean        => false
+      long: "--[no-]skip-cookbook-sync",
+      description: "Use cached cookbooks without overwriting local differences from the server",
+      boolean: false
 
     def self.print_help
       instance = new
@@ -281,7 +332,7 @@ FOOTER
     end
 
     def self.setup!
-      self.new.parse_opts
+      new.parse_opts
     end
 
     def parse_opts
@@ -293,7 +344,7 @@ FOOTER
       config[:config_file] = config_file_for_shell_mode(environment)
       config_msg = config[:config_file] || "none (standalone session)"
       puts "loading configuration: #{config_msg}"
-      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exists?(config[:config_file]) && File.readable?(config[:config_file])
+      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exist?(config[:config_file]) && File.readable?(config[:config_file])
       Chef::Config.merge!(config)
     end
 
@@ -305,18 +356,20 @@ FOOTER
         config[:config_file]
       elsif environment
         Shell.env = environment
-        config_file_to_try = ::File.join(dot_chef_dir, environment, "chef_shell.rb")
+        config_file_to_try = ::File.join(dot_chef_dir, environment, ChefUtils::Dist::Infra::SHELL_CONF)
         unless ::File.exist?(config_file_to_try)
-          puts "could not find chef-shell config for environment #{environment} at #{config_file_to_try}"
+          puts "could not find #{ChefUtils::Dist::Infra::SHELL} config for environment #{environment} at #{config_file_to_try}"
           exit 1
         end
         config_file_to_try
-      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, "chef_shell.rb"))
-        File.join(dot_chef_dir, "chef_shell.rb")
-      elsif config[:solo]
-        Chef::Config.platform_specific_path("/etc/chef/solo.rb")
+      elsif dot_chef_dir && ::File.exist?(File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF))
+        File.join(dot_chef_dir, ChefUtils::Dist::Infra::SHELL_CONF)
+      elsif config[:solo_legacy_shell]
+        Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/solo.rb")
       elsif config[:client]
-        Chef::Config.platform_specific_path("/etc/chef/client.rb")
+        Chef::Config.platform_specific_path("#{ChefConfig::Config.etc_chef_dir}/client.rb")
+      elsif config[:solo_shell]
+        Chef::WorkstationConfigLoader.new(nil, Chef::Log).config_location
       else
         nil
       end

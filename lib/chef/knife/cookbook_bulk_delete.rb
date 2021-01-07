@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookBulkDelete < Knife
 
       deps do
-        require "chef/knife/cookbook_delete"
-        require "chef/cookbook_version"
+        require_relative "cookbook_delete"
+        require_relative "../cookbook_version"
       end
 
-      option :purge, :short => "-p", :long => "--purge", :boolean => true, :description => "Permanently remove files from backing data store"
+      option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store."
 
       banner "knife cookbook bulk delete REGEX (options)"
 

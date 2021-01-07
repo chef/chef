@@ -17,18 +17,17 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleRunListSet < Knife
 
       deps do
-        require "chef/role"
-        require "chef/json_compat"
+        require_relative "../role"
       end
 
-      banner "knife role run_list set [ROLE] [ENTRIES]"
+      banner "knife role run_list set [ROLE] [ENTRIES] (options)"
 
       # Clears out any existing env_run_list_items and sets them to the
       # specified entries
@@ -51,12 +50,12 @@ class Chef
           exit 1
         elsif @name_args.size > 1
           # Check for nested lists and create a single plain one
-          entries = @name_args[1..-1].map do |entry|
-            entry.split(",").map { |e| e.strip }
+          entries = @name_args[1..].map do |entry|
+            entry.split(",").map(&:strip)
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[1].split(",").map { |e| e.strip }
+          entries = @name_args[1].split(",").map(&:strip)
         end
 
         set_env_run_list(role, environment, entries )

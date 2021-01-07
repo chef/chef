@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ class DataQueryDSLTester
 end
 
 describe Chef::DSL::DataQuery do
-  let(:node) { Hash.new }
+  let(:node) { {} }
 
   let(:language) do
     language = DataQueryDSLTester.new
@@ -68,7 +68,8 @@ describe Chef::DSL::DataQuery do
         "a1" => [1, 2, 3],
         "a2" => { "b1" => true },
       },
-    } end
+    }
+    end
 
     let(:item) do
       item = Chef::DataBagItem.new

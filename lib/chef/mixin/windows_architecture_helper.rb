@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/platform/query_helpers"
-require "chef/win32/process" if Chef::Platform.windows?
-require "chef/win32/system" if Chef::Platform.windows?
+require_relative "../exceptions"
+require_relative "../platform/query_helpers"
+require_relative "../win32/process" if ChefUtils.windows?
+require_relative "../win32/system" if ChefUtils.windows?
 
 class Chef
   module Mixin
@@ -49,8 +49,8 @@ class Chef
         node ||= begin
           os_arch = ENV["PROCESSOR_ARCHITEW6432"] ||
             ENV["PROCESSOR_ARCHITECTURE"]
-          Hash.new.tap do |n|
-            n[:kernel] = Hash.new
+          {}.tap do |n|
+            n[:kernel] = {}
             n[:kernel][:machine] = os_arch == "AMD64" ? :x86_64 : :i386
           end
         end
@@ -74,22 +74,22 @@ class Chef
 
       def node_supports_windows_architecture?(node, desired_architecture)
         assert_valid_windows_architecture!(desired_architecture)
-        return ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
+        ( node_windows_architecture(node) == :x86_64 ) || ( desired_architecture == :i386 )
       end
 
       def valid_windows_architecture?(architecture)
-        return ( architecture == :x86_64 ) || ( architecture == :i386 )
+        ( architecture == :x86_64 ) || ( architecture == :i386 )
       end
 
       def assert_valid_windows_architecture!(architecture)
-        if !valid_windows_architecture?(architecture)
+        unless valid_windows_architecture?(architecture)
           raise Chef::Exceptions::Win32ArchitectureIncorrect,
-          "The specified architecture was not valid. It must be one of :i386 or :x86_64"
+            "The specified architecture was not valid. It must be one of :i386 or :x86_64"
         end
       end
 
       def is_i386_process_on_x86_64_windows?
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           Chef::ReservedNames::Win32::Process.is_wow64_process
         else
           false
@@ -97,13 +97,13 @@ class Chef
       end
 
       def disable_wow64_file_redirection( node )
-        if ( node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if ( node_windows_architecture(node) == :x86_64) && ::ChefUtils.windows?
           Chef::ReservedNames::Win32::System.wow64_disable_wow64_fs_redirection
         end
       end
 
       def restore_wow64_file_redirection( node, original_redirection_state )
-        if (node_windows_architecture(node) == :x86_64) && ::Chef::Platform.windows?
+        if (node_windows_architecture(node) == :x86_64) && ::ChefUtils.windows?
           Chef::ReservedNames::Win32::System.wow64_revert_wow64_fs_redirection(original_redirection_state)
         end
       end

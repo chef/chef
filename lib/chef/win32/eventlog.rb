@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 # limitations under the License.
 #
 
-if Chef::Platform.windows? && (not Chef::Platform.windows_server_2003?)
-  if !defined? Chef::Win32EventLogLoaded
+if ChefUtils.windows?
+  unless defined? Chef::Win32EventLogLoaded
     if defined? Windows::Constants
-      [:INFINITE, :WAIT_FAILED, :FORMAT_MESSAGE_IGNORE_INSERTS, :ERROR_INSUFFICIENT_BUFFER].each do |c|
+      %i{INFINITE WAIT_FAILED FORMAT_MESSAGE_IGNORE_INSERTS ERROR_INSUFFICIENT_BUFFER}.each do |c|
         # These are redefined in 'win32/eventlog'
         Windows::Constants.send(:remove_const, c) if Windows::Constants.const_defined? c
       end
     end
 
     require "win32/eventlog"
-    Chef::Win32EventLogLoaded = true # rubocop:disable Style/ConstantName
+    Chef::Win32EventLogLoaded = true # rubocop:disable Naming/ConstantName
   end
 end

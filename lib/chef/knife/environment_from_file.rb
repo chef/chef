@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,21 +16,23 @@
 # limitations under the License.
 #
 
+require_relative "../knife"
+
 class Chef
   class Knife
     class EnvironmentFromFile < Knife
 
       deps do
-        require "chef/environment"
-        require "chef/knife/core/object_loader"
+        require_relative "../environment"
+        require_relative "core/object_loader"
       end
 
       banner "knife environment from file FILE [FILE..] (options)"
 
       option :all,
-      :short => "-a",
-      :long  => "--all",
-      :description => "Upload all environments"
+        short: "-a",
+        long: "--all",
+        description: "Upload all environments."
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(Chef::Environment, ui)

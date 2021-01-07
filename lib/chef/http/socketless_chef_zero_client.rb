@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +44,10 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 require "chef_zero/server"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+module Net
+  autoload :HTTPResponse, "net/http"
+end
 
 class Chef
   class HTTP
@@ -63,7 +67,7 @@ class Chef
         # or else streaming-style responses won't work.
         def read_body(dest = nil, &block)
           if dest
-            raise "responses from socketless chef zero can't be written to specific destination"
+            raise "responses from socketless #{ChefUtils::Dist::Zero::PRODUCT} can't be written to specific destination"
           end
 
           if block_given?
@@ -131,9 +135,9 @@ class Chef
         505 => "HTTP Version Not Supported",
         507 => "Insufficient Storage",
         511 => "Network Authentication Required",
-      }
+      }.freeze
 
-      STATUS_MESSAGE.values.each { |v| v.freeze }
+      STATUS_MESSAGE.each_value(&:freeze)
       STATUS_MESSAGE.freeze
 
       def initialize(base_url)
@@ -163,15 +167,16 @@ class Chef
       def req_to_rack(method, url, body, headers)
         body_str = body || ""
         {
-          "SCRIPT_NAME"     => "",
-          "SERVER_NAME"     => "localhost",
-          "REQUEST_METHOD"  => method.to_s.upcase,
-          "PATH_INFO"       => url.path,
-          "QUERY_STRING"    => url.query,
-          "SERVER_PORT"     => url.port,
-          "HTTP_HOST"       => "localhost:#{url.port}",
+          "SCRIPT_NAME" => "",
+          "SERVER_NAME" => "localhost",
+          "REQUEST_METHOD" => method.to_s.upcase,
+          "PATH_INFO" => url.path,
+          "QUERY_STRING" => url.query,
+          "SERVER_PORT" => url.port,
+          "HTTP_HOST" => "localhost:#{url.port}",
+          "HTTP_X_OPS_SERVER_API_VERSION" => headers["X-Ops-Server-API-Version"],
           "rack.url_scheme" => "chefzero",
-          "rack.input"      => StringIO.new(body_str),
+          "rack.input" => StringIO.new(body_str),
         }
       end
 
@@ -179,6 +184,7 @@ class Chef
         body = chunked_body.join("")
         msg = STATUS_MESSAGE[code]
         raise "Cannot determine HTTP status message for code #{code}" unless msg
+
         response = Net::HTTPResponse.send(:response_class, code.to_s).new("1.0", code.to_s, msg)
         response.instance_variable_set(:@body, body)
         headers.each do |name, value|
@@ -198,7 +204,7 @@ class Chef
 
       def headers_extracted_from_options
         options.reject { |name, _| KNOWN_OPTIONS.include?(name) }.map do |name, value|
-          [name.to_s.split("_").map { |segment| segment.capitalize }.join("-"), value]
+          [name.to_s.split("_").map(&:capitalize).join("-"), value]
         end
       end
 

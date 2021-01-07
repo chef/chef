@@ -1,0 +1,64 @@
+<% %w(@node_name
+      @chef_license
+      @chef_server_url
+      @event_loggers
+      @file_backup_path
+      @file_cache_path
+      @file_staging_uses_destdir
+      @formatters
+      @http_proxy
+      @https_proxy
+      @ftp_proxy
+      @log_level
+      @minimal_ohai
+      @named_run_list
+      @no_proxy
+      @ohai_disabled_plugins
+      @ohai_optional_plugins
+      @pid_file
+      @policy_group
+      @policy_name
+      @ssl_verify_mode).each do |prop| -%>
+<% next if instance_variable_get(prop).nil? || instance_variable_get(prop).empty? -%>
+<%=prop.delete_prefix("@") %> <%= instance_variable_get(prop).inspect %>
+<% end -%>
+<%# log_location is special due to STDOUT/STDERR from String -> IO Object -%>
+<% unless @log_location.nil? %>
+  <% if @log_location.is_a?(String) && %w(STDOUT STDERR).include?(@log_location) -%>
+log_location <%= @log_location %>
+  <% else -%>
+log_location <%= @log_location.inspect %>
+  <% end -%>
+<% end -%>
+<%# The code below is not DRY on purpose to improve readability -%>
+<% unless @start_handlers.empty? -%>
+  # Do not crash if a start handler is missing / not installed yet
+  begin
+  <% @start_handlers.each do |handler| -%>
+    start_handlers << <%= @handler %>
+  <% end -%>
+  rescue NameError => e
+    Chef::Log.error e
+  end
+<% end -%>
+<% unless @report_handlers.empty? -%>
+  # Do not crash if a report handler is missing / not installed yet
+  begin
+  <% @report_handlers.each do |handler| -%>
+    report_handlers << <%= @handler %>
+  <% end -%>
+  rescue NameError => e
+    Chef::Log.error e
+  end
+<% end -%>
+<% unless @exception_handlers.empty? -%>
+  # Do not crash if an exception handler is missing / not installed yet
+  begin
+  <% @exception_handlers.each do |handler| -%>
+    exception_handlers << <%= @handler %>
+  <% end -%>
+  rescue NameError => e
+    Chef::Log.error e
+  end
+<% end -%>
+<%= @additional_config -%>

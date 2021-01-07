@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -32,19 +33,19 @@ describe "knife role bulk delete", :workstation do
     end
 
     it "deletes all matching roles" do
-      knife("role bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following roles will be deleted:
+      knife("role bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following roles will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these roles? (Y/N) Deleted role car
-Deleted role cat
-EOM
+        Are you sure you want to delete these roles? (Y/N) Deleted role car
+        Deleted role cat
+      EOM
 
-      knife("role list").should_succeed <<EOM
-cdr
-cons
-EOM
+      knife("role list").should_succeed <<~EOM
+        cdr
+        cons
+      EOM
     end
 
   end

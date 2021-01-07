@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,8 +35,8 @@ describe Chef::Knife::Raw do
     it "should set the x-ops-request-source header when --proxy-auth is set" do
       knife.config[:proxy_auth] = true
       expect(rest).to receive(:request).with(:GET, "/nodes",
-                                              { "Content-Type" => "application/json",
-                                                "x-ops-request-source" => "web" }, false)
+        { "Content-Type" => "application/json",
+          "x-ops-request-source" => "web" }, false)
       knife.run
     end
   end

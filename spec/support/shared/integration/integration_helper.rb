@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Author:: Ho-Sheng Hsiao (<hosh@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,9 +23,7 @@ require "chef/config"
 require "chef/json_compat"
 require "chef/server_api"
 require "support/shared/integration/knife_support"
-require "support/shared/integration/app_server_support"
 require "cheffish/rspec/chef_run_support"
-require "spec_helper"
 
 module Cheffish
   class BasicChefClient
@@ -46,15 +44,30 @@ module IntegrationSupport
 
     def when_the_repository(desc, *tags, &block)
       context("when the chef repo #{desc}", *tags) do
-        include_context "with a chef repo"
+        before :each do
+          raise "Can only create one directory per test" if @repository_dir
 
-        module_eval(&block)
-      end
-    end
+          @repository_dir = Dir.mktmpdir("chef_repo")
+          Chef::Config.chef_repo_path = @repository_dir
+          %w{client cookbook data_bag environment node role user}.each do |object_name|
+            Chef::Config.delete("#{object_name}_path".to_sym)
+          end
+        end
 
-    def with_versioned_cookbooks(&block)
-      context("with versioned cookbooks") do
-        include_context "with versioned cookbooks"
+        after :each do
+          if @repository_dir
+            begin
+              # TODO: "force" actually means "silence all exceptions". this
+              # silences a weird permissions error on Windows that we should track
+              # down, but for now there's no reason for it to blow up our CI.
+              FileUtils.remove_entry_secure(@repository_dir, force = ChefUtils.windows?)
+            ensure
+              @repository_dir = nil
+            end
+          end
+          Dir.chdir(@old_cwd) if @old_cwd
+        end
+
         module_eval(&block)
       end
     end
@@ -107,48 +120,4 @@ module IntegrationSupport
     @old_cwd = Dir.pwd
     Dir.chdir(path_to(relative_path))
   end
-
-  RSpec.shared_context "with a chef repo" do
-    before :each do
-      raise "Can only create one directory per test" if @repository_dir
-      @repository_dir = Dir.mktmpdir("chef_repo")
-      Chef::Config.chef_repo_path = @repository_dir
-      %w{client cookbook data_bag environment node role user}.each do |object_name|
-        Chef::Config.delete("#{object_name}_path".to_sym)
-      end
-    end
-
-    after :each do
-      if @repository_dir
-        begin
-          %w{client cookbook data_bag environment node role user}.each do |object_name|
-            Chef::Config.delete("#{object_name}_path".to_sym)
-          end
-          Chef::Config.delete(:chef_repo_path)
-          # TODO: "force" actually means "silence all exceptions". this
-          # silences a weird permissions error on Windows that we should track
-          # down, but for now there's no reason for it to blow up our CI.
-          FileUtils.remove_entry_secure(@repository_dir, force = Chef::Platform.windows?)
-        ensure
-          @repository_dir = nil
-        end
-      end
-      Dir.chdir(@old_cwd) if @old_cwd
-    end
-
-  end
-
-  # Versioned cookbooks
-
-  RSpec.shared_context "with versioned cookbooks", :versioned_cookbooks => true do
-    before(:each) { Chef::Config[:versioned_cookbooks] = true }
-    after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
-  end
-
-  RSpec.shared_context "without versioned cookbooks", :versioned_cookbooks => false do
-    # Just make sure this goes back to default
-    before(:each) { Chef::Config[:versioned_cookbooks] = false }
-    after(:each)  { Chef::Config.delete(:versioned_cookbooks) }
-  end
-
 end

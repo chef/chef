@@ -43,7 +43,7 @@ describe Chef::HTTP do
 
   end
 
-  describe "#intialize" do
+  describe "#initialize" do
     it "accepts a keepalive option and passes it to the http_client" do
       http = Chef::HTTP.new(uri, keepalives: true)
       expect(Chef::HTTP::BasicClient).to receive(:new).with(uri, ssl_policy: Chef::HTTP::APISSLPolicy, keepalives: true).and_call_original
@@ -74,7 +74,7 @@ describe Chef::HTTP do
       expect(http.create_url("///api/endpoint?url=http://foo.bar")).to eql(URI.parse("http://www.getchef.com/organization/org/api/endpoint?url=http://foo.bar"))
     end
 
-    # As per: https://github.com/opscode/chef/issues/2500
+    # As per: https://github.com/chef/chef/issues/2500
     it "should treat scheme part of the URI in a case-insensitive manner" do
       http = Chef::HTTP.allocate # Calling Chef::HTTP::new sets @url, don't want that.
       expect { http.create_url("HTTP://www1.chef.io/") }.not_to raise_error
@@ -93,6 +93,15 @@ describe Chef::HTTP do
       expect { http.send(:stream_to_tempfile, uri, resp) }.to raise_error("TestError")
     end
 
+    it "accepts a tempfile" do
+      resp = Net::HTTPOK.new("1.1", 200, "OK")
+      http = Chef::HTTP.new(uri)
+      tempfile = Tempfile.open("tempy-mctempfile")
+      expect(Tempfile).not_to receive(:open)
+      expect(resp).to receive(:read_body).and_yield("conty-mccontent")
+      http.send(:stream_to_tempfile, uri, resp, tempfile)
+      expect(IO.read(tempfile.path)).to eql("conty-mccontent")
+    end
   end
 
   describe "head" do
@@ -156,7 +165,7 @@ describe Chef::HTTP do
       end
 
       it "raises the error without retrying or sleeping" do
-        # We modify the strings to give addtional context, but the exception class should be the same
+        # We modify the strings to give additional context, but the exception class should be the same
         expect { http.get("/") }.to raise_error(exception.class)
       end
     end

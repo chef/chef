@@ -2,8 +2,8 @@
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Chef Software Inc.
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@
 # This lives here in Chef::Mixin because Chef's namespacing makes it
 # awkward to use modules elsewhere (e.g., chef/provider/package/homebrew/owner)
 
-require "chef/mixin/shell_out"
-require "etc"
+require_relative "shell_out"
+require "etc" unless defined?(Etc)
 
 class Chef
   module Mixin
@@ -34,15 +34,27 @@ class Chef
       # This tries to find the user to execute brew as.  If a user is provided, that overrides the brew
       # executable user.  It is an error condition if the brew executable owner is root or we cannot find
       # the brew executable.
+      # @param [String, Integer] provided_user
+      # @return [Integer] UID of the user
       def find_homebrew_uid(provided_user = nil)
         # They could provide us a user name or a UID
         if provided_user
           return provided_user if provided_user.is_a? Integer
+
           return Etc.getpwnam(provided_user).uid
         end
 
-        @homebrew_owner ||= calculate_owner
-        @homebrew_owner
+        @homebrew_owner_uid ||= calculate_owner
+        @homebrew_owner_uid
+      end
+
+      # Use find_homebrew_uid to return the UID and then lookup the
+      # name from that UID because sometimes you want the name not the UID
+      # @param [String, Integer] provided_user
+      # @return [String] username
+      def find_homebrew_username(provided_user = nil)
+        @homebrew_owner_username ||= Etc.getpwuid(find_homebrew_uid(provided_user)).name
+        @homebrew_owner_username
       end
 
       private
@@ -56,7 +68,7 @@ class Chef
           owner = ::File.stat(brew_path).uid
         else
           raise Chef::Exceptions::CannotDetermineHomebrewOwner,
-                'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
+            'Could not find the "brew" executable in /usr/local/bin or anywhere on the path.'
         end
 
         Chef::Log.debug "Found Homebrew owner #{Etc.getpwuid(owner).name}; executing `brew` commands as them"

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -32,19 +33,19 @@ describe "knife node bulk delete", :workstation do
     end
 
     it "deletes all matching nodes" do
-      knife("node bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following nodes will be deleted:
+      knife("node bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following nodes will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these nodes? (Y/N) Deleted node car
-Deleted node cat
-EOM
+        Are you sure you want to delete these nodes? (Y/N) Deleted node car
+        Deleted node cat
+      EOM
 
-      knife("node list").should_succeed <<EOM
-cdr
-cons
-EOM
+      knife("node list").should_succeed <<~EOM
+        cdr
+        cons
+      EOM
     end
   end
 

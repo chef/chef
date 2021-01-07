@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -33,41 +34,41 @@ describe "knife client bulk delete", :workstation do
     end
 
     it "deletes all matching clients" do
-      knife("client bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following clients will be deleted:
+      knife("client bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following clients will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these clients? (Y/N) Deleted client car
-Deleted client cat
-EOM
+        Are you sure you want to delete these clients? (Y/N) Deleted client car
+        Deleted client cat
+      EOM
 
-      knife("client list").should_succeed <<EOM
-cdr
-chef-validator
-chef-webui
-concat
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        cdr
+        chef-validator
+        chef-webui
+        concat
+        cons
+      EOM
     end
 
     it "deletes all matching clients when unanchored" do
-      knife("client bulk delete ca.*", input: "Y").should_succeed <<EOM
-The following clients will be deleted:
+      knife("client bulk delete ca.*", input: "Y").should_succeed <<~EOM
+        The following clients will be deleted:
 
-car     cat     concat
+        car     cat     concat
 
-Are you sure you want to delete these clients? (Y/N) Deleted client car
-Deleted client cat
-Deleted client concat
-EOM
+        Are you sure you want to delete these clients? (Y/N) Deleted client car
+        Deleted client cat
+        Deleted client concat
+      EOM
 
-      knife("client list").should_succeed <<EOM
-cdr
-chef-validator
-chef-webui
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        cdr
+        chef-validator
+        chef-webui
+        cons
+      EOM
     end
   end
 
@@ -81,50 +82,50 @@ EOM
     end
 
     it "refuses to delete a validator normally" do
-      knife("client bulk delete ^ca.*", input: "Y").should_succeed <<EOM
-The following clients are validators and will not be deleted:
+      knife("client bulk delete ^ca.*", input: "Y").should_succeed <<~EOM
+        The following clients are validators and will not be deleted:
 
-car-validator
+        car-validator
 
-You must specify --delete-validators to delete the validator clients
-The following clients will be deleted:
+        You must specify --delete-validators to delete the validator clients
+        The following clients will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these clients? (Y/N) Deleted client car
-Deleted client cat
-EOM
+        Are you sure you want to delete these clients? (Y/N) Deleted client car
+        Deleted client cat
+      EOM
 
-      knife("client list").should_succeed <<EOM
-car-validator
-cdr
-chef-validator
-chef-webui
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        car-validator
+        cdr
+        chef-validator
+        chef-webui
+        cons
+      EOM
     end
 
     it "deletes a validator when told to" do
-      knife("client bulk delete ^ca.* -D", input: "Y\nY").should_succeed <<EOM
-The following validators will be deleted:
+      knife("client bulk delete ^ca.* -D", input: "Y\nY").should_succeed <<~EOM
+        The following validators will be deleted:
 
-car-validator
+        car-validator
 
-Are you sure you want to delete these validators? (Y/N) Deleted client car-validator
-The following clients will be deleted:
+        Are you sure you want to delete these validators? (Y/N) Deleted client car-validator
+        The following clients will be deleted:
 
-car  cat
+        car  cat
 
-Are you sure you want to delete these clients? (Y/N) Deleted client car
-Deleted client cat
-EOM
+        Are you sure you want to delete these clients? (Y/N) Deleted client car
+        Deleted client cat
+      EOM
 
-      knife("client list").should_succeed <<EOM
-cdr
-chef-validator
-chef-webui
-cons
-EOM
+      knife("client list").should_succeed <<~EOM
+        cdr
+        chef-validator
+        chef-webui
+        cons
+      EOM
     end
   end
 end

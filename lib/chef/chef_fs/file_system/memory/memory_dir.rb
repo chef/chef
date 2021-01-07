@@ -1,5 +1,5 @@
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/memory/memory_file"
+require_relative "../base_fs_dir"
+require_relative "memory_file"
 
 class Chef
   module ChefFS
@@ -38,7 +38,7 @@ class Chef
             dir = self
             path_parts.each do |path_part|
               subdir = dir.child(path_part)
-              if !subdir.exists?
+              unless subdir.exists?
                 subdir = MemoryDir.new(path_part, dir)
                 dir.add_child(subdir)
               end

@@ -1,7 +1,7 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,14 +36,14 @@ shared_examples_for "a platform introspector" do
 
     @platform_family_hash = {
       "debian" => "debian value",
-      [:rhel, :fedora] => "redhatty value",
+      %i{rhel fedora} => "redhatty value",
       "suse" => "suse value",
       :default => "default value",
     }
   end
 
   it "returns a default value when there is no known platform" do
-    node = Hash.new
+    node = {}
     expect(platform_introspector.value_for_platform(@platform_hash)).to eq("default")
   end
 
@@ -125,7 +125,7 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is a provided platform and platforms are provided as symbols" do
       node.automatic_attrs[:platform] = "ubuntu"
-      expect(platform_introspector.platform?([:redhat, :ubuntu])).to eq(true)
+      expect(platform_introspector.platform?(%i{redhat ubuntu})).to eq(true)
     end
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
@@ -143,7 +143,7 @@ shared_examples_for "a platform introspector" do
 
     it "returns true if the node is in a provided platform family and families are provided as symbols" do
       node.automatic_attrs[:platform_family] = "debian"
-      expect(platform_introspector.platform_family?([:rhel, :debian])).to eq(true)
+      expect(platform_introspector.platform_family?(%i{rhel debian})).to eq(true)
     end
 
     it "returns true if the node is a provided platform and platforms are provided as strings" do
@@ -165,24 +165,24 @@ shared_examples_for "a platform introspector" do
   describe "when the value is an array" do
     before do
       @platform_hash = {
-        "debian" => { "4.0" => [ :restart, :reload ], "default" => [ :restart, :reload, :status ] },
-        "ubuntu" => { "default" => [ :restart, :reload, :status ] },
-        "centos" => { "default" => [ :restart, :reload, :status ] },
-        "redhat" => { "default" => [ :restart, :reload, :status ] },
-        "fedora" => { "default" => [ :restart, :reload, :status ] },
-        "default" => { "default" => [:restart, :reload ] } }
+        "debian" => { "4.0" => %i{restart reload}, "default" => %i{restart reload status} },
+        "ubuntu" => { "default" => %i{restart reload status} },
+        "centos" => { "default" => %i{restart reload status} },
+        "redhat" => { "default" => %i{restart reload status} },
+        "fedora" => { "default" => %i{restart reload status} },
+        "default" => { "default" => %i{restart reload} } }
     end
 
     it "returns the correct default for a given platform" do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = "9000"
-      expect(platform_introspector.value_for_platform(@platform_hash)).to eq([ :restart, :reload, :status ])
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq(%i{restart reload status})
     end
 
     it "returns the correct platform+version specific value " do
       node.automatic_attrs[:platform] = "debian"
       node.automatic_attrs[:platform_version] = "4.0"
-      expect(platform_introspector.value_for_platform(@platform_hash)).to eq([:restart, :reload])
+      expect(platform_introspector.value_for_platform(@platform_hash)).to eq(%i{restart reload})
     end
   end
 

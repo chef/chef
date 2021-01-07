@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/cron/unix"
+require_relative "unix"
 
 # Just to create an alias so 'Chef::Provider::Cron::Solaris' is exposed and accessible to existing consumers of class.
 Chef::Provider::Cron::Solaris = Chef::Provider::Cron::Unix

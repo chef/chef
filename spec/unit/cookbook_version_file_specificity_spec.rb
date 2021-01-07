@@ -1,7 +1,7 @@
 #
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,179 +23,213 @@ describe Chef::CookbookVersion, "file specificity" do
   before(:each) do
     @cookbook = Chef::CookbookVersion.new("test-cookbook", "/cookbook-folder")
     @cookbook.manifest = {
-      "files" =>
+      "all_files" =>
       [
        # afile.rb
        {
-         :name => "afile.rb",
-         :path => "files/host-examplehost.example.org/afile.rb",
-         :checksum => "csum-host",
-         :specificity => "host-examplehost.example.org",
+         name: "files/afile.rb",
+         path: "files/host-examplehost.example.org/afile.rb",
+         full_path: "/cookbook-folder/files/host-examplehost.example.org/afile.rb",
+         checksum: "csum-host",
+         specificity: "host-examplehost.example.org",
        },
        {
-         :name => "afile.rb",
-         :path => "files/ubuntu-9.10/afile.rb",
-         :checksum => "csum-platver-full",
-         :specificity => "ubuntu-9.10",
+         name: "files/afile.rb",
+         path: "files/ubuntu-9.10/afile.rb",
+         full_path: "/cookbook-folder/files/ubuntu-9.10/afile.rb",
+         checksum: "csum-platver-full",
+         specificity: "ubuntu-9.10",
        },
        {
-         :name => "afile.rb",
-         :path => "files/newubuntu-9/afile.rb",
-         :checksum => "csum-platver-partial",
-         :specificity => "newubuntu-9",
+         name: "files/afile.rb",
+         path: "files/newubuntu-9/afile.rb",
+         full_path: "/cookbook-folder/files/newubuntu-9/afile.rb",
+         checksum: "csum-platver-partial",
+         specificity: "newubuntu-9",
        },
        {
-         :name => "afile.rb",
-         :path => "files/ubuntu/afile.rb",
-         :checksum => "csum-plat",
-         :specificity => "ubuntu",
+         name: "files/afile.rb",
+         path: "files/ubuntu/afile.rb",
+         full_path: "/cookbook-folder/files/ubuntu/afile.rb",
+         checksum: "csum-plat",
+         specificity: "ubuntu",
        },
        {
-         :name => "afile.rb",
-         :path => "files/default/afile.rb",
-         :checksum => "csum-default",
-         :specificity => "default",
+         name: "files/afile.rb",
+         path: "files/default/afile.rb",
+         full_path: "/cookbook-folder/files/default/afile.rb",
+         checksum: "csum-default",
+         specificity: "default",
        },
 
        # for different/odd platform_versions
        {
-         :name => "bfile.rb",
-         :path => "files/fakeos-2.0.rc.1/bfile.rb",
-         :checksum => "csum2-platver-full",
-         :specificity => "fakeos-2.0.rc.1",
+         name: "files/bfile.rb",
+         path: "files/fakeos-2.0.rc.1/bfile.rb",
+         full_path: "/cookbook-folder/files/fakeos-2.0.rc.1/bfile.rb",
+         checksum: "csum2-platver-full",
+         specificity: "fakeos-2.0.rc.1",
        },
        {
-         :name => "bfile.rb",
-         :path => "files/newfakeos-2.0.rc/bfile.rb",
-         :checksum => "csum2-platver-partial",
-         :specificity => "newfakeos-2.0.rc",
+         name: "files/bfile.rb",
+         path: "files/newfakeos-2.0.rc/bfile.rb",
+         full_path: "/cookbook-folder/files/newfakeos-2.0.rc/bfile.rb",
+         checksum: "csum2-platver-partial",
+         specificity: "newfakeos-2.0.rc",
        },
        {
-         :name => "bfile.rb",
-         :path => "files/fakeos-maple tree/bfile.rb",
-         :checksum => "csum3-platver-full",
-         :specificity => "maple tree",
+         name: "files/bfile.rb",
+         path: "files/fakeos-maple tree/bfile.rb",
+         full_path: "/cookbook-folder/files/fakeos-maple tree/bfile.rb",
+         checksum: "csum3-platver-full",
+         specificity: "maple tree",
        },
        {
-         :name => "bfile.rb",
-         :path => "files/fakeos-1/bfile.rb",
-         :checksum => "csum4-platver-full",
-         :specificity => "fakeos-1",
+         name: "files/bfile.rb",
+         path: "files/fakeos-1/bfile.rb",
+         full_path: "/cookbook-folder/files/fakeos-1/bfile.rb",
+         checksum: "csum4-platver-full",
+         specificity: "fakeos-1",
        },
 
        # directory adirectory
        {
-         :name => "anotherfile1.rb",
-         :path => "files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
-         :checksum => "csum-host-1",
-         :specificity => "host-examplehost.example.org",
-       },
-       {
-         :name => "anotherfile2.rb",
-         :path => "files/host-examplehost.example.org/adirectory/anotherfile2.rb.host",
-         :checksum => "csum-host-2",
-         :specificity => "host-examplehost.example.org",
+         name: "files/anotherfile1.rb",
+         path: "files/root_directory/anotherfile1.rb.root",
+         checksum: "csum-root-directory",
+         specificity: "root_directory",
        },
 
        {
-         :name => "anotherfile1.rb",
-         :path => "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
-         :checksum => "csum-platver-full-1",
-         :specificity => "ubuntu-9.10",
+         name: "files/anotherfile1.rb",
+         path: "files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
+         full_path: "/cookbook-folder/files/host-examplehost.example.org/adirectory/anotherfile1.rb.host",
+         checksum: "csum-host-1",
+         specificity: "host-examplehost.example.org",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-full-version",
-         :checksum => "csum-platver-full-2",
-         :specificity => "ubuntu-9.10",
-       },
-
-       {
-         :name => "anotherfile1.rb",
-         :path => "files/newubuntu-9/adirectory/anotherfile1.rb.platform-partial-version",
-         :checksum => "csum-platver-partial-1",
-         :specificity => "newubuntu-9",
-       },
-       {
-         :name => "anotherfile2.rb",
-         :path => "files/newubuntu-9/adirectory/anotherfile2.rb.platform-partial-version",
-         :checksum => "csum-platver-partial-2",
-         :specificity => "nweubuntu-9",
+         name: "files/anotherfile2.rb",
+         path: "files/host-examplehost.example.org/adirectory/anotherfile2.rb.host",
+         full_path: "/cookbook-folder/files/host-examplehost.example.org/adirectory/anotherfile2.rb.host",
+         checksum: "csum-host-2",
+         specificity: "host-examplehost.example.org",
        },
 
        {
-         :name => "anotherfile1.rb",
-         :path => "files/ubuntu/adirectory/anotherfile1.rb.platform",
-         :checksum => "csum-plat-1",
-         :specificity => "ubuntu",
+         name: "files/anotherfile1.rb",
+         path: "files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/ubuntu-9.10/adirectory/anotherfile1.rb.platform-full-version",
+         checksum: "csum-platver-full-1",
+         specificity: "ubuntu-9.10",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/ubuntu/adirectory/anotherfile2.rb.platform",
-         :checksum => "csum-plat-2",
-         :specificity => "ubuntu",
+         name: "files/anotherfile2.rb",
+         path: "files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/ubuntu-9.10/adirectory/anotherfile2.rb.platform-full-version",
+         checksum: "csum-platver-full-2",
+         specificity: "ubuntu-9.10",
        },
 
        {
-         :name => "anotherfile1.rb",
-         :path => "files/default/adirectory/anotherfile1.rb.default",
-         :checksum => "csum-default-1",
-         :specificity => "default",
+         name: "files/anotherfile1.rb",
+         path: "files/newubuntu-9/adirectory/anotherfile1.rb.platform-partial-version",
+         full_path: "/cookbook-folder/files/newubuntu-9/adirectory/anotherfile1.rb.platform-partial-version",
+         checksum: "csum-platver-partial-1",
+         specificity: "newubuntu-9",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/default/adirectory/anotherfile2.rb.default",
-         :checksum => "csum-default-2",
-         :specificity => "default",
+         name: "files/anotherfile2.rb",
+         path: "files/newubuntu-9/adirectory/anotherfile2.rb.platform-partial-version",
+         full_path: "/cookbook-folder/files/newubuntu-9/adirectory/anotherfile2.rb.platform-partial-version",
+         checksum: "csum-platver-partial-2",
+         specificity: "nweubuntu-9",
+       },
+
+       {
+         name: "files/anotherfile1.rb",
+         path: "files/ubuntu/adirectory/anotherfile1.rb.platform",
+         full_path: "/cookbook-folder/files/ubuntu/adirectory/anotherfile1.rb.platform",
+         checksum: "csum-plat-1",
+         specificity: "ubuntu",
+       },
+       {
+         name: "files/anotherfile2.rb",
+         path: "files/ubuntu/adirectory/anotherfile2.rb.platform",
+         full_path: "/cookbook-folder/files/ubuntu/adirectory/anotherfile2.rb.platform",
+         checksum: "csum-plat-2",
+         specificity: "ubuntu",
+       },
+
+       {
+         name: "files/anotherfile1.rb",
+         path: "files/default/adirectory/anotherfile1.rb.default",
+         full_path: "/cookbook-folder/files/default/adirectory/anotherfile1.rb.default",
+         checksum: "csum-default-1",
+         specificity: "default",
+       },
+       {
+         name: "files/anotherfile2.rb",
+         path: "files/default/adirectory/anotherfile2.rb.default",
+         full_path: "/cookbook-folder/files/default/adirectory/anotherfile2.rb.default",
+         checksum: "csum-default-2",
+         specificity: "default",
        },
        # for different/odd platform_versions
        {
-         :name => "anotherfile1.rb",
-         :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-full-version",
-         :checksum => "csum2-platver-full-1",
-         :specificity => "fakeos-2.0.rc.1",
+         name: "files/anotherfile1.rb",
+         path: "files/fakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-full-version",
+         checksum: "csum2-platver-full-1",
+         specificity: "fakeos-2.0.rc.1",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/fakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-full-version",
-         :checksum => "csum2-platver-full-2",
-         :specificity => "fakeos-2.0.rc.1",
+         name: "files/anotherfile2.rb",
+         path: "files/fakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-full-version",
+         checksum: "csum2-platver-full-2",
+         specificity: "fakeos-2.0.rc.1",
        },
        {
-         :name => "anotherfile1.rb",
-         :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-partial-version",
-         :checksum => "csum2-platver-partial-1",
-         :specificity => "newfakeos-2.0.rc",
+         name: "files/anotherfile1.rb",
+         path: "files/newfakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-partial-version",
+         full_path: "/cookbook-folder/files/newfakeos-2.0.rc.1/adirectory/anotherfile1.rb.platform-partial-version",
+         checksum: "csum2-platver-partial-1",
+         specificity: "newfakeos-2.0.rc",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/newfakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-partial-version",
-         :checksum => "csum2-platver-partial-2",
-         :specificity => "newfakeos-2.0.rc",
+         name: "files/anotherfile2.rb",
+         path: "files/newfakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-partial-version",
+         full_path: "/cookbook-folder/files/newfakeos-2.0.rc.1/adirectory/anotherfile2.rb.platform-partial-version",
+         checksum: "csum2-platver-partial-2",
+         specificity: "newfakeos-2.0.rc",
        },
        {
-         :name => "anotherfile1.rb",
-         :path => "files/fakeos-maple tree/adirectory/anotherfile1.rb.platform-full-version",
-         :checksum => "csum3-platver-full-1",
-         :specificity => "fakeos-maple tree",
+         name: "files/anotherfile1.rb",
+         path: "files/fakeos-maple tree/adirectory/anotherfile1.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-maple tree/adirectory/anotherfile1.rb.platform-full-version",
+         checksum: "csum3-platver-full-1",
+         specificity: "fakeos-maple tree",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/fakeos-maple tree/adirectory/anotherfile2.rb.platform-full-version",
-         :checksum => "csum3-platver-full-2",
-         :specificity => "fakeos-maple tree",
+         name: "files/anotherfile2.rb",
+         path: "files/fakeos-maple tree/adirectory/anotherfile2.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-maple tree/adirectory/anotherfile2.rb.platform-full-version",
+         checksum: "csum3-platver-full-2",
+         specificity: "fakeos-maple tree",
        },
        {
-         :name => "anotherfile1.rb",
-         :path => "files/fakeos-1/adirectory/anotherfile1.rb.platform-full-version",
-         :checksum => "csum4-platver-full-1",
-         :specificity => "fakeos-1",
+         name: "files/anotherfile1.rb",
+         path: "files/fakeos-1/adirectory/anotherfile1.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-1/adirectory/anotherfile1.rb.platform-full-version",
+         checksum: "csum4-platver-full-1",
+         specificity: "fakeos-1",
        },
        {
-         :name => "anotherfile2.rb",
-         :path => "files/fakeos-1/adirectory/anotherfile2.rb.platform-full-version",
-         :checksum => "csum4-platver-full-2",
-         :specificity => "fakeos-1",
+         name: "files/anotherfile2.rb",
+         path: "files/fakeos-1/adirectory/anotherfile2.rb.platform-full-version",
+         full_path: "/cookbook-folder/files/fakeos-1/adirectory/anotherfile2.rb.platform-full-version",
+         checksum: "csum4-platver-full-2",
+         specificity: "fakeos-1",
        },
       ],
     }
@@ -337,7 +371,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-host-1", "csum-host-2"])
+      expect(checksums.sort).to eq(%w{csum-host-1 csum-host-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform & full version" do
@@ -351,7 +385,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-platver-full-1", "csum-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum-platver-full-1 csum-platver-full-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform & partial version" do
@@ -365,7 +399,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-platver-partial-1", "csum-platver-partial-2"])
+      expect(checksums.sort).to eq(%w{csum-platver-partial-1 csum-platver-partial-2})
     end
 
     it "should return a directory of manifest records based on priority preference: platform only" do
@@ -379,7 +413,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-plat-1", "csum-plat-2"])
+      expect(checksums.sort).to eq(%w{csum-plat-1 csum-plat-2})
     end
 
     it "should return a directory of manifest records based on priority preference: default" do
@@ -393,7 +427,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum-default-1", "csum-default-2"])
+      expect(checksums.sort).to eq(%w{csum-default-1 csum-default-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 1" do
@@ -407,7 +441,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum2-platver-full-1", "csum2-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum2-platver-full-1 csum2-platver-full-2})
     end
 
     it "should return a manifest record based on priority preference: platform & partial version - platform_version variant 1" do
@@ -421,7 +455,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum2-platver-partial-1", "csum2-platver-partial-2"])
+      expect(checksums.sort).to eq(%w{csum2-platver-partial-1 csum2-platver-partial-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 2" do
@@ -435,7 +469,7 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum3-platver-full-1", "csum3-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum3-platver-full-1 csum3-platver-full-2})
     end
 
     it "should return a manifest record based on priority preference: platform & full version - platform_version variant 3" do
@@ -449,13 +483,26 @@ describe Chef::CookbookVersion, "file specificity" do
       expect(manifest_records.size).to eq(2)
 
       checksums = manifest_records.map { |manifest_record| manifest_record[:checksum] }
-      expect(checksums.sort).to eq(["csum4-platver-full-1", "csum4-platver-full-2"])
+      expect(checksums.sort).to eq(%w{csum4-platver-full-1 csum4-platver-full-2})
     end
   end
 
   ## Globbing the relative paths out of the manifest records ##
 
   describe "when globbing for relative file paths based on filespecificity" do
+    it "should return a list of relative paths based on priority preference: root directory" do
+      node = Chef::Node.new
+      node.automatic_attrs[:platform] = "ubuntu"
+      node.automatic_attrs[:platform_version] = "9.10"
+      node.automatic_attrs[:fqdn] = "examplehost.example.org"
+
+      filenames = @cookbook.relative_filenames_in_preferred_directory(node, :files, "root_directory")
+      expect(filenames).not_to be_nil
+      expect(filenames.size).to eq(1)
+
+      expect(filenames.sort).to eq(["anotherfile1.rb.root"])
+    end
+
     it "should return a list of relative paths based on priority preference: host" do
       node = Chef::Node.new
       node.automatic_attrs[:platform] = "ubuntu"

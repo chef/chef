@@ -1,6 +1,6 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,13 @@
 # limitations under the License.
 #
 
-require "tempfile"
-require "erubis"
+autoload :Tempfile, "tempfile"
+autoload :Erubis, "erubis"
 
 class Chef
   module Mixin
     module Template
 
-      # == ChefContext
       # ChefContext was previously used to mix behavior into Erubis::Context so
       # that it would be available to templates. This behavior has now moved to
       # TemplateContext, but this module is still mixed in to the
@@ -32,7 +31,6 @@ class Chef
       module ChefContext
       end
 
-      # == TemplateContext
       # TemplateContext is the base context class for all templates in Chef. It
       # defines user-facing extensions to the base Erubis::Context to provide
       # enhanced features. Individual instances of TemplateContext can be
@@ -72,7 +70,7 @@ class Chef
         # @return [String] recipe path
         attr_reader :recipe_path
 
-        # line in the recipe containing the template reosurce, e.g.:
+        # line in the recipe containing the template resource, e.g.:
         #   2
         #
         # @return [String] recipe line
@@ -104,6 +102,7 @@ class Chef
         # by the bare `node` everywhere.
         def node
           return @node if @node
+
           raise "Could not find a value for node. If you are explicitly setting variables in a template, " +
             "include a node variable if you plan to use it."
         end
@@ -140,11 +139,11 @@ class Chef
           partial_context._extend_modules(@_extension_modules)
 
           template_location = @template_finder.find(partial_name, options)
-          _render_template(IO.binread(template_location), partial_context)
+          _render_template(IO.binread(template_location), partial_context, filename: template_location)
         end
 
         def render_template(template_location)
-          _render_template(IO.binread(template_location), self)
+          _render_template(IO.binread(template_location), self, filename: template_location)
         end
 
         def render_template_from_string(template)
@@ -155,12 +154,13 @@ class Chef
         # INTERNAL PUBLIC API
         ###
 
-        def _render_template(template, context)
+        def _render_template(template, context, options = {})
           begin
-            eruby = Erubis::Eruby.new(template)
+            # eruby = Erubis::Eruby.new(template, options)
+            eruby = Erubis::Eruby.new(template, options)
             output = eruby.evaluate(context)
           rescue Object => e
-            raise TemplateError.new(e, template, context)
+            raise TemplateError.new(e, template, context, options)
           end
 
           # CHEF-4399
@@ -175,7 +175,7 @@ class Chef
           # potential issues for the applications that will consume
           # this template.
 
-          if Chef::Platform.windows?
+          if ChefUtils.windows?
             output = output.gsub(/\r?\n/, "\r\n")
           end
 
@@ -184,7 +184,7 @@ class Chef
 
         def _extend_modules(module_names)
           module_names.each do |mod|
-            context_methods = [:node, :render, :render_template, :render_template_from_string]
+            context_methods = %i{node render render_template render_template_from_string}
             context_methods.each do |core_method|
               if mod.method_defined?(core_method) || mod.private_method_defined?(core_method)
                 Chef::Log.warn("Core template method `#{core_method}' overridden by extension module #{mod}")
@@ -204,7 +204,7 @@ class Chef
           all_ivars.delete(:@_extension_modules)
           all_ivars.inject({}) do |ivar_map, ivar_symbol_name|
             value = instance_variable_get(ivar_symbol_name)
-            name_without_at = ivar_symbol_name.to_s[1..-1].to_sym
+            name_without_at = ivar_symbol_name.to_s[1..].to_sym
             ivar_map[name_without_at] = value
             ivar_map
           end
@@ -212,11 +212,12 @@ class Chef
       end
 
       class TemplateError < RuntimeError
-        attr_reader :original_exception, :context
+        attr_reader :original_exception, :context, :options
+
         SOURCE_CONTEXT_WINDOW = 2
 
-        def initialize(original_exception, template, context)
-          @original_exception, @template, @context = original_exception, template, context
+        def initialize(original_exception, template, context, options)
+          @original_exception, @template, @context, @options = original_exception, template, context, options
         end
 
         def message
@@ -224,7 +225,11 @@ class Chef
         end
 
         def line_number
-          @line_number ||= $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
+          @line_number ||= if options[:filename]
+                             $1.to_i if original_exception.backtrace.find { |line| line =~ /#{Regexp.escape(options[:filename])}:(\d+)/ }
+                           else
+                             $1.to_i if original_exception.backtrace.find { |line| line =~ /\(erubis\):(\d+)/ }
+                           end
         end
 
         def source_location

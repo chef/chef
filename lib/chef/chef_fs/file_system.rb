@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/path_utils"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/parallelizer"
+require_relative "path_utils"
+require_relative "file_system/exceptions"
+require_relative "parallelizer"
 
 class Chef
   module ChefFS
@@ -94,6 +94,7 @@ class Chef
       def self.resolve_path(entry, path)
         return entry if path.length == 0
         return resolve_path(entry.root, path) if path[0, 1] == "/" && entry.root != entry
+
         if path[0, 1] == "/"
           path = path[1, path.length - 1]
         end
@@ -194,7 +195,7 @@ class Chef
           # Check the outer regex pattern to see if it matches anything on the
           # filesystem that isn't on the server
           Chef::ChefFS::FileSystem.list(b_root, pattern).each do |b|
-            if !found_paths.include?(b.display_path)
+            unless found_paths.include?(b.display_path)
               a = Chef::ChefFS::FileSystem.resolve_path(a_root, b.display_path)
               yield [ a, b ]
             end
@@ -228,7 +229,7 @@ class Chef
 
         # Check b for children that aren't in a
         b.children.each do |b_child|
-          if !a_children_names.include?(b_child.bare_name)
+          unless a_children_names.include?(b_child.bare_name)
             result << [ a.child(b_child.bare_name), b_child ]
           end
         end
@@ -291,7 +292,7 @@ class Chef
                     end
                   end
                 else
-                  ui.output ("Not deleting extra entry #{dest_path} (purge is off)") if ui
+                  ui.output("Not deleting extra entry #{dest_path} (purge is off)") if ui
                 end
               end
 
@@ -419,7 +420,7 @@ class Chef
               ui.output "Created #{parent_path}" if ui
             end
           end
-          return parent
+          parent
         end
 
         def parallel_do(enum, options = {}, &block)

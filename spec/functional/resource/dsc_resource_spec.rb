@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,11 +33,11 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
     Chef::Resource::DscResource.new("dsc_resource_test", run_context)
   end
 
-  context "when Powershell does not support Invoke-DscResource"
-  context "when Powershell supports Invoke-DscResource" do
+  context "when PowerShell does not support Invoke-DscResource"
+  context "when PowerShell supports Invoke-DscResource" do
     before do
       if !Chef::Platform.supports_dsc_invoke_resource?(node)
-        skip "Requires Powershell >= 5.0.10018.0"
+        skip "Requires PowerShell >= 5.0.10018.0"
       elsif !Chef::Platform.supports_refresh_mode_enabled?(node) && !Chef::Platform.dsc_refresh_mode_disabled?(node)
         skip "Requires LCM RefreshMode is Disabled"
       end
@@ -46,7 +46,8 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
       it "raises an exception if the resource is not found" do
         new_resource.resource "thisdoesnotexist"
         expect { new_resource.run_action(:run) }.to raise_error(
-                                            Chef::Exceptions::ResourceNotFound)
+          Chef::Exceptions::ResourceNotFound
+        )
       end
     end
 
@@ -61,7 +62,7 @@ describe Chef::Resource::DscResource, :windows_powershell_dsc_only do
       end
 
       after do
-        File.delete(tmp_file_name) if File.exists? tmp_file_name
+        File.delete(tmp_file_name) if File.exist? tmp_file_name
       end
 
       it "converges the resource if it is not converged" do

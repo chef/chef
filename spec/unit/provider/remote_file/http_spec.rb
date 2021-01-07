@@ -157,9 +157,9 @@ describe Chef::Provider::RemoteFile::HTTP do
     let(:expected_http_opts) { {} }
     let(:expected_http_args) { [uri, expected_http_opts] }
 
-    let(:tempfile_path) { "/tmp/chef-mock-tempfile-abc123" }
+    let(:tempfile_path) { tempfile.path }
 
-    let(:tempfile) { double(Tempfile, :path => tempfile_path, :close => nil) }
+    let(:tempfile) { Tempfile.open("muhtempfile") }
 
     let(:last_response) { {} }
 
@@ -171,7 +171,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
     let(:rest) do
       rest = double(Chef::HTTP::Simple)
-      allow(rest).to receive(:streaming_request).and_return(tempfile)
+      allow_any_instance_of(Chef::FileContentManagement::Tempfile).to receive(:tempfile).and_return(tempfile)
       allow(rest).to receive(:last_response).and_return(last_response)
       rest
     end
@@ -185,21 +185,37 @@ describe Chef::Provider::RemoteFile::HTTP do
       expect(Chef::HTTP::Simple).to receive(:new).with(*expected_http_args).and_return(rest)
     end
 
-    describe "and the request does not return new content" do
-
-      it "should return a nil tempfile for a 304 HTTPNotModifed" do
-        # Streaming request returns nil for 304 errors
-        allow(rest).to receive(:streaming_request).and_return(nil)
-        expect(fetcher.fetch).to be_nil
-      end
-
+    it "should clean up the tempfile, and return a nil when streaming_request returns nil" do
+      # Streaming request returns nil for a 304 not modified (etags / last-modified)
+      expect(rest).to receive(:streaming_request).with(uri, {}, tempfile).and_return(nil)
+      expect(tempfile).to receive(:close)
+      expect(tempfile).to receive(:unlink)
+      expect(fetcher.fetch).to be_nil
     end
 
-    describe "and the request returns new content" do
-
+    context "with progress reports" do
       let(:fetched_content_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
 
       before do
+        expect(cache_control_data).to receive(:save)
+        expect(Chef::Digester).to receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
+        Chef::Config[:show_download_progress] = true
+      end
+
+      it "should yield its progress" do
+        expect(rest).to receive(:streaming_request_with_progress).with(uri, {}, tempfile).and_yield(50, 100).and_yield(70, 100).and_return(tempfile)
+        expect(event_dispatcher).to receive(:formatter?).and_return(true)
+        expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 50, 100, 10).ordered
+        expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 70, 100, 10).ordered
+        fetcher.fetch
+      end
+    end
+
+    describe "and the request returns new content" do
+      let(:fetched_content_checksum) { "e2a8938cc31754f6c067b35aab1d0d4864272e9bf8504536ef3e79ebf8432305" }
+
+      before do
+        expect(rest).to receive(:streaming_request).with(uri, {}, tempfile).and_return(tempfile)
         expect(cache_control_data).to receive(:save)
         expect(Chef::Digester).to receive(:checksum_for_file).with(tempfile_path).and_return(fetched_content_checksum)
       end
@@ -210,20 +226,6 @@ describe Chef::Provider::RemoteFile::HTTP do
         expect(cache_control_data.etag).to be_nil
         expect(cache_control_data.mtime).to be_nil
         expect(cache_control_data.checksum).to eq(fetched_content_checksum)
-      end
-
-      context "with progress reports" do
-        before do
-          Chef::Config[:show_download_progress] = true
-        end
-
-        it "should yield its progress" do
-          allow(rest).to receive(:streaming_request_with_progress).and_yield(50, 100).and_yield(70, 100).and_return(tempfile)
-          expect(event_dispatcher).to receive(:formatter?).and_return(true)
-          expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 50, 100, 10).ordered
-          expect(event_dispatcher).to receive(:resource_update_progress).with(new_resource, 70, 100, 10).ordered
-          fetcher.fetch
-        end
       end
 
       context "and the response does not contain an etag" do
@@ -290,7 +292,7 @@ describe Chef::Provider::RemoteFile::HTTP do
       context "and the target file is a tarball [CHEF-3140]" do
 
         let(:uri) { URI.parse("http://opscode.com/tarball.tgz") }
-        let(:expected_http_opts) { { :disable_gzip => true } }
+        let(:expected_http_opts) { { disable_gzip: true } }
 
         # CHEF-3140
         # Some servers return tarballs as content type tar and encoding gzip, which
@@ -303,7 +305,7 @@ describe Chef::Provider::RemoteFile::HTTP do
 
         it "should disable gzip compression in the client" do
           # Before block in the parent context has set an expectation on
-          # Chef::HTTP::Simple.new() being called with expected arguments. Here we fufil
+          # Chef::HTTP::Simple.new() being called with expected arguments. Here we fulfill
           # that expectation, so that we can explicitly set it for this test.
           # This is intended to provide insurance that refactoring of the parent
           # context does not negate the value of this particular example.

@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,14 @@
 # limitations under the License.
 #
 
-require "forwardable"
-require "chef/platform/query_helpers"
-require "chef/knife/core/generic_presenter"
-require "tempfile"
+require "forwardable" unless defined?(Forwardable)
+require_relative "../../platform/query_helpers"
+require_relative "generic_presenter"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class Knife
 
-    #==Chef::Knife::UI
     # The User Interaction class used by knife.
     class UI
 
@@ -62,48 +61,105 @@ class Chef
         end
       end
 
-      # Prints a message to stdout. Aliased as +info+ for compatibility with
-      # the logger API.
-      def msg(message)
-        begin
-          stdout.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
+      # Creates a new object of class TTY::Prompt
+      # with interrupt as exit so that it can be terminated with status code.
+      def prompt
+        @prompt ||= begin
+          require "tty-prompt"
+          TTY::Prompt.new(interrupt: :exit)
         end
       end
 
-      # Prints a msg to stderr. Used for info, warn, error, and fatal.
-      def log(message)
-        begin
-          stderr.puts message
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
+      # pastel.decorate is a lightweight replacement for highline.color
+      def pastel
+        @pastel ||= begin
+          require "pastel" unless defined?(Pastel)
+          Pastel.new
         end
+      end
+
+      # Prints a message to stdout. Aliased as +info+ for compatibility with
+      # the logger API.
+      #
+      # @param message [String] the text string
+      def msg(message)
+        stdout.puts message
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+
+        exit 0
+      end
+
+      # Prints a msg to stderr. Used for info, warn, error, and fatal.
+      #
+      # @param message [String] the text string
+      def log(message)
+        lines = message.split("\n")
+        first_line = lines.shift
+        stderr.puts first_line
+        # If the message is multiple lines,
+        # indent subsequent lines to align with the
+        # log type prefix ("ERROR: ", etc)
+        unless lines.empty?
+          prefix, = first_line.split(":", 2)
+          return if prefix.nil?
+
+          prefix_len = prefix.length
+          prefix_len -= 9 if color? # prefix includes 9 bytes of color escape sequences
+          prefix_len += 2 # include room to align to the ": " following PREFIX
+          padding = " " * prefix_len
+          lines.each do |line|
+            stderr.puts "#{padding}#{line}"
+          end
+        end
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+
+        exit 0
       end
 
       alias :info :log
       alias :err :log
 
+      # Print a Debug
+      #
+      # @param message [String] the text string
+      def debug(message)
+        log("#{color("DEBUG:", :blue, :bold)} #{message}")
+      end
+
       # Print a warning message
+      #
+      # @param message [String] the text string
       def warn(message)
-        log("#{color('WARNING:', :yellow, :bold)} #{message}")
+        log("#{color("WARNING:", :yellow, :bold)} #{message}")
       end
 
       # Print an error message
+      #
+      # @param message [String] the text string
       def error(message)
-        log("#{color('ERROR:', :red, :bold)} #{message}")
+        log("#{color("ERROR:", :red, :bold)} #{message}")
       end
 
       # Print a message describing a fatal error.
+      #
+      # @param message [String] the text string
       def fatal(message)
-        log("#{color('FATAL:', :red, :bold)} #{message}")
+        log("#{color("FATAL:", :red, :bold)} #{message}")
+      end
+
+      # Print a message describing a fatal error and exit 1
+      #
+      # @param message [String] the text string
+      def fatal!(message)
+        fatal(message)
+        exit 1
       end
 
       def color(string, *colors)
         if color?
-          highline.color(string, *colors)
+          pastel.decorate(string, *colors)
         else
           string
         end
@@ -116,8 +172,8 @@ class Chef
         Chef::Config[:color] && stdout.tty?
       end
 
-      def ask(*args, &block)
-        highline.ask(*args, &block)
+      def ask(*args, **options, &block)
+        prompt.ask(*args, **options, &block)
       end
 
       def list(*args)
@@ -138,7 +194,7 @@ class Chef
       end
 
       def ask_question(question, opts = {})
-        question = question + "[#{opts[:default]}] " if opts[:default]
+        question += "[#{opts[:default]}] " if opts[:default]
 
         if opts[:default] && config[:defaults]
           opts[:default]
@@ -155,12 +211,11 @@ class Chef
       end
 
       def pretty_print(data)
-        begin
-          stdout.puts data
-        rescue Errno::EPIPE => e
-          raise e if @config[:verbosity] >= 2
-          exit 0
-        end
+        stdout.puts data
+      rescue Errno::EPIPE => e
+        raise e if @config[:verbosity] >= 2
+
+        exit 0
       end
 
       # Hash -> Hash
@@ -173,12 +228,12 @@ class Chef
 
       def edit_data(data, parse_output = true, object_class: nil)
         output = Chef::JSONCompat.to_json_pretty(data)
-        if !config[:disable_editing]
+        unless config[:disable_editing]
           Tempfile.open([ "knife-edit-", ".json" ]) do |tf|
             tf.sync = true
             tf.puts output
             tf.close
-            raise "Please set EDITOR environment variable" unless system("#{config[:editor]} #{tf.path}")
+            raise "Please set EDITOR environment variable. See https://docs.chef.io/knife_setup/ for details." unless system("#{config[:editor]} #{tf.path}")
 
             output = IO.read(tf.path)
           end
@@ -186,8 +241,7 @@ class Chef
 
         if parse_output
           if object_class.nil?
-            Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please pass in the class to inflate or use #edit_hash")
-            Chef::JSONCompat.from_json(output)
+            raise ArgumentError, "Please pass in the object class to hydrate or use #edit_hash"
           else
             object_class.from_hash(Chef::JSONCompat.parse(output))
           end
@@ -215,9 +269,9 @@ class Chef
         output_parsed_again = Chef::JSONCompat.parse(Chef::JSONCompat.to_json(output))
         if object_parsed_again != output_parsed_again
           output.save
-          self.msg("Saved #{output}")
+          msg("Saved #{output}")
         else
-          self.msg("Object unchanged, not saving")
+          msg("Object unchanged, not saving")
         end
         output(format_for_display(object)) if config[:print_after]
       end
@@ -247,19 +301,19 @@ class Chef
         when "Y", "y"
           true
         when "N", "n"
-          self.msg("You said no, so I'm done here.")
+          msg("You said no, so I'm done here.")
           false
         when ""
           unless default_choice.nil?
             default_choice
           else
-            self.msg("I have no idea what to do with '#{answer}'")
-            self.msg("Just say Y or N, please.")
+            msg("I have no idea what to do with '#{answer}'")
+            msg("Just say Y or N, please.")
             confirm_without_exit(question, append_instructions, default_choice)
           end
         else
-          self.msg("I have no idea what to do with '#{answer}'")
-          self.msg("Just say Y or N, please.")
+          msg("I have no idea what to do with '#{answer}'")
+          msg("Just say Y or N, please.")
           confirm_without_exit(question, append_instructions, default_choice)
         end
       end

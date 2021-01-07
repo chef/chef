@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +23,14 @@ class Chef
       attr_reader :run_context
       attr_reader :new_resource
       attr_reader :current_resource
+      attr_reader :logger
 
-      def initialize(new_resource, current_resource, run_context)
+      def initialize(new_resource, current_resource, run_context, logger = Chef::Log.with_child)
         @new_resource = new_resource
         @current_resource = current_resource
         @run_context = run_context
         @tempfile_loaded = false
+        @logger = logger
       end
 
       def tempfile

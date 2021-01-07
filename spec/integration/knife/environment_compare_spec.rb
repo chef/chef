@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -42,33 +43,33 @@ describe "knife environment compare", :workstation do
       }
     end
 
-    # rubocop:disable Style/TrailingWhitespace
+    # rubocop:disable Layout/TrailingWhitespace
     it "displays the cookbooks for a single environment" do
-      knife("environment compare x").should_succeed <<EOM
-      x       
-blah  = 1.0.0 
-krad  >= 1.0.0
-
-EOM
+      knife("environment compare x").should_succeed <<~EOM
+              x       
+        blah  = 1.0.0 
+        krad  >= 1.0.0
+        
+      EOM
     end
 
     it "compares the cookbooks for two environments" do
-      knife("environment compare x y").should_succeed <<EOM
-      x         y       
-blah  = 1.0.0   = 1.1.0 
-krad  >= 1.0.0  >= 1.0.0
-
-EOM
+      knife("environment compare x y").should_succeed <<~EOM
+              x         y       
+        blah  = 1.0.0   = 1.1.0 
+        krad  >= 1.0.0  >= 1.0.0
+        
+      EOM
     end
 
     it "compares the cookbooks for all environments" do
-      knife("environment compare --all").should_succeed <<EOM
-      x         y       
-blah  = 1.0.0   = 1.1.0 
-krad  >= 1.0.0  >= 1.0.0
-
-EOM
+      knife("environment compare --all").should_succeed <<~EOM
+              x         y       
+        blah  = 1.0.0   = 1.1.0 
+        krad  >= 1.0.0  >= 1.0.0
+        
+      EOM
     end
-    # rubocop:enable Style/TrailingWhitespace
+    # rubocop:enable Layout/TrailingWhitespace
   end
 end

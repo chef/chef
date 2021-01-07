@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Resource::RegistryKey do
 
-  before (:all) do
+  before(:all) do
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
     node.consume_external_attrs(OHAI_SYSTEM.data, {})

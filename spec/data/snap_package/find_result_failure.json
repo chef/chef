@@ -1,0 +1,10 @@
+{
+  "type": "error",
+  "status-code": 404,
+  "status": "Not Found",
+  "result": {
+    "message": "snap not found",
+    "kind": "snap-not-found",
+    "value": "hello2"
+  }
+}

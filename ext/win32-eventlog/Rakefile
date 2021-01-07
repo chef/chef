@@ -1,6 +1,8 @@
 require "rubygems"
 require "rake"
 require "mkmf"
+require "erb"
+require "chef-utils/dist"
 
 desc "Building event log dll"
 
@@ -12,18 +14,24 @@ def ensure_present(commands)
   end
 end
 
-EVT_MC_FILE = "chef-log.man"
-EVT_RC_FILE = "chef-log.rc"
-EVT_RESOURCE_OBJECT = "resource.o"
-EVT_SHARED_OBJECT = "chef-log.dll"
-MC = "windmc"
-RC = "windres"
-CC = "gcc"
+# Templating the windows event log messages
+# So we can inject distro constants in there
+template = ERB.new(IO.read("chef-log.man.erb"))
+chef_log_man = template.result
+File.open("chef-log.man", "w") { |f| f.write(chef_log_man) }
+
+EVT_MC_FILE = "chef-log.man".freeze
+EVT_RC_FILE = "chef-log.rc".freeze
+EVT_RESOURCE_OBJECT = "resource.o".freeze
+EVT_SHARED_OBJECT = "chef-log.dll".freeze
+MC = "windmc".freeze
+RC = "windres".freeze
+CC = "gcc".freeze
 
 ensure_present [MC, RC, CC]
 
-task :build => [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT]
-task :default => [:build, :register]
+task build: [EVT_RESOURCE_OBJECT, EVT_SHARED_OBJECT]
+task default: %i{build register}
 
 file EVT_RC_FILE => EVT_MC_FILE do
   sh "#{MC} #{EVT_MC_FILE}"
@@ -37,15 +45,15 @@ file EVT_SHARED_OBJECT => EVT_RESOURCE_OBJECT do
   sh "#{CC} -o #{EVT_SHARED_OBJECT} -shared #{EVT_RESOURCE_OBJECT}"
 end
 
-task :register => EVT_SHARED_OBJECT do
+task register: EVT_SHARED_OBJECT do
   require "win32/eventlog"
   dll_file = File.expand_path(EVT_SHARED_OBJECT)
   begin
     Win32::EventLog.add_event_source(
-      :source => "Application",
-      :key_name => "Chef",
-      :event_message_file => dll_file,
-      :category_message_file => dll_file
+      source: "Application",
+      key_name: ChefUtils::Dist::Infra::SHORT,
+      event_message_file: dll_file,
+      category_message_file: dll_file
     )
   rescue Errno::EIO => e
     puts "Skipping event log registration due to missing privileges: #{e}"

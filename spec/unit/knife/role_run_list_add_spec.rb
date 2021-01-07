@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Will Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,25 +21,25 @@ require "spec_helper"
 
 describe Chef::Knife::RoleRunListAdd do
   before(:each) do
-#    Chef::Config[:role_name]  = "websimian"
-#    Chef::Config[:env_name]  = "QA"
+    #    Chef::Config[:role_name]  = "websimian"
+    #    Chef::Config[:env_name]  = "QA"
     @knife = Chef::Knife::RoleRunListAdd.new
     @knife.config = {
-      :after => nil,
+      after: nil,
     }
     @knife.name_args = [ "will", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)
-    @role = Chef::Role.new()
+    @role = Chef::Role.new
     allow(@role).to receive(:save).and_return(true)
     allow(Chef::Role).to receive(:load).and_return(@role)
   end
 
   describe "run" do
 
-#    it "should display all the things" do
-#      @knife.run
-#      @role.to_json.should == 'show all the things'
-#    end
+    #    it "should display all the things" do
+    #      @knife.run
+    #      @role.to_json.should == 'show all the things'
+    #    end
 
     it "should have a run list with the monkey role" do
       @knife.run
@@ -74,14 +74,14 @@ describe Chef::Knife::RoleRunListAdd do
       end
 
       it "should add to the run list after the specified entries in the default run list" do
-        #Setup
+        # Setup
         @role.run_list_for("_default") << "role[acorns]"
         @role.run_list_for("_default") << "role[barn]"
-        #Configuration we are testing
+        # Configuration we are testing
         @knife.config[:after] = "role[acorns]"
         @knife.name_args = [ "will", "role[pad]", "role[whackadoo]" ]
         @knife.run
-        #The actual tests
+        # The actual tests
         expect(@role.run_list[0]).to eq("role[acorns]")
         expect(@role.run_list[1]).to eq("role[pad]")
         expect(@role.run_list[2]).to eq("role[whackadoo]")

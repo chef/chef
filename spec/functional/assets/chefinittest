@@ -1,15 +1,17 @@
 #!/bin/ksh
 
+TMPDIR="${TMPDIR:-/tmp}"
+
 function create_chef_txt {
-        touch /tmp/chefinittest.txt
+        touch $TMPDIR/chefinittest.txt
 }
 
 function delete_chef_txt {
-        rm /tmp/chefinittest.txt
+        rm $TMPDIR/chefinittest.txt
 }
 
 function rename_chef_txt {
-        mv /tmp/chefinittest.txt /tmp/$1
+        mv $TMPDIR/chefinittest.txt $TMPDIR/$1
 }
 
 case "$1" in
@@ -20,7 +22,7 @@ stop )
         delete_chef_txt
         ;;
 status )
-        [ -f /tmp/chefinittest.txt ] || [ -f /tmp/chefinittest_reload.txt ] || [ -f /tmp/chefinittest_restart.txt ]
+        [ -f $TMPDIR/chefinittest.txt ] || [ -f $TMPDIR/chefinittest_reload.txt ] || [ -f $TMPDIR/chefinittest_restart.txt ]
         ;;
 reload )
         rename_chef_txt "chefinittest_reload.txt"

@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,16 +37,16 @@ describe "key edit commands that inherit knife" do
     end
 
     context "after apply_params! is called with valid args" do
-      let(:params) { ["charmander", "charmander-key"] }
+      let(:params) { %w{charmander charmander-key} }
       before do
         command.apply_params!(params)
       end
 
       context "when the service object is called" do
         it "creates a new instance of Chef::Knife::KeyEdit with the correct args" do
-          expect(Chef::Knife::KeyEdit).to receive(:new).
-            with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config).
-            and_return(service_object)
+          expect(Chef::Knife::KeyEdit).to receive(:new)
+            .with("charmander-key", "charmander", command.actor_field_name, command.ui, command.config)
+            .and_return(service_object)
           command.service_object
         end
       end # when the service object is called
@@ -59,7 +59,7 @@ describe "key edit commands that inherit knife" do
     it_should_behave_like "a knife key command with a keyname as the second arg"
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyEdit) }
-      let(:params) { ["charmander", "charmander-key"] }
+      let(:params) { %w{charmander charmander-key} }
     end
   end
 
@@ -69,7 +69,7 @@ describe "key edit commands that inherit knife" do
     it_should_behave_like "a knife key command with a keyname as the second arg"
     it_should_behave_like "a knife key command" do
       let(:service_object) { instance_double(Chef::Knife::KeyEdit) }
-      let(:params) { ["charmander", "charmander-key"] }
+      let(:params) { %w{charmander charmander-key} }
     end
   end
 end
@@ -86,7 +86,7 @@ Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
 0wIDAQAB
 -----END PUBLIC KEY-----"
   end
-  let(:config) { Hash.new }
+  let(:config) { {} }
   let(:actor) { "charmander" }
   let(:keyname) { "charmander-key" }
   let(:ui) { instance_double("Chef::Knife::UI") }

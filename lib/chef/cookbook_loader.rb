@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
@@ -18,114 +18,90 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/config"
-require "chef/exceptions"
-require "chef/cookbook/cookbook_version_loader"
-require "chef/cookbook_version"
-require "chef/cookbook/chefignore"
-require "chef/cookbook/metadata"
+require_relative "config"
+require_relative "exceptions"
+require_relative "cookbook/cookbook_version_loader"
+require_relative "cookbook_version"
+require_relative "cookbook/chefignore"
+require_relative "cookbook/metadata"
 
-#
-# CookbookLoader class loads the cookbooks lazily as read
-#
 class Chef
+  # This class is used by knife, cheffs and legacy chef-solo modes.  It is not used by the server mode
+  # of chef-client or zolo/zero modes.
+  #
+  # This class implements orchestration around producing a single cookbook_version for a cookbook or
+  # loading a Mash of all cookbook_versions, using the cookbook_version_loader class, and doing
+  # lazy-access and memoization to only load each cookbook once on demand.
+  #
+  # This implements a key-value style each which makes it appear to be a Hash of String => CookbookVersion
+  # pairs where the String is the cookbook name.  The use of Enumerable combined with the Hash-style
+  # each is likely not entirely sane.
+  #
+  # This object is also passed and injected into the CookbookCollection object where it is converted
+  # to a Mash that looks almost exactly like the cookbook_by_name Mash in this object.
+  #
   class CookbookLoader
+    # @return [Array<String>] the array of repo paths containing cookbook dirs
+    attr_reader :repo_paths
 
-    attr_reader :cookbooks_by_name
-    attr_reader :merged_cookbooks
-    attr_reader :cookbook_paths
-    attr_reader :metadata
-
+    # XXX: this is highly questionable combined with the Hash-style each method
     include Enumerable
 
+    # @param repo_paths [Array<String>] the array of repo paths containing cookbook dirs
     def initialize(*repo_paths)
-      repo_paths = repo_paths.flatten
-      raise ArgumentError, "You must specify at least one cookbook repo path" if repo_paths.empty?
-      @cookbooks_by_name = Mash.new
-      @loaded_cookbooks = {}
-      @metadata = Mash.new
-      @cookbooks_paths = Hash.new { |h, k| h[k] = [] } # for deprecation warnings
-      @chefignores = {}
-      @repo_paths = repo_paths.map do |repo_path|
-        File.expand_path(repo_path)
-      end
-
-      @preloaded_cookbooks = false
-      @loaders_by_name = {}
-
-      # Used to track which cookbooks appear in multiple places in the cookbook repos
-      # and are merged in to a single cookbook by file shadowing. This behavior is
-      # deprecated, so users of this class may issue warnings to the user by checking
-      # this variable
-      @merged_cookbooks = []
+      @repo_paths = repo_paths.flatten.compact.map { |p| File.expand_path(p) }
+      raise ArgumentError, "You must specify at least one cookbook repo path" if @repo_paths.empty?
     end
 
-    def merged_cookbook_paths # for deprecation warnings
-      merged_cookbook_paths = {}
-      @merged_cookbooks.each { |c| merged_cookbook_paths[c] = @cookbooks_paths[c] }
-      merged_cookbook_paths
-    end
-
-    def warn_about_cookbook_shadowing
-      unless merged_cookbooks.empty?
-        Chef::Log.deprecation "The cookbook(s): #{merged_cookbooks.join(', ')} exist in multiple places in your cookbook_path. " +
-          "A composite version has been compiled.  This has been deprecated since 0.10.4, in Chef 13 this behavior will be REMOVED."
-      end
-    end
-
-    # Will be removed when cookbook shadowing is removed, do NOT create new consumers of this API.
+    # The primary function of this class is to build this Mash mapping cookbook names as a string to
+    # the CookbookVersion objects for them.  Callers must call "load_cookbooks" first.
     #
-    # @api private
-    def load_cookbooks_without_shadow_warning
-      preload_cookbooks
-      @loaders_by_name.each do |cookbook_name, _loaders|
+    # @return [Mash<String, Chef::CookbookVersion>]
+    def cookbooks_by_name
+      @cookbooks_by_name ||= Mash.new
+    end
+
+    # This class also builds a mapping of cookbook names to their Metadata objects.  Callers must call
+    # "load_cookbooks" first.
+    #
+    # @return [Mash<String, Chef::Cookbook::Metadata>]
+    def metadata
+      @metadata ||= Mash.new
+    end
+
+    # Loads all cookbooks across all repo_paths
+    #
+    # @return [Mash<String, Chef::CookbookVersion>] the cookbooks_by_name Mash
+    def load_cookbooks
+      cookbook_version_loaders.each_key do |cookbook_name|
         load_cookbook(cookbook_name)
       end
-      @cookbooks_by_name
+      cookbooks_by_name
     end
 
-    def load_cookbooks
-      ret = load_cookbooks_without_shadow_warning
-      warn_about_cookbook_shadowing
-      ret
-    end
-
+    # Loads a single cookbook by its name.
+    #
+    # @param [String]
+    # @return [Chef::CookbookVersion]
     def load_cookbook(cookbook_name)
-      preload_cookbooks
-
-      return @cookbooks_by_name[cookbook_name] if @cookbooks_by_name.has_key?(cookbook_name)
-
-      return nil unless @loaders_by_name.key?(cookbook_name.to_s)
-
-      cookbook_loaders_for(cookbook_name).each do |loader|
-        loader.load
-
-        next if loader.empty?
-
-        @cookbooks_paths[cookbook_name] << loader.cookbook_path # for deprecation warnings
-
-        if @loaded_cookbooks.key?(cookbook_name)
-          @merged_cookbooks << cookbook_name # for deprecation warnings
-          @loaded_cookbooks[cookbook_name].merge!(loader)
-        else
-          @loaded_cookbooks[cookbook_name] = loader
-        end
+      unless cookbook_version_loaders.key?(cookbook_name)
+        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook_name}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata/)"
       end
 
-      if @loaded_cookbooks.has_key?(cookbook_name)
-        cookbook_version = @loaded_cookbooks[cookbook_name].cookbook_version
-        @cookbooks_by_name[cookbook_name] = cookbook_version
-        @metadata[cookbook_name] = cookbook_version.metadata
-      end
-      @cookbooks_by_name[cookbook_name]
+      return cookbooks_by_name[cookbook_name] if cookbooks_by_name.key?(cookbook_name)
+
+      loader = cookbook_version_loaders[cookbook_name]
+
+      loader.load!
+
+      cookbook_version = loader.cookbook_version
+      cookbooks_by_name[cookbook_name] = cookbook_version
+      metadata[cookbook_name] = cookbook_version.metadata unless cookbook_version.nil?
+      cookbook_version
     end
 
     def [](cookbook)
-      if @cookbooks_by_name.has_key?(cookbook.to_sym) || load_cookbook(cookbook.to_sym)
-        @cookbooks_by_name[cookbook.to_sym]
-      else
-        raise Exceptions::CookbookNotFoundInRepo, "Cannot find a cookbook named #{cookbook}; did you forget to add metadata to a cookbook? (https://docs.chef.io/config_rb_metadata.html)"
-      end
+      load_cookbook(cookbook)
     end
 
     alias :fetch :[]
@@ -133,41 +109,83 @@ class Chef
     def has_key?(cookbook_name)
       not self[cookbook_name.to_sym].nil?
     end
+
     alias :cookbook_exists? :has_key?
     alias :key? :has_key?
 
     def each
-      @cookbooks_by_name.keys.sort { |a, b| a.to_s <=> b.to_s }.each do |cname|
-        yield(cname, @cookbooks_by_name[cname])
+      cookbooks_by_name.keys.sort_by(&:to_s).each do |cname|
+        yield(cname, cookbooks_by_name[cname])
       end
     end
 
+    def each_key(&block)
+      cookbook_names.each(&block)
+    end
+
+    def each_value(&block)
+      values.each(&block)
+    end
+
     def cookbook_names
-      @cookbooks_by_name.keys.sort
+      cookbooks_by_name.keys.sort
     end
 
     def values
-      @cookbooks_by_name.values
+      cookbooks_by_name.values
     end
+
+    # This method creates tmp directory and copies all cookbooks into it and creates cookbook loader object which points to tmp directory
+    def self.copy_to_tmp_dir_from_array(cookbooks)
+      Dir.mktmpdir do |tmp_dir|
+        cookbooks.each do |cookbook|
+          checksums_to_on_disk_paths = cookbook.checksums
+          cookbook.each_file do |manifest_record|
+            path_in_cookbook = manifest_record[:path]
+            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+            dest = File.join(tmp_dir, cookbook.name.to_s, path_in_cookbook)
+            FileUtils.mkdir_p(File.dirname(dest))
+            FileUtils.cp_r(on_disk_path, dest)
+          end
+        end
+        tmp_cookbook_loader ||= begin
+          Chef::Cookbook::FileVendor.fetch_from_disk(tmp_dir)
+          CookbookLoader.new(tmp_dir)
+        end
+        yield tmp_cookbook_loader
+      end
+    end
+
+    # generates metadata.json adds it in the manifest
+    def compile_metadata
+      each do |cookbook_name, cookbook|
+        compiled_metadata = cookbook.compile_metadata
+        if compiled_metadata
+          cookbook.all_files << compiled_metadata
+          cookbook.cookbook_manifest.send(:generate_manifest)
+        end
+      end
+    end
+
+    # freeze versions of all the cookbooks
+    def freeze_versions
+      each do |cookbook_name, cookbook|
+        cookbook.freeze_version
+      end
+    end
+
     alias :cookbooks :values
 
     private
 
-    def preload_cookbooks
-      return false if @preloaded_cookbooks
-
-      all_directories_in_repo_paths.each do |cookbook_path|
-        preload_cookbook(cookbook_path)
-      end
-      @preloaded_cookbooks = true
-      true
-    end
-
-    def preload_cookbook(cookbook_path)
-      repo_path = File.dirname(cookbook_path)
+    # Helper method to lazily create and remember the chefignore object
+    # for a given repo_path.
+    #
+    # @param [String] repo_path the full path to the cookbook directory of the repo
+    # @return [Chef::Cookbook::Chefignore] the chefignore object for the repo_path
+    def chefignore(repo_path)
+      @chefignores ||= {}
       @chefignores[repo_path] ||= Cookbook::Chefignore.new(repo_path)
-      loader = Cookbook::CookbookVersionLoader.new(cookbook_path, @chefignores[repo_path])
-      add_cookbook_loader(loader)
     end
 
     def all_directories_in_repo_paths
@@ -178,23 +196,30 @@ class Chef
     def all_files_in_repo_paths
       @all_files_in_repo_paths ||=
         begin
-          @repo_paths.inject([]) do |all_children, repo_path|
+          repo_paths.inject([]) do |all_children, repo_path|
             all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
           end
         end
     end
 
-    def add_cookbook_loader(loader)
-      cookbook_name = loader.cookbook_name
+    # This method creates a Mash of the CookbookVersionLoaders for each cookbook.
+    #
+    # @return [Mash<String, Cookbook::CookbookVersionLoader>]
+    def cookbook_version_loaders
+      @cookbook_version_loaders ||=
+        begin
+          mash = Mash.new
+          all_directories_in_repo_paths.each do |cookbook_path|
+            loader = Cookbook::CookbookVersionLoader.new(cookbook_path, chefignore(cookbook_path))
+            cookbook_name = loader.cookbook_name
+            if mash.key?(cookbook_name)
+              raise Chef::Exceptions::CookbookMergingError, "Cookbook merging is no longer supported, the cookbook named #{cookbook_name} can only appear once in the cookbook_path"
+            end
 
-      @loaders_by_name[cookbook_name.to_s] ||= []
-      @loaders_by_name[cookbook_name.to_s] << loader
-      loader
+            mash[cookbook_name] = loader
+          end
+          mash
+        end
     end
-
-    def cookbook_loaders_for(cookbook_name)
-      @loaders_by_name[cookbook_name.to_s]
-    end
-
   end
 end

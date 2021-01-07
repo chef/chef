@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,13 @@ require "ostruct"
 
 describe Shell::ModelWrapper do
   before do
-    @model = OpenStruct.new(:name => "Chef::Node")
+    @model = OpenStruct.new(name: "Chef::Node")
     @wrapper = Shell::ModelWrapper.new(@model)
   end
 
   describe "when created with an explicit model_symbol" do
     before do
-      @model = OpenStruct.new(:name => "Chef::ApiClient")
+      @model = OpenStruct.new(name: "Chef::ApiClient")
       @wrapper = Shell::ModelWrapper.new(@model, :client)
     end
 
@@ -46,7 +46,7 @@ describe Shell::ModelWrapper do
       @node_1.name("sammich")
       @node_2 = Chef::Node.new
       @node_2.name("yummy")
-      @server_response = { :node_1 => @node_1, :node_2 => @node_2 }
+      @server_response = { node_1: @node_1, node_2: @node_2 }
       @wrapper = Shell::ModelWrapper.new(Chef::Node)
       allow(Chef::Node).to receive(:list).and_return(@server_response)
     end
@@ -57,7 +57,7 @@ describe Shell::ModelWrapper do
     end
 
     it "maps the listed nodes when given a block" do
-      expect(@wrapper.all { |n| n.name }.sort.reverse).to eq(%w{yummy sammich})
+      expect(@wrapper.all(&:name).sort.reverse).to eq(%w{yummy sammich})
     end
   end
 
@@ -67,7 +67,7 @@ describe Shell::ModelWrapper do
       @node_1.name("sammich")
       @node_2 = Chef::Node.new
       @node_2.name("yummy")
-      @server_response = { :node_1 => @node_1, :node_2 => @node_2 }
+      @server_response = { node_1: @node_1, node_2: @node_2 }
       @wrapper = Shell::ModelWrapper.new(Chef::Node)
 
       # Creating a Chef::Search::Query object tries to read the private key...

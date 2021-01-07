@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::GuardInterpreter do
   describe "#for_resource" do
-    let (:resource) { Chef::Resource.new("foo") }
+    let(:resource) { Chef::Resource.new("foo") }
 
     it "returns a DefaultGuardInterpreter if the resource has guard_interpreter set to :default" do
       resource.guard_interpreter :default

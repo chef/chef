@@ -1,6 +1,6 @@
 #
 # Author:: Sahil Muthoo (<sahil.muthoo@gmail.com>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,12 +23,14 @@ describe Chef::Knife::Status do
     node = Chef::Node.new.tap do |n|
       n.automatic_attrs["fqdn"] = "foobar"
       n.automatic_attrs["ohai_time"] = 1343845969
+      n.automatic_attrs["platform"] = "mac_os_x"
+      n.automatic_attrs["platform_version"] = "10.12.5"
     end
     allow(Time).to receive(:now).and_return(Time.at(1428573420))
     @query = double("Chef::Search::Query")
     allow(@query).to receive(:search).and_yield(node)
     allow(Chef::Search::Query).to receive(:new).and_return(@query)
-    @knife  = Chef::Knife::Status.new
+    @knife = Chef::Knife::Status.new
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
@@ -37,8 +39,9 @@ describe Chef::Knife::Status do
     let(:opts) do
       { filter_result:
                  { name: ["name"], ipaddress: ["ipaddress"], ohai_time: ["ohai_time"],
-                   ec2: ["ec2"], run_list: ["run_list"], platform: ["platform"],
-                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } } end
+                   cloud: ["cloud"], run_list: ["run_list"], platform: ["platform"],
+                   platform_version: ["platform_version"], chef_environment: ["chef_environment"] } }
+    end
 
     it "should default to searching for everything" do
       expect(@query).to receive(:search).with(:node, "*:*", opts)

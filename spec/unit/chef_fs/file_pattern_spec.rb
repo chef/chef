@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -157,7 +157,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with simple pattern "a\*\b"', :skip => (Chef::Platform.windows?) do
+  context 'with simple pattern "a\*\b"', skip: (ChefUtils.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new('a\*\b') }
     it "match?" do
       expect(pattern.match?("a*b")).to be_truthy
@@ -264,7 +264,7 @@ describe Chef::ChefFS::FilePattern do
     end
   end
 
-  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', :skip => (Chef::Platform.windows?) do
+  context 'with star pattern "/abc/d[a-z][0-9]f/ghi"', skip: (ChefUtils.windows?) do
     let(:pattern) { Chef::ChefFS::FilePattern.new("/abc/d[a-z][0-9]f/ghi") }
     it "match?" do
       expect(pattern.match?("/abc/de1f/ghi")).to be_truthy

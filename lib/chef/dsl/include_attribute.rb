@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/log"
+require_relative "../log"
 
 class Chef
   module DSL
@@ -31,9 +31,9 @@ class Chef
         attr_file_specs.flatten.each do |attr_file_spec|
           cookbook_name, attr_file = parse_attribute_file_spec(attr_file_spec)
           if run_context.loaded_fully_qualified_attribute?(cookbook_name, attr_file)
-            Chef::Log.debug("I am not loading attribute file #{cookbook_name}::#{attr_file}, because I have already seen it.")
+            Chef::Log.trace("I am not loading attribute file #{cookbook_name}::#{attr_file}, because I have already seen it.")
           else
-            Chef::Log.debug("Loading Attribute #{cookbook_name}::#{attr_file}")
+            Chef::Log.trace("Loading Attribute #{cookbook_name}::#{attr_file}")
             run_context.loaded_attribute(cookbook_name, attr_file)
             attr_file_path = run_context.resolve_attribute(cookbook_name, attr_file)
             node.from_file(attr_file_path)
@@ -55,7 +55,3 @@ class Chef
     end
   end
 end
-
-# **DEPRECATED**
-# This used to be part of chef/mixin/language_include_attribute. Load the file to activate the deprecation code.
-require "chef/mixin/language_include_attribute"

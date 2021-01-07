@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ require "chef/platform/resource_priority_map"
 describe Chef::Recipe do
 
   let(:cookbook_collection) do
-    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "data", "cookbooks"))
+    cookbook_repo = File.expand_path(File.join(__dir__, "..", "data", "cookbooks"))
     cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
     cookbook_loader.load_cookbooks
     Chef::CookbookCollection.new(cookbook_loader)
@@ -74,12 +74,6 @@ describe Chef::Recipe do
         expect { recipe.not_home("not_home_resource") }.to raise_error(NameError)
       end
 
-      it "should require a name argument" do
-        expect do
-          recipe.cat
-        end.to raise_error(ArgumentError)
-      end
-
       it "should allow regular errors (not NameErrors) to pass unchanged" do
         expect do
           recipe.cat("felix") { raise ArgumentError, "You Suck" }
@@ -100,7 +94,7 @@ describe Chef::Recipe do
           end
         end
 
-        expect(run_context.resource_collection.map { |r| r.name }).to eql(%w{monkey dog cat})
+        expect(run_context.resource_collection.map(&:name)).to eql(%w{monkey dog cat})
       end
 
       it "should return the new resource after creating it" do
@@ -116,12 +110,12 @@ describe Chef::Recipe do
         it "locate resource for particular platform" do
           ShaunTheSheep = Class.new(Chef::Resource)
           ShaunTheSheep.resource_name :shaun_the_sheep
-          ShaunTheSheep.provides :laughter, :platform => ["television"]
+          ShaunTheSheep.provides :laughter, platform: ["television"]
           node.automatic[:platform] = "television"
           node.automatic[:platform_version] = "123"
           res = recipe.laughter "timmy"
           expect(res.name).to eql("timmy")
-          res.kind_of?(ShaunTheSheep)
+          res.is_a?(ShaunTheSheep)
         end
 
         it "locate a resource for all platforms" do
@@ -130,7 +124,7 @@ describe Chef::Recipe do
           YourMom.provides :love_and_caring
           res = recipe.love_and_caring "mommy"
           expect(res.name).to eql("mommy")
-          res.kind_of?(YourMom)
+          res.is_a?(YourMom)
         end
 
         describe "when there is more than one resource that resolves on a node" do
@@ -147,16 +141,16 @@ describe Chef::Recipe do
             Object.send(:remove_const, :TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically" do
+          it "selects the last-writer wins" do
             Sounders.provides :football, platform: "nbc_sports"
             TottenhamHotspur.provides :football, platform: "nbc_sports"
 
             res1 = recipe.football "club world cup"
             expect(res1.name).to eql("club world cup")
-            expect(res1).to be_a_kind_of(Sounders)
+            expect(res1).to be_a_kind_of(TottenhamHotspur)
           end
 
-          it "selects the first one alphabetically even if the declaration order is reversed" do
+          it "selects the last-writer wins even if the declaration order is reversed" do
             TottenhamHotspur.provides :football2, platform: "nbc_sports"
             Sounders.provides :football2, platform: "nbc_sports"
 
@@ -189,111 +183,40 @@ describe Chef::Recipe do
 
       it "does not add the resource to the resource collection" do
         zm_resource # force let binding evaluation
-        expect { run_context.resource_collection.resources(:zen_master => "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
+        expect { run_context.resource_collection.resources(zen_master: "klopp") }.to raise_error(Chef::Exceptions::ResourceNotFound)
       end
     end
 
-    describe "when cloning resources" do
-      def expect_warning
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
+    describe "when resource cloning is disabled" do
+      def not_expect_warning
+        expect(Chef::Log).not_to receive(:warn).with(/3694/)
+        expect(Chef::Log).not_to receive(:warn).with(/Previous/)
+        expect(Chef::Log).not_to receive(:warn).with(/Current/)
+      end
+
+      before do
+        Chef::Config[:resource_cloning] = false
       end
 
       it "should emit a 3694 warning when attributes change" do
         recipe.zen_master "klopp" do
           something "bvb"
         end
-        expect_warning
+        not_expect_warning
         recipe.zen_master "klopp" do
           something "vbv"
         end
       end
 
-      it "should emit a 3694 warning when attributes change" do
+      it "should not copy attributes from a prior resource" do
         recipe.zen_master "klopp" do
           something "bvb"
         end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-      end
-
-      it "should emit a 3694 warning when attributes change" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-          peace true
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should emit a 3694 warning for non-trivial attributes (unfortunately)" do
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-        expect_warning
-        recipe.zen_master "klopp" do
-          something "bvb"
-        end
-      end
-
-      it "should not emit a 3694 warning for completely trivial resource cloning" do
+        not_expect_warning
         recipe.zen_master "klopp"
-        expect(Chef).to_not receive(:log_deprecation)
-        recipe.zen_master "klopp"
+        expect(run_context.resource_collection.first.something).to eql("bvb")
+        expect(run_context.resource_collection[1].something).to be nil
       end
-
-      it "should not emit a 3694 warning when attributes do not change and the first action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-        expect(Chef).to_not receive(:log_deprecation)
-        recipe.zen_master "klopp" do
-          action :score
-        end
-      end
-
-      it "should not emit a 3694 warning when attributes do not change and the second action is :nothing" do
-        recipe.zen_master "klopp" do
-          action :score
-        end
-        expect(Chef).to_not receive(:log_deprecation)
-        recipe.zen_master "klopp" do
-          action :nothing
-        end
-      end
-
-      class Coerced < Chef::Resource
-        resource_name :coerced
-        provides :coerced
-        default_action :whatever
-        property :package_name, [String, Array], coerce: proc { |x| [x].flatten }, name_property: true
-        def after_created
-          Array(action).each do |action|
-            run_action(action)
-          end
-        end
-        action :whatever do
-          package_name # unlazy the package_name
-        end
-      end
-
-      it "does not emit 3694 when the name_property is unlazied by running it at compile_time" do
-        recipe.coerced "string"
-        expect(Chef).to_not receive(:log_deprecation)
-        recipe.coerced "string"
-      end
-
-      it "validating resources via build_resource" do
-        expect do
-          recipe.build_resource(:remote_file, "klopp") do
-            source Chef::DelayedEvaluator.new { "http://chef.io" }
-          end end.to_not raise_error
-      end
-
     end
 
     describe "creating resources via declare_resource" do
@@ -315,21 +238,13 @@ describe Chef::Recipe do
 
       it "adds the resource to the resource collection" do
         zm_resource # force let binding evaluation
-        expect(run_context.resource_collection.resources(:zen_master => "klopp")).to eq(zm_resource)
+        expect(run_context.resource_collection.resources(zen_master: "klopp")).to eq(zm_resource)
       end
 
       it "will insert another resource if create_if_missing is not set (cloned resource as of Chef-12)" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
         zm_resource
         recipe.declare_resource(:zen_master, "klopp")
         expect(run_context.resource_collection.count).to eql(2)
-      end
-
-      it "does not insert two resources if create_if_missing is used" do
-        zm_resource
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        recipe.declare_resource(:zen_master, "klopp", create_if_missing: true)
-        expect(run_context.resource_collection.count).to eql(1)
       end
 
       context "injecting a different run_context" do
@@ -386,7 +301,7 @@ describe Chef::Recipe do
       it "gives a sane error message when using method_missing" do
         expect do
           recipe.no_such_resource("foo")
-        end.to raise_error(NoMethodError, %q{No resource or method named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NoMethodError, /undefined method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using method_missing 'bare'" do
@@ -395,7 +310,7 @@ describe Chef::Recipe do
             # Giving an argument will change this from NameError to NoMethodError
             no_such_resource
           end
-        end.to raise_error(NameError, %q{No resource, method, or local variable named `no_such_resource' for `Chef::Recipe "test"'})
+        end.to raise_error(NameError, /undefined local variable or method `no_such_resource' for cookbook: hjk, recipe: test :Chef::Recipe/)
       end
 
       it "gives a sane error message when using build_resource" do
@@ -421,62 +336,10 @@ describe Chef::Recipe do
 
     end
 
-    describe "resource cloning" do
-
-      let(:second_recipe) do
-        Chef::Recipe.new("second_cb", "second_recipe", run_context)
-      end
-
-      let(:original_resource) do
-        recipe.zen_master("klopp") do
-          something "bvb09"
-          action :score
-        end
-      end
-
-      let(:duplicated_resource) do
-        original_resource
-        second_recipe.zen_master("klopp") do
-          # attrs should be cloned
-        end
-      end
-
-      it "copies attributes from the first resource" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.something).to eq("bvb09")
-      end
-
-      it "does not copy the action from the first resource" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(original_resource.action).to eq([:score])
-        expect(duplicated_resource.action).to eq([:nothing])
-      end
-
-      it "does not copy the source location of the first resource" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
-        # sanity check source location:
-        expect(original_resource.source_line).to include(__FILE__)
-        expect(duplicated_resource.source_line).to include(__FILE__)
-        # actual test:
-        expect(original_resource.source_line).not_to eq(duplicated_resource.source_line)
-      end
-
-      it "sets the cookbook name on the cloned resource to that resource's cookbook" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.cookbook_name).to eq("second_cb")
-      end
-
-      it "sets the recipe name on the cloned resource to that resoure's recipe" do
-        expect(Chef).to receive(:log_deprecation).with(/^Cloning resource attributes for zen_master\[klopp\]/)
-        expect(duplicated_resource.recipe_name).to eq("second_recipe")
-      end
-
-    end
-
     describe "resource definitions" do
       it "should execute defined resources" do
         crow_define = Chef::ResourceDefinition.new
-        crow_define.define :crow, :peace => false, :something => true do
+        crow_define.define :crow, peace: false, something: true do
           zen_master "lao tzu" do
             peace params[:peace]
             something params[:something]
@@ -486,13 +349,13 @@ describe Chef::Recipe do
         recipe.crow "mine" do
           peace true
         end
-        expect(run_context.resource_collection.resources(:zen_master => "lao tzu").name).to eql("lao tzu")
-        expect(run_context.resource_collection.resources(:zen_master => "lao tzu").something).to eql(true)
+        expect(run_context.resource_collection.resources(zen_master: "lao tzu").name).to eql("lao tzu")
+        expect(run_context.resource_collection.resources(zen_master: "lao tzu").something).to eql(true)
       end
 
       it "should set the node on defined resources" do
         crow_define = Chef::ResourceDefinition.new
-        crow_define.define :crow, :peace => false, :something => true do
+        crow_define.define :crow, peace: false, something: true do
           zen_master "lao tzu" do
             peace params[:peace]
             something params[:something]
@@ -503,12 +366,12 @@ describe Chef::Recipe do
         recipe.crow "mine" do
           something node[:foo]
         end
-        expect(recipe.resources(:zen_master => "lao tzu").something).to eql(false)
+        expect(recipe.resources(zen_master: "lao tzu").something).to eql(false)
       end
 
       it "should return the last statement in the definition as the retval" do
         crow_define = Chef::ResourceDefinition.new
-        crow_define.define :crow, :peace => false, :something => true do
+        crow_define.define :crow, peace: false, something: true do
           "the return val"
         end
         run_context.definitions[:crow] = crow_define
@@ -527,9 +390,9 @@ describe Chef::Recipe do
   zen_master "gnome" do
     peace = true
   end
-  CODE
+      CODE
       expect { recipe.instance_eval(code) }.not_to raise_error
-      expect(recipe.resources(:zen_master => "gnome").name).to eql("gnome")
+      expect(recipe.resources(zen_master: "gnome").name).to eql("gnome")
     end
   end
 
@@ -545,7 +408,7 @@ describe Chef::Recipe do
   describe "from_file" do
     it "should load a resource from a ruby file" do
       recipe.from_file(File.join(CHEF_SPEC_DATA, "recipes", "test.rb"))
-      res = recipe.resources(:file => "/etc/nsswitch.conf")
+      res = recipe.resources(file: "/etc/nsswitch.conf")
       expect(res.name).to eql("/etc/nsswitch.conf")
       expect(res.action).to eql([:create])
       expect(res.owner).to eql("root")
@@ -563,7 +426,7 @@ describe Chef::Recipe do
       expect(node).to receive(:loaded_recipe).with(:openldap, "gigantor")
       allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
       run_context.include_recipe "openldap::gigantor"
-      res = run_context.resource_collection.resources(:cat => "blanket")
+      res = run_context.resource_collection.resources(cat: "blanket")
       expect(res.name).to eql("blanket")
       expect(res.pretty_kitty).to eql(false)
     end
@@ -572,7 +435,7 @@ describe Chef::Recipe do
       expect(node).to receive(:loaded_recipe).with(:openldap, "default")
       allow(run_context).to receive(:unreachable_cookbook?).with(:openldap).and_return(false)
       run_context.include_recipe "openldap"
-      res = run_context.resource_collection.resources(:cat => "blanket")
+      res = run_context.resource_collection.resources(cat: "blanket")
       expect(res.name).to eql("blanket")
       expect(res.pretty_kitty).to eql(true)
     end
@@ -713,12 +576,75 @@ describe Chef::Recipe do
     end
   end
 
-  describe "included DSL" do
-    it "should include features from Chef::DSL::Audit" do
-      expect(recipe.singleton_class.included_modules).to include(Chef::DSL::Audit)
-      expect(recipe.respond_to?(:control_group)).to be true
+  describe "from_yaml_file" do
+    it "raises ArgumentError if the YAML file contains multiple documents" do
+      filename = "multiple_docs.yaml"
+      yaml = "---\n- resources:\n  - type: false\n---\n-resources:\n  - type: false\n"
+      allow(File).to receive(:file?).and_call_original
+      allow(File).to receive(:readable?).and_call_original
+      allow(IO).to receive(:read).and_call_original
+      allow(File).to receive(:file?).with(filename).and_return(true)
+      allow(File).to receive(:readable?).with(filename).and_return(true)
+      allow(IO).to receive(:read).with(filename).and_return(yaml)
+      expect { recipe.from_yaml_file(filename) }.to raise_error(ArgumentError, /contains multiple documents/)
     end
 
+    it "raises IOError if the file does not exist" do
+      filename = "/nonexistent"
+      allow(File).to receive(:file?).and_call_original
+      allow(File).to receive(:file?).with(filename).and_return(false)
+      expect { recipe.from_yaml_file(filename) }.to raise_error(IOError, /Cannot open or read/)
+    end
+  end
+
+  describe "from_yaml" do
+    it "raises ArgumentError if the YAML is not a top-level hash" do
+      yaml = <<~YAML
+        ---
+        - one
+        - resources
+        - three
+      YAML
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "raises ArgumentError if the YAML does not contain a resources hash" do
+      yaml = <<~YAML
+        ---
+        - airplanes:
+          - type: "execute"
+            command: "whoami"
+      YAML
+      expect { recipe.from_yaml(yaml) }.to raise_error(ArgumentError, /must contain a top-level 'resources' hash/)
+    end
+
+    it "does not raise if the YAML contains a resources hash" do
+      yaml = <<~YAML
+        ---
+        resources:
+        - type: "execute"
+          command: "whoami"
+      YAML
+      expect(recipe).to receive(:from_hash).with({ "resources" => [{ "command" => "whoami", "type" => "execute" }] })
+      recipe.from_yaml(yaml)
+    end
+  end
+
+  describe "from_hash" do
+    it "declares resources from a hash" do
+      resources = { "resources" => [
+        { "name" => "running some commands", "type" => "execute", "command" => "whoami" },
+        { "name" => "preparing the bits", "type" => "service", "action" => "start", "service_name" => "bit_launcher" },
+      ] }
+
+      recipe.from_hash(resources)
+      expect(recipe.resources(execute: "running some commands").command).to eql("whoami")
+      expect(recipe.resources(service: "preparing the bits").service_name).to eql("bit_launcher")
+      expect(recipe.resources(service: "preparing the bits").action).to eql([:start])
+    end
+  end
+
+  describe "included DSL" do
     it "should respond to :ps_credential from Chef::DSL::Powershell" do
       expect(recipe.respond_to?(:ps_credential)).to be true
     end

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/acl"
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/repository/acls_sub_dir"
-require "chef/chef_fs/file_system/chef_server/acls_dir"
-require "chef/chef_fs/data_handler/acl_data_handler"
+require_relative "acl"
+require_relative "directory"
+require_relative "acls_sub_dir"
+require_relative "../chef_server/acls_dir"
+require_relative "../../data_handler/acl_data_handler"
 
 class Chef
   module ChefFS
@@ -28,7 +28,7 @@ class Chef
       module Repository
         class AclsDir < Repository::Directory
 
-          BARE_FILES = %w{ organization.json root }
+          BARE_FILES = %w{ organization.json root }.freeze
 
           def can_have_child?(name, is_dir)
             is_dir ? Chef::ChefFS::FileSystem::ChefServer::AclsDir::ENTITY_TYPES.include?(name) : BARE_FILES.include?(name)

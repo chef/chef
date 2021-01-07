@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,8 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
             "a1" => [1, 2, 3],
             "a2" => { "b1" => true },
         },
-    } end
+    }
+    end
 
     let(:version) { 1 }
     let(:encoded_data) do
@@ -84,7 +85,7 @@ describe Chef::EncryptedDataBagItem::CheckEncrypted do
       end
     end
 
-    context "when encryption version is 3", :aes_256_gcm_only, ruby: "~> 2.0.0" do
+    context "when encryption version is 3", :aes_256_gcm_only do
       include_examples "encryption detected" do
         let(:version) { 3 }
         let(:encryptor) { Chef::EncryptedDataBagItem::Encryptor::Version3Encryptor }

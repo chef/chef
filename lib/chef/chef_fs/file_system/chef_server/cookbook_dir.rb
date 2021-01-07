@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/command_line"
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/cookbook_subdir"
-require "chef/chef_fs/file_system/chef_server/cookbook_file"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/cookbook_version"
-require "chef/cookbook_uploader"
+require_relative "../../command_line"
+require_relative "rest_list_dir"
+require_relative "cookbook_subdir"
+require_relative "cookbook_file"
+require_relative "../exceptions"
+require_relative "../../../cookbook_version"
+require_relative "../../../cookbook_uploader"
 
 class Chef
   module ChefFS
@@ -49,18 +49,6 @@ class Chef
 
           attr_reader :cookbook_name, :version
 
-          COOKBOOK_SEGMENT_INFO = {
-            :attributes => { :ruby_only => true },
-            :definitions => { :ruby_only => true },
-            :recipes => { :ruby_only => true },
-            :libraries => { :recursive => true },
-            :templates => { :recursive => true },
-            :files => { :recursive => true },
-            :resources => { :ruby_only => true, :recursive => true },
-            :providers => { :ruby_only => true, :recursive => true },
-            :root_files => {},
-          }
-
           def add_child(child)
             @children << child
           end
@@ -73,45 +61,40 @@ class Chef
             # Since we're ignoring the rules and doing a network request here,
             # we need to make sure we don't rethrow the exception.  (child(name)
             # is not supposed to fail.)
-            begin
-              children.find { |child| child.name == name }
-            rescue Chef::ChefFS::FileSystem::NotFoundError
-              nil
-            end
+
+            children.find { |child| child.name == name }
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            nil
           end
 
           def can_have_child?(name, is_dir)
-            # A cookbook's root may not have directories unless they are segment directories
-            return name != "root_files" && COOKBOOK_SEGMENT_INFO.keys.include?(name.to_sym) if is_dir
-            return true
+            return name != "root_files" if is_dir
+
+            true
           end
 
           def children
             if @children.nil?
               @children = []
-              manifest = chef_object.manifest
-              COOKBOOK_SEGMENT_INFO.each do |segment, segment_info|
-                next unless manifest.has_key?(segment)
-
-                # Go through each file in the manifest for the segment, and
-                # add cookbook subdirs and files for it.
-                manifest[segment].each do |segment_file|
-                  parts = segment_file[:path].split("/")
+              manifest = chef_object.cookbook_manifest
+              manifest.by_parent_directory.each_value do |files|
+                files.each do |file|
+                  parts = file[:path].split("/")
                   # Get or create the path to the file
                   container = self
                   parts[0, parts.length - 1].each do |part|
                     old_container = container
                     container = old_container.children.find { |child| part == child.name }
-                    if !container
-                      container = CookbookSubdir.new(part, old_container, segment_info[:ruby_only], segment_info[:recursive])
+                    unless container
+                      container = CookbookSubdir.new(part, old_container, false, true)
                       old_container.add_child(container)
                     end
                   end
                   # Create the file itself
-                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, segment_file))
+                  container.add_child(CookbookFile.new(parts[parts.length - 1], container, file))
                 end
               end
-              @children = @children.sort_by { |c| c.name }
+              @children = @children.sort_by(&:name)
             end
             @children
           end
@@ -126,7 +109,7 @@ class Chef
                 rest.delete(api_path)
               rescue Timeout::Error => e
                 raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-              rescue Net::HTTPServerException
+              rescue Net::HTTPClientException
                 if $!.response.code == "404"
                   raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
                 else
@@ -134,7 +117,8 @@ class Chef
                 end
               end
             else
-              raise NotFoundError.new(self) if !exists?
+              raise NotFoundError.new(self) unless exists?
+
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end
           end
@@ -149,12 +133,13 @@ class Chef
           end
 
           def compare_to(other)
-            if !other.dir?
+            unless other.dir?
               return [ !exists?, nil, nil ]
             end
+
             are_same = true
             Chef::ChefFS::CommandLine.diff_entries(self, other, nil, :name_only).each do |type, old_entry, new_entry|
-              if [ :directory_to_file, :file_to_directory, :deleted, :added, :modified ].include?(type)
+              if %i{directory_to_file file_to_directory deleted added modified}.include?(type)
                 are_same = false
               end
             end
@@ -166,7 +151,11 @@ class Chef
           end
 
           def rest
-            parent.rest
+            Chef::ServerAPI.new(parent.rest.url, parent.rest.options.merge(version_class: Chef::CookbookManifestVersions))
+          end
+
+          def chef_rest
+            Chef::ServerAPI.new(parent.chef_rest.url, parent.chef_rest.options.merge(version_class: Chef::CookbookManifestVersions))
           end
 
           def chef_object
@@ -188,7 +177,7 @@ class Chef
               old_retry_count = Chef::Config[:http_retry_count]
               begin
                 Chef::Config[:http_retry_count] = 0
-                @chef_object ||= Chef::CookbookVersion.from_hash(root.get_json(api_path))
+                @chef_object ||= Chef::CookbookVersion.from_hash(chef_rest.get(api_path))
               ensure
                 Chef::Config[:http_retry_count] = old_retry_count
               end
@@ -196,7 +185,7 @@ class Chef
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
 
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "404"
                 @could_not_get_chef_object = e
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, @could_not_get_chef_object)

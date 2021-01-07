@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,37 +18,37 @@
 
 require "spec_helper"
 
-def impersonates_a(klass)
-  it "#is_a?(#{klass}) is true" do
-    expect(decorator.is_a?(klass)).to be true
-  end
-
-  it "#is_a?(Chef::Decorator) is true" do
-    expect(decorator.is_a?(Chef::Decorator)).to be true
-  end
-
-  it "#kind_of?(#{klass}) is true" do
-    expect(decorator.kind_of?(klass)).to be true
-  end
-
-  it "#kind_of?(Chef::Decorator) is true" do
-    expect(decorator.kind_of?(Chef::Decorator)).to be true
-  end
-
-  it "#instance_of?(#{klass}) is false" do
-    expect(decorator.instance_of?(klass)).to be false
-  end
-
-  it "#instance_of?(Chef::Decorator) is true" do
-    expect(decorator.instance_of?(Chef::Decorator)).to be true
-  end
-
-  it "#class is Chef::Decorator" do
-    expect(decorator.class).to eql(Chef::Decorator)
-  end
-end
-
 describe Chef::Decorator do
+  def self.impersonates_a(klass)
+    it "#is_a?(#{klass}) is true" do
+      expect(decorator.is_a?(klass)).to be true
+    end
+
+    it "#is_a?(Chef::Decorator) is true" do
+      expect(decorator.is_a?(Chef::Decorator)).to be true
+    end
+
+    it "#kind_of?(#{klass}) is true" do
+      expect(decorator.is_a?(klass)).to be true
+    end
+
+    it "#kind_of?(Chef::Decorator) is true" do
+      expect(decorator.is_a?(Chef::Decorator)).to be true
+    end
+
+    it "#instance_of?(#{klass}) is false" do
+      expect(decorator.instance_of?(klass)).to be false
+    end
+
+    it "#instance_of?(Chef::Decorator) is true" do
+      expect(decorator.instance_of?(Chef::Decorator)).to be true
+    end
+
+    it "#class is Chef::Decorator" do
+      expect(decorator.class).to eql(Chef::Decorator)
+    end
+  end
+
   let(:obj) {}
   let(:decorator) { Chef::Decorator.new(obj) }
 

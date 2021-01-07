@@ -1,5 +1,5 @@
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/chef_fs/file_system/nonexistent_fs_object"
+require_relative "base_fs_object"
+require_relative "nonexistent_fs_object"
 
 class Chef
   module ChefFS
@@ -17,22 +17,20 @@ class Chef
         end
 
         def children
-          begin
-            result = []
-            seen = {}
-            # If multiple things have the same name, the first one wins.
-            multiplexed_dirs.each do |dir|
-              dir.children.each do |child|
-                if seen[child.name]
-                  Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}") unless seen[child.name].path_for_printing == child.path_for_printing
-                else
-                  result << child
-                  seen[child.name] = child
-                end
+          result = []
+          seen = {}
+          # If multiple things have the same name, the first one wins.
+          multiplexed_dirs.each do |dir|
+            dir.children.each do |child|
+              if seen[child.name]
+                Chef::Log.warn("Child with name '#{child.name}' found in multiple directories: #{seen[child.name].path_for_printing} and #{child.path_for_printing}") unless seen[child.name].path_for_printing == child.path_for_printing
+              else
+                result << child
+                seen[child.name] = child
               end
             end
-            result
           end
+          result
         end
 
         def make_child_entry(name)
@@ -41,7 +39,7 @@ class Chef
             child_entry = dir.child(name)
             if child_entry.exists?
               if result
-                Chef::Log.debug("Child with name '#{child_entry.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child_entry.parent.path_for_printing}")
+                Chef::Log.trace("Child with name '#{child_entry.name}' found in multiple directories: #{result.parent.path_for_printing} and #{child_entry.parent.path_for_printing}")
               else
                 result = child_entry
               end

@@ -1,10 +1,10 @@
 
-require "chef/mixin/descendants_tracker"
+require_relative "descendants_tracker"
 
 class Chef
   module Mixin
     module Provides
-      # TODO no longer needed, remove or deprecate?
+      # @todo no longer needed, remove or deprecate?
       include Chef::Mixin::DescendantsTracker
 
       def provides(short_name, opts = {})
@@ -12,7 +12,8 @@ class Chef
       end
 
       # Check whether this resource provides the resource_name DSL for the given
-      # node.  TODO remove this when we stop checking unregistered things.
+      # node.
+      # @todo remove this when we stop checking unregistered things.
       # FIXME: yard with @yield
       def provides?(node, resource)
         raise NotImplementedError, :provides?

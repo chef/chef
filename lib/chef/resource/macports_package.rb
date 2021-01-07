@@ -1,6 +1,6 @@
 #
 # Author:: David Balatero (<dbalatero@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,22 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
+require_relative "package"
 
 class Chef
   class Resource
     class MacportsPackage < Chef::Resource::Package
-      resource_name :macports_package
+      unified_mode true
+      provides :macports_package
+
+      description "Use the **macports_package** resource to manage packages for the macOS platform using the MacPorts package management system."
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

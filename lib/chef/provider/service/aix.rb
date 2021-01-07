@@ -1,6 +1,6 @@
 #
 # Author:: kaustubh (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/service"
+require_relative "../service"
 
 class Chef
   class Provider
@@ -41,10 +41,6 @@ class Chef
           determine_current_status!
 
           @current_resource
-        end
-
-        def whyrun_supported?
-          true
         end
 
         def start_service
@@ -92,7 +88,7 @@ class Chef
         protected
 
         def determine_current_status!
-          Chef::Log.debug "#{@new_resource} using lssrc to check the status"
+          logger.trace "#{@new_resource} using lssrc to check the status"
           begin
             if is_resource_group?
               # Groups as a whole have no notion of whether they're running
@@ -105,7 +101,7 @@ class Chef
                 @current_resource.running false
               end
             end
-            Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+            logger.trace "#{@new_resource} running: #{@current_resource.running}"
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
             # Temporarily catching different types of exceptions here until we get Shellout fixed.
             # TODO: Remove the line before one we get the ShellOut fix.
@@ -119,7 +115,7 @@ class Chef
         def is_resource_group?
           so = shell_out("lssrc -g #{@new_resource.service_name}")
           if so.exitstatus == 0
-            Chef::Log.debug("#{@new_resource.service_name} is a group")
+            logger.trace("#{@new_resource.service_name} is a group")
             @is_resource_group = true
           end
         end

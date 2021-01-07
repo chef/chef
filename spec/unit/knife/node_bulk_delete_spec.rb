@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ describe Chef::Knife::NodeBulkDelete do
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:confirm).and_return(true)
-    @nodes = Hash.new
+    @nodes = {}
     %w{adam brent jacob}.each do |node_name|
       @nodes[node_name] = "http://localhost:4000/nodes/#{node_name}"
     end
@@ -44,14 +44,14 @@ describe Chef::Knife::NodeBulkDelete do
       # I hate not having == defined for anything :(
       actual = @knife.all_nodes
       expect(actual.keys).to match_array(expected.keys)
-      expect(actual.values.map { |n| n.name }).to match_array(%w{adam brent jacob})
+      expect(actual.values.map(&:name)).to match_array(%w{adam brent jacob})
     end
   end
 
   describe "run" do
     before do
       @inflatedish_list = @nodes.keys.inject({}) do |nodes_by_name, name|
-        node = Chef::Node.new()
+        node = Chef::Node.new
         node.name(name)
         allow(node).to receive(:destroy).and_return(true)
         nodes_by_name[name] = node

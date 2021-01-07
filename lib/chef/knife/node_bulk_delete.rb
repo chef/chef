@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodeBulkDelete < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
+        require_relative "../node"
+        require_relative "../json_compat"
       end
 
       banner "knife node bulk delete REGEX (options)"
@@ -39,7 +39,8 @@ class Chef
         matcher = /#{name_args[0]}/
 
         all_nodes.each do |name, node|
-          next unless name =~ matcher
+          next unless name&.match?(matcher)
+
           nodes_to_delete[name] = node
         end
 

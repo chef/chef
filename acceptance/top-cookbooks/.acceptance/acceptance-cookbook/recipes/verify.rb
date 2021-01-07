@@ -1,1 +1,0 @@
-top_cookbooks "verify"

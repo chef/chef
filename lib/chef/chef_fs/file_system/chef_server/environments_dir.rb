@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "../base_fs_dir"
+require_relative "rest_list_entry"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS
@@ -40,12 +40,14 @@ class Chef
             end
 
             def delete(recurse)
-              raise NotFoundError.new(self) if !exists?
+              raise NotFoundError.new(self) unless exists?
+
               raise DefaultEnvironmentCannotBeModifiedError.new(:delete, self)
             end
 
             def write(file_contents)
-              raise NotFoundError.new(self) if !exists?
+              raise NotFoundError.new(self) unless exists?
+
               raise DefaultEnvironmentCannotBeModifiedError.new(:write, self)
             end
           end

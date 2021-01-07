@@ -1,6 +1,6 @@
 #
 # Author:: Steven Murawski (<smurawski@chef.io>)
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,10 +49,6 @@ describe Chef::Application::ExitCode do
       expect(valid_rfc_exit_codes.include?(3)).to eq(true)
     end
 
-    it "validates a AUDIT_MODE_FAILURE return code of 42" do
-      expect(valid_rfc_exit_codes.include?(42)).to eq(true)
-    end
-
     it "validates a REBOOT_SCHEDULED return code of 35" do
       expect(valid_rfc_exit_codes.include?(35)).to eq(true)
     end
@@ -64,106 +60,22 @@ describe Chef::Application::ExitCode do
     it "validates a REBOOT_FAILED return code of 41" do
       expect(valid_rfc_exit_codes.include?(41)).to eq(true)
     end
-  end
 
-  context "when Chef::Config :exit_status is not configured" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(nil)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
+    it "validates a CONFIG_FAILURE return code of 43" do
+      expect(valid_rfc_exit_codes.include?(43)).to eq(true)
     end
 
-    it "writes a deprecation warning" do
-      warn = "Chef RFC 062 (https://github.com/chef/chef-rfc/master/rfc062-exit-status.md) defines the" \
-      " exit codes that should be used with Chef.  Chef::Application::ExitCode defines valid exit codes"  \
-      " In a future release, non-standard exit codes will be redefined as" \
-      " GENERIC_FAILURE unless `exit_status` is set to `:disabled` in your client.rb."
-      expect(Chef).to receive(:log_deprecation).with(warn)
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "does not modify non-RFC exit codes" do
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "returns DEPRECATED_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(-1)
-    end
-
-    it "returns SIGINT_RECEIVED when a SIGINT is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigInt.new("BOOM"))).to eq(2)
-    end
-
-    it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns SIGINT_RECEIVED when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(2)
-    end
-
-    it "returns GENERIC_FAILURE when an exception is specified" do
-      expect(exit_codes.normalize_exit_code(Exception.new("BOOM"))).to eq(1)
-    end
-
-  end
-
-  context "when Chef::Config :exit_status is configured to not validate exit codes" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(:disabled)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
-    end
-
-    it "does not write a deprecation warning" do
-      warn = "Chef RFC 062 (https://github.com/chef/chef-rfc/master/rfc062-exit-status.md) defines the" \
-      " exit codes that should be used with Chef.  Chef::Application::ExitCode defines valid exit codes"  \
-      " In a future release, non-standard exit codes will be redefined as" \
-      " GENERIC_FAILURE unless `exit_status` is set to `:disabled` in your client.rb."
-      expect(Chef).not_to receive(:log_deprecation).with(warn)
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "does not modify non-RFC exit codes" do
-      expect(exit_codes.normalize_exit_code(151)).to eq(151)
-    end
-
-    it "returns DEPRECATED_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(-1)
-    end
-
-    it "returns GENERIC_FAILURE when an exception is specified" do
-      expect(exit_codes.normalize_exit_code(Exception.new("BOOM"))).to eq(1)
-    end
-
-    it "returns SUCCESS when a reboot is pending" do
-      allow(Chef::DSL::RebootPending).to receive(:reboot_pending?).and_return(true)
-      expect(exit_codes.normalize_exit_code(0)).to eq(0)
-    end
-
-    it "returns SIGINT_RECEIVED when a SIGINT is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigInt.new("BOOM"))).to eq(2)
-    end
-
-    it "returns SIGTERM_RECEIVED when a SIGTERM is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
-    end
-
-    it "returns SIGINT_RECEIVED when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(2)
+    it "validates a CLIENT_UPGRADED return code of 213" do
+      expect(valid_rfc_exit_codes.include?(213)).to eq(true)
     end
   end
 
-  context "when Chef::Config :exit_status is configured to validate exit codes" do
-    before do
-      allow(Chef::Config).to receive(:[]).with(:exit_status).and_return(:enabled)
-      allow(Chef::Config).to receive(:[]).with(:treat_deprecation_warnings_as_errors).and_return(false)
-    end
+  context "when Chef validates exit codes" do
 
-    it "does write a deprecation warning" do
-      warn = "Chef RFC 062 (https://github.com/chef/chef-rfc/master/rfc062-exit-status.md) defines the" \
-      " exit codes that should be used with Chef.  Chef::Application::ExitCode defines valid exit codes"  \
-      " In a future release, non-standard exit codes will be redefined as" \
-      " GENERIC_FAILURE unless `exit_status` is set to `:disabled` in your client.rb."
-      expect(Chef).to receive(:log_deprecation).with(warn)
+    it "does write a warning on non-standard exit codes" do
+      expect(Chef::Log).to receive(:warn).with(
+        /attempted to exit with a non-standard exit code of 151/
+      )
       expect(exit_codes.normalize_exit_code(151)).to eq(1)
     end
 
@@ -172,7 +84,7 @@ describe Chef::Application::ExitCode do
     end
 
     it "returns GENERIC_FAILURE when no exit code is specified" do
-      expect(exit_codes.normalize_exit_code()).to eq(1)
+      expect(exit_codes.normalize_exit_code).to eq(1)
     end
 
     it "returns SIGINT_RECEIVED when a SIGINT is received" do
@@ -183,18 +95,8 @@ describe Chef::Application::ExitCode do
       expect(exit_codes.normalize_exit_code(Chef::Exceptions::SigTerm.new("BOOM"))).to eq(3)
     end
 
-    it "returns GENERIC_FAILURE when a deprecated exit code error is received" do
-      expect(exit_codes.normalize_exit_code(Chef::Exceptions::DeprecatedExitCode.new("BOOM"))).to eq(1)
-    end
-
     it "returns GENERIC_FAILURE when an exception is specified" do
       expect(exit_codes.normalize_exit_code(Exception.new("BOOM"))).to eq(1)
-    end
-
-    it "returns AUDIT_MODE_FAILURE when there is an audit error" do
-      audit_error = Chef::Exceptions::AuditError.new("BOOM")
-      runtime_error = Chef::Exceptions::RunFailedWrappingError.new(audit_error)
-      expect(exit_codes.normalize_exit_code(runtime_error)).to eq(42)
     end
 
     it "returns REBOOT_SCHEDULED when there is an reboot requested" do
@@ -213,6 +115,18 @@ describe Chef::Application::ExitCode do
       reboot_error = Chef::Exceptions::RebootPending.new("BOOM")
       runtime_error = Chef::Exceptions::RunFailedWrappingError.new(reboot_error)
       expect(exit_codes.normalize_exit_code(runtime_error)).to eq(37)
+    end
+
+    it "returns CONFIG_FAILURE when a configuration exception is specified" do
+      config_error = Chef::Exceptions::ConfigurationError.new("BOOM")
+      runtime_error = Chef::Exceptions::RunFailedWrappingError.new(config_error)
+      expect(exit_codes.normalize_exit_code(runtime_error)).to eq(43)
+    end
+
+    it "returns CLIENT_UPGRADED when the client was upgraded during converge" do
+      client_upgraded_error = Chef::Exceptions::ClientUpgraded.new("BOOM")
+      runtime_error = Chef::Exceptions::RunFailedWrappingError.new(client_upgraded_error)
+      expect(exit_codes.normalize_exit_code(runtime_error)).to eq(213)
     end
 
     it "returns SIGINT_RECEIVED when a SIGINT is received." do

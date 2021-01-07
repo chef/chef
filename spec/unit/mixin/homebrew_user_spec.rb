@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 #
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,10 +23,6 @@ class ExampleHomebrewUser
 end
 
 describe Chef::Mixin::HomebrewUser do
-  before(:each) do
-    node.default["homebrew"]["owner"] = nil
-  end
-
   let(:homebrew_user) { ExampleHomebrewUser.new }
   let(:node) { Chef::Node.new }
 
@@ -52,7 +48,7 @@ describe Chef::Mixin::HomebrewUser do
     let(:brew_owner) { 2001 }
     let(:default_brew_path) { "/usr/local/bin/brew" }
     let(:stat_double) do
-      d = double()
+      d = double
       expect(d).to receive(:uid).and_return(brew_owner)
       d
     end
@@ -60,7 +56,7 @@ describe Chef::Mixin::HomebrewUser do
     context "debug statement prints owner name" do
 
       before do
-        expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(:name => "name"))
+        expect(Etc).to receive(:getpwuid).with(brew_owner).and_return(OpenStruct.new(name: "name"))
       end
 
       it "returns the owner of the brew executable when it is at a default location" do

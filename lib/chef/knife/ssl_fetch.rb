@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,19 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/config"
+require_relative "../knife"
 
 class Chef
   class Knife
     class SslFetch < Chef::Knife
 
       deps do
-        require "pp"
-        require "socket"
-        require "uri"
-        require "openssl"
-        require "chef/mixin/proxified_socket"
+        require_relative "../config"
+        require "pp" unless defined?(PP)
+        require "socket" unless defined?(Socket)
+        require "uri" unless defined?(URI)
+        require "openssl" unless defined?(OpenSSL)
+        require_relative "../mixin/proxified_socket"
         include Chef::Mixin::ProxifiedSocket
       end
 
@@ -41,7 +41,7 @@ class Chef
 
       def uri
         @uri ||= begin
-          Chef::Log.debug("Checking SSL cert on #{given_uri}")
+          Chef::Log.trace("Checking SSL cert on #{given_uri}")
           URI.parse(given_uri)
         end
       end
@@ -89,15 +89,18 @@ class Chef
 
       def cn_of(certificate)
         subject = certificate.subject
-        cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
-        cn_field_tuple[1]
+        if cn_field_tuple = subject.to_a.find { |field| field[0] == "CN" }
+          cn_field_tuple[1]
+        else
+          nil
+        end
       end
 
       # Convert the CN of a certificate into something that will work well as a
       # filename. To do so, all `*` characters are converted to the string
-      # "wildcard" and then all characters other than alphanumeric and hypen
+      # "wildcard" and then all characters other than alphanumeric and hyphen
       # characters are converted to underscores.
-      # NOTE: There is some confustion about what the CN will contain when
+      # NOTE: There is some confusion about what the CN will contain when
       # using internationalized domain names. RFC 6125 mandates that the ascii
       # representation be used, but it is not clear whether this is followed in
       # practice.
@@ -117,23 +120,24 @@ class Chef
       def write_cert(cert)
         FileUtils.mkdir_p(trusted_certs_dir)
         cn = cn_of(cert)
-        filename = File.join(trusted_certs_dir, "#{normalize_cn(cn)}.crt")
-        ui.msg("Adding certificate for #{cn} in #{filename}")
-        File.open(filename, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
+        filename = cn.nil? ? "#{host}_#{Time.new.to_i}" : normalize_cn(cn)
+        full_path = File.join(trusted_certs_dir, "#{filename}.crt")
+        ui.msg("Adding certificate for #{filename} in #{full_path}")
+        File.open(full_path, File::CREAT | File::TRUNC | File::RDWR, 0644) do |f|
           f.print(cert.to_s)
         end
       end
 
       def run
         validate_uri
-        ui.warn(<<-TRUST_TRUST)
-Certificates from #{host} will be fetched and placed in your trusted_cert
-directory (#{trusted_certs_dir}).
+        ui.warn(<<~TRUST_TRUST)
+          Certificates from #{host} will be fetched and placed in your trusted_cert
+          directory (#{trusted_certs_dir}).
 
-Knife has no means to verify these are the correct certificates. You should
-verify the authenticity of these certificates after downloading.
+          Knife has no means to verify these are the correct certificates. You should
+          verify the authenticity of these certificates after downloading.
 
-TRUST_TRUST
+        TRUST_TRUST
         remote_cert_chain.each do |cert|
           write_cert(cert)
         end

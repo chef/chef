@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,9 +22,10 @@ require "chef/search/query"
 describe Chef::Search::Query do
   let(:rest) { double("Chef::ServerAPI") }
   let(:query) { Chef::Search::Query.new }
+  let(:default_rows) { 1000 }
 
   shared_context "filtered search" do
-    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
+    let(:query_string) { "search/node?q=platform:rhel&start=0&rows=#{default_rows}" }
     let(:server_url) { "https://api.opscode.com/organizations/opscode/nodes" }
     let(:args) { { filter_key => filter_hash } }
     let(:filter_hash) do
@@ -81,10 +82,10 @@ describe Chef::Search::Query do
   end
 
   describe "search" do
-    let(:query_string) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0" }
-    let(:query_string_continue) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4" }
-    let(:query_string_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=4" }
-    let(:query_string_continue_with_rows) { "search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=4&rows=4" }
+    let(:query_string) { "search/node?q=platform:rhel&start=0&rows=#{default_rows}" }
+    let(:query_string_continue) { "search/node?q=platform:rhel&start=4&rows=#{default_rows}" }
+    let(:query_string_with_rows) { "search/node?q=platform:rhel&start=0&rows=4" }
+    let(:query_string_continue_with_rows) { "search/node?q=platform:rhel&start=4&rows=4" }
 
     let(:response) do
       {
@@ -148,12 +149,7 @@ describe Chef::Search::Query do
       ],
       "start" => 0,
       "total" => 4,
-    } end
-
-    let(:big_response) do
-      r = response.dup
-      r["total"] = 8
-      r
+    }
     end
 
     let(:big_response_empty) do
@@ -174,37 +170,32 @@ describe Chef::Search::Query do
     it "accepts a type as the first argument" do
       expect { query.search("node") }.not_to raise_error
       expect { query.search(:node) }.not_to raise_error
-      expect { query.search(Hash.new) }.to raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
+      expect { query.search({}) }.to raise_error(Chef::Exceptions::InvalidSearchQuery, /(Hash)/)
     end
 
     it "queries for every object of a type by default" do
-      expect(rest).to receive(:get).with("search/node?q=*:*&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=*:*&start=0&rows=#{default_rows}").and_return(response)
       query.search(:node)
     end
 
     it "allows a custom query" do
-      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&start=0&rows=#{default_rows}").and_return(response)
       query.search(:node, "platform:rhel")
     end
 
-    it "lets you set a sort order" do
-      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=id%20desc&start=0").and_return(response)
-      query.search(:node, "platform:rhel", sort: "id desc")
-    end
-
     it "lets you set a starting object" do
-      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=2").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&start=2&rows=#{default_rows}").and_return(response)
       query.search(:node, "platform:rhel", start: 2)
     end
 
     it "lets you set how many rows to return" do
-      expect(rest).to receive(:get).with("search/node?q=platform:rhel&sort=X_CHEF_id_CHEF_X%20asc&start=0&rows=40").and_return(response)
+      expect(rest).to receive(:get).with("search/node?q=platform:rhel&start=0&rows=40").and_return(response)
       query.search(:node, "platform:rhel", rows: 40)
     end
 
     it "throws an exception if you pass an incorrect option" do
       expect { query.search(:node, "platform:rhel", total: 10) }
-        .to raise_error(ArgumentError, /unknown keyword: total/)
+        .to raise_error(ArgumentError, /unknown keyword: :?total/)
     end
 
     it "returns the raw rows, start, and total if no block is passed" do
@@ -223,12 +214,12 @@ describe Chef::Search::Query do
     it "pages through the responses" do
       @call_me = double("blocky")
       response["rows"].each { |r| expect(@call_me).to receive(:do).with(Chef::Node.from_hash(r)) }
-      query.search(:node, "*:*", sort: nil, start: 0, rows: 4) { |r| @call_me.do(r) }
+      query.search(:node, "*:*", start: 0, rows: 4) { |r| @call_me.do(r) }
     end
 
-    it "sends multiple API requests when the server indicates there is more data" do
-      expect(rest).to receive(:get).with(query_string).and_return(big_response)
-      expect(rest).to receive(:get).with(query_string_continue).and_return(big_response_end)
+    # This test would loop infinitely if pagination didn't advance
+    it "paginates correctly in the face of filtered nodes without explicit rows" do
+      allow(rest).to receive(:get).with(query_string).and_return(big_response_empty)
       query.search(:node, "platform:rhel") do |r|
         nil
       end
@@ -240,6 +231,34 @@ describe Chef::Search::Query do
       query.search(:node, "platform:rhel", rows: 4) do |r|
         nil
       end
+    end
+
+    it "fuzzifies node searches when fuzz is set and type is a symbol" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=tags:*free.messi*%20OR%20roles:*free.messi*%20OR%20fqdn:*free.messi*%20OR%20addresses:*free.messi*%20OR%20policy_name:*free.messi*%20OR%20policy_group:*free.messi*&start=0&rows=#{default_rows}"
+      ).and_return(response)
+      query.search(:node, "free.messi", fuzz: true)
+    end
+
+    it "fuzzifies node searches when fuzz is set and type is a string" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=tags:*free.messi*%20OR%20roles:*free.messi*%20OR%20fqdn:*free.messi*%20OR%20addresses:*free.messi*%20OR%20policy_name:*free.messi*%20OR%20policy_group:*free.messi*&start=0&rows=#{default_rows}"
+      ).and_return(response)
+      query.search("node", "free.messi", fuzz: true)
+    end
+
+    it "does not fuzzify node searches when fuzz is not set" do
+      expect(rest).to receive(:get).with(
+        "search/node?q=free.messi&start=0&rows=#{default_rows}"
+      ).and_return(response)
+      query.search(:node, "free.messi")
+    end
+
+    it "does not fuzzify client searches" do
+      expect(rest).to receive(:get).with(
+        "search/client?q=messi&start=0&rows=#{default_rows}"
+      ).and_return(response)
+      query.search(:client, "messi", fuzz: true)
     end
 
     context "when :filter_result is provided as a result" do
@@ -269,22 +288,4 @@ describe Chef::Search::Query do
     end
   end
 
-  describe "#partial_search" do
-    include_context "filtered search" do
-      let(:filter_key) { :keys }
-
-      it "emits a deprecation warning" do
-        # partial_search calls search, so we'll stub search to return empty
-        allow(query).to receive(:search).and_return( [ [], 0, 0 ] )
-        expect(Chef::Log).to receive(:warn).with(/DEPRECATED: The 'partial_search' API is deprecated/)
-        query.partial_search(:node, "platform:rhel", args)
-      end
-
-      it "returns an array of filtered hashes" do
-        expect(rest).to receive(:post).with(query_string, args[filter_key]).and_return(response)
-        results = query.partial_search(:node, "platform:rhel", args)
-        expect(results[0]).to match_array(response_rows)
-      end
-    end
-  end
 end

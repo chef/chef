@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/exceptions"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS
@@ -77,11 +77,12 @@ class Chef
               object["policies"].each do |policy_name, policy_data|
                 policy_path = "/policies/#{policy_name}/revisions/#{policy_data["revision_id"]}"
 
-                get_data = begin
-                  rest.get(policy_path)
-                rescue Net::HTTPServerException => e
-                  raise "Could not find policy '#{policy_name}'' with revision '#{policy_data["revision_id"]}'' on the server"
-                end
+                get_data =
+                  begin
+                    rest.get(policy_path)
+                  rescue Net::HTTPClientException => e
+                    raise "Could not find policy '#{policy_name}'' with revision '#{policy_data["revision_id"]}'' on the server"
+                  end
 
                 # GET policy data
                 server_policy_data = Chef::JSONCompat.parse(get_data)
@@ -93,7 +94,7 @@ class Chef
               end
 
               begin
-                existing_group = Chef::JSONCompat.parse(self.read)
+                existing_group = Chef::JSONCompat.parse(read)
               rescue NotFoundError
                 # It's OK if the group doesn't already exist, just means no existing policies
               end
@@ -113,7 +114,7 @@ class Chef
 
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:create_child, self, e, "Timeout creating '#{name}': #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               # 404 = NotFoundError
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)

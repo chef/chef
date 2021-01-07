@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,11 @@ describe Chef::Resource::WindowsScript::Batch, :windows_only do
 
   let(:output_command) { " > " }
 
-  let (:architecture_command) { "@echo %PROCESSOR_ARCHITECTURE%" }
+  let(:architecture_command) { "@echo %PROCESSOR_ARCHITECTURE%" }
+
+  let(:resource) do
+    Chef::Resource::WindowsScript::Batch.new("Batch resource functional test", @run_context)
+  end
 
   it_behaves_like "a Windows script running on Windows"
 

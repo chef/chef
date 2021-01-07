@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/formatters/error_inspectors/api_error_formatting"
+require_relative "api_error_formatting"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module Formatters
@@ -40,16 +41,16 @@ class Chef
 
         def add_explanation(error_description)
           case exception
-          when Net::HTTPServerException, Net::HTTPFatalError
+          when Net::HTTPClientException, Net::HTTPFatalError
             humanize_http_exception(error_description)
           when Chef::Exceptions::PrivateKeyMissing
-            error_description.section("Private Key Not Found:", <<-E)
-Your private key could not be loaded. If the key file exists, ensure that it is
-readable by chef-client.
-E
-            error_description.section("Relevant Config Settings:", <<-E)
-client_key        "#{api_key}"
-E
+            error_description.section("Private Key Not Found:", <<~E)
+              Your private key could not be loaded. If the key file exists, ensure that it is
+              readable by #{ChefUtils::Dist::Infra::PRODUCT}.
+            E
+            error_description.section("Relevant Config Settings:", <<~E)
+              client_key        "#{api_key}"
+            E
           when EOFError
             describe_eof_error(error_description)
           when *NETWORK_ERROR_CLASSES
@@ -69,14 +70,14 @@ E
             # TODO: we're rescuing errors from Node.find_or_create
             # * could be no write on nodes container
             # * could be no read on the node
-            error_description.section("Authorization Error", <<-E)
-Your client is not authorized to load the node data (HTTP 403).
-E
+            error_description.section("Authorization Error", <<~E)
+              Your client is not authorized to load the node data (HTTP 403).
+            E
             error_description.section("Server Response:", format_rest_error)
 
-            error_description.section("Possible Causes:", <<-E)
-* Your client (#{username}) may have misconfigured authorization permissions.
-E
+            error_description.section("Possible Causes:", <<~E)
+              * Your client (#{username}) may have misconfigured authorization permissions.
+            E
           when Net::HTTPBadRequest
             describe_400_error(error_description)
           when Net::HTTPNotFound
@@ -97,12 +98,12 @@ E
         # one, e.g., PUT http://wrong.url/nodes/node-name becomes a GET after a
         # redirect.
         def describe_404_error(error_description)
-          error_description.section("Resource Not Found:", <<-E)
-The server returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
-E
-          error_description.section("Relevant Config Settings:", <<-E)
-chef_server_url "#{server_url}"
-E
+          error_description.section("Resource Not Found:", <<~E)
+            The #{ChefUtils::Dist::Server::PRODUCT} returned a HTTP 404. This usually indicates that your chef_server_url is incorrect.
+          E
+          error_description.section("Relevant Config Settings:", <<~E)
+            chef_server_url "#{server_url}"
+          E
         end
 
         def username

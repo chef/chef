@@ -1,6 +1,6 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/service"
-require "chef/resource/service"
-require "chef/mixin/command"
+require_relative "../service"
+require_relative "../../resource/service"
 
 class Chef
   class Provider
@@ -32,7 +31,7 @@ class Chef
           super
           @init_command   = "/usr/sbin/svcadm"
           @status_command = "/bin/svcs"
-          @maintenace     = false
+          @maintenance    = false
         end
 
         def load_current_resource
@@ -55,12 +54,16 @@ class Chef
         end
 
         def enable_service
+          # Running service status to update maintenance status to invoke svcadm clear
+          service_status
           shell_out!(default_init_command, "clear", @new_resource.service_name) if @maintenance
-          shell_out!(default_init_command, "enable", "-s", @new_resource.service_name)
+          enable_flags = [ "-s", @new_resource.options ].flatten.compact
+          shell_out!(default_init_command, "enable", *enable_flags, @new_resource.service_name)
         end
 
         def disable_service
-          shell_out!(default_init_command, "disable", "-s", @new_resource.service_name)
+          disable_flags = [ "-s", @new_resource.options ].flatten.compact
+          shell_out!(default_init_command, "disable", *disable_flags, @new_resource.service_name)
         end
 
         alias_method :stop_service, :disable_service
@@ -73,11 +76,11 @@ class Chef
         def restart_service
           ## svcadm restart doesn't supports sync(-s) option
           disable_service
-          return enable_service
+          enable_service
         end
 
         def service_status
-          cmd = shell_out!(@status_command, "-l", @current_resource.service_name, :returns => [0, 1])
+          cmd = shell_out!(@status_command, "-l", @current_resource.service_name, returns: [0, 1])
           # Example output
           # $ svcs -l rsyslog
           # fmri         svc:/application/rsyslog:default
@@ -92,6 +95,9 @@ class Chef
           # dependency   require_all/error svc:/milestone/multi-user:default (online)
           # $
 
+          # Set the default value for maintenance
+          @maintenance = false
+
           # load output into hash
           status = {}
           cmd.stdout.each_line do |line|
@@ -100,7 +106,6 @@ class Chef
           end
 
           # check service state
-          @maintenance = false
           case status["state"]
           when "online"
             @current_resource.enabled(true)

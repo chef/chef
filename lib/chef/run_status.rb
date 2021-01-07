@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,17 +25,13 @@ class Chef::RunStatus
 
   attr_reader :events
 
-  attr_reader :run_context
-
-  attr_writer :run_context
+  attr_accessor :run_context
 
   attr_reader :start_time
 
   attr_reader :end_time
 
-  attr_reader :exception
-
-  attr_writer :exception
+  attr_accessor :exception
 
   attr_accessor :run_id
 
@@ -53,6 +49,7 @@ class Chef::RunStatus
 
   # sets +end_time+ to the current time
   def stop_clock
+    @start_time ||= Time.now # if we failed so early we didn't get a start time
     @end_time = Time.now
   end
 
@@ -74,7 +71,7 @@ class Chef::RunStatus
   # The list of all resources in the current run context's +resource_collection+
   # that are marked as updated
   def updated_resources
-    @run_context && @run_context.resource_collection.select { |r| r.updated }
+    @run_context && @run_context.resource_collection.select(&:updated)
   end
 
   # The backtrace from +exception+, if any
@@ -102,19 +99,21 @@ class Chef::RunStatus
   # * :updated_resources
   # * :exception
   # * :backtrace
-  def to_hash
+  def to_h
     # use a flat hash here so we can't errors from intermediate values being nil
-    { :node => node,
-      :success => success?,
-      :start_time => start_time,
-      :end_time => end_time,
-      :elapsed_time => elapsed_time,
-      :all_resources => all_resources,
-      :updated_resources => updated_resources,
-      :exception => formatted_exception,
-      :backtrace => backtrace,
-      :run_id => run_id }
+    { node: node,
+      success: success?,
+      start_time: start_time,
+      end_time: end_time,
+      elapsed_time: elapsed_time,
+      all_resources: all_resources,
+      updated_resources: updated_resources,
+      exception: formatted_exception,
+      backtrace: backtrace,
+      run_id: run_id }
   end
+
+  alias_method :to_hash, :to_h
 
   # Returns a string of the format "ExceptionClass: message" or +nil+ if no
   # +exception+ is set.

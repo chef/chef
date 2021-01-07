@@ -1,15 +1,15 @@
 
-require "set"
-require "chef/exceptions"
-require "chef/knife/cookbook_metadata"
-require "chef/digester"
-require "chef/cookbook_manifest"
-require "chef/cookbook_version"
-require "chef/cookbook/syntax_check"
-require "chef/cookbook/file_system_file_vendor"
-require "chef/util/threaded_job_queue"
-require "chef/sandbox"
-require "chef/server_api"
+autoload :Set, "set"
+require_relative "exceptions"
+require_relative "knife/cookbook_metadata"
+require_relative "digester"
+require_relative "cookbook_manifest"
+require_relative "cookbook_version"
+require_relative "cookbook/syntax_check"
+require_relative "cookbook/file_system_file_vendor"
+require_relative "util/threaded_job_queue"
+require_relative "sandbox"
+require_relative "server_api"
 
 class Chef
   class CookbookUploader
@@ -40,14 +40,14 @@ class Chef
     def initialize(cookbooks, opts = {})
       @opts = opts
       @cookbooks = Array(cookbooks)
-      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url])
+      @rest = opts[:rest] || Chef::ServerAPI.new(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions)
       @concurrency = opts[:concurrency] || 10
       @policy_mode = opts[:policy_mode] || false
     end
 
     def upload_cookbooks
       # Syntax Check
-      validate_cookbooks
+      validate_cookbooks unless opts[:skip_syntax_check]
       # generate checksums of cookbook files and create a sandbox
       checksum_files = {}
       cookbooks.each do |cb|
@@ -56,7 +56,7 @@ class Chef
       end
 
       checksums = checksum_files.inject({}) { |memo, elt| memo[elt.first] = nil; memo }
-      new_sandbox = rest.post("sandboxes", { :checksums => checksums })
+      new_sandbox = rest.post("sandboxes", { checksums: checksums })
 
       Chef::Log.info("Uploading files")
 
@@ -68,23 +68,23 @@ class Chef
       new_sandbox["checksums"].each do |checksum, info|
         if info["needs_upload"] == true
           checksums_to_upload << checksum
-          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info['url']}")
+          Chef::Log.info("Uploading #{checksum_files[checksum]} (checksum hex = #{checksum}) to #{info["url"]}")
           queue << uploader_function_for(checksum_files[checksum], checksum, info["url"], checksums_to_upload)
         else
-          Chef::Log.debug("#{checksum_files[checksum]} has not changed")
+          Chef::Log.trace("#{checksum_files[checksum]} has not changed")
         end
       end
 
       queue.process(@concurrency)
 
       sandbox_url = new_sandbox["uri"]
-      Chef::Log.debug("Committing sandbox")
+      Chef::Log.trace("Committing sandbox")
       # Retry if S3 is claims a checksum doesn't exist (the eventual
       # in eventual consistency)
       retries = 0
       begin
-        rest.put(sandbox_url, { :is_completed => true })
-      rescue Net::HTTPServerException => e
+        rest.put(sandbox_url, { is_completed: true })
+      rescue Net::HTTPClientException => e
         if e.message =~ /^400/ && (retries += 1) <= 5
           sleep 2
           retry
@@ -101,7 +101,7 @@ class Chef
         save_url = opts[:force] ? manifest.force_save_url : manifest.save_url
         begin
           rest.put(save_url, manifest)
-        rescue Net::HTTPServerException => e
+        rescue Net::HTTPClientException => e
           case e.response.code
           when "409"
             raise Chef::Exceptions::CookbookFrozen, "Version #{cb.version} of cookbook #{cb.name} is frozen. Use --force to override."
@@ -120,7 +120,7 @@ class Chef
         # but we need the base64 encoding for the content-md5
         # header
         checksum64 = Base64.encode64([checksum].pack("H*")).strip
-        file_contents = File.open(file, "rb") { |f| f.read }
+        file_contents = File.open(file, "rb", &:read)
 
         # Custom headers. 'content-type' disables JSON serialization of the request body.
         headers = { "content-type" => "application/x-binary", "content-md5" => checksum64, "accept" => "application/json" }
@@ -128,7 +128,7 @@ class Chef
         begin
           rest.put(url, file_contents, headers)
           checksums_to_upload.delete(checksum)
-        rescue Net::HTTPServerException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
+        rescue Net::HTTPClientException, Net::HTTPFatalError, Errno::ECONNREFUSED, Timeout::Error, Errno::ETIMEDOUT, SocketError => e
           error_message = "Failed to upload #{file} (#{checksum}) to #{url} : #{e.message}"
           error_message << "\n#{e.response.body}" if e.respond_to?(:response)
           Chef::Knife.ui.error(error_message)
@@ -139,13 +139,14 @@ class Chef
 
     def validate_cookbooks
       cookbooks.each do |cb|
-        syntax_checker = Chef::Cookbook::SyntaxCheck.for_cookbook(cb.name)
+        next if cb.nil?
+
+        syntax_checker = Chef::Cookbook::SyntaxCheck.new(cb.root_dir)
         Chef::Log.info("Validating ruby files")
         exit(1) unless syntax_checker.validate_ruby_files
         Chef::Log.info("Validating templates")
         exit(1) unless syntax_checker.validate_templates
         Chef::Log.info("Syntax OK")
-        true
       end
     end
 

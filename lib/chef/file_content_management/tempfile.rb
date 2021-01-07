@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "tempfile"
+require "tempfile" unless defined?(Tempfile)
 
 class Chef
   class FileContentManagement
@@ -39,15 +39,15 @@ class Chef
         errors = [ ]
 
         tempfile_dirnames.each do |tempfile_dirname|
-          begin
-            # preserving the file extension of the target filename should be considered a public API
-            tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
-            break
-          rescue SystemCallError => e
-            message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
-            Chef::Log.debug(message)
-            errors << message
-          end
+
+          # preserving the file extension of the target filename should be considered a public API
+          tf = ::Tempfile.open([tempfile_basename, tempfile_extension], tempfile_dirname)
+          break
+        rescue SystemCallError => e
+          message = "Creating temp file under '#{tempfile_dirname}' failed with: '#{e.message}'"
+          Chef::Log.trace(message)
+          errors << message
+
         end
 
         raise Chef::Exceptions::FileContentStagingError, errors if tf.nil?
@@ -67,8 +67,8 @@ class Chef
         basename = ::File.basename(@new_resource.path, tempfile_extension)
         # the leading "[.]chef-" here should be considered a public API and should not be changed
         basename.insert 0, "chef-"
-        basename.insert 0, "." unless Chef::Platform.windows? # dotfile if we're not on windows
-        basename
+        basename.insert 0, "." unless ChefUtils.windows? # dotfile if we're not on windows
+        basename.scrub
       end
 
       # this is similar to File.extname() but greedy about the extension (from the first dot, not the last dot)
@@ -76,7 +76,7 @@ class Chef
         # complexity here is due to supporting mangling non-UTF8 strings (e.g. latin-1 filenames with characters that are illegal in UTF-8)
         b = File.basename(@new_resource.path)
         i = b.index(".")
-        i.nil? ? "" : b[i..-1]
+        i.nil? ? "" : b[i..].scrub
       end
 
       # Returns the possible directories for the tempfile to be created in.

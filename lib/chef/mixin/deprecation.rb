@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,24 +23,24 @@ class Chef
       @deprecated_constants ||= {}
     end
 
-      # Add a deprecated constant to the Chef::Mixin namespace.
-      # === Arguments
-      # * name: the constant name, as a relative symbol.
-      # * replacement: the constant to return instead.
-      # * message: A message telling the user what to do instead.
-      # === Example:
-      #   deprecate_constant(:RecipeDefinitionDSLCore, Chef::DSL::Recipe, <<-EOM)
-      #     Chef::Mixin::RecipeDefinitionDSLCore is deprecated, use Chef::DSL::Recipe instead.
-      #   EOM
+    # Add a deprecated constant to the Chef::Mixin namespace.
+    #
+    # @param name [Symbol] the constant name, as a relative symbol.
+    # @param replacement [Object] the constant to return instead.
+    # @param message [String] A message telling the user what to do instead.
+    # @example
+    #   deprecate_constant(:RecipeDefinitionDSLCore, Chef::DSL::Recipe, <<-EOM)
+    #     Chef::Mixin::RecipeDefinitionDSLCore is deprecated, use Chef::DSL::Recipe instead.
+    #   EOM
     def self.deprecate_constant(name, replacement, message)
-      deprecated_constants[name] = { :replacement => replacement, :message => message }
+      deprecated_constants[name] = { replacement: replacement, message: message }
     end
 
-      # Const missing hook to look up deprecated constants defined with
-      # deprecate_constant. Emits a warning to the logger and returns the
-      # replacement constant. Will call super, most likely causing an exception
-      # for the missing constant, if +name+ is not found in the
-      # deprecated_constants collection.
+    # Const missing hook to look up deprecated constants defined with
+    # deprecate_constant. Emits a warning to the logger and returns the
+    # replacement constant. Will call super, most likely causing an exception
+    # for the missing constant, if +name+ is not found in the
+    # deprecated_constants collection.
     def self.const_missing(name)
       if new_const = deprecated_constants[name]
         Chef::Log.warn(new_const[:message])
@@ -54,7 +54,7 @@ class Chef
     module Deprecation
 
       class DeprecatedObjectProxyBase
-        KEEPERS = %w{__id__ __send__ instance_eval == equal? initialize object_id}
+        KEEPERS = %w{__id__ __send__ instance_eval == equal? initialize object_id}.freeze
         instance_methods.each { |method_name| undef_method(method_name) unless KEEPERS.include?(method_name.to_s) }
       end
 
@@ -65,7 +65,7 @@ class Chef
         end
 
         def method_missing(method_name, *args, &block)
-          log_deprecation_msg(caller[0..3])
+          deprecated_msg(caller[0..3])
           @target.send(method_name, *args, &block)
         end
 
@@ -75,7 +75,7 @@ class Chef
 
         private
 
-        def log_deprecation_msg(*called_from)
+        def deprecated_msg(*called_from)
           called_from = called_from.flatten
           log("Accessing #{@ivar_name} by the variable @#{@ivar_name} is deprecated. Support will be removed in a future release.")
           log("Please update your cookbooks to use #{@ivar_name} in place of @#{@ivar_name}. Accessed from:")
@@ -101,20 +101,14 @@ class Chef
 
       def deprecated_attr_reader(name, alternative, level = :warn)
         define_method(name) do
-          Chef.log_deprecation("#{self.class}.#{name} is deprecated. Support will be removed in a future release.")
-          Chef.log_deprecation(alternative)
-          Chef.log_deprecation("Called from:")
-          caller[0..3].each { |c| Chef.log_deprecation(c) }
+          Chef.deprecated(:internal_api, "#{self.class}.#{name} is deprecated. Support will be removed in a future release. #{alternative}")
           instance_variable_get("@#{name}")
         end
       end
 
       def deprecated_attr_writer(name, alternative, level = :warn)
         define_method("#{name}=") do |value|
-          Chef.log_deprecation("Writing to #{self.class}.#{name} with #{name}= is deprecated. Support will be removed in a future release.")
-          Chef.log_deprecation(alternative)
-          Chef.log_deprecation("Called from:")
-          caller[0..3].each { |c| Chef.log_deprecation(c) }
+          Chef.deprecated(:internal_api, "Writing to #{self.class}.#{name} with #{name}= is deprecated. Support will be removed in a future release. #{alternative}")
           instance_variable_set("@#{name}", value)
         end
       end

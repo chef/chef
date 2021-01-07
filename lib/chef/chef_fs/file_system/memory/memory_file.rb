@@ -1,4 +1,4 @@
-require "chef/chef_fs/file_system/base_fs_object"
+require_relative "../base_fs_object"
 
 class Chef
   module ChefFS
@@ -11,7 +11,7 @@ class Chef
           end
 
           def read
-            return @value
+            @value
           end
         end
       end

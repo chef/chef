@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "openssl"
@@ -38,12 +39,12 @@ describe "knife client key create", :workstation do
     it "creates a new client key with an expiration date" do
       date = "2017-12-31T23:59:59Z"
       knife("client key create -k new -e #{date} bah").should_succeed stderr: /^#{out}/, stdout: /.*BEGIN RSA PRIVATE KEY/
-      knife("client key show bah new").should_succeed /expiration_date:.*#{date}/
+      knife("client key show bah new").should_succeed(/expiration_date:.*#{date}/)
     end
 
     it "refuses to add an already existing key" do
       knife("client key create -k new bah")
-      expect { knife("client key create -k new bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("client key create -k new bah") }.to raise_error(Net::HTTPClientException)
     end
 
     it "saves the private key to a file" do

@@ -17,121 +17,44 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class Route < Chef::Resource
-      identity_attr :target
+      unified_mode true
 
-      state_attrs :netmask, :gateway
+      provides :route
 
       default_action :add
       allowed_actions :add, :delete
 
-      def initialize(name, run_context = nil)
-        super
-        @target = name
-        @netmask = nil
-        @gateway = nil
-        @metric = nil
-        @device = nil
-        @route_type = :host
-        @networking = nil
-        @networking_ipv6 = nil
-        @hostname = nil
-        @domainname = nil
-        @domain = nil
-      end
+      description "Use the **route** resource to manage the system routing table in a Linux environment."
 
-      def networking(arg = nil)
-        set_or_return(
-          :networking,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :target, String,
+        description: "The IP address of the target route.",
+        name_property: true
 
-      def networking_ipv6(arg = nil)
-        set_or_return(
-          :networking_ipv6,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :comment, [String, nil],
+        description: "Add a comment for the route.",
+        introduced: "14.0"
 
-      def hostname(arg = nil)
-        set_or_return(
-          :hostname,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :metric, [Integer, nil],
+        description: "The route metric value."
 
-      def domainname(arg = nil)
-        set_or_return(
-          :domainname,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :netmask, [String, nil],
+        description: "The decimal representation of the network mask. For example: `255.255.255.0`."
 
-      def domain(arg = nil)
-        set_or_return(
-          :domain,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :gateway, [String, nil],
+        description: "The gateway for the route."
 
-      def target(arg = nil)
-        set_or_return(
-          :target,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :device, [String, nil],
+        description: "The network interface to which the route applies.",
+        desired_state: false # Has a partial default in the provider of eth0.
 
-      def netmask(arg = nil)
-        set_or_return(
-          :netmask,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def gateway(arg = nil)
-        set_or_return(
-          :gateway,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def metric(arg = nil)
-        set_or_return(
-          :metric,
-          arg,
-          :kind_of => Integer
-        )
-      end
-
-      def device(arg = nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def route_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :route_type,
-          real_arg,
-          :equal_to => [ :host, :net ]
-        )
-      end
+      property :route_type, [Symbol, String],
+        description: "",
+        equal_to: %i{host net}, default: :host, desired_state: false
     end
   end
 end

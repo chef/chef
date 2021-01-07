@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -49,8 +49,7 @@ describe Chef::Knife::DataBagEdit do
 
   let(:is_encrypted?) { false }
   let(:transmitted_hash) { raw_edited_hash }
-  let(:data_to_edit) { db }
-
+  let(:data_to_edit) { db.raw_data }
   shared_examples_for "editing a data bag" do
     it "correctly edits then uploads the data bag" do
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(db)
@@ -74,7 +73,7 @@ describe Chef::Knife::DataBagEdit do
   end
 
   context "when config[:print_after] is set" do
-    let(:config) { { :print_after => true } }
+    let(:config) { { print_after: true } }
     before do
       expect(knife.ui).to receive(:output).with(raw_edited_hash)
     end
@@ -96,7 +95,7 @@ describe Chef::Knife::DataBagEdit do
       let(:is_encrypted?) { true }
       let(:db) { Chef::DataBagItem.from_hash(enc_raw_hash) }
       # If the data bag is encrypted, it gets passed to `edit` as a hash.  Otherwise, it gets passed as a DataBag
-      let (:data_to_edit) { raw_hash }
+      let(:data_to_edit) { raw_hash }
 
       before(:each) do
         expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)

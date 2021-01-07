@@ -40,12 +40,12 @@ describe Chef::Provider::Ifconfig::Debian do
   let(:current_resource) { Chef::Resource::Ifconfig.new("10.0.0.1", run_context) }
 
   let(:provider) do
-    status = double("Status", :exitstatus => 0)
+    status = double("Status", exitstatus: 0)
     provider = Chef::Provider::Ifconfig::Debian.new(new_resource, run_context)
     provider.instance_variable_set("@status", status)
     provider.current_resource = current_resource
     allow(provider).to receive(:load_current_resource)
-    allow(provider).to receive(:run_command)
+    allow(provider).to receive(:shell_out!)
     provider
   end
 
@@ -77,12 +77,12 @@ describe Chef::Provider::Ifconfig::Debian do
       context "when the interface_dot_d directory does not exist" do
         before do
           FileUtils.rmdir tempdir_path
-          expect(File.exists?(tempdir_path)).to be_falsey
+          expect(File.exist?(tempdir_path)).to be_falsey
         end
 
         it "should create the /etc/network/interfaces.d directory" do
           provider.run_action(:add)
-          expect(File.exists?(tempdir_path)).to be_truthy
+          expect(File.exist?(tempdir_path)).to be_truthy
           expect(File.directory?(tempdir_path)).to be_truthy
         end
 
@@ -94,7 +94,7 @@ describe Chef::Provider::Ifconfig::Debian do
 
       context "when the interface_dot_d directory exists" do
         before do
-          expect(File.exists?(tempdir_path)).to be_truthy
+          expect(File.exist?(tempdir_path)).to be_truthy
         end
 
         it "should still mark the resource as updated (we still write a file to it)" do
@@ -114,22 +114,16 @@ describe Chef::Provider::Ifconfig::Debian do
       before do
         stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_FILE", tempfile.path)
         stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_DOT_D_DIR", tempdir_path)
-        config_file_ifcfg = StringIO.new(<<-EOF
-iface eth0 inet static
-  address 10.0.0.1
-  netmask 255.255.254.0
-EOF
-        )
-        expect(File.exists?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
+        expect(File.exist?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
       end
 
       context "when the /etc/network/interfaces file has the source line" do
         let(:expected_string) do
-          <<-EOF
-a line
-source #{tempdir_path}/*
-another line
-EOF
+          <<~EOF
+            a line
+            source #{tempdir_path}/*
+            another line
+          EOF
         end
 
         before do
@@ -148,11 +142,11 @@ EOF
 
       context "when the /etc/network/interfaces file does not have the source line" do
         let(:expected_string) do
-          <<-EOF
-a line
-another line
-source #{tempdir_path}/*
-EOF
+          <<~EOF
+            a line
+            another line
+            source #{tempdir_path}/*
+          EOF
         end
 
         before do
@@ -210,12 +204,12 @@ EOF
         context "when the interface_dot_d directory does not exist" do
           before do
             FileUtils.rmdir tempdir_path
-            expect(File.exists?(tempdir_path)).to be_falsey
+            expect(File.exist?(tempdir_path)).to be_falsey
           end
 
           it "should not create the /etc/network/interfaces.d directory" do
             provider.run_action(:add)
-            expect(File.exists?(tempdir_path)).not_to be_truthy
+            expect(File.exist?(tempdir_path)).not_to be_truthy
           end
 
           it "should mark the resource as updated" do
@@ -226,7 +220,7 @@ EOF
 
         context "when the interface_dot_d directory exists" do
           before do
-            expect(File.exists?(tempdir_path)).to be_truthy
+            expect(File.exist?(tempdir_path)).to be_truthy
           end
 
           it "should still mark the resource as updated (we still write a file to it)" do
@@ -246,22 +240,16 @@ EOF
         before do
           stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_FILE", tempfile.path)
           stub_const("Chef::Provider::Ifconfig::Debian::INTERFACES_DOT_D_DIR", tempdir_path)
-          config_file_ifcfg = StringIO.new(<<-EOF
-iface eth0 inet static
-  address 10.0.0.1
-  netmask 255.255.254.0
-                                           EOF
-                                          )
           expect(File).not_to receive(:new).with(config_filename_ifcfg, "w")
-          expect(File.exists?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
+          expect(File.exist?(tempdir_path)).to be_truthy # since the file exists, the enclosing dir must also exist
         end
 
         context "when the /etc/network/interfaces file has the source line" do
           let(:expected_string) do
-            <<-EOF
-a line
-source #{tempdir_path}/*
-another line
+            <<~EOF
+              a line
+              source #{tempdir_path}/*
+              another line
             EOF
           end
 
@@ -279,10 +267,10 @@ another line
 
         context "when the /etc/network/interfaces file does not have the source line" do
           let(:expected_string) do
-            <<-EOF
-a line
-another line
-source #{tempdir_path}/*
+            <<~EOF
+              a line
+              another line
+              source #{tempdir_path}/*
             EOF
           end
 

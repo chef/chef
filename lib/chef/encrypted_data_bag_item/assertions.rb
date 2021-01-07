@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/encrypted_data_bag_item/unacceptable_encrypted_data_bag_item_format"
-require "chef/encrypted_data_bag_item/unsupported_cipher"
+require_relative "unacceptable_encrypted_data_bag_item_format"
+require_relative "unsupported_cipher"
 
 class Chef::EncryptedDataBagItem
 
@@ -27,10 +27,10 @@ class Chef::EncryptedDataBagItem
   module Assertions
 
     def assert_format_version_acceptable!(format_version)
-      unless format_version.kind_of?(Integer) && format_version >= Chef::Config[:data_bag_decrypt_minimum_version]
+      unless format_version.is_a?(Integer) && format_version >= Chef::Config[:data_bag_decrypt_minimum_version]
         raise UnacceptableEncryptedDataBagItemFormat,
           "The encrypted data bag item has format version `#{format_version}', " +
-          "but the config setting 'data_bag_decrypt_minimum_version' requires version `#{Chef::Config[:data_bag_decrypt_minimum_version]}'"
+            "but the config setting 'data_bag_decrypt_minimum_version' requires version `#{Chef::Config[:data_bag_decrypt_minimum_version]}'"
       end
     end
 

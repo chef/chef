@@ -21,11 +21,11 @@ class Chef
     class WhyrunSafeRubyBlock < Chef::Provider::RubyBlock
       provides :whyrun_safe_ruby_block
 
-      def action_run
-        @new_resource.block.call
-        @new_resource.updated_by_last_action(true)
-        @run_context.events.resource_update_applied(@new_resource, :create, "execute the whyrun_safe_ruby_block #{@new_resource.name}")
-        Chef::Log.info("#{@new_resource} called")
+      action :run do
+        new_resource.block.call
+        new_resource.updated_by_last_action(true)
+        @run_context.events.resource_update_applied(new_resource, :create, "execute the whyrun_safe_ruby_block #{new_resource.name}")
+        logger.info("#{new_resource} called")
       end
     end
   end

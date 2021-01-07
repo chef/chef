@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,19 +23,19 @@ describe Chef::Knife::NodeEdit do
 
   # helper to convert the view from Chef objects into Ruby objects representing JSON
   def deserialized_json_view
-    actual = Chef::JSONCompat.from_json(Chef::JSONCompat.to_json_pretty(@knife.node_editor.send(:view)))
+    Chef::JSONCompat.from_json(Chef::JSONCompat.to_json_pretty(@knife.node_editor.send(:view)))
   end
 
   before(:each) do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeEdit.new
     @knife.config = {
-      :editor => "cat",
-      :attribute => nil,
-      :print_after => nil,
+      editor: "cat",
+      attribute: nil,
+      print_after: nil,
     }
     @knife.name_args = [ "adam" ]
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
   end
 
   it "should load the node" do
@@ -45,11 +45,13 @@ describe Chef::Knife::NodeEdit do
 
   describe "after loading the node" do
     before do
+      @knife.config[:all_attributes] = false
+
       allow(@knife).to receive(:node).and_return(@node)
-      @node.automatic_attrs = { :go => :away }
-      @node.default_attrs = { :hide => :me }
-      @node.override_attrs = { :dont => :show }
-      @node.normal_attrs = { :do_show => :these }
+      @node.automatic_attrs = { go: :away }
+      @node.default_attrs = { hide: :me }
+      @node.override_attrs = { dont: :show }
+      @node.normal_attrs = { do_show: :these }
       @node.chef_environment("prod")
       @node.run_list("recipe[foo]")
     end

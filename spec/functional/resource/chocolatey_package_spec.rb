@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,27 +16,29 @@
 # limitations under the License.
 #
 require "spec_helper"
-require "chef/mixin/powershell_out"
+require "chef/mixin/shell_out"
 
-describe Chef::Resource::ChocolateyPackage, :windows_only do
-  include Chef::Mixin::PowershellOut
-
-  before(:all) do
-    powershell_out!("iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))")
-    unless ENV["PATH"] =~ /chocolatey\\bin/
-      ENV["PATH"] = "C:\\ProgramData\\chocolatey\\bin;#{ENV["PATH"]}"
-    end
-  end
+describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
+  include Chef::Mixin::ShellOut
 
   let(:package_name) { "test-A" }
-  let(:package_list) { proc { powershell_out!("choco list -lo -r #{Array(package_name).join(' ')}").stdout.chomp } }
+  let(:package_list) { proc { shell_out!("choco list -lo -r #{Array(package_name).join(" ")}").stdout.chomp } }
   let(:package_source) { File.join(CHEF_SPEC_ASSETS, "chocolatey_feed") }
+
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
 
   subject do
     new_resource = Chef::Resource::ChocolateyPackage.new("test choco package", run_context)
     new_resource.package_name package_name
     new_resource.source package_source
     new_resource
+  end
+
+  let(:provider) do
+    provider = subject.provider_for_action(subject.action)
+    provider
   end
 
   context "installing a package" do
@@ -70,7 +72,7 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
     end
 
     context "installing multiple packages" do
-      let(:package_name) { [ "test-A", "test-B" ] }
+      let(:package_name) { %w{test-A test-B} }
 
       it "installs both packages" do
         subject.run_action(:install)
@@ -81,6 +83,48 @@ describe Chef::Resource::ChocolateyPackage, :windows_only do
     it "raises if package is not found" do
       subject.package_name "blah"
       expect { subject.run_action(:install) }.to raise_error Chef::Exceptions::Package
+    end
+
+    it "installs with an option as a string" do
+      subject.options "--force --confirm"
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
+    end
+
+    it "installs with multiple options as a string" do
+      subject.options "--force --confirm"
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
+    end
+
+    context "when multiple options passed as string" do
+      before do
+        subject.options "--force --confirm"
+        subject.source nil
+      end
+
+      it "splits a string into an array of options" do
+        expect(provider.send(:cmd_args)).to eq(["--force", "--confirm"])
+      end
+
+      it "calls command_line_to_argv_w_helper method" do
+        expect(provider).to receive(:command_line_to_argv_w_helper).with(subject.options).and_return(["--force", "--confirm"])
+        provider.send(:cmd_args)
+      end
+    end
+
+    context "when multiple options passed as array" do
+      it "Does not call command_line_to_argv_w_helper method" do
+        subject.options [ "--force", "--confirm" ]
+        expect(provider).not_to receive(:command_line_to_argv_w_helper)
+        provider.send(:cmd_args)
+      end
+    end
+
+    it "installs with multiple options as an array" do
+      subject.options [ "--force", "--confirm" ]
+      subject.run_action(:install)
+      expect(package_list.call).to eq("#{package_name}|2.0")
     end
   end
 

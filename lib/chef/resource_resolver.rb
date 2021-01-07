@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/platform/resource_priority_map"
-require "chef/mixin/convert_to_class_name"
+require_relative "exceptions"
+require_relative "platform/resource_priority_map"
+require_relative "mixin/convert_to_class_name"
 
 class Chef
   class ResourceResolver
@@ -29,8 +29,8 @@ class Chef
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
     #
-    def self.resolve(resource_name, node: nil, canonical: nil)
-      new(node, resource_name, canonical: canonical).resolve
+    def self.resolve(resource_name, node: nil)
+      new(node, resource_name).resolve
     end
 
     #
@@ -40,11 +40,9 @@ class Chef
     # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.
     #
-    def self.list(resource_name, node: nil, canonical: nil)
-      new(node, resource_name, canonical: canonical).list
+    def self.list(resource_name, node: nil)
+      new(node, resource_name).list
     end
 
     include Chef::Mixin::ConvertToClassName
@@ -54,14 +52,7 @@ class Chef
     # @api private
     attr_reader :resource_name
     # @api private
-    def resource
-      Chef.log_deprecation("Chef::ResourceResolver.resource deprecated.  Use resource_name instead.")
-      resource_name
-    end
-    # @api private
     attr_reader :action
-    # @api private
-    attr_reader :canonical
 
     #
     # Create a resolver.
@@ -69,27 +60,24 @@ class Chef
     # @param node [Chef::Node] The node against which to resolve. `nil` causes
     #   platform filters to be ignored.
     # @param resource_name [Symbol] The resource DSL name (e.g. `:file`).
-    # @param canonical [Boolean] `true` or `false` to match canonical or
-    #   non-canonical values only. `nil` to ignore canonicality.  Default: `nil`
     #
     # @api private use Chef::ResourceResolver.resolve or .list instead.
-    def initialize(node, resource_name, canonical: nil)
+    def initialize(node, resource_name)
       @node = node
       @resource_name = resource_name.to_sym
-      @canonical = canonical
     end
 
     # @api private use Chef::ResourceResolver.resolve instead.
     def resolve
       # log this so we know what resources will work for the generic resource on the node (early cut)
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
 
       handler = prioritized_handlers.first
 
       if handler
-        Chef::Log.debug "Resource for #{resource_name} is #{handler}"
+        Chef::Log.trace "Resource for #{resource_name} is #{handler}"
       else
-        Chef::Log.debug "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
+        Chef::Log.trace "Dynamic resource resolver FAILED to resolve a resource for #{resource_name}"
       end
 
       handler
@@ -97,7 +85,7 @@ class Chef
 
     # @api private
     def list
-      Chef::Log.debug "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
+      Chef::Log.trace "Resources for generic #{resource_name} resource enabled on node include: #{prioritized_handlers}"
       prioritized_handlers
     end
 
@@ -140,7 +128,7 @@ class Chef
 
     # @api private
     def potential_handlers
-      handler_map.list(node, resource_name, canonical: canonical).uniq
+      handler_map.list(node, resource_name).uniq
     end
 
     def enabled_handlers
@@ -151,7 +139,7 @@ class Chef
       @prioritized_handlers ||= begin
         enabled_handlers = self.enabled_handlers
 
-        prioritized = priority_map.list(node, resource_name, canonical: canonical).flatten(1)
+        prioritized = priority_map.list(node, resource_name).flatten(1)
         prioritized &= enabled_handlers # Filter the priority map by the actual enabled handlers
         prioritized |= enabled_handlers # Bring back any handlers that aren't in the priority map, at the *end* (ordered set)
         prioritized
@@ -161,25 +149,5 @@ class Chef
     def overrode_provides?(handler)
       handler.method(:provides?).owner != Chef::Resource.method(:provides?).owner
     end
-
-    module Deprecated
-      # return a deterministically sorted list of Chef::Resource subclasses
-      def resources
-        Chef::Resource.sorted_descendants
-      end
-
-      def enabled_handlers
-        handlers = super
-        if handlers.empty?
-          handlers = resources.select { |handler| overrode_provides?(handler) && handler.provides?(node, resource_name) }
-          handlers.each do |handler|
-            Chef.log_deprecation("#{handler}.provides? returned true when asked if it provides DSL #{resource_name}, but provides #{resource_name.inspect} was never called!")
-            Chef.log_deprecation("In Chef 13, this will break: you must call provides to mark the names you provide, even if you also override provides? yourself.")
-          end
-        end
-        handlers
-      end
-    end
-    prepend Deprecated
   end
 end

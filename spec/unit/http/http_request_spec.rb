@@ -1,6 +1,6 @@
 #
 # Author:: Klaas Jan Wierenga (<k.j.wierenga@gmail.com>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,6 +52,12 @@ describe Chef::HTTP::HTTPRequest do
       expect(request.headers["Host"]).to eql("yourhost.com:8888")
     end
 
+    it "should not mutate the URI when it contains parameters" do
+      # buggy constructor code mutated strings owned by the URI parameter
+      uri = URI("http://dummy.com/foo?bar=baz")
+      request = Chef::HTTP::HTTPRequest.new(:GET, uri, "")
+      expect(uri).to eql(URI("http://dummy.com/foo?bar=baz"))
+    end
   end
 
   context "with HTTPS url scheme" do

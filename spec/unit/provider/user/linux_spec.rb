@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # License:: Apache License, Version 2.0
 #
@@ -19,7 +19,6 @@
 #
 
 require "spec_helper"
-require "chef/provider/user/useradd"
 
 describe Chef::Provider::User::Linux do
 
@@ -45,48 +44,16 @@ describe Chef::Provider::User::Linux do
       @current_resource = Chef::Resource::User::LinuxUser.new("adam", @run_context)
     end
 
-    it "supports manage_home does not exist", chef: ">= 13" do
-      expect( @new_resource.supports.key?(:manage_home) ).to be false
+    it "throws an error when trying to set supports manage_home: true" do
+      expect { @new_resource.supports( manage_home: true ) }.to raise_error(NoMethodError)
     end
 
-    it "supports non_unique does not exist", chef: ">= 13" do
-      expect( @new_resource.supports.key?(:non_unique) ).to be false
-    end
-
-    # supports is a method on the superclass so can't totally be removed, but we should aggressively NOP it to decisively break it
-    it "disables the supports API", chef: ">= 13" do
-      @new_resource.supports( { manage_home: true } )
-      expect( @new_resource.supports.key?(:manage_home) ).to be false
-    end
-
-    it "sets supports manage_home to false" do
-      expect( @new_resource.supports[:manage_home] ).to be false
-    end
-
-    it "sets supports non-unique to false" do
-      expect( @new_resource.supports[:non_unique] ).to be false
-    end
-
-    it "throws a deprecation warning on setting supports[:manage_home]" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(Chef).to receive(:log_deprecation).with("supports { manage_home: true } on the user resource is deprecated and will be removed in Chef 13, set manage_home: true instead")
-      @new_resource.supports( { :manage_home => true } )
+    it "throws an error when trying to set supports non_unique: true" do
+      expect { @new_resource.supports( non_unique: true ) }.to raise_error(NoMethodError)
     end
 
     it "defaults manage_home to false" do
       expect( @new_resource.manage_home ).to be false
-    end
-
-    it "supports[:manage_home] (incorectly) acts like manage_home" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      @new_resource.supports({ manage_home: true })
-      expect( provider.useradd_options ).to eql(["-m"])
-    end
-
-    it "supports[:manage_home] does not change behavior of manage_home: false", chef: ">= 13" do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      @new_resource.supports({ manage_home: true })
-      expect( provider.useradd_options ).to eql(["-M"])
     end
 
     it "by default manage_home is false and we use -M" do

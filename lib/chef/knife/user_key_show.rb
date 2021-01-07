@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
@@ -28,6 +28,10 @@ class Chef
     # @attr_reader [String] actor the name of the client that this key is for
     class UserKeyShow < Knife
       banner "knife user key show USER KEYNAME (options)"
+
+      deps do
+        require_relative "key_show"
+      end
 
       attr_reader :actor
 

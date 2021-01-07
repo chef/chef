@@ -22,9 +22,9 @@ describe Chef::Platform::Rebooter do
 
   let(:reboot_info) do
     {
-      :delay_mins => 5,
-      :requested_by => "reboot resource functional test",
-      :reason => "rebooter spec test",
+      delay_mins: 5,
+      requested_by: "reboot resource functional test",
+      reason: "rebooter spec test",
     }
   end
 
@@ -35,16 +35,18 @@ describe Chef::Platform::Rebooter do
     resource
   end
 
+  let(:node) { Chef::Node.new }
+
   let(:run_context) do
-    node = Chef::Node.new
     events = Chef::EventDispatch::Dispatcher.new
     Chef::RunContext.new(node, {}, events)
   end
 
   let(:expected) do
     {
-      :windows => 'shutdown /r /t 300 /c "rebooter spec test"',
-      :linux => 'shutdown -r +5 "rebooter spec test"',
+      windows: "#{ENV["SYSTEMROOT"]}/System32/shutdown.exe /r /t 300 /c \"rebooter spec test\"",
+      linux: 'shutdown -r +5 "rebooter spec test" &',
+      solaris: 'shutdown -i6 -g5 -y "rebooter spec test" &',
     }
   end
 
@@ -69,9 +71,11 @@ describe Chef::Platform::Rebooter do
       end
 
       shared_context "test a reboot method" do
-        def test_rebooter_method(method_sym, is_windows, expected_reboot_str)
-          allow(ChefConfig).to receive(:windows?).and_return(is_windows)
+        def test_rebooter_method(method_sym, is_windows, is_solaris, expected_reboot_str)
+          allow(ChefUtils).to receive(:windows?).and_return(is_windows)
+          node.automatic["os"] = node.automatic["platform"] = node.automatic["platform_family"] = "solaris2" if is_solaris
           expect(rebooter).to receive(:shell_out!).once.with(expected_reboot_str)
+          expect(rebooter).to receive(:raise).with(Chef::Exceptions::Reboot)
           expect(rebooter).to receive(method_sym).once.and_call_original
           rebooter.send(method_sym, run_context.node)
         end
@@ -81,11 +85,15 @@ describe Chef::Platform::Rebooter do
         include_context "test a reboot method"
 
         it "should produce the correct string on Windows" do
-          test_rebooter_method(:reboot_if_needed!, true, expected[:windows])
+          test_rebooter_method(:reboot_if_needed!, true, false, expected[:windows])
         end
 
-        it "should produce the correct (Linux-specific) string on non-Windows" do
-          test_rebooter_method(:reboot_if_needed!, false, expected[:linux])
+        it "should produce a SysV-like shutdown on solaris" do
+          test_rebooter_method(:reboot_if_needed!, false, true, expected[:solaris])
+        end
+
+        it "should produce a BSD-like shutdown by default" do
+          test_rebooter_method(:reboot_if_needed!, false, false, expected[:linux])
         end
       end
 
@@ -93,11 +101,15 @@ describe Chef::Platform::Rebooter do
         include_context "test a reboot method"
 
         it "should produce the correct string on Windows" do
-          test_rebooter_method(:reboot!, true, expected[:windows])
+          test_rebooter_method(:reboot!, true, false, expected[:windows])
         end
 
-        it "should produce the correct (Linux-specific) string on non-Windows" do
-          test_rebooter_method(:reboot!, false, expected[:linux])
+        it "should produce a SysV-like shutdown on solaris" do
+          test_rebooter_method(:reboot!, false, true, expected[:solaris])
+        end
+
+        it "should produce a BSD-like shutdown by default" do
+          test_rebooter_method(:reboot!, false, false, expected[:linux])
         end
       end
     end

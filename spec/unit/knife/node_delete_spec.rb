@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,14 +23,19 @@ describe Chef::Knife::NodeDelete do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeDelete.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
-    @knife.name_args = [ "adam" ]
+    @knife.name_args = %w{ adam ben }
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
-    @node = Chef::Node.new()
-    allow(@node).to receive(:destroy).and_return(true)
-    allow(Chef::Node).to receive(:load).and_return(@node)
+
+    @adam_node = Chef::Node.new
+    @ben_node = Chef::Node.new
+    allow(@ben_node).to receive(:destroy).and_return(true)
+    allow(@adam_node).to receive(:destroy).and_return(true)
+    allow(Chef::Node).to receive(:load).with("adam").and_return(@adam_node)
+    allow(Chef::Node).to receive(:load).with("ben").and_return(@ben_node)
+
     @stdout = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
   end
@@ -41,13 +46,15 @@ describe Chef::Knife::NodeDelete do
       @knife.run
     end
 
-    it "should load the node" do
-      expect(Chef::Node).to receive(:load).with("adam").and_return(@node)
+    it "should load the nodes" do
+      expect(Chef::Node).to receive(:load).with("adam").and_return(@adam_node)
+      expect(Chef::Node).to receive(:load).with("ben").and_return(@ben_node)
       @knife.run
     end
 
-    it "should delete the node" do
-      expect(@node).to receive(:destroy).and_return(@node)
+    it "should delete the nodes" do
+      expect(@adam_node).to receive(:destroy).and_return(@adam_node)
+      expect(@ben_node).to receive(:destroy).and_return(@ben_node)
       @knife.run
     end
 
@@ -59,8 +66,10 @@ describe Chef::Knife::NodeDelete do
     describe "with -p or --print-after" do
       it "should pretty print the node, formatted for display" do
         @knife.config[:print_after] = true
-        expect(@knife).to receive(:format_for_display).with(@node).and_return("poop")
-        expect(@knife).to receive(:output).with("poop")
+        expect(@knife).to receive(:format_for_display).with(@adam_node).and_return("adam")
+        expect(@knife).to receive(:format_for_display).with(@ben_node).and_return("ben")
+        expect(@knife).to receive(:output).with("adam")
+        expect(@knife).to receive(:output).with("ben")
         @knife.run
       end
     end

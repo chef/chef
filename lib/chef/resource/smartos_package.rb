@@ -1,6 +1,6 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,24 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/smartos"
+require_relative "package"
 
 class Chef
   class Resource
     class SmartosPackage < Chef::Resource::Package
-      resource_name :smartos_package
-      provides :package, os: "solaris2", platform_family: "smartos"
+      unified_mode true
+
+      provides :smartos_package
+      provides :package, platform_family: "smartos"
+
+      description "Use the **smartos_package** resource to manage packages for the SmartOS platform."
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

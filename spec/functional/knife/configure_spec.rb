@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "spec_helper"
 require "chef/knife/configure"
 
 describe "knife configure" do
-  let (:ohai) do
+  let(:ohai) do
     OHAI_SYSTEM
   end
 

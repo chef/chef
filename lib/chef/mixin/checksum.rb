@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-require "digest/sha2"
-require "chef/digester"
+require_relative "../digester"
 
 class Chef
   module Mixin
@@ -27,6 +26,11 @@ class Chef
         Chef::Digester.checksum_for_file(file)
       end
 
+      def short_cksum(checksum)
+        return "none" if checksum.nil?
+
+        checksum.slice(0, 6)
+      end
     end
   end
 end

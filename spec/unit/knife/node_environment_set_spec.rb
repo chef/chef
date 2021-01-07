@@ -24,7 +24,7 @@ describe Chef::Knife::NodeEnvironmentSet do
     @knife = Chef::Knife::NodeEnvironmentSet.new
     @knife.name_args = %w{adam bar}
     allow(@knife).to receive(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.name("knifetest-node")
     @node.chef_environment << "foo"
     allow(@node).to receive(:save).and_return(true)
@@ -45,6 +45,11 @@ describe Chef::Knife::NodeEnvironmentSet do
     it "should save the node" do
       expect(@node).to receive(:save)
       @knife.run
+    end
+
+    it "sets the environment to config for display" do
+      @knife.run
+      expect(@knife.config[:environment]).to eq("bar")
     end
 
     it "should print the environment" do

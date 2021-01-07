@@ -1,7 +1,7 @@
 #
 # Author:: Jesse Campbell (<hikeit@gmail.com>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,6 +24,10 @@ class Chef
 
         def self.for_resource(uri, new_resource, current_resource)
           if network_share?(uri)
+            unless ChefUtils.windows?
+              raise Exceptions::UnsupportedPlatform, "Fetching the file on a network share is supported only on the Windows platform. Please change your source: #{uri}"
+            end
+
             Chef::Provider::RemoteFile::NetworkFile.new(uri, new_resource, current_resource)
           else
             case uri.scheme
@@ -45,7 +49,7 @@ class Chef
         def self.network_share?(source)
           case source
           when String
-            !!(%r{\A\\\\[A-Za-z0-9+\-\.]+} =~ source)
+            !!(/\A\\\\[A-Za-z0-9+\-\.]+/ =~ source)
           else
             false
           end

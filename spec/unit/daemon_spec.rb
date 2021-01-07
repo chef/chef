@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,13 @@ require "spec_helper"
 require "ostruct"
 
 describe Chef::Daemon do
+  let(:testuser) { "thisisausernamewhichshouldnotexist" }
+  let(:testgroup) { "thisisagroupnamewhichshouldnotexist" }
+
   before do
     if windows?
-      mock_struct = #Struct::Passwd.new(nil, nil, 111, 111)
-        mock_struct = OpenStruct.new(:uid => 2342, :gid => 2342)
+      mock_struct = # Struct::Passwd.new(nil, nil, 111, 111)
+        mock_struct = OpenStruct.new(uid: 2342, gid: 2342)
       allow(Etc).to receive(:getpwnam).and_return mock_struct
       allow(Etc).to receive(:getgrnam).and_return mock_struct
       # mock unimplemented methods
@@ -73,8 +76,9 @@ describe Chef::Daemon do
   describe ".change_privilege" do
 
     before do
+      allow(Chef::Daemon).to receive(:_change_privilege)
       allow(Chef::Application).to receive(:fatal!).and_return(true)
-      Chef::Config[:user] = "aj"
+      Chef::Config[:user] = testuser
       allow(Dir).to receive(:chdir)
     end
 
@@ -86,28 +90,28 @@ describe Chef::Daemon do
     describe "when the user and group options are supplied" do
 
       before do
-        Chef::Config[:group] = "staff"
+        Chef::Config[:group] = testgroup
       end
 
       it "should log an appropriate info message" do
-        expect(Chef::Log).to receive(:info).with("About to change privilege to aj:staff")
+        expect(Chef::Log).to receive(:info).with("About to change privilege to #{testuser}:#{testgroup}")
         Chef::Daemon.change_privilege
       end
 
       it "should call _change_privilege with the user and group" do
-        expect(Chef::Daemon).to receive(:_change_privilege).with("aj", "staff")
+        expect(Chef::Daemon).to receive(:_change_privilege).with(testuser, testgroup)
         Chef::Daemon.change_privilege
       end
     end
 
     describe "when just the user option is supplied" do
       it "should log an appropriate info message" do
-        expect(Chef::Log).to receive(:info).with("About to change privilege to aj")
+        expect(Chef::Log).to receive(:info).with("About to change privilege to #{testuser}")
         Chef::Daemon.change_privilege
       end
 
       it "should call _change_privilege with just the user" do
-        expect(Chef::Daemon).to receive(:_change_privilege).with("aj")
+        expect(Chef::Daemon).to receive(:_change_privilege).with(testuser)
         Chef::Daemon.change_privilege
       end
     end
@@ -122,8 +126,8 @@ describe Chef::Daemon do
       allow(Process::UID).to receive(:change_privilege).and_return(nil)
       allow(Process::GID).to receive(:change_privilege).and_return(nil)
 
-      @pw_user = double("Struct::Passwd", :uid => 501)
-      @pw_group = double("Struct::Group", :gid => 20)
+      @pw_user = double("Struct::Passwd", uid: 501)
+      @pw_group = double("Struct::Group", gid: 20)
 
       allow(Process).to receive(:initgroups).and_return(true)
 
@@ -138,18 +142,18 @@ describe Chef::Daemon do
       end
 
       it "should initialize the supplemental group list" do
-        expect(Process).to receive(:initgroups).with("aj", 20)
-        Chef::Daemon._change_privilege("aj")
+        expect(Process).to receive(:initgroups).with(testuser, 20)
+        Chef::Daemon._change_privilege(testuser)
       end
 
       it "should attempt to change the process GID" do
         expect(Process::GID).to receive(:change_privilege).with(20).and_return(20)
-        Chef::Daemon._change_privilege("aj")
+        Chef::Daemon._change_privilege(testuser)
       end
 
       it "should attempt to change the process UID" do
         expect(Process::UID).to receive(:change_privilege).with(501).and_return(501)
-        Chef::Daemon._change_privilege("aj")
+        Chef::Daemon._change_privilege(testuser)
       end
     end
 
@@ -159,6 +163,11 @@ describe Chef::Daemon do
         allow(Process).to receive(:egid).and_return(999)
       end
 
+      after do
+        allow(Process).to receive(:euid).and_call_original
+        allow(Process).to receive(:egid).and_call_original
+      end
+
       it "should log an appropriate error message and fail miserably" do
         allow(Process).to receive(:initgroups).and_raise(Errno::EPERM)
         error = "Operation not permitted"
@@ -166,7 +175,7 @@ describe Chef::Daemon do
           error = "Not owner"
         end
         expect(Chef::Application).to receive(:fatal!).with("Permission denied when trying to change 999:999 to 501:20. #{error}")
-        Chef::Daemon._change_privilege("aj")
+        Chef::Daemon._change_privilege(testuser)
       end
     end
 

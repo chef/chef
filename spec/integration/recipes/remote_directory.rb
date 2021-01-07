@@ -5,7 +5,7 @@ describe Chef::Resource::RemoteDirectory do
   include Chef::Mixin::ShellOut
 
   # Until Cheffish::RSpec has cookbook support, we have to run the whole client
-  let(:chef_dir) { File.join(File.dirname(__FILE__), "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -16,13 +16,13 @@ describe Chef::Resource::RemoteDirectory do
   # machine that has omnibus chef installed. In that case we need to ensure
   # we're running `chef-client` from the source tree and not the external one.
   # cf. CHEF-4914
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "has a cookbook with a source_dir with two subdirectories, each with one file and subdir in a different alphabetical order" do
     before do
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
       EOM
       directory "cookbooks/test" do
         directory "files/default/source_dir" do
@@ -50,7 +50,7 @@ describe Chef::Resource::RemoteDirectory do
              end
           EOM
         end
-        shell_out!("#{chef_client} -c \"#{path_to('config/client.rb')}\" -o 'test::default'", :cwd => chef_dir)
+        shell_out!("#{chef_client} -c \"#{path_to("config/client.rb")}\" -o 'test::default'", cwd: chef_dir)
       end
 
       def mode_of(path)

@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@junglist.gen.nz>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,12 +24,11 @@ describe Chef::Application::Knife do
   before(:all) do
     class NoopKnifeCommand < Chef::Knife
       option :opt_with_default,
-        :short => "-D VALUE",
-        :long => "-optwithdefault VALUE",
-        :default => "default-value"
+        short: "-D VALUE",
+        long: "-optwithdefault VALUE",
+        default: "default-value"
 
-      def run
-      end
+      def run; end
     end
   end
 
@@ -75,10 +74,23 @@ describe Chef::Application::Knife do
       expect(@knife).to receive(:exit).with(0)
       @knife.run
     end
-    if windows?
-      expect(Chef::Config[:color]).to be_truthy
-    else
-      expect(Chef::Config[:color]).to be_truthy
+    expect(Chef::Config[:color]).to be_truthy
+  end
+
+  context "validate --format option" do
+    it "should set the default format summary" do
+      with_argv(*%w{noop knife command}) do
+        expect(@knife).to receive(:exit).with(0)
+        @knife.run
+        expect(@knife.default_config[:format]).to eq("summary")
+      end
+    end
+
+    it "should raise the error for invalid value" do
+      with_argv(*%w{noop knife command -F abc}) do
+        expect(STDOUT).to receive(:puts).at_least(2).times
+        expect { @knife.run }.to raise_error(SystemExit) { |e| expect(e.status).to eq(2) }
+      end
     end
   end
 

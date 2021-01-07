@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/data_bag_entry"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/data_handler/data_bag_item_data_handler"
+require_relative "rest_list_dir"
+require_relative "data_bag_entry"
+require_relative "../exceptions"
+require_relative "../../data_handler/data_bag_item_data_handler"
 
 class Chef
   module ChefFS
@@ -48,15 +48,16 @@ class Chef
           end
 
           def delete(recurse)
-            if !recurse
-              raise NotFoundError.new(self) if !exists?
+            unless recurse
+              raise NotFoundError.new(self) unless exists?
+
               raise MustDeleteRecursivelyError.new(self, "#{path_for_printing} must be deleted recursively")
             end
             begin
               rest.delete(api_path)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
               else

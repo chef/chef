@@ -17,12 +17,12 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/security"
 end
 
 describe "Chef::ReservedNames::Win32::SID", :windows_only do
-  if Chef::Platform.windows?
+  if ChefUtils.windows?
     SID ||= Chef::ReservedNames::Win32::Security::SID
   end
 

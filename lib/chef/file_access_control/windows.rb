@@ -1,7 +1,7 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/file"
+require_relative "../win32/security"
+require_relative "../win32/file"
 
 class Chef
   class FileAccessControl
@@ -34,7 +34,8 @@ class Chef
         # We want to mix these in as class methods
         def writable?(path)
           ::File.exists?(path) && Chef::ReservedNames::Win32::File.file_access_check(
-            path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE)
+            path, Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE
+          )
         end
       end
 
@@ -90,17 +91,19 @@ class Chef
         target_acl.each do |target_ace|
           if target_ace.flags & INHERIT_ONLY_ACE == 0
             self_ace = target_ace.dup
-            self_ace.flags = 0
+            # We need flag value which is already being set in case of WRITE permissions as 3, so we will not be overwriting it with the hard coded value.
+            self_ace.flags = 0 unless target_ace.mask == Chef::ReservedNames::Win32::API::Security::WRITE
             self_ace.mask = securable_object.predict_rights_mask(target_ace.mask)
             new_target_acl << self_ace
           end
-          if target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
+          # As there is no inheritance needed in case of WRITE permissions.
+          if target_ace.mask != Chef::ReservedNames::Win32::API::Security::WRITE && target_ace.flags & (CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE) != 0
             children_ace = target_ace.dup
             children_ace.flags |= INHERIT_ONLY_ACE
             new_target_acl << children_ace
           end
         end
-        return actual_acl == new_target_acl
+        actual_acl == new_target_acl
       end
 
       def existing_descriptor
@@ -108,9 +111,13 @@ class Chef
       end
 
       def get_sid(value)
-        if value.kind_of?(String)
-          SID.from_account(value)
-        elsif value.kind_of?(SID)
+        if value.is_a?(String)
+          begin
+            Security.convert_string_sid_to_sid(value)
+          rescue Chef::Exceptions::Win32APIError
+            SID.from_account(value)
+          end
+        elsif value.is_a?(SID)
           value
         else
           raise "Must specify username, group or SID: #{value}"
@@ -119,16 +126,18 @@ class Chef
 
       def securable_object
         @securable_object ||= begin
-          if file.kind_of?(String)
+          if file.is_a?(String)
             so = Chef::ReservedNames::Win32::Security::SecurableObject.new(file.dup)
           end
-          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.kind_of? Chef::ReservedNames::Win32::Security::SecurableObject
+          raise ArgumentError, "'file' must be a valid path or object of type 'Chef::ReservedNames::Win32::Security::SecurableObject'" unless so.is_a? Chef::ReservedNames::Win32::Security::SecurableObject
+
           so
         end
       end
 
       def should_update_dacl?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         dacl = target_dacl
         existing_dacl = existing_descriptor.dacl
         inherits = target_inherits
@@ -162,6 +171,7 @@ class Chef
 
       def should_update_group?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         (group = target_group) && (group != existing_descriptor.group)
       end
 
@@ -181,6 +191,7 @@ class Chef
 
       def should_update_owner?
         return true unless ::File.exists?(file) || ::File.symlink?(file)
+
         (owner = target_owner) && (owner != existing_descriptor.owner)
       end
 
@@ -204,6 +215,7 @@ class Chef
         mask |= (GENERIC_WRITE | DELETE) if mode & 2 != 0
         mask |= GENERIC_EXECUTE if mode & 1 != 0
         return [] if mask == 0
+
         [ ACE.access_allowed(sid, mask) ]
       end
 
@@ -220,7 +232,7 @@ class Chef
           when :read_execute
             mask |= GENERIC_READ | GENERIC_EXECUTE
           when :write
-            mask |= GENERIC_WRITE
+            mask |= WRITE
           else
             # Otherwise, assume it's an integer specifying the actual flags
             mask |= permission
@@ -234,7 +246,7 @@ class Chef
         flags = 0
 
         #
-        # Configure child inheritence only if the resource is some
+        # Configure child inheritance only if the resource is some
         # type of a directory.
         #
         if resource.is_a? Chef::Resource::Directory
@@ -243,10 +255,7 @@ class Chef
             flags |= CONTAINER_INHERIT_ACE
           when :objects_only
             flags |= OBJECT_INHERIT_ACE
-          when true
-            flags |= CONTAINER_INHERIT_ACE
-            flags |= OBJECT_INHERIT_ACE
-          when nil
+          when true, nil
             flags |= CONTAINER_INHERIT_ACE
             flags |= OBJECT_INHERIT_ACE
           end
@@ -264,9 +273,10 @@ class Chef
 
       def target_dacl
         return nil if resource.rights.nil? && resource.deny_rights.nil? && resource.mode.nil?
+
         acls = nil
 
-        if !resource.deny_rights.nil?
+        unless resource.deny_rights.nil?
           acls = [] if acls.nil?
 
           resource.deny_rights.each do |rights|
@@ -279,7 +289,7 @@ class Chef
           end
         end
 
-        if !resource.rights.nil?
+        unless resource.rights.nil?
           acls = [] if acls.nil?
 
           resource.rights.each do |rights|
@@ -292,7 +302,7 @@ class Chef
           end
         end
 
-        if !resource.mode.nil?
+        unless resource.mode.nil?
           acls = [] if acls.nil?
 
           mode = (resource.mode.respond_to?(:oct) ? resource.mode.oct : resource.mode.to_i) & 0777
@@ -319,6 +329,7 @@ class Chef
 
       def target_group
         return nil if resource.group.nil?
+
         get_sid(resource.group)
       end
 
@@ -328,6 +339,7 @@ class Chef
 
       def target_owner
         return nil if resource.owner.nil?
+
         get_sid(resource.owner)
       end
     end

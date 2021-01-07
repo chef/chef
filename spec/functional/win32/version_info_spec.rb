@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/file/version_info"
 end
 
@@ -32,12 +32,12 @@ describe "Chef::ReservedNames::Win32::File::VersionInfo", :windows_only do
 
   subject { Chef::ReservedNames::Win32::File::VersionInfo.new(file_path) }
 
-  it "file version has the same version as windows" do
-    expect(subject.FileVersion).to start_with(os_version)
+  it "file version has the same major.minor version as windows" do
+    expect(subject.FileVersion).to start_with(os_version.rpartition(".").first)
   end
 
-  it "product version has the same version as windows" do
-    expect(subject.ProductVersion).to start_with(os_version)
+  it "product version has the same major.minor version as windows" do
+    expect(subject.ProductVersion).to start_with(os_version.rpartition(".").first)
   end
 
   it "company is microsoft" do

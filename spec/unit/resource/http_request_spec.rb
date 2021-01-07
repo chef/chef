@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,39 +20,45 @@
 require "spec_helper"
 
 describe Chef::Resource::HttpRequest do
+  let(:resource) { Chef::Resource::HttpRequest.new("fakey_fakerton") }
 
-  before(:each) do
-    @resource = Chef::Resource::HttpRequest.new("fakey_fakerton")
+  it "sets the default action as :get" do
+    expect(resource.action).to eql([:get])
   end
 
-  it "should create a new Chef::Resource::HttpRequest" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::HttpRequest)
+  it "supports :delete, :get, :head, :options, :patch, :post, :put actions" do
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :get }.not_to raise_error
+    expect { resource.action :head }.not_to raise_error
+    expect { resource.action :options }.not_to raise_error
+    expect { resource.action :patch }.not_to raise_error
+    expect { resource.action :post }.not_to raise_error
+    expect { resource.action :put }.not_to raise_error
   end
 
-  it "should set url to a string" do
-    @resource.url "http://slashdot.org"
-    expect(@resource.url).to eql("http://slashdot.org")
+  it "sets url to a string" do
+    resource.url "http://slashdot.org"
+    expect(resource.url).to eql("http://slashdot.org")
   end
 
-  it "should set the message to the name by default" do
-    expect(@resource.message).to eql("fakey_fakerton")
+  it "sets the message to the name by default" do
+    expect(resource.message).to eql("fakey_fakerton")
   end
 
-  it "should set message to a string" do
-    @resource.message "monkeybars"
-    expect(@resource.message).to eql("monkeybars")
+  it "sets message to a string" do
+    resource.message "monkeybars"
+    expect(resource.message).to eql("monkeybars")
   end
 
   describe "when it has a message and headers" do
     before do
-      @resource.url("http://www.trololol.net")
-      @resource.message("Get sum post brah.")
-      @resource.headers({ "head" => "tail" })
+      resource.url("http://www.trololol.net")
+      resource.message("Get sum post brah.")
+      resource.headers({ "head" => "tail" })
     end
 
     it "returns the url as its identity" do
-      expect(@resource.identity).to eq("http://www.trololol.net")
+      expect(resource.identity).to eq("http://www.trololol.net")
     end
   end
 

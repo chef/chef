@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,39 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/text_formatter"
-require "chef/knife/core/generic_presenter"
+require_relative "text_formatter"
+require_relative "generic_presenter"
 
 class Chef
   class Knife
     module Core
 
-      # This module may be included into a knife subcommand class to automatically
-      # add configuration options used by the NodePresenter
-      module NodeFormattingOptions
-        # :nodoc:
-        # Would prefer to do this in a rational way, but can't be done b/c of
-        # Mixlib::CLI's design :(
-        def self.included(includer)
-          includer.class_eval do
-            option :medium_output,
-              :short   => "-m",
-              :long    => "--medium",
-              :boolean => true,
-              :default => false,
-              :description => "Include normal attributes in the output"
-
-            option :long_output,
-              :short   => "-l",
-              :long    => "--long",
-              :boolean => true,
-              :default => false,
-              :description => "Include all attributes in the output"
-          end
-        end
-      end
-
-      #==Chef::Knife::Core::NodePresenter
       # A customized presenter for Chef::Node objects. Supports variable-length
       # output formats for displaying node data
       class NodePresenter < GenericPresenter
@@ -62,7 +36,7 @@ class Chef
         end
 
         def summarize_json(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
             result = {}
 
@@ -93,55 +67,55 @@ class Chef
         # the volume of output is adjusted accordingly. Uses colors if enabled
         # in the ui object.
         def summarize(data)
-          if data.kind_of?(Chef::Node)
+          if data.is_a?(Chef::Node)
             node = data
-            # special case ec2 with their split horizon whatsis.
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
+            # special case clouds with their split horizon thing.
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
 
-            summarized = <<-SUMMARY
-#{ui.color('Node Name:', :bold)}   #{ui.color(node.name, :bold)}
-SUMMARY
+            summarized = <<~SUMMARY
+              #{ui.color("Node Name:", :bold)}   #{ui.color(node.name, :bold)}
+            SUMMARY
             show_policy = !(node.policy_name.nil? && node.policy_group.nil?)
             if show_policy
-              summarized << <<-POLICY
-#{key('Policy Name:')}  #{node.policy_name}
-#{key('Policy Group:')} #{node.policy_group}
-POLICY
+              summarized << <<~POLICY
+                #{key("Policy Name:")}  #{node.policy_name}
+                #{key("Policy Group:")} #{node.policy_group}
+              POLICY
             else
-              summarized << <<-ENV
-#{key('Environment:')} #{node.chef_environment}
-ENV
+              summarized << <<~ENV
+                #{key("Environment:")} #{node.chef_environment}
+              ENV
             end
-            summarized << <<-SUMMARY
-#{key('FQDN:')}        #{node[:fqdn]}
-#{key('IP:')}          #{ip}
-#{key('Run List:')}    #{node.run_list}
-SUMMARY
+            summarized << <<~SUMMARY
+              #{key("FQDN:")}        #{node[:fqdn]}
+              #{key("IP:")}          #{ip}
+              #{key("Run List:")}    #{node.run_list}
+            SUMMARY
             unless show_policy
-              summarized << <<-ROLES
-#{key('Roles:')}       #{Array(node[:roles]).join(', ')}
-ROLES
+              summarized << <<~ROLES
+                #{key("Roles:")}       #{Array(node[:roles]).join(", ")}
+              ROLES
             end
-            summarized << <<-SUMMARY
-#{key('Recipes:')}     #{Array(node[:recipes]).join(', ')}
-#{key('Platform:')}    #{node[:platform]} #{node[:platform_version]}
-#{key('Tags:')}        #{node.tags.join(', ')}
-SUMMARY
+            summarized << <<~SUMMARY
+              #{key("Recipes:")}     #{Array(node[:recipes]).join(", ")}
+              #{key("Platform:")}    #{node[:platform]} #{node[:platform_version]}
+              #{key("Tags:")}        #{node.tags.join(", ")}
+            SUMMARY
             if config[:medium_output] || config[:long_output]
-              summarized += <<-MORE
-#{key('Attributes:')}
-#{text_format(node.normal_attrs)}
-MORE
+              summarized += <<~MORE
+                #{key("Attributes:")}
+                #{text_format(node.normal_attrs)}
+              MORE
             end
             if config[:long_output]
-              summarized += <<-MOST
-#{key('Default Attributes:')}
-#{text_format(node.default_attrs)}
-#{key('Override Attributes:')}
-#{text_format(node.override_attrs)}
-#{key('Automatic Attributes (Ohai Data):')}
-#{text_format(node.automatic_attrs)}
-MOST
+              summarized += <<~MOST
+                #{key("Default Attributes:")}
+                #{text_format(node.default_attrs)}
+                #{key("Override Attributes:")}
+                #{text_format(node.override_attrs)}
+                #{key("Automatic Attributes (Ohai Data):")}
+                #{text_format(node.automatic_attrs)}
+              MOST
             end
             summarized
           else

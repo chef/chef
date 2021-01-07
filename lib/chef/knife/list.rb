@@ -1,42 +1,63 @@
-require "chef/chef_fs/knife"
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require_relative "../chef_fs/knife"
 
 class Chef
   class Knife
     class List < Chef::ChefFS::Knife
-      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn]"
+      banner "knife list [-dfR1p] [PATTERN1 ... PATTERNn] (options)"
 
       category "path-based"
 
       deps do
-        require "chef/chef_fs/file_system"
-        require "highline"
+        require_relative "../chef_fs/file_system"
+        require "tty-screen"
       end
 
       option :recursive,
-        :short => "-R",
-        :boolean => true,
-        :description => "List directories recursively"
+        short: "-R",
+        boolean: true,
+        description: "List directories recursively."
+
       option :bare_directories,
-        :short => "-d",
-        :boolean => true,
-        :description => "When directories match the pattern, do not show the directories' children"
+        short: "-d",
+        boolean: true,
+        description: "When directories match the pattern, do not show the directories' children."
+
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :description => "List local directory instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "List local directory instead of remote."
+
       option :flat,
-        :short => "-f",
-        :long => "--flat",
-        :boolean => true,
-        :description => "Show a list of filenames rather than the prettified ls-like output normally produced"
+        short: "-f",
+        long: "--flat",
+        boolean: true,
+        description: "Show a list of filenames rather than the prettified ls-like output normally produced."
+
       option :one_column,
-        :short => "-1",
-        :boolean => true,
-        :description => "Show only one column of results"
+        short: "-1",
+        boolean: true,
+        description: "Show only one column of results."
+
       option :trailing_slashes,
-        :short => "-p",
-        :boolean => true,
-        :description => "Show trailing slashes after directories"
+        short: "-p",
+        boolean: true,
+        description: "Show trailing slashes after directories."
 
       attr_accessor :exit_code
 
@@ -56,7 +77,7 @@ class Chef
 
         # Process directories
         if !config[:bare_directories]
-          dir_results = parallelize(all_results.select { |result| result.dir? }) do |result|
+          dir_results = parallelize(all_results.select(&:dir?)) do |result|
             add_dir_result(result)
           end.flatten(1)
 
@@ -69,14 +90,14 @@ class Chef
 
         # Flatten out directory results if necessary
         if config[:flat]
-          dir_results.each do |result, children|
+          dir_results.each do |result, children| # rubocop:disable Style/HashEachMethods
             results += children
           end
           dir_results = []
         end
 
         # Sort by path for happy output
-        results = results.sort_by { |result| result.path }
+        results = results.sort_by(&:path)
         dir_results = dir_results.sort_by { |result| result[0].path }
 
         # Print!
@@ -97,12 +118,12 @@ class Chef
           print_results(children.map { |result| maybe_add_slash(result.display_name, result.dir?) }.sort, "")
         end
 
-        exit self.exit_code if self.exit_code
+        exit exit_code if exit_code
       end
 
       def add_dir_result(result)
         begin
-          children = result.children.sort_by { |child| child.name }
+          children = result.children.sort_by(&:name)
         rescue Chef::ChefFS::FileSystem::NotFoundError => e
           ui.error "#{format_path(e.entry)}: No such file or directory"
           return []
@@ -110,7 +131,7 @@ class Chef
 
         result = [ [ result, children ] ]
         if config[:recursive]
-          child_dirs = children.select { |child| child.dir? }
+          child_dirs = children.select(&:dir?)
           result += parallelize(child_dirs) { |child| add_dir_result(child) }.flatten(1).to_a
         end
         result
@@ -123,11 +144,11 @@ class Chef
       def print_results(results, indent)
         return if results.length == 0
 
-        print_space = results.map { |result| result.length }.max + 2
+        print_space = results.map(&:length).max + 2
         if config[:one_column] || !stdout.isatty
           columns = 0
         else
-          columns = HighLine::SystemExtensions.terminal_size[0]
+          columns = TTY::Screen.columns
         end
         current_line = ""
         results.each do |result|

@@ -1,5 +1,5 @@
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,15 +40,11 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OF OTHER DEALINGS IN THE
 # SOFTWARE.
 
-require "diff/lcs"
-require "diff/lcs/hunk"
-
 class Chef
   class Util
     class Diff
       # @todo: to_a, to_s, to_json, inspect defs, accessors for @diff and @error
       # @todo: move coercion to UTF-8 into to_json
-      # @todo: replace shellout to diff -u with diff-lcs gem
 
       def for_output
         # formatted output to a terminal uses arrays of strings and returns error strings
@@ -58,13 +54,14 @@ class Chef
       def for_reporting
         # caller needs to ensure that new files aren't posted to resource reporting
         return nil if @diff.nil?
+
         @diff.join("\\n")
       end
 
       def use_tempfile_if_missing(file)
         tempfile = nil
-        unless File.exists?(file)
-          Chef::Log.debug("File #{file} does not exist to diff against, using empty tempfile")
+        unless File.exist?(file)
+          Chef::Log.trace("File #{file} does not exist to diff against, using empty tempfile")
           tempfile = Tempfile.new("chef-diff")
           file = tempfile.path
         end
@@ -86,11 +83,14 @@ class Chef
       # produces a unified-output-format diff with 3 lines of context
       # ChefFS uses udiff() directly
       def udiff(old_file, new_file)
+        require "diff/lcs"
+        require "diff/lcs/hunk"
+
         diff_str = ""
         file_length_difference = 0
 
-        old_data = IO.readlines(old_file).map { |e| e.chomp }
-        new_data = IO.readlines(new_file).map { |e| e.chomp }
+        old_data = IO.readlines(old_file).map(&:chomp)
+        new_data = IO.readlines(new_file).map(&:chomp)
         diff_data = ::Diff::LCS.diff(old_data, new_data)
 
         return diff_str if old_data.empty? && new_data.empty?
@@ -106,18 +106,19 @@ class Chef
         # join them. otherwise, print out the old one.
         old_hunk = hunk = nil
         diff_data.each do |piece|
-          begin
-            hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
-            file_length_difference = hunk.file_length_difference
-            next unless old_hunk
-            next if hunk.merge(old_hunk)
-            diff_str << old_hunk.diff(:unified) << "\n"
-          ensure
-            old_hunk = hunk
-          end
+
+          hunk = ::Diff::LCS::Hunk.new(old_data, new_data, piece, 3, file_length_difference)
+          file_length_difference = hunk.file_length_difference
+          next unless old_hunk
+          next if hunk.merge(old_hunk)
+
+          diff_str << old_hunk.diff(:unified) << "\n"
+        ensure
+          old_hunk = hunk
+
         end
         diff_str << old_hunk.diff(:unified) << "\n"
-        return diff_str
+        diff_str
       end
 
       private
@@ -134,12 +135,12 @@ class Chef
           return "(file sizes exceed #{diff_filesize_threshold} bytes, diff output suppressed)"
         end
 
-        # MacOSX(BSD?) diff will *sometimes* happily spit out nasty binary diffs
+        # macOS(BSD?) diff will *sometimes* happily spit out nasty binary diffs
         return "(current file is binary, diff output suppressed)" if is_binary?(old_file)
         return "(new content is binary, diff output suppressed)" if is_binary?(new_file)
 
         begin
-          Chef::Log.debug("Running: diff -u #{old_file} #{new_file}")
+          Chef::Log.trace("Running: diff -u #{old_file} #{new_file}")
           diff_str = udiff(old_file, new_file)
 
         rescue Exception => e
@@ -150,14 +151,14 @@ class Chef
 
         if !diff_str.empty? && diff_str != "No differences encountered\n"
           if diff_str.length > diff_output_threshold
-            return "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
+            "(long diff of over #{diff_output_threshold} characters, diff output suppressed)"
           else
             diff_str = encode_diff_for_json(diff_str)
             @diff = diff_str.split("\n")
-            return "(diff available)"
+            "(diff available)"
           end
         else
-          return "(no diff)"
+          "(no diff)"
         end
       end
 
@@ -169,14 +170,15 @@ class Chef
           begin
             return buff !~ /\A[\s[:print:]]*\z/m
           rescue ArgumentError => e
-            return true if e.message =~ /invalid byte sequence/
+            return true if /invalid byte sequence/.match?(e.message)
+
             raise
           end
         end
       end
 
       def encode_diff_for_json(diff_str)
-        diff_str.encode!("UTF-8", :invalid => :replace, :undef => :replace, :replace => "?")
+        diff_str.encode!("UTF-8", invalid: :replace, undef: :replace, replace: "?")
       end
 
     end

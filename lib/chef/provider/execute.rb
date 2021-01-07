@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,59 +16,53 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
-require "forwardable"
+require_relative "../log"
+require_relative "../provider"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider
     class Execute < Chef::Provider
       extend Forwardable
 
-      provides :execute
+      provides :execute, target_mode: true
 
-      def_delegators :@new_resource, :command, :returns, :environment, :user, :group, :cwd, :umask, :creates
+      def_delegators :new_resource, :command, :returns, :environment, :user, :domain, :password, :group, :cwd, :umask, :creates, :elevated, :default_env, :timeout, :input
 
       def load_current_resource
         current_resource = Chef::Resource::Execute.new(new_resource.name)
         current_resource
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def define_resource_requirements
-         # @todo: this should change to raise in some appropriate major version bump.
         if creates && creates_relative? && !cwd
-          Chef::Log.warn "Providing a relative path for the creates attribute without the cwd is deprecated and will be changed to fail in the future (CHEF-3819)"
+          # FIXME? move this onto the resource?
+          raise Chef::Exceptions::Execute, "Please either specify a full path for the creates property, or specify a cwd property to the #{new_resource} resource"
         end
       end
 
-      def timeout
-        # original implementation did not specify a timeout, but ShellOut
-        # *always* times out. So, set a very long default timeout
-        new_resource.timeout || 3600
-      end
-
-      def action_run
+      action :run do
         if creates && sentinel_file.exist?
-          Chef::Log.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
+          logger.debug("#{new_resource} sentinel file #{sentinel_file} exists - nothing to do")
           return false
         end
 
         converge_by("execute #{description}") do
           begin
-            shell_out!(command, opts)
+            shell_out!(command, **opts)
           rescue Mixlib::ShellOut::ShellCommandFailed
             if sensitive?
-              raise Mixlib::ShellOut::ShellCommandFailed,
-                "Command execution failed. STDOUT/STDERR suppressed for sensitive resource"
+              ex = Mixlib::ShellOut::ShellCommandFailed.new("Command execution failed. STDOUT/STDERR suppressed for sensitive resource")
+              # Forcibly hide the exception cause chain here so we don't log the unredacted version
+              def ex.cause
+                nil
+              end
+              raise ex
             else
               raise
             end
           end
-          Chef::Log.info("#{new_resource} ran successfully")
+          logger.info("#{new_resource} ran successfully")
         end
       end
 
@@ -92,18 +86,23 @@ class Chef
         opts[:returns]     = returns if returns
         opts[:environment] = environment if environment
         opts[:user]        = user if user
+        opts[:domain]      = domain if domain
+        opts[:password]    = password if password
         opts[:group]       = group if group
         opts[:cwd]         = cwd if cwd
         opts[:umask]       = umask if umask
+        opts[:input]       = input if input
+        opts[:default_env] = default_env
         opts[:log_level]   = :info
         opts[:log_tag]     = new_resource.to_s
-        if (Chef::Log.info? || live_stream?) && !sensitive?
+        if (logger.info? || live_stream?) && !sensitive?
           if run_context.events.formatter?
-            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+            opts[:live_stream] = Chef::EventDispatch::EventsOutputStream.new(run_context.events, name: :execute)
           elsif stream_to_stdout?
             opts[:live_stream] = STDOUT
           end
         end
+        opts[:elevated] = elevated if elevated
         opts
       end
 
@@ -117,9 +116,10 @@ class Chef
 
       def sentinel_file
         Pathname.new(Chef::Util::PathHelper.cleanpath(
-           ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
+          ( cwd && creates_relative? ) ? ::File.join(cwd, creates) : creates
         ))
       end
+
     end
   end
 end

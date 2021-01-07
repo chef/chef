@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ module RSpec
         # GC 1 invokes.
         # Index    Invoke Time(sec)       Use Size(byte)     Total Size(byte)         Total Object                    GC time(ms)
         #     1               0.012               159240               212940                10647         0.00000000000001530000
-        LINE_PATTERN = /^\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)$/
+        LINE_PATTERN = /^\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)\s+([\d\.]*)$/.freeze
 
         def start
           ::GC::Profiler.enable unless ::GC::Profiler.enabled?
@@ -35,12 +35,10 @@ module RSpec
         end
 
         def working_set_size
-          begin
-            ::GC.start
-            ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
-          ensure
-            ::GC::Profiler.clear
-          end
+          ::GC.start
+          ::GC::Profiler.result.scan(LINE_PATTERN)[-1][2].to_i if ::GC::Profiler.enabled?
+        ensure
+          ::GC::Profiler.clear
         end
 
         def handle_count

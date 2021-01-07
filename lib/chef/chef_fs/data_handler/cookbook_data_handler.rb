@@ -1,5 +1,5 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/cookbook/metadata"
+require_relative "data_handler_base"
+require_relative "../../cookbook/metadata"
 
 class Chef
   module ChefFS
@@ -24,7 +24,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "cookbook_name" || key == "version"
+          %w{cookbook_name version}.include?(key)
         end
 
         def chef_class

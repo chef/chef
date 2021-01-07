@@ -37,19 +37,19 @@ describe Chef::Knife::CookbookList do
 
   describe "run" do
     it "should display the latest version of the cookbooks" do
-      expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=1").
-        and_return(@cookbook_data)
+      expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=1")
+        .and_return(@cookbook_data)
       @knife.run
       @cookbook_names.each do |item|
-        expect(@stdout.string).to match /#{item}\s+1\.0\.1/
+        expect(@stdout.string).to match(/#{item}\s+1\.0\.1/)
       end
     end
 
     it "should query cookbooks for the configured environment" do
       @knife.config[:environment] = "production"
-      expect(@rest_mock).to receive(:get).
-        with("/environments/production/cookbooks?num_versions=1").
-        and_return(@cookbook_data)
+      expect(@rest_mock).to receive(:get)
+        .with("/environments/production/cookbooks?num_versions=1")
+        .and_return(@cookbook_data)
       @knife.run
     end
 
@@ -75,11 +75,11 @@ describe Chef::Knife::CookbookList do
 
       it "should display all versions of the cookbooks" do
         @knife.config[:all_versions] = true
-        expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=all").
-          and_return(@cookbook_data)
+        expect(@rest_mock).to receive(:get).with("/cookbooks?num_versions=all")
+          .and_return(@cookbook_data)
         @knife.run
         @cookbook_names.each do |item|
-          expect(@stdout.string).to match /#{item}\s+1\.0\.1\s+1\.0\.0/
+          expect(@stdout.string).to match(/#{item}\s+1\.0\.1\s+1\.0\.0/)
         end
       end
     end

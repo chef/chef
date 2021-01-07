@@ -62,8 +62,8 @@ describe Chef::Knife::CookbookDelete do
       describe "with -p or --purge" do
         it "should prompt to purge the files" do
           @knife.config[:purge] = true
-          expect(@knife).to receive(:confirm).
-            with(/.+Are you sure you want to purge files.+/)
+          expect(@knife).to receive(:confirm)
+            .with(/.+Are you sure you want to purge files.+/)
           expect(@knife).to receive(:delete_without_explicit_version)
           @knife.run
         end
@@ -76,8 +76,8 @@ describe Chef::Knife::CookbookDelete do
       @knife.cookbook_name = "foobar"
       @knife.version = "1.0.0"
       expect(@knife).to receive(:delete_object).with(Chef::CookbookVersion,
-                                                 "foobar version 1.0.0",
-                                                 "cookbook").and_yield()
+        "foobar version 1.0.0",
+        "cookbook").and_yield
       expect(@knife).to receive(:delete_request).with("cookbooks/foobar/1.0.0")
       @knife.delete_explicit_version
     end
@@ -139,20 +139,20 @@ describe Chef::Knife::CookbookDelete do
     end
 
     it "should raise if an error other than HTTP 404 is returned" do
-      exception = Net::HTTPServerException.new("500 Internal Server Error", "500")
+      exception = Net::HTTPClientException.new("500 Internal Server Error", "500")
       expect(@rest_mock).to receive(:get).and_raise(exception)
-      expect { @knife.available_versions }.to raise_error Net::HTTPServerException
+      expect { @knife.available_versions }.to raise_error Net::HTTPClientException
     end
 
     describe "if the cookbook can't be found" do
       before(:each) do
-        expect(@rest_mock).to receive(:get).
-          and_raise(Net::HTTPServerException.new("404 Not Found", "404"))
+        expect(@rest_mock).to receive(:get)
+          .and_raise(Net::HTTPClientException.new("404 Not Found", "404"))
       end
 
       it "should print an error" do
         @knife.available_versions
-        expect(@stderr.string).to match /error.+cannot find a cookbook named foobar/i
+        expect(@stderr.string).to match(/error.+cannot find a cookbook named foobar/i)
       end
 
       it "should return nil" do
@@ -204,7 +204,7 @@ describe Chef::Knife::CookbookDelete do
     it "should output that the cookbook was deleted" do
       allow(@knife).to receive(:delete_request)
       @knife.delete_version_without_confirmation("1.0.0")
-      expect(@stderr.string).to match /deleted cookbook\[foobar\]\[1.0.0\]/im
+      expect(@stderr.string).to match(/deleted cookbook\[foobar\]\[1.0.0\]/im)
     end
 
     describe "with --print-after" do

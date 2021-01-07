@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,9 +18,9 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/dsl/recipe"
-require "chef/dsl/include_recipe"
+require_relative "../provider"
+require_relative "../dsl/recipe"
+require_relative "../dsl/include_recipe"
 
 class Chef
   class Provider
@@ -42,8 +42,7 @@ class Chef
       # no-op `load_current_resource`. Allows simple LWRP providers to work
       # without defining this method explicitly (silences
       # Chef::Exceptions::Override exception)
-      def load_current_resource
-      end
+      def load_current_resource; end
 
       # class methods
       class <<self
@@ -52,7 +51,7 @@ class Chef
 
         def build_from_file(cookbook_name, filename, run_context)
           if LWRPBase.loaded_lwrps[filename]
-            Chef::Log.debug("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
+            Chef::Log.trace("LWRP provider #{filename} from cookbook #{cookbook_name} has already been loaded!  Skipping the reload.")
             return loaded_lwrps[filename]
           end
 
@@ -71,20 +70,11 @@ class Chef
             define_singleton_method(:inspect) { to_s }
           end
 
-          Chef::Log.debug("Loaded contents of #{filename} into provider #{resource_name} (#{provider_class})")
+          Chef::Log.trace("Loaded contents of #{filename} into provider #{resource_name} (#{provider_class})")
 
           LWRPBase.loaded_lwrps[filename] = true
 
-          Chef::Provider.register_deprecated_lwrp_class(provider_class, convert_to_class_name(resource_name))
-
           provider_class
-        end
-
-        # DSL for defining a provider's actions.
-        def action(name, &block)
-          define_method("action_#{name}") do
-            instance_eval(&block)
-          end
         end
 
         protected

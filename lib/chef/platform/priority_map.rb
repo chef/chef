@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/node_map"
+require_relative "../node_map"
 
 class Chef
   class Platform
     class PriorityMap < Chef::NodeMap
-      def priority(resource_name, priority_array, *filter)
-        set_priority_array(resource_name.to_sym, priority_array, *filter)
+      def priority(resource_name, priority_array, **filter)
+        set_priority_array(resource_name.to_sym, priority_array, **filter)
       end
 
       # @api private
@@ -31,9 +31,9 @@ class Chef
       end
 
       # @api private
-      def set_priority_array(key, priority_array, *filter, &block)
+      def set_priority_array(key, priority_array, **filter, &block)
         priority_array = Array(priority_array)
-        set(key, priority_array, *filter, &block)
+        set(key, priority_array, **filter, &block)
         priority_array
       end
     end

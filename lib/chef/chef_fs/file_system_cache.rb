@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-require "singleton"
-require "chef/client"
+require "singleton" unless defined?(Singleton)
+require_relative "../client"
 
 class Chef
   module ChefFS
@@ -51,7 +51,7 @@ class Chef
 
       def delete!(path)
         parent = _get_parent(path)
-        Chef::Log.debug("Deleting parent #{parent} and #{path} from FileSystemCache")
+        Chef::Log.trace("Deleting parent #{parent} and #{path} from FileSystemCache")
         if @cache.key?(path)
           @cache.delete(path)
         end
@@ -73,6 +73,7 @@ class Chef
       def _get_parent(path)
         parts = ChefFS::PathUtils.split(path)
         return nil if parts.nil? || parts.length < 2
+
         ChefFS::PathUtils.join(*parts[0..-2])
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,67 +16,31 @@
 # limitations under the License.
 #
 
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 class Chef
   class Platform
 
     class << self
       def windows?
-        ChefConfig.windows?
+        ChefUtils.windows?
       end
 
-      def windows_server_2003?
-        # WMI startup shouldn't be performed unless we're on Windows.
-        return false unless windows?
-        require "wmi-lite/wmi"
-
-        wmi = WmiLite::Wmi.new
-        host = wmi.first_of("Win32_OperatingSystem")
-        is_server_2003 = (host["version"] && host["version"].start_with?("5.2"))
-
-        is_server_2003
-      end
-
+      # @deprecated Windows Nano is not a thing anymore so this check shouldn't be used
       def windows_nano_server?
-        return false unless windows?
-        require "win32/registry"
-
-        # This method may be called before ohai runs (e.g., it may be used to
-        # determine settings in config.rb). Chef::Win32::Registry.new uses
-        # node attributes to verify the machine architecture which aren't
-        # accessible before ohai runs.
-        nano = nil
-        key = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Server\\ServerLevels"
-        access = ::Win32::Registry::KEY_QUERY_VALUE | 0x0100 # nano is 64-bit only
-        begin
-          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
-            nano = reg["NanoServer"]
-          end
-        rescue ::Win32::Registry::Error
-          # If accessing the registry key failed, then we're probably not on
-          # nano. Fail through.
-        end
-        return nano == 1
+        false
       end
 
+      # @deprecated we added this method due to Windows Server Nano, which is no longer a platform
       def supports_msi?
         return false unless windows?
-        require "win32/registry"
 
-        key = "System\\CurrentControlSet\\Services\\msiserver"
-        access = ::Win32::Registry::KEY_QUERY_VALUE
-
-        begin
-          ::Win32::Registry::HKEY_LOCAL_MACHINE.open(key, access) do |reg|
-            true
-          end
-        rescue ::Win32::Registry::Error
-          false
-        end
+        true
       end
 
+      # @deprecated we don't support any release of Windows that isn't PS 3+
       def supports_powershell_execution_bypass?(node)
-        node[:languages] && node[:languages][:powershell] &&
-          node[:languages][:powershell][:version].to_i >= 3
+        true
       end
 
       def supports_dsc?(node)
@@ -94,15 +58,16 @@ class Chef
       end
 
       def dsc_refresh_mode_disabled?(node)
-        require "chef/util/powershell/cmdlet"
-        cmdlet = Chef::Util::Powershell::Cmdlet.new(node, "Get-DscLocalConfigurationManager", :object)
-        metadata = cmdlet.run!.return_value
-        metadata["RefreshMode"] == "Disabled"
+        require_relative "../powershell"
+        exec = Chef::PowerShell.new("Get-DscLocalConfigurationManager")
+        exec.error!
+        exec.result["RefreshMode"] == "Disabled"
       end
 
       def supported_powershell_version?(node, version_string)
         return false unless node[:languages] && node[:languages][:powershell]
-        require "rubygems"
+
+        require "rubygems" unless defined?(Gem)
         Gem::Version.new(node[:languages][:powershell][:version]) >=
           Gem::Version.new(version_string)
       end

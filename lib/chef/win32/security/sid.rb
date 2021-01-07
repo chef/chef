@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/api/net"
-require "chef/win32/api/error"
+require_relative "../security"
+require_relative "../api/net"
+require_relative "../api/error"
 
 require "wmi-lite/wmi"
 
@@ -50,7 +50,7 @@ class Chef
         end
 
         def ==(other)
-          other != nil && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
+          !other.nil? && Chef::ReservedNames::Win32::Security.equal_sid(self, other)
         end
 
         attr_reader :pointer
@@ -59,9 +59,14 @@ class Chef
           Chef::ReservedNames::Win32::Security.lookup_account_sid(self)
         end
 
+        def account_simple_name
+          domain, name, use = account
+          name
+        end
+
         def account_name
           domain, name, use = account
-          (domain != nil && domain.length > 0) ? "#{domain}\\#{name}" : name
+          (!domain.nil? && domain.length > 0) ? "#{domain}\\#{name}" : name
         end
 
         def size
@@ -226,25 +231,63 @@ class Chef
         end
 
         def self.None
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\None")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\None")
         end
 
         def self.Administrator
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\#{SID.admin_account_name}")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\#{SID.admin_account_name}")
         end
 
         def self.Guest
-          SID.from_account("#{::ENV['COMPUTERNAME']}\\Guest")
+          SID.from_account("#{::ENV["COMPUTERNAME"]}\\Guest")
         end
 
         def self.current_user
-          SID.from_account("#{::ENV['USERDOMAIN']}\\#{::ENV['USERNAME']}")
+          SID.from_account("#{::ENV["USERDOMAIN"]}\\#{::ENV["USERNAME"]}")
+        end
+
+        SERVICE_ACCOUNT_USERS = [self.LocalSystem,
+                                 self.NtLocal,
+                                 self.NtNetwork].flat_map do |user_type|
+                                   [user_type.account_simple_name.upcase,
+                                    user_type.account_name.upcase]
+                                 end.freeze
+
+        BUILT_IN_GROUPS = [self.BuiltinAdministrators,
+                           self.BuiltinUsers, self.Guests].flat_map do |user_type|
+                             [user_type.account_simple_name.upcase,
+                              user_type.account_name.upcase]
+                           end.freeze
+
+        SYSTEM_USER = SERVICE_ACCOUNT_USERS + BUILT_IN_GROUPS
+
+        # Check if the user belongs to service accounts category
+        #
+        # @return [Boolean] True or False
+        #
+        def self.service_account_user?(user)
+          SERVICE_ACCOUNT_USERS.include?(user.to_s.upcase)
+        end
+
+        # Check if the user is in builtin system group
+        #
+        # @return [Boolean] True or False
+        #
+        def self.group_user?(user)
+          BUILT_IN_GROUPS.include?(user.to_s.upcase)
+        end
+
+        # Check if the user belongs to system users category
+        #
+        # @return [Boolean] True or False
+        #
+        def self.system_user?(user)
+          SYSTEM_USER.include?(user.to_s.upcase)
         end
 
         # See https://technet.microsoft.com/en-us/library/cc961992.aspx
         # In practice, this is SID.Administrators if the current_user is an admin (even if not
-        # running elevated), and is current_user otherwise. On win2k3, it technically can be
-        # current_user in all cases if a certain group policy is set.
+        # running elevated), and is current_user otherwise.
         def self.default_security_object_owner
           token = Chef::ReservedNames::Win32::Security.open_current_process_token
           Chef::ReservedNames::Win32::Security.get_token_information_owner(token)
@@ -278,11 +321,11 @@ class Chef
             while status == ERROR_MORE_DATA
               status = NetUserEnum(servername, level, filter, bufptr, prefmaxlen, entriesread, totalentries, resume_handle)
 
-              if status == NERR_Success || status == ERROR_MORE_DATA
+              if [NERR_Success, ERROR_MORE_DATA].include?(status)
                 Array.new(entriesread.read_long) do |i|
                   user_info = USER_INFO_3.new(bufptr.read_pointer + i * USER_INFO_3.size)
                   # Check if the account is the Administrator account
-                  # RID for the Administrator account is always 500 and it's privilage is set to USER_PRIV_ADMIN
+                  # RID for the Administrator account is always 500 and it's privilege is set to USER_PRIV_ADMIN
                   if user_info[:usri3_user_id] == 500 && user_info[:usri3_priv] == 2 # USER_PRIV_ADMIN (2) - Administrator
                     admin_account_name = user_info[:usri3_name].read_wstring
                     break
@@ -295,6 +338,7 @@ class Chef
             end
 
             raise "Can not determine the administrator account name." if admin_account_name.nil?
+
             admin_account_name
           end
         end

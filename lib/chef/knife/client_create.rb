@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,43 +16,37 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
     class ClientCreate < Knife
 
       deps do
-        require "chef/api_client_v1"
-        require "chef/json_compat"
+        require_relative "../api_client_v1"
       end
 
       option :file,
-             :short => "-f FILE",
-             :long  => "--file FILE",
-             :description => "Write the private key to a file if the server generated one."
-
-      option :admin,
-             :short => "-a",
-             :long  => "--admin",
-             :description => "Open Source Chef Server 11 only. Create the client as an admin.",
-             :boolean => true
+        short: "-f FILE",
+        long: "--file FILE",
+        description: "Write the private key to a file if the #{ChefUtils::Dist::Server::PRODUCT} generated one."
 
       option :validator,
-             :long => "--validator",
-             :description => "Create the client as a validator.",
-             :boolean => true
+        long: "--validator",
+        description: "Create the client as a validator.",
+        boolean: true
 
       option :public_key,
-             :short => "-p FILE",
-             :long  => "--public-key",
-             :description => "Set the initial default key for the client from a file on disk (cannot pass with --prevent-keygen)."
+        short: "-p FILE",
+        long: "--public-key",
+        description: "Set the initial default key for the client from a file on disk (cannot pass with --prevent-keygen)."
 
       option :prevent_keygen,
-             :short => "-k",
-             :long  => "--prevent-keygen",
-             :description => "API V1 (Chef Server 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --public-key.",
-             :boolean => true
+        short: "-k",
+        long: "--prevent-keygen",
+        description: "Prevent #{ChefUtils::Dist::Server::PRODUCT} from generating a default key pair for you. Cannot be passed with --public-key.",
+        boolean: true
 
       banner "knife client create CLIENTNAME (options)"
 
@@ -77,10 +71,6 @@ class Chef
 
         if !config[:prevent_keygen] && !config[:public_key]
           client.create_key(true)
-        end
-
-        if config[:admin]
-          client.admin(true)
         end
 
         if config[:validator]

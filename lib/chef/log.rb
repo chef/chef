@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: AJ Christensen (<@aj@opscode.com>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,18 +18,23 @@
 # limitations under the License.
 
 require "logger"
-require "chef/monologger"
-require "chef/exceptions"
+require_relative "monologger"
+require_relative "exceptions"
 require "mixlib/log"
-require "chef/log/syslog" unless RUBY_PLATFORM =~ /mswin|mingw|windows/
-require "chef/log/winevt"
+require_relative "log/syslog" unless RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+require_relative "log/winevt"
 
 class Chef
   class Log
     extend Mixlib::Log
 
+    def self.setup!
+      init(MonoLogger.new(STDOUT))
+      nil
+    end
+
     # Force initialization of the primary log device (@logger)
-    init(MonoLogger.new(STDOUT))
+    setup!
 
     class Formatter
       def self.show_time=(*args)
@@ -46,16 +51,18 @@ class Chef
     #
     def self.caller_location
       # Pick the first caller that is *not* part of the Chef gem, that's the
-      # thing the user wrote.
-      chef_gem_path = File.expand_path("../..", __FILE__)
-      caller(0..20).find { |c| !c.start_with?(chef_gem_path) }
+      # thing the user wrote. Or failing that, the most recent caller.
+      chef_gem_path = File.expand_path("..", __dir__)
+      caller(0..20).find { |c| !c.start_with?(chef_gem_path) } || caller(0..1)[0]
     end
 
-    def self.deprecation(msg = nil, location = caller(2..2)[0], &block)
-      if msg
-        msg << " at #{Array(location).join("\n")}"
-        msg = msg.join("") if msg.respond_to?(:join)
-      end
+    # Log a deprecation warning.
+    #
+    # If the treat_deprecation_warnings_as_errors config option is set, this
+    # will raise an exception instead.
+    #
+    # @param msg [String] Deprecation message to display.
+    def self.deprecation(msg, &block)
       if Chef::Config[:treat_deprecation_warnings_as_errors]
         error(msg, &block)
         raise Chef::Exceptions::DeprecatedFeatureError.new(msg)

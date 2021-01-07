@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@lambda.local>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,44 +16,42 @@
 # limitations under the License.
 #
 
-require "win32/daemon"
+if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+  require "win32/daemon"
 
-class SpecService < ::Win32::Daemon
-  def service_init
-    @test_service_file = "#{ENV['TMP']}/spec_service_file"
-  end
-
-  def service_main(*startup_parameters)
-    while running?
-      if !File.exists?(@test_service_file)
-        File.open(@test_service_file, "wb") do |f|
-          f.write("This file is created by SpecService")
-        end
-      end
-
-      sleep 1
+  class SpecService < ::Win32::Daemon
+    def service_init
+      @test_service_file = "#{ENV["TMP"]}/spec_service_file"
     end
+
+    def service_main(*startup_parameters)
+      while running?
+        unless File.exist?(@test_service_file)
+          File.open(@test_service_file, "wb") do |f|
+            f.write("This file is created by SpecService")
+          end
+        end
+
+        sleep 1
+      end
+    end
+
+    ################################################################################
+    # Control Signal Callback Methods
+    ################################################################################
+
+    def service_stop; end
+
+    def service_pause; end
+
+    def service_resume; end
+
+    def service_shutdown; end
   end
 
-  ################################################################################
-  # Control Signal Callback Methods
-  ################################################################################
-
-  def service_stop
+  # To run this file as a service, it must be called as a script from within
+  # the Windows Service framework.  In that case, kick off the main loop!
+  if __FILE__ == $0
+    SpecService.mainloop
   end
-
-  def service_pause
-  end
-
-  def service_resume
-  end
-
-  def service_shutdown
-  end
-end
-
-# To run this file as a service, it must be called as a script from within
-# the Windows Service framework.  In that case, kick off the main loop!
-if __FILE__ == $0
-  SpecService.mainloop
 end

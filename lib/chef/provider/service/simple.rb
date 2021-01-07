@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/provider/service"
-require "chef/resource/service"
-require "chef/mixin/command"
+require_relative "../service"
+require_relative "../../resource/service"
 
 class Chef
   class Provider
@@ -39,10 +38,6 @@ class Chef
           determine_current_status!
 
           @current_resource
-        end
-
-        def whyrun_supported?
-          true
         end
 
         def shared_resource_requirements
@@ -78,7 +73,8 @@ class Chef
           requirements.assert(:all_actions) do |a|
             a.assertion do
               @new_resource.status_command || supports[:status] ||
-                (!ps_cmd.nil? && !ps_cmd.empty?) end
+                (!ps_cmd.nil? && !ps_cmd.empty?)
+            end
             a.failure_message Chef::Exceptions::Service, "#{@new_resource} could not determine how to inspect the process table, please set this node's 'command.ps' attribute"
           end
           requirements.assert(:all_actions) do |a|
@@ -88,16 +84,16 @@ class Chef
         end
 
         def start_service
-          shell_out_with_systems_locale!(@new_resource.start_command)
+          shell_out!(@new_resource.start_command, default_env: false)
         end
 
         def stop_service
-          shell_out_with_systems_locale!(@new_resource.stop_command)
+          shell_out!(@new_resource.stop_command, default_env: false)
         end
 
         def restart_service
           if @new_resource.restart_command
-            shell_out_with_systems_locale!(@new_resource.restart_command)
+            shell_out!(@new_resource.restart_command, default_env: false)
           else
             stop_service
             sleep 1
@@ -106,35 +102,35 @@ class Chef
         end
 
         def reload_service
-          shell_out_with_systems_locale!(@new_resource.reload_command)
+          shell_out!(@new_resource.reload_command, default_env: false)
         end
 
         protected
 
         def determine_current_status!
           if @new_resource.status_command
-            Chef::Log.debug("#{@new_resource} you have specified a status command, running..")
+            logger.trace("#{@new_resource} you have specified a status command, running..")
 
             begin
               if shell_out(@new_resource.status_command).exitstatus == 0
                 @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
+                logger.trace("#{@new_resource} is running")
               end
             rescue Mixlib::ShellOut::ShellCommandFailed, SystemCallError
-            # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
-            # Temporarily catching different types of exceptions here until we get Shellout fixed.
-            # TODO: Remove the line before one we get the ShellOut fix.
+              # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
+              # Temporarily catching different types of exceptions here until we get Shellout fixed.
+              # TODO: Remove the line before one we get the ShellOut fix.
               @status_load_success = false
               @current_resource.running false
               nil
             end
 
           elsif supports[:status]
-            Chef::Log.debug("#{@new_resource} supports status, running")
+            logger.trace("#{@new_resource} supports status, running")
             begin
               if shell_out("#{default_init_command} status").exitstatus == 0
                 @current_resource.running true
-                Chef::Log.debug("#{@new_resource} is running")
+                logger.trace("#{@new_resource} is running")
               end
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
             # Temporarily catching different types of exceptions here until we get Shellout fixed.
@@ -145,9 +141,9 @@ class Chef
               nil
             end
           else
-            Chef::Log.debug "#{@new_resource} falling back to process table inspection"
+            logger.trace "#{@new_resource} falling back to process table inspection"
             r = Regexp.new(@new_resource.pattern)
-            Chef::Log.debug "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
+            logger.trace "#{@new_resource} attempting to match '#{@new_resource.pattern}' (#{r.inspect}) against process list"
             begin
               shell_out!(ps_cmd).stdout.each_line do |line|
                 if r.match(line)
@@ -157,7 +153,7 @@ class Chef
               end
 
               @current_resource.running false unless @current_resource.running
-              Chef::Log.debug "#{@new_resource} running: #{@current_resource.running}"
+              logger.trace "#{@new_resource} running: #{@current_resource.running}"
             # ShellOut sometimes throws different types of Exceptions than ShellCommandFailed.
             # Temporarily catching different types of exceptions here until we get Shellout fixed.
             # TODO: Remove the line before one we get the ShellOut fix.
@@ -168,6 +164,7 @@ class Chef
         end
 
         def ps_cmd
+          # XXX: magic attributes are a shitty api, need something better here and deprecate this attribute
           @run_context.node[:command] && @run_context.node[:command][:ps]
         end
       end

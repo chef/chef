@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/node/common_api"
+require_relative "common_api"
+require_relative "mixin/state_tracking"
+require_relative "mixin/immutablize_array"
+require_relative "mixin/immutablize_hash"
+require_relative "mixin/mashy_array"
 
 class Chef
   class Node
@@ -25,37 +29,9 @@ class Chef
     # "root" (Chef::Node::Attribute) object, and will trigger a cache
     # invalidation on that object when mutated.
     class AttrArray < Array
-      MUTATOR_METHODS = [
-        :<<,
-        :[]=,
-        :clear,
-        :collect!,
-        :compact!,
-        :default=,
-        :default_proc=,
-        :delete,
-        :delete_at,
-        :delete_if,
-        :fill,
-        :flatten!,
-        :insert,
-        :keep_if,
-        :map!,
-        :merge!,
-        :pop,
-        :push,
-        :update,
-        :reject!,
-        :reverse!,
-        :replace,
-        :select!,
-        :shift,
-        :slice!,
-        :sort!,
-        :sort_by!,
-        :uniq!,
-        :unshift,
-      ]
+      include Chef::Node::Mixin::MashyArray
+
+      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeArray::DISALLOWED_MUTATOR_METHODS
 
       # For all of the methods that may mutate an Array, we override them to
       # also invalidate the cached merged_attributes on the root
@@ -63,16 +39,19 @@ class Chef
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
           ret = super(*args, &block)
-          root.reset_cache(root.top_level_breadcrumb)
+          send_reset_cache
           ret
         end
       end
 
-      attr_reader :root
+      def delete(key, &block)
+        send_reset_cache(__path__, key)
+        super
+      end
 
-      def initialize(root, data)
-        @root = root
+      def initialize(data = [])
         super(data)
+        map! { |e| convert_value(e) }
       end
 
       # For elements like Fixnums, true, nil...
@@ -86,6 +65,31 @@ class Chef
         Array.new(map { |e| safe_dup(e) })
       end
 
+      def to_yaml(*opts)
+        to_a.to_yaml(*opts)
+      end
+
+      private
+
+      def convert_value(value)
+        case value
+        when VividMash, AttrArray
+          value
+        when Hash
+          VividMash.new(value, __root__, __node__, __precedence__)
+        when Array
+          AttrArray.new(value, __root__, __node__, __precedence__)
+        else
+          value
+        end
+      end
+
+      # needed for __path__
+      def convert_key(key)
+        key
+      end
+
+      prepend Chef::Node::Mixin::StateTracking
     end
 
     # == VividMash
@@ -99,46 +103,36 @@ class Chef
     #   #fetch, work as normal).
     # * attr_accessor style element set and get are supported via method_missing
     class VividMash < Mash
-      attr_reader :root
-
       include CommonAPI
 
       # Methods that mutate a VividMash. Each of them is overridden so that it
       # also invalidates the cached merged_attributes on the root Attribute
       # object.
-      MUTATOR_METHODS = [
-        :clear,
-        :delete,
-        :delete_if,
-        :keep_if,
-        :merge!,
-        :update,
-        :reject!,
-        :replace,
-        :select!,
-        :shift,
-      ]
+      MUTATOR_METHODS = Chef::Node::Mixin::ImmutablizeHash::DISALLOWED_MUTATOR_METHODS - %i{write write! unlink unlink!}
 
       # For all of the mutating methods on Mash, override them so that they
       # also invalidate the cached `merged_attributes` on the root Attribute
       # object.
       MUTATOR_METHODS.each do |mutator|
         define_method(mutator) do |*args, &block|
-          root.reset_cache(root.top_level_breadcrumb)
+          send_reset_cache
           super(*args, &block)
         end
       end
 
-      def initialize(root, data = {})
-        @root = root
+      def delete(key, &block)
+        send_reset_cache(__path__, key)
+        super
+      end
+
+      def initialize(data = {})
         super(data)
       end
 
       def [](key)
-        root.top_level_breadcrumb ||= key
         value = super
         if !key?(key)
-          value = self.class.new(root)
+          value = self.class.new({}, __root__)
           self[key] = value
         else
           value
@@ -146,31 +140,12 @@ class Chef
       end
 
       def []=(key, value)
-        root.top_level_breadcrumb ||= key
         ret = super
-        root.reset_cache(root.top_level_breadcrumb)
-        ret
+        send_reset_cache(__path__, key)
+        ret # rubocop:disable Lint/Void
       end
 
       alias :attribute? :has_key?
-
-      def method_missing(symbol, *args)
-        # Calling `puts arg` implicitly calls #to_ary on `arg`. If `arg` does
-        # not implement #to_ary, ruby recognizes it as a single argument, and
-        # if it returns an Array, then ruby prints each element. If we don't
-        # account for that here, we'll auto-vivify a VividMash for the key
-        # :to_ary which creates an unwanted key and raises a TypeError.
-        if symbol == :to_ary
-          super
-        elsif args.empty?
-          self[symbol]
-        elsif symbol.to_s =~ /=$/
-          key_to_set = symbol.to_s[/^(.+)=$/, 1]
-          self[key_to_set] = (args.length == 1 ? args[0] : args)
-        else
-          raise NoMethodError, "Undefined node attribute or method `#{symbol}' on `node'. To set an attribute, use `#{symbol}=value' instead."
-        end
-      end
 
       def convert_key(key)
         super
@@ -182,12 +157,12 @@ class Chef
       # attribute tree will have the correct cache invalidation behavior.
       def convert_value(value)
         case value
-        when VividMash
+        when VividMash, AttrArray
           value
         when Hash
-          VividMash.new(root, value)
+          VividMash.new(value, __root__, __node__, __precedence__)
         when Array
-          AttrArray.new(root, value)
+          AttrArray.new(value, __root__, __node__, __precedence__)
         else
           value
         end
@@ -197,6 +172,11 @@ class Chef
         Mash.new(self)
       end
 
+      def to_yaml(*opts)
+        to_h.to_yaml(*opts)
+      end
+
+      prepend Chef::Node::Mixin::StateTracking
     end
   end
 end

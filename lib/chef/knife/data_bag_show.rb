@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/data_bag_secret_options"
+require_relative "../knife"
+require_relative "data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require "chef/data_bag"
-        require "chef/encrypted_data_bag_item"
+        require_relative "../data_bag"
+        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag show BAG [ITEM] (options)"
@@ -44,14 +44,14 @@ class Chef
                       # Users do not need to pass --encrypt to read data, we simply try to use the provided secret
                       ui.info("Encrypted data bag detected, decrypting with provided secret.")
                       raw = Chef::EncryptedDataBagItem.load(@name_args[0],
-                                                            @name_args[1],
-                                                            secret)
-                      format_for_display(raw.to_hash)
+                        @name_args[1],
+                        secret)
+                      format_for_display(raw.to_h)
                     elsif encrypted && !secret
                       ui.warn("Encrypted data bag detected, but no secret provided for decoding. Displaying encrypted data.")
                       format_for_display(raw_data)
                     else
-                      ui.warn("Unencrypted data bag detected, ignoring any provided secret options.")
+                      ui.warn("Unencrypted data bag detected, ignoring any provided secret options.") if secret
                       format_for_display(raw_data)
                     end
 

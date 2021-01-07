@@ -7,13 +7,13 @@ def without_deprecation_warnings(&block)
   old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
   Chef::Config[:treat_deprecation_warnings_as_errors] = false
   begin
-    block.call
+    yield
   ensure
     Chef::Config[:treat_deprecation_warnings_as_errors] = old_treat_deprecation_warnings_as_errors
   end
 end
 
-action :twiddle_thumbs do
+def action_twiddle_thumbs
   @enclosed_resource = lwrp_foo :foo do
     monkey generate_new_name(new_resource.monkey){ 'the monkey' }
     # We know there will be a deprecation error here; head it off

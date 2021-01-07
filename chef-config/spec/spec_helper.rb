@@ -1,4 +1,4 @@
-require "chef-config/windows"
+require "chef-utils"
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|
@@ -32,8 +32,8 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
-  config.filter_run_excluding :windows_only => true unless ChefConfig.windows?
-  config.filter_run_excluding :unix_only => true if ChefConfig.windows?
+  config.filter_run_excluding windows_only: true unless ChefUtils.windows?
+  config.filter_run_excluding unix_only: true if ChefUtils.windows?
 
   # Limits the available syntax to the non-monkey patched syntax that is
   # recommended. For more details, see:

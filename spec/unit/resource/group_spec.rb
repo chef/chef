@@ -1,7 +1,7 @@
 #
-# Author:: AJ Christensen (<aj@chef.io>)
+# Author:: AJ Christensen (<aj@junglistheavy.industries>)
 # Author:: Tyler Cloke (<tyler@chef.io>);
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,143 +20,146 @@
 require "spec_helper"
 
 describe Chef::Resource::Group, "initialize" do
-  before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "sets the resource_name to :group" do
+    expect(resource.resource_name).to eql(:group)
   end
 
-  it "should create a new Chef::Resource::Group" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Group)
+  it "the group_name property is the name_property" do
+    expect(resource.group_name).to eql("fakey_fakerton")
   end
 
-  it "should set the resource_name to :group" do
-    expect(@resource.resource_name).to eql(:group)
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
   end
 
-  it "should set the group_name equal to the argument to initialize" do
-    expect(@resource.group_name).to eql("admin")
+  it "supports :create, :manage, :modify, :remove actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :manage }.not_to raise_error
+    expect { resource.action :modify }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
   end
 
-  it "should default gid to nil" do
-    expect(@resource.gid).to eql(nil)
+  it "defaults gid to nil" do
+    expect(resource.gid).to eql(nil)
   end
 
-  it "should default members to an empty array" do
-    expect(@resource.members).to eql([])
+  it "defaults members to an empty array" do
+    expect(resource.members).to eql([])
   end
 
-  it "should alias users to members, also an empty array" do
-    expect(@resource.users).to eql([])
+  it "defaults comment to be nil" do
+    expect(resource.comment).to eql(nil)
   end
 
-  it "should set action to :create" do
-    expect(@resource.action).to eql([:create])
+  it "aliases users to members, also an empty array" do
+    expect(resource.users).to eql([])
   end
 
-  %w{create remove modify manage}.each do |action|
-    it "should allow action #{action}" do
-      expect(@resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
-    end
-  end
-
-  it "should accept domain groups (@ or \ separator) on non-windows" do
-    expect { @resource.group_name "domain\@group" }.not_to raise_error
-    expect(@resource.group_name).to eq("domain\@group")
-    expect { @resource.group_name "domain\\group" }.not_to raise_error
-    expect(@resource.group_name).to eq("domain\\group")
-    expect { @resource.group_name "domain\\group^name" }.not_to raise_error
-    expect(@resource.group_name).to eq("domain\\group^name")
+  it "accepts domain groups (@ or \ separator) on non-windows" do
+    expect { resource.group_name "domain\@group" }.not_to raise_error
+    expect(resource.group_name).to eq("domain\@group")
+    expect { resource.group_name "domain\\group" }.not_to raise_error
+    expect(resource.group_name).to eq("domain\\group")
+    expect { resource.group_name "domain\\group^name" }.not_to raise_error
+    expect(resource.group_name).to eq("domain\\group^name")
   end
 end
 
 describe Chef::Resource::Group, "group_name" do
-  before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "allows a string" do
+    resource.group_name "pirates"
+    expect(resource.group_name).to eql("pirates")
   end
 
-  it "should allow a string" do
-    @resource.group_name "pirates"
-    expect(@resource.group_name).to eql("pirates")
-  end
-
-  it "should not allow a hash" do
-    expect { @resource.send(:group_name, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+  it "does not allow a hash" do
+    expect { resource.send(:group_name, { some_other_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
 describe Chef::Resource::Group, "gid" do
-  before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "allows an integer" do
+    resource.gid 100
+    expect(resource.gid).to eql(100)
   end
 
-  it "should allow an integer" do
-    @resource.gid 100
-    expect(@resource.gid).to eql(100)
-  end
-
-  it "should not allow a hash" do
-    expect { @resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+  it "does not allow a hash" do
+    expect { resource.send(:gid, { some_other_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end
 
 describe Chef::Resource::Group, "members" do
-  before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
-  end
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
 
-  [ :users, :members].each do |method|
-    it "(#{method}) should allow and convert a string" do
-      @resource.send(method, "aj")
-      expect(@resource.send(method)).to eql(["aj"])
+  %i{users members}.each do |method|
+    it "(#{method}) allows a String and coerces it to an Array" do
+      resource.send(method, "some_user")
+      expect(resource.send(method)).to eql(["some_user"])
     end
 
-    it "(#{method}) should split a string on commas" do
-      @resource.send(method, "aj,adam")
-      expect(@resource.send(method)).to eql( %w{aj adam} )
+    it "(#{method}) coerces a comma separated list of users to an Array" do
+      resource.send(method, "some_user, other_user ,another_user,just_one_more_user")
+      expect(resource.send(method)).to eql( %w{some_user other_user another_user just_one_more_user} )
     end
 
-    it "(#{method}) should allow an array" do
-      @resource.send(method, %w{aj adam})
-      expect(@resource.send(method)).to eql( %w{aj adam} )
+    it "(#{method}) allows an Array" do
+      resource.send(method, %w{some_user other_user})
+      expect(resource.send(method)).to eql( %w{some_user other_user} )
     end
 
-    it "(#{method}) should not allow a hash" do
-      expect { @resource.send(method, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+    it "(#{method}) does not allow a Hash" do
+      expect { resource.send(method, { some_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
     end
   end
 end
 
 describe Chef::Resource::Group, "append" do
-  before(:each) do
-    @resource = Chef::Resource::Group.new("admin")
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "defaults to false" do
+    expect(resource.append).to eql(false)
   end
 
-  it "should default to false" do
-    expect(@resource.append).to eql(false)
+  it "allows a boolean" do
+    resource.append true
+    expect(resource.append).to eql(true)
   end
 
-  it "should allow a boolean" do
-    @resource.append true
-    expect(@resource.append).to eql(true)
-  end
-
-  it "should not allow a hash" do
-    expect { @resource.send(:gid, { :aj => "is freakin awesome" }) }.to raise_error(ArgumentError)
+  it "does not allow a hash" do
+    expect { resource.send(:gid, { some_other_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 
   describe "when it has members" do
     before do
-      @resource.group_name("pokemon")
-      @resource.members(%w{blastoise pikachu})
+      resource.group_name("pokemon")
+      resource.members(%w{blastoise pikachu})
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = resource.state_for_resource_reporter
       expect(state[:members]).to eql(%w{blastoise pikachu})
     end
 
     it "returns the group name as its identity" do
-      expect(@resource.identity).to eq("pokemon")
+      expect(resource.identity).to eq("pokemon")
     end
+  end
+end
+
+describe Chef::Resource::Group, "comment" do
+  let(:resource) { Chef::Resource::Group.new("fakey_fakerton") }
+
+  it "allows an string" do
+    resource.comment "this is a group comment"
+    expect(resource.comment).to eql("this is a group comment")
+  end
+
+  it "does not allow a hash" do
+    expect { resource.send(:comment, { some_other_user: "is freakin awesome" }) }.to raise_error(ArgumentError)
   end
 end

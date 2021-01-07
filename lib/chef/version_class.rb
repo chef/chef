@@ -1,6 +1,6 @@
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,8 +33,8 @@ class Chef
     end
 
     def <=>(other)
-      [:major, :minor, :patch].each do |method|
-        version = self.send(method)
+      %i{major minor patch}.each do |method|
+        version = send(method)
         begin
           ans = (version <=> other.send(method))
         rescue NoMethodError # if the other thing isn't a version object, return nil

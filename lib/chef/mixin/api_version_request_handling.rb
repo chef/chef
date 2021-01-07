@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,25 +19,23 @@
 class Chef
   module Mixin
     module ApiVersionRequestHandling
-      # Input:
-      # exeception:
-      #   Net::HTTPServerException that may or may not contain the x-ops-server-api-version header
+      # @param exception [Net::HTTPClientException] may or may not contain the x-ops-server-api-version header
       # supported_client_versions:
-      #  An array of Integers that represent the API versions the client supports.
+      # @param supported_client_versions [Array<Integer>] The API versions the client supports.
       #
       # Output:
       # nil:
-      #  If the execption was not a 406 or the server does not support versioning
+      #  If the exception was not a 406 or the server does not support versioning
       # Array of length zero:
       #  If there was no intersection between supported client versions and supported server versions
-      # Arrary of Integers:
+      # Array of Integers:
       #  If there was an intersection of supported versions, the array returns will contain that intersection
       def server_client_api_version_intersection(exception, supported_client_versions)
         # return empty array unless 406 Unacceptable with proper header
         return nil if exception.response.code != "406" || exception.response["x-ops-server-api-version"].nil?
 
         # intersection of versions the server and client support, will be of length zero if no intersection
-        server_supported_client_versions = Array.new
+        server_supported_client_versions = []
 
         header = Chef::JSONCompat.from_json(exception.response["x-ops-server-api-version"])
         min_server_version = Integer(header["min_version"])
@@ -52,13 +50,13 @@ class Chef
       end
 
       def reregister_only_v0_supported_error_msg(max_version, min_version)
-        <<-EOH
-The reregister command only supports server API version 0.
-The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
-User keys are now managed via the key rotation commmands.
-Please refer to the documentation on how to manage your keys via the key rotation commands:
-https://docs.chef.io/server_security.html#key-rotation
-EOH
+        <<~EOH
+          The reregister command only supports server API version 0.
+          The server that received the request supports a min version of #{min_version} and a max version of #{max_version}.
+          User keys are now managed via the key rotation commands.
+          Please refer to the documentation on how to manage your keys via the key rotation commands:
+          https://docs.chef.io/ctl_chef_server/#key-rotation
+        EOH
       end
 
     end

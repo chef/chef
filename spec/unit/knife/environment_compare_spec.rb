@@ -61,8 +61,8 @@ describe Chef::Knife::EnvironmentCompare do
     it "should display only cookbooks with version constraints" do
       @knife.config[:format] = "summary"
       @knife.run
-      @environments.each do |item, url|
-        expect(@stdout.string).to(match /#{item}/) && expect(@stdout.string.lines.count).to(be 4)
+      @environments.each_key do |item|
+        expect(@stdout.string).to(match(/#{item}/)) && expect(@stdout.string.lines.count).to(be 4)
       end
     end
 
@@ -78,8 +78,8 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = "summary"
       @knife.config[:mismatch] = true
       @knife.run
-      @constraints.each do |item, ver|
-        expect(@stdout.string).to match /#{ver[1]}/
+      @constraints.each_value do |ver|
+        expect(@stdout.string).to match(/#{ver[1]}/)
       end
     end
 
@@ -96,8 +96,8 @@ describe Chef::Knife::EnvironmentCompare do
       @knife.config[:format] = "summary"
       @knife.config[:all] = true
       @knife.run
-      @constraints.each do |item, ver|
-        expect(@stdout.string).to match /#{ver[1]}/
+      @constraints.each_value do |ver|
+        expect(@stdout.string).to match(/#{ver[1]}/)
       end
     end
 

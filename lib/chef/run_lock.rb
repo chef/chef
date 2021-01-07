@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,14 +15,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/create_path"
+require_relative "mixin/create_path"
 require "fcntl"
-if Chef::Platform.windows?
-  require "chef/win32/mutex"
+if ChefUtils.windows?
+  require_relative "win32/mutex"
 end
-require "chef/config"
-require "chef/exceptions"
-require "timeout"
+require_relative "config"
+require_relative "exceptions"
+require "timeout" unless defined?(Timeout)
+require "chef-utils" unless defined?(ChefUtils::CANARY)
 
 class Chef
 
@@ -95,8 +96,8 @@ class Chef
     # Waits until acquiring the system-wide lock.
     #
     def wait
-      Chef::Log.warn("Chef client #{runpid} is running, will wait for it to finish and then run.")
-      if Chef::Platform.windows?
+      Chef::Log.warn("#{ChefUtils::Dist::Infra::PRODUCT} #{runpid} is running, will wait for it to finish and then run.")
+      if ChefUtils.windows?
         mutex.wait
       else
         runlock.flock(File::LOCK_EX)
@@ -115,7 +116,7 @@ class Chef
     # Release the system-wide lock.
     def release
       if runlock
-        if Chef::Platform.windows?
+        if ChefUtils.windows?
           mutex.release
         else
           runlock.flock(File::LOCK_UN)
@@ -137,7 +138,7 @@ class Chef
 
     # @api private solely for race condition tests
     def acquire_lock
-      if Chef::Platform.windows?
+      if ChefUtils.windows?
         acquire_win32_mutex
       else
         # If we support FD_CLOEXEC, then use it.
@@ -172,7 +173,7 @@ class Chef
     # Mutex name is case-sensitive contrary to other things in
     # windows. "\" is the only invalid character.
     def acquire_win32_mutex
-      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.gsub(/[\\]/, "/").downcase}")
+      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.tr('\\', "/").downcase}")
       mutex.test
     end
 

@@ -1,4 +1,4 @@
-require "chef/chef_fs/parallelizer/flatten_enumerable"
+require_relative "flatten_enumerable"
 
 class Chef
   module ChefFS
@@ -145,8 +145,9 @@ class Chef
 
         def each_with_exceptions_unordered
           if @each_running
-            raise "each() called on parallel enumerable twice simultaneously!  Bad mojo"
+            raise "each() called on parallel enumerable twice simultaneously! Bad mojo"
           end
+
           @each_running = true
           begin
             # Grab all the inputs, yielding any responses during enumeration
@@ -197,7 +198,7 @@ class Chef
             # If we exited early, perhaps due to any? finding a result, we want
             # to make sure and throw away any extra results (gracefully) so that
             # the next enumerator can start over.
-            if !finished?
+            unless finished?
               stop
             end
             raise
@@ -234,7 +235,7 @@ class Chef
         # The order of these checks is important, as well, to be thread safe.
         # 1. If @unconsumed_input.empty? is true, then we will never have any more
         # work legitimately picked up.
-        # 2. If @in_process == 0, then there is no work in process, and because ofwhen unconsumed_input is empty, it will never go back up, because
+        # 2. If @in_process == 0, then there is no work in process, and because of when unconsumed_input is empty, it will never go back up, because
         # this is called after the input enumerator is finished.  Note that switching #2 and #1
         # could cause a race, because in_process is incremented *before* consuming input.
         # 3. If @unconsumed_output.empty? is true, then we are done with outputs.

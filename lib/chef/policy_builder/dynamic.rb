@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,15 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
-require "chef/log"
-require "chef/run_context"
-require "chef/config"
-require "chef/node"
-require "chef/exceptions"
+require_relative "../log"
+require_relative "../run_context"
+require_relative "../config"
+require_relative "../node"
+require_relative "../exceptions"
+require_relative "expand_node_object"
+require_relative "policyfile"
 
 class Chef
   module PolicyBuilder
@@ -63,7 +65,7 @@ class Chef
       # @return [Chef::Node] the loaded node.
       def load_node
         events.node_load_start(node_name, config)
-        Chef::Log.debug("Building node object for #{node_name}")
+        Chef::Log.trace("Building node object for #{node_name}")
 
         @node =
           if Chef::Config[:solo_legacy_mode]
@@ -74,6 +76,7 @@ class Chef
         select_implementation(node)
         implementation.finish_load_node(node)
         node
+        events.node_load_success(node)
       rescue Exception => e
         events.node_load_failed(node_name, e, config)
         raise
@@ -173,7 +176,7 @@ class Chef
       end
 
       def policyfile_set_in_config?
-        config[:use_policyfile] || config[:policy_name] || config[:policy_group]
+        config[:policy_name] || config[:policy_group]
       end
 
       def policyfile_compat_mode_config?

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Cookbook::CookbookVersionLoader do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
 
   describe "loading a cookbook" do
@@ -40,42 +40,45 @@ describe Chef::Cookbook::CookbookVersionLoader do
       File.join(cookbook_path, cookbook_relative_path)
     end
 
+    def full_paths_for_part(part)
+      loaded_cookbook.files_for(part).inject([]) { |memo, f| memo << f[:full_path]; memo }
+    end
+
     it "loads attribute files of the cookbook" do
-      expect(loaded_cookbook.attribute_filenames).to include(full_path("/attributes/default.rb"))
-      expect(loaded_cookbook.attribute_filenames).to include(full_path("/attributes/smokey.rb"))
+      expect(full_paths_for_part("attributes")).to include(full_path("/attributes/default.rb"))
+      expect(full_paths_for_part("attributes")).to include(full_path("/attributes/smokey.rb"))
     end
 
     it "loads definition files" do
-      expect(loaded_cookbook.definition_filenames).to include(full_path("/definitions/client.rb"))
-      expect(loaded_cookbook.definition_filenames).to include(full_path("/definitions/server.rb"))
+      expect(full_paths_for_part("definitions")).to include(full_path("/definitions/client.rb"))
+      expect(full_paths_for_part("definitions")).to include(full_path("/definitions/server.rb"))
     end
 
     it "loads recipes" do
-      expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/default.rb"))
-      expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/gigantor.rb"))
-      expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/one.rb"))
-      expect(loaded_cookbook.recipe_filenames).to include(full_path("/recipes/return.rb"))
+      expect(full_paths_for_part("recipes")).to include(full_path("/recipes/default.rb"))
+      expect(full_paths_for_part("recipes")).to include(full_path("/recipes/gigantor.rb"))
+      expect(full_paths_for_part("recipes")).to include(full_path("/recipes/one.rb"))
+      expect(full_paths_for_part("recipes")).to include(full_path("/recipes/return.rb"))
     end
 
     it "loads libraries" do
-      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap.rb"))
-      expect(loaded_cookbook.library_filenames).to include(full_path("/libraries/openldap/version.rb"))
+      expect(full_paths_for_part("libraries")).to include(full_path("/libraries/openldap.rb"))
+      expect(full_paths_for_part("libraries")).to include(full_path("/libraries/openldap/version.rb"))
     end
 
     it "loads static files in the files/ dir" do
-      expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file1.txt"))
-      expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file2.txt"))
+      expect(full_paths_for_part("files")).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file1.txt"))
+      expect(full_paths_for_part("files")).to include(full_path("/files/default/remotedir/remotesubdir/remote_subdir_file2.txt"))
     end
 
     it "loads files that start with a ." do
-      expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/.dotfile"))
-      expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/.ssh/id_rsa"))
-      expect(loaded_cookbook.file_filenames).to include(full_path("/files/default/remotedir/.a_dotdir/.a_dotfile_in_a_dotdir"))
+      expect(full_paths_for_part("files")).to include(full_path("/files/default/.dotfile"))
+      expect(full_paths_for_part("files")).to include(full_path("/files/default/.ssh/id_rsa"))
+      expect(full_paths_for_part("files")).to include(full_path("/files/default/remotedir/.a_dotdir/.a_dotfile_in_a_dotdir"))
     end
 
     it "loads root files that start with a ." do
       expect(loaded_cookbook.all_files).to include(full_path(".root_dotfile"))
-      expect(loaded_cookbook.root_filenames).to include(full_path(".root_dotfile"))
     end
 
     it "loads all unignored files, even if they don't match a segment type" do
@@ -97,11 +100,20 @@ describe Chef::Cookbook::CookbookVersionLoader do
       let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "kitchen/openldap") }
 
       it "skips ignored files" do
-        expect(loaded_cookbook.recipe_filenames).to include(full_path("recipes/gigantor.rb"))
-        expect(loaded_cookbook.recipe_filenames).to include(full_path("recipes/woot.rb"))
-        expect(loaded_cookbook.recipe_filenames).to_not include(full_path("recipes/ignoreme.rb"))
+        expect(full_paths_for_part("recipes")).to include(full_path("recipes/gigantor.rb"))
+        expect(full_paths_for_part("recipes")).to include(full_path("recipes/woot.rb"))
+        expect(full_paths_for_part("recipes")).to_not include(full_path("recipes/ignoreme.rb"))
       end
 
+    end
+
+    context "when a cookbook's metadata.rb does not parse but the compiled metadata.json is present" do
+      let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "prefer_metadata_json") }
+
+      it "reads the cookbook" do
+        expect(loaded_cookbook.metadata.name.to_s).to eq("prefer_metadata_json")
+        expect(loaded_cookbook.metadata.version.to_s).to eq("1.2.3")
+      end
     end
 
     context "when the given path is not actually a cookbook" do
@@ -112,8 +124,9 @@ describe Chef::Cookbook::CookbookVersionLoader do
         expect { cookbook_loader.load! }.to raise_error(Chef::Exceptions::CookbookNotFoundInRepo)
       end
 
-      it "skips the cookbook when called with #load" do
-        expect { cookbook_loader.load }.to_not raise_error
+      it "gives deprecation warning called with #load" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        cookbook_loader.load
       end
 
     end
@@ -136,7 +149,8 @@ describe Chef::Cookbook::CookbookVersionLoader do
         expect { cookbook_loader.load! }.to raise_error("THIS METADATA HAS A BUG")
       end
 
-      it "raises an error when called with #load" do
+      it "gives deprecation warning to us load!  when called with #load and raises error" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect { cookbook_loader.load }.to raise_error("THIS METADATA HAS A BUG")
       end
 
@@ -161,14 +175,15 @@ describe Chef::Cookbook::CookbookVersionLoader do
       let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "incomplete-metadata-chef-repo/incomplete-metadata") }
 
       let(:error_message) do
-        "Cookbook loaded at path(s) [#{cookbook_path}] has invalid metadata: The `name' attribute is required in cookbook metadata"
+        "Cookbook loaded at path [#{cookbook_path}] has invalid metadata: The `name' attribute is required in cookbook metadata"
       end
 
       it "raises an error when loading with #load!" do
         expect { cookbook_loader.load! }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
       end
 
-      it "raises an error when called with #load" do
+      it "gives deprecation warning to use load! method when called with #load and raises error for invalid metadata" do
+        Chef::Config[:treat_deprecation_warnings_as_errors] = false
         expect { cookbook_loader.load }.to raise_error(Chef::Exceptions::MetadataNotValid, error_message)
       end
 

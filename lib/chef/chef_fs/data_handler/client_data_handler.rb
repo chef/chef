@@ -1,5 +1,5 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/api_client"
+require_relative "data_handler_base"
+require_relative "../../api_client"
 
 class Chef
   module ChefFS
@@ -25,7 +25,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "name"
+          key == "name"
         end
 
         def chef_class

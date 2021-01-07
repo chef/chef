@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::ResourceCollection::ResourceList do
-  let(:resource_list) { Chef::ResourceCollection::ResourceList.new() }
+  let(:resource_list) { Chef::ResourceCollection::ResourceList.new }
   let(:resource) { Chef::Resource::ZenMaster.new("makoto") }
   let(:second_resource) { Chef::Resource::ZenMaster.new("hattori") }
 

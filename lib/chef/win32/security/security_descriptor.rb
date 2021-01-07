@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/acl"
-require "chef/win32/security/sid"
+require_relative "../security"
+require_relative "acl"
+require_relative "sid"
 
 class Chef
   module ReservedNames::Win32
@@ -41,7 +41,8 @@ class Chef
         end
 
         def dacl
-          raise "DACL not present" if !dacl_present?
+          raise "DACL not present" unless dacl_present?
+
           present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_dacl(self)
           acl
         end
@@ -65,7 +66,8 @@ class Chef
         end
 
         def sacl
-          raise "SACL not present" if !sacl_present?
+          raise "SACL not present" unless sacl_present?
+
           Security.with_privileges("SeSecurityPrivilege") do
             present, acl, defaulted = Chef::ReservedNames::Win32::Security.get_security_descriptor_sacl(self)
             acl

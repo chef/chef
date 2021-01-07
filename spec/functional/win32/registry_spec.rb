@@ -1,7 +1,7 @@
 #
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ require "chef/win32/registry"
 describe "Chef::Win32::Registry", :windows_only do
 
   before(:all) do
-    #Create a registry item
+    # Create a registry item
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch"
     ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\B®anch"
@@ -39,28 +39,22 @@ describe "Chef::Win32::Registry", :windows_only do
       reg["Petals", Win32::Registry::REG_MULTI_SZ] = %w{Pink Delicate}
     end
 
-    #Create the node with ohai data
+    # Create the node with ohai data
     events = Chef::EventDispatch::Dispatcher.new
     @node = Chef::Node.new
     @node.consume_external_attrs(OHAI_SYSTEM.data, {})
     @run_context = Chef::RunContext.new(@node, {}, events)
 
-    #Create a registry object that has access ot the node previously created
+    # Create a registry object that has access ot the node previously created
     @registry = Chef::Win32::Registry.new(@run_context)
   end
 
-  #Delete what is left of the registry key-values previously created
+  # Delete what is left of the registry key-values previously created
   after(:all) do
     ::Win32::Registry::HKEY_CURRENT_USER.open("Software") do |reg|
       reg.delete_key("Root", true)
     end
   end
-
-  # Server Versions
-  # it "succeeds if server versiion is 2003R2, 2008, 2008R2, 2012" do
-  # end
-  # it "falis if the server versions are anything else" do
-  # end
 
   describe "hive_exists?" do
     it "returns true if the hive exists" do
@@ -102,85 +96,85 @@ describe "Chef::Win32::Registry", :windows_only do
 
   describe "value_exists?" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.value_exists?("JKLM\\Software\\Branch\\Flower", { :name => "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.value_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.value_exists?("HKCU\\Software\\Branch\\Flower", { :name => "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.value_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if the value exists" do
-      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals" })).to eq(true)
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals" })).to eq(true)
     end
     it "returns true if the value exists with a case mismatch on the value name" do
-      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals" })).to eq(true)
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "petals" })).to eq(true)
     end
     it "returns false if the value does not exist" do
-      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "FOOBAR" })).to eq(false)
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "FOOBAR" })).to eq(false)
     end
   end
 
   describe "value_exists!" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.value_exists!("JKLM\\Software\\Branch\\Flower", { :name => "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.value_exists!("JKLM\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.value_exists!("HKCU\\Software\\Branch\\Flower", { :name => "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.value_exists!("HKCU\\Software\\Branch\\Flower", { name: "Petals" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if the value exists" do
-      expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals" })).to eq(true)
+      expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals" })).to eq(true)
     end
     it "returns true if the value exists with a case mismatch on the value name" do
-      expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals" })).to eq(true)
+      expect(@registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "petals" })).to eq(true)
     end
     it "throws an exception if the value does not exist" do
-      expect { @registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "FOOBAR" }) }.to raise_error(Chef::Exceptions::Win32RegValueMissing)
+      expect { @registry.value_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "FOOBAR" }) }.to raise_error(Chef::Exceptions::Win32RegValueMissing)
     end
   end
 
   describe "data_exists?" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.data_exists?("JKLM\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.data_exists?("HKCU\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if all the data matches" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} })).to eq(true)
     end
     it "returns true if all the data matches with a case mismatch on the data name" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "petals", type: :multi_string, data: %w{Pink Delicate} })).to eq(true)
     end
     it "returns false if the name does not exist" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "slateP", type: :multi_string, data: %w{Pink Delicate} })).to eq(false)
     end
     it "returns false if the types do not match" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Pink" })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :string, data: "Pink" })).to eq(false)
     end
     it "returns false if the data does not match" do
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Mauve Delicate} })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Mauve Delicate} })).to eq(false)
     end
   end
 
   describe "data_exists!" do
     it "throws an exception if the hive does not exist" do
-      expect { @registry.data_exists!("JKLM\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.data_exists!("JKLM\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
     it "throws an exception if the key does not exist" do
-      expect { @registry.data_exists!("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
     it "returns true if all the data matches" do
-      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
+      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Pink Delicate} })).to eq(true)
     end
     it "returns true if all the data matches with a case mismatch on the data name" do
-      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "petals", :type => :multi_string, :data => %w{Pink Delicate} })).to eq(true)
+      expect(@registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "petals", type: :multi_string, data: %w{Pink Delicate} })).to eq(true)
     end
     it "throws an exception if the name does not exist" do
-      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "slateP", :type => :multi_string, :data => %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "slateP", type: :multi_string, data: %w{Pink Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
     it "throws an exception if the types do not match" do
-      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Pink" }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :string, data: "Pink" }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
     it "throws an exception if the data does not match" do
-      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => %w{Mauve Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
+      expect { @registry.data_exists!("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: %w{Mauve Delicate} }) }.to raise_error(Chef::Exceptions::Win32RegDataMissing)
     end
   end
 
@@ -188,8 +182,8 @@ describe "Chef::Win32::Registry", :windows_only do
     it "returns all values for a key if it exists" do
       values = @registry.get_values("HKCU\\Software\\Root")
       expect(values).to be_an_instance_of Array
-      expect(values).to eq([{ :name => "RootType1", :type => :string, :data => "fibrous" },
-                        { :name => "Roots", :type => :multi_string, :data => ["strong roots", "healthy tree"] }])
+      expect(values).to eq([{ name: "RootType1", type: :string, data: "fibrous" },
+                        { name: "Roots", type: :multi_string, data: ["strong roots", "healthy tree"] }])
     end
 
     it "throws an exception if the key does not exist" do
@@ -203,80 +197,80 @@ describe "Chef::Win32::Registry", :windows_only do
 
   describe "set_value" do
     it "updates a value if the key, value exist and type matches and value different" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(true)
     end
 
     it "updates a value if the type does match and the values are different" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Yellow" })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :string, :data => "Yellow" })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(false)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :string, data: "Yellow" })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :string, data: "Yellow" })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(false)
     end
 
     it "creates a value if key exists and value does not" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Stamen", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Stamen", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "Stamen", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Stamen", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(true)
     end
 
     it "does nothing if data,type and name parameters for the value are same" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Stamen", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(false)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "Stamen", :type => :multi_string, :data => ["Yellow", "Changed Color"] })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "Stamen", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(false)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "Stamen", type: :multi_string, data: ["Yellow", "Changed Color"] })).to eq(true)
     end
 
     it "throws an exception if the key does not exist" do
-      expect { @registry.set_value("HKCU\\Software\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Yellow", "Changed Color"] }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.set_value("HKCU\\Software\\Branch\\Flower", { name: "Petals", type: :multi_string, data: ["Yellow", "Changed Color"] }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
 
     it "throws an exception if the hive does not exist" do
-      expect { @registry.set_value("JKLM\\Software\\Root\\Branch\\Flower", { :name => "Petals", :type => :multi_string, :data => ["Yellow", "Changed Color"] }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.set_value("JKLM\\Software\\Root\\Branch\\Flower", { name: "Petals", type: :multi_string, data: ["Yellow", "Changed Color"] }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
 
     # we are validating that the data gets .to_i called on it when type is a :dword
 
     it "casts an integer string given as a dword into an integer" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBe32767", :type => :dword, :data => "32767" })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBe32767", :type => :dword, :data => 32767 })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBe32767", type: :dword, data: "32767" })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBe32767", type: :dword, data: 32767 })).to eq(true)
     end
 
     it "casts a nonsense string given as a dword into zero" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBeZero", :type => :dword, :data => "whatdoesthisdo" })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBeZero", :type => :dword, :data => 0 })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBeZero", type: :dword, data: "whatdoesthisdo" })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBeZero", type: :dword, data: 0 })).to eq(true)
     end
 
     it "throws an exception when trying to cast an array to an int for a dword" do
-      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldThrow", :type => :dword, :data => %w{one two} }) }.to raise_error NoMethodError
+      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldThrow", type: :dword, data: %w{one two} }) }.to raise_error NoMethodError
     end
 
     # we are validating that the data gets .to_s called on it when type is a :string
 
     it "stores the string representation of an array into a string if you pass it an array" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBePainful", :type => :string, :data => %w{one two} })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBePainful", :type => :string, :data => '["one", "two"]' })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBePainful", type: :string, data: %w{one two} })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBePainful", type: :string, data: '["one", "two"]' })).to eq(true)
     end
 
     it "stores the string representation of a number into a string if you pass it an number" do
-      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBe65535", :type => :string, :data => 65535 })).to eq(true)
-      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBe65535", :type => :string, :data => "65535" })).to eq(true)
+      expect(@registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBe65535", type: :string, data: 65535 })).to eq(true)
+      expect(@registry.data_exists?("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBe65535", type: :string, data: "65535" })).to eq(true)
     end
 
     # we are validating that the data gets .to_a called on it when type is a :multi_string
 
     it "throws an exception when a multi-string is passed a number" do
-      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldThrow", :type => :multi_string, :data => 65535 }) }.to raise_error NoMethodError
+      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldThrow", type: :multi_string, data: 65535 }) }.to raise_error NoMethodError
     end
 
     it "throws an exception when a multi-string is passed a string" do
-      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { :name => "ShouldBeWat", :type => :multi_string, :data => "foo" }) }.to raise_error NoMethodError
+      expect { @registry.set_value("HKCU\\Software\\Root\\Branch\\Flower", { name: "ShouldBeWat", type: :multi_string, data: "foo" }) }.to raise_error NoMethodError
     end
   end
 
   describe "create_key" do
     before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root") do |reg|
-        begin
-          reg.delete_key("Trunk", true)
-        rescue
-        end
+
+        reg.delete_key("Trunk", true)
+      rescue
+
       end
     end
 
@@ -309,26 +303,26 @@ describe "Chef::Win32::Registry", :windows_only do
     end
 
     it "deletes values if the value exists" do
-      expect(@registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" })).to eq(true)
-      expect(@registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" })).to eq(false)
+      expect(@registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" })).to eq(true)
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" })).to eq(false)
     end
 
     it "does nothing if value does not exist" do
-      expect(@registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" })).to eq(true)
-      expect(@registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" })).to eq(false)
+      expect(@registry.delete_value("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" })).to eq(true)
+      expect(@registry.value_exists?("HKCU\\Software\\Root\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" })).to eq(false)
     end
 
     it "throws an exception if the key does not exist?" do
-      expect { @registry.delete_value("HKCU\\Software\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+      expect { @registry.delete_value("HKCU\\Software\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
     end
 
     it "throws an exception if the hive does not exist" do
-      expect { @registry.delete_value("JKLM\\Software\\Root\\Trunk\\Peck\\Woodpecker", { :name => "Peter", :type => :string, :data => "Tiny" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
+      expect { @registry.delete_value("JKLM\\Software\\Root\\Trunk\\Peck\\Woodpecker", { name: "Peter", type: :string, data: "Tiny" }) }.to raise_error(Chef::Exceptions::Win32RegHiveMissing)
     end
   end
 
   describe "delete_key" do
-    before (:all) do
+    before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Branch\\Fruit"
       ::Win32::Registry::HKEY_CURRENT_USER.open('Software\\Root\\Branch\\Fruit', Win32::Registry::KEY_ALL_ACCESS) do |reg|
         reg["Apple", Win32::Registry::REG_MULTI_SZ] = %w{Red Juicy}
@@ -368,10 +362,10 @@ describe "Chef::Win32::Registry", :windows_only do
     before(:all) do
       ::Win32::Registry::HKEY_CURRENT_USER.create "Software\\Root\\Trunk"
       ::Win32::Registry::HKEY_CURRENT_USER.open("Software\\Root\\Trunk") do |reg|
-        begin
-          reg.delete_key("Red", true)
-        rescue
-        end
+
+        reg.delete_key("Red", true)
+      rescue
+
       end
     end
 
@@ -566,38 +560,38 @@ describe "Chef::Win32::Registry", :windows_only do
       describe "value_exists?" do
         it "does not find 64-bit values in the 32-bit registry" do
           @registry.architecture = :i386
-          expect { @registry.value_exists?("HKLM\\Software\\Root\\Mauve", { :name => "Alert" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+          expect { @registry.value_exists?("HKLM\\Software\\Root\\Mauve", { name: "Alert" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "finds 32-bit values in the 32-bit registry" do
           @registry.architecture = :i386
-          expect(@registry.value_exists?("HKLM\\Software\\Root\\Poosh", { :name => "Status" })).to eq(true)
+          expect(@registry.value_exists?("HKLM\\Software\\Root\\Poosh", { name: "Status" })).to eq(true)
         end
         it "does not find 32-bit values in the 64-bit registry" do
           @registry.architecture = :x86_64
-          expect(@registry.value_exists?("HKLM\\Software\\Root\\Mauve", { :name => "Alert" })).to eq(true)
+          expect(@registry.value_exists?("HKLM\\Software\\Root\\Mauve", { name: "Alert" })).to eq(true)
         end
         it "finds 64-bit values in the 64-bit registry" do
           @registry.architecture = :x86_64
-          expect { @registry.value_exists?("HKLM\\Software\\Root\\Poosh", { :name => "Status" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+          expect { @registry.value_exists?("HKLM\\Software\\Root\\Poosh", { name: "Status" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
       end
 
       describe "data_exists?" do
         it "does not find 64-bit keys in the 32-bit registry" do
           @registry.architecture = :i386
-          expect { @registry.data_exists?("HKLM\\Software\\Root\\Mauve", { :name => "Alert", :type => :string, :data => "Universal" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+          expect { @registry.data_exists?("HKLM\\Software\\Root\\Mauve", { name: "Alert", type: :string, data: "Universal" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
         it "finds 32-bit keys in the 32-bit registry" do
           @registry.architecture = :i386
-          expect(@registry.data_exists?("HKLM\\Software\\Root\\Poosh", { :name => "Status", :type => :string, :data => "Lost" })).to eq(true)
+          expect(@registry.data_exists?("HKLM\\Software\\Root\\Poosh", { name: "Status", type: :string, data: "Lost" })).to eq(true)
         end
         it "does not find 32-bit keys in the 64-bit registry" do
           @registry.architecture = :x86_64
-          expect(@registry.data_exists?("HKLM\\Software\\Root\\Mauve", { :name => "Alert", :type => :string, :data => "Universal" })).to eq(true)
+          expect(@registry.data_exists?("HKLM\\Software\\Root\\Mauve", { name: "Alert", type: :string, data: "Universal" })).to eq(true)
         end
         it "finds 64-bit keys in the 64-bit registry" do
           @registry.architecture = :x86_64
-          expect { @registry.data_exists?("HKLM\\Software\\Root\\Poosh", { :name => "Status", :type => :string, :data => "Lost" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
+          expect { @registry.data_exists?("HKLM\\Software\\Root\\Poosh", { name: "Status", type: :string, data: "Lost" }) }.to raise_error(Chef::Exceptions::Win32RegKeyMissing)
         end
       end
 

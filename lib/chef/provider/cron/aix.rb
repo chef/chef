@@ -1,6 +1,6 @@
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/cron/unix"
+require_relative "unix"
 
 class Chef
   class Provider
@@ -33,8 +33,11 @@ class Chef
             raise Chef::Exceptions::Cron, "Aix cron entry does not support environment variables. Please set them in script and use script in cron."
           end
 
-          newcron = ""
-          newcron << "# Chef Name: #{new_resource.name}\n"
+          if time_out_set?
+            raise Chef::Exceptions::Cron, "Aix cron entry does not support timeout."
+          end
+
+          newcron = "# Chef Name: #{new_resource.name}\n"
           newcron << "#{@new_resource.minute} #{@new_resource.hour} #{@new_resource.day} #{@new_resource.month} #{@new_resource.weekday}"
 
           newcron << " #{@new_resource.command}\n"
@@ -43,6 +46,10 @@ class Chef
 
         def env_vars_are_set?
           @new_resource.environment.length > 0 || !@new_resource.mailto.nil? || !@new_resource.path.nil? || !@new_resource.shell.nil? || !@new_resource.home.nil?
+        end
+
+        def time_out_set?
+          !@new_resource.time_out.empty?
         end
       end
     end

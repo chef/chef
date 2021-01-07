@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/guard_interpreter"
-require "chef/mixin/descendants_tracker"
+require_relative "../../exceptions"
+require_relative "../../guard_interpreter"
+require_relative "../../mixin/descendants_tracker"
 
 class Chef
   class Resource
@@ -36,7 +36,7 @@ class Chef
       # ruby block, which will be called, or a string, which will be
       # executed as a Shell command.
       #
-      # Additonally, Chef or third-party verifications can ship
+      # Additionally, Chef or third-party verifications can ship
       # "registered verifications" that the user can use by specifying
       # a :symbol as the command name.
       #
@@ -63,6 +63,7 @@ class Chef
 
       class Verification
         extend Chef::Mixin::DescendantsTracker
+        attr_reader :output
 
         def self.provides(name)
           @provides = name
@@ -77,7 +78,12 @@ class Chef
           if c.nil?
             raise Chef::Exceptions::VerificationNotFound.new "No file verification for #{name} found."
           end
+
           c
+        end
+
+        def logger
+          @parent_resource.logger
         end
 
         def initialize(parent_resource, command, opts, &block)
@@ -87,7 +93,7 @@ class Chef
         end
 
         def verify(path, opts = {})
-          Chef::Log.debug("Running verification[#{self}] on #{path}")
+          logger.trace("Running verification[#{self}] on #{path}")
           if @block
             verify_block(path, opts)
           elsif @command.is_a?(Symbol)
@@ -106,21 +112,31 @@ class Chef
         # We reuse Chef::GuardInterpreter in order to support
         # the same set of options that the not_if/only_if blocks do
         def verify_command(path, opts)
-          # First implementation interpolated `file`; docs & RFC claim `path`
-          # is interpolated. Until `file` can be deprecated, interpolate both.
-          Chef.log_deprecation(
-            "%{file} is deprecated in verify command and will not be "\
-            "supported in Chef 13. Please use %{path} instead."
-          ) if @command.include?("%{file}")
-          command = @command % { :file => path, :path => path }
+          if @command.include?("%{file}")
+            raise ArgumentError, "The %{file} expansion for verify commands has been removed. Please use %{path} instead."
+          end
+
+          command = @command % { path: path }
           interpreter = Chef::GuardInterpreter.for_resource(@parent_resource, command, @command_opts)
-          interpreter.evaluate
+          ret = interpreter.evaluate
+          @output = interpreter.output
+          ret
         end
 
         def verify_registered_verification(path, opts)
           verification_class = Chef::Resource::File::Verification.lookup(@command)
           v = verification_class.new(@parent_resource, @command, @command_opts, &@block)
           v.verify(path, opts)
+        end
+
+        def to_s
+          if @block
+            "<Proc>"
+          elsif @command.is_a?(Symbol)
+            "#{@command.inspect} (#{Chef::Resource::File::Verification.lookup(@command).name})"
+          elsif @command.is_a?(String)
+            @command
+          end
         end
       end
     end

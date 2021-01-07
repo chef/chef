@@ -1,6 +1,6 @@
 #
 # Author:: Salim Alam (<salam@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/system"
-require "chef/win32/error"
-require "ffi"
+require_relative "api/system"
+require_relative "error"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

@@ -16,12 +16,12 @@
 # limitations under the License.
 #
 
-#the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
-#see also: WNetAddConnection2 and WNetAddConnection3
-#see also cmd.exe: net use /?
+# the Win32 Volume APIs do not support mapping network drives. not supported by WMI either.
+# see also: WNetAddConnection2 and WNetAddConnection3
+# see also cmd.exe: net use /?
 
-require "chef/util/windows"
-require "chef/win32/net"
+require_relative "../windows"
+require_relative "../../win32/net"
 
 class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def initialize(localname)
@@ -38,7 +38,7 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   def add(args)
     if args.class == String
       remote = args
-      args = Hash.new
+      args = {}
       args[:remote] = remote
     end
     args[:local] ||= use_name
@@ -59,24 +59,20 @@ class Chef::Util::Windows::NetUse < Chef::Util::Windows
   end
 
   def get_info
-    begin
-      ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
-      from_use_info_struct(ui2)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    ui2 = Chef::ReservedNames::Win32::Net.net_use_get_info_l2(nil, use_name)
+    from_use_info_struct(ui2)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def device
-    get_info()[:remote]
+    get_info[:remote]
   end
 
   def delete
-    begin
-      Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
-    rescue Chef::Exceptions::Win32APIError => e
-      raise ArgumentError, e
-    end
+    Chef::ReservedNames::Win32::Net.net_use_del(nil, use_name, :use_noforce)
+  rescue Chef::Exceptions::Win32APIError => e
+    raise ArgumentError, e
   end
 
   def use_name

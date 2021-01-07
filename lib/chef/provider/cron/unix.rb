@@ -18,30 +18,29 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/provider"
-require "chef/provider/cron"
+require_relative "../../log"
+require_relative "../../provider"
+require_relative "../cron"
 
 class Chef
   class Provider
     class Cron
       class Unix < Chef::Provider::Cron
-        include Chef::Mixin::ShellOut
-
         provides :cron, os: "solaris2"
 
         private
 
         def read_crontab
-          crontab = shell_out("/usr/bin/crontab -l", :user => @new_resource.user)
+          crontab = shell_out(%w{/usr/bin/crontab -l}, user: @new_resource.user)
           status = crontab.status.exitstatus
 
-          Chef::Log.debug crontab.format_for_exception if status > 0
+          logger.trace crontab.format_for_exception if status > 0
 
           if status > 1
             raise Chef::Exceptions::Cron, "Error determining state of #{@new_resource.name}, exit: #{status}"
           end
           return nil if status > 0
+
           crontab.stdout.chomp << "\n"
         end
 
@@ -53,7 +52,7 @@ class Chef
           exit_status = 0
           error_message = ""
           begin
-            crontab_write = shell_out("/usr/bin/crontab #{tempcron.path}", :user => @new_resource.user)
+            crontab_write = shell_out("/usr/bin/crontab", tempcron.path, user: @new_resource.user)
             stderr = crontab_write.stderr
             exit_status = crontab_write.status.exitstatus
             # solaris9, 10 on some failures for example invalid 'mins' in crontab fails with exit code of zero :(
@@ -62,12 +61,12 @@ class Chef
               exit_status = 1
             end
           rescue Chef::Exceptions::Exec => e
-            Chef::Log.debug(e.message)
+            logger.trace(e.message)
             exit_status = 1
             error_message = e.message
           rescue ArgumentError => e
             # usually raised on invalid user.
-            Chef::Log.debug(e.message)
+            logger.trace(e.message)
             exit_status = 1
             error_message = e.message
           end

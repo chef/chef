@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,31 +17,29 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/provider/http_request"
+require_relative "../resource"
 
 class Chef
   class Resource
     class HttpRequest < Chef::Resource
+      unified_mode true
 
-      identity_attr :url
+      provides :http_request
+
+      description "Use the **http_request** resource to send an HTTP request (`GET`, `PUT`, `POST`, `DELETE`, `HEAD`, or `OPTIONS`) with an arbitrary message. This resource is often useful when custom callbacks are necessary."
 
       default_action :get
-      allowed_actions :get, :put, :post, :delete, :head, :options
+      allowed_actions :get, :patch, :put, :post, :delete, :head, :options
+
+      property :url, String, identity: true,
+               description: "The URL to which an HTTP request is sent."
+
+      property :headers, Hash, default: lazy { {} },
+               description: "A Hash of custom headers."
 
       def initialize(name, run_context = nil)
         super
         @message = name
-        @url = nil
-        @headers = {}
-      end
-
-      def url(args = nil)
-        set_or_return(
-          :url,
-          args,
-          :kind_of => String
-        )
       end
 
       def message(args = nil, &block)
@@ -49,15 +47,7 @@ class Chef
         set_or_return(
           :message,
           args,
-          :kind_of => Object
-        )
-      end
-
-      def headers(args = nil)
-        set_or_return(
-          :headers,
-          args,
-          :kind_of => Hash
+          kind_of: Object
         )
       end
 

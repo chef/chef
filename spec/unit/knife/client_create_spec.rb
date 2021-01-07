@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,6 @@ describe Chef::Knife::ClientCreate do
     {
       "name" => "adam",
       "validator" => false,
-      "admin" => false,
     }
   end
 
@@ -82,7 +81,7 @@ describe Chef::Knife::ClientCreate do
 
         it "prints a relevant error message" do
           expect { knife.run }.to raise_error(SystemExit)
-          expect(stderr.string).to match /You cannot pass --public-key and --prevent-keygen/
+          expect(stderr.string).to match(/You cannot pass --public-key and --prevent-keygen/)
         end
       end
 
@@ -94,7 +93,7 @@ describe Chef::Knife::ClientCreate do
       it "should print a message upon creation" do
         expect(knife).to receive(:create_client)
         knife.run
-        expect(stderr.string).to match /Created client.*adam/i
+        expect(stderr.string).to match(/Created client.*adam/i)
       end
 
       it "should set the Client name" do
@@ -102,14 +101,9 @@ describe Chef::Knife::ClientCreate do
         expect(client.name).to eq("adam")
       end
 
-      it "by default it is not an admin" do
-        knife.run
-        expect(client.admin).to be_falsey
-      end
-
       it "by default it is not a validator" do
         knife.run
-        expect(client.admin).to be_falsey
+        expect(client.validator).to be_falsey
       end
 
       it "by default it should set create_key to true" do
@@ -133,17 +127,6 @@ describe Chef::Knife::ClientCreate do
           expect(filehandle).to receive(:print).with("woot")
           expect(File).to receive(:open).with("/tmp/monkeypants", "w").and_yield(filehandle)
           knife.run
-        end
-      end
-
-      describe "with -a or --admin" do
-        before do
-          knife.config[:admin] = true
-        end
-
-        it "should create an admin client" do
-          knife.run
-          expect(client.admin).to be_truthy
         end
       end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,20 +21,20 @@ require "spec_helper"
 require "chef/key"
 
 describe Chef::Key do
-  # whether user or client irrelevent to these tests
+  # whether user or client irrelevant to these tests
   let(:key) { Chef::Key.new("original_actor", "user") }
   let(:public_key_string) do
-    <<EOS
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
-KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
-WrlqpI3yv/5DOP8HTMCxnFuMJQtDwMcevlqebX4bCxcByuBpNYDcAHjjfLGSfMjn
-E5lZpgYWwnpic4kSjYcL9ORK9nYvlWV9P/kCYmRhIjB4AhtpWRiOfY/TKi3P2LxT
-IjSmiN/ihHtlhV/VSnBJ5PzT/lRknlrJ4kACoz7Pq9jv+aAx5ft/xE9yDa2DYs0q
-Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
-0wIDAQAB
------END PUBLIC KEY-----
-EOS
+    <<~EOS
+      -----BEGIN PUBLIC KEY-----
+      MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvPo+oNPB7uuNkws0fC02
+      KxSwdyqPLu0fhI1pOweNKAZeEIiEz2PkybathHWy8snSXGNxsITkf3eyvIIKa8OZ
+      WrlqpI3yv/5DOP8HTMCxnFuMJQtDwMcevlqebX4bCxcByuBpNYDcAHjjfLGSfMjn
+      E5lZpgYWwnpic4kSjYcL9ORK9nYvlWV9P/kCYmRhIjB4AhtpWRiOfY/TKi3P2LxT
+      IjSmiN/ihHtlhV/VSnBJ5PzT/lRknlrJ4kACoz7Pq9jv+aAx5ft/xE9yDa2DYs0q
+      Tfuc9dUYsFjptWYrV6pfEQ+bgo1OGBXORBFcFL+2D7u9JYquKrMgosznHoEkQNLo
+      0wIDAQAB
+      -----END PUBLIC KEY-----
+    EOS
   end
 
   shared_examples_for "fields with username type validation" do
@@ -66,7 +66,7 @@ EOS
 
     context "when you feed it anything but a string" do
       it "should raise an ArgumentError" do
-        expect { key.send(field, Hash.new) }.to raise_error(ArgumentError)
+        expect { key.send(field, {}) }.to raise_error(ArgumentError)
       end
     end
   end
@@ -406,9 +406,9 @@ EOS
 
           it "creates a new key via the API with the fingerprint as the name" do
             expect(rest).to receive(:post).with(url,
-                                                     { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
-                                                       "public_key" => key.public_key,
-                                                       "expiration_date" => key.expiration_date }).and_return({})
+              { "name" => "12:3e:33:73:0b:f4:ec:72:dc:f0:4c:51:62:27:08:76:96:24:f4:4a",
+                "public_key" => key.public_key,
+                "expiration_date" => key.expiration_date }).and_return({})
             key.create
           end
         end
@@ -424,9 +424,9 @@ EOS
           context "when create_key is false" do
             it "creates a new key via the API" do
               expect(rest).to receive(:post).with(url,
-                                                       { "name" => key.name,
-                                                         "public_key" => key.public_key,
-                                                         "expiration_date" => key.expiration_date }).and_return({})
+                { "name" => key.name,
+                  "public_key" => key.public_key,
+                  "expiration_date" => key.expiration_date }).and_return({})
               key.create
             end
           end
@@ -564,7 +564,7 @@ EOS
         end
       end
 
-    end #update
+    end # update
 
     describe "load" do
       shared_examples_for "load" do
@@ -592,7 +592,7 @@ EOS
         end
       end
 
-    end #load
+    end # load
 
     describe "destroy" do
       shared_examples_for "destroy key" do

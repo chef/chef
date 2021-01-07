@@ -1,6 +1,6 @@
 #
 # Author:: Deepali Jagtap (<deepali.jagtap@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,46 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/aix"
+require_relative "package"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class BffPackage < Chef::Resource::Package
+      unified_mode true
+
+      provides :bff_package
+
+      description "Use the **bff_package** resource to manage packages for the AIX platform using the installp utility. When a package is installed from a local file, it must be added to the node using the **remote_file** or **cookbook_file** resources."
+      introduced "12.0"
+      examples <<~DOC
+      The **bff_package** resource is the default package provider on the AIX platform. The base **package** resource may be used, and then when the platform is AIX, #{ChefUtils::Dist::Infra::PRODUCT} will identify the correct package provider. The following examples show how to install part of the IBM XL C/C++ compiler.
+
+      **Installing using the base package resource**
+
+      ```ruby
+      package 'xlccmp.13.1.0' do
+        source '/var/tmp/IBM_XL_C_13.1.0/usr/sys/inst.images/xlccmp.13.1.0'
+        action :install
+      end
+      ```
+
+      **Installing using the bff_package resource**
+
+      ```ruby
+      bff_package 'xlccmp.13.1.0' do
+        source '/var/tmp/IBM_XL_C_13.1.0/usr/sys/inst.images/xlccmp.13.1.0'
+        action :install
+      end
+      ```
+      DOC
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

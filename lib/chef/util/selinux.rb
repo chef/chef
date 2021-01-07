@@ -3,7 +3,7 @@
 # Author:: Kevin Keane
 # Author:: Lamont Granquist (<lamont@chef.io>)
 #
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2013-2016, North County Tech Center, LLC
 #
 # License:: Apache License, Version 2.0
@@ -20,8 +20,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/shell_out"
-require "chef/mixin/which"
+require_relative "../mixin/shell_out"
+require_relative "../mixin/which"
 
 class Chef
   class Util
@@ -48,10 +48,11 @@ class Chef
 
       def restore_security_context(file_path, recursive = false)
         if restorecon_path
-          restorecon_command = recursive ? "#{restorecon_path} -R -r" : "#{restorecon_path} -R"
-          restorecon_command += " \"#{file_path}\""
-          Chef::Log.debug("Restoring selinux security content with #{restorecon_command}")
-          shell_out!(restorecon_command)
+          restorecon_flags = [ "-R" ]
+          restorecon_flags << "-r" if recursive
+          restorecon_flags << file_path
+          Chef::Log.trace("Restoring selinux security content with #{restorecon_path}")
+          shell_out!(restorecon_path, restorecon_flags)
         else
           Chef::Log.warn "Can not find 'restorecon' on the system. Skipping selinux security context restore."
         end
@@ -71,19 +72,19 @@ class Chef
 
       def check_selinux_enabled?
         if selinuxenabled_path
-          cmd = shell_out!(selinuxenabled_path, :returns => [0, 1])
+          cmd = shell_out!(selinuxenabled_path, returns: [0, 1])
           case cmd.exitstatus
           when 1
-            return false
+            false
           when 0
-            return true
+            true
           else
             raise "Unknown exit code from command #{selinuxenabled_path}: #{cmd.exitstatus}"
           end
         else
           # We assume selinux is not enabled if selinux utils are not
           # installed.
-          return false
+          false
         end
       end
 

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -29,7 +30,7 @@ describe "knife node run list add", :workstation do
     end
 
     it "sets the run list" do
-      knife("node run list add cons recipe[foo]").should_succeed /run_list:\s*recipe\[foo\]\n/
+      knife("node run list add cons recipe[foo]").should_succeed(/run_list:\s*recipe\[foo\]\n/)
     end
   end
 
@@ -39,15 +40,15 @@ describe "knife node run list add", :workstation do
     end
 
     it "appends to the run list" do
-      knife("node run list add cons recipe[foo]").should_succeed /run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m
+      knife("node run list add cons recipe[foo]").should_succeed(/run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m)
     end
 
     it "adds to the run list before the specified item" do
-      knife("node run list add cons -b recipe[bar] recipe[foo]").should_succeed /run_list:\n\s*recipe\[foo\]\n\s*recipe\[bar\]\n/m
+      knife("node run list add cons -b recipe[bar] recipe[foo]").should_succeed(/run_list:\n\s*recipe\[foo\]\n\s*recipe\[bar\]\n/m)
     end
 
     it "adds to the run list after the specified item" do
-      knife("node run list add cons -a recipe[bar] recipe[foo]").should_succeed /run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m
+      knife("node run list add cons -a recipe[bar] recipe[foo]").should_succeed(/run_list:\n\s*recipe\[bar\]\n\s*recipe\[foo\]\n/m)
     end
   end
 end

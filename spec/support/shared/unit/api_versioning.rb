@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,8 +19,8 @@
 require "chef/exceptions"
 
 shared_examples_for "version handling" do
-  let(:response_406) { OpenStruct.new(:code => "406") }
-  let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+  let(:response_406) { OpenStruct.new(code: "406") }
+  let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
 
   before do
     allow(rest_v1).to receive(http_verb).and_raise(exception_406)
@@ -38,8 +38,8 @@ shared_examples_for "version handling" do
 end # version handling
 
 shared_examples_for "user and client reregister" do
-  let(:response_406) { OpenStruct.new(:code => "406") }
-  let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+  let(:response_406) { OpenStruct.new(code: "406") }
+  let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
   let(:generic_exception) { Exception.new }
   let(:min_version) { "2" }
   let(:max_version) { "5" }

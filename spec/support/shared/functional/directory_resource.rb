@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,18 +65,20 @@ shared_examples_for "a directory resource" do
     end
 
     # Set up the context for security tests
-    def allowed_acl(sid, expected_perms)
-      [
-       ACE.access_allowed(sid, expected_perms[:specific]),
-       ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE)),
-      ]
+    def allowed_acl(sid, expected_perms, flags = 0)
+      acl = [ ACE.access_allowed(sid, expected_perms[:specific], flags) ]
+      if expected_perms[:generic]
+        acl << ACE.access_allowed(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::SUBFOLDERS_AND_FILES_ONLY))
+      end
+      acl
     end
 
-    def denied_acl(sid, expected_perms)
-      [
-       ACE.access_denied(sid, expected_perms[:specific]),
-       ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::INHERIT_ONLY_ACE | Chef::ReservedNames::Win32::API::Security::CONTAINER_INHERIT_ACE | Chef::ReservedNames::Win32::API::Security::OBJECT_INHERIT_ACE)),
-      ]
+    def denied_acl(sid, expected_perms, flags = 0)
+      acl = [ ACE.access_denied(sid, expected_perms[:specific], flags) ]
+      if expected_perms[:generic]
+        acl << ACE.access_denied(sid, expected_perms[:generic], (Chef::ReservedNames::Win32::API::Security::SUBFOLDERS_AND_FILES_ONLY))
+      end
+      acl
     end
 
     def parent_inheritable_acls
@@ -171,6 +173,6 @@ shared_context Chef::Resource::Directory do
   end
 
   after(:each) do
-    FileUtils.rm_r(path) if File.exists?(path)
+    FileUtils.rm_r(path) if File.exist?(path)
   end
 end

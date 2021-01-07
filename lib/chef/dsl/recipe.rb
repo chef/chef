@@ -1,7 +1,7 @@
-#--
+#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, 2009-2015 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,32 +17,23 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/dsl/resources"
-require "chef/dsl/definitions"
-require "chef/dsl/data_query"
-require "chef/dsl/include_recipe"
-require "chef/dsl/registry_helper"
-require "chef/dsl/reboot_pending"
-require "chef/dsl/audit"
-require "chef/dsl/powershell"
-require "chef/dsl/core"
-require "chef/dsl/method_missing"
-require "chef/mixin/lazy_module_include"
+require_relative "../exceptions"
+require_relative "resources"
+require_relative "definitions"
+require_relative "include_recipe"
+require_relative "reboot_pending"
+require_relative "universal"
+require_relative "declare_resource"
+require_relative "../mixin/notifying_block"
+require_relative "../mixin/lazy_module_include"
 
 class Chef
   module DSL
     # Part of a family of DSL mixins.
     #
-    # Chef::DSL::Recipe mixes into Recipes and LWRP Providers.
-    #   - this does not target core chef resources and providers.
+    # Chef::DSL::Recipe mixes into Recipes and Providers.
     #   - this is restricted to recipe/resource/provider context where a resource collection exists.
     #   - cookbook authors should typically include modules into here.
-    #
-    # Chef::DSL::Core mixes into Recipes, LWRP Providers and Core Providers
-    #   - this adds cores providers on top of the Recipe DSL.
-    #   - this is restricted to recipe/resource/provider context where a resource collection exists.
-    #   - core chef authors should typically include modules into here.
     #
     # Chef::DSL::Universal mixes into Recipes, LWRP Resources+Providers, Core Resources+Providers, and Attributes files.
     #   - this adds resources and attributes files.
@@ -51,17 +42,13 @@ class Chef
     #   - it also pollutes the namespace of nearly every context, watch out.
     #
     module Recipe
-      include Chef::DSL::Core
-      include Chef::DSL::DataQuery
+      include Chef::DSL::Universal
+      include Chef::DSL::DeclareResource
+      include Chef::Mixin::NotifyingBlock
       include Chef::DSL::IncludeRecipe
-      include Chef::DSL::RegistryHelper
       include Chef::DSL::RebootPending
-      include Chef::DSL::Audit
-      include Chef::DSL::Powershell
       include Chef::DSL::Resources
       include Chef::DSL::Definitions
-      # method_missing will disappear in Chef 13
-      include Chef::DSL::MethodMissing
       extend Chef::Mixin::LazyModuleInclude
 
       def resource_class_for(snake_case_name)
@@ -77,19 +64,6 @@ class Chef
       def exec(args)
         raise Chef::Exceptions::ResourceNotFound, "exec was called, but you probably meant to use an execute resource.  If not, please call Kernel#exec explicitly.  The exec block called was \"#{args}\""
       end
-
-      # @deprecated Use Chef::DSL::Recipe instead, will be removed in Chef 13
-      module FullDSL
-        include Chef::DSL::Recipe
-        extend Chef::Mixin::LazyModuleInclude
-      end
     end
   end
 end
-
-# Avoid circular references for things that are only used in instance methods
-require "chef/resource"
-
-# **DEPRECATED**
-# This used to be part of chef/mixin/recipe_definition_dsl_core. Load the file to activate the deprecation code.
-require "chef/mixin/recipe_definition_dsl_core"

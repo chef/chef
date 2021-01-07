@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -98,7 +98,7 @@ describe Chef::FileContentManagement::Tempfile do
       expect(tempfile.path).to match(/chef-new_file.*\.html\.erb$/)
     end
 
-    it "should pick the destdir preferrentially" do
+    it "should pick the destdir preferentially" do
       subject = tempfile_object_for_path("/foo/bar/new_file")
       expect(Tempfile).to receive(:open).with([tempname, ""], "/foo/bar").and_return(tempfile)
       subject.send(:tempfile_open)

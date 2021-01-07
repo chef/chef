@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/sid"
-require "chef/win32/memory"
+require_relative "../security"
+require_relative "sid"
+require_relative "../memory"
 
-require "ffi"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32

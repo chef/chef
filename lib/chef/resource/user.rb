@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,159 +16,63 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class User < Chef::Resource
-      resource_name :user_resource_abstract_base_class # this prevents magickal class name DSL wiring
-      identity_attr :username
+      unified_mode true
 
-      state_attrs :uid, :gid, :home
+      description "Use the **user** resource to add users, update existing users, remove users, and to lock/unlock user passwords."
 
       default_action :create
       allowed_actions :create, :remove, :modify, :manage, :lock, :unlock
 
-      def initialize(name, run_context = nil)
-        super
-        @username = name
-        @comment = nil
-        @uid = nil
-        @gid = nil
-        @home = nil
-        @shell = nil
-        @password = nil
-        @system = false
-        @manage_home = false
-        @force = false
-        @non_unique = false
-        @supports = {
-          manage_home: false,
-          non_unique: false,
-        }
-        @iterations = 27855
-        @salt = nil
-      end
+      property :username, String,
+        description: "An optional property to set the username value if it differs from the resource block's name.",
+        name_property: true
 
-      def username(arg = nil)
-        set_or_return(
-          :username,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :comment, String,
+        description: "The contents of the user comments field."
 
-      def comment(arg = nil)
-        set_or_return(
-          :comment,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :home, String,
+        description: "The location of the home directory."
 
-      def uid(arg = nil)
-        set_or_return(
-          :uid,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :salt, String,
+        description: "A SALTED-SHA512-PBKDF2 hash.",
+        desired_state: false
 
-      def gid(arg = nil)
-        set_or_return(
-          :gid,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :shell, String,
+        description: "The login shell."
+
+      property :password, String,
+        description: "The password shadow hash",
+        sensitive: true,
+        desired_state: false
+
+      property :non_unique, [ TrueClass, FalseClass ],
+        description: "Create a duplicate (non-unique) user account.",
+        default: false, desired_state: false
+
+      property :manage_home, [ TrueClass, FalseClass ],
+        description: "Manage a user's home directory.\nWhen used with the :create action, a user's home directory is created based on HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. When created, a skeleton set of files and subdirectories are included within the home directory.\nWhen used with the :modify action, a user's home directory is moved to HOME_DIR. If the home directory is missing, it is created unless CREATE_HOME in /etc/login.defs is set to no. The contents of the user's home directory are moved to the new location.",
+        default: false, desired_state: false
+
+      property :force, [ TrueClass, FalseClass ],
+        description: "Force the removal of a user. May be used only with the :remove action.",
+        default: false, desired_state: false
+
+      property :system, [ TrueClass, FalseClass ],
+        description: "Create a system user. This property may be used with useradd as the provider to create a system user which passes the -r flag to useradd.",
+        default: false
+
+      property :uid, [ String, Integer, NilClass ], # nil for backwards compat
+        description: "The numeric user identifier."
+
+      property :gid, [ String, Integer, NilClass ], # nil for backwards compat
+        description: "The numeric group identifier."
 
       alias_method :group, :gid
-
-      def home(arg = nil)
-        set_or_return(
-          :home,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def shell(arg = nil)
-        set_or_return(
-          :shell,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def password(arg = nil)
-        set_or_return(
-          :password,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def salt(arg = nil)
-        set_or_return(
-          :salt,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def iterations(arg = nil)
-        set_or_return(
-          :iterations,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
-
-      def system(arg = nil)
-        set_or_return(
-          :system,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def manage_home(arg = nil)
-        set_or_return(
-          :manage_home,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def force(arg = nil)
-        set_or_return(
-          :force,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def non_unique(arg = nil)
-        set_or_return(
-          :non_unique,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def supports(args = {})
-        if args.key?(:manage_home)
-          Chef.log_deprecation "supports { manage_home: #{args[:manage_home]} } on the user resource is deprecated and will be removed in Chef 13, set manage_home: #{args[:manage_home]} instead"
-        end
-        if args.key?(:non_unique)
-          Chef.log_deprecation "supports { non_unique: #{args[:non_unique]} } on the user resource is deprecated and will be removed in Chef 13, set non_unique: #{args[:non_unique]} instead"
-        end
-        super
-      end
-
-      def supports=(args)
-        supports(args)
-      end
     end
   end
 end

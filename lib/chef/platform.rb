@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 #
 
 # Order of these headers is important: query helpers is needed by many things
-require "chef/platform/query_helpers"
-require "chef/platform/provider_mapping"
+require_relative "platform/query_helpers"
+require_relative "platform/provider_mapping"
 
 class Chef
   class Platform

@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32
@@ -35,8 +35,8 @@ class Chef
         CRYPTPROTECT_AUDIT         = 0x10
 
         class CRYPT_INTEGER_BLOB < FFI::Struct
-          layout :cbData, :DWORD,   # Count, in bytes, of data
-                 :pbData, :pointer  # Pointer to data buffer
+          layout :cbData, :DWORD, # Count, in bytes, of data
+            :pbData, :pointer # Pointer to data buffer
           def initialize(str = nil)
             super(nil)
             if str
@@ -47,15 +47,15 @@ class Chef
 
         end
 
-        safe_attach_function :CryptProtectData, [
-          :PDATA_BLOB,
-          :LPCWSTR,
-          :PDATA_BLOB,
-          :pointer,
-          :PCRYPTPROTECT_PROMPTSTRUCT,
-          :DWORD,
-          :PDATA_BLOB,
-        ], :BOOL
+        safe_attach_function :CryptProtectData, %i{
+          PDATA_BLOB
+          LPCWSTR
+          PDATA_BLOB
+          pointer
+          PCRYPTPROTECT_PROMPTSTRUCT
+          DWORD
+          PDATA_BLOB
+        }, :BOOL
 
       end
     end

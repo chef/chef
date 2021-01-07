@@ -1,5 +1,22 @@
-require "chef/knife"
-require "chef/local_mode"
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require_relative "../knife"
+require_relative "../local_mode"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
@@ -8,16 +25,16 @@ class Chef
       banner "knife serve (options)"
 
       option :repo_mode,
-        :long => "--repo-mode MODE",
-        :description => "Specifies the local repository layout. Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef). Default: everything/hosted_everything"
+        long: "--repo-mode MODE",
+        description: "Specifies the local repository layout. Values: static (only environments/roles/data_bags/cookbooks), everything (includes nodes/clients/users), hosted_everything (includes acls/groups/etc. for Enterprise/Hosted Chef). Default: everything/hosted_everything."
 
       option :chef_repo_path,
-        :long => "--chef-repo-path PATH",
-        :description => "Overrides the location of chef repo. Default is specified by chef_repo_path in the config"
+        long: "--chef-repo-path PATH",
+        description: "Overrides the location of #{ChefUtils::Dist::Infra::PRODUCT} repo. Default is specified by chef_repo_path in the config."
 
       option :chef_zero_host,
-        :long => "--chef-zero-host IP",
-        :description => "Overrides the host upon which chef-zero listens. Default is 127.0.0.1."
+        long: "--chef-zero-host IP",
+        description: "Overrides the host upon which #{ChefUtils::Dist::Zero::PRODUCT} listens. Default is 127.0.0.1."
 
       def configure_chef
         super

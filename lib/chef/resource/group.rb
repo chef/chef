@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,83 +20,45 @@
 class Chef
   class Resource
     class Group < Chef::Resource
-
-      identity_attr :group_name
-
+      unified_mode true
       state_attrs :members
+
+      description "Use the **group** resource to manage a local group."
+
+      provides :group
 
       allowed_actions :create, :remove, :modify, :manage
       default_action :create
 
-      def initialize(name, run_context = nil)
-        super
-        @group_name = name
-        @gid = nil
-        @members = []
-        @excluded_members = []
-        @append = false
-        @non_unique = false
-      end
+      property :group_name, String,
+        name_property: true,
+        description: "The name of the group."
 
-      def group_name(arg = nil)
-        set_or_return(
-          :group_name,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :gid, [ String, Integer ],
+        description: "The identifier for the group."
 
-      def gid(arg = nil)
-        set_or_return(
-          :gid,
-          arg,
-          :kind_of => [ String, Integer ]
-        )
-      end
+      property :members, [String, Array], default: lazy { [] },
+               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
+               description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: members ['user1', 'user2']."
 
-      def members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :members,
-          converted_members,
-          :kind_of => [ Array ]
-        )
-      end
+      property :excluded_members, [String, Array], default: lazy { [] },
+               coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
+               description: "Remove users from a group. May only be used when append is set to true."
+
+      property :append, [ TrueClass, FalseClass ], default: false,
+               description: "How members should be appended and/or removed from a group. When true, members are appended and excluded_members are removed. When false, group members are reset to the value of the members property."
+
+      property :system, [ TrueClass, FalseClass ], default: false,
+               description: "Set if a group belongs to a system group. Set to true if the group belongs to a system group."
+
+      property :non_unique, [ TrueClass, FalseClass ], default: false,
+               description: "Allow gid duplication. May only be used with the Groupadd provider."
+
+      property :comment, String,
+        introduced: "14.9",
+        description: "Specifies a comment to associate with the local group."
 
       alias_method :users, :members
-
-      def excluded_members(arg = nil)
-        converted_members = arg.is_a?(String) ? arg.split(",") : arg
-        set_or_return(
-          :excluded_members,
-          converted_members,
-          :kind_of => [ Array ]
-        )
-      end
-
-      def append(arg = nil)
-        set_or_return(
-          :append,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def system(arg = nil)
-        set_or_return(
-          :system,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
-
-      def non_unique(arg = nil)
-        set_or_return(
-          :non_unique,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
     end
   end
 end

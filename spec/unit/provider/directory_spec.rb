@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -148,6 +148,16 @@ describe Chef::Provider::Directory do
         directory.run_action(:create)
         expect(new_resource).not_to be_updated
       end
+
+      context "in why run mode" do
+        before { Chef::Config[:why_run] = true }
+        after { Chef::Config[:why_run] = false }
+
+        it "does not modify new_resource" do
+          expect(directory).not_to receive(:load_resource_attributes_from_file).with(new_resource)
+          directory.run_action(:create)
+        end
+      end
     end
 
     describe "when the directory does not exist" do
@@ -191,33 +201,22 @@ describe Chef::Provider::Directory do
       end
     end
 
-    describe "on OS X" do
+    describe "on macOS" do
       before do
-        allow(node).to receive(:[]).with("platform").and_return("mac_os_x")
+        allow(ChefUtils).to receive(:macos?).and_return(true)
         new_resource.path "/usr/bin/chef_test"
         new_resource.recursive false
         allow_any_instance_of(Chef::Provider::File).to receive(:do_selinux)
       end
 
-      it "os x 10.10 can write to sip locations" do
-        allow(node).to receive(:[]).with("platform_version").and_return("10.10")
-        allow(Dir).to receive(:mkdir).and_return([true], [])
-        allow(::File).to receive(:directory?).and_return(true)
-        allow(Chef::FileAccessControl).to receive(:writable?).and_return(true)
-        directory.run_action(:create)
-        expect(new_resource).to be_updated
-      end
-
-      it "os x 10.11 cannot write to sip locations" do
-        allow(node).to receive(:[]).with("platform_version").and_return("10.11")
+      it "macOS cannot write to sip locations" do
         allow(::File).to receive(:directory?).and_return(true)
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)
         expect { directory.run_action(:create) }.to raise_error(Chef::Exceptions::InsufficientPermissions)
       end
 
-      it "os x 10.11 can write to sip exlcusions" do
+      it "macOS can write to sip exclusions" do
         new_resource.path "/usr/local/chef_test"
-        allow(node).to receive(:[]).with("platform_version").and_return("10.11")
         allow(::File).to receive(:directory?).and_return(true)
         allow(Dir).to receive(:mkdir).and_return([true], [])
         allow(Chef::FileAccessControl).to receive(:writable?).and_return(false)

@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala(<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/net"
-require "chef/win32/error"
-require "chef/mixin/wide_string"
+require_relative "api/net"
+require_relative "error"
+require_relative "../mixin/wide_string"
 
 class Chef
   module ReservedNames::Win32
@@ -40,6 +40,7 @@ class Chef
             usri3_priv: 0,
             usri3_home_dir: nil,
             usri3_comment: nil,
+            # cspell:disable-next-line
             usri3_flags: UF_SCRIPT | UF_DONT_EXPIRE_PASSWD | UF_NORMAL_ACCOUNT,
             usri3_script_path: nil,
             usri3_auth_flags: 0,
@@ -180,6 +181,21 @@ class Chef
         end
       end
 
+      def self.net_local_group_set_info(server_name, group_name, comment)
+        server_name = wstring(server_name)
+        group_name = wstring(group_name)
+        comment = wstring(comment)
+
+        buf = LOCALGROUP_INFO_1.new
+        buf[:lgrpi1_name] = FFI::MemoryPointer.from_string(group_name)
+        buf[:lgrpi1_comment] = FFI::MemoryPointer.from_string(comment)
+
+        rc = NetLocalGroupSetInfo(server_name, group_name, 1, buf, nil)
+        if rc != NERR_Success
+          Chef::ReservedNames::Win32::Error.raise!(nil, rc)
+        end
+      end
+
       def self.net_user_del(server_name, user_name)
         server_name = wstring(server_name)
         user_name = wstring(user_name)
@@ -209,7 +225,8 @@ class Chef
         buf = FFI::MemoryPointer.new(LOCALGROUP_MEMBERS_INFO_3, members.size)
         Array.new(members.size) do |i|
           member_info = LOCALGROUP_MEMBERS_INFO_3.new(
-            buf + i * LOCALGROUP_MEMBERS_INFO_3.size)
+            buf + i * LOCALGROUP_MEMBERS_INFO_3.size
+          )
           member_info[:lgrmi3_domainandname] = FFI::MemoryPointer.from_string(wstring(members[i]))
           member_info
         end
@@ -221,7 +238,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupAddMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)
@@ -234,7 +252,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupSetMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)
@@ -247,7 +266,8 @@ class Chef
 
         lgrmi3s = members_to_lgrmi3(members)
         rc = NetLocalGroupDelMembers(
-          server_name, group_name, 3, lgrmi3s[0], members.size)
+          server_name, group_name, 3, lgrmi3s[0], members.size
+        )
 
         if rc != NERR_Success
           Chef::ReservedNames::Win32::Error.raise!(nil, rc)

@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,13 +38,13 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:expected_rack_req) do
       {
-        "SCRIPT_NAME"     => "",
-        "SERVER_NAME"     => "localhost",
-        "REQUEST_METHOD"  => method.to_s.upcase,
-        "PATH_INFO"       => uri.path,
-        "QUERY_STRING"    => uri.query,
-        "SERVER_PORT"     => uri.port,
-        "HTTP_HOST"       => "localhost:#{uri.port}",
+        "SCRIPT_NAME" => "",
+        "SERVER_NAME" => "localhost",
+        "REQUEST_METHOD" => method.to_s.upcase,
+        "PATH_INFO" => uri.path,
+        "QUERY_STRING" => uri.query,
+        "SERVER_PORT" => uri.port,
+        "HTTP_HOST" => "localhost:#{uri.port}",
         "rack.url_scheme" => "chefzero",
       }
     end
@@ -132,20 +132,21 @@ describe Chef::HTTP::SocketlessChefZeroClient do
 
     let(:method) { :GET }
     let(:relative_url) { "clients" }
-    let(:headers) { { "Accept" => "application/json" } }
+    let(:headers) { { "Accept" => "application/json", "X-Ops-Server-API-Version" => "2" } }
     let(:body) { false }
 
     let(:expected_rack_req) do
       {
-        "SCRIPT_NAME"     => "",
-        "SERVER_NAME"     => "localhost",
-        "REQUEST_METHOD"  => method.to_s.upcase,
-        "PATH_INFO"       => uri.path,
-        "QUERY_STRING"    => uri.query,
-        "SERVER_PORT"     => uri.port,
-        "HTTP_HOST"       => "localhost:#{uri.port}",
+        "SCRIPT_NAME" => "",
+        "SERVER_NAME" => "localhost",
+        "REQUEST_METHOD" => method.to_s.upcase,
+        "PATH_INFO" => uri.path,
+        "QUERY_STRING" => uri.query,
+        "SERVER_PORT" => uri.port,
+        "HTTP_HOST" => "localhost:#{uri.port}",
+        "HTTP_X_OPS_SERVER_API_VERSION" => "2",
         "rack.url_scheme" => "chefzero",
-        "rack.input"      => an_instance_of(StringIO),
+        "rack.input" => an_instance_of(StringIO),
       }
     end
 

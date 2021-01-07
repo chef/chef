@@ -6,6 +6,11 @@ tags
 */tags
 *~
 .chef
+results
+*.swp
+
+# Docker
+.dobi
 
 # You should check in your Gemfile.lock in applications, and not in gems
 external_tests/*.lock
@@ -15,7 +20,7 @@ external_tests/*.lock
 # http://gembundler.com/man/bundle-exec.1.html
 b/
 binstubs/
-**/.bundle
+.bundle
 # RVM and RBENV ruby version files
 .rbenv-version
 .rvmrc
@@ -24,6 +29,7 @@ binstubs/
 
 # IDE files
 .project
+.idea
 
 # Documentation
 _site/*
@@ -37,9 +43,53 @@ doc/
 Vagrantfile
 .vagrant/
 
-# Kitchen Tests Local Mode Data
+# Kitchen Tests lock files and chef data
 kitchen-tests/nodes/*
+kitchen-tests/Gemfile.lock
+kitchen-tests/Berksfile.lock
 
 # Temporary files present during spec runs
 spec/data/test-dir
+spec/data/nodes
+spec/data/chef_guid
 /config/
+
+vendor/
+kitchen-tests/vendor
+
+# Visual Studio Code files
+.vscode
+
+# ignore nodes generated during local testing
+nodes/
+
+# chef-config
+chef-config/.bundle
+chef-config/Gemfile.lock
+chef-config/pkg
+
+# chef-bin
+chef-bin/.bundle
+chef-bin/Gemfile.lock
+chef-bin/pkg
+
+# chef-utils
+chef-utils/.bundle
+chef-utils/Gemfile.lock
+chef-utils/pkg
+
+# auto generated docs from the docs.rb rake task
+docs_site
+
+# Rendered Templates
+ext/win32-eventlog/chef-log.man
+distro/powershell/chef/chef.psm1
+
+# tool logs
+mkmf.log
+
+# ignore byebug command history file.
+.byebug_history
+
+# our custom dictionary pulled from https://github.com/chef/chef_dictionary/
+chef_dictionary.txt

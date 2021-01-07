@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ class Chef
       # method-style access to attributes
 
       def valid_container?(obj, key)
-        return obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Fixnum))
+        obj.is_a?(Hash) || (obj.is_a?(Array) && key.is_a?(Integer))
       end
 
       private :valid_container?
@@ -32,12 +32,11 @@ class Chef
       # - autovivifying / autoreplacing writer
       # - non-container-ey intermediate objects are replaced with hashes
       def write(*args, &block)
-        root.top_level_breadcrumb = nil if respond_to?(:root)
         value = block_given? ? yield : args.pop
         last = args.pop
         prev_memo = prev_key = nil
         chain = args.inject(self) do |memo, key|
-          if !valid_container?(memo, key)
+          unless valid_container?(memo, key)
             prev_memo[prev_key] = {}
             memo = prev_memo[prev_key]
           end
@@ -45,7 +44,7 @@ class Chef
           prev_key = key
           memo[key]
         end
-        if !valid_container?(chain, last)
+        unless valid_container?(chain, last)
           prev_memo[prev_key] = {}
           chain = prev_memo[prev_key]
         end
@@ -56,14 +55,15 @@ class Chef
       # something that is not a container ("schema violation" issues).
       #
       def write!(*args, &block)
-        root.top_level_breadcrumb = nil if respond_to?(:root)
         value = block_given? ? yield : args.pop
         last = args.pop
         obj = args.inject(self) do |memo, key|
           raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(memo, key)
+
           memo[key]
         end
         raise Chef::Exceptions::AttributeTypeMismatch unless valid_container?(obj, last)
+
         obj[last] = value
       end
 
@@ -71,9 +71,9 @@ class Chef
 
       # return true or false based on if the attribute exists
       def exist?(*path)
-        root.top_level_breadcrumb = nil if respond_to?(:root)
         path.inject(self) do |memo, key|
           return false unless valid_container?(memo, key)
+
           if memo.is_a?(Hash)
             if memo.key?(key)
               memo[key]
@@ -88,22 +88,22 @@ class Chef
             end
           end
         end
-        return true
+        true
       end
 
       # this is a safe non-autovivifying reader that returns nil if the attribute does not exist
       def read(*path)
-        begin
-          read!(*path)
-        rescue Chef::Exceptions::NoSuchAttribute
-          nil
-        end
+        read!(*path)
+      rescue Chef::Exceptions::NoSuchAttribute
+        nil
       end
+
+      alias :dig :read
 
       # non-autovivifying reader that throws an exception if the attribute does not exist
       def read!(*path)
-        raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
-        root.top_level_breadcrumb = nil if respond_to?(:root)
+        raise Chef::Exceptions::NoSuchAttribute.new(path.join ".") unless exist?(*path)
+
         path.inject(self) do |memo, key|
           memo[key]
         end
@@ -112,15 +112,15 @@ class Chef
       # FIXME:(?) does anyone really like the autovivifying reader that we have and wants the same behavior?  readers that write?  ugh...
 
       def unlink(*path, last)
-        root.top_level_breadcrumb = nil if respond_to?(:root)
         hash = path.empty? ? self : read(*path)
         return nil unless hash.is_a?(Hash) || hash.is_a?(Array)
-        root.top_level_breadcrumb ||= last
+
         hash.delete(last)
       end
 
       def unlink!(*path)
         raise Chef::Exceptions::NoSuchAttribute unless exist?(*path)
+
         unlink(*path)
       end
 

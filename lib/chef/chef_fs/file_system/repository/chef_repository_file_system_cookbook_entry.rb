@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/file_system_entry"
-require "chef/chef_fs/file_system/repository/cookbooks_dir"
-require "chef/chef_fs/file_system/exceptions"
+require_relative "file_system_entry"
+require_relative "cookbooks_dir"
+require_relative "../exceptions"
 
 class Chef
   module ChefFS
@@ -52,31 +52,30 @@ class Chef
           end
 
           def children
-            begin
-              entries = Dir.entries(file_path).sort.
-                        map { |child_name| make_child_entry(child_name) }.
-                        select { |child| child && can_have_child?(child.name, child.dir?) }
-              entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
+            entries = Dir.entries(file_path).sort
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |child| child && can_have_child?(child.name, child.dir?) }
+            entries.select { |entry| !(entry.dir? && entry.children.size == 0 ) }
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def can_have_child?(name, is_dir)
             if is_dir
               return recursive && name != "." && name != ".."
             elsif ruby_only
-              return false if name[-3..-1] != ".rb"
+              return false if name[-3..] != ".rb"
             end
 
             # Check chefignore
-            ignorer = parent
+            ignorer = self
+
             loop do
-              if ignorer.is_a?(CookbooksDir)
+              if ignorer.is_a?(ChefRepositoryFileSystemCookbookDir)
                 # Grab the path from entry to child
                 path_to_child = name
                 child = self
-                while child.parent != ignorer
+                while child != ignorer
                   path_to_child = PathUtils.join(child.name, path_to_child)
                   child = child.parent
                 end
@@ -103,6 +102,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+
             if file_contents
               child.write(file_contents)
             else
@@ -123,9 +123,10 @@ class Chef
             FileSystemCache.instance.delete!(file_path)
             begin
               if dir?
-                if !recurse
+                unless recurse
                   raise MustDeleteRecursivelyError.new(self, $!)
                 end
+
                 FileUtils.rm_r(file_path)
               else
                 File.delete(file_path)
@@ -136,15 +137,13 @@ class Chef
           end
 
           def exists?
-            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+            File.exist?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
           end
 
           def read
-            begin
-              File.open(file_path, "rb") { |f| f.read }
-            rescue Errno::ENOENT
-              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-            end
+            File.open(file_path, "rb", &:read)
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def write(content)

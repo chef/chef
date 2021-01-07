@@ -1,4 +1,4 @@
-require "chef/chef_fs/data_handler/data_handler_base"
+require_relative "data_handler_base"
 
 class Chef
   module ChefFS
@@ -17,7 +17,7 @@ class Chef
 
         # Verify that the JSON hash for this type has a key that matches its name.
         #
-        # @param object [Object] JSON hash of the object
+        # @param object_data [Object] JSON hash of the object
         # @param entry [Chef::ChefFS::FileSystem::BaseFSObject] filesystem object we are verifying
         # @yield  [s] callback to handle errors
         # @yieldparam [s<string>] error message

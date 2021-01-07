@@ -1,4 +1,4 @@
-require "chef/application/client"
-require "chef/application/knife"
-require "chef/application/solo"
-require "chef/application/apply"
+require_relative "application/client"
+require_relative "application/knife"
+require_relative "application/solo"
+require_relative "application/apply"

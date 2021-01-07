@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,28 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
+require_relative "package"
 
 class Chef
   class Resource
     class PortagePackage < Chef::Resource::Package
-      resource_name :portage_package
-      def initialize(name, run_context = nil)
-        super
-        @provider = Chef::Provider::Package::Portage
-      end
+      unified_mode true
 
+      provides :portage_package
+
+      description "Use the **portage_package** resource to manage packages for the Gentoo platform."
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
+      property :timeout, [String, Integer],
+        default: 3600,
+        description: "The amount of time (in seconds) to wait before timing out.",
+        desired_state: false
     end
   end
 end

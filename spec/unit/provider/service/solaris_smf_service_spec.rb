@@ -1,6 +1,6 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -74,19 +74,19 @@ describe Chef::Provider::Service::Solaris do
     ].join("\n")
 
     # shell_out! return value for a service that is running
-    @enabled_svc_status = double("Status", :exitstatus => 0, :stdout => enabled_svc_stdout, :stdin => "", :stderr => "")
+    @enabled_svc_status = double("Status", exitstatus: 0, stdout: enabled_svc_stdout, stdin: "", stderr: "")
 
     # shell_out! return value for a service that is disabled
-    @disabled_svc_status = double("Status", :exitstatus => 0, :stdout => disabled_svc_stdout, :stdin => "", :stderr => "")
+    @disabled_svc_status = double("Status", exitstatus: 0, stdout: disabled_svc_stdout, stdin: "", stderr: "")
 
     # shell_out! return value for a service that is in maintenance mode
-    @maintenance_svc_status = double("Status", :exitstatus => 0, :stdout => maintenance_svc_stdout, :stdin => "", :stderr => "")
+    @maintenance_svc_status = double("Status", exitstatus: 0, stdout: maintenance_svc_stdout, stdin: "", stderr: "")
 
     # shell_out! return value for a service that does not exist
-    @no_svc_status = double("Status", :exitstatus => 1, :stdout => "", :stdin => "", :stderr => "svcs: Pattern 'chef' doesn't match any instances\n")
+    @no_svc_status = double("Status", exitstatus: 1, stdout: "", stdin: "", stderr: "svcs: Pattern 'chef' doesn't match any instances\n")
 
     # shell_out! return value for a successful execution
-    @success = double("clear", :exitstatus => 0, :stdout => "", :stdin => "", :stderr => "")
+    @success = double("clear", exitstatus: 0, stdout: "", stdin: "", stderr: "")
   end
 
   it "should raise an error if /bin/svcs and /usr/sbin/svcadm are not executable" do
@@ -116,18 +116,19 @@ describe Chef::Provider::Service::Solaris do
 
     describe "when discovering the current service state" do
       it "should create a current resource with the name of the new resource" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         expect(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
+        expect(@provider.maintenance).to be_falsey
         @provider.load_current_resource
       end
 
       it "should return the current resource" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         expect(@provider.load_current_resource).to eql(@current_resource)
       end
 
       it "should call '/bin/svcs -l service_name'" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         @provider.load_current_resource
       end
 
@@ -162,7 +163,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm enable -s chef" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).twice.with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-s", @current_resource.service_name).and_return(@success)
         @provider.load_current_resource
@@ -172,7 +173,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm enable -s chef for start_service" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).twice.with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-s", @current_resource.service_name).and_return(@success)
         @provider.load_current_resource
@@ -182,7 +183,7 @@ describe Chef::Provider::Service::Solaris do
 
       it "should call svcadm clear chef for start_service when state maintenance" do
         # we are in maint mode
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@maintenance_svc_status)
+        expect(@provider).to receive(:shell_out!).twice.with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@maintenance_svc_status)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name).and_return(@success)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-s", @current_resource.service_name).and_return(@success)
 
@@ -191,11 +192,38 @@ describe Chef::Provider::Service::Solaris do
         expect(@provider.enable_service).to be_truthy
 
         # now we are enabled
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
         @provider.load_current_resource
 
         expect(@current_resource.enabled).to be_truthy
       end
+    end
+
+    describe "when enabling the service recursively" do
+      before(:each) do
+        @provider.current_resource = @current_resource
+      end
+
+      it "should call svcadm enable -s -r chef" do
+        @new_resource.options("-r")
+        expect(@provider).to receive(:shell_out!).twice.with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name)
+        expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-s", "-r", @current_resource.service_name).and_return(@success)
+        @provider.load_current_resource
+        expect(@provider.enable_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
+      end
+
+      it "should call svcadm enable -s -r -t chef when passed an array of options" do
+        @new_resource.options(["-r", "-t"])
+        expect(@provider).to receive(:shell_out!).twice.with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
+        expect(@provider).not_to receive(:shell_out!).with("/usr/sbin/svcadm", "clear", @current_resource.service_name)
+        expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "enable", "-s", "-r", "-t", @current_resource.service_name).and_return(@success)
+        @provider.load_current_resource
+        expect(@provider.enable_service).to be_truthy
+        expect(@current_resource.enabled).to be_truthy
+      end
+
     end
 
     describe "when disabling the service" do
@@ -204,7 +232,7 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm disable -s chef" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@disabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@disabled_svc_status)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "disable", "-s", "chef").and_return(@success)
         @provider.load_current_resource
         expect(@provider.disable_service).to be_truthy
@@ -212,10 +240,19 @@ describe Chef::Provider::Service::Solaris do
       end
 
       it "should call svcadm disable -s chef for stop_service" do
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@disabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@disabled_svc_status)
         expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "disable", "-s", "chef").and_return(@success)
         @provider.load_current_resource
-        expect(@provider.stop_service).to be_truthy
+        expect(@provider.disable_service).to be_truthy
+        expect(@current_resource.enabled).to be_falsey
+      end
+
+      it "should call svcadm disable chef with options" do
+        @new_resource.options("-t")
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@disabled_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/usr/sbin/svcadm", "disable", "-s", "-t", "chef").and_return(@success)
+        @provider.load_current_resource
+        expect(@provider.disable_service).to be_truthy
         expect(@current_resource.enabled).to be_falsey
       end
 
@@ -224,7 +261,7 @@ describe Chef::Provider::Service::Solaris do
     describe "when reloading the service" do
       before(:each) do
         @provider.current_resource = @current_resource
-        allow(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@enabled_svc_status)
+        allow(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@enabled_svc_status)
       end
 
       it "should call svcadm refresh chef" do
@@ -237,7 +274,7 @@ describe Chef::Provider::Service::Solaris do
     describe "when the service doesn't exist" do
       before(:each) do
         @provider.current_resource = @current_resource
-        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { :returns => [0, 1] }).and_return(@no_svc_status)
+        expect(@provider).to receive(:shell_out!).with("/bin/svcs", "-l", "chef", { returns: [0, 1] }).and_return(@no_svc_status)
       end
 
       it "should be marked not running" do

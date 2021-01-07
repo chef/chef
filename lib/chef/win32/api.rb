@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,9 @@
 # limitations under the License.
 #
 
-require "ffi"
-require "chef/reserved_names"
-require "chef/exceptions"
+require "ffi" unless defined?(FFI)
+require_relative "../reserved_names"
+require_relative "../exceptions"
 
 class Chef
   module ReservedNames::Win32
@@ -29,12 +29,10 @@ class Chef
       # function into the calling module.  If this fails a dummy method is
       # defined which when called, raises a helpful exception to the end-user.
       def safe_attach_function(win32_func, *args)
-        begin
-          attach_function(win32_func.to_sym, *args)
-        rescue FFI::NotFoundError
-          define_method(win32_func.to_sym) do |*margs|
-            raise Chef::Exceptions::Win32APIFunctionNotImplemented, "This version of Windows does not implement the Win32 function [#{win32_func}]."
-          end
+        attach_function(win32_func.to_sym, *args)
+      rescue FFI::NotFoundError
+        define_method(win32_func.to_sym) do |*margs|
+          raise Chef::Exceptions::Win32APIFunctionNotImplemented, "This version of Windows does not implement the Win32 function [#{win32_func}]."
         end
       end
 
@@ -53,7 +51,7 @@ class Chef
         host.typedef :bool,    :BOOL
         host.typedef :bool,    :BOOLEAN
         host.typedef :uchar,   :BYTE # Byte (8 bits). Declared as unsigned char
-        #CALLBACK:  K,       # Win32.API gem-specific ?? MSDN: #define CALLBACK __stdcall
+        # CALLBACK:  K,       # Win32.API gem-specific ?? MSDN: #define CALLBACK __stdcall
         host.typedef :char,    :CHAR # 8-bit Windows (ANSI) character. See http://msdn.microsoft.com/en-us/library/dd183415%28VS.85%29.aspx
         host.typedef :uint32,  :COLORREF # Red, green, blue (RGB) color value (32 bits). See COLORREF for more info.
         host.typedef :uint32,  :DWORD # 32-bit unsigned integer. The range is 0 through 4,294,967,295 decimal.
@@ -80,7 +78,7 @@ class Chef
         host.typedef :ulong,   :HDESK # (L) Handle to a desktop. http://msdn.microsoft.com/en-us/library/ms682573%28VS.85%29.aspx
         host.typedef :ulong,   :HDROP # (L) Handle to an internal drop structure.
         host.typedef :ulong,   :HDWP # (L) Handle to a deferred window position structure.
-        host.typedef :ulong,   :HENHMETAFILE #(L) Handle to an enhanced metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
+        host.typedef :ulong,   :HENHMETAFILE # (L) Handle to an enhanced metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
         host.typedef :uint,    :HFILE # (I) Special file handle to a file opened by OpenFile, not CreateFile.
         # WinDef.h: #host.typedef int HFILE;
         host.typedef :ulong,   :HFONT # (L) Handle to a font. http://msdn.microsoft.com/en-us/library/dd162470%28VS.85%29.aspx
@@ -96,7 +94,7 @@ class Chef
         host.typedef :ulong,   :HMENU # (L) Handle to a menu. http://msdn.microsoft.com/en-us/library/ms646977%28VS.85%29.aspx
         host.typedef :ulong,   :HMETAFILE # (L) Handle to a metafile. http://msdn.microsoft.com/en-us/library/dd145051%28VS.85%29.aspx
         host.typedef :ulong,   :HMODULE # (L) Handle to an instance. Same as HINSTANCE today, but was different in 16-bit Windows.
-        host.typedef :ulong,   :HMONITOR # (L) Рandle to a display monitor. WinDef.h: if(WINVER >= 0x0500) host.typedef HANDLE HMONITOR;
+        host.typedef :ulong,   :HMONITOR # (L) Handle to a display monitor. WinDef.h: if(WINVER >= 0x0500) host.typedef HANDLE HMONITOR;
         host.typedef :ulong,   :HPALETTE # (L) Handle to a palette.
         host.typedef :ulong,   :HPEN # (L) Handle to a pen. http://msdn.microsoft.com/en-us/library/dd162786%28VS.85%29.aspx
         host.typedef :long,    :HRESULT # Return code used by COM interfaces. For more info, Structure of the COM Error Codes.
@@ -109,7 +107,7 @@ class Chef
         host.typedef :int,     :INT # 32-bit signed integer. The range is -2147483648 through 2147483647 decimal.
         host.typedef :int,     :INT_PTR # Signed integer type for pointer precision. Use when casting a pointer to an integer
         # to perform pointer arithmetic. BaseTsd.h:
-        #if defined(_WIN64) host.typedef __int64 INT_PTR; #else host.typedef int INT_PTR;
+        # if defined(_WIN64) host.typedef __int64 INT_PTR; #else host.typedef int INT_PTR;
         host.typedef :int32,   :INT32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :INT64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
         host.typedef :ushort,  :LANGID # Language identifier. For more information, see Locales. WinNT.h: #host.typedef WORD LANGID;
@@ -117,14 +115,14 @@ class Chef
         host.typedef :uint32,  :LCID # Locale identifier. For more information, see Locales.
         host.typedef :uint32,  :LCTYPE # Locale information type. For a list, see Locale Information Constants.
         host.typedef :uint32,  :LGRPID # Language group identifier. For a list, see EnumLanguageGroupLocales.
-        host.typedef :pointer, :LMSTR # Pointer to null termiated string of unicode characters
+        host.typedef :pointer, :LMSTR # Pointer to null terminated string of unicode characters
         host.typedef :long,    :LONG # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int32,   :LONG32 # 32-bit signed integer. The range is -2,147,483,648 through +...647 decimal.
         host.typedef :int64,   :LONG64 # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
         host.typedef :int64,   :LONGLONG # 64-bit signed integer. The range is –9,223,372,036,854,775,808 through +...807
         host.typedef :long,    :LONG_PTR # Signed long type for pointer precision. Use when casting a pointer to a long to
         # perform pointer arithmetic. BaseTsd.h:
-        #if defined(_WIN64) host.typedef __int64 LONG_PTR; #else host.typedef long LONG_PTR;
+        # if defined(_WIN64) host.typedef __int64 LONG_PTR; #else host.typedef long LONG_PTR;
         host.typedef :long,    :LPARAM # Message parameter. WinDef.h as follows: #host.typedef LONG_PTR LPARAM;
         host.typedef :pointer, :LPBOOL # Pointer to a BOOL. WinDef.h as follows: #host.typedef BOOL far *LPBOOL;
         host.typedef :pointer, :LPBYTE # Pointer to a BYTE. WinDef.h as follows: #host.typedef BYTE far *LPBYTE;
@@ -162,7 +160,7 @@ class Chef
         host.typedef :pointer, :PDWORD32 # Pointer to a DWORD32.
         host.typedef :pointer, :PDWORD64 # Pointer to a DWORD64.
         host.typedef :pointer, :PFLOAT # Pointer to a FLOAT.
-        host.typedef :pointer, :PGENERICMAPPING #Pointer to GENERIC_MAPPING
+        host.typedef :pointer, :PGENERICMAPPING # Pointer to GENERIC_MAPPING
         host.typedef :pointer, :PHALF_PTR # Pointer to a HALF_PTR.
         host.typedef :pointer, :PHANDLE # Pointer to a HANDLE.
         host.typedef :pointer, :PHKEY # Pointer to an HKEY.
@@ -237,7 +235,7 @@ class Chef
         host.typedef :ulong_long, :USN # Update sequence number (USN).
         host.typedef :ushort,  :WCHAR # 16-bit Unicode character. For more information, see Character Sets Used By Fonts.
         # In WinNT.h: host.typedef wchar_t WCHAR;
-        #WINAPI: K,      # Calling convention for system functions. WinDef.h: define WINAPI __stdcall
+        # WINAPI: K,      # Calling convention for system functions. WinDef.h: define WINAPI __stdcall
         host.typedef :ushort,  :WORD # 16-bit unsigned integer. The range is 0 through 65535 decimal.
         host.typedef :uint,    :WPARAM # Message parameter. WinDef.h as follows: host.typedef UINT_PTR WPARAM;
       end

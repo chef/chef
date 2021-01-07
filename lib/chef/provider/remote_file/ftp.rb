@@ -16,11 +16,14 @@
 # limitations under the License.
 #
 
-require "uri"
-require "tempfile"
-require "net/ftp"
-require "chef/provider/remote_file"
-require "chef/file_content_management/tempfile"
+autoload :URI, "uri"
+autoload :CGI, "cgi"
+autoload :Tempfile, "tempfile"
+module Net
+  autoload :FTP, "net/ftp"
+end
+require_relative "../remote_file"
+require_relative "../../file_content_management/tempfile"
 
 class Chef
   class Provider
@@ -57,7 +60,7 @@ class Chef
 
         def user
           if uri.userinfo
-            URI.unescape(uri.user)
+            CGI.unescape(uri.user)
           else
             "anonymous"
           end
@@ -65,7 +68,7 @@ class Chef
 
         def pass
           if uri.userinfo
-            URI.unescape(uri.password)
+            CGI.unescape(uri.password)
           else
             nil
           end

@@ -1,6 +1,6 @@
 #--
 # Author:: Lamont Granquist <lamont@chef.io>
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,22 +15,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "chef-utils/dsl/which" unless defined?(ChefUtils::DSL::Which)
+require "chef-utils/dsl/default_paths" unless defined?(ChefUtils::DSL::DefaultPaths)
+require_relative "chef_utils_wiring" unless defined?(Chef::Mixin::ChefUtilsWiring)
+
 class Chef
   module Mixin
     module Which
-      def which(cmd, opts = {})
-        extra_path =
-          if opts[:extra_path].nil?
-            [ "/bin", "/usr/bin", "/sbin", "/usr/sbin" ]
-          else
-            [ opts[:extra_path] ].flatten
-          end
-        paths = ENV["PATH"].split(File::PATH_SEPARATOR) + extra_path
-        paths.each do |path|
-          filename = File.join(path, cmd)
-          return filename if File.executable?(Chef.path_to(filename))
-        end
-        false
+      include ChefUtils::DSL::Which
+      include ChefUtils::DSL::DefaultPaths
+      include ChefUtilsWiring
+
+      private
+
+      # we dep-inject default paths into this API for historical reasons
+      #
+      # @api private
+      def __extra_path
+        __default_paths
       end
     end
   end

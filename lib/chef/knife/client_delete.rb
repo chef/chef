@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,45 +16,47 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class ClientDelete < Knife
 
       deps do
-        require "chef/api_client_v1"
-        require "chef/json_compat"
+        require_relative "../api_client_v1"
       end
 
       option :delete_validators,
-       :short => "-D",
-       :long => "--delete-validators",
-       :description => "Force deletion of client if it's a validator"
+        short: "-D",
+        long: "--delete-validators",
+        description: "Force deletion of client if it's a validator."
 
-      banner "knife client delete CLIENT (options)"
+      banner "knife client delete [CLIENT [CLIENT]] (options)"
 
       def run
-        @client_name = @name_args[0]
-
-        if @client_name.nil?
+        if @name_args.length == 0
           show_usage
-          ui.fatal("You must specify a client name")
+          ui.fatal("You must specify at least one client name")
           exit 1
         end
 
-        delete_object(Chef::ApiClientV1, @client_name, "client") do
-          object = Chef::ApiClientV1.load(@client_name)
+        @name_args.each do |client_name|
+          delete_client(client_name)
+        end
+      end
+
+      def delete_client(client_name)
+        delete_object(Chef::ApiClientV1, client_name, "client") do
+          object = Chef::ApiClientV1.load(client_name)
           if object.validator
             unless config[:delete_validators]
-              ui.fatal("You must specify --delete-validators to delete the validator client #{@client_name}")
+              ui.fatal("You must specify --delete-validators to delete the validator client #{client_name}")
               exit 2
             end
           end
           object.destroy
         end
       end
-
     end
   end
 end

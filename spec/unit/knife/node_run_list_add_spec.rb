@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,11 +23,11 @@ describe Chef::Knife::NodeRunListAdd do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeRunListAdd.new
     @knife.config = {
-      :after => nil,
+      after: nil,
     }
     @knife.name_args = [ "adam", "role[monkey]" ]
     allow(@knife).to receive(:output).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     allow(@node).to receive(:save).and_return(true)
     allow(Chef::Node).to receive(:load).and_return(@node)
   end

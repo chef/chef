@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,13 @@
 # limitations under the License.
 #
 
-require "chef-config/windows"
-require "chef-config/logger"
+require_relative "windows"
+require_relative "logger"
 
 module ChefConfig
 
   class ConfigurationError < ArgumentError; end
   class InvalidPath < StandardError; end
+  class UnparsableConfigOption < StandardError; end
 
 end

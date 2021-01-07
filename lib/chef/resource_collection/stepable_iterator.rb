@@ -20,8 +20,7 @@ class Chef
     class StepableIterator
 
       def self.for_collection(new_collection)
-        instance = new(new_collection)
-        instance
+        new(new_collection)
       end
 
       attr_accessor :collection
@@ -82,6 +81,7 @@ class Chef
 
       def step
         return nil if @position == size
+
         call_iterator_block
         @position += 1
       end

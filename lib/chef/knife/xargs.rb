@@ -1,74 +1,90 @@
-require "chef/chef_fs/knife"
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require_relative "../chef_fs/knife"
 
 class Chef
   class Knife
     class Xargs < Chef::ChefFS::Knife
-      banner "knife xargs [COMMAND]"
+      banner "knife xargs [COMMAND] (options)"
 
       category "path-based"
 
       deps do
-        require "chef/chef_fs/file_system"
-        require "chef/chef_fs/file_system/not_found_error"
+        require_relative "../chef_fs/file_system"
+        require_relative "../chef_fs/file_system/exceptions"
       end
 
       # TODO modify to remote-only / local-only pattern (more like delete)
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :description => "Xargs local files instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "Xargs local files instead of remote."
 
       option :patterns,
-        :long => "--pattern [PATTERN]",
-        :short => "-p [PATTERN]",
-        :description => "Pattern on command line (if these are not specified, a list of patterns is expected on standard input). Multiple patterns may be passed in this way.",
-        :arg_arity => [1, -1]
+        long: "--pattern [PATTERN]",
+        short: "-p [PATTERN]",
+        description: "Pattern on command line (if these are not specified, a list of patterns is expected on standard input). Multiple patterns may be passed in this way.",
+        arg_arity: [1, -1]
 
       option :diff,
-        :long => "--[no-]diff",
-        :default => true,
-        :boolean => true,
-        :description => "Whether to show a diff when files change (default: true)"
+        long: "--[no-]diff",
+        default: true,
+        boolean: true,
+        description: "Whether to show a diff when files change (default: true)."
 
       option :dry_run,
-        :long => "--dry-run",
-        :boolean => true,
-        :description => "Prevents changes from actually being uploaded to the server."
+        long: "--dry-run",
+        boolean: true,
+        description: "Prevents changes from actually being uploaded to the server."
 
       option :force,
-        :long => "--[no-]force",
-        :boolean => true,
-        :default => false,
-        :description => "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)"
+        long: "--[no-]force",
+        boolean: true,
+        default: false,
+        description: "Force upload of files even if they are not changed (quicker and harmless, but doesn't print out what it changed)."
 
       option :replace_first,
-        :long => "--replace-first REPLACESTR",
-        :short => "-J REPLACESTR",
-        :description => "String to replace with filenames. -J will only replace the FIRST occurrence of the replacement string."
+        long: "--replace-first REPLACESTR",
+        short: "-J REPLACESTR",
+        description: "String to replace with filenames. -J will only replace the FIRST occurrence of the replacement string."
 
       option :replace_all,
-        :long => "--replace REPLACESTR",
-        :short => "-I REPLACESTR",
-        :description => "String to replace with filenames. -I will replace ALL occurrence of the replacement string."
+        long: "--replace REPLACESTR",
+        short: "-I REPLACESTR",
+        description: "String to replace with filenames. -I will replace ALL occurrence of the replacement string."
 
       option :max_arguments_per_command,
-        :long => "--max-args MAXARGS",
-        :short => "-n MAXARGS",
-        :description => "Maximum number of arguments per command line."
+        long: "--max-args MAXARGS",
+        short: "-n MAXARGS",
+        description: "Maximum number of arguments per command line."
 
       option :max_command_line,
-        :long => "--max-chars LENGTH",
-        :short => "-s LENGTH",
-        :description => "Maximum size of command line, in characters"
+        long: "--max-chars LENGTH",
+        short: "-s LENGTH",
+        description: "Maximum size of command line, in characters."
 
       option :verbose_commands,
-        :short => "-t",
-        :description => "Print command to be run on the command line"
+        short: "-t",
+        description: "Print command to be run on the command line."
 
       option :null_separator,
-        :short => "-0",
-        :boolean => true,
-        :description => "Use the NULL character (\0) as a separator, instead of whitespace"
+        short: "-0",
+        boolean: true,
+        description: "Use the NULL character (\0) as a separator, instead of whitespace."
 
       def run
         error = false
@@ -159,7 +175,7 @@ class Chef
           # Create the temporary files
           files.each do |file|
             tempfile = Tempfile.new(file.name)
-            tempfiles[tempfile] = { :file => file }
+            tempfiles[tempfile] = { file: file }
           end
         rescue
           destroy_tempfiles(files)
@@ -167,7 +183,7 @@ class Chef
         end
 
         # Create the command
-        paths = tempfiles.keys.map { |tempfile| tempfile.path }.join(" ")
+        paths = tempfiles.keys.map(&:path).join(" ")
         if config[:replace_all]
           final_command = command.gsub(config[:replace_all], paths)
         elsif config[:replace_first]
@@ -181,32 +197,32 @@ class Chef
 
       def destroy_tempfiles(tempfiles)
         # Unlink the files now that we're done with them
-        tempfiles.keys.each { |tempfile| tempfile.close! }
+        tempfiles.each_key(&:close!)
       end
 
       def xargs_files(command, tempfiles)
         error = false
         # Create the temporary files
         tempfiles.each_pair do |tempfile, file|
-          begin
-            value = file[:file].read
-            file[:value] = value
-            tempfile.open
-            tempfile.write(value)
-            tempfile.close
-          rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
-            ui.error "#{format_path(e.entry)}: #{e.reason}."
-            error = true
-            tempfile.close!
-            tempfiles.delete(tempfile)
-            next
-          rescue Chef::ChefFS::FileSystem::NotFoundError => e
-            ui.error "#{format_path(e.entry)}: No such file or directory"
-            error = true
-            tempfile.close!
-            tempfiles.delete(tempfile)
-            next
-          end
+
+          value = file[:file].read
+          file[:value] = value
+          tempfile.open
+          tempfile.write(value)
+          tempfile.close
+        rescue Chef::ChefFS::FileSystem::OperationNotAllowedError => e
+          ui.error "#{format_path(e.entry)}: #{e.reason}."
+          error = true
+          tempfile.close!
+          tempfiles.delete(tempfile)
+          next
+        rescue Chef::ChefFS::FileSystem::NotFoundError => e
+          ui.error "#{format_path(e.entry)}: No such file or directory"
+          error = true
+          tempfile.close!
+          tempfiles.delete(tempfile)
+          next
+
         end
 
         return error if error && tempfiles.size == 0

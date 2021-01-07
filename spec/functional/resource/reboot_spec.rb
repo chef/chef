@@ -22,9 +22,9 @@ describe Chef::Resource::Reboot do
 
   let(:expected) do
     {
-      :delay_mins => 5,
-      :requested_by => "reboot resource functional test",
-      :reason => "reboot resource spec test",
+      delay_mins: 5,
+      requested_by: "reboot resource functional test",
+      reason: "reboot resource spec test",
     }
   end
 
@@ -45,7 +45,7 @@ describe Chef::Resource::Reboot do
   shared_context "testing run context modification" do
     def test_reboot_action(resource)
       reboot_info = resource.run_context.reboot_info
-      expect(reboot_info.keys.sort).to eq([:delay_mins, :reason, :requested_by, :timestamp])
+      expect(reboot_info.keys.sort).to eq(%i{delay_mins reason requested_by timestamp})
       expect(reboot_info[:delay_mins]).to eq(expected[:delay_mins])
       expect(reboot_info[:reason]).to eq(expected[:reason])
       expect(reboot_info[:requested_by]).to eq(expected[:requested_by])

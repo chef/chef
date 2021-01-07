@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ require "chef/chef_fs/file_system_cache"
 
 module KnifeSupport
   DEBUG = ENV["DEBUG"]
-  def knife(*args, input: nil)
+  def knife(*args, input: nil, instance_filter: nil)
     # Allow knife('role from file roles/blah.json') rather than requiring the
     # arguments to be split like knife('role', 'from', 'file', 'roles/blah.json')
     # If any argument will have actual spaces in it, the long form is required.
@@ -39,10 +39,7 @@ module KnifeSupport
 
     # Work on machines where we can't access /var
     Dir.mktmpdir("checksums") do |checksums_cache_dir|
-      Chef::Config[:cache_options] = {
-        :path => checksums_cache_dir,
-        :skip_expires => true,
-      }
+      Chef::Config[:syntax_check_cache_path] = checksums_cache_dir
 
       # This is Chef::Knife.run without load_commands--we'll load stuff
       # ourselves, thank you very much
@@ -55,17 +52,18 @@ module KnifeSupport
                 STDIN
               end
 
-      old_loggers = Chef::Log.loggers
-      old_log_level = Chef::Log.level
       begin
-        puts "knife: #{args.join(' ')}" if DEBUG
+        puts "knife: #{args.join(" ")}" if DEBUG
         subcommand_class = Chef::Knife.subcommand_class_from(args)
         subcommand_class.options = Chef::Application::Knife.options.merge(subcommand_class.options)
         subcommand_class.load_deps
         instance = subcommand_class.new(args)
 
+        # Load configs
+        instance.merge_configs
+
         # Capture stdout/stderr
-        instance.ui = Chef::Knife::UI.new(stdout, stderr, stdin, disable_editing: true)
+        instance.ui = Chef::Knife::UI.new(stdout, stderr, stdin, instance.config.merge(disable_editing: true))
 
         # Don't print stuff
         Chef::Config[:verbosity] = ( DEBUG ? 2 : 0 )
@@ -80,9 +78,20 @@ module KnifeSupport
         # running test scenarios against a real chef server. If things don't
         # smell right, abort.
 
+        # To ensure that we don't pick up a user's credentials file we lie through our teeth about
+        # it's existence.
+        allow(File).to receive(:file?).and_call_original
+        allow(File).to receive(:file?).with(File.expand_path("~/.chef/credentials")).and_return(false)
+
+        # Set a canary that is modified by the default null_config.rb config file.
         $__KNIFE_INTEGRATION_FAILSAFE_CHECK = "ole"
+
+        # Allow tweaking the knife instance before configuration.
+        instance_filter.call(instance) if instance_filter
+
         instance.configure_chef
 
+        # The canary is incorrect, meaning the normal null_config.rb didn't run. Something is wrong.
         unless $__KNIFE_INTEGRATION_FAILSAFE_CHECK == "ole ole"
           raise Exception, "Potential misconfiguration of integration tests detected. Aborting test."
         end
@@ -101,9 +110,7 @@ module KnifeSupport
       rescue SystemExit => e
         exit_code = e.status
       ensure
-        Chef::Log.use_log_devices(old_loggers)
-        Chef::Log.level = old_log_level
-        Chef::Config.delete(:cache_options)
+        Chef::Config.delete(:syntax_check_cache_path)
         Chef::Config.delete(:concurrency)
       end
 
@@ -136,7 +143,7 @@ module KnifeSupport
           expected[:stderr] = arg
         end
       end
-      expected[:exit_code] = 1 if !expected[:exit_code]
+      expected[:exit_code] = 1 unless expected[:exit_code]
       should_result_in(expected)
     end
 
@@ -155,21 +162,24 @@ module KnifeSupport
     private
 
     def should_result_in(expected)
-      expected[:stdout] = "" if !expected[:stdout]
-      expected[:stderr] = "" if !expected[:stderr]
-      expected[:exit_code] = 0 if !expected[:exit_code]
+      expected[:stdout] = "" unless expected[:stdout]
+      expected[:stdout] = expected[:stdout].is_a?(String) ? expected[:stdout].gsub(/[ \t\f\v]+$/, "") : expected[:stdout]
+      expected[:stderr] = "" unless expected[:stderr]
+      expected[:stderr] = expected[:stderr].is_a?(String) ? expected[:stderr].gsub(/[ \t\f\v]+$/, "") : expected[:stderr]
+      expected[:exit_code] = 0 unless expected[:exit_code]
       # TODO make this go away
       stderr_actual = @stderr.sub(/^WARNING: No knife configuration file found\n/, "")
-
+      stderr_actual = stderr_actual.gsub(/[ \t\f\v]+$/, "")
+      stdout_actual = @stdout
+      stdout_actual = stdout_actual.gsub(/[ \t\f\v]+$/, "")
+      if ChefUtils.windows?
+        stderr_actual = stderr_actual.gsub("\r\n", "\n")
+        stdout_actual = stdout_actual.gsub("\r\n", "\n")
+      end
       if expected[:stderr].is_a?(Regexp)
         expect(stderr_actual).to match(expected[:stderr])
       else
         expect(stderr_actual).to eq(expected[:stderr])
-      end
-      stdout_actual = @stdout
-      if Chef::Platform.windows?
-        stderr_actual = stderr_actual.gsub("\r\n", "\n")
-        stdout_actual = stdout_actual.gsub("\r\n", "\n")
       end
       expect(@exit_code).to eq(expected[:exit_code])
       if expected[:stdout].is_a?(Regexp)

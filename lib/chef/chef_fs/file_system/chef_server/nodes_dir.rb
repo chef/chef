@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/data_handler/node_data_handler"
+require_relative "../base_fs_dir"
+require_relative "rest_list_entry"
+require_relative "../exceptions"
+require_relative "../../data_handler/node_data_handler"
 
 class Chef
   module ChefFS
@@ -28,18 +28,16 @@ class Chef
         class NodesDir < RestListDir
           # Identical to RestListDir.children, except supports environments
           def children
-            begin
-              @children ||= root.get_json(env_api_path).keys.sort.map do |key|
-                make_child_entry(key, true)
-              end
-            rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
-            rescue Net::HTTPServerException => e
-              if $!.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
-              else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error retrieving children: #{e}")
-              end
+            @children ||= root.get_json(env_api_path).keys.sort.map do |key|
+              make_child_entry(key, true)
+            end
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "Timeout retrieving children: #{e}")
+          rescue Net::HTTPClientException => e
+            if $!.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:children, self, e, "HTTP error retrieving children: #{e}")
             end
           end
 

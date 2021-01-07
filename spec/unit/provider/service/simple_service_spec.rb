@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Provider::Service::Simple, "load_current_resource" do
   before(:each) do
     @node = Chef::Node.new
-    @node.automatic_attrs[:command] = { :ps => "ps -ef" }
+    @node.automatic_attrs[:command] = { ps: "ps -ef" }
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
 
@@ -31,12 +31,12 @@ describe Chef::Provider::Service::Simple, "load_current_resource" do
     @provider = Chef::Provider::Service::Simple.new(@new_resource, @run_context)
     allow(Chef::Resource::Service).to receive(:new).and_return(@current_resource)
 
-    @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
-aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
-aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
-NOMOCKINGSTRINGSPLZ
-    @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+    @stdout = StringIO.new(<<~NOMOCKINGSTRINGSPLZ)
+      aj        7842  5057  0 21:26 pts/2    00:00:06 vi init.rb
+      aj        7903  5016  0 21:26 pts/5    00:00:00 /bin/bash
+      aj        8119  6041  0 21:34 pts/3    00:00:03 vi simple_service_spec.rb
+    NOMOCKINGSTRINGSPLZ
+    @status = double("Status", exitstatus: 0, stdout: @stdout)
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 
@@ -50,19 +50,19 @@ NOMOCKINGSTRINGSPLZ
     @provider.load_current_resource
   end
 
-  it "should raise error if the node has a nil ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = { :ps => nil }
+  it "should raise error if the node has a nil ps property and no other means to get status" do
+    @node.automatic_attrs[:command] = { ps: nil }
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
-  it "should raise error if the node has an empty ps attribute and no other means to get status" do
-    @node.automatic_attrs[:command] = { :ps => "" }
+  it "should raise error if the node has an empty ps property and no other means to get status" do
+    @node.automatic_attrs[:command] = { ps: "" }
     @provider.define_resource_requirements
     expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Service)
   end
 
-  describe "when we have a 'ps' attribute" do
+  describe "when we have a 'ps' property" do
     it "should shell_out! the node's ps command" do
       expect(@provider).to receive(:shell_out!).with(@node[:command][:ps]).and_return(@status)
       @provider.load_current_resource
@@ -75,11 +75,11 @@ NOMOCKINGSTRINGSPLZ
     end
 
     it "should set running to true if the regex matches the output" do
-      @stdout = StringIO.new(<<-NOMOCKINGSTRINGSPLZ)
-aj        7842  5057  0 21:26 pts/2    00:00:06 chef
-aj        7842  5057  0 21:26 pts/2    00:00:06 poos
-NOMOCKINGSTRINGSPLZ
-      @status = double("Status", :exitstatus => 0, :stdout => @stdout)
+      @stdout = StringIO.new(<<~NOMOCKINGSTRINGSPLZ)
+        aj        7842  5057  0 21:26 pts/2    00:00:06 chef
+        aj        7842  5057  0 21:26 pts/2    00:00:06 poos
+      NOMOCKINGSTRINGSPLZ
+      @status = double("Status", exitstatus: 0, stdout: @stdout)
       allow(@provider).to receive(:shell_out!).and_return(@status)
       @provider.load_current_resource
       expect(@current_resource.running).to be_truthy
@@ -106,9 +106,9 @@ NOMOCKINGSTRINGSPLZ
 
   describe "when starting the service" do
     it "should call the start command if one is specified" do
-      allow(@new_resource).to receive(:start_command).and_return("#{@new_resource.start_command}")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("#{@new_resource.start_command}")
-      @provider.start_service()
+      @new_resource.start_command((@new_resource.start_command).to_s)
+      expect(@provider).to receive(:shell_out!).with((@new_resource.start_command).to_s, default_env: false)
+      @provider.start_service
     end
 
     it "should raise an exception if no start command is specified" do
@@ -121,8 +121,8 @@ NOMOCKINGSTRINGSPLZ
   describe "when stopping a service" do
     it "should call the stop command if one is specified" do
       @new_resource.stop_command("/etc/init.d/themadness stop")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/themadness stop")
-      @provider.stop_service()
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/themadness stop", default_env: false)
+      @provider.stop_service
     end
 
     it "should raise an exception if no stop command is specified" do
@@ -135,8 +135,8 @@ NOMOCKINGSTRINGSPLZ
   describe Chef::Provider::Service::Simple, "restart_service" do
     it "should call the restart command if one has been specified" do
       @new_resource.restart_command("/etc/init.d/foo restart")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("/etc/init.d/foo restart")
-      @provider.restart_service()
+      expect(@provider).to receive(:shell_out!).with("/etc/init.d/foo restart", default_env: false)
+      @provider.restart_service
     end
 
     it "should raise an exception if the resource doesn't support restart, no restart command is provided, and no stop command is provided" do
@@ -149,7 +149,7 @@ NOMOCKINGSTRINGSPLZ
       expect(@provider).to receive(:stop_service)
       expect(@provider).to receive(:sleep).with(1)
       expect(@provider).to receive(:start_service)
-      @provider.restart_service()
+      @provider.restart_service
     end
   end
 
@@ -162,8 +162,8 @@ NOMOCKINGSTRINGSPLZ
 
     it "should should run the user specified reload command if one is specified" do
       @new_resource.reload_command("kill -9 1")
-      expect(@provider).to receive(:shell_out_with_systems_locale!).with("kill -9 1")
-      @provider.reload_service()
+      expect(@provider).to receive(:shell_out!).with("kill -9 1", default_env: false)
+      @provider.reload_service
     end
   end
 end

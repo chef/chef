@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,7 +23,7 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   include Chef::Mixin::WindowsArchitectureHelper
 
   before do
-    @valid_architectures = [ :i386, :x86_64 ]
+    @valid_architectures = %i{i386 x86_64}
     @invalid_architectures = [ "i386", "x86_64", :x64, :x86, :arm ]
 
     @node_i386 = Chef::Node.new
@@ -50,10 +50,10 @@ describe Chef::Mixin::WindowsArchitectureHelper do
 
   it "raises an error if an invalid architecture is passed to assert_valid_windows_architecture!" do
     @invalid_architectures.each do |architecture|
-      begin
-        expect(assert_valid_windows_architecture!(architecture)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
-      rescue Chef::Exceptions::Win32ArchitectureIncorrect
-      end
+
+      expect(assert_valid_windows_architecture!(architecture)).to raise_error Chef::Exceptions::Win32ArchitectureIncorrect
+    rescue Chef::Exceptions::Win32ArchitectureIncorrect
+
     end
   end
 
@@ -67,14 +67,14 @@ describe Chef::Mixin::WindowsArchitectureHelper do
   it "returns true only when forced_32bit_override_required? has 64-bit node architecture and 32-bit desired architecture" do
     with_node_architecture_combinations do |node, desired_arch|
       expect(forced_32bit_override_required?(node, desired_arch)).to be true if (node_windows_architecture(node) == :x86_64) && (desired_arch == :i386) && !is_i386_process_on_x86_64_windows?
-      expect(forced_32bit_override_required?(node, desired_arch)).to be false if ! ((node_windows_architecture(node) == :x86_64) && (desired_arch == :i386))
+      expect(forced_32bit_override_required?(node, desired_arch)).to be false unless (node_windows_architecture(node) == :x86_64) && (desired_arch == :i386)
     end
   end
 
   def with_node_architecture_combinations
     @valid_architectures.each do |node_architecture|
       new_node = Chef::Node.new
-      new_node.default["kernel"] = Hash.new
+      new_node.default["kernel"] = {}
       new_node.default["kernel"][:machine] = node_architecture.to_s
 
       @valid_architectures.each do |architecture|

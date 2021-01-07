@@ -17,18 +17,18 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleRunListClear < Knife
 
       deps do
-        require "chef/role"
-        require "chef/json_compat"
+        require_relative "../role"
+        require_relative "../json_compat"
       end
 
-      banner "knife role run_list clear [ROLE]"
+      banner "knife role run_list clear [ROLE] (options)"
       def clear_env_run_list(role, environment)
         nlist = []
         role.env_run_lists_add(environment => nlist)

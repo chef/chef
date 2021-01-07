@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -30,8 +31,11 @@ describe "knife node environment set", :workstation do
     end
 
     it "sets an environment on a node" do
-      knife("node environment set cons lisp").should_succeed /chef_environment:.*lisp/
-      knife("node show cons -a chef_environment").should_succeed /Environment:.*lisp/
+      knife("node environment set cons lisp").should_succeed(/chef_environment:.*lisp/)
+      knife("node show cons -a chef_environment").should_succeed <<~EOM
+        cons:
+          chef_environment: lisp
+      EOM
     end
 
     it "with no environment" do

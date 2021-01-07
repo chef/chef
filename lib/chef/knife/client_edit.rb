@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class ClientEdit < Knife
 
       deps do
-        require "chef/api_client_v1"
-        require "chef/json_compat"
+        require_relative "../api_client_v1"
       end
 
       banner "knife client edit CLIENT (options)"
@@ -38,7 +37,7 @@ class Chef
           exit 1
         end
 
-        original_data = Chef::ApiClientV1.load(@client_name).to_hash
+        original_data = Chef::ApiClientV1.load(@client_name).to_h
         edited_client = edit_hash(original_data)
         if original_data != edited_client
           client = Chef::ApiClientV1.from_hash(edited_client)

@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala(<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/win32/crypto"
 end
 
@@ -32,20 +32,20 @@ describe "Chef::ReservedNames::Win32::Crypto", :windows_only do
       @run_context = Chef::RunContext.new(new_node, {}, events)
     end
 
-    let (:plaintext) { "p@assword" }
+    let(:plaintext) { "p@assword" }
 
     it "can be decrypted by powershell" do
       encrypted = Chef::ReservedNames::Win32::Crypto.encrypt(plaintext)
-      resource = Chef::Resource::WindowsScript::PowershellScript.new("Powershell resource functional test", @run_context)
-      resource.code <<-EOF
-$encrypted = '#{encrypted}' | ConvertTo-SecureString
-$BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($encrypted)
-$plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
-if ($plaintext -ne '#{plaintext}') {
-  Write-Error 'Got: ' $plaintext
-  exit 1
-}
-exit 0
+      resource = Chef::Resource::WindowsScript::PowershellScript.new("PowerShell resource functional test", @run_context)
+      resource.code <<~EOF
+        $encrypted = '#{encrypted}' | ConvertTo-SecureString
+        $BSTR = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($encrypted)
+        $plaintext = [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)
+        if ($plaintext -ne '#{plaintext}') {
+          Write-Error 'Got: ' $plaintext
+          exit 1
+        }
+        exit 0
       EOF
       resource.returns(0)
       resource.run_action(:run)

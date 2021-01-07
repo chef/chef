@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,11 @@
 # limitations under the License.
 #
 
-require "chef/resource_collection/resource_set"
-require "chef/resource_collection/resource_list"
-require "chef/resource_collection/resource_collection_serialization"
-require "chef/log"
-require "forwardable"
+require_relative "resource_collection/resource_set"
+require_relative "resource_collection/resource_list"
+require_relative "resource_collection/resource_collection_serialization"
+require_relative "log"
+require "forwardable" unless defined?(Forwardable)
 
 ##
 # ResourceCollection currently handles two tasks:
@@ -32,6 +32,8 @@ class Chef
     include ResourceCollectionSerialization
     extend Forwardable
 
+    attr_accessor :unified_mode
+
     attr_reader :resource_set, :resource_list
     attr_accessor :run_context
 
@@ -41,11 +43,12 @@ class Chef
       @run_context = run_context
       @resource_set = ResourceSet.new
       @resource_list = ResourceList.new
+      @unified_mode = false
     end
 
     # @param resource [Chef::Resource] The resource to insert
     # @param resource_type [String,Symbol] If known, the resource type used in the recipe, Eg `package`, `execute`
-    # @param instance_name [String] If known, the recource name as used in the recipe, IE `vim` in `package 'vim'`
+    # @param instance_name [String] If known, the resource name as used in the recipe, IE `vim` in `package 'vim'`
     # This method is meant to be the 1 insert method necessary in the future.  It should support all known use cases
     #   for writing into the ResourceCollection.
     def insert(resource, opts = {})
@@ -57,11 +60,15 @@ class Chef
       else
         resource_set.insert_as(resource)
       end
+      if unified_mode
+        run_context.runner.run_all_actions(resource)
+      end
     end
 
     def delete(key)
-      resource_list.delete(key)
-      resource_set.delete(key)
+      res = resource_set.delete(key)
+      resource_list.delete(res.to_s)
+      res
     end
 
     # @deprecated
@@ -86,9 +93,9 @@ class Chef
     # Read-only methods are simple to delegate - doing that below
 
     resource_list_methods = Enumerable.instance_methods +
-      [:iterator, :all_resources, :[], :each, :execute_each_resource, :each_index, :empty?] -
+      %i{iterator all_resources [] each execute_each_resource each_index empty?} -
       [:find] # find overridden below
-    resource_set_methods = [:resources, :keys, :validate_lookup_spec!]
+    resource_set_methods = %i{resources keys validate_lookup_spec!}
 
     def_delegators :resource_list, *resource_list_methods
     def_delegators :resource_set, *resource_set_methods
@@ -117,12 +124,23 @@ class Chef
       end
     end
 
+    def self.from_hash(o)
+      collection = new
+      { "@resource_list" => "ResourceList", "@resource_set" => "ResourceSet" }.each_pair do |name, klass|
+        obj = Chef::ResourceCollection.const_get(klass).from_hash(o["instance_vars"].delete(name))
+        collection.instance_variable_set(name.to_sym, obj)
+      end
+      collection.instance_variable_set(:@run_context, o["instance_vars"].delete("@run_context"))
+      collection
+    end
+
     private
 
     def lookup_recursive(rc, key)
       rc.resource_collection.resource_set.lookup(key)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       lookup_recursive(rc.parent_run_context, key)
     end
 
@@ -130,6 +148,7 @@ class Chef
       rc.resource_collection.resource_set.find(*args)
     rescue Chef::Exceptions::ResourceNotFound
       raise if rc.parent_run_context.nil?
+
       find_recursive(rc.parent_run_context, *args)
     end
   end

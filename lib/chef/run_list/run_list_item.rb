@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,10 @@
 class Chef
   class RunList
     class RunListItem
-      QUALIFIED_RECIPE             = %r{^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$}
-      QUALIFIED_ROLE               = %r{^role\[([^\]]+)\]$}
-      VERSIONED_UNQUALIFIED_RECIPE = %r{^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$}
-      FALSE_FRIEND                 = %r{[\[\]]}
+      QUALIFIED_RECIPE             = /^recipe\[([^\]@]+)(@([0-9]+(\.[0-9]+){1,2}))?\]$/.freeze
+      QUALIFIED_ROLE               = /^role\[([^\]]+)\]$/.freeze
+      VERSIONED_UNQUALIFIED_RECIPE = /^([^@]+)(@([0-9]+(\.[0-9]+){1,2}))$/.freeze
+      FALSE_FRIEND                 = /[\[\]]/.freeze
 
       attr_reader :name, :type, :version
 
@@ -32,7 +32,7 @@ class Chef
           assert_hash_is_valid_run_list_item!(item)
           @type = (item["type"] || item[:type]).to_sym
           @name = item["name"] || item[:name]
-          if item.has_key?("version") || item.has_key?(:version)
+          if item.key?("version") || item.key?(:version)
             @version = item["version"] || item[:version]
           end
         when String
@@ -80,8 +80,8 @@ class Chef
       end
 
       def ==(other)
-        if other.kind_of?(String)
-          self.to_s == other.to_s
+        if other.is_a?(String)
+          to_s == other.to_s
         else
           other.respond_to?(:type) && other.respond_to?(:name) && other.respond_to?(:version) && other.type == @type && other.name == @name && other.version == @version
         end

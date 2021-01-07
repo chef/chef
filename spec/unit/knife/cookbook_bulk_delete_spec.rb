@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Delano (<stephen@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,14 +24,14 @@ describe Chef::Knife::CookbookBulkDelete do
 
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::CookbookBulkDelete.new
-    @knife.config = { :print_after => nil }
+    @knife.config = { print_after: nil }
     @knife.name_args = ["."]
     @stdout = StringIO.new
     @stderr = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
     allow(@knife.ui).to receive(:stderr).and_return(@stderr)
     allow(@knife.ui).to receive(:confirm).and_return(true)
-    @cookbooks = Hash.new
+    @cookbooks = {}
     %w{cheezburger pizza lasagna}.each do |cookbook_name|
       cookbook = Chef::CookbookVersion.new(cookbook_name)
       @cookbooks[cookbook_name] = cookbook

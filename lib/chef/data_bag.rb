@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,13 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/data_bag_item"
-require "chef/mash"
-require "chef/json_compat"
-require "chef/server_api"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "data_bag_item"
+require_relative "mash"
+require_relative "json_compat"
+require_relative "server_api"
 
 class Chef
   class DataBag
@@ -32,13 +32,15 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_NAME = /^[\.\-[:alnum:]_]+$/
-
-    attr_accessor :chef_server_rest
+    VALID_NAME = /^[\.\-[:alnum:]_]+$/.freeze
+    RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
 
     def self.validate_name!(name)
-      unless name =~ VALID_NAME
+      unless VALID_NAME.match?(name)
         raise Exceptions::InvalidDataBagName, "DataBags must have a name matching #{VALID_NAME.inspect}, you gave #{name.inspect}"
+      end
+      if RESERVED_NAMES.match?(name)
+        raise Exceptions::InvalidDataBagName, "DataBags may not have a name matching #{RESERVED_NAMES.inspect}, you gave #{name.inspect}"
       end
     end
 
@@ -52,22 +54,23 @@ class Chef
       set_or_return(
         :name,
         arg,
-        :regex => VALID_NAME
+        regex: VALID_NAME
       )
     end
 
-    def to_hash
-      result = {
-        "name"       => @name,
+    def to_h
+      {
+        "name" => @name,
         "json_class" => self.class.name,
-        "chef_type"  => "data_bag",
+        "chef_type" => "data_bag",
       }
-      result
     end
+
+    alias_method :to_hash, :to_h
 
     # Serialize this object as a hash
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def chef_server_rest
@@ -76,12 +79,6 @@ class Chef
 
     def self.chef_server_rest
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
-    end
-
-    # Create a Chef::Role from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBag#from_hash")
-      from_hash(o)
     end
 
     def self.from_hash(o)
@@ -96,11 +93,12 @@ class Chef
         names = []
         paths.each do |path|
           unless File.directory?(path)
-            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
+            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' not found. Please create this directory."
           end
 
           names += Dir.glob(File.join(
-            Chef::Util::PathHelper.escape_glob_dir(path), "*")).map { |f| File.basename(f) }.sort
+            Chef::Util::PathHelper.escape_glob_dir(path), "*"
+          )).map { |f| File.basename(f) }.sort
         end
         names.inject({}) { |h, n| h[n] = n; h }
       else
@@ -123,21 +121,21 @@ class Chef
         data_bag = {}
         paths.each do |path|
           unless File.directory?(path)
-            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' is invalid"
+            raise Chef::Exceptions::InvalidDataBagPath, "Data bag path '#{path}' not found. Please create this directory."
           end
 
           Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path, name.to_s), "*.json")).inject({}) do |bag, f|
             item = Chef::JSONCompat.parse(IO.read(f))
 
             # Check if we have multiple items with similar names (ids) and raise if their content differs
-            if data_bag.has_key?(item["id"]) && data_bag[item["id"]] != item
+            if data_bag.key?(item["id"]) && data_bag[item["id"]] != item
               raise Chef::Exceptions::DuplicateDataBagItem, "Data bag '#{name}' has items with the same name '#{item["id"]}' but different content."
             else
               data_bag[item["id"]] = item
             end
           end
         end
-        return data_bag
+        data_bag
       else
         Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{name}")
       end
@@ -155,13 +153,13 @@ class Chef
         else
           create
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "409"
       end
       self
     end
 
-    #create a data bag via RESTful API
+    # create a data bag via RESTful API
     def create
       chef_server_rest.post("data", self)
       self

@@ -1,7 +1,7 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
 # Author:: Matt Wrock <matt@mattwrock.com>
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
+require_relative "../../../mixin/shell_out"
 
 class Chef
   class Provider
@@ -28,11 +28,13 @@ class Chef
 
           def initialize(resource, installer_type, uninstall_entries)
             @new_resource = resource
+            @logger = new_resource.logger
             @installer_type = installer_type
             @uninstall_entries = uninstall_entries
           end
 
           attr_reader :new_resource
+          attr_reader :logger
           attr_reader :installer_type
           attr_reader :uninstall_entries
 
@@ -43,7 +45,7 @@ class Chef
 
           # Returns a version if the package is installed or nil if it is not.
           def installed_version
-            Chef::Log.debug("#{new_resource} checking package version")
+            logger.trace("#{new_resource} checking package version")
             current_installed_version
           end
 
@@ -52,7 +54,7 @@ class Chef
           end
 
           def install_package
-            Chef::Log.debug("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
+            logger.trace("#{new_resource} installing #{new_resource.installer_type} package '#{new_resource.source}'")
             shell_out!(
               [
                 "start",
@@ -62,16 +64,16 @@ class Chef
                 unattended_flags,
                 expand_options(new_resource.options),
                 "& exit %%%%ERRORLEVEL%%%%",
-              ].join(" "), timeout: new_resource.timeout, returns: new_resource.returns
+              ].join(" "), default_env: false, timeout: new_resource.timeout, returns: new_resource.returns, sensitive: new_resource.sensitive
             )
           end
 
           def remove_package
             uninstall_version = new_resource.version || current_installed_version
             uninstall_entries.select { |entry| [uninstall_version].flatten.include?(entry.display_version) }
-              .map { |version| version.uninstall_string }.uniq.each do |uninstall_string|
-                Chef::Log.debug("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
-                shell_out!(uninstall_command(uninstall_string), { :timeout => new_resource.timeout, :returns => new_resource.returns })
+              .map(&:uninstall_string).uniq.each do |uninstall_string|
+                logger.trace("Registry provided uninstall string for #{new_resource} is '#{uninstall_string}'")
+                shell_out!(uninstall_command(uninstall_string), default_env: false, timeout: new_resource.timeout, returns: new_resource.returns)
               end
           end
 
@@ -85,13 +87,14 @@ class Chef
               " ",
               unattended_flags,
             ].join
-            %Q{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
+            %{start "" /wait #{uninstall_string} & exit %%%%ERRORLEVEL%%%%}
           end
 
           def current_installed_version
-            @current_installed_version ||= uninstall_entries.count == 0 ? nil : begin
-              uninstall_entries.map { |entry| entry.display_version }.uniq
-            end
+            @current_installed_version ||=
+              if uninstall_entries.count != 0
+                uninstall_entries.map(&:display_version).uniq
+              end
           end
 
           # http://unattended.sourceforge.net/installers.php

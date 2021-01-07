@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,20 @@
 # limitations under the License.
 #
 
-require "chef/resource/user"
+require_relative "../user"
 
 class Chef
   class Resource
     class User
       class DsclUser < Chef::Resource::User
-        resource_name :dscl_user
+        unified_mode true
 
         provides :dscl_user
-        provides :user, os: "darwin"
+        provides :user, platform: "mac_os_x", platform_version: "< 10.14"
+
+        property :iterations, Integer,
+          description: "macOS platform only. The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
+          default: 27855, desired_state: false
       end
     end
   end

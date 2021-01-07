@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/package/freebsd/base"
+require_relative "base"
 
 class Chef
   class Provider
@@ -25,46 +25,46 @@ class Chef
         class Pkgng < Base
 
           def install_package(name, version)
-            unless @current_resource.version
-              case @new_resource.source
-              when /^(http|ftp|\/)/
-                shell_out_with_timeout!("pkg add#{expand_options(@new_resource.options)} #{@new_resource.source}", :env => { "LC_ALL" => nil }).status
-                Chef::Log.debug("#{@new_resource} installed from: #{@new_resource.source}")
-
+            unless current_resource.version
+              case new_resource.source
+              when %r{^(http|ftp|/)}
+                shell_out!("pkg", "add", options, new_resource.source, env: { "LC_ALL" => nil }).status
+                logger.trace("#{new_resource} installed from: #{new_resource.source}")
               else
-                shell_out_with_timeout!("pkg install -y#{expand_options(@new_resource.options)} #{name}", :env => { "LC_ALL" => nil }).status
+                shell_out!("pkg", "install", "-y", options, name, env: { "LC_ALL" => nil }).status
               end
             end
           end
 
           def remove_package(name, version)
-            options = @new_resource.options && @new_resource.options.sub(repo_regex, "")
-            options && !options.empty? || options = nil
-            shell_out_with_timeout!("pkg delete -y#{expand_options(options)} #{name}#{version ? '-' + version : ''}", :env => nil).status
+            options_dup = options && options.map { |str| str.sub(repo_regex, "") }.reject!(&:empty?)
+            shell_out!("pkg", "delete", "-y", options_dup, "#{name}#{version ? "-" + version : ""}", env: nil).status
           end
 
           def current_installed_version
-            pkg_info = shell_out_with_timeout!("pkg info \"#{@new_resource.package_name}\"", :env => nil, :returns => [0, 1])
+            # pkgng up to version 1.15.99.7 returns 70 for pkg not found,
+            # later versions return 1
+            pkg_info = shell_out!("pkg", "info", new_resource.package_name, env: nil, returns: [0, 1, 70])
             pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 
           def candidate_version
-            @new_resource.source ? file_candidate_version : repo_candidate_version
+            new_resource.source ? file_candidate_version : repo_candidate_version
           end
 
           private
 
           def file_candidate_version
-            @new_resource.source[/#{Regexp.escape(@new_resource.package_name)}-(.+)\.txz/, 1]
+            new_resource.source[/#{Regexp.escape(new_resource.package_name)}-(.+)\.txz/, 1]
           end
 
           def repo_candidate_version
-            if @new_resource.options && @new_resource.options.match(repo_regex)
-              options = $1
+            if options && options.join(" ").match(repo_regex)
+              options = $1.split(" ")
             end
 
-            pkg_query = shell_out_with_timeout!("pkg rquery#{expand_options(options)} '%v' #{@new_resource.package_name}", :env => nil)
-            pkg_query.exitstatus.zero? ? pkg_query.stdout.strip.split(/\n/).last : nil
+            pkg_query = shell_out!("pkg", "rquery", options, "%v", new_resource.package_name, env: nil)
+            pkg_query.exitstatus == 0 ? pkg_query.stdout.strip.split('\n').last : nil
           end
 
           def repo_regex

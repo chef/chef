@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@
 require "spec_helper"
 
 describe Chef::ResourceDefinition do
-  let(:defn) { Chef::ResourceDefinition.new() }
+  let(:defn) { Chef::ResourceDefinition.new }
 
   describe "initialize" do
     it "should be a Chef::ResourceDefinition" do
@@ -66,13 +66,13 @@ describe Chef::ResourceDefinition do
 
   it "should accept a new definition with a hash" do
     expect do
-      defn.define :smoke, :cigar => "cuban", :cigarette => "marlboro" do
+      defn.define :smoke, cigar: "cuban", cigarette: "marlboro" do
       end
     end.not_to raise_error
   end
 
   it "should expose the prototype hash params in the params hash" do
-    defn.define(:smoke, :cigar => "cuban", :cigarette => "marlboro") {}
+    defn.define(:smoke, cigar: "cuban", cigarette: "marlboro") {}
     expect(defn.params[:cigar]).to eql("cuban")
     expect(defn.params[:cigarette]).to eql("marlboro")
   end
@@ -92,7 +92,7 @@ describe Chef::ResourceDefinition do
 
   it "should raise an exception if prototype_params is not a hash" do
     expect do
-      defn.define :monkey, Array.new do
+      defn.define :monkey, [] do
       end
     end.to raise_error(ArgumentError)
   end

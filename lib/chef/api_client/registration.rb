@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/server_api"
-require "chef/exceptions"
+require_relative "../config"
+require_relative "../server_api"
+require_relative "../exceptions"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class ApiClient
@@ -59,6 +60,7 @@ class Chef
         rescue Net::HTTPFatalError => e
           # HTTPFatalError implies 5xx.
           raise if retries <= 0
+
           retries -= 1
           Chef::Log.warn("Failed to register new client, #{retries} tries remaining")
           Chef::Log.warn("Response: HTTP #{e.response.code} - #{e}")
@@ -69,8 +71,15 @@ class Chef
       end
 
       def assert_destination_writable!
-        if (File.exists?(destination) && !File.writable?(destination)) || !File.writable?(File.dirname(destination))
-          abs_path = File.expand_path(destination)
+        abs_path = File.expand_path(destination)
+        unless File.exist?(File.dirname(abs_path))
+          begin
+            FileUtils.mkdir_p(File.dirname(abs_path))
+          rescue Errno::EACCES
+            raise Chef::Exceptions::CannotWritePrivateKey, "I can't create the configuration directory at #{File.dirname(abs_path)} - check permissions?"
+          end
+        end
+        if (File.exist?(abs_path) && !File.writable?(abs_path)) || !File.writable?(File.dirname(abs_path))
           raise Chef::Exceptions::CannotWritePrivateKey, "I can't write your private key to #{abs_path} - check permissions?"
         end
       end
@@ -85,10 +94,11 @@ class Chef
 
       def create_or_update
         create
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         # If create fails because the client exists, attempt to update. This
         # requires admin privileges.
         raise unless e.response.code == "409"
+
         update
       end
 
@@ -131,7 +141,7 @@ class Chef
       end
 
       def put_data
-        base_put_data = { :name => name, :admin => false }
+        base_put_data = { name: name, admin: false }
         if self_generate_keys?
           base_put_data[:public_key] = generated_public_key
         else
@@ -141,19 +151,18 @@ class Chef
       end
 
       def post_data
-        post_data = { :name => name, :admin => false }
+        post_data = { name: name, admin: false }
         post_data[:public_key] = generated_public_key if self_generate_keys?
         post_data
       end
 
       def http_api
         @http_api ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url],
-                                          {
-                                            :api_version => "0",
-                                            :client_name => Chef::Config[:validation_client_name],
-                                            :signing_key_filename => Chef::Config[:validation_key],
-                                          }
-                                         )
+          {
+            api_version: "0",
+            client_name: Chef::Config[:validation_client_name],
+            signing_key_filename: Chef::Config[:validation_key],
+          })
       end
 
       # Whether or not to generate keys locally and post the public key to the

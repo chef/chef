@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,30 +16,23 @@
 # limitations under the License.
 #
 
-require "chef/provider/windows_script"
+require_relative "windows_script"
 
 class Chef
   class Provider
     class Batch < Chef::Provider::WindowsScript
 
-      provides :batch, os: "windows"
-
-      def initialize(new_resource, run_context)
-        super(new_resource, run_context, ".bat")
-      end
+      provides :batch
 
       def command
-        basepath = is_forced_32bit ? wow64_directory : run_context.node["kernel"]["os_info"]["system_directory"]
-
         interpreter_path = Chef::Util::PathHelper.join(basepath, interpreter)
 
-        "\"#{interpreter_path}\" #{flags} \"#{script_file.path}\""
+        "\"#{interpreter_path}\" #{new_resource.flags} /c \"#{script_file_path}\""
       end
 
-      def flags
-        @new_resource.flags.nil? ? "/c" : new_resource.flags + " /c"
+      def script_extension
+        ".bat"
       end
-
     end
   end
 end

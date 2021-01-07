@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,12 +14,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require "chef/config"
-if Chef::Platform.windows?
-  if Gem::Version.new(RUBY_VERSION) >= Gem::Version.new("2.1")
-    require "chef/monkey_patches/webrick-utils"
-  end
-end
+
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+require_relative "config"
+require_relative "monkey_patches/webrick-utils" if ChefUtils.windows?
 
 class Chef
   module LocalMode
@@ -55,8 +53,8 @@ class Chef
         destroy_server_connectivity
 
         require "chef_zero/server"
-        require "chef/chef_fs/chef_fs_data_store"
-        require "chef/chef_fs/config"
+        require_relative "chef_fs/chef_fs_data_store"
+        require_relative "chef_fs/config"
 
         @chef_fs = Chef::ChefFS::Config.new.local_fs
         @chef_fs.write_pretty_json = true
@@ -73,6 +71,7 @@ class Chef
         @chef_zero_server = ChefZero::Server.new(server_options)
 
         if Chef::Config[:listen]
+          Chef.deprecated(:local_listen, "Starting local-mode server in deprecated socket mode")
           @chef_zero_server.start_background
         else
           @chef_zero_server.start_socketless
@@ -80,7 +79,7 @@ class Chef
 
         local_mode_url = @chef_zero_server.local_mode_url
 
-        Chef::Log.info("Started chef-zero at #{local_mode_url} with #{@chef_fs.fs_description}")
+        Chef::Log.info("Started #{ChefUtils::Dist::Zero::PRODUCT} at #{local_mode_url} with #{@chef_fs.fs_description}")
         Chef::Config.chef_server_url = local_mode_url
       end
     end

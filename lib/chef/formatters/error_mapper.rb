@@ -1,6 +1,6 @@
 #--
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,7 +30,7 @@ class Chef
         headline = "Chef encountered an error attempting to create the client \"#{node_name}\""
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.node_load_failed(node_name, exception, config)
@@ -38,7 +38,7 @@ class Chef
         headline = "Chef encountered an error attempting to load the node data for \"#{node_name}\""
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.run_list_expand_failed(node, exception)
@@ -46,7 +46,7 @@ class Chef
         headline = "Error expanding the run_list:"
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.cookbook_resolution_failed(expanded_run_list, exception)
@@ -54,7 +54,7 @@ class Chef
         headline = "Error Resolving Cookbooks for Run List:"
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.cookbook_sync_failed(cookbooks, exception)
@@ -62,7 +62,7 @@ class Chef
         headline = "Error Syncing Cookbooks:"
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.resource_failed(resource, action, exception)
@@ -70,7 +70,7 @@ class Chef
         headline = "Error executing action `#{action}` on resource '#{resource}'"
         description = ErrorDescription.new(headline)
         error_inspector.add_explanation(description)
-        return description
+        description
       end
 
       def self.file_load_failed(path, exception)

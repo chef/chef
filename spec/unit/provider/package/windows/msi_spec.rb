@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ require "chef/provider/package/windows/msi"
 describe Chef::Provider::Package::Windows::MSI do
   let(:node) { double("Chef::Node") }
   let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:run_context) { double("Chef::RunContext", node: node, events: events) }
   let(:package_name) { "calculator" }
   let(:resource_source) { "calculator.msi" }
   let(:resource_version) { nil }
@@ -104,14 +104,14 @@ describe Chef::Provider::Package::Windows::MSI do
 
   describe "install_package" do
     it "calls msiexec /qn /i" do
-      expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/i \"#{Regexp.quote(new_resource.source)}\"/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{msiexec /qn /i \"#{Regexp.quote(new_resource.source)}\"}, kind_of(Hash))
       provider.install_package
     end
   end
 
   describe "remove_package" do
     it "calls msiexec /qn /x" do
-      expect(provider).to receive(:shell_out!).with(/msiexec \/qn \/x \"#{Regexp.quote(new_resource.source)}\"/, kind_of(Hash))
+      expect(provider).to receive(:shell_out!).with(%r{msiexec /qn /x \"#{Regexp.quote(new_resource.source)}\"}, kind_of(Hash))
       provider.remove_package
     end
 
@@ -121,7 +121,7 @@ describe Chef::Provider::Package::Windows::MSI do
       end
 
       it "removes installed package" do
-        expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
+        expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /q}, kind_of(Hash))
         provider.remove_package
       end
 
@@ -140,8 +140,8 @@ describe Chef::Provider::Package::Windows::MSI do
         end
 
         it "removes both installed package" do
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid2} \/Q/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /q}, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid2} /q}, kind_of(Hash))
           provider.remove_package
         end
       end
@@ -150,7 +150,16 @@ describe Chef::Provider::Package::Windows::MSI do
         before { new_resource.options("/Q") }
 
         it "does not duplicate quiet switch" do
-          expect(provider).to receive(:shell_out!).with(/MsiExec.exe \/X{guid} \/Q/, kind_of(Hash))
+          expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /Q}, kind_of(Hash))
+          provider.remove_package
+        end
+      end
+
+      context "custom options includes /qn" do
+        before { new_resource.options("/qn") }
+
+        it "does not duplicate quiet switch" do
+          expect(provider).to receive(:shell_out!).with(%r{msiexec /x {guid} /qn}, kind_of(Hash))
           provider.remove_package
         end
       end

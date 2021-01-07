@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,11 +24,6 @@ class RecipeDSLExampleClass
   include Chef::DSL::Recipe
 end
 
-FullRecipeDSLExampleClass = Struct.new(:cookbook_name, :recipe_name)
-class FullRecipeDSLExampleClass
-  include Chef::DSL::Recipe::FullDSL
-end
-
 RecipeDSLBaseAPI = Struct.new(:cookbook_name, :recipe_name)
 class RecipeDSLExampleSubclass < RecipeDSLBaseAPI
   include Chef::DSL::Recipe
@@ -40,14 +35,6 @@ describe Chef::DSL::Recipe do
 
   let(:cookbook_name) { "example_cb" }
   let(:recipe_name) { "example_recipe" }
-
-  it "tracks when it is included via FullDSL" do
-    expect(Chef::DSL::Recipe::FullDSL.descendants).to include(FullRecipeDSLExampleClass)
-  end
-
-  it "doesn't track what is included via only the recipe DSL" do
-    expect(Chef::DSL::Recipe::FullDSL.descendants).not_to include(RecipeDSLExampleClass)
-  end
 
   shared_examples_for "A Recipe DSL Implementation" do
 
@@ -65,10 +52,6 @@ describe Chef::DSL::Recipe do
 
     it "responds to shell_out" do
       expect(recipe.respond_to?(:shell_out!)).to be true
-    end
-
-    it "responds to shell_out" do
-      expect(recipe.respond_to?(:shell_out_with_systems_locale)).to be true
     end
   end
 

@@ -1,4 +1,4 @@
-require "chef/chef_fs/file_system/memory/memory_dir"
+require_relative "memory_dir"
 
 class Chef
   module ChefFS

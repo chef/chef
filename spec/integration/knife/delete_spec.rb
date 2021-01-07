@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/knife/delete"
 require "chef/knife/list"
@@ -25,77 +26,77 @@ describe "knife delete", :workstation do
   include KnifeSupport
 
   let :everything do
-    <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+    <<~EOM
+      /clients
+      /clients/x.json
+      /cookbooks
+      /cookbooks/x
+      /cookbooks/x/metadata.rb
+      /data_bags
+      /data_bags/x
+      /data_bags/x/y.json
+      /environments
+      /environments/_default.json
+      /environments/x.json
+      /nodes
+      /nodes/x.json
+      /roles
+      /roles/x.json
+      /users
+      /users/x.json
+    EOM
   end
 
   let :server_everything do
-    <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
+    <<~EOM
+      /clients
+      /clients/chef-validator.json
+      /clients/chef-webui.json
+      /clients/x.json
+      /cookbooks
+      /cookbooks/x
+      /cookbooks/x/metadata.rb
+      /data_bags
+      /data_bags/x
+      /data_bags/x/y.json
+      /environments
+      /environments/_default.json
+      /environments/x.json
+      /nodes
+      /nodes/x.json
+      /roles
+      /roles/x.json
+      /users
+      /users/admin.json
+      /users/x.json
+    EOM
   end
   let :server_nothing do
-    <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/cookbooks
-/data_bags
-/environments
-/environments/_default.json
-/nodes
-/roles
-/users
-/users/admin.json
-EOM
+    <<~EOM
+      /clients
+      /clients/chef-validator.json
+      /clients/chef-webui.json
+      /cookbooks
+      /data_bags
+      /environments
+      /environments/_default.json
+      /nodes
+      /roles
+      /users
+      /users/admin.json
+    EOM
   end
 
   let :nothing do
-    <<EOM
-/clients
-/cookbooks
-/data_bags
-/environments
-/nodes
-/roles
-/users
-EOM
+    <<~EOM
+      /clients
+      /cookbooks
+      /data_bags
+      /environments
+      /nodes
+      /roles
+      /users
+    EOM
   end
 
   when_the_chef_server "has one of each thing" do
@@ -122,99 +123,99 @@ EOM
       end
 
       it "knife delete --both /cookbooks/x fails" do
-        knife("delete --both /cookbooks/x").should_fail <<EOM
-ERROR: /cookbooks/x (remote) must be deleted recursively!  Pass -r to knife delete.
-ERROR: /cookbooks/x (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
+        knife("delete --both /cookbooks/x").should_fail <<~EOM
+          ERROR: /cookbooks/x (remote) must be deleted recursively!  Pass -r to knife delete.
+          ERROR: /cookbooks/x (local) must be deleted recursively!  Pass -r to knife delete.
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
 
       it "knife delete --both -r /cookbooks/x deletes x" do
         knife("delete --both -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete -r --local /cookbooks/x deletes x locally but not remotely" do
         knife("delete -r --local /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
         knife("list -Rf /").should_succeed server_everything
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete -r /cookbooks/x deletes x remotely but not locally" do
         knife("delete -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
         knife("list -Rf --local /").should_succeed everything
       end
 
@@ -226,213 +227,213 @@ EOM
         end
 
         it "knife delete --both /data_bags/empty fails but deletes local version" do
-          knife("delete --both /data_bags/empty").should_fail <<EOM
-ERROR: /data_bags/empty (remote) must be deleted recursively!  Pass -r to knife delete.
-ERROR: /data_bags/empty (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
-          knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/empty
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
-          knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/empty
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+          knife("delete --both /data_bags/empty").should_fail <<~EOM
+            ERROR: /data_bags/empty (remote) must be deleted recursively!  Pass -r to knife delete.
+            ERROR: /data_bags/empty (local) must be deleted recursively!  Pass -r to knife delete.
+          EOM
+          knife("list -Rf /").should_succeed <<~EOM
+            /clients
+            /clients/chef-validator.json
+            /clients/chef-webui.json
+            /clients/x.json
+            /cookbooks
+            /cookbooks/x
+            /cookbooks/x/metadata.rb
+            /data_bags
+            /data_bags/empty
+            /data_bags/x
+            /data_bags/x/y.json
+            /environments
+            /environments/_default.json
+            /environments/x.json
+            /nodes
+            /nodes/x.json
+            /roles
+            /roles/x.json
+            /users
+            /users/admin.json
+            /users/x.json
+          EOM
+          knife("list -Rf --local /").should_succeed <<~EOM
+            /clients
+            /clients/x.json
+            /cookbooks
+            /cookbooks/x
+            /cookbooks/x/metadata.rb
+            /data_bags
+            /data_bags/empty
+            /data_bags/x
+            /data_bags/x/y.json
+            /environments
+            /environments/_default.json
+            /environments/x.json
+            /nodes
+            /nodes/x.json
+            /roles
+            /roles/x.json
+            /users
+            /users/x.json
+          EOM
         end
       end
 
       it "knife delete --both /data_bags/x fails" do
-        knife("delete --both /data_bags/x").should_fail <<EOM
-ERROR: /data_bags/x (remote) must be deleted recursively!  Pass -r to knife delete.
-ERROR: /data_bags/x (local) must be deleted recursively!  Pass -r to knife delete.
-EOM
+        knife("delete --both /data_bags/x").should_fail <<~EOM
+          ERROR: /data_bags/x (remote) must be deleted recursively!  Pass -r to knife delete.
+          ERROR: /data_bags/x (local) must be deleted recursively!  Pass -r to knife delete.
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
 
       it "knife delete --both -r /data_bags/x deletes x" do
         knife("delete --both -r /data_bags/x").should_succeed "Deleted /data_bags/x\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /environments/x.json deletes x" do
         knife("delete --both /environments/x.json").should_succeed "Deleted /environments/x.json\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /roles/x.json deletes x" do
         knife("delete --both /roles/x.json").should_succeed "Deleted /roles/x.json\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/users
-/users/admin.json
-/users/x.json
-EOM
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/users
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
-        knife("delete --both /environments/_default.json").should_fail :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", :stdout => "Deleted /environments/_default.json\n"
+        knife("delete --both /environments/_default.json").should_fail stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", stdout: "Deleted /environments/_default.json\n"
         knife("list -Rf /").should_succeed server_everything
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /environments/nonexistent.json fails" do
@@ -442,33 +443,33 @@ EOM
       end
 
       it "knife delete --both / fails" do
-        knife("delete --both /").should_fail <<EOM
-ERROR: / (remote) cannot be deleted.
-ERROR: / (local) cannot be deleted.
-EOM
+        knife("delete --both /").should_fail <<~EOM
+          ERROR: / (remote) cannot be deleted.
+          ERROR: / (local) cannot be deleted.
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
 
       it "knife delete --both -r /* fails" do
-        knife("delete --both -r /*").should_fail <<EOM
-ERROR: / (remote) cannot be deleted.
-ERROR: / (local) cannot be deleted.
-ERROR: /clients (remote) cannot be deleted.
-ERROR: /clients (local) cannot be deleted.
-ERROR: /cookbooks (remote) cannot be deleted.
-ERROR: /cookbooks (local) cannot be deleted.
-ERROR: /data_bags (remote) cannot be deleted.
-ERROR: /data_bags (local) cannot be deleted.
-ERROR: /environments (remote) cannot be deleted.
-ERROR: /environments (local) cannot be deleted.
-ERROR: /nodes (remote) cannot be deleted.
-ERROR: /nodes (local) cannot be deleted.
-ERROR: /roles (remote) cannot be deleted.
-ERROR: /roles (local) cannot be deleted.
-ERROR: /users (remote) cannot be deleted.
-ERROR: /users (local) cannot be deleted.
-EOM
+        knife("delete --both -r /*").should_fail <<~EOM
+          ERROR: / (remote) cannot be deleted.
+          ERROR: / (local) cannot be deleted.
+          ERROR: /clients (remote) cannot be deleted.
+          ERROR: /clients (local) cannot be deleted.
+          ERROR: /cookbooks (remote) cannot be deleted.
+          ERROR: /cookbooks (local) cannot be deleted.
+          ERROR: /data_bags (remote) cannot be deleted.
+          ERROR: /data_bags (local) cannot be deleted.
+          ERROR: /environments (remote) cannot be deleted.
+          ERROR: /environments (local) cannot be deleted.
+          ERROR: /nodes (remote) cannot be deleted.
+          ERROR: /nodes (local) cannot be deleted.
+          ERROR: /roles (remote) cannot be deleted.
+          ERROR: /roles (local) cannot be deleted.
+          ERROR: /users (remote) cannot be deleted.
+          ERROR: /users (local) cannot be deleted.
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed everything
       end
@@ -493,26 +494,26 @@ EOM
 
       it "knife delete --both -r /cookbooks/x deletes x" do
         knife("delete --both -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
@@ -524,83 +525,83 @@ EOM
 
       it "knife delete --both -r /data_bags/x deletes x" do
         knife("delete --both -r /data_bags/x").should_succeed "Deleted /data_bags/x\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
       it "knife delete --both /environments/x.json deletes x" do
         knife("delete --both /environments/x.json").should_succeed "Deleted /environments/x.json\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/admin.json
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
       it "knife delete --both /roles/x.json deletes x" do
         knife("delete --both /roles/x.json").should_succeed "Deleted /roles/x.json\n"
-        knife("list -Rf /").should_succeed <<EOM
-/clients
-/clients/chef-validator.json
-/clients/chef-webui.json
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/users
-/users/admin.json
-/users/x.json
-EOM
+        knife("list -Rf /").should_succeed <<~EOM
+          /clients
+          /clients/chef-validator.json
+          /clients/chef-webui.json
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /users
+          /users/admin.json
+          /users/x.json
+        EOM
         knife("list -Rf --local /").should_succeed nothing
       end
 
       it "knife delete --both /environments/_default.json fails" do
-        knife("delete --both /environments/_default.json").should_fail "", :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
+        knife("delete --both /environments/_default.json").should_fail "", stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n"
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed nothing
       end
@@ -612,24 +613,24 @@ EOM
       end
 
       it "knife delete --both -r /* fails" do
-        knife("delete --both -r /*").should_fail <<EOM
-ERROR: / (remote) cannot be deleted.
-ERROR: / (local) cannot be deleted.
-ERROR: /clients (remote) cannot be deleted.
-ERROR: /clients (local) cannot be deleted.
-ERROR: /cookbooks (remote) cannot be deleted.
-ERROR: /cookbooks (local) cannot be deleted.
-ERROR: /data_bags (remote) cannot be deleted.
-ERROR: /data_bags (local) cannot be deleted.
-ERROR: /environments (remote) cannot be deleted.
-ERROR: /environments (local) cannot be deleted.
-ERROR: /nodes (remote) cannot be deleted.
-ERROR: /nodes (local) cannot be deleted.
-ERROR: /roles (remote) cannot be deleted.
-ERROR: /roles (local) cannot be deleted.
-ERROR: /users (remote) cannot be deleted.
-ERROR: /users (local) cannot be deleted.
-EOM
+        knife("delete --both -r /*").should_fail <<~EOM
+          ERROR: / (remote) cannot be deleted.
+          ERROR: / (local) cannot be deleted.
+          ERROR: /clients (remote) cannot be deleted.
+          ERROR: /clients (local) cannot be deleted.
+          ERROR: /cookbooks (remote) cannot be deleted.
+          ERROR: /cookbooks (local) cannot be deleted.
+          ERROR: /data_bags (remote) cannot be deleted.
+          ERROR: /data_bags (local) cannot be deleted.
+          ERROR: /environments (remote) cannot be deleted.
+          ERROR: /environments (local) cannot be deleted.
+          ERROR: /nodes (remote) cannot be deleted.
+          ERROR: /nodes (local) cannot be deleted.
+          ERROR: /roles (remote) cannot be deleted.
+          ERROR: /roles (local) cannot be deleted.
+          ERROR: /users (remote) cannot be deleted.
+          ERROR: /users (local) cannot be deleted.
+        EOM
         knife("list -Rf /").should_succeed server_everything
         knife("list -Rf --local /").should_succeed nothing
       end
@@ -643,38 +644,38 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
-          knife("list -Rf /").should_succeed <<EOM
-clients
-clients/chef-validator.json
-clients/chef-webui.json
-clients/x.json
-cookbooks
-cookbooks/x
-cookbooks/x/metadata.rb
-data_bags
-data_bags/x
-data_bags/x/y.json
-environments
-environments/_default.json
-environments/x.json
-nodes
-nodes/x.json
-roles
-roles/x.json
-users
-users/admin.json
-users/x.json
-EOM
-          knife("list -Rf --local /").should_succeed <<EOM
-clients
-cookbooks
-data_bags
-environments
-nodes
-roles
-users
-EOM
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
+          knife("list -Rf /").should_succeed <<~EOM
+            clients
+            clients/chef-validator.json
+            clients/chef-webui.json
+            clients/x.json
+            cookbooks
+            cookbooks/x
+            cookbooks/x/metadata.rb
+            data_bags
+            data_bags/x
+            data_bags/x/y.json
+            environments
+            environments/_default.json
+            environments/x.json
+            nodes
+            nodes/x.json
+            roles
+            roles/x.json
+            users
+            users/admin.json
+            users/x.json
+          EOM
+          knife("list -Rf --local /").should_succeed <<~EOM
+            clients
+            cookbooks
+            data_bags
+            environments
+            nodes
+            roles
+            users
+          EOM
         end
       end
     end
@@ -702,23 +703,23 @@ EOM
       it "knife delete --both -r /cookbooks/x deletes x" do
         knife("delete --both -r /cookbooks/x").should_succeed "Deleted /cookbooks/x\n"
         knife("list -Rf /").should_succeed server_nothing
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /data_bags/x fails" do
@@ -730,92 +731,92 @@ EOM
       it "knife delete --both -r /data_bags/x deletes x" do
         knife("delete --both -r /data_bags/x").should_succeed "Deleted /data_bags/x\n"
         knife("list -Rf /").should_succeed server_nothing
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /environments/x.json deletes x" do
         knife("delete --both /environments/x.json").should_succeed "Deleted /environments/x.json\n"
         knife("list -Rf /").should_succeed server_nothing
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /roles/x.json deletes x" do
         knife("delete --both /roles/x.json").should_succeed "Deleted /roles/x.json\n"
         knife("list -Rf /").should_succeed server_nothing
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/_default.json
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/_default.json
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both /environments/_default.json fails but still deletes the local copy" do
-        knife("delete --both /environments/_default.json").should_fail :stderr => "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", :stdout => "Deleted /environments/_default.json\n"
+        knife("delete --both /environments/_default.json").should_fail stderr: "ERROR: /environments/_default.json (remote) cannot be deleted (default environment cannot be modified).\n", stdout: "Deleted /environments/_default.json\n"
         knife("list -Rf /").should_succeed server_nothing
-        knife("list -Rf --local /").should_succeed <<EOM
-/clients
-/clients/x.json
-/cookbooks
-/cookbooks/x
-/cookbooks/x/metadata.rb
-/data_bags
-/data_bags/x
-/data_bags/x/y.json
-/environments
-/environments/x.json
-/nodes
-/nodes/x.json
-/roles
-/roles/x.json
-/users
-/users/x.json
-EOM
+        knife("list -Rf --local /").should_succeed <<~EOM
+          /clients
+          /clients/x.json
+          /cookbooks
+          /cookbooks/x
+          /cookbooks/x/metadata.rb
+          /data_bags
+          /data_bags/x
+          /data_bags/x/y.json
+          /environments
+          /environments/x.json
+          /nodes
+          /nodes/x.json
+          /roles
+          /roles/x.json
+          /users
+          /users/x.json
+        EOM
       end
 
       it "knife delete --both / fails" do
@@ -825,24 +826,24 @@ EOM
       end
 
       it "knife delete --both -r /* fails" do
-        knife("delete --both -r /*").should_fail <<EOM
-ERROR: / (remote) cannot be deleted.
-ERROR: / (local) cannot be deleted.
-ERROR: /clients (remote) cannot be deleted.
-ERROR: /clients (local) cannot be deleted.
-ERROR: /cookbooks (remote) cannot be deleted.
-ERROR: /cookbooks (local) cannot be deleted.
-ERROR: /data_bags (remote) cannot be deleted.
-ERROR: /data_bags (local) cannot be deleted.
-ERROR: /environments (remote) cannot be deleted.
-ERROR: /environments (local) cannot be deleted.
-ERROR: /nodes (remote) cannot be deleted.
-ERROR: /nodes (local) cannot be deleted.
-ERROR: /roles (remote) cannot be deleted.
-ERROR: /roles (local) cannot be deleted.
-ERROR: /users (remote) cannot be deleted.
-ERROR: /users (local) cannot be deleted.
-EOM
+        knife("delete --both -r /*").should_fail <<~EOM
+          ERROR: / (remote) cannot be deleted.
+          ERROR: / (local) cannot be deleted.
+          ERROR: /clients (remote) cannot be deleted.
+          ERROR: /clients (local) cannot be deleted.
+          ERROR: /cookbooks (remote) cannot be deleted.
+          ERROR: /cookbooks (local) cannot be deleted.
+          ERROR: /data_bags (remote) cannot be deleted.
+          ERROR: /data_bags (local) cannot be deleted.
+          ERROR: /environments (remote) cannot be deleted.
+          ERROR: /environments (local) cannot be deleted.
+          ERROR: /nodes (remote) cannot be deleted.
+          ERROR: /nodes (local) cannot be deleted.
+          ERROR: /roles (remote) cannot be deleted.
+          ERROR: /roles (local) cannot be deleted.
+          ERROR: /users (remote) cannot be deleted.
+          ERROR: /users (local) cannot be deleted.
+        EOM
         knife("list -Rf /").should_succeed server_nothing
         knife("list -Rf --local /").should_succeed everything
       end
@@ -856,39 +857,39 @@ EOM
       context "and cwd is at the top level" do
         before { cwd "." }
         it "knife delete fails" do
-          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", :stdout => /USAGE/
-          knife("list -Rf /").should_succeed <<EOM
-clients
-clients/chef-validator.json
-clients/chef-webui.json
-cookbooks
-data_bags
-environments
-environments/_default.json
-nodes
-roles
-users
-users/admin.json
-EOM
-          knife("list -Rf --local /").should_succeed <<EOM
-clients
-clients/x.json
-cookbooks
-cookbooks/x
-cookbooks/x/metadata.rb
-data_bags
-data_bags/x
-data_bags/x/y.json
-environments
-environments/_default.json
-environments/x.json
-nodes
-nodes/x.json
-roles
-roles/x.json
-users
-users/x.json
-EOM
+          knife("delete").should_fail "FATAL: You must specify at least one argument. If you want to delete everything in this directory, run \"knife delete --recurse .\"\n", stdout: /USAGE/
+          knife("list -Rf /").should_succeed <<~EOM
+            clients
+            clients/chef-validator.json
+            clients/chef-webui.json
+            cookbooks
+            data_bags
+            environments
+            environments/_default.json
+            nodes
+            roles
+            users
+            users/admin.json
+          EOM
+          knife("list -Rf --local /").should_succeed <<~EOM
+            clients
+            clients/x.json
+            cookbooks
+            cookbooks/x
+            cookbooks/x/metadata.rb
+            data_bags
+            data_bags/x
+            data_bags/x/y.json
+            environments
+            environments/_default.json
+            environments/x.json
+            nodes
+            nodes/x.json
+            roles
+            roles/x.json
+            users
+            users/x.json
+          EOM
         end
       end
     end
@@ -962,7 +963,7 @@ EOM
     end
   end
 
-  when_the_chef_server "is in Enterprise mode", :osc_compat => false, :single_org => false do
+  when_the_chef_server "is in Enterprise mode", osc_compat: false, single_org: false do
     before do
       organization "foo" do
         container "x", {}

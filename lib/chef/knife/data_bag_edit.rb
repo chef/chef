@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/data_bag_secret_options"
+require_relative "../knife"
+require_relative "data_bag_secret_options"
 
 class Chef
   class Knife
@@ -26,8 +26,8 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require "chef/data_bag_item"
-        require "chef/encrypted_data_bag_item"
+        require_relative "../data_bag_item"
+        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag edit BAG ITEM (options)"
@@ -37,13 +37,13 @@ class Chef
         item = Chef::DataBagItem.load(bag, item_name)
         if encrypted?(item.raw_data)
           if encryption_secret_provided_ignore_encrypt_flag?
-            return Chef::EncryptedDataBagItem.new(item, read_secret).to_hash, true
+            [Chef::EncryptedDataBagItem.new(item, read_secret).to_hash, true]
           else
             ui.fatal("You cannot edit an encrypted data bag without providing the secret.")
             exit(1)
           end
         else
-          return item, false
+          [item.raw_data, false]
         end
       end
 

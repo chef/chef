@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,35 +22,70 @@ require "chef/server_api"
 describe "knife serve", :workstation do
   include IntegrationSupport
   include KnifeSupport
-  include AppServerSupport
+
+  def with_knife_serve
+    exception = nil
+    t = Thread.new do
+
+      knife("serve --chef-zero-port=8890")
+    rescue
+      exception = $!
+
+    end
+    begin
+      Chef::Config.log_level = :debug
+      Chef::Config.chef_server_url = "http://localhost:8890"
+      Chef::Config.node_name = nil
+      Chef::Config.client_key = nil
+      api = Chef::ServerAPI.new
+      yield api
+    rescue
+      if exception
+        raise exception
+      else
+        raise
+      end
+    ensure
+      t.kill
+      sleep 0.5
+    end
+  end
 
   when_the_repository "also has one of each thing" do
-    before { file "nodes/x.json", { "foo" => "bar" } }
+    before do
+      file "nodes/a_node_in_json.json", { "foo" => "bar" }
+      file "nodes/a_node_in_ruby.rb", "name 'a_node_in_ruby'"
+      file "roles/a_role_in_json.json", { "foo" => "bar" }
+      file "roles/a_role_in_ruby.rb", "name 'a_role_in_ruby'"
+    end
 
-    it "knife serve serves up /nodes/x" do
-      exception = nil
-      t = Thread.new do
-        begin
-          knife("serve --chef-zero-port=8890")
-        rescue
-          exception = $!
+    %w{a_node_in_json a_node_in_ruby}.each do |file_type|
+      context file_type do
+        it "knife serve serves up /nodes" do
+          with_knife_serve do |api|
+            expect(api.get("nodes")).to have_key(file_type)
+          end
+        end
+        it "knife serve serves up /nodes/#{file_type}" do
+          with_knife_serve do |api|
+            expect(api.get("nodes/#{file_type}")["name"]).to eq(file_type)
+          end
         end
       end
-      begin
-        Chef::Config.log_level = :debug
-        Chef::Config.chef_server_url = "http://localhost:8890"
-        Chef::Config.node_name = nil
-        Chef::Config.client_key = nil
-        api = Chef::ServerAPI.new
-        expect(api.get("nodes/x")["name"]).to eq("x")
-      rescue
-        if exception
-          raise exception
-        else
-          raise
+    end
+
+    %w{a_role_in_json a_role_in_ruby}.each do |file_type|
+      context file_type do
+        it "knife serve serves up /roles" do
+          with_knife_serve do |api|
+            expect(api.get("roles")).to have_key(file_type)
+          end
         end
-      ensure
-        t.kill
+        it "knife serve serves up /roles/#{file_type}" do
+          with_knife_serve do |api|
+            expect(api.get("roles/#{file_type}")["name"]).to eq(file_type)
+          end
+        end
       end
     end
   end

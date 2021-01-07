@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
 # limitations under the License.
 #
 
-require "chef/resource/user"
+require_relative "../user"
 
 class Chef
   class Resource
     class User
       class SolarisUser < Chef::Resource::User
-        resource_name :solaris_user
+        unified_mode true
 
         provides :solaris_user
         provides :user, os: %w{omnios solaris2}

@@ -1,6 +1,6 @@
 #
 # Author:: Chris Doherty (<cdoherty@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,13 +18,12 @@
 
 require "spec_helper"
 
-describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only, :appveyor_only, :broken => true do
-  # Marking as broken. This test is causing appveyor tests to exit with 116.
+describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_gem_only do
 
   include_context "using Win32::Service"
 
   let(:username) { "service_spec_user" }
-  let(:qualified_username) { "#{ENV['COMPUTERNAME']}\\#{username}" }
+  let(:qualified_username) { "#{ENV["COMPUTERNAME"]}\\#{username}" }
   let(:password) { "1a2b3c4X!&narf" }
 
   let(:user_resource) do
@@ -36,7 +35,7 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
   end
 
   let(:global_service_file_path) do
-    "#{ENV['WINDIR']}\\temp\\#{File.basename(test_service[:service_file_path])}"
+    "#{ENV["WINDIR"]}\\temp\\#{File.basename(test_service[:service_file_path])}"
   end
 
   let(:service_params) do
@@ -59,8 +58,12 @@ describe Chef::Resource::WindowsService, :windows_only, :system_windows_service_
 
   let(:service_resource) do
     r = Chef::Resource::WindowsService.new(service_params[:service_name], run_context)
-    [:run_as_user, :run_as_password].each { |prop| r.send(prop, service_params[prop]) }
+    %i{run_as_user run_as_password}.each { |prop| r.send(prop, service_params[prop]) }
     r
+  end
+
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
   before do

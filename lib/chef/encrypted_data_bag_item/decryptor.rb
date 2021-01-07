@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "yaml"
-require "chef/json_compat"
-require "openssl"
-require "base64"
-require "digest/sha2"
-require "chef/encrypted_data_bag_item"
-require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
-require "chef/encrypted_data_bag_item/decryption_failure"
-require "chef/encrypted_data_bag_item/assertions"
+autoload :YAML, "yaml"
+require_relative "../json_compat"
+autoload :OpenSSL, "openssl"
+autoload :Base64, "base64"
+require "digest/sha2" unless defined?(Digest::SHA2)
+require_relative "../encrypted_data_bag_item"
+require_relative "unsupported_encrypted_data_bag_item_format"
+require_relative "decryption_failure"
+require_relative "assertions"
 
 class Chef::EncryptedDataBagItem
 
@@ -88,13 +88,14 @@ class Chef::EncryptedDataBagItem
       end
 
       def decrypted_data
-        @decrypted_data ||= begin
-          plaintext = openssl_decryptor.update(encrypted_bytes)
-          plaintext << openssl_decryptor.final
-        rescue OpenSSL::Cipher::CipherError => e
-          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{ (@key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : '' }"
-        end
+        @decrypted_data ||=
+          begin
+            plaintext = openssl_decryptor.update(encrypted_bytes)
+            plaintext << openssl_decryptor.final
+          rescue OpenSSL::Cipher::CipherError => e
+            # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{(@key.length < 255 && @key.include?("/")) ? "You may need to use --secret-file rather than --secret." : ""}"
+          end
       end
 
       def encrypted_bytes
@@ -102,12 +103,13 @@ class Chef::EncryptedDataBagItem
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          d = OpenSSL::Cipher.new(algorithm)
-          d.decrypt
-          d.pkcs5_keyivgen(key)
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            d = OpenSSL::Cipher.new(algorithm)
+            d.decrypt
+            d.pkcs5_keyivgen(key)
+            d
+          end
       end
     end
 
@@ -139,25 +141,27 @@ class Chef::EncryptedDataBagItem
       end
 
       def decrypted_data
-        @decrypted_data ||= begin
-          plaintext = openssl_decryptor.update(encrypted_bytes)
-          plaintext << openssl_decryptor.final
-        rescue OpenSSL::Cipher::CipherError => e
-          # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
-          raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{ ( @key.length < 255 && @key.include?('/')) ? 'You may need to use --secret-file rather than --secret.' : '' }"
-        end
+        @decrypted_data ||=
+          begin
+            plaintext = openssl_decryptor.update(encrypted_bytes)
+            plaintext << openssl_decryptor.final
+          rescue OpenSSL::Cipher::CipherError => e
+            # if the key length is less than 255 characters, and it contains slashes, we think it may be a path.
+            raise DecryptionFailure, "Error decrypting data bag value: '#{e.message}'. Most likely the provided key is incorrect. #{( @key.length < 255 && @key.include?("/")) ? "You may need to use --secret-file rather than --secret." : ""}"
+          end
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
-          d = OpenSSL::Cipher.new(algorithm)
-          d.decrypt
-          # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-          d.key = OpenSSL::Digest::SHA256.digest(key)
-          d.iv = iv
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            assert_valid_cipher!(@encrypted_data["cipher"], algorithm)
+            d = OpenSSL::Cipher.new(algorithm)
+            d.decrypt
+            # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
+            d.key = OpenSSL::Digest.digest("SHA256", key)
+            d.iv = iv
+            d
+          end
       end
 
     end
@@ -184,6 +188,7 @@ class Chef::EncryptedDataBagItem
 
       def candidate_hmac_matches?(expected_hmac)
         return false unless @encrypted_data["hmac"]
+
         expected_bytes = expected_hmac.bytes.to_a
         candidate_hmac_bytes = Base64.decode64(@encrypted_data["hmac"]).bytes.to_a
         valid = expected_bytes.size ^ candidate_hmac_bytes.size
@@ -209,16 +214,18 @@ class Chef::EncryptedDataBagItem
         if auth_tag_b64.nil?
           raise DecryptionFailure, "Error decrypting data bag value: invalid authentication tag. Most likely the data is corrupted"
         end
+
         Base64.decode64(auth_tag_b64)
       end
 
       def openssl_decryptor
-        @openssl_decryptor ||= begin
-          d = super
-          d.auth_tag = auth_tag
-          d.auth_data = ""
-          d
-        end
+        @openssl_decryptor ||=
+          begin
+            d = super
+            d.auth_tag = auth_tag
+            d.auth_data = ""
+            d
+          end
       end
 
     end

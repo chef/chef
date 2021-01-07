@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,13 +17,15 @@
 #
 
 require "spec_helper"
+require_relative "../../lib/chef/cookbook_uploader"
 
 describe Chef::CookbookUploader do
 
   let(:http_client) { double("Chef::ServerAPI") }
+  let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
 
   let(:cookbook_loader) do
-    loader = Chef::CookbookLoader.new(File.join(CHEF_SPEC_DATA, "cookbooks"))
+    loader = Chef::CookbookLoader.new(cookbook_path)
     loader.load_cookbooks
     loader.cookbooks_by_name["apache2"].identifier = apache2_identifier
     loader.cookbooks_by_name["java"].identifier = java_identifier
@@ -55,6 +57,10 @@ describe Chef::CookbookUploader do
 
   let(:uploader) { described_class.new(cookbooks_to_upload, rest: http_client, policy_mode: policy_mode) }
 
+  before do
+    allow(Chef::Config).to receive(:cookbook_path) { cookbook_path }
+  end
+
   it "defaults to not enabling policy mode" do
     expect(described_class.new(cookbooks_to_upload, rest: http_client).policy_mode?).to be(false)
   end
@@ -65,7 +71,7 @@ describe Chef::CookbookUploader do
 
   it "creates an HTTP client with default configuration when not initialized with one" do
     default_http_client = double("Chef::ServerAPI")
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url]).and_return(default_http_client)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], version_class: Chef::CookbookManifestVersions).and_return(default_http_client)
     uploader = described_class.new(cookbooks_to_upload)
     expect(uploader.rest).to eq(default_http_client)
   end
@@ -85,9 +91,9 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_create
-      expect(http_client).to receive(:post).
-        with("sandboxes", { :checksums => checksums_set }).
-        and_return(sandbox_response)
+      expect(http_client).to receive(:post)
+        .with("sandboxes", { checksums: checksums_set })
+        .and_return(sandbox_response)
     end
 
     def expect_checksum_upload
@@ -96,12 +102,12 @@ describe Chef::CookbookUploader do
 
         upload_headers = {
           "content-type" => "application/x-binary",
-          "content-md5"  => an_instance_of(String),
-          "accept"       => "application/json",
+          "content-md5" => an_instance_of(String),
+          "accept" => "application/json",
         }
 
-        expect(http_client).to receive(:put).
-          with(url_for(md5), IO.binread(file_path), upload_headers)
+        expect(http_client).to receive(:put)
+          .with(url_for(md5), IO.binread(file_path), upload_headers)
 
       end
     end
@@ -111,14 +117,14 @@ describe Chef::CookbookUploader do
     end
 
     def expect_sandbox_commit
-      expect(http_client).to receive(:put).with(sandbox_commit_uri, { :is_completed => true })
+      expect(http_client).to receive(:put).with(sandbox_commit_uri, { is_completed: true })
     end
 
     def expect_cookbook_create
       cookbooks_to_upload.each do |cookbook|
 
-        expect(http_client).to receive(:put).
-          with(expected_save_url(cookbook), cookbook)
+        expect(http_client).to receive(:put)
+          .with(expected_save_url(cookbook), cookbook)
 
       end
     end

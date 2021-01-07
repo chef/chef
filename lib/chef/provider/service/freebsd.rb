@@ -16,9 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
-require "chef/provider/service/init"
-require "chef/mixin/command"
+require_relative "../../resource/service"
+require_relative "init"
 
 class Chef
   class Provider
@@ -48,7 +47,7 @@ class Chef
 
           return current_resource unless init_command
 
-          Chef::Log.debug("#{current_resource} found at #{init_command}")
+          logger.trace("#{current_resource} found at #{init_command}")
 
           @status_load_success = true
           determine_current_status! # see Chef::Provider::Service::Simple
@@ -68,13 +67,13 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             a.assertion { enabled_state_found }
-            # for consistentcy with original behavior, this will not fail in non-whyrun mode;
+            # for consistency with original behavior, this will not fail in non-whyrun mode;
             # rather it will silently set enabled state=>false
             a.whyrun "Unable to determine enabled/disabled state, assuming this will be correct for an actual run.  Assuming disabled."
           end
 
           requirements.assert(:start, :enable, :reload, :restart) do |a|
-            a.assertion { service_enable_variable_name != nil }
+            a.assertion { !service_enable_variable_name.nil? }
             a.failure_message Chef::Exceptions::Service, "Could not find the service name in #{init_command} and rcvar"
             # No recovery in whyrun mode - the init file is present but not correct.
           end
@@ -84,7 +83,7 @@ class Chef
           if new_resource.start_command
             super
           else
-            shell_out_with_systems_locale!("#{init_command} faststart")
+            shell_out!("#{init_command} faststart", default_env: false)
           end
         end
 
@@ -92,7 +91,7 @@ class Chef
           if new_resource.stop_command
             super
           else
-            shell_out_with_systems_locale!("#{init_command} faststop")
+            shell_out!("#{init_command} faststop", default_env: false)
           end
         end
 
@@ -100,7 +99,7 @@ class Chef
           if new_resource.restart_command
             super
           elsif supports[:restart]
-            shell_out_with_systems_locale!("#{init_command} fastrestart")
+            shell_out!("#{init_command} fastrestart", default_env: false)
           else
             stop_service
             sleep 1
@@ -119,7 +118,7 @@ class Chef
         private
 
         def read_rc_conf
-          ::File.open("/etc/rc.conf", "r") { |file| file.readlines }
+          ::File.open("/etc/rc.conf", "r", &:readlines)
         end
 
         def write_rc_conf(lines)
@@ -146,7 +145,7 @@ class Chef
                 end
                 # some scripts support multiple instances through symlinks such as openvpn.
                 # We should get the service name from rcvar.
-                Chef::Log.debug("name=\"service\" not found at #{init_command}. falling back to rcvar")
+                logger.trace("name=\"service\" not found at #{init_command}. falling back to rcvar")
                 shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
               else
                 # for why-run mode when the rcd_script is not there yet
@@ -162,9 +161,9 @@ class Chef
               case line
               when /^#{Regexp.escape(var_name)}="(\w+)"/
                 enabled_state_found!
-                if $1 =~ /^yes$/i
+                if $1.casecmp?("yes")
                   current_resource.enabled true
-                elsif $1 =~ /^(no|none)$/i
+                elsif $1.casecmp?("no") || $1.casecmp?("none")
                   current_resource.enabled false
                 end
               end
@@ -172,7 +171,7 @@ class Chef
           end
 
           if current_resource.enabled.nil?
-            Chef::Log.debug("#{new_resource.name} enable/disable state unknown")
+            logger.trace("#{new_resource.name} enable/disable state unknown")
             current_resource.enabled false
           end
         end

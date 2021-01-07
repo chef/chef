@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,8 +31,36 @@ describe Chef::Resource::AptPackage, "initialize" do
 
   let(:resource) { Chef::Resource::AptPackage.new("foo") }
 
-  it "should support default_release" do
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
+
+  it "supports default_release" do
     resource.default_release("lenny-backports")
     expect(resource.default_release).to eql("lenny-backports")
+  end
+
+  it "should preserve configuration files by default" do
+    expect(resource.overwrite_config_files).to eql(false)
+  end
+
+  it "accepts a string for the response file" do
+    resource.response_file "something"
+    expect(resource.response_file).to eql("something")
+  end
+
+  it "accepts a hash for response file template variables" do
+    resource.response_file_variables({ variables: true })
+    expect(resource.response_file_variables).to eql({ variables: true })
   end
 end

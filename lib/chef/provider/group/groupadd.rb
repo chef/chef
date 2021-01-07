@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,8 +35,8 @@ class Chef
           super
           required_binaries.each do |required_binary|
             requirements.assert(:all_actions) do |a|
-              a.assertion { ::File.exists?(required_binary) }
-              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{@new_resource}"
+              a.assertion { ::File.exist?(required_binary) }
+              a.failure_message Chef::Exceptions::Group, "Could not find binary #{required_binary} for #{new_resource}"
               # No whyrun alternative: this component should be available in the base install of any given system that uses it
             end
           end
@@ -44,54 +44,49 @@ class Chef
 
         # Create the group
         def create_group
-          command = "groupadd"
-          command << set_options
-          command << groupadd_options
-          run_command(:command => command)
+          shell_out!("groupadd", set_options, groupadd_options)
           modify_group_members
         end
 
         # Manage the group when it already exists
         def manage_group
-          command = "groupmod"
-          command << set_options
-          run_command(:command => command)
+          shell_out!("groupmod", set_options)
           modify_group_members
         end
 
         # Remove the group
         def remove_group
-          run_command(:command => "groupdel #{@new_resource.group_name}")
+          shell_out!("groupdel", new_resource.group_name)
         end
 
         def modify_group_members
-          if @new_resource.append
-            if @new_resource.members && !@new_resource.members.empty?
+          if new_resource.append
+            if new_resource.members && !new_resource.members.empty?
               members_to_be_added = [ ]
-              @new_resource.members.each do |member|
-                members_to_be_added << member if !@current_resource.members.include?(member)
+              new_resource.members.each do |member|
+                members_to_be_added << member unless current_resource.members.include?(member)
               end
               members_to_be_added.each do |member|
-                Chef::Log.debug("#{@new_resource} appending member #{member} to group #{@new_resource.group_name}")
+                logger.trace("#{new_resource} appending member #{member} to group #{new_resource.group_name}")
                 add_member(member)
               end
             end
 
-            if @new_resource.excluded_members && !@new_resource.excluded_members.empty?
+            if new_resource.excluded_members && !new_resource.excluded_members.empty?
               members_to_be_removed = [ ]
-              @new_resource.excluded_members.each do |member|
-                members_to_be_removed << member if @current_resource.members.include?(member)
+              new_resource.excluded_members.each do |member|
+                members_to_be_removed << member if current_resource.members.include?(member)
               end
 
               members_to_be_removed.each do |member|
-                Chef::Log.debug("#{@new_resource} removing member #{member} from group #{@new_resource.group_name}")
+                logger.trace("#{new_resource} removing member #{member} from group #{new_resource.group_name}")
                 remove_member(member)
               end
             end
           else
-            members_description = @new_resource.members.empty? ? "none" : @new_resource.members.join(", ")
-            Chef::Log.debug("#{@new_resource} setting group members to: #{members_description}")
-            set_members(@new_resource.members)
+            members_description = new_resource.members.empty? ? "none" : new_resource.members.join(", ")
+            logger.trace("#{new_resource} setting group members to: #{members_description}")
+            set_members(new_resource.members)
           end
         end
 
@@ -112,22 +107,24 @@ class Chef
         # ==== Returns
         # <string>:: A string containing the option and then the quoted value
         def set_options
-          opts = ""
-          { :gid => "-g" }.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
-            if @current_resource.send(field) != @new_resource.send(field)
-              if @new_resource.send(field)
-                opts << " #{option} '#{@new_resource.send(field)}'"
-                Chef::Log.debug("#{@new_resource} set #{field} to #{@new_resource.send(field)}")
-              end
-            end
+          opts = []
+          { gid: "-g" }.sort_by { |a| a[0] }.each do |field, option|
+            next unless current_resource.send(field) != new_resource.send(field)
+            next unless new_resource.send(field)
+
+            opts << option
+            opts << new_resource.send(field)
+            logger.trace("#{new_resource} set #{field} to #{new_resource.send(field)}")
           end
-          opts << " #{@new_resource.group_name}"
+          opts << new_resource.group_name
+          opts
         end
 
         def groupadd_options
-          opts = ""
-          opts << " -r" if @new_resource.system
-          opts << " -o" if @new_resource.non_unique
+          opts = []
+          # Solaris doesn't support system groups.
+          opts << "-r" if new_resource.system && !node.platform?("solaris2")
+          opts << "-o" if new_resource.non_unique
           opts
         end
 

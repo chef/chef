@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,15 +28,15 @@ shared_examples_for "an api error inspector" do
   before do
     @node_name = "test-node.example.com"
     @config = {
-      :validation_client_name => "testorg-validator",
-      :validation_key => "/etc/chef/testorg-validator.pem",
-      :chef_server_url => "https://chef-api.example.com",
-      :node_name => "testnode-name",
-      :client_key => "/etc/chef/client.pem",
+      validation_client_name: "testorg-validator",
+      validation_key: "/etc/chef/testorg-validator.pem",
+      chef_server_url: "https://chef-api.example.com",
+      node_name: "testnode-name",
+      client_key: "/etc/chef/client.pem",
     }
     @description = Chef::Formatters::ErrorDescription.new("Error registering the node:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
 
   end
 
@@ -71,7 +71,7 @@ shared_examples_for "an api error inspector" do
       @response_body = "synchronize the clock on your host"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
+      @exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
     end
@@ -87,7 +87,7 @@ shared_examples_for "an api error inspector" do
       @response_body = "check your key and node name"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
+      @exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
     end
@@ -103,7 +103,7 @@ shared_examples_for "an api error inspector" do
       @response_body = "forbidden"
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+      @exception = Net::HTTPClientException.new("(exception) forbidden", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
     end
@@ -119,7 +119,7 @@ shared_examples_for "an api error inspector" do
       @response_body = "didn't like your data"
       @response = Net::HTTPBadRequest.new("1.1", "400", "(response) bad request")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) bad request", @response)
+      @exception = Net::HTTPClientException.new("(exception) bad request", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
     end
@@ -135,7 +135,7 @@ shared_examples_for "an api error inspector" do
       @response_body = "probably caused by a redirect to a get"
       @response = Net::HTTPNotFound.new("1.1", "404", "(response) not found")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) not found", @response)
+      @exception = Net::HTTPClientException.new("(exception) not found", @response)
       @inspector = described_class.new(@node_name, @exception, @config)
       @inspector.add_explanation(@description)
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -127,18 +127,6 @@ describe Chef::PolicyBuilder::Dynamic do
 
           it "uses the ExpandNodeObject implementation" do
             expect(implementation).to be_a(Chef::PolicyBuilder::ExpandNodeObject)
-          end
-
-        end
-
-        context "and :use_policyfile is set in Chef::Config" do
-
-          before do
-            Chef::Config[:use_policyfile] = true
-          end
-
-          it "uses the Policyfile implementation" do
-            expect(implementation).to be_a(Chef::PolicyBuilder::Policyfile)
           end
 
         end

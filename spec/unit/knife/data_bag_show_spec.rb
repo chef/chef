@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,8 @@ describe Chef::Knife::DataBagShow do
 
   let(:data_bag_contents) do
     { "id" => "id", "baz" => "http://localhost:4000/data/bag_o_data/baz",
-      "qux" => "http://localhost:4000/data/bag_o_data/qux" } end
+      "qux" => "http://localhost:4000/data/bag_o_data/qux" }
+  end
   let(:enc_hash) { Chef::EncryptedDataBagItem.encrypt_data_bag_item(data_bag_contents, secret) }
   let(:data_bag) { Chef::DataBagItem.from_hash(data_bag_contents) }
   let(:data_bag_with_encoded_hash) { Chef::DataBagItem.from_hash(enc_hash) }
@@ -91,18 +92,32 @@ qux: http://localhost:4000/data/bag_o_data/qux}
   context "Data bag to show is not encrypted" do
     before do
       allow(knife).to receive(:encrypted?).and_return(false)
-      expect(knife).to receive(:read_secret).exactly(0).times
     end
 
     it "displays the data bag" do
+      expect(knife).to receive(:read_secret).exactly(0).times
       expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
-      expect(knife.ui).to receive(:warn).with("Unencrypted data bag detected, ignoring any provided secret options.")
 
       expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
 id:  id
 qux: http://localhost:4000/data/bag_o_data/qux}
       knife.run
       expect(stdout.string.strip).to eq(expected)
+    end
+
+    context "when a secret is given" do
+      it "displays the data bag" do
+        expect(knife).to receive(:encryption_secret_provided_ignore_encrypt_flag?).and_return(true)
+        expect(knife).to receive(:read_secret).and_return(secret)
+        expect(Chef::DataBagItem).to receive(:load).with(bag_name, item_name).and_return(data_bag)
+        expect(knife.ui).to receive(:warn).with("Unencrypted data bag detected, ignoring any provided secret options.")
+
+        expected = %q{baz: http://localhost:4000/data/bag_o_data/baz
+id:  id
+qux: http://localhost:4000/data/bag_o_data/qux}
+        knife.run
+        expect(stdout.string.strip).to eq(expected)
+      end
     end
   end
 

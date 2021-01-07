@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,9 +38,9 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     let(:target_file_mode) { 0644 }
     let(:target_file_stat) do
       double "File::Stat struct for target file",
-           :mode => target_file_mode,
-           :uid => target_file_uid,
-           :gid => target_file_gid
+        mode: target_file_mode,
+        uid: target_file_uid,
+        gid: target_file_gid
     end
 
     before do
@@ -76,7 +76,7 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
     context "when the user does not have permissions to set file ownership" do
 
       # The test code does not care what these values are. These values are
-      # chosen because they're representitive of the case that chef-client is
+      # chosen because they're representative of the case that chef-client is
       # running as non-root and is managing a file that got ownership set to
       # root somehow. In this example, gid==20 is something like "staff" which
       # the user running chef-client is a member of (but it's not that user's
@@ -97,5 +97,17 @@ describe Chef::FileContentManagement::Deploy::MvUnix do
       end
     end
 
+  end
+
+  describe "when testing against real files", unix_only: true do
+    it "preserves sticky bits" do
+      staging_file = Tempfile.new("staging_file")
+      target_file = Tempfile.new("target_file")
+      File.chmod(04755, target_file.path)
+      content_deployer.deploy(staging_file.path, target_file.path)
+      expect(::File.stat(target_file.path).mode & 07777).to eql(04755)
+      staging_file.unlink
+      target_file.unlink
+    end
   end
 end

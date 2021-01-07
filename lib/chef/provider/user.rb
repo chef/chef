@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,16 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/mixin/command"
-require "etc"
+require_relative "../provider"
+require "etc" unless defined?(Etc)
 
 class Chef
   class Provider
     class User < Chef::Provider
-      include Chef::Mixin::Command
 
       attr_accessor :user_exists, :locked
+      attr_accessor :change_desc
 
       def initialize(new_resource, run_context)
         super
@@ -36,74 +35,70 @@ class Chef
       end
 
       def convert_group_name
-        if @new_resource.gid.is_a? String
-          @new_resource.gid(Etc.getgrnam(@new_resource.gid).gid)
+        if new_resource.gid.is_a?(String) && new_resource.gid.to_i == 0
+          new_resource.gid(Etc.getgrnam(new_resource.gid).gid)
         end
-      rescue ArgumentError => e
+      rescue ArgumentError
         @group_name_resolved = false
       end
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
-        @current_resource = Chef::Resource::User.new(@new_resource.name)
-        @current_resource.username(@new_resource.username)
+        @current_resource = Chef::Resource::User.new(new_resource.name)
+        current_resource.username(new_resource.username)
 
         begin
-          user_info = Etc.getpwnam(@new_resource.username)
-        rescue ArgumentError => e
+          user_info = Etc.getpwnam(new_resource.username)
+        rescue ArgumentError
           @user_exists = false
-          Chef::Log.debug("#{@new_resource} user does not exist")
+          logger.trace("#{new_resource} user does not exist")
           user_info = nil
         end
 
         if user_info
-          @current_resource.uid(user_info.uid)
-          @current_resource.gid(user_info.gid)
-          @current_resource.home(user_info.dir)
-          @current_resource.shell(user_info.shell)
-          @current_resource.password(user_info.passwd)
+          current_resource.uid(user_info.uid)
+          current_resource.gid(user_info.gid)
+          current_resource.home(user_info.dir)
+          current_resource.shell(user_info.shell)
+          current_resource.password(user_info.passwd)
 
-          if @new_resource.comment
-            user_info.gecos.force_encoding(@new_resource.comment.encoding)
+          if new_resource.comment
+            user_info.gecos.force_encoding(new_resource.comment.encoding)
           end
-          @current_resource.comment(user_info.gecos)
+          current_resource.comment(user_info.gecos)
 
-          if @new_resource.password && @current_resource.password == "x"
+          if new_resource.password && current_resource.password == "x"
             begin
               require "shadow"
             rescue LoadError
               @shadow_lib_ok = false
             else
-              shadow_info = Shadow::Passwd.getspnam(@new_resource.username)
-              @current_resource.password(shadow_info.sp_pwdp)
+              shadow_info = Shadow::Passwd.getspnam(new_resource.username)
+              current_resource.password(shadow_info.sp_pwdp)
             end
           end
 
-          convert_group_name if @new_resource.gid
+          convert_group_name if new_resource.gid
         end
 
-        @current_resource
+        current_resource
       end
 
       def define_resource_requirements
         requirements.assert(:create, :modify, :manage, :lock, :unlock) do |a|
           a.assertion { @group_name_resolved }
-          a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{@new_resource.gid}"
-          a.whyrun "group name #{@new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
+          a.failure_message Chef::Exceptions::User, "Couldn't lookup integer GID for group name #{new_resource.gid}"
+          a.whyrun "group name #{new_resource.gid} does not exist.  This will cause group assignment to fail.  Assuming this group will have been created previously."
         end
         requirements.assert(:all_actions) do |a|
           a.assertion { @shadow_lib_ok }
           a.failure_message Chef::Exceptions::MissingLibrary, "You must have ruby-shadow installed for password support!"
-          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." +
+          a.whyrun "ruby-shadow is not installed. Attempts to set user password will cause failure.  Assuming that this gem will have been previously installed." \
             "Note that user update converge may report false-positive on the basis of mismatched password. "
         end
         requirements.assert(:modify, :lock, :unlock) do |a|
           a.assertion { @user_exists }
-          a.failure_message(Chef::Exceptions::User, "Cannot modify user #{@new_resource.username} - does not exist!")
-          a.whyrun("Assuming user #{@new_resource.username} would have been created")
+          a.failure_message(Chef::Exceptions::User, "Cannot modify user #{new_resource.username} - does not exist!")
+          a.whyrun("Assuming user #{new_resource.username} would have been created")
         end
       end
 
@@ -113,77 +108,82 @@ class Chef
       # <true>:: If a change is required
       # <false>:: If the users are identical
       def compare_user
-        changed = [ :comment, :home, :shell, :password ].select do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+        @change_desc = []
+        if !new_resource.home.nil? && Pathname.new(new_resource.home).cleanpath != Pathname.new(current_resource.home).cleanpath
+          @change_desc << "change homedir from #{current_resource.home} to #{new_resource.home}"
         end
 
-        changed += [ :uid, :gid ].select do |user_attrib|
-          !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib).to_s != @current_resource.send(user_attrib).to_s
+        %i{comment shell password uid gid}.each do |user_attrib|
+          new_val = new_resource.send(user_attrib)
+          cur_val = current_resource.send(user_attrib)
+          if !new_val.nil? && new_val.to_s != cur_val.to_s
+            @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+          end
         end
 
-        changed.any?
+        !@change_desc.empty?
       end
 
-      def action_create
+      action :create do
         if !@user_exists
-          converge_by("create user #{@new_resource.username}") do
+          converge_by("create user #{new_resource.username}") do
             create_user
-            Chef::Log.info("#{@new_resource} created")
+            logger.info("#{new_resource} created")
           end
         elsif compare_user
-          converge_by("alter user #{@new_resource.username}") do
+          converge_by(["alter user #{new_resource.username}"] + change_desc) do
             manage_user
-            Chef::Log.info("#{@new_resource} altered")
+            logger.info("#{new_resource} altered, #{change_desc.join(", ")}")
           end
         end
       end
 
-      def action_remove
-        if @user_exists
-          converge_by("remove user #{@new_resource.username}") do
-            remove_user
-            Chef::Log.info("#{@new_resource} removed")
-          end
+      action :remove do
+        return unless @user_exists
+
+        converge_by("remove user #{new_resource.username}") do
+          remove_user
+          logger.info("#{new_resource} removed")
         end
       end
 
-      def action_manage
-        if @user_exists && compare_user
-          converge_by("manage user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} managed")
-          end
+      action :manage do
+        return unless @user_exists && compare_user
+
+        converge_by(["manage user #{new_resource.username}"] + change_desc) do
+          manage_user
+          logger.info("#{new_resource} managed: #{change_desc.join(", ")}")
         end
       end
 
-      def action_modify
-        if compare_user
-          converge_by("modify user #{@new_resource.username}") do
-            manage_user
-            Chef::Log.info("#{@new_resource} modified")
-          end
+      action :modify do
+        return unless compare_user
+
+        converge_by(["modify user #{new_resource.username}"] + change_desc) do
+          manage_user
+          logger.info("#{new_resource} modified: #{change_desc.join(", ")}")
         end
       end
 
-      def action_lock
-        if check_lock() == false
-          converge_by("lock the user #{@new_resource.username}") do
+      action :lock do
+        if check_lock == false
+          converge_by("lock the user #{new_resource.username}") do
             lock_user
-            Chef::Log.info("#{@new_resource} locked")
+            logger.info("#{new_resource} locked")
           end
         else
-          Chef::Log.debug("#{@new_resource} already locked - nothing to do")
+          logger.trace("#{new_resource} already locked - nothing to do")
         end
       end
 
-      def action_unlock
-        if check_lock() == true
-          converge_by("unlock user #{@new_resource.username}") do
+      action :unlock do
+        if check_lock == true
+          converge_by("unlock user #{new_resource.username}") do
             unlock_user
-            Chef::Log.info("#{@new_resource} unlocked")
+            logger.info("#{new_resource} unlocked")
           end
         else
-          Chef::Log.debug("#{@new_resource} already unlocked - nothing to do")
+          logger.trace("#{new_resource} already unlocked - nothing to do")
         end
       end
 
@@ -209,6 +209,24 @@ class Chef
 
       def check_lock
         raise NotImplementedError
+      end
+
+      private
+
+      #
+      # helpers for subclasses
+      #
+
+      def should_set?(sym)
+        current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
+      end
+
+      def updating_home?
+        return false if new_resource.home.nil?
+        return true if current_resource.home.nil?
+
+        # Pathname#cleanpath matches more edge conditions than File.expand_path()
+        new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
       end
     end
   end

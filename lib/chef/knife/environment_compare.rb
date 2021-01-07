@@ -16,29 +16,29 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class EnvironmentCompare < Knife
 
       deps do
-        require "chef/environment"
+        require_relative "../environment"
       end
 
       banner "knife environment compare [ENVIRONMENT..] (options)"
 
       option :all,
-        :short => "-a",
-        :long => "--all",
-        :description => "Show all cookbooks",
-        :boolean => true
+        short: "-a",
+        long: "--all",
+        description: "Show all cookbooks.",
+        boolean: true
 
       option :mismatch,
-        :short => "-m",
-        :long => "--mismatch",
-        :description => "Only show mismatching versions",
-        :boolean => true
+        short: "-m",
+        long: "--mismatch",
+        description: "Only show mismatching versions.",
+        boolean: true
 
       def run
         # Get the commandline environments or all if none are provided.
@@ -81,7 +81,7 @@ class Chef
 
       def constraint_list(environments)
         constraints = {}
-        environments.each do |env, url|
+        environments.each do |env, url| # rubocop:disable Style/HashEachMethods
           # Because you cannot modify the default environment I filter it out here.
           unless env == "_default"
             envdata = Chef::Environment.load(env)
@@ -94,21 +94,22 @@ class Chef
 
       def cookbook_list(constraints)
         result = {}
-        constraints.each { |env, cb| result.merge!(cb) }
+        constraints.each_value { |cb| result.merge!(cb) }
         result
       end
 
       def matrix_output(cookbooks, constraints)
         rows = [ "" ]
         environments = []
-        constraints.each { |e, v| environments << e.to_s }
+        constraints.each_key { |e| environments << e.to_s }
         columns = environments.count + 1
         environments.each { |env| rows << ui.color(env, :bold) }
-        cookbooks.each do |c, v|
+        cookbooks.each_key do |c|
           total = []
           environments.each { |n| total << constraints[n][c] }
           if total.uniq.count == 1
             next if config[:mismatch]
+
             color = :white
           else
             color = :yellow

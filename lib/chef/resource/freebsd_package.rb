@@ -1,7 +1,7 @@
 #
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza.
 # License:: Apache License, Version 2.0
 #
@@ -18,43 +18,34 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/freebsd/port"
-require "chef/provider/package/freebsd/pkg"
-require "chef/provider/package/freebsd/pkgng"
-require "chef/mixin/shell_out"
+require_relative "package"
+require_relative "../provider/package/freebsd/port"
+require_relative "../provider/package/freebsd/pkgng"
 
 class Chef
   class Resource
     class FreebsdPackage < Chef::Resource::Package
-      include Chef::Mixin::ShellOut
-
-      resource_name :freebsd_package
+      unified_mode true
+      provides :freebsd_package
       provides :package, platform: "freebsd"
 
+      description "Use the **freebsd_package** resource to manage packages for the FreeBSD platform."
+
+      # make sure we assign the appropriate underlying providers based on what
+      # package managers exist on this FreeBSD system or the source of the package
+      #
+      # @return [void]
       def after_created
         assign_provider
       end
 
-      def supports_pkgng?
-        ships_with_pkgng? || !!shell_out!("make -V WITH_PKGNG", :env => nil).stdout.match(/yes/i)
-      end
-
       private
 
-      def ships_with_pkgng?
-        # It was not until __FreeBSD_version 1000017 that pkgng became
-        # the default binary package manager. See '/usr/ports/Mk/bsd.port.mk'.
-        node[:os_version].to_i >= 1000017
-      end
-
       def assign_provider
-        @provider = if source.to_s =~ /^ports$/i
+        @provider = if /^ports$/i.match?(source.to_s)
                       Chef::Provider::Package::Freebsd::Port
-                    elsif supports_pkgng?
-                      Chef::Provider::Package::Freebsd::Pkgng
                     else
-                      Chef::Provider::Package::Freebsd::Pkg
+                      Chef::Provider::Package::Freebsd::Pkgng
                     end
       end
     end

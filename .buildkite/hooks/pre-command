@@ -1,0 +1,38 @@
+#!/bin/bash
+
+set -eu
+
+# Only execute in the verify pipeline
+[[ "$BUILDKITE_PIPELINE_NAME" =~ verify$ ]] || exit 0
+
+docker ps || true
+free -m || true
+
+# We've now seen cases where origin/master on the build hosts can get
+# out of date. This causes us to build components unnecessarily.
+# Fetching it here hopefully will prevent this situation.
+echo "Fetching origin/master"
+git fetch origin master
+
+# DEBUGGING FOR RELENG
+# Fetch the git tags to see if that addresses the weird smart build behavior for Habitat
+git fetch --tags --force
+
+# Rebase onto current master to ensure this PR is closer to what happens when it's merged.
+# Only do this if it's actually a branch (i.e. a PR or a manually created build), not a
+# post-merge CI run of master.
+if [[ "$BUILDKITE_BRANCH" != "master" ]]; then
+  git config user.email "you@example.com" # these are needed for the rebase attempt
+  git config user.name "Your Name"
+  master=$(git show-ref -s --abbrev origin/master)
+  pr_head=$(git show-ref -s --abbrev HEAD)
+  github="https://github.com/chef/chef/commit/"
+  if git rebase origin/master >/dev/null; then
+    buildkite-agent annotate --style success --context "rebase-pr-branch-${master}" \
+      "Rebased onto master ([${master}](${github}${master}))."
+  else
+    git rebase --abort
+    buildkite-agent annotate --style warning --context "rebase-pr-branch-${master}" \
+      "Couldn't rebase onto master ([${master}](${github}${master})), building PR HEAD ([${pr_head}](${github}${pr_head}))."
+  fi
+fi

@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,20 +17,14 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/mixin/shell_out"
-require "chef/provider"
+require_relative "../log"
+require_relative "../provider"
 
 class Chef
   class Provider
     class Mount < Chef::Provider
-      include Chef::Mixin::ShellOut
 
       attr_accessor :unmount_retries
-
-      def whyrun_supported?
-        true
-      end
 
       def load_current_resource
         true
@@ -41,72 +35,74 @@ class Chef
         self.unmount_retries = 20
       end
 
-      def action_mount
+      action :mount do
         unless current_resource.mounted
           converge_by("mount #{current_resource.device} to #{current_resource.mount_point}") do
             mount_fs
-            Chef::Log.info("#{new_resource} mounted")
+            logger.info("#{new_resource} mounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already mounted")
+          logger.trace("#{new_resource} is already mounted")
         end
       end
 
-      def action_umount
+      action :umount do
         if current_resource.mounted
           converge_by("unmount #{current_resource.device}") do
             umount_fs
-            Chef::Log.info("#{new_resource} unmounted")
+            logger.info("#{new_resource} unmounted")
           end
         else
-          Chef::Log.debug("#{new_resource} is already unmounted")
+          logger.trace("#{new_resource} is already unmounted")
         end
       end
 
-      def action_remount
+      action :remount do
         if current_resource.mounted
           if new_resource.supports[:remount]
             converge_by("remount #{current_resource.device}") do
               remount_fs
-              Chef::Log.info("#{new_resource} remounted")
+              logger.info("#{new_resource} remounted")
             end
           else
             converge_by("unmount #{current_resource.device}") do
               umount_fs
-              Chef::Log.info("#{new_resource} unmounted")
+              logger.info("#{new_resource} unmounted")
             end
             wait_until_unmounted(unmount_retries)
             converge_by("mount #{current_resource.device}") do
               mount_fs
-              Chef::Log.info("#{new_resource} mounted")
+              logger.info("#{new_resource} mounted")
             end
           end
         else
-          Chef::Log.debug("#{new_resource} not mounted, nothing to remount")
+          logger.trace("#{new_resource} not mounted, nothing to remount")
         end
       end
 
-      def action_enable
-        unless current_resource.enabled && mount_options_unchanged?
+      action :enable do
+        unless current_resource.enabled && mount_options_unchanged? && device_unchanged?
           converge_by("enable #{current_resource.device}") do
             enable_fs
-            Chef::Log.info("#{new_resource} enabled")
+            logger.info("#{new_resource} enabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already enabled")
+          logger.trace("#{new_resource} already enabled")
         end
       end
 
-      def action_disable
+      action :disable do
         if current_resource.enabled
           converge_by("disable #{current_resource.device}") do
             disable_fs
-            Chef::Log.info("#{new_resource} disabled")
+            logger.info("#{new_resource} disabled")
           end
         else
-          Chef::Log.debug("#{new_resource} already disabled")
+          logger.trace("#{new_resource} already disabled")
         end
       end
+
+      alias :action_unmount :action_umount
 
       #
       # Abstract Methods to be implemented by subclasses
@@ -120,6 +116,17 @@ class Chef
       # should check new_resource against current_resource to see if mount options need updating, returns true/false
       def mount_options_unchanged?
         raise Chef::Exceptions::UnsupportedAction, "#{self} does not implement #mount_options_unchanged?"
+      end
+
+      # It's entirely plausible that a site might prefer UUIDs or labels, so
+      # we need to be able to update fstab to conform with their wishes
+      # without necessarily needing to remount the device.
+      # See #6851 for more.
+      # We have to compare current resource device with device_fstab value
+      # because entry in /etc/fstab will be as per device_type.
+      # For Ex: 'LABEL=/tmp/ /mnt ext3 defaults 0 2', where 'device_type' is :label.
+      def device_unchanged?
+        @current_resource.device == device_fstab
       end
 
       #
@@ -161,7 +168,22 @@ class Chef
           if (tries -= 1) < 0
             raise Chef::Exceptions::Mount, "Retries exceeded waiting for filesystem to unmount"
           end
+
           sleep 0.1
+        end
+      end
+
+      # Returns the new_resource device as per device_type
+      def device_fstab
+        # Removed "/" from the end of str, because it was causing idempotency issue.
+        device = @new_resource.device == "/" ? @new_resource.device : @new_resource.device.chomp("/")
+        case @new_resource.device_type
+        when :device
+          device
+        when :label
+          "LABEL=#{device}"
+        when :uuid
+          "UUID=#{device}"
         end
       end
     end

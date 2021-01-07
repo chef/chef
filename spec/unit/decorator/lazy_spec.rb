@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "spec_helper"
 describe Chef::Decorator::Lazy do
   let(:decorator) do
     @a = 0
-    Chef::Decorator::Lazy.new { @a = @a + 1 }
+    Chef::Decorator::Lazy.new { @a += 1 }
   end
 
   it "decorates an object" do

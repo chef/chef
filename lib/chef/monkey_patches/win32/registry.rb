@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/registry"
-require "chef/win32/unicode"
-require "win32/registry"
+require_relative "../../win32/api/registry"
+require_relative "../../win32/unicode"
+require "win32/registry" unless defined?(Win32::Registry)
 
 module Win32
   class Registry
@@ -55,32 +55,6 @@ module Win32
         check RegDeleteKeyExW(hkey, name.to_wstring, 0, 0)
       end
 
-    end
-
-    if RUBY_VERSION =~ /^2\.1/
-      # ::Win32::Registry#write does not correctly handle data in Ruby 2.1
-      # This bug is _reportedly_ resolved in Ruby 2.1.7 and 2.2.3
-      # but fails in appveyor on 2.1.8 unless we keep applying this monkeypatch
-      # https://bugs.ruby-lang.org/issues/11439
-      def write(name, type, data)
-        case type
-        when REG_SZ, REG_EXPAND_SZ
-          data = data.to_s.encode(WCHAR) + WCHAR_NUL
-        when REG_MULTI_SZ
-          data = data.to_a.map { |s| s.encode(WCHAR) }.join(WCHAR_NUL) << WCHAR_NUL << WCHAR_NUL
-        when REG_BINARY
-          data = data.to_s
-        when REG_DWORD
-          data = API.packdw(data.to_i)
-        when REG_DWORD_BIG_ENDIAN
-          data = [data.to_i].pack("N")
-        when REG_QWORD
-          data = API.packqw(data.to_i)
-        else
-          raise TypeError, "Unsupported type #{type}"
-        end
-        API.SetValue(@hkey, name, type, data, data.bytesize)
-      end
     end
   end
 end

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
 
   let(:plugin_manifest) do
@@ -43,12 +43,14 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
   let(:loader) do
     Chef::Knife::SubcommandLoader::HashedCommandLoader.new(
-    File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
-    plugin_manifest) end
+      File.join(CHEF_SPEC_DATA, "knife-site-subcommands"),
+      plugin_manifest
+    )
+  end
 
   describe "#list_commands" do
     before do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
     end
 
     it "lists all commands by category when no argument is given" do
@@ -61,11 +63,11 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
 
     context "when the plugin path is invalid" do
       before do
-        expect(File).to receive(:exists?).with("/file/for/plugin/b").and_return(false)
+        expect(File).to receive(:exist?).with("/file/for/plugin/b").and_return(false)
       end
 
       it "lists all commands by category when no argument is given" do
-        expect(Chef::Log).to receive(:error).with(/There are files specified in the manifest that are missing/)
+        expect(Chef::Log).to receive(:error).with(/There are plugin files specified in the knife cache that cannot be found/)
         expect(Chef::Log).to receive(:error).with("Missing files:\n\t/file/for/plugin/b")
         expect(loader.list_commands).to eq({})
       end
@@ -88,7 +90,7 @@ describe Chef::Knife::SubcommandLoader::HashedCommandLoader do
     end
 
     it "loads the correct file and returns true if the command exists" do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       expect(Kernel).to receive(:load).with("/file/for/plugin/a").and_return(true)
       expect(loader.load_command(["cool_a"])).to eq(true)
     end

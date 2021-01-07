@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,9 +50,9 @@ describe "Chef::ReservedNames::Win32::Security", :windows_only do
 
   it "should not leak when retrieving and reading the ACE from a file", :volatile do
     expect do
-      sids = Chef::ReservedNames::Win32::Security::SecurableObject.new(@monkeyfoo).security_descriptor.dacl.select { |ace| ace.sid }
+      sids = Chef::ReservedNames::Win32::Security::SecurableObject.new(@monkeyfoo).security_descriptor.dacl.select(&:sid)
       GC.start
-    end.not_to leak_memory(:warmup => 50, :iterations => 100)
+    end.not_to leak_memory(warmup: 50, iterations: 100)
   end
 
   it "should not leak when creating a new ACL and setting it on a file", :volatile do
@@ -63,7 +63,7 @@ describe "Chef::ReservedNames::Win32::Security", :windows_only do
         Chef::ReservedNames::Win32::Security::ACE.access_denied(Chef::ReservedNames::Win32::Security::SID.from_account("Users"), Chef::ReservedNames::Win32::API::Security::GENERIC_ALL),
       ])
       GC.start
-    end.not_to leak_memory(:warmup => 50, :iterations => 100)
+    end.not_to leak_memory(warmup: 50, iterations: 100)
   end
 
 end

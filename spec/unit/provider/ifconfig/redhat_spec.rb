@@ -25,16 +25,21 @@ describe Chef::Provider::Ifconfig::Redhat do
     @cookbook_collection = Chef::CookbookCollection.new([])
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, @cookbook_collection, @events)
-    #This new_resource can be called anything --> it is not the same as in ifconfig.rb
+    # This new_resource can be called anything --> it is not the same as in ifconfig.rb
     @new_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
     @new_resource.mask "255.255.254.0"
     @new_resource.metric "1"
     @new_resource.mtu "1500"
     @new_resource.device "eth0"
+    @new_resource.ethtool_opts "-A eth0 autoneg off"
+    @new_resource.bonding_opts "mode=active-backup miimon=100"
+    @new_resource.master "bond0"
+    @new_resource.slave "yes"
+    @new_resource.vlan "yes"
     @provider = Chef::Provider::Ifconfig::Redhat.new(@new_resource, @run_context)
     @current_resource = Chef::Resource::Ifconfig.new("10.0.0.1", @run_context)
 
-    status = double("Status", :exitstatus => 0)
+    status = double("Status", exitstatus: 0)
     @provider.instance_variable_set("@status", status)
     @provider.current_resource = @current_resource
 
@@ -47,11 +52,16 @@ describe Chef::Provider::Ifconfig::Redhat do
 
     it "should write network-script for centos" do
       allow(@provider).to receive(:load_current_resource)
-      allow(@provider).to receive(:run_command)
+      allow(@provider).to receive(:shell_out!)
       expect(@config).to receive(:content) do |arg|
         expect(arg).to match(/^\s*DEVICE=eth0\s*$/)
         expect(arg).to match(/^\s*IPADDR=10\.0\.0\.1\s*$/)
         expect(arg).to match(/^\s*NETMASK=255\.255\.254\.0\s*$/)
+        expect(arg).to match(/^\s*ETHTOOL_OPTS="-A eth0 autoneg off"\s*$/)
+        expect(arg).to match(/^\s*BONDING_OPTS="mode=active-backup miimon=100"\s*$/)
+        expect(arg).to match(/^\s*MASTER=bond0\s*$/)
+        expect(arg).to match(/^\s*SLAVE=yes\s*$/)
+        expect(arg).to match(/^\s*VLAN=yes\s*$/)
       end
       expect(@config).to receive(:run_action).with(:create)
       expect(@config).to receive(:updated?).and_return(true)
@@ -64,7 +74,7 @@ describe Chef::Provider::Ifconfig::Redhat do
     it "should delete network-script if it exists for centos" do
       @current_resource.device @new_resource.device
       allow(@provider).to receive(:load_current_resource)
-      allow(@provider).to receive(:run_command)
+      allow(@provider).to receive(:shell_out!)
       expect(@config).to receive(:run_action).with(:delete)
       expect(@config).to receive(:updated?).and_return(true)
       @provider.run_action(:delete)

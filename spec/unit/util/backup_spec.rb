@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "tmpdir"
 
 describe Chef::Util::Backup do
 
-  let (:tempfile) do
+  let(:tempfile) do
     Tempfile.new("chef-util-backup-spec-test")
   end
 
@@ -110,7 +110,7 @@ describe Chef::Util::Backup do
     end
     it "should strip the drive letter off for windows" do
       expect(@backup).to receive(:path).and_return('c:\a\b\c.txt')
-      expect(@backup.send(:backup_filename)).to match(%r|^\\a\\b\\c.txt.chef-\d{14}.\d{6}$|)
+      expect(@backup.send(:backup_filename)).to match(/^\\a\\b\\c.txt.chef-\d{14}.\d{6}$/)
     end
     it "should strip the drive letter off for windows (with forwardslashes)" do
       expect(@backup).to receive(:path).and_return("c:/a/b/c.txt")

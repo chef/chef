@@ -37,7 +37,7 @@ describe Chef::Resource::Ifconfig do
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = @resource.state_for_resource_reporter
       expect(state[:inet_addr]).to eq("434.2343.23")
       expect(state[:mask]).to eq("255.255.545")
     end
@@ -55,7 +55,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
+    it "uses an ordinary Provider::Ifconfig as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add).class).to eq(Chef::Provider::Ifconfig)
     end
   end
@@ -68,7 +68,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an Provider::Ifconfig::Redhat as a provider for #{platform} #{version}" do
+    it "uses an Provider::Ifconfig::Redhat as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Redhat)
     end
   end
@@ -81,7 +81,7 @@ describe Chef::Resource::Ifconfig do
       @node.automatic_attrs[:platform_version] = version
     end
 
-    it "should use an Ifconfig::Debian as a provider for #{platform} #{version}" do
+    it "uses an Ifconfig::Debian as a provider for #{platform} #{version}" do
       expect(@resource.provider_for_action(:add)).to be_a_kind_of(Chef::Provider::Ifconfig::Debian)
     end
   end
@@ -90,19 +90,11 @@ describe Chef::Resource::Ifconfig do
     it_should_behave_like "being a platform based on RedHat", "redhat", "4.0"
   end
 
-  describe "when it is an old Debian platform" do
-    it_should_behave_like "being a platform based on an old Debian", "debian", "6.0"
-  end
-
-  describe "when it is a new Debian platform" do
+  describe "when it is a Debian platform" do
     it_should_behave_like "being a platform based on a recent Debian", "debian", "7.0"
   end
 
-  describe "when it is an old Ubuntu platform" do
-    it_should_behave_like "being a platform based on an old Debian", "ubuntu", "11.04"
-  end
-
-  describe "when it is a new Ubuntu platform" do
+  describe "when it is a Ubuntu platform" do
     it_should_behave_like "being a platform based on a recent Debian", "ubuntu", "11.10"
   end
 

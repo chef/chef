@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/provider/service/init"
+require_relative "init"
 
 class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   provides :service, platform_family: "arch"
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:etc_rcd)
+    service_script_exist?(:etc_rcd, resource.service_name)
   end
 
   def initialize(new_resource, run_context)
@@ -32,8 +32,9 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   def load_current_resource
-    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exists?("/etc/rc.conf")
-    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless ::File.read("/etc/rc.conf") =~ /DAEMONS=\((.*)\)/m
+    raise Chef::Exceptions::Service, "Could not find /etc/rc.conf" unless ::File.exist?("/etc/rc.conf")
+    raise Chef::Exceptions::Service, "No DAEMONS found in /etc/rc.conf" unless /DAEMONS=\((.*)\)/m.match?(::File.read("/etc/rc.conf"))
+
     super
 
     @current_resource.enabled(daemons.include?(@current_resource.service_name))
@@ -41,7 +42,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
   end
 
   # Get list of all daemons from the file '/etc/rc.conf'.
-  # Mutiple lines and background form are supported. Example:
+  # Multiple lines and background form are supported. Example:
   #   DAEMONS=(\
   #     foobar \
   #     @example \
@@ -60,13 +61,13 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
 
   # FIXME: Multiple entries of DAEMONS will cause very bad results :)
   def update_daemons(entries)
-    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(' ')})")
+    content = ::File.read("/etc/rc.conf").gsub(/DAEMONS=\((.*)\)/m, "DAEMONS=(#{entries.join(" ")})")
     ::File.open("/etc/rc.conf", "w") do |f|
       f.write(content)
     end
   end
 
-  def enable_service()
+  def enable_service
     new_daemons = []
     entries = daemons
 
@@ -92,7 +93,7 @@ class Chef::Provider::Service::Arch < Chef::Provider::Service::Init
     end
   end
 
-  def disable_service()
+  def disable_service
     new_daemons = []
     entries = daemons
 

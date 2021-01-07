@@ -1,0 +1,153 @@
+---
+driver:
+  name: dokken
+  privileged: true
+  chef_image: chef/chef
+  chef_version: current
+
+transport:
+  name: dokken
+
+provisioner:
+  name: dokken
+  client_rb:
+    diff_disabled: true
+    always_dump_stacktrace: true
+  chef_license: "accept-no-persist"
+
+lifecycle:
+  pre_converge:
+    - remote: echo "Chef container's Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+    - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
+    - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
+    - remote: echo "Installed Chef / Ohai release:"
+    - remote: /opt/chef/bin/chef-client -v
+    - remote: /opt/chef/bin/ohai -v
+
+verifier:
+  name: inspec
+  format: progress
+
+platforms:
+- name: amazonlinux-2
+  driver:
+    image: dokken/amazonlinux-2
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: debian-9
+  driver:
+    image: dokken/debian-9
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
+- name: debian-10
+  driver:
+    image: dokken/debian-10
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
+- name: debian-11
+  driver:
+    image: dokken/debian-11
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
+- name: centos-6
+  driver:
+    image: dokken/centos-6
+    pid_one_command: /sbin/init
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+      - RUN wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
+      - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=http://vault.centos.org/centos/6/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
+      - RUN yum install -y devtoolset-7
+      - RUN scl enable devtoolset-7 bash
+
+- name: centos-7
+  driver:
+    image: dokken/centos-7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: centos-8
+  driver:
+    image: dokken/centos-8
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: oraclelinux-7
+  driver:
+    image: dokken/oraclelinux-7
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: oraclelinux-8
+  driver:
+    image: dokken/oraclelinux-8
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN yum -y install e2fsprogs
+      - RUN yum -y reinstall systemd
+      - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: fedora-latest
+  driver:
+    image: dokken/fedora-latest
+    pid_one_command: /usr/lib/systemd/systemd
+    intermediate_instructions:
+      - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
+
+- name: ubuntu-18.04
+  driver:
+    image: dokken/ubuntu-18.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource
+
+- name: ubuntu-20.04
+  driver:
+    image: dokken/ubuntu-20.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+
+- name: ubuntu-21.04
+  driver:
+    image: dokken/ubuntu-21.04
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/apt-get update
+      - RUN /usr/bin/apt-get install ifupdown -y # we need this for /etc/network/interfaces & ifconfig resource testing
+
+- name: opensuse-leap-15
+  driver:
+    image: dokken/opensuse-leap-15
+    pid_one_command: /bin/systemd
+    intermediate_instructions:
+      - RUN /usr/bin/zypper --non-interactive update
+      - RUN /usr/bin/zypper --non-interactive install net-tools-deprecated # we need this for /etc/network/interfaces & ifconfig resource testing
+
+suites:
+  - name: end-to-end
+    run_list:
+      - recipe[end_to_end::default]

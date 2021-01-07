@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/util/path_helper"
+require_relative "path_helper"
 
 class Chef
   class Util
@@ -36,7 +36,7 @@ class Chef
           slice_number = @new_resource.backup
           backup_files = sorted_backup_files
           if backup_files.length >= @new_resource.backup
-            remainder = backup_files.slice(slice_number..-1)
+            remainder = backup_files.slice(slice_number..)
             remainder.each do |backup_to_delete|
               delete_backup(backup_to_delete)
             end
@@ -52,7 +52,7 @@ class Chef
           nanoseconds = sprintf("%6f", time.to_f).split(".")[1]
           savetime = time.strftime("%Y%m%d%H%M%S.#{nanoseconds}")
           backup_filename = "#{path}.chef-#{savetime}"
-          backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") #strip drive letter on Windows
+          backup_filename = backup_filename.sub(/^([A-Za-z]:)/, "") # strip drive letter on Windows
         end
       end
 
@@ -69,7 +69,7 @@ class Chef
 
       def do_backup
         FileUtils.mkdir_p(::File.dirname(backup_path)) if Chef::Config[:file_backup_path]
-        FileUtils.cp(path, backup_path, :preserve => true)
+        FileUtils.cp(path, backup_path, preserve: true)
         Chef::Log.info("#{@new_resource} backed up to #{backup_path}")
       end
 
@@ -87,7 +87,7 @@ class Chef
       end
 
       def sorted_backup_files
-        unsorted_backup_files.sort { |a, b| b <=> a }
+        unsorted_backup_files.sort.reverse # faster than sort { |a, b| b <=> a }
       end
     end
   end

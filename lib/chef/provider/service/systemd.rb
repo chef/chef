@@ -1,7 +1,7 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
 # Author:: Davide Cavalca (<dcavalca@fb.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,22 +17,23 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
-require "chef/provider/service/simple"
-require "chef/mixin/which"
+require_relative "../../resource/service"
+require_relative "simple"
+require_relative "../../mixin/which"
+require "shellwords" unless defined?(Shellwords)
 
 class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   include Chef::Mixin::Which
 
-  provides :service, os: "linux" do |node|
-    Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
+  provides :service, os: "linux", target_mode: true do |node|
+    systemd?
   end
 
   attr_accessor :status_check_success
 
   def self.supports?(resource, action)
-    Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:systemd)
+    service_script_exist?(:systemd, resource.service_name)
   end
 
   def load_current_resource
@@ -41,7 +42,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     @status_check_success = true
 
     if new_resource.status_command
-      Chef::Log.debug("#{new_resource} you have specified a status command, running..")
+      logger.trace("#{new_resource} you have specified a status command, running..")
 
       unless shell_out(new_resource.status_command).error?
         current_resource.running(true)
@@ -50,6 +51,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
         current_resource.running(false)
         current_resource.enabled(false)
         current_resource.masked(false)
+        current_resource.indirect(false)
       end
     else
       current_resource.running(is_active?)
@@ -57,12 +59,12 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
     current_resource.enabled(is_enabled?)
     current_resource.masked(is_masked?)
+    current_resource.indirect(is_indirect?)
     current_resource
   end
 
   # systemd supports user services just fine
-  def user_services_requirements
-  end
+  def user_services_requirements; end
 
   def define_resource_requirements
     shared_resource_requirements
@@ -74,14 +76,40 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     end
   end
 
+  def systemd_service_status
+    @systemd_service_status ||= begin
+      # Collect all the status information for a service and returns it at once
+      options, args = get_systemctl_options_args
+      s = shell_out!(systemctl_path, args, "show", "-p", "UnitFileState", "-p", "ActiveState", new_resource.service_name, options)
+      # e.g. /bin/systemctl --system show  -p UnitFileState -p ActiveState sshd.service
+      # Returns something like:
+      # ActiveState=active
+      # UnitFileState=enabled
+      status = {}
+      s.stdout.each_line do |line|
+        k, v = line.strip.split("=")
+        status[k] = v
+      end
+
+      # Assert requisite keys exist
+      unless status.key?("UnitFileState") && status.key?("ActiveState")
+        raise Chef::Exceptions::Service, "'#{systemctl_path} show' not reporting status for #{new_resource.service_name}!"
+      end
+
+      status
+    end
+  end
+
   def get_systemctl_options_args
     if new_resource.user
-      uid = node["etc"]["passwd"][new_resource.user]["uid"]
+      raise NotImplementedError, "#{new_resource} does not support the user property on a target_mode host (yet)" if Chef::Config.target_mode?
+
+      uid = Etc.getpwnam(new_resource.user).uid
       options = {
-        :environment => {
+        environment: {
           "DBUS_SESSION_BUS_ADDRESS" => "unix:path=/run/user/#{uid}/bus",
         },
-        :user => new_resource.user,
+        user: new_resource.user,
       }
       args = "--user"
     else
@@ -89,31 +117,31 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       args = "--system"
     end
 
-    return options, args
+    [options, args]
   end
 
   def start_service
     if current_resource.running
-      Chef::Log.debug("#{new_resource} already running, not starting")
+      logger.trace("#{new_resource} already running, not starting")
     else
       if new_resource.start_command
         super
       else
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} start #{new_resource.service_name}", options)
+        shell_out!(systemctl_path, args, "start", new_resource.service_name, default_env: false, **options)
       end
     end
   end
 
   def stop_service
     unless current_resource.running
-      Chef::Log.debug("#{new_resource} not running, not stopping")
+      logger.trace("#{new_resource} not running, not stopping")
     else
       if new_resource.stop_command
         super
       else
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} stop #{new_resource.service_name}", options)
+        shell_out!(systemctl_path, args, "stop", new_resource.service_name, default_env: false, **options)
       end
     end
   end
@@ -123,7 +151,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
       super
     else
       options, args = get_systemctl_options_args
-      shell_out_with_systems_locale!("#{systemctl_path} #{args} restart #{new_resource.service_name}", options)
+      shell_out!(systemctl_path, args, "restart", new_resource.service_name, default_env: false, **options)
     end
   end
 
@@ -133,7 +161,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     else
       if current_resource.running
         options, args = get_systemctl_options_args
-        shell_out_with_systems_locale!("#{systemctl_path} #{args} reload #{new_resource.service_name}", options)
+        shell_out!(systemctl_path, args, "reload", new_resource.service_name, default_env: false, **options)
       else
         start_service
       end
@@ -141,39 +169,53 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def enable_service
+    if current_resource.masked || current_resource.indirect
+      logger.trace("#{new_resource} cannot be enabled: it is masked or indirect")
+      return
+    end
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} enable #{new_resource.service_name}", options)
+    shell_out!(systemctl_path, args, "enable", new_resource.service_name, **options)
   end
 
   def disable_service
+    if current_resource.masked || current_resource.indirect
+      logger.trace("#{new_resource} cannot be disabled: it is masked or indirect")
+      return
+    end
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} disable #{new_resource.service_name}", options)
+    shell_out!(systemctl_path, args, "disable", new_resource.service_name, **options)
   end
 
   def mask_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} mask #{new_resource.service_name}", options)
+    shell_out!(systemctl_path, args, "mask", new_resource.service_name, **options)
   end
 
   def unmask_service
     options, args = get_systemctl_options_args
-    shell_out!("#{systemctl_path} #{args} unmask #{new_resource.service_name}", options)
+    shell_out!(systemctl_path, args, "unmask", new_resource.service_name, **options)
   end
 
   def is_active?
-    options, args = get_systemctl_options_args
-    shell_out("#{systemctl_path} #{args} is-active #{new_resource.service_name} --quiet", options).exitstatus == 0
+    # Note: "activating" is not active (as with type=notify or a oneshot)
+    systemd_service_status["ActiveState"] == "active"
   end
 
   def is_enabled?
-    options, args = get_systemctl_options_args
-    shell_out("#{systemctl_path} #{args} is-enabled #{new_resource.service_name} --quiet", options).exitstatus == 0
+    # See https://github.com/systemd/systemd/blob/master/src/systemctl/systemctl-is-enabled.c
+    # Note: enabled-runtime is excluded because this is volatile, and the state of enabled-runtime
+    # specifically means that the service is not enabled
+    %w{enabled static generated alias indirect}.include?(systemd_service_status["UnitFileState"])
+  end
+
+  def is_indirect?
+    systemd_service_status["UnitFileState"] == "indirect"
   end
 
   def is_masked?
-    options, args = get_systemctl_options_args
-    s = shell_out("#{systemctl_path} #{args} is-enabled #{new_resource.service_name}", options)
-    s.exitstatus != 0 && s.stdout.include?("masked")
+    # Note: masked-runtime is excluded, because runtime is volatile, and
+    # because masked-runtime is not masked.
+    systemd_service_status["UnitFileState"] == "masked"
   end
 
   private

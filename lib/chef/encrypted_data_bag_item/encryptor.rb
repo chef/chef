@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "base64"
-require "digest/sha2"
-require "openssl"
-require "ffi_yajl"
-require "chef/encrypted_data_bag_item"
-require "chef/encrypted_data_bag_item/unsupported_encrypted_data_bag_item_format"
-require "chef/encrypted_data_bag_item/encryption_failure"
-require "chef/encrypted_data_bag_item/assertions"
+autoload :Base64, "base64"
+require "digest/sha2" unless defined?(Digest::SHA2)
+autoload :OpenSSL, "openssl"
+autoload :FFI_Yajl, "ffi_yajl"
+require_relative "../encrypted_data_bag_item"
+require_relative "unsupported_encrypted_data_bag_item_format"
+require_relative "encryption_failure"
+require_relative "assertions"
 
 class Chef::EncryptedDataBagItem
 
@@ -102,7 +102,7 @@ class Chef::EncryptedDataBagItem
           encryptor = OpenSSL::Cipher.new(algorithm)
           encryptor.encrypt
           # We must set key before iv: https://bugs.ruby-lang.org/issues/8221
-          encryptor.key = OpenSSL::Digest::SHA256.digest(key)
+          encryptor.key = OpenSSL::Digest.digest("SHA256", key)
           @iv ||= encryptor.random_iv
           encryptor.iv = @iv
           encryptor
@@ -123,7 +123,7 @@ class Chef::EncryptedDataBagItem
       # Strings) that do not produce valid JSON when serialized without the
       # wrapper.
       def serialized_data
-        FFI_Yajl::Encoder.encode(:json_wrapper => plaintext_data)
+        FFI_Yajl::Encoder.encode(json_wrapper: plaintext_data)
       end
 
       def self.encryptor_keys
@@ -193,6 +193,7 @@ class Chef::EncryptedDataBagItem
         if @auth_tag.nil?
           raise EncryptionFailure, "Internal Error: GCM authentication tag read before encryption"
         end
+
         @auth_tag
       end
 

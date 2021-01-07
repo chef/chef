@@ -16,13 +16,12 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/resource/launchd"
-require "chef/resource/file"
-require "chef/resource/cookbook_file"
-require "chef/resource/macosx_service"
-require "plist"
-require "forwardable"
+require_relative "../provider"
+require_relative "../resource/file"
+require_relative "../resource/cookbook_file"
+require_relative "../resource/macosx_service"
+autoload :Plist, "plist"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
   class Provider
@@ -30,22 +29,10 @@ class Chef
       extend Forwardable
       provides :launchd, os: "darwin"
 
-      def_delegators :@new_resource, *[
-        :backup,
-        :cookbook,
-        :group,
-        :label,
-        :mode,
-        :owner,
-        :path,
-        :source,
-        :session_type,
-        :type,
-      ]
+      def_delegators :new_resource, :backup, :cookbook, :group, :label, :mode, :owner, :source, :session_type, :type
 
       def load_current_resource
         current_resource = Chef::Resource::Launchd.new(new_resource.name)
-        @path = path ? path : gen_path_from_type
       end
 
       def gen_path_from_type
@@ -56,82 +43,86 @@ class Chef
         types[type]
       end
 
-      def action_create
+      action :create do
         manage_plist(:create)
       end
 
-      def action_create_if_missing
+      action :create_if_missing do
         manage_plist(:create_if_missing)
       end
 
-      def action_delete
-        # If you delete a service you want to make sure its not loaded or
-        # the service will be in memory and you wont be able to stop it.
-        if ::File.exists?(@path)
+      action :delete do
+        if ::File.exists?(path)
           manage_service(:disable)
         end
         manage_plist(:delete)
       end
 
-      def action_enable
-        if manage_plist(:create)
-          manage_service(:restart)
-        else
-          manage_service(:enable)
+      action :enable do
+        manage_service(:nothing)
+        manage_plist(:create) do
+          notifies :restart, "macosx_service[#{label}]", :immediately
         end
+        manage_service(:enable)
       end
 
-      def action_disable
+      action :disable do
+        return unless ::File.exist?(path)
+
         manage_service(:disable)
       end
 
-      def manage_plist(action)
+      action :restart do
+        manage_service(:restart)
+      end
+
+      def manage_plist(action, &block)
         if source
-          res = cookbook_file_resource
+          cookbook_file path do
+            cookbook_name = new_resource.cookbook if new_resource.cookbook
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner, :source)
+            action(action)
+            only_if { manage_agent?(action) }
+            instance_eval(&block) if block_given?
+          end
         else
-          res = file_resource
+          file path do
+            copy_properties_from(new_resource, :backup, :group, :mode, :owner)
+            content(file_content) if file_content?
+            action(action)
+            only_if { manage_agent?(action) }
+            instance_eval(&block) if block_given?
+          end
         end
-        res.run_action(action)
-        new_resource.updated_by_last_action(true) if res.updated?
-        res.updated
       end
 
       def manage_service(action)
-        res = service_resource
-        res.run_action(action)
-        new_resource.updated_by_last_action(true) if res.updated?
+        plist_path = path
+        macosx_service label do
+          service_name(new_resource.label) if new_resource.label
+          plist(plist_path) if plist_path
+          copy_properties_from(new_resource, :session_type)
+          action(action)
+          only_if { manage_agent?(action) }
+        end
       end
 
-      def service_resource
-        res = Chef::Resource::MacosxService.new(label, run_context)
-        res.name(label) if label
-        res.service_name(label) if label
-        res.plist(@path) if @path
-        res.session_type(session_type) if session_type
-        res
-      end
-
-      def file_resource
-        res = Chef::Resource::File.new(@path, run_context)
-        res.name(@path) if @path
-        res.backup(backup) if backup
-        res.content(content) if content
-        res.group(group) if group
-        res.mode(mode) if mode
-        res.owner(owner) if owner
-        res
-      end
-
-      def cookbook_file_resource
-        res = Chef::Resource::CookbookFile.new(@path, run_context)
-        res.cookbook_name = cookbook if cookbook
-        res.name(@path) if @path
-        res.backup(backup) if backup
-        res.group(group) if group
-        res.mode(mode) if mode
-        res.owner(owner) if owner
-        res.source(source) if source
-        res
+      def manage_agent?(action)
+        # Gets UID of console_user and converts to string.
+        console_user = Etc.getpwuid(::File.stat("/dev/console").uid).name
+        root = console_user == "root"
+        agent = type == "agent"
+        invalid_action = %i{delete disable enable restart}.include?(action)
+        lltstype = ""
+        if new_resource.limit_load_to_session_type
+          lltstype = new_resource.limit_load_to_session_type
+        end
+        invalid_type = lltstype != "LoginWindow"
+        if root && agent && invalid_action && invalid_type
+          logger.trace("#{label}: Aqua LaunchAgents shouldn't be loaded as root")
+          return false
+        end
+        true
       end
 
       def define_resource_requirements
@@ -145,17 +136,18 @@ class Chef
         end
       end
 
-      def content?
-        !!content
+      def file_content?
+        !!file_content
       end
 
-      def content
-        plist_hash = new_resource.hash || gen_hash
-        Plist::Emit.dump(plist_hash) unless plist_hash.nil?
+      def file_content
+        plist_hash = new_resource.plist_hash || gen_hash
+        ::Plist::Emit.dump(plist_hash) unless plist_hash.nil?
       end
 
       def gen_hash
         return nil unless new_resource.program || new_resource.program_arguments
+
         {
           "label" => "Label",
           "program" => "Program",
@@ -168,10 +160,11 @@ class Chef
           "environment_variables" => "EnvironmentVariables",
           "exit_timeout" => "ExitTimeout",
           "ld_group" => "GroupName",
-          "hard_resource_limits" => "HardreSourceLimits",
+          "hard_resource_limits" => "HardResourceLimits",
           "inetd_compatibility" => "inetdCompatibility",
           "init_groups" => "InitGroups",
           "keep_alive" => "KeepAlive",
+          "launch_events" => "LaunchEvents",
           "launch_only_once" => "LaunchOnlyOnce",
           "limit_load_from_hosts" => "LimitLoadFromHosts",
           "limit_load_to_hosts" => "LimitLoadToHosts",
@@ -202,6 +195,11 @@ class Chef
         }.each_with_object({}) do |(key, val), memo|
           memo[val] = new_resource.send(key) if new_resource.send(key)
         end
+      end
+
+      # @api private
+      def path
+        @path ||= new_resource.path || gen_path_from_type
       end
     end
   end

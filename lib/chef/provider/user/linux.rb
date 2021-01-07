@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/provider/user"
+require_relative "../user"
 
 class Chef
   class Provider
@@ -24,23 +24,28 @@ class Chef
         provides :user, os: "linux"
 
         def create_user
-          shell_out!(*clean_array("useradd", universal_options, useradd_options, new_resource.username))
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
         end
 
         def manage_user
-          shell_out!(*clean_array("usermod", universal_options, usermod_options, new_resource.username))
+          manage_u = shell_out("usermod", universal_options, usermod_options, new_resource.username, returns: [0, 12])
+          if manage_u.exitstatus == 12 && manage_u.stderr !~ /exists/
+            raise Chef::Exceptions::User, "Unable to modify home directory for #{new_resource.username}"
+          end
+
+          manage_u.error!
         end
 
         def remove_user
-          shell_out!(*clean_array("userdel", userdel_options, new_resource.username))
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         def lock_user
-          shell_out!(*clean_array("usermod", "-L", new_resource.username))
+          shell_out!("usermod", "-L", new_resource.username)
         end
 
         def unlock_user
-          shell_out!(*clean_array("usermod", "-U", new_resource.username))
+          shell_out!("usermod", "-U", new_resource.username)
         end
 
         # common to usermod and useradd
@@ -52,14 +57,15 @@ class Chef
           opts << "-s" << new_resource.shell if should_set?(:shell)
           opts << "-u" << new_resource.uid if should_set?(:uid)
           opts << "-d" << new_resource.home if updating_home?
-          opts << "-o" if non_unique
+          opts << "-o" if new_resource.non_unique
           opts
         end
 
         def usermod_options
           opts = []
+          opts += [ "-u", new_resource.uid ] if new_resource.non_unique
           if updating_home?
-            if manage_home
+            if new_resource.manage_home
               opts << "-m"
             end
           end
@@ -69,29 +75,19 @@ class Chef
         def useradd_options
           opts = []
           opts << "-r" if new_resource.system
-          if manage_home
-            opts << "-m"
-          else
-            opts << "-M"
-          end
+          opts << if new_resource.manage_home
+                    "-m"
+                  else
+                    "-M"
+                  end
           opts
         end
 
         def userdel_options
           opts = []
-          opts << "-r" if manage_home
+          opts << "-r" if new_resource.manage_home
           opts << "-f" if new_resource.force
           opts
-        end
-
-        def should_set?(sym)
-          current_resource.send(sym).to_s != new_resource.send(sym).to_s && new_resource.send(sym)
-        end
-
-        def updating_home?
-          return false unless new_resource.home
-          return true unless current_resource.home
-          new_resource.home && Pathname.new(current_resource.home).cleanpath != Pathname.new(new_resource.home).cleanpath
         end
 
         def check_lock
@@ -100,12 +96,10 @@ class Chef
           passwd_s = shell_out("passwd", "-S", new_resource.username, returns: [ 0, 1 ])
 
           # checking "does not exist" has to come before exit code handling since centos and ubuntu differ in exit codes
-          if passwd_s.stderr =~ /does not exist/
-            if whyrun_mode?
-              return false
-            else
-              raise Chef::Exceptions::User, "User #{new_resource.username} does not exist when checking lock status for #{new_resource}"
-            end
+          if /does not exist/.match?(passwd_s.stderr)
+            return false if whyrun_mode?
+
+            raise Chef::Exceptions::User, "User #{new_resource.username} does not exist when checking lock status for #{new_resource}"
           end
 
           # now raise if we didn't get a 0 or 1 (see above)
@@ -114,23 +108,13 @@ class Chef
           # now the actual output parsing
           @locked = nil
           status_line = passwd_s.stdout.split(" ")
-          @locked = false if status_line[1] =~ /^[PN]/
-          @locked = true if status_line[1] =~ /^L/
+          @locked = false if /^[PN]/.match?(status_line[1])
+          @locked = true if /^L/.match?(status_line[1])
 
           raise Chef::Exceptions::User, "Cannot determine if user #{new_resource.username} is locked for #{new_resource}" if @locked.nil?
 
           # FIXME: should probably go on the current_resource
           @locked
-        end
-
-        def non_unique
-          # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.non_unique
-          new_resource.non_unique || new_resource.supports[:non_unique]
-        end
-
-        def manage_home
-          # XXX: THIS GOES AWAY IN CHEF-13 AND BECOMES JUST new_resource.manage_home
-          new_resource.manage_home || new_resource.supports[:manage_home]
         end
       end
     end

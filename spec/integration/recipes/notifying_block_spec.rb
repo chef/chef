@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
@@ -22,8 +23,8 @@ describe "notifying_block" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../../bin", __FILE__) }
-  let(:chef_client) { "ruby '#{chef_dir}/chef-client' --minimal-ohai" }
+  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifying_block test one" do
     before do
@@ -33,11 +34,13 @@ describe "notifying_block" do
             log "gamma" do
               action :nothing
             end
-            log "alpha" do
+            notify_group "alpha" do
               notifies :write, "log[gamma]", :delayed
+              action :run
             end
-            log "beta" do
+            notify_group "beta" do
               notifies :write, "log[gamma]", :delayed
+              action :run
             end
           end
           log "delta"
@@ -45,7 +48,7 @@ describe "notifying_block" do
       end
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         log_level :warn
       EOM
     end
@@ -55,8 +58,8 @@ describe "notifying_block" do
     #  2. delayed notifications are de-dup'd in the subcontext
     #  3. delayed notifications (to resources inside the subcontext) are run at the end of the subcontext
     it "should run alpha, beta, gamma, and delta in that order" do
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
-      expect(result.stdout).to match(/\* log\[alpha\] action write\s+\* log\[beta\] action write\s+\* log\[gamma\] action write\s+Converging 1 resources\s+\* log\[delta\] action write/)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      expect(result.stdout).to match(/\* notify_group\[alpha\] action run\s+\* notify_group\[beta\] action run\s+\* log\[gamma\] action write\s+Converging 1 resources\s+\* log\[delta\] action write/)
       result.error!
     end
   end
@@ -71,8 +74,9 @@ describe "notifying_block" do
 
           action :run do
             notifying_block do
-              log "foo" do
+              notify_group "foo" do
                 notifies :write, 'log[bar]', :delayed
+                action :run
               end
             end
           end
@@ -94,7 +98,7 @@ describe "notifying_block" do
       end
       file "config/client.rb", <<-EOM
         local_mode true
-        cookbook_path "#{path_to('cookbooks')}"
+        cookbook_path "#{path_to("cookbooks")}"
         log_level :warn
       EOM
     end
@@ -103,8 +107,8 @@ describe "notifying_block" do
     #  1. notifying block will correctly update wrapping new_resource updated_by_last_action status
     #  2. delayed notifications from a subcontext inside a resource will notify resources in their outer run_context
     it "should run foo, quux, bar, and baz in that order" do
-      result = shell_out("#{chef_client} -c \"#{path_to('config/client.rb')}\" --no-color -F doc -o 'x::default'", :cwd => chef_dir)
-      expect(result.stdout).to match(/\* log\[foo\] action write\s+\* log\[quux\] action write\s+\* log\[bar\] action write\s+\* log\[baz\] action write/)
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      expect(result.stdout).to match(/\* notify_group\[foo\] action run\s+\* log\[quux\] action write\s+\* log\[bar\] action write\s+\* log\[baz\] action write/)
       result.error!
     end
   end

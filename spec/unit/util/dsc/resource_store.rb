@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala <jdm@chef.io>
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,7 +55,7 @@ describe Chef::Util::DSC::ResourceStore do
         expect(resource_store.find("foo")).to eql([resource_a])
       end
 
-      it "returns multiple resoures if they are found" do
+      it "returns multiple resources if they are found" do
         expect(resource_store).to receive(:query_resource).and_return([resource_a, resource_b])
         expect(resource_store.find("foo")).to include(resource_a, resource_b)
       end

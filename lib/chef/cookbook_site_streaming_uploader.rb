@@ -2,7 +2,7 @@
 # Author:: Stanislav Vitvitskiy
 # Author:: Nuo Yan (nuo@chef.io)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2009-2016, 2010-2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,10 +18,17 @@
 # limitations under the License.
 #
 
-require "uri"
-require "net/http"
-require "mixlib/authentication/signedheaderauth"
-require "openssl"
+autoload :URI, "uri"
+module Net
+  autoload :HTTP, "net/http"
+end
+autoload :OpenSSL, "openssl"
+module Mixlib
+  module Authentication
+    autoload :SignedHeaderAuth, "mixlib/authentication/signedheaderauth"
+  end
+end
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   # == Chef::CookbookSiteStreamingUploader
@@ -31,31 +38,29 @@ class Chef
   # inspired by http://stanislavvitvitskiy.blogspot.com/2008/12/multipart-post-in-ruby.html
   class CookbookSiteStreamingUploader
 
-    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION } # rubocop:disable Style/ConstantName
+    DefaultHeaders = { "accept" => "application/json", "x-chef-version" => ::Chef::VERSION }.freeze # rubocop:disable Naming/ConstantName
 
     class << self
 
       def create_build_dir(cookbook)
-        tmp_cookbook_path = Tempfile.new("chef-#{cookbook.name}-build")
+        tmp_cookbook_path = Tempfile.new("#{ChefUtils::Dist::Infra::SHORT}-#{cookbook.name}-build")
         tmp_cookbook_path.close
         tmp_cookbook_dir = tmp_cookbook_path.path
         File.unlink(tmp_cookbook_dir)
         FileUtils.mkdir_p(tmp_cookbook_dir)
-        Chef::Log.debug("Staging at #{tmp_cookbook_dir}")
+        Chef::Log.trace("Staging at #{tmp_cookbook_dir}")
         checksums_to_on_disk_paths = cookbook.checksums
-        Chef::CookbookVersion::COOKBOOK_SEGMENTS.each do |segment|
-          cookbook.manifest[segment].each do |manifest_record|
-            path_in_cookbook = manifest_record[:path]
-            on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
-            dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
-            FileUtils.mkdir_p(File.dirname(dest))
-            Chef::Log.debug("Staging #{on_disk_path} to #{dest}")
-            FileUtils.cp(on_disk_path, dest)
-          end
+        cookbook.each_file do |manifest_record|
+          path_in_cookbook = manifest_record[:path]
+          on_disk_path = checksums_to_on_disk_paths[manifest_record[:checksum]]
+          dest = File.join(tmp_cookbook_dir, cookbook.name.to_s, path_in_cookbook)
+          FileUtils.mkdir_p(File.dirname(dest))
+          Chef::Log.trace("Staging #{on_disk_path} to #{dest}")
+          FileUtils.cp(on_disk_path, dest)
         end
 
         # First, generate metadata
-        Chef::Log.debug("Generating metadata")
+        Chef::Log.trace("Generating metadata")
         kcm = Chef::Knife::CookbookMetadata.new
         kcm.config[:cookbook_path] = [ tmp_cookbook_dir ]
         kcm.name_args = [ cookbook.name.to_s ]
@@ -81,7 +86,7 @@ class Chef
 
         unless params.nil? || params.empty?
           params.each do |key, value|
-            if value.kind_of?(File)
+            if value.is_a?(File)
               content_file = value
               filepath = value.path
               filename = File.basename(filepath)
@@ -117,10 +122,10 @@ class Chef
         content_file.rewind if content_file # we consumed the file for the above operation, so rewind it.
 
         signing_options = {
-          :http_method => http_verb,
-          :path => url.path,
-          :user_id => user_id,
-          :timestamp => timestamp }
+          http_method: http_verb,
+          path: url.path,
+          user_id: user_id,
+          timestamp: timestamp }
         (content_file && signing_options[:file] = content_file) || (signing_options[:body] = (content_body || ""))
 
         headers.merge!(Mixlib::Authentication::SignedHeaderAuth.signing_object(signing_options).sign(secret_key))
@@ -148,7 +153,7 @@ class Chef
         class << res
           alias :to_s :body
 
-          # BUGBUG this makes the response compatible with what respsonse_steps expects to test headers (response.headers[] -> response[])
+          # BUG this makes the response compatible with what response_steps expects to test headers (response.headers[] -> response[])
           def headers # rubocop:disable Lint/NestedMethodDefinition
             self
           end
@@ -186,7 +191,7 @@ class Chef
         @str.length
       end
 
-      # read the specified amount from the string startiung at the offset
+      # read the specified amount from the string starting at the offset
       def read(offset, how_much)
         @str[offset, how_much]
       end
@@ -226,11 +231,7 @@ class Chef
           @part_no += 1
           @part_offset = 0
           next_part = read(how_much_next_part)
-          result = current_part + if next_part
-                                    next_part
-                                  else
-                                    ""
-                                  end
+          result = current_part + (next_part || "")
         else
           @part_offset += how_much_current_part
           result = current_part

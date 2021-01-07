@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,6 +27,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   describe "when passed a network share" do
     before do
       expect(Chef::Provider::RemoteFile::NetworkFile).to receive(:new).and_return(fetcher_instance)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     context "when host is a name" do
@@ -45,7 +46,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an http url" do
-    let(:uri) { double("uri", :scheme => "http" ) }
+    let(:uri) { double("uri", scheme: "http" ) }
     before do
       expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -55,7 +56,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an https url" do
-    let(:uri) { double("uri", :scheme => "https" ) }
+    let(:uri) { double("uri", scheme: "https" ) }
     before do
       expect(Chef::Provider::RemoteFile::HTTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -65,7 +66,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed an ftp url" do
-    let(:uri) { double("uri", :scheme => "ftp" ) }
+    let(:uri) { double("uri", scheme: "ftp" ) }
     before do
       expect(Chef::Provider::RemoteFile::FTP).to receive(:new).and_return(fetcher_instance)
     end
@@ -75,7 +76,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed a file url" do
-    let(:uri) { double("uri", :scheme => "file" ) }
+    let(:uri) { double("uri", scheme: "file" ) }
     before do
       expect(Chef::Provider::RemoteFile::LocalFile).to receive(:new).and_return(fetcher_instance)
     end
@@ -85,7 +86,7 @@ describe Chef::Provider::RemoteFile::Fetcher do
   end
 
   describe "when passed a url we do not recognize" do
-    let(:uri) { double("uri", :scheme => "xyzzy" ) }
+    let(:uri) { double("uri", scheme: "xyzzy" ) }
     it "throws an ArgumentError exception" do
       expect { described_class.for_resource(uri, new_resource, current_resource) }.to raise_error(ArgumentError)
     end

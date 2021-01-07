@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,27 +16,29 @@
 # limitations under the License.
 #
 
-require "chef/provider/service/init"
-require "chef/util/path_helper"
+require_relative "init"
+require_relative "../../util/path_helper"
 
 class Chef
   class Provider
     class Service
       class Insserv < Chef::Provider::Service::Init
 
-        provides :service, platform_family: %w{debian rhel fedora suse} do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:insserv)
+        provides :service, platform_family: %w{debian rhel fedora suse amazon} do
+          insserv?
         end
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def load_current_resource
           super
 
           # Look for a /etc/rc.*/SnnSERVICE link to signify that the service would be started in a runlevel
-          if Dir.glob("/etc/rc**/S*#{Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)}").empty?
+          service_name = Chef::Util::PathHelper.escape_glob_dir(current_resource.service_name)
+
+          if Dir.glob("/etc/rc*/**/S*#{service_name}").empty?
             current_resource.enabled false
           else
             current_resource.enabled true
@@ -45,12 +47,12 @@ class Chef
           current_resource
         end
 
-        def enable_service()
+        def enable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
           shell_out!("/sbin/insserv -d -f #{new_resource.service_name}")
         end
 
-        def disable_service()
+        def disable_service
           shell_out!("/sbin/insserv -r -f #{new_resource.service_name}")
         end
       end

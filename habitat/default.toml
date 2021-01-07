@@ -1,0 +1,42 @@
+pid_file = "chef.pid"
+run_list = ""
+
+local_mode = true
+
+# Positive License Acceptance. See https://docs.chef.io/chef_license_accept/
+chef_license = "donotaccept"
+
+# Path to the chef client config on disk.  If blank, will default to the one built by habitat.
+config_path = ""
+
+# The location in which nodes are stored when the chef-client is run in local mode
+
+log_location = "STDOUT"
+
+# The level of logging to be stored in a log file
+log_level = "info"
+
+# A random number between zero and splay that is added to interval
+splay = 10
+
+# The frequency (in seconds) at which the chef-client runs
+interval = 10
+
+minimal_ohai = false
+
+# The name of the node. Determines which configuration should be applied and sets the client_name,
+# which is the name used when authenticating to a Chef server. The default value is the FQDN of the chef-client,
+# as detected by Ohai. In general, Chef recommends that you leave this setting blank and let Ohai
+# assign the FQDN of the node as the node_name during each chef-client run.
+node_name = ""
+
+# The name of the environment
+environment = "_default"
+
+use_member_id_as_uuid = false
+
+[data_collector]
+url="http://localhost/data-collector/v0/"
+token="93a49a4f2482c64126f7b6015e6b0f30284287ee4054ff8807fb63d9cbd1c506"
+raise_on_failure=false
+mode="both"

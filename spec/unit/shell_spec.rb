@@ -18,32 +18,28 @@
 require "spec_helper"
 require "ostruct"
 
-ObjectTestHarness = Proc.new do
-  extend Shell::Extensions::ObjectCoreExtensions
-
-  def conf=(new_conf)
-    @conf = new_conf
-  end
-
-  def conf
-    @conf
-  end
-
-  desc "rspecin'"
-  def rspec_method
-  end
-end
-
-class TestJobManager
-  attr_accessor :jobs
-end
-
 describe Shell do
+  let(:object_test_harness) do
+    Proc.new do
+      extend Shell::Extensions::ObjectCoreExtensions
+
+      def conf=(new_conf)
+        @conf = new_conf
+      end
+
+      def conf
+        @conf
+      end
+
+      desc "rspecin'"
+      def rspec_method; end
+    end
+  end
 
   before do
     Shell.irb_conf = {}
     allow(Shell::ShellSession.instance).to receive(:reset!)
-    allow(ChefConfig).to receive(:windows?).and_return(false)
+    allow(ChefUtils).to receive(:windows?).and_return(false)
     allow(Chef::Util::PathHelper).to receive(:home).and_return("/home/foo")
   end
 
@@ -67,7 +63,7 @@ describe Shell do
 
       conf = OpenStruct.new
       conf.main = Object.new
-      conf.main.instance_eval(&ObjectTestHarness)
+      conf.main.instance_eval(&object_test_harness)
       Shell.irb_conf[:IRB_RC].call(conf)
       expect(conf.prompt_c).to      eq("chef > ")
       expect(conf.return_format).to eq(" => %s \n")
@@ -108,7 +104,7 @@ describe Shell do
 
     before do
       @chef_object = Object.new
-      @chef_object.instance_eval(&ObjectTestHarness)
+      @chef_object.instance_eval(&object_test_harness)
     end
 
     it "creates help text for methods with descriptions" do
@@ -154,8 +150,8 @@ describe Shell do
     end
 
     it "creates a help banner with the command descriptions" do
-      expect(@chef_object.help_banner).to match(/^\|\ Command[\s]+\|\ Description[\s]*$/)
-      expect(@chef_object.help_banner).to match(/^\|\ rspec_method[\s]+\|\ rspecin\'[\s]*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ Command\s+\|\ Description\s*$/)
+      expect(@chef_object.help_banner).to match(/^\|\ rspec_method\s+\|\ rspecin\'\s*$/)
     end
   end
 

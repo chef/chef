@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/http/cookie_jar"
+require_relative "cookie_jar"
 
 class Chef
   class HTTP
@@ -33,7 +33,7 @@ class Chef
 
       def handle_request(method, url, headers = {}, data = false)
         @host, @port = url.host, url.port
-        if @cookies.has_key?("#{@host}:#{@port}")
+        if @cookies.key?("#{@host}:#{@port}")
           headers["Cookie"] = @cookies["#{@host}:#{@port}"]
         end
         [method, url, headers, data]

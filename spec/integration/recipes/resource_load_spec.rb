@@ -6,6 +6,7 @@ describe "Resource.load_current_value" do
   module Namer
     extend self
     attr_accessor :current_index
+
     def incrementing_value
       @incrementing_value += 1
       @incrementing_value
@@ -32,10 +33,10 @@ describe "Resource.load_current_value" do
         @created
       end
       action :create do
-        new_resource.class.created_x = x
+        new_resource.class.created_x = new_resource.x
       end
     end
-    result.resource_name resource_name
+    result.provides resource_name
     result
   end
 
@@ -45,10 +46,10 @@ describe "Resource.load_current_value" do
   context "with a resource with load_current_value" do
     before :each do
       resource_class.load_current_value do
-        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
-          select { |name, p| p.is_set?(self) }.
-          map { |name, p| "#{name}=#{p.get(self)}" }.
-          join(", ") })"
+        x "loaded #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }
+          .select { |name, p| p.is_set?(self) }
+          .map { |name, p| "#{name}=#{p.get(self)}" }
+          .join(", ")})"
       end
     end
 
@@ -65,17 +66,17 @@ describe "Resource.load_current_value" do
       end
 
       it "current_resource is passed name but not x" do
-        expect(resource.current_value.x).to eq "loaded 2 (name=blah)"
+        expect(resource.current_value.x).to eq "loaded 3 (name=blah)"
       end
 
       it "resource.current_value returns a different resource" do
-        expect(resource.current_value.x).to eq "loaded 2 (name=blah)"
+        expect(resource.current_value.x).to eq "loaded 3 (name=blah)"
         expect(resource.x).to eq "desired"
       end
 
       it "resource.current_value constructs the resource anew each time" do
-        expect(resource.current_value.x).to eq "loaded 2 (name=blah)"
         expect(resource.current_value.x).to eq "loaded 3 (name=blah)"
+        expect(resource.current_value.x).to eq "loaded 4 (name=blah)"
       end
 
       it "the provider accesses the current value of x" do
@@ -96,7 +97,7 @@ describe "Resource.load_current_value" do
         end
 
         it "i, name and d are passed to load_current_value, but not x" do
-          expect(resource.current_value.x).to eq "loaded 2 (d=desired_d, i=desired_i, name=blah)"
+          expect(resource.current_value.x).to eq "loaded 3 (d=desired_d, i=desired_i, name=blah)"
         end
       end
 
@@ -114,35 +115,19 @@ describe "Resource.load_current_value" do
         end
 
         it "i, name and d are passed to load_current_value, but not x" do
-          expect(resource.current_value.x).to eq "loaded 2 (d=desired_d, i=desired_i, name=blah)"
+          expect(resource.current_value.x).to eq "loaded 3 (d=desired_d, i=desired_i, name=blah)"
         end
       end
     end
 
-    context "and a resource with no values set" do
-      let(:resource) do
-        e = self
-        r = nil
-        converge do
-          r = public_send(e.resource_name, "blah") do
-          end
-        end
-        r
-      end
-
-      it "the provider accesses values from load_current_value" do
-        expect(resource.class.created_x).to eq "loaded 1 (name=blah)"
-      end
-    end
-
-    let (:subresource_name) do
+    let(:subresource_name) do
       :"load_current_value_subresource_dsl#{Namer.current_index}"
     end
-    let (:subresource_class) do
+    let(:subresource_class) do
       r = Class.new(resource_class) do
         property :y, default: lazy { "default_y #{Namer.incrementing_value}" }
       end
-      r.resource_name subresource_name
+      r.provides subresource_name
       r
     end
 
@@ -162,7 +147,7 @@ describe "Resource.load_current_value" do
 
     context "and a child resource class with no load_current_value" do
       it "the parent load_current_value is used" do
-        expect(subresource.current_value.x).to eq "loaded 2 (name=blah)"
+        expect(subresource.current_value.x).to eq "loaded 3 (name=blah)"
       end
       it "load_current_value yields a copy of the child class" do
         expect(subresource.current_value).to be_kind_of(subresource_class)
@@ -172,17 +157,17 @@ describe "Resource.load_current_value" do
     context "And a child resource class with load_current_value" do
       before do
         subresource_class.load_current_value do
-          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
-            select { |name, p| p.is_set?(self) }.
-            map { |name, p| "#{name}=#{p.get(self)}" }.
-            join(", ") })"
+          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }
+            .select { |name, p| p.is_set?(self) }
+            .map { |name, p| "#{name}=#{p.get(self)}" }
+            .join(", ")})"
         end
       end
 
       it "the overridden load_current_value is used" do
         current_resource = subresource.current_value
-        expect(current_resource.x).to eq "default 3"
-        expect(current_resource.y).to eq "loaded_y 2 (name=blah)"
+        expect(current_resource.x).to eq "default 4"
+        expect(current_resource.y).to eq "loaded_y 3 (name=blah)"
       end
     end
 
@@ -190,19 +175,141 @@ describe "Resource.load_current_value" do
       before do
         subresource_class.load_current_value do
           super()
-          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }.
-            select { |name, p| p.is_set?(self) }.
-            map { |name, p| "#{name}=#{p.get(self)}" }.
-            join(", ") })"
+          y "loaded_y #{Namer.incrementing_value} (#{self.class.properties.sort_by { |name, p| name }
+            .select { |name, p| p.is_set?(self) }
+            .map { |name, p| "#{name}=#{p.get(self)}" }
+            .join(", ")})"
         end
       end
 
       it "the original load_current_value is called as well as the child one" do
         current_resource = subresource.current_value
-        expect(current_resource.x).to eq "loaded 3 (name=blah)"
-        expect(current_resource.y).to eq "loaded_y 4 (name=blah, x=loaded 3 (name=blah))"
+        expect(current_resource.x).to eq "loaded 5 (name=blah)"
+        expect(current_resource.y).to eq "loaded_y 6 (name=blah, x=loaded 5 (name=blah))"
+      end
+    end
+  end
+end
+
+describe "simple load_current_value tests" do
+  let(:resource_class) do
+    Class.new(Chef::Resource) do
+      attr_writer :index # this is our hacky global state
+
+      def index; @index ||= 1; end
+
+      property :myindex, Integer
+
+      load_current_value do |new_resource|
+        myindex new_resource.index
+      end
+
+      action :run do
+        new_resource.index += 1
       end
     end
   end
 
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:new_resource) { resource_class.new("test", run_context) }
+  let(:provider) { new_resource.provider_for_action(:run) }
+
+  it "calling the action on the provider sets the current_resource" do
+    expect(events).to receive(:resource_current_state_loaded).with(new_resource, :run, anything)
+    provider.run_action(:run)
+    expect(provider.current_resource.myindex).to eql(1)
+  end
+
+  it "calling the action on the provider sets the after_resource" do
+    expect(events).to receive(:resource_after_state_loaded).with(new_resource, :run, anything)
+    provider.run_action(:run)
+    expect(provider.after_resource.myindex).to eql(2)
+  end
+end
+
+describe "simple load_current_resource tests" do
+  let(:provider_class) do
+    Class.new(Chef::Provider) do
+      provides :no_load_current_value
+      def load_current_resource
+        @current_resource = new_resource.dup
+        @current_resource.myindex = 1
+      end
+      action :run do
+      end
+    end
+  end
+
+  let(:resource_class) do
+    provider_class # vivify the provider_class
+    Class.new(Chef::Resource) do
+      provides :no_load_current_value
+      property :myindex, Integer
+    end
+  end
+
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:new_resource) { resource_class.new("test", run_context) }
+  let(:provider) { new_resource.provider_for_action(:run) }
+
+  it "calling the action on the provider sets the current_resource" do
+    expect(events).to receive(:resource_current_state_loaded).with(new_resource, :run, anything)
+    provider.run_action(:run)
+    expect(provider.current_resource.myindex).to eql(1)
+  end
+
+  it "calling the action on the provider sets the after_resource" do
+    expect(events).to receive(:resource_after_state_loaded).with(new_resource, :run, new_resource)
+    provider.run_action(:run)
+    expect(provider.after_resource.myindex).to eql(nil)
+  end
+end
+
+describe "simple load_current_resource and load_after_resource tests" do
+  let(:provider_class) do
+    Class.new(Chef::Provider) do
+      provides :load_after
+      def load_current_resource
+        @current_resource = new_resource.dup
+        @current_resource.myindex = 1
+      end
+
+      def load_after_resource
+        @after_resource = new_resource.dup
+        @after_resource.myindex = 2
+      end
+      action :run do
+      end
+    end
+  end
+
+  let(:resource_class) do
+    provider_class # autovivify provider class
+    Class.new(Chef::Resource) do
+      provides :load_after
+      property :myindex, Integer
+    end
+  end
+
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:new_resource) { resource_class.new("test", run_context) }
+  let(:provider) { new_resource.provider_for_action(:run) }
+
+  it "calling the action on the provider sets the current_resource" do
+    expect(events).to receive(:resource_current_state_loaded).with(new_resource, :run, anything)
+    provider.run_action(:run)
+    expect(provider.current_resource.myindex).to eql(1)
+  end
+
+  it "calling the action on the provider sets the after_resource" do
+    expect(events).to receive(:resource_after_state_loaded).with(new_resource, :run, anything)
+    provider.run_action(:run)
+    expect(provider.after_resource.myindex).to eql(2)
+  end
 end

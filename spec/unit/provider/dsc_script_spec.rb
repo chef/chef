@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,15 +23,15 @@ require "spec_helper"
 
 describe Chef::Provider::DscScript do
   context "when DSC is available" do
-    let (:node) do
+    let(:node) do
       node = Chef::Node.new
       node.automatic[:languages][:powershell][:version] = "4.0"
       node
     end
-    let (:events) { Chef::EventDispatch::Dispatcher.new }
-    let (:run_context) { Chef::RunContext.new(node, {}, events) }
-    let (:resource) { Chef::Resource::DscScript.new("script", run_context) }
-    let (:provider) do
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::DscScript.new("script", run_context) }
+    let(:provider) do
       Chef::Provider::DscScript.new(resource, run_context)
     end
 
@@ -99,7 +99,7 @@ describe Chef::Provider::DscScript do
       it "should noop if neither code or command are provided" do
         allow(provider).to receive(:load_current_resource)
         generator = double("Chef::Util::DSC::ConfigurationGenerator")
-        expect(generator).to receive(:configuration_document_from_script_code).with("", anything(), anything(), anything())
+        expect(generator).to receive(:configuration_document_from_script_code).with("", anything, anything)
         allow(Chef::Util::DSC::ConfigurationGenerator).to receive(:new).and_return(generator)
         provider.send(:generate_configuration_document, "tmp", nil)
       end
@@ -145,11 +145,11 @@ describe Chef::Provider::DscScript do
   end
 
   context "when Dsc is not available" do
-    let (:node) { Chef::Node.new }
-    let (:events) { Chef::EventDispatch::Dispatcher.new }
-    let (:run_context) { Chef::RunContext.new(node, {}, events) }
-    let (:resource) { Chef::Resource::DscScript.new("script", run_context) }
-    let (:provider) { Chef::Provider::DscScript.new(resource, run_context) }
+    let(:node) { Chef::Node.new }
+    let(:events) { Chef::EventDispatch::Dispatcher.new }
+    let(:run_context) { Chef::RunContext.new(node, {}, events) }
+    let(:resource) { Chef::Resource::DscScript.new("script", run_context) }
+    let(:provider) { Chef::Provider::DscScript.new(resource, run_context) }
 
     describe "action_run" do
       ["1.0", "2.0", "3.0"].each do |version|
@@ -162,7 +162,7 @@ describe Chef::Provider::DscScript do
         end
       end
 
-      it "raises an exception if Powershell is not present" do
+      it "raises an exception if PowerShell is not present" do
         expect do
           provider.run_action(:run)
         end.to raise_error(Chef::Exceptions::ProviderNotFound)

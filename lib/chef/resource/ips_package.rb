@@ -1,6 +1,6 @@
 #
 # Author:: Jason Williams (<williamsjj@digitar.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,19 +16,31 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/ips"
+require_relative "package"
+require_relative "../provider/package/ips"
 
 class Chef
   class Resource
     class IpsPackage < ::Chef::Resource::Package
-      resource_name :ips_package
+      unified_mode true
+
+      provides :ips_package
       provides :package, os: "solaris2"
-      provides :ips_package, os: "solaris2"
+
+      description "Use the **ips_package** resource to manage packages (using Image Packaging System (IPS)) on the Solaris 11 platform."
 
       allowed_actions :install, :remove, :upgrade
 
-      property :accept_license, [ true, false ], default: false, desired_state: false
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
+
+      property :accept_license, [TrueClass, FalseClass],
+        default: false, desired_state: false,
+        description: "Accept an end-user license agreement, automatically."
     end
   end
 end

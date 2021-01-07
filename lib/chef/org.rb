@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@chef.io)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/json_compat"
-require "chef/mixin/params_validate"
-require "chef/server_api"
+require_relative "json_compat"
+require_relative "mixin/params_validate"
+require_relative "server_api"
 
 class Chef
   class Org
@@ -40,25 +40,25 @@ class Chef
 
     def name(arg = nil)
       set_or_return(:name, arg,
-                    :regex => /^[a-z0-9\-_]+$/)
+        regex: /^[a-z0-9\-_]+$/)
     end
 
     def full_name(arg = nil)
       set_or_return(:full_name,
-                    arg, :kind_of => String)
+        arg, kind_of: String)
     end
 
     def private_key(arg = nil)
       set_or_return(:private_key,
-                    arg, :kind_of => String)
+        arg, kind_of: String)
     end
 
     def guid(arg = nil)
       set_or_return(:guid,
-                    arg, :kind_of => String)
+        arg, kind_of: String)
     end
 
-    def to_hash
+    def to_h
       result = {
         "name" => @name,
         "full_name" => @full_name,
@@ -68,20 +68,22 @@ class Chef
       result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def create
-      payload = { :name => self.name, :full_name => self.full_name }
+      payload = { name: name, full_name: full_name }
       new_org = chef_rest.post("organizations", payload)
-      Chef::Org.from_hash(self.to_hash.merge(new_org))
+      Chef::Org.from_hash(to_h.merge(new_org))
     end
 
     def update
-      payload = { :name => self.name, :full_name => self.full_name }
+      payload = { name: name, full_name: full_name }
       new_org = chef_rest.put("organizations/#{name}", payload)
-      Chef::Org.from_hash(self.to_hash.merge(new_org))
+      Chef::Org.from_hash(to_h.merge(new_org))
     end
 
     def destroy
@@ -89,22 +91,20 @@ class Chef
     end
 
     def save
-      begin
-        create
-      rescue Net::HTTPServerException => e
-        if e.response.code == "409"
-          update
-        else
-          raise e
-        end
+      create
+    rescue Net::HTTPClientException => e
+      if e.response.code == "409"
+        update
+      else
+        raise e
       end
     end
 
     def associate_user(username)
-      request_body = { :user => username }
+      request_body = { user: username }
       response = chef_rest.post "organizations/#{@name}/association_requests", request_body
       association_id = response["uri"].split("/").last
-      chef_rest.put "users/#{username}/association_requests/#{association_id}", { :response => "accept" }
+      chef_rest.put "users/#{username}/association_requests/#{association_id}", { response: "accept" }
     end
 
     def dissociate_user(username)
@@ -122,11 +122,6 @@ class Chef
 
     def self.from_json(json)
       Chef::Org.from_hash(Chef::JSONCompat.from_json(json))
-    end
-
-    def self.json_create(json)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Org#from_json or Chef::Org#load.")
-      Chef::Org.from_json(json)
     end
 
     def self.load(org_name)

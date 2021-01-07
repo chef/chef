@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,27 +24,21 @@ describe Chef::Resource::AptUpdate do
   let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) { Chef::Resource::AptUpdate.new("update", run_context) }
 
-  it "should create a new Chef::Resource::AptUpdate" do
-    expect(resource).to be_a_kind_of(Chef::Resource)
-    expect(resource).to be_a_kind_of(Chef::Resource::AptUpdate)
+  it "sets the default action as :periodic" do
+    expect(resource.action).to eql([:periodic])
   end
 
-  it "the default frequency should be 1 day" do
+  it "supports :periodic, :update actions" do
+    expect { resource.action :periodic }.not_to raise_error
+    expect { resource.action :update }.not_to raise_error
+  end
+
+  it "default frequency is set to be 1 day" do
     expect(resource.frequency).to eql(86_400)
   end
 
-  it "the frequency should accept integers" do
+  it "frequency accepts integers" do
     resource.frequency(400)
     expect(resource.frequency).to eql(400)
-  end
-
-  it "should resolve to a Noop class when apt-get is not found" do
-    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(false)
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::Noop)
-  end
-
-  it "should resolve to a AptUpdate class when apt-get is found" do
-    expect(Chef::Provider::AptUpdate).to receive(:which).with("apt-get").and_return(true)
-    expect(resource.provider_for_action(:add)).to be_a(Chef::Provider::AptUpdate)
   end
 end

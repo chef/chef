@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,11 +34,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:node)
     end
 
-    it "implements a load_node method for backwards compatibility until Chef 13" do
-      expect(policy_builder).to respond_to(:load_node)
-    end
-
-    it "has removed the deprecated #load_node method", chef: ">= 13" do
+    it "has removed the deprecated #load_node method" do
       expect(policy_builder).to_not respond_to(:load_node)
     end
 
@@ -46,13 +42,13 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       expect(policy_builder).to respond_to(:finish_load_node)
     end
 
-    it "implements  a build_node method" do
+    it "implements a build_node method" do
       expect(policy_builder).to respond_to(:build_node)
     end
 
     it "implements a setup_run_context method that accepts a list of recipe files to run" do
       expect(policy_builder).to respond_to(:setup_run_context)
-      expect(policy_builder.method(:setup_run_context).arity).to eq(-1) #optional argument
+      expect(policy_builder.method(:setup_run_context).arity).to eq(-1) # optional argument
     end
 
     it "implements a run_context method" do
@@ -102,27 +98,6 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
 
     it "has an override_runlist" do
       expect(policy_builder.override_runlist).to eq(override_runlist)
-    end
-
-  end
-
-  context "deprecated #load_node method" do
-
-    let(:node) do
-      node = Chef::Node.new
-      node.name(node_name)
-      node.run_list(["recipe[a::default]", "recipe[b::server]"])
-      node
-    end
-
-    before do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
-      expect(Chef::Node).to receive(:find_or_create).with(node_name).and_return(node)
-      policy_builder.load_node
-    end
-
-    it "loads the node" do
-      expect(policy_builder.node).to eq(node)
     end
 
   end
@@ -201,7 +176,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       let(:expansion) do
         recipe_list = Chef::RunList::VersionedRecipeList.new
         recipe_list.add_recipe("recipe[from_role::default", "1.0.2")
-        double("RunListExpansion", :recipes => recipe_list)
+        double("RunListExpansion", recipes: recipe_list)
       end
 
       let(:node) do
@@ -249,7 +224,7 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
       end
 
       it "reports that a temporary policy is being used" do
-        expect(policy_builder.temporary_policy?).to be_truthy
+        expect(policy_builder.temporary_policy?).to be true
       end
 
     end
@@ -293,13 +268,13 @@ describe Chef::PolicyBuilder::ExpandNodeObject do
     let(:chef_http) { double("Chef::ServerAPI") }
 
     let(:cookbook_resolve_url) { "environments/#{node.chef_environment}/cookbook_versions" }
-    let(:cookbook_resolve_post_data) { { :run_list => ["first::default", "second::default"] } }
+    let(:cookbook_resolve_post_data) { { run_list: ["first::default", "second::default"] } }
 
     # cookbook_hash is just a hash, but since we're passing it between mock
     # objects, we get a little better test strictness by using a double (which
     # will have object equality rather than semantic equality #== semantics).
     let(:cookbook_hash) { double("cookbook hash") }
-    let(:expanded_cookbook_hash) { double("expanded cookbook hash", :each => nil) }
+    let(:expanded_cookbook_hash) { double("expanded cookbook hash", each: nil) }
 
     let(:cookbook_synchronizer) { double("CookbookSynchronizer") }
 

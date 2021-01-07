@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist <lamont@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,12 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
   let(:stdin) { StringIO.new }
   let(:ui) { Chef::Knife::UI.new(stdout, stderr, stdin, {}) }
 
-  let(:knife_config) { {} }
+  let(:config) { {} }
 
   let(:client) { Chef::ApiClient.new }
 
   let(:chef_vault_handler) do
-    chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(knife_config: knife_config, ui: ui)
+    chef_vault_handler = Chef::Knife::Bootstrap::ChefVaultHandler.new(config: config, ui: ui)
     chef_vault_handler
   end
 
@@ -55,28 +55,28 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
       expect(bootstrap_vault_item).to receive(:save).at_least(:once)
     end
 
-    context "from knife_config[:bootstrap_vault_item]" do
+    context "from config[:bootstrap_vault_item]" do
       it "sets a single item as a scalar" do
-        knife_config[:bootstrap_vault_item] = { "vault" => "item1" }
+        config[:bootstrap_vault_item] = { "vault" => "item1" }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets a single item as an array" do
-        knife_config[:bootstrap_vault_item] = { "vault" => [ "item1" ] }
+        config[:bootstrap_vault_item] = { "vault" => [ "item1" ] }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets two items as an array" do
-        knife_config[:bootstrap_vault_item] = { "vault" => %w{item1 item2} }
+        config[:bootstrap_vault_item] = { "vault" => %w{item1 item2} }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets two vaults from different hash keys" do
-        knife_config[:bootstrap_vault_item] = { "vault" => %w{item1 item2}, "vault2" => [ "item3" ] }
+        config[:bootstrap_vault_item] = { "vault" => %w{item1 item2}, "vault2" => [ "item3" ] }
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault2", "item3").and_return(bootstrap_vault_item)
@@ -84,28 +84,28 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
       end
     end
 
-    context "from knife_config[:bootstrap_vault_json]" do
+    context "from config[:bootstrap_vault_json]" do
       it "sets a single item as a scalar" do
-        knife_config[:bootstrap_vault_json] = '{ "vault": "item1" }'
+        config[:bootstrap_vault_json] = '{ "vault": "item1" }'
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets a single item as an array" do
-        knife_config[:bootstrap_vault_json] = '{ "vault": [ "item1" ] }'
+        config[:bootstrap_vault_json] = '{ "vault": [ "item1" ] }'
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets two items as an array" do
-        knife_config[:bootstrap_vault_json] = '{ "vault": [ "item1", "item2" ] }'
+        config[:bootstrap_vault_json] = '{ "vault": [ "item1", "item2" ] }'
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         chef_vault_handler.run(client)
       end
 
       it "sets two vaults from different hash keys" do
-        knife_config[:bootstrap_vault_json] = '{ "vault": [ "item1", "item2" ], "vault2": [ "item3" ] }'
+        config[:bootstrap_vault_json] = '{ "vault": [ "item1", "item2" ], "vault2": [ "item3" ] }'
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item1").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault", "item2").and_return(bootstrap_vault_item)
         expect(chef_vault_handler).to receive(:load_chef_bootstrap_vault_item).with("vault2", "item3").and_return(bootstrap_vault_item)
@@ -113,12 +113,12 @@ describe Chef::Knife::Bootstrap::ChefVaultHandler do
       end
     end
 
-    context "from knife_config[:bootstrap_vault_file]" do
+    context "from config[:bootstrap_vault_file]" do
 
       def setup_file_contents(json)
         stringio = StringIO.new(json)
-        knife_config[:bootstrap_vault_file] = "/foo/bar/baz"
-        expect(File).to receive(:read).with(knife_config[:bootstrap_vault_file]).and_return(stringio)
+        config[:bootstrap_vault_file] = "/foo/bar/baz"
+        expect(File).to receive(:read).with(config[:bootstrap_vault_file]).and_return(stringio)
       end
 
       it "sets a single item as a scalar" do

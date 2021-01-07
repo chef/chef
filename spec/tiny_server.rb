@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,9 @@
 # limitations under the License.
 #
 
-require "rubygems"
 require "webrick"
 require "webrick/https"
 require "rack"
-require "thread"
 require "singleton"
 require "open-uri"
 require "chef/config"
@@ -38,7 +36,7 @@ module TinyServer
       # SSLEnable: options[:ssl],
       # SSLCertName: [ [ 'CN', WEBrick::Utils::getservername ] ],
       AccessLog: [], # Remove this option to enable the access log when debugging.
-    }
+    }.freeze
 
     def initialize(**options)
       @options = DEFAULT_OPTIONS.merge(options)
@@ -101,10 +99,10 @@ module TinyServer
   class API
     include Singleton
 
-    GET     = "GET"
-    PUT     = "PUT"
-    POST    = "POST"
-    DELETE  = "DELETE"
+    GET     = "GET".freeze
+    PUT     = "PUT".freeze
+    POST    = "POST".freeze
+    DELETE  = "DELETE".freeze
 
     attr_reader :routes
 
@@ -136,8 +134,8 @@ module TinyServer
       if response = response_for_request(env)
         response.call
       else
-        debug_info = { :message => "no data matches the request for #{env['REQUEST_URI']}",
-                       :available_routes => @routes, :request => env }
+        debug_info = { message: "no data matches the request for #{env["REQUEST_URI"]}",
+                       available_routes: @routes, request: env }
         # Uncomment me for glorious debugging
         # pp :not_found => debug_info
         [404, { "Content-Type" => "application/json" }, [ Chef::JSONCompat.to_json(debug_info) ]]
@@ -170,7 +168,7 @@ module TinyServer
   end
 
   class Response
-    HEADERS = { "Content-Type" => "application/json" }
+    HEADERS = { "Content-Type" => "application/json" }.freeze
 
     def initialize(response_code = 200, data = nil, headers = nil, &block)
       @response_code, @data = response_code, data

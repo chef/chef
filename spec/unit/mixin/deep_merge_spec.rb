@@ -236,6 +236,14 @@ describe Chef::Mixin::DeepMerge, "deep_merge!" do
     @dm.deep_merge!(hash_src, hash_dst)
     expect(hash_dst).to eq({ "item" => "orange" })
   end
+
+  it "should overwrite a string with a nil when merging nil values" do
+    hash_src = { "item" => nil }
+    hash_dst = { "item" => "orange" }
+    @dm.deep_merge!(hash_src, hash_dst)
+    expect(hash_dst).to eq({ "item" => nil })
+  end
+
 end # deep_merge!
 
 # Chef specific
@@ -337,6 +345,13 @@ describe Chef::Mixin::DeepMerge do
       merge_ee_hash = { "top_level_a" => 1, "top_level_b" => false }
       merge_with_hash = { "top_level_a" => 2, "top_level_b" => true }
       @dm.hash_only_merge(merge_ee_hash, merge_with_hash)
+    end
+
+    it "should overwrite a string with a nil when merging nil values" do
+      hash_src = { "item" => nil }
+      hash_dst = { "item" => "orange" }
+      merged_result = @dm.hash_only_merge(hash_dst, hash_src)
+      expect(merged_result).to eq({ "item" => nil })
     end
   end
 end

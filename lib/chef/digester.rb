@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2009-2016, Daniel DeLeo
 # License:: Apache License, Version 2.0
 #
@@ -18,8 +18,9 @@
 # limitations under the License.
 #
 
-require "openssl"
-require "singleton"
+autoload :OpenSSL, "openssl"
+autoload :Digest, "digest"
+require "singleton" unless defined?(Singleton)
 
 class Chef
   class Digester
@@ -39,9 +40,9 @@ class Chef
 
     def generate_checksum(file)
       if file.is_a?(StringIO)
-        checksum_io(file, OpenSSL::Digest::SHA256.new)
+        checksum_io(file, OpenSSL::Digest.new("SHA256"))
       else
-        checksum_file(file, OpenSSL::Digest::SHA256.new)
+        checksum_file(file, OpenSSL::Digest.new("SHA256"))
       end
     end
 
@@ -50,11 +51,11 @@ class Chef
     end
 
     def generate_md5_checksum_for_file(file)
-      checksum_file(file, OpenSSL::Digest::MD5.new)
+      checksum_file(file, ::Digest::MD5.new)
     end
 
     def generate_md5_checksum(io)
-      checksum_io(io, OpenSSL::Digest::MD5.new)
+      checksum_io(io, ::Digest::MD5.new)
     end
 
     private

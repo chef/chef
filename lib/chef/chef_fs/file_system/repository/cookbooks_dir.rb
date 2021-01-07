@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/repository/directory"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
-require "chef/cookbook/chefignore"
+require_relative "directory"
+require_relative "chef_repository_file_system_cookbook_dir"
+require_relative "../../../cookbook/chefignore"
 
 class Chef
   module ChefFS
@@ -28,7 +28,7 @@ class Chef
         class CookbooksDir < Repository::Directory
 
           def chefignore
-            @chefignore ||= Chef::Cookbook::Chefignore.new(self.file_path)
+            @chefignore ||= Chef::Cookbook::Chefignore.new(file_path)
           rescue Errno::EISDIR, Errno::EACCES
             # Work around a bug in Chefignore when chefignore is a directory
           end

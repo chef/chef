@@ -1,6 +1,6 @@
 #
 # Author:: Nicolas DUPEUX (<nicolas.dupeux@arkea.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,39 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/text_formatter"
-require "chef/knife/core/generic_presenter"
+require_relative "text_formatter"
+require_relative "generic_presenter"
 
 class Chef
   class Knife
     module Core
 
-      # This module may be included into a knife subcommand class to automatically
-      # add configuration options used by the StatusPresenter
-      module StatusFormattingOptions
-        # :nodoc:
-        # Would prefer to do this in a rational way, but can't be done b/c of
-        # Mixlib::CLI's design :(
-        def self.included(includer)
-          includer.class_eval do
-            option :medium_output,
-              :short   => "-m",
-              :long    => "--medium",
-              :boolean => true,
-              :default => false,
-              :description => "Include normal attributes in the output"
-
-            option :long_output,
-              :short   => "-l",
-              :long    => "--long",
-              :boolean => true,
-              :default => false,
-              :description => "Include all attributes in the output"
-          end
-        end
-      end
-
-      #==Chef::Knife::Core::StatusPresenter
       # A customized presenter for Chef::Node objects. Supports variable-length
       # output formats for displaying node data
       class StatusPresenter < GenericPresenter
@@ -68,8 +42,8 @@ class Chef
 
             result["name"] = node["name"] || node.name
             result["chef_environment"] = node["chef_environment"]
-            ip = (node["ec2"] && node["ec2"]["public_ipv4"]) || node["ipaddress"]
-            fqdn = (node["ec2"] && node["ec2"]["public_hostname"]) || node["fqdn"]
+            ip = (node["cloud"] && node["cloud"]["public_ipv4_addrs"]&.first) || node["ipaddress"]
+            fqdn = (node["cloud"] && node["cloud"]["public_hostname"]) || node["fqdn"]
             result["ip"] = ip if ip
             result["fqdn"] = fqdn if fqdn
             result["run_list"] = node.run_list if config["run_list"]
@@ -96,36 +70,52 @@ class Chef
           summarized = ""
           list.each do |data|
             node = data
-            # special case ec2 with their split horizon whatsis.
-            ip = (node[:ec2] && node[:ec2][:public_ipv4]) || node[:ipaddress]
-            fqdn = (node[:ec2] && node[:ec2][:public_hostname]) || node[:fqdn]
+            # special case clouds with their split horizon thing.
+            ip = (node[:cloud] && node[:cloud][:public_ipv4_addrs] && node[:cloud][:public_ipv4_addrs].first) || node[:ipaddress]
+            fqdn = (node[:cloud] && node[:cloud][:public_hostname]) || node[:fqdn]
             name = node["name"] || node.name
 
-            hours, minutes, = time_difference_in_hms(node["ohai_time"])
-            hours_text   = "#{hours} hour#{hours == 1 ? ' ' : 's'}"
-            minutes_text = "#{minutes} minute#{minutes == 1 ? ' ' : 's'}"
-            run_list = "#{node['run_list']}" if config[:run_list]
-            if hours > 24
-              color = :red
-              text = hours_text
-            elsif hours >= 1
-              color = :yellow
-              text = hours_text
-            else
-              color = :green
-              text = minutes_text
+            if config[:run_list]
+              if config[:long_output]
+                run_list = node.run_list.map { |rl| "#{rl.type}[#{rl.name}]" }
+              else
+                run_list = node["run_list"]
+              end
             end
 
-            line_parts = Array.new
-            line_parts << @ui.color(text, color) + " ago" << name
+            line_parts = []
+
+            if node["ohai_time"]
+              hours, minutes, seconds = time_difference_in_hms(node["ohai_time"])
+              hours_text = "#{hours} hour#{hours == 1 ? " " : "s"}"
+              minutes_text = "#{minutes} minute#{minutes == 1 ? " " : "s"}"
+              seconds_text = "#{seconds} second#{seconds == 1 ? " " : "s"}"
+              if hours > 24
+                color = :red
+                text = hours_text
+              elsif hours >= 1
+                color = :yellow
+                text = hours_text
+              elsif minutes >= 1
+                color = :green
+                text = minutes_text
+              else
+                color = :green
+                text = seconds_text
+              end
+              line_parts << @ui.color(text, color) + " ago" << name
+            else
+              line_parts << "Node #{name} has not yet converged"
+            end
+
             line_parts << fqdn if fqdn
             line_parts << ip if ip
-            line_parts << run_list if run_list
+            line_parts << run_list.to_s if run_list
 
             if node["platform"]
-              platform = node["platform"]
+              platform = node["platform"].dup
               if node["platform_version"]
-                platform << " #{node['platform_version']}"
+                platform << " #{node["platform_version"]}"
               end
               line_parts << platform
             end
@@ -139,8 +129,8 @@ class Chef
           ui.color(key_text, :cyan)
         end
 
-        # :nodoc:
-        # TODO: this is duplicated from StatusHelper in the Webui. dedup.
+        # @private
+        # @todo this is duplicated from StatusHelper in the Webui. dedup.
         def time_difference_in_hms(unix_time)
           now = Time.now.to_i
           difference = now - unix_time.to_i
@@ -148,7 +138,7 @@ class Chef
           difference = difference % 3600
           minutes = (difference / 60).to_i
           seconds = (difference % 60)
-          return [hours, minutes, seconds]
+          [hours, minutes, seconds]
         end
 
       end

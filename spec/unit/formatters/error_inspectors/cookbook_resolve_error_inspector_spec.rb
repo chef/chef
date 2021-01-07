@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,7 +35,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
       @response_body = %q({"error": [{"message": "gtfo"}])
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+      @exception = Net::HTTPClientException.new("(exception) forbidden", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
@@ -56,7 +56,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
       @response_body = "{\"error\":[\"{\\\"non_existent_cookbooks\\\":[\\\"apache2\\\"],\\\"cookbooks_with_no_versions\\\":[\\\"users\\\"],\\\"message\\\":\\\"Run list contains invalid items: no such cookbook nope.\\\"}\"]}"
       @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPClientException.new("(exception) precondition failed", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
@@ -81,10 +81,10 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
 
     before do
 
-      @response_body = "{\"error\":[{\"non_existent_cookbooks\":[],\"cookbooks_with_no_versions\":[],\"message\":\"unable to solve dependencies in alotted time.\"}]}"
+      @response_body = "{\"error\":[{\"non_existent_cookbooks\":[],\"cookbooks_with_no_versions\":[],\"message\":\"unable to solve dependencies in allotted time.\"}]}"
       @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPClientException.new("(exception) precondition failed", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)
@@ -93,7 +93,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
     it "prints a pretty message" do
       @description.display(@outputter)
       @outputter_output.rewind
-      expect(@outputter_output.read).to include("unable to solve dependencies in alotted time.")
+      expect(@outputter_output.read).to include("unable to solve dependencies in allotted time.")
     end
 
   end
@@ -107,7 +107,7 @@ describe Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector do
       @response_body = "{\"error\":[{\"non_existent_cookbooks\":[\"apache2\"],\"cookbooks_with_no_versions\":[\"users\"],\"message\":\"Run list contains invalid items: no such cookbook nope.\"}]}"
       @response = Net::HTTPPreconditionFailed.new("1.1", "412", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) precondition failed", @response)
+      @exception = Net::HTTPClientException.new("(exception) precondition failed", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::CookbookResolveErrorInspector.new(@expanded_run_list, @exception)
       @inspector.add_explanation(@description)

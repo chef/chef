@@ -1,5 +1,5 @@
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,7 @@
 #
 # mixin to make this syntax work without specifying a source:
 #
-# gem_pacakge "/tmp/foo-x.y.z.gem"
+# gem_package "/tmp/foo-x.y.z.gem"
 # rpm_package "/tmp/foo-x.y-z.rpm"
 # dpkg_package "/tmp/foo-x.y.z.deb"
 #
@@ -35,11 +35,12 @@ class Chef
       def initialize(new_resource, run_context)
         super
         return if new_resource.package_name.is_a?(Array)
+
         # if we're passed something that looks like a filesystem path, with no source, use it
         #  - require at least one '/' in the path to avoid gem_package "foo" breaking if a file named 'foo' exists in the cwd
-        if new_resource.source.nil? && new_resource.package_name.match(/#{::File::SEPARATOR}/) && ::File.exists?(new_resource.package_name)
-          Chef::Log.debug("No package source specified, but #{new_resource.package_name} exists on the filesystem, copying to package source")
-          new_resource.source(@new_resource.package_name)
+        if new_resource.source.nil? && new_resource.package_name.include?(::File::SEPARATOR) && ::File.exist?(new_resource.package_name)
+          Chef::Log.trace("No package source specified, but #{new_resource.package_name} exists on the filesystem, copying to package source")
+          new_resource.source(new_resource.package_name)
         end
       end
     end

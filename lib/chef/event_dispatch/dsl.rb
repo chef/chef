@@ -15,9 +15,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/event_dispatch/base"
-require "chef/exceptions"
-require "chef/config"
+require_relative "base"
+require_relative "../exceptions"
+require_relative "../config"
 
 class Chef
   module EventDispatch
@@ -35,10 +35,10 @@ class Chef
         # and associated event dispatcher is set, else fallback to
         # Chef::Config[:event_handlers]
         if Chef.run_context && Chef.run_context.events
-          Chef::Log.debug("Registering handler '#{name}' using events api")
+          Chef::Log.trace("Registering handler '#{name}' using events api")
           Chef.run_context.events.register(handler)
         else
-          Chef::Log.debug("Registering handler '#{name}' using global config")
+          Chef::Log.trace("Registering handler '#{name}' using global config")
           Chef::Config[:event_handlers] << handler
         end
       end

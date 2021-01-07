@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,7 +21,7 @@ require "spec_helper"
 require "cgi"
 describe Chef::Mixin::Template, "render_template" do
 
-  let(:sep) { Chef::Platform.windows? ? "\r\n" : "\n" }
+  let(:sep) { ChefUtils.windows? ? "\r\n" : "\n" }
 
   before :each do
     @context = Chef::Mixin::Template::TemplateContext.new({})
@@ -39,7 +39,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on windows" do
     before do
-      allow(ChefConfig).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     it "should render the templates with windows line endings" do
@@ -54,7 +54,7 @@ describe Chef::Mixin::Template, "render_template" do
 
   describe "when running on unix" do
     before do
-      allow(ChefConfig).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
     end
 
     it "should render the templates with unix line endings" do
@@ -104,16 +104,16 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should render local files" do
-      begin
-        tf = Tempfile.new("partial")
-        tf.write "test"
-        tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
-        expect(output).to eq("before {test} after")
-      ensure
-        tf.close
-      end
+      tf = Tempfile.new("partial")
+      tf.write "test"
+      tf.rewind
+
+      output = @template_context.render_template_from_string("before {<%= render '#{tf.path}', :local => true %>} after")
+      expect(output).to eq("before {test} after")
+    ensure
+      tf.close
+
     end
 
     it "should render partials from a different cookbook" do
@@ -124,16 +124,16 @@ describe Chef::Mixin::Template, "render_template" do
     end
 
     it "should render using the source argument if provided" do
-      begin
-        tf = Tempfile.new("partial")
-        tf.write "test"
-        tf.rewind
 
-        output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
-        expect(output).to eq("before {test} after")
-      ensure
-        tf.close
-      end
+      tf = Tempfile.new("partial")
+      tf.write "test"
+      tf.rewind
+
+      output = @template_context.render_template_from_string("before {<%= render 'something', :local => true, :source => '#{tf.path}' %>} after")
+      expect(output).to eq("before {test} after")
+    ensure
+      tf.close
+
     end
 
     it "should pass the node to partials" do
@@ -182,6 +182,51 @@ describe Chef::Mixin::Template, "render_template" do
       expect(output).to eq("before {partial one We could be diving for pearls! calling home} after")
     end
 
+    describe "when an exception is raised in the template" do
+      let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "templates", "failed.erb")) }
+
+      def do_raise
+        @template_context.render_template(template_file)
+      end
+
+      it "should catch and re-raise the exception as a TemplateError" do
+        expect { do_raise }.to raise_error(Chef::Mixin::Template::TemplateError)
+      end
+
+      describe "the raised TemplateError" do
+        subject(:exception) do
+
+          do_raise
+        rescue Chef::Mixin::Template::TemplateError => e
+          e
+
+        end
+
+        it "should contain template file and line numbers" do
+          expect(exception.line_number).to eq(5)
+        end
+
+        it "should provide a source listing of the template around the exception" do
+          expect(exception.source_listing).to eq("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+        end
+
+        it "should provide a nice source location" do
+          expect(exception.source_location).to eq("on line #5")
+        end
+
+        it "should create a pretty output for the terminal" do
+          expect(exception.to_s).to match(/Chef::Mixin::Template::TemplateError/)
+          expect(exception.to_s).to match(/undefined method `\[\]' for nil:NilClass/)
+          expect(exception.to_s).to include("  3: Which includes some content\n  4: \n  5: And will fail <%= nil[] %>")
+          expect(exception.to_s).to include(exception.original_exception.backtrace.first)
+        end
+
+        it "should include template file on original_exception backtrace" do
+          expect(exception.original_exception.backtrace).to include(/#{Regexp.escape(template_file)}/)
+        end
+      end
+    end
+
     describe "when customizing the template context" do
 
       it "extends the context to include modules" do
@@ -197,17 +242,13 @@ describe Chef::Mixin::Template, "render_template" do
 
       it "emits a warning when overriding 'core' methods" do
         mod = Module.new do
-          def render
-          end
+          def render; end
 
-          def node
-          end
+          def node; end
 
-          def render_template
-          end
+          def render_template; end
 
-          def render_template_from_string
-          end
+          def render_template_from_string; end
         end
         %w{node render render_template render_template_from_string}.each do |method_name|
           expect(Chef::Log).to receive(:warn).with(/^Core template method `#{method_name}' overridden by extension module/)
@@ -233,11 +274,11 @@ describe Chef::Mixin::Template, "render_template" do
 
     describe "the raised TemplateError" do
       before :each do
-        begin
-          do_raise
-        rescue Chef::Mixin::Template::TemplateError => e
-          @exception = e
-        end
+
+        do_raise
+      rescue Chef::Mixin::Template::TemplateError => e
+        @exception = e
+
       end
 
       it "should have the original exception" do

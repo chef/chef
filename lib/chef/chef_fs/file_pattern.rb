@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs"
-require "chef/chef_fs/path_utils"
+require_relative "../chef_fs"
+require_relative "path_utils"
 
 class Chef
   module ChefFS
@@ -74,6 +74,7 @@ class Chef
 
         argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
+
         path = path[1, path.length - 1] if argument_is_absolute
 
         path_parts = Chef::ChefFS::PathUtils.split(path)
@@ -81,10 +82,11 @@ class Chef
         return false if regexp_parts.length <= path_parts.length && !has_double_star
         # If the path doesn't match up to this point, children won't match either.
         return false if path_parts.zip(regexp_parts).any? { |part, regexp| !regexp.nil? && !regexp.match(part) }
+
         # Otherwise, it's possible we could match: the path matches to this point, and the pattern is longer than the path.
         # TODO There is one edge case where the double star comes after some characters like abc**def--we could check whether the next
         # bit of path starts with abc in that case.
-        return true
+        true
       end
 
       # Returns the immediate child of a path that would be matched
@@ -114,7 +116,8 @@ class Chef
         path = path[1, path.length - 1] if Chef::ChefFS::PathUtils.is_absolute?(path)
         dirs_in_path = Chef::ChefFS::PathUtils.split(path).length
         return nil if exact_parts.length <= dirs_in_path
-        return exact_parts[dirs_in_path]
+
+        exact_parts[dirs_in_path]
       end
 
       # If this pattern represents an exact path, returns the exact path.
@@ -123,7 +126,8 @@ class Chef
       #   abc/*def.exact_path == 'abc/def'
       #   abc/x\\yz.exact_path == 'abc/xyz'
       def exact_path
-        return nil if has_double_star || exact_parts.any? { |part| part.nil? }
+        return nil if has_double_star || exact_parts.any?(&:nil?)
+
         result = Chef::ChefFS::PathUtils.join(*exact_parts)
         is_absolute ? Chef::ChefFS::PathUtils.join("", result) : result
       end
@@ -151,6 +155,7 @@ class Chef
       def match?(path)
         argument_is_absolute = Chef::ChefFS::PathUtils.is_absolute?(path)
         return false if is_absolute != argument_is_absolute
+
         path = path[1, path.length - 1] if argument_is_absolute
         !!regexp.match(path)
       end
@@ -183,7 +188,7 @@ class Chef
       end
 
       def calculate
-        if !@regexp
+        unless @regexp
           @is_absolute = Chef::ChefFS::PathUtils.is_absolute?(@pattern)
 
           full_regexp_parts = []
@@ -199,7 +204,7 @@ class Chef
             end
 
             # Skip // and /./ (pretend it's not there)
-            if exact == "" || exact == "."
+            if ["", "."].include?(exact)
               next
             end
 
@@ -213,9 +218,10 @@ class Chef
                 if has_double_star_prev
                   raise ArgumentError, ".. overlapping a ** is unsupported"
                 end
+
                 full_regexp_parts.pop
                 normalized_parts.pop
-                if !@has_double_star
+                unless @has_double_star
                   @regexp_parts.pop
                   @exact_parts.pop
                 end
@@ -226,7 +232,7 @@ class Chef
             # Build up the regexp
             full_regexp_parts << regexp
             normalized_parts << part
-            if !@has_double_star
+            unless @has_double_star
               @regexp_parts << Regexp.new("^#{regexp}$")
               @exact_parts << exact
             end
@@ -239,7 +245,7 @@ class Chef
       end
 
       def self.pattern_special_characters
-        if Chef::ChefFS.windows?
+        if ChefUtils.windows?
           @pattern_special_characters ||= /(\*\*|\*|\?|[\*\?\.\|\(\)\[\]\{\}\+\\\\\^\$])/
         else
           # Unix also supports character regexes and backslashes
@@ -259,7 +265,7 @@ class Chef
         pattern.split(pattern_special_characters).each_with_index do |part, index|
           # Odd indexes from the split are symbols.  Even are normal bits.
           if index.even?
-            exact << part if !exact.nil?
+            exact << part unless exact.nil?
             regexp << part
           else
             case part
@@ -277,7 +283,7 @@ class Chef
             else
               if part[0, 1] == '\\' && part.length == 2
                 # backslash escapes are only supported on Unix, and are handled here by leaving the escape on (it means the same thing in a regex)
-                exact << part[1, 1] if !exact.nil?
+                exact << part[1, 1] unless exact.nil?
                 if regexp_escape_characters.include?(part[1, 1])
                   regexp << part
                 else
@@ -288,7 +294,7 @@ class Chef
                 exact = nil
                 regexp << part
               else
-                exact += part if !exact.nil?
+                exact += part unless exact.nil?
                 regexp << "\\#{part}"
               end
             end

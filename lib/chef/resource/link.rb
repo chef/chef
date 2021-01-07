@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,90 +17,55 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/mixin/securable"
+require_relative "../resource"
+require_relative "../mixin/securable"
 
 class Chef
   class Resource
     class Link < Chef::Resource
       include Chef::Mixin::Securable
+      unified_mode true
 
-      identity_attr :target_file
+      provides :link
 
-      state_attrs :to, :owner, :group
+      description "Use the **link** resource to create symbolic or hard links.\n\n"\
+                  "A symbolic link—sometimes referred to as a soft link—is a directory entry"\
+                  " that associates a file name with a string that contains an absolute or"\
+                  " relative path to a file on any file system. In other words, 'a file that"\
+                  " contains a path that points to another file.' A symbolic link creates a new"\
+                  " file with a new inode that points to the inode location of the original file.\n\n"\
+                  "A hard link is a directory entry that associates a file with another file in the"\
+                  " same file system. In other words, 'multiple directory entries to the same file.'"\
+                  " A hard link creates a new file that points to the same inode as the original file."
+
+      state_attrs :owner # required since it's not a property below
 
       default_action :create
       allowed_actions :create, :delete
 
-      def initialize(name, run_context = nil)
-        verify_links_supported!
-        super
-        @to = nil
-        @link_type = :symbolic
-        @target_file = name
-      end
+      property :target_file, String,
+        description: "An optional property to set the target file if it differs from the resource block's name.",
+        name_property: true
 
-      def to(arg = nil)
-        set_or_return(
-          :to,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :to, String,
+        description: "The actual file to which the link is to be created."
 
-      def target_file(arg = nil)
-        set_or_return(
-          :target_file,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :link_type, [String, Symbol],
+        description: "The type of link: :symbolic or :hard.",
+        coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
+        equal_to: %i{symbolic hard}, default: :symbolic
 
-      def link_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        set_or_return(
-          :link_type,
-          real_arg,
-          :equal_to => [ :symbolic, :hard ]
-        )
-      end
+      property :group, [String, Integer],
+        description: "A group name or ID number that identifies the group associated with a symbolic link.",
+        regex: [Chef::Config[:group_valid_regex]]
 
-      def group(arg = nil)
-        set_or_return(
-          :group,
-          arg,
-          :regex => Chef::Config[:group_valid_regex]
-        )
-      end
-
-      def owner(arg = nil)
-        set_or_return(
-          :owner,
-          arg,
-          :regex => Chef::Config[:user_valid_regex]
-        )
-      end
+      property :owner, [String, Integer],
+        description: "The owner associated with a symbolic link.",
+        regex: [Chef::Config[:user_valid_regex]]
 
       # make link quack like a file (XXX: not for public consumption)
       def path
         target_file
-      end
-
-      private
-
-      def verify_links_supported!
-        # On certain versions of windows links are not supported. Make
-        # sure we are not on such a platform.
-
-        if Chef::Platform.windows?
-          require "chef/win32/file"
-          begin
-            Chef::ReservedNames::Win32::File.verify_links_supported!
-          rescue Chef::Exceptions::Win32APIFunctionNotImplemented => e
-            Chef::Log.fatal("Link resource is not supported on this version of Windows")
-            raise e
-          end
-        end
       end
     end
   end

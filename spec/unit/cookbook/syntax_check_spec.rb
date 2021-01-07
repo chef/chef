@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,10 +21,11 @@ require "chef/cookbook/syntax_check"
 
 describe Chef::Cookbook::SyntaxCheck do
   before do
-    allow(ChefConfig).to receive(:windows?) { false }
+    allow(ChefUtils).to receive(:windows?) { false }
   end
 
   let(:cookbook_path) { File.join(CHEF_SPEC_DATA, "cookbooks", "openldap") }
+  let(:unsafe_cookbook_path) { 'C:\AGENT-HOME\xml-data\build-dir\76808194-76906499\artifact\cookbooks/java' }
   let(:syntax_check) { Chef::Cookbook::SyntaxCheck.new(cookbook_path) }
 
   let(:open_ldap_cookbook_files) do
@@ -53,18 +54,19 @@ describe Chef::Cookbook::SyntaxCheck do
     @recipes = %w{default.rb gigantor.rb one.rb return.rb}.map { |f| File.join(cookbook_path, "recipes", f) }
     @spec_files = [ File.join(cookbook_path, "spec", "spec_helper.rb") ]
     @ruby_files = @attr_files + @libr_files + @defn_files + @recipes + @spec_files + [File.join(cookbook_path, "metadata.rb")]
-    basenames = %w{ helpers_via_partial_test.erb
+    @basenames = %w{ helpers_via_partial_test.erb
                     helper_test.erb
                     helpers.erb
                     openldap_stuff.conf.erb
                     nested_openldap_partials.erb
                     nested_partial.erb
+                    openldap_nested_variable_stuff.erb
                     openldap_variable_stuff.conf.erb
                     test.erb
                     some_windows_line_endings.erb
                     all_windows_line_endings.erb
                     no_windows_line_endings.erb }
-    @template_files = basenames.map { |f| File.join(cookbook_path, "templates", "default", f) }
+    @template_files = @basenames.map { |f| File.join(cookbook_path, "templates", "default", f) }
   end
 
   after do
@@ -92,6 +94,11 @@ describe Chef::Cookbook::SyntaxCheck do
       expect(syntax_check.cookbook_path).to eq(cookbook_path)
       expect(syntax_check.ruby_files).to eq([File.join(cookbook_path, "recipes/default.rb")])
     end
+  end
+
+  it "safely handles a path containing control characters" do
+    syntax_check = Chef::Cookbook::SyntaxCheck.new(unsafe_cookbook_path)
+    expect { syntax_check.remove_uninteresting_ruby_files(@basenames) }.not_to raise_error
   end
 
   describe "when first created" do

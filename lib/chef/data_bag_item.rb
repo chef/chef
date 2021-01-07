@@ -2,7 +2,7 @@
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Nuo Yan (<nuo@chef.io>)
 # Author:: Christopher Brown (<cb@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,15 +18,15 @@
 # limitations under the License.
 #
 
-require "forwardable"
+require "forwardable" unless defined?(Forwardable)
 
-require "chef/config"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/data_bag"
-require "chef/mash"
-require "chef/server_api"
-require "chef/json_compat"
+require_relative "config"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "data_bag"
+require_relative "mash"
+require_relative "server_api"
+require_relative "json_compat"
 
 class Chef
   class DataBagItem
@@ -36,9 +36,7 @@ class Chef
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 
-    VALID_ID = /^[\.\-[:alnum:]_]+$/
-
-    attr_accessor :chef_server_rest
+    VALID_ID = /^[\.\-[:alnum:]_]+$/.freeze
 
     def self.validate_id!(id_str)
       if id_str.nil? || ( id_str !~ VALID_ID )
@@ -66,18 +64,16 @@ class Chef
       Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
-    def raw_data
-      @raw_data
-    end
-
     def validate_id!(id_str)
       self.class.validate_id!(id_str)
     end
 
     def raw_data=(new_data)
+      new_data = Mash.new(new_data)
       unless new_data.respond_to?(:[]) && new_data.respond_to?(:keys)
         raise Exceptions::ValidationFailed, "Data Bag Items must contain a Hash or Mash!"
       end
+
       validate_id!(new_data["id"])
       @raw_data = new_data
     end
@@ -86,7 +82,7 @@ class Chef
       set_or_return(
         :data_bag,
         arg,
-        :regex => /^[\-[:alnum:]_]+$/
+        regex: /^[\-[:alnum:]_]+$/
       )
     end
 
@@ -95,7 +91,7 @@ class Chef
     end
 
     def object_name
-      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.has_key?("id")
+      raise Exceptions::ValidationFailed, "You must have an 'id' or :id key in the raw data" unless raw_data.key?("id")
       raise Exceptions::ValidationFailed, "You must have declared what bag this item belongs to!" unless data_bag
 
       id = raw_data["id"]
@@ -106,21 +102,23 @@ class Chef
       "data_bag_item_#{data_bag_name}_#{id}"
     end
 
-    def to_hash
-      result = self.raw_data.dup
+    def to_h
+      result = raw_data.dup
       result["chef_type"] = "data_bag_item"
-      result["data_bag"] = self.data_bag.to_s
+      result["data_bag"] = data_bag.to_s
       result
     end
+
+    alias_method :to_hash, :to_h
 
     # Serialize this object as a hash
     def to_json(*a)
       result = {
-        "name"       => object_name,
+        "name" => object_name,
         "json_class" => self.class.name,
-        "chef_type"  => "data_bag_item",
-        "data_bag"   => data_bag,
-        "raw_data"   => raw_data,
+        "chef_type" => "data_bag_item",
+        "data_bag" => data_bag,
+        "raw_data" => raw_data,
       }
       Chef::JSONCompat.to_json(result, *a)
     end
@@ -132,17 +130,11 @@ class Chef
       item = new
       item.data_bag(h.delete("data_bag")) if h.key?("data_bag")
       if h.key?("raw_data")
-        item.raw_data = Mash.new(h["raw_data"])
+        item.raw_data = h["raw_data"]
       else
         item.raw_data = h
       end
       item
-    end
-
-    # Create a Chef::DataBagItem from JSON
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::DataBagItem#from_hash")
-      from_hash(o)
     end
 
     # Load a Data Bag Item by name via either the RESTful API or local data_bag_path if run in solo mode
@@ -150,12 +142,13 @@ class Chef
       if Chef::Config[:solo_legacy_mode]
         bag = Chef::DataBag.load(data_bag)
         raise Exceptions::InvalidDataBagItemID, "Item #{name} not found in data bag #{data_bag}. Other items found: #{bag.keys.join(", ")}" unless bag.include?(name)
+
         item = bag[name]
       else
         item = Chef::ServerAPI.new(Chef::Config[:chef_server_url]).get("data/#{data_bag}/#{name}")
       end
 
-      if item.kind_of?(DataBagItem)
+      if item.is_a?(DataBagItem)
         item
       else
         item = from_hash(item)
@@ -164,7 +157,7 @@ class Chef
       end
     end
 
-    def destroy(data_bag = self.data_bag(), databag_item = name)
+    def destroy(data_bag = self.data_bag, databag_item = name)
       chef_server_rest.delete("data/#{data_bag}/#{databag_item}")
     end
 
@@ -177,8 +170,9 @@ class Chef
         else
           r.put("data/#{data_bag}/#{item_id}", self)
         end
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         r.post("data/#{data_bag}", self)
       end
       self
@@ -191,9 +185,9 @@ class Chef
     end
 
     def ==(other)
-      other.respond_to?(:to_hash) &&
+      other.respond_to?(:to_h) &&
         other.respond_to?(:data_bag) &&
-        (other.to_hash == to_hash) &&
+        (other.to_h == to_h) &&
         (other.data_bag.to_s == data_bag.to_s)
     end
 
@@ -203,11 +197,11 @@ class Chef
     end
 
     def inspect
-      "data_bag_item[#{data_bag.inspect}, #{raw_data['id'].inspect}, #{raw_data.inspect}]"
+      "data_bag_item[#{data_bag.inspect}, #{raw_data["id"].inspect}, #{raw_data.inspect}]"
     end
 
     def pretty_print(pretty_printer)
-      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => self.to_hash })
+      pretty_printer.pp({ "data_bag_item('#{data_bag}', '#{id}')" => to_hash })
     end
 
     def id

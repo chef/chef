@@ -1,6 +1,4 @@
 # git config merge.ignore.name 'ignore changes merge driver'
 # git config merge.ignore.driver 'touch %A'
-distro/common/html/* merge=ignore
-distro/common/man/man1/* merge=ignore
-distro/common/man/man8/* merge=ignore
 lib/chef/version.rb merge=ignore
+*.reg text eol=crlf

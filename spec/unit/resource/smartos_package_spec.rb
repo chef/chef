@@ -1,6 +1,7 @@
 #
 # Author:: Thomas Bishop (<bishop.thomas@gmail.com>)
 # Copyright:: Copyright 2010-2016, Thomas Bishop
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +18,8 @@
 #
 
 require "spec_helper"
-require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::SmartosPackage, "initialize" do
+describe Chef::Resource::SmartosPackage do
 
   static_provider_resolution(
     resource: Chef::Resource::SmartosPackage,
@@ -30,4 +30,23 @@ describe Chef::Resource::SmartosPackage, "initialize" do
     platform_family: "smartos"
   )
 
+  let(:resource) { Chef::Resource::SmartosPackage.new("fakey_fakerton") }
+
+  it "sets the package_name to the name provided" do
+    expect(resource.package_name).to eql("fakey_fakerton")
+  end
+
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
+  end
+
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
+  end
 end

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,22 +30,19 @@ class Chef
         def create(file)
           # this is very simple, but it ensures that ownership and file modes take
           # good defaults, in particular mode needs to obey umask on create
-          Chef::Log.debug("Touching #{file} to create it")
+          Chef::Log.trace("Touching #{file} to create it")
           FileUtils.touch(file)
         end
 
         def deploy(src, dst)
           # we are only responsible for content so restore the dst files perms
-          Chef::Log.debug("Reading modes from #{dst} file")
+          Chef::Log.trace("Reading modes from #{dst} file")
           stat = ::File.stat(dst)
           mode = stat.mode & 07777
           uid  = stat.uid
           gid  = stat.gid
 
-          Chef::Log.debug("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
-
-          # i own the inode, so should be able to at least chmod it
-          ::File.chmod(mode, src)
+          Chef::Log.trace("Applying mode = #{mode.to_s(8)}, uid = #{uid}, gid = #{gid} to #{src}")
 
           # we may be running as non-root in which case because we are doing an mv we cannot preserve
           # the file modes.  after the mv we have a different inode and if we don't have rights to
@@ -54,7 +51,7 @@ class Chef
           # in the case where i'm running chef-solo on my homedir as myself and some root-shell
           # work has caused dotfiles of mine to change to root-owned, i'm fine with this not being
           # exceptional, and i think most use cases will consider this to not be exceptional, and
-          # the right thing is to fix the ownership of the file to the user running the commmand
+          # the right thing is to fix the ownership of the file to the user running the command
           # (which requires write perms to the directory, or mv will throw an exception)
           begin
             ::File.chown(uid, nil, src)
@@ -67,7 +64,11 @@ class Chef
             Chef::Log.warn("Could not set gid = #{gid} on #{src}, file modes not preserved")
           end
 
-          Chef::Log.debug("Moving temporary file #{src} into place at #{dst}")
+          # i own the inode, so should be able to at least chmod it
+          # NOTE: this must come last due to POSIX stripping sticky mode bits on chown/chgrp
+          ::File.chmod(mode, src)
+
+          Chef::Log.trace("Moving temporary file #{src} into place at #{dst}")
           FileUtils.mv(src, dst)
         end
       end

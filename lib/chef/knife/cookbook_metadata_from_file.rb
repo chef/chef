@@ -1,8 +1,7 @@
 #
-#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2010-2016, Matthew Kent
 # License:: Apache License, Version 2.0
 #
@@ -19,19 +18,25 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class CookbookMetadataFromFile < Knife
 
       deps do
-        require "chef/cookbook/metadata"
+        require_relative "../cookbook/metadata"
       end
 
-      banner "knife cookbook metadata from FILE (options)"
+      banner "knife cookbook metadata from file FILE (options)"
 
       def run
+        if @name_args.length < 1
+          show_usage
+          ui.fatal("You must specify the FILE.")
+          exit(1)
+        end
+
         file = @name_args[0]
         cookbook = File.basename(File.dirname(file))
 

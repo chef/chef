@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
 #
 
 name "chef"
-friendly_name "Chef Client"
+friendly_name "Chef Infra Client"
 maintainer "Chef Software, Inc. <maintainers@chef.io>"
 homepage "https://www.chef.io"
-license "Apache-2.0"
-license_file "../LICENSE"
+license "Chef EULA"
+license_file "CHEF-EULA.md"
 
 build_iteration 1
 # Do not use __FILE__ after this point, use current_file. If you use __FILE__
@@ -39,31 +39,55 @@ else
   install_dir "#{default_root}/#{name}"
 end
 
-# Global FIPS override flag.
-if windows? || rhel?
-  override :fips, enabled: true
-end
+override :chef, version: "local_source"
 
 # Load dynamically updated overrides
 overrides_path = File.expand_path("../../../../omnibus_overrides.rb", current_file)
 instance_eval(IO.read(overrides_path), overrides_path)
 
-override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows? && windows_arch_i386?
-
 dependency "preparation"
 
-# All actual dependencies are in chef-complete, so that the addition
-# or removal of a dependency doesn't dirty the entire project file
-dependency "chef-complete"
+dependency "chef"
+
+#
+# addons which require omnibus software defns (not direct deps of chef itself - RFC-063)
+#
+dependency "nokogiri" # (nokogiri cannot go in the Gemfile, see wall of text in the software defn)
+
+# FIXME?: might make sense to move dependencies below into the omnibus-software chef
+#  definition or into a chef-complete definition added to omnibus-software.
+dependency "gem-permissions"
+dependency "shebang-cleanup"
+dependency "version-manifest"
+dependency "openssl-customization"
+
+# devkit needs to come dead last these days so we do not use it to compile any gems
+if windows?
+  override :"ruby-windows-devkit", version: "4.5.2-20111229-1559" if windows_arch_i386?
+  dependency "ruby-windows-devkit"
+  dependency "ruby-windows-devkit-bash"
+end
+
+dependency "ruby-cleanup"
+
+# further gem cleanup other projects might not yet want to use
+dependency "more-ruby-cleanup"
 
 package :rpm do
   signing_passphrase ENV["OMNIBUS_RPM_SIGNING_PASSPHRASE"]
+  compression_level 1
+  compression_type :xz
 end
 
-proj_to_work_around_cleanroom = self
+package :deb do
+  compression_level 1
+  compression_type :xz
+end
+
+proj_to_work_around_cleanroom = self # wat voodoo hackery is this?
 package :pkg do
   identifier "com.getchef.pkg.#{proj_to_work_around_cleanroom.name}"
-  signing_identity "Developer ID Installer: Chef Software, Inc. (EU3VF8YLX2)"
+  signing_identity "Chef Software, Inc. (EU3VF8YLX2)"
 end
 compress :dmg
 
@@ -74,11 +98,12 @@ package :msi do
   upgrade_code msi_upgrade_code
   wix_candle_extension "WixUtilExtension"
   wix_light_extension "WixUtilExtension"
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
+  signing_identity "AF21BA8C9E50AE20DA9907B6E2D4B0CC3306CA03", machine_store: true
   parameters ChefLogDllPath: windows_safe_path(gem_path("chef-[0-9]*-mingw32/ext/win32-eventlog/chef-log.dll")),
              ProjectLocationDir: project_location_dir
 end
 
+# We don't support appx builds, and they eat a lot of time.
 package :appx do
-  signing_identity "F74E1A68005E8A9C465C3D2FF7B41F3988F0EA09", machine_store: true
+  skip_packager true
 end

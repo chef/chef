@@ -1,5 +1,5 @@
 #
-# Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@
 # `config/project/chef.rb`.
 #
 current_file = __FILE__
-chef_project_contents = IO.read(File.expand_path("../chef.rb", __FILE__))
-self.instance_eval chef_project_contents
+chef_project_contents = IO.read(File.expand_path("chef.rb", __dir__))
+instance_eval chef_project_contents
 
 name "angrychef"
 friendly_name "Angry Chef Client"

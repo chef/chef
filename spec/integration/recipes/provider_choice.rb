@@ -16,8 +16,9 @@ describe "Recipe DSL methods" do
     context "And class Chef::Provider::ProviderThingy with no provides" do
       before :context do
         class Chef::Provider::ProviderThingy < Chef::Provider
-          def load_current_resource
-          end
+          provides :provider_thingy
+
+          def load_current_resource; end
 
           def action_create
             Chef::Log.warn("hello from #{self.class.name}")
@@ -29,8 +30,8 @@ describe "Recipe DSL methods" do
         recipe = converge do
           provider_thingy("blah") {}
         end
-        expect(recipe.logged_warnings).to match /hello from Chef::Provider::ProviderThingy/
-        expect(recipe.logged_warnings).to match /you must use 'provides' to provide DSL/i
+        expect(recipe.logged_warnings).to match(/hello from Chef::Provider::ProviderThingy/)
+        expect(recipe.logged_warnings).to match(/you must use 'provides' to provide DSL/i)
       end
     end
   end

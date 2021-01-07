@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/group/groupadd"
+require_relative "groupadd"
 
 class Chef
   class Provider
@@ -31,26 +31,26 @@ class Chef
         def define_resource_requirements
           super
           requirements.assert(:all_actions) do |a|
-            a.assertion { ::File.exists?("/usr/bin/gpasswd") }
-            a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/gpasswd for #{@new_resource}"
+            a.assertion { ::File.exist?("/usr/bin/gpasswd") }
+            a.failure_message Chef::Exceptions::Group, "Could not find binary /usr/bin/gpasswd for #{new_resource}"
             # No whyrun alternative: this component should be available in the base install of any given system that uses it
           end
         end
 
         def set_members(members)
-          unless members.empty?
-            shell_out!("gpasswd -M #{members.join(',')} #{@new_resource.group_name}")
+          if members.empty?
+            shell_out!("gpasswd", "-M", "", new_resource.group_name)
           else
-            shell_out!("gpasswd -M \"\" #{@new_resource.group_name}")
+            shell_out!("gpasswd", "-M", members.join(","), new_resource.group_name)
           end
         end
 
         def add_member(member)
-          shell_out!("gpasswd -a #{member} #{@new_resource.group_name}")
+          shell_out!("gpasswd", "-a", member, new_resource.group_name)
         end
 
         def remove_member(member)
-          shell_out!("gpasswd -d #{member} #{@new_resource.group_name}")
+          shell_out!("gpasswd", "-d", member, new_resource.group_name)
         end
       end
     end

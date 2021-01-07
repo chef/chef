@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,9 +23,10 @@ require "chef/chef_fs/file_system/memory/memory_file"
 
 module FileSystemSupport
   def memory_fs(pretty_name, value, cannot_be_in_regex = nil)
-    if !value.is_a?(Hash)
+    unless value.is_a?(Hash)
       raise "memory_fs() must take a Hash"
     end
+
     dir = Chef::ChefFS::FileSystem::Memory::MemoryRoot.new(pretty_name, cannot_be_in_regex)
     value.each do |key, child|
       dir.add_child(memory_fs_value(child, key.to_s, dir))
@@ -55,7 +56,7 @@ module FileSystemSupport
 
   def no_blocking_calls_allowed
     [ Chef::ChefFS::FileSystem::Memory::MemoryFile, Chef::ChefFS::FileSystem::Memory::MemoryDir ].each do |c|
-      [ :children, :exists?, :read ].each do |m|
+      %i{children exists? read}.each do |m|
         allow_any_instance_of(c).to receive(m).and_raise("#{m} should not be called")
       end
     end

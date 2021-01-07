@@ -4,7 +4,7 @@
 # Author:: Tim Hinderliter (<tim@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,10 +19,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/run_list/run_list_item"
-require "chef/run_list/run_list_expansion"
-require "chef/run_list/versioned_recipe_list"
-require "chef/mixin/params_validate"
+require_relative "run_list/run_list_item"
+require_relative "run_list/run_list_expansion"
+require_relative "run_list/versioned_recipe_list"
+require_relative "mixin/params_validate"
 
 class Chef
   class RunList
@@ -70,10 +70,11 @@ class Chef
     alias :add :<<
 
     def ==(other)
-      if other.kind_of?(Chef::RunList)
+      if other.is_a?(Chef::RunList)
         other.run_list_items == @run_list_items
       else
         return false unless other.respond_to?(:size) && (other.size == @run_list_items.size)
+
         other_run_list_items = other.dup
 
         other_run_list_items.map! { |item| coerce_to_run_list_item(item) }
@@ -86,7 +87,7 @@ class Chef
     end
 
     def for_json
-      to_a.map { |item| item.to_s }
+      to_a.map(&:to_s)
     end
 
     def to_json(*a)
@@ -122,7 +123,7 @@ class Chef
     def reset!(*args)
       @run_list_items.clear
       args.flatten.each do |item|
-        if item.kind_of?(Chef::RunList)
+        if item.is_a?(Chef::RunList)
           item.each { |r| self << r }
         else
           self << item
@@ -152,7 +153,7 @@ class Chef
     end
 
     def coerce_to_run_list_item(item)
-      item.kind_of?(RunListItem) ? item : parse_entry(item)
+      item.is_a?(RunListItem) ? item : parse_entry(item)
     end
 
     def expansion_for_data_source(environment, data_source, opts = {})

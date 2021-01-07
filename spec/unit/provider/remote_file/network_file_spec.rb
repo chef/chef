@@ -1,6 +1,7 @@
+
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +20,6 @@
 require "spec_helper"
 
 describe Chef::Provider::RemoteFile::NetworkFile do
-
   let(:source) { "\\\\foohost\\fooshare\\Foo.tar.gz" }
 
   let(:new_resource) { Chef::Resource::RemoteFile.new("network file (new_resource)") }
@@ -28,12 +28,17 @@ describe Chef::Provider::RemoteFile::NetworkFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/Foo.tar.gz", :close => nil) }
-    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+    let(:tempfile) { double("Tempfile", path: "/tmp/foo/bar/Foo.tar.gz", close: nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", tempfile: tempfile) }
+    let(:source_file) { double("::File", read: nil) }
+
+    before do
+      allow(ChefUtils).to receive(:windows?).and_return(true)
+    end
 
     it "stages the local file to a temporary file" do
       expect(Chef::FileContentManagement::Tempfile).to receive(:new).with(new_resource).and_return(chef_tempfile)
-      expect(::FileUtils).to receive(:cp).with(source, tempfile.path)
+      expect(::File).to receive(:open).with(source, "rb").and_return(source_file)
       expect(tempfile).to receive(:close)
 
       result = fetcher.fetch

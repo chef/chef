@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Handler::JsonFile do
   before(:each) do
-    @handler = Chef::Handler::JsonFile.new(:the_sun => "will rise", :path => "/tmp/foobarbazqux")
+    @handler = Chef::Handler::JsonFile.new(the_sun: "will rise", path: "/tmp/foobarbazqux")
   end
 
   it "accepts arbitrary config options" do

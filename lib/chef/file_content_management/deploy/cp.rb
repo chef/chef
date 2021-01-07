@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,12 +34,12 @@ class Chef
       #
       class Cp
         def create(file)
-          Chef::Log.debug("Touching #{file} to create it")
+          Chef::Log.trace("Touching #{file} to create it")
           FileUtils.touch(file)
         end
 
         def deploy(src, dst)
-          Chef::Log.debug("Copying temporary file #{src} into place at #{dst}")
+          Chef::Log.trace("Copying temporary file #{src} into place at #{dst}")
           FileUtils.cp(src, dst)
         end
       end

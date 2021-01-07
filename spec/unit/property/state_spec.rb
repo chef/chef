@@ -28,7 +28,8 @@ describe "Chef::Resource#identity and #state" do
   def self.english_join(values)
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
-    "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
+
+    "#{values[0..-2].map(&:inspect).join(", ")} and #{values[-1].inspect}"
   end
 
   def self.with_property(*properties, &block)
@@ -254,38 +255,38 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, identity: true, default: 'xxx'",
-                  ":y, identity: true, default: 'yyy'",
-                  ":z, identity: true, default: 'zzz'" do
-      it "identity_property raises an error if multiple identity values are defined" do
-        expect { resource_class.identity_property }.to raise_error Chef::Exceptions::MultipleIdentityError
+      ":y, identity: true, default: 'yyy'",
+      ":z, identity: true, default: 'zzz'" do
+        it "identity_property raises an error if multiple identity values are defined" do
+          expect { resource_class.identity_property }.to raise_error Chef::Exceptions::MultipleIdentityError
+        end
+        it "identity_attr raises an error if multiple identity values are defined" do
+          expect { resource_class.identity_attr }.to raise_error Chef::Exceptions::MultipleIdentityError
+        end
+        it "identity returns all identity values in a hash if multiple are defined" do
+          resource.x "foo"
+          resource.y "bar"
+          resource.z "baz"
+          expect(resource.identity).to eq(x: "foo", y: "bar", z: "baz")
+        end
+        it "identity returns all values whether any value is set or not" do
+          expect(resource.identity).to eq(x: "xxx", y: "yyy", z: "zzz")
+        end
+        it "identity_properties wipes out any other identity attributes if multiple are defined" do
+          resource_class.identity_properties :y
+          resource.x "foo"
+          resource.y "bar"
+          resource.z "baz"
+          expect(resource.identity).to eq "bar"
+        end
       end
-      it "identity_attr raises an error if multiple identity values are defined" do
-        expect { resource_class.identity_attr }.to raise_error Chef::Exceptions::MultipleIdentityError
-      end
-      it "identity returns all identity values in a hash if multiple are defined" do
-        resource.x "foo"
-        resource.y "bar"
-        resource.z "baz"
-        expect(resource.identity).to eq(x: "foo", y: "bar", z: "baz")
-      end
-      it "identity returns all values whether any value is set or not" do
-        expect(resource.identity).to eq(x: "xxx", y: "yyy", z: "zzz")
-      end
-      it "identity_properties wipes out any other identity attributes if multiple are defined" do
-        resource_class.identity_properties :y
-        resource.x "foo"
-        resource.y "bar"
-        resource.z "baz"
-        expect(resource.identity).to eq "bar"
-      end
-    end
 
     with_property ":x, identity: true, name_property: true" do
       it "identity when x is not defined returns the value of x" do
         expect(resource.identity).to eq "blah"
       end
-      it "state when x is not defined returns the value of x" do
-        expect(resource.state_for_resource_reporter).to eq(x: "blah")
+      it "the name property is not included in the desired state" do
+        expect(resource.state_for_resource_reporter).to eq({})
       end
     end
   end
@@ -331,12 +332,17 @@ describe "Chef::Resource#identity and #state" do
     end
 
     with_property ":x, name_property: true" do
-      # it "Unset values with name_property are included in state" do
-      #   expect(resource.state_for_resource_reporter).to eq({ x: 'blah' })
-      # end
-      it "Set values with name_property are included in state" do
+      it "Is by default the identity property if no other identity property is included" do
+        expect(resource.identity).to eq("blah")
+      end
+
+      it "Unset values with name_property are not included in state" do
+        expect(resource.state_for_resource_reporter).to eq({})
+      end
+
+      it "Set values with name_property are not included in state" do
         resource.x 1
-        expect(resource.state_for_resource_reporter).to eq(x: 1)
+        expect(resource.state_for_resource_reporter).to eq({})
       end
     end
 

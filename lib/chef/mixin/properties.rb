@@ -1,6 +1,6 @@
-require "chef/delayed_evaluator"
-require "chef/mixin/params_validate"
-require "chef/property"
+require_relative "../delayed_evaluator"
+require_relative "params_validate"
+require_relative "../property"
 
 class Chef
   module Mixin
@@ -75,13 +75,15 @@ class Chef
         #     will return if the user does not set one. If this is `lazy`, it will
         #     be run in the context of the instance (and able to access other
         #     properties).
+        #   @option options [String] :description A description of the property.
+        #   @option options [String] :introduced The release that introduced this property
         #   @option options [Boolean] :desired_state `true` if this property is
         #     part of desired state. Defaults to `true`.
         #   @option options [Boolean] :identity `true` if this property
         #     is part of object identity. Defaults to `false`.
         #   @option options [Boolean] :sensitive `true` if this property could
         #     contain sensitive information and whose value should be redacted
-        #     in any resource reporting / auditing output. Defaults to `false`.
+        #     in any resource reporting output. Defaults to `false`.
         #
         # @example Bare property
         #   property :x
@@ -100,14 +102,14 @@ class Chef
 
           options = options.inject({}) { |memo, (key, value)| memo[key.to_sym] = value; memo }
 
-          options[:instance_variable_name] = :"@#{name}" if !options.has_key?(:instance_variable_name)
+          options[:instance_variable_name] = :"@#{name}" unless options.key?(:instance_variable_name)
           options[:name] = name
           options[:declared_in] = self
 
           if type == NOT_PASSED
             # If a type is not passed, the property derives from the
             # superclass property (if any)
-            if properties.has_key?(name)
+            if properties.key?(name)
               property = properties[name].derive(**options)
             else
               property = property_type(**options)
@@ -133,6 +135,8 @@ class Chef
           property.emit_dsl
         end
 
+        alias :attribute :property
+
         #
         # Create a reusable property type that can be used in multiple properties
         # in different resources.
@@ -145,6 +149,10 @@ class Chef
         #
         def property_type(**options)
           Property.derive(**options)
+        end
+
+        def deprecated_property_alias(from, to, message)
+          Property.emit_deprecated_alias(from, to, message, self)
         end
 
         #
@@ -170,9 +178,6 @@ class Chef
         # by providing additional options for a package manager to use when
         # installing a package.
         #
-        # This list is used by the Chef client auditing system to extract
-        # information from resources to describe changes made to the system.
-        #
         # This method is unnecessary when declaring properties with `property`;
         # properties are added to state_properties by default, and can be turned off
         # with `desired_state: false`.
@@ -188,8 +193,8 @@ class Chef
         # @return [Array<Property>] All properties in desired state.
         #
         def state_properties(*names)
-          if !names.empty?
-            names = names.map { |name| name.to_sym }.uniq
+          unless names.empty?
+            names = names.map(&:to_sym).uniq
 
             local_properties = properties(false)
             # Add new properties to the list.
@@ -211,7 +216,7 @@ class Chef
             end
           end
 
-          properties.values.select { |property| property.desired_state? }
+          properties.values.select(&:desired_state?)
         end
 
         #
@@ -237,8 +242,8 @@ class Chef
         # @return [Array<Property>] All identity properties.
         #
         def identity_properties(*names)
-          if !names.empty?
-            names = names.map { |name| name.to_sym }
+          unless names.empty?
+            names = names.map(&:to_sym)
 
             # Add or change properties that are not part of the identity.
             names.each do |name|
@@ -260,9 +265,21 @@ class Chef
             end
           end
 
-          result = properties.values.select { |property| property.identity? }
-          result = [ properties[:name] ] if result.empty?
+          result = properties.values.select(&:identity?)
+          # if there are no other identity properties set, then the name_property becomes the identity, or
+          # failing that we use the actual name.
+          if result.empty?
+            result = name_property ? [ properties[name_property] ] : [ properties[:name] ]
+          end
           result
+        end
+
+        # Returns the name of the name property.  Returns nil if there is no name property.
+        #
+        # @return [Symbol] the name property for this resource
+        def name_property
+          p = properties.find { |n, p| p.name_property? }
+          p ? p.first : nil
         end
 
         def included(other)
@@ -285,7 +302,8 @@ class Chef
       #
       def property_is_set?(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
         property.is_set?(self)
       end
 
@@ -298,9 +316,59 @@ class Chef
       #
       def reset_property(name)
         property = self.class.properties[name.to_sym]
-        raise ArgumentError, "Property #{name} is not defined in class #{self}" if !property
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
         property.reset(self)
       end
+
+      #
+      # The description of the property
+      #
+      # @param name [Symbol] The name of the property.
+      # @return [String] The description of the property.
+      def property_description(name)
+        property = self.class.properties[name.to_sym]
+        raise ArgumentError, "Property #{name} is not defined in class #{self}" unless property
+
+        property.description
+      end
+
+      # Copy properties from another property object (resource)
+      #
+      # By default this copies all properties other than the name property (that is required to create the
+      # destination object so it has already been done in advance and this way we do not clobber the name
+      # that was set in that constructor).  By default it copies everything, optional arguments can be use
+      # to only select a subset.  Or specific excludes can be set (and the default exclude on the name property
+      # can also be overridden).  Exclude has priority over include, although the caller is likely better
+      # off doing the set arithmetic themselves for explicitness.
+      #
+      # ```ruby
+      # action :doit do
+      #   # use it inside a block
+      #   file "/etc/whatever.xyz" do
+      #     copy_properties_from new_resource
+      #   end
+      #
+      #   # or directly call it
+      #   r = declare_resource(:file, "etc/whatever.xyz")
+      #   r.copy_properties_from(new_resource, :owner, :group, :mode)
+      # end
+      # ```
+      #
+      # @param other [Object] the other object (Chef::Resource) which implements the properties API
+      # @param includes [Array<Symbol>] splat-args list of symbols of the properties to copy.
+      # @param exclude [Array<Symbol>] list of symbols of the properties to exclude.
+      # @return the self object the properties were copied to for method chaining
+      #
+      def copy_properties_from(other, *includes, exclude: [ :name ])
+        includes = other.class.properties.keys if includes.empty?
+        includes -= exclude
+        includes.each do |p|
+          send(p, other.send(p)) if other.property_is_set?(p)
+        end
+        self
+      end
+
     end
   end
 end

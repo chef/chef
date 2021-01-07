@@ -17,10 +17,10 @@
 # limitations under the License.
 #
 
-require "chef/http/simple"
-require "chef/digester"
-require "chef/provider/remote_file"
-require "chef/provider/remote_file/cache_control_data"
+require_relative "../../http/simple"
+require_relative "../../digester"
+require_relative "../remote_file"
+require_relative "cache_control_data"
 
 class Chef
   class Provider
@@ -31,12 +31,14 @@ class Chef
         attr_reader :uri
         attr_reader :new_resource
         attr_reader :current_resource
+        attr_reader :logger
 
         # Parse the uri into instance variables
-        def initialize(uri, new_resource, current_resource)
+        def initialize(uri, new_resource, current_resource, logger = Chef::Log.with_child)
           @uri = uri
           @new_resource = new_resource
           @current_resource = current_resource
+          @logger = logger
         end
 
         def events
@@ -55,22 +57,28 @@ class Chef
           if (etag = cache_control_data.etag) && want_etag_cache_control?
             cache_control_headers["if-none-match"] = etag
           end
-          Chef::Log.debug("Cache control headers: #{cache_control_headers.inspect}")
+          logger.trace("Cache control headers: #{cache_control_headers.inspect}")
           cache_control_headers
         end
 
         def fetch
           http = Chef::HTTP::Simple.new(uri, http_client_opts)
+          orig_tempfile = Chef::FileContentManagement::Tempfile.new(@new_resource).tempfile
           if want_progress?
-            tempfile = http.streaming_request_with_progress(uri, headers) do |size, total|
+            tempfile = http.streaming_request_with_progress(uri, headers, orig_tempfile) do |size, total|
               events.resource_update_progress(new_resource, size, total, progress_interval)
             end
           else
-            tempfile = http.streaming_request(uri, headers)
+            tempfile = http.streaming_request(uri, headers, orig_tempfile)
           end
           if tempfile
             update_cache_control_data(tempfile, http.last_response)
             tempfile.close
+          else
+            # cache_control shows the file is unchanged, so we got back nil from the streaming_request above, and it is
+            # now our responsibility to unlink the tempfile we created
+            orig_tempfile.close
+            orig_tempfile.unlink
           end
           tempfile
         end
@@ -122,9 +130,12 @@ class Chef
           # which tricks Chef::REST into decompressing the response body. In this
           # case you'd end up with a tar archive (no gzip) named, e.g., foo.tgz,
           # which is not what you wanted.
-          if uri.to_s =~ /gz$/
-            Chef::Log.debug("Turning gzip compression off due to filename ending in gz")
+          if /gz$/.match?(uri.to_s)
+            logger.trace("Turning gzip compression off due to filename ending in gz")
             opts[:disable_gzip] = true
+          end
+          if new_resource.ssl_verify_mode
+            opts[:ssl_verify_mode] = new_resource.ssl_verify_mode
           end
           opts
         end

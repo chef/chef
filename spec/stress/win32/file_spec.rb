@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,17 +21,17 @@ require "chef/win32/file" if windows?
 
 describe "Chef::ReservedNames::Win32::File", :windows_only do
   before(:each) do
-    @path = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "old_home_dir", "my-dot-emacs"))
+    @path = File.expand_path(File.join(__dir__, "..", "..", "data", "old_home_dir", "my-dot-emacs"))
   end
 
   it "should not leak significant memory", :volatile do
     test = lambda { Chef::ReservedNames::Win32::File.symlink?(@path) }
-    expect(test).not_to leak_memory(:warmup => 50000, :iterations => 50000)
+    expect(test).not_to leak_memory(warmup: 50000, iterations: 50000)
   end
 
   it "should not leak handles", :volatile do
     test = lambda { Chef::ReservedNames::Win32::File.symlink?(@path) }
-    expect(test).not_to leak_handles(:warmup => 50, :iterations => 100)
+    expect(test).not_to leak_handles(warmup: 50, iterations: 100)
   end
 
 end

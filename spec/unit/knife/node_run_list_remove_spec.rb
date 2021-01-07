@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ describe Chef::Knife::NodeRunListRemove do
     @knife = Chef::Knife::NodeRunListRemove.new
     @knife.config[:print_after] = nil
     @knife.name_args = [ "adam", "role[monkey]" ]
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     @node.name("knifetest-node")
     @node.run_list << "role[monkey]"
     allow(@node).to receive(:save).and_return(true)

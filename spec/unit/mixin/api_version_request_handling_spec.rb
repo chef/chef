@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,24 +26,24 @@ describe Chef::Mixin::ApiVersionRequestHandling do
     let(:default_supported_client_versions) { [0, 1, 2] }
 
     context "when the response code is not 406" do
-      let(:response) { OpenStruct.new(:code => "405") }
-      let(:exception) { Net::HTTPServerException.new("405 Something Else", response) }
+      let(:response) { OpenStruct.new(code: "405") }
+      let(:exception) { Net::HTTPClientException.new("405 Something Else", response) }
 
       it "returns nil" do
-        expect(object.server_client_api_version_intersection(exception, default_supported_client_versions)).
-          to be_nil
+        expect(object.server_client_api_version_intersection(exception, default_supported_client_versions))
+          .to be_nil
       end
 
     end # when the response code is not 406
 
     context "when the response code is 406" do
-      let(:response) { OpenStruct.new(:code => "406") }
-      let(:exception) { Net::HTTPServerException.new("406 Not Acceptable", response) }
+      let(:response) { OpenStruct.new(code: "406") }
+      let(:exception) { Net::HTTPClientException.new("406 Not Acceptable", response) }
 
       context "when x-ops-server-api-version header does not exist" do
         it "returns nil" do
-          expect(object.server_client_api_version_intersection(exception, default_supported_client_versions)).
-            to be_nil
+          expect(object.server_client_api_version_intersection(exception, default_supported_client_versions))
+            .to be_nil
         end
       end # when x-ops-server-api-version header does not exist
 
@@ -64,13 +64,13 @@ describe Chef::Mixin::ApiVersionRequestHandling do
         context "when there is no intersection between client and server versions" do
           shared_examples_for "no intersection between client and server versions" do
             it "return an array" do
-              expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
-                to be_a_kind_of(Array)
+              expect(object.server_client_api_version_intersection(exception, supported_client_versions))
+                .to be_a_kind_of(Array)
             end
 
             it "returns an empty array" do
-              expect(object.server_client_api_version_intersection(exception, supported_client_versions).length).
-                to eq(0)
+              expect(object.server_client_api_version_intersection(exception, supported_client_versions).length)
+                .to eq(0)
             end
 
           end
@@ -94,8 +94,8 @@ describe Chef::Mixin::ApiVersionRequestHandling do
             let(:supported_client_versions) { [1, 2, 3, 4, 5] }
 
             it "includes all of the intersection" do
-              expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
-                to eq([2, 3, 4])
+              expect(object.server_client_api_version_intersection(exception, supported_client_versions))
+                .to eq([2, 3, 4])
             end
           end # when multiple versions intersect
 
@@ -103,8 +103,8 @@ describe Chef::Mixin::ApiVersionRequestHandling do
             let(:supported_client_versions) { [0, 1, 2] }
 
             it "includes the intersection" do
-              expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
-                to eq([2])
+              expect(object.server_client_api_version_intersection(exception, supported_client_versions))
+                .to eq([2])
             end
           end # when only the min client version intersects
 
@@ -112,8 +112,8 @@ describe Chef::Mixin::ApiVersionRequestHandling do
             let(:supported_client_versions) { [4, 5, 6] }
 
             it "includes the intersection" do
-              expect(object.server_client_api_version_intersection(exception, supported_client_versions)).
-                to eq([4])
+              expect(object.server_client_api_version_intersection(exception, supported_client_versions))
+                .to eq([4])
             end
           end # when only the max client version intersects
 

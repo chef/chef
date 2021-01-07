@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32
@@ -101,7 +101,7 @@ BOOL IsTextUnicode(
   __inout  LPINT lpiResult
 );
 =end
-        safe_attach_function :IsTextUnicode, [:pointer, :int, :LPINT], :BOOL
+        safe_attach_function :IsTextUnicode, %i{pointer int LPINT}, :BOOL
 
 =begin
 int MultiByteToWideChar(
@@ -113,7 +113,7 @@ int MultiByteToWideChar(
   __in   int cchWideChar
 );
 =end
-        safe_attach_function :MultiByteToWideChar, [:UINT, :DWORD, :LPCSTR, :int, :LPWSTR, :int], :int
+        safe_attach_function :MultiByteToWideChar, %i{UINT DWORD LPCSTR int LPWSTR int}, :int
 
 =begin
 int WideCharToMultiByte(
@@ -127,7 +127,7 @@ int WideCharToMultiByte(
   __out  LPBOOL lpUsedDefaultChar
 );
 =end
-        safe_attach_function :WideCharToMultiByte, [:UINT, :DWORD, :LPCWSTR, :int, :LPSTR, :int, :LPCSTR, :LPBOOL], :int
+        safe_attach_function :WideCharToMultiByte, %i{UINT DWORD LPCWSTR int LPSTR int LPCSTR LPBOOL}, :int
 
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,27 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/dsl/powershell"
+require_relative "../resource"
+require_relative "../exceptions"
+require_relative "../dsl/powershell"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class DscScript < Chef::Resource
       include Chef::DSL::Powershell
 
-      provides :dsc_script, os: "windows"
+      unified_mode true
+      provides :dsc_script
+
+      description <<~DESC
+        Many DSC resources are comparable to built-in #{ChefUtils::Dist::Infra::PRODUCT} resources. For example, both DSC and #{ChefUtils::Dist::Infra::PRODUCT}
+        have file, package, and service resources. The dsc_script resource is most useful for those DSC resources that do not have a direct comparison to a
+        resource in #{ChefUtils::Dist::Infra::PRODUCT}, such as the Archive resource, a custom DSC resource, an existing DSC script that performs an important
+        task, and so on. Use the dsc_script resource to embed the code that defines a DSC configuration directly within a #{ChefUtils::Dist::Infra::PRODUCT} recipe.
+
+        Warning: The **dsc_script** resource may not be used with the 32 bit Chef Infra client. It must be executed from a 64 bit Chef Infra client.
+      DESC
 
       default_action :run
 
@@ -35,59 +47,64 @@ class Chef
 
       def code(arg = nil)
         if arg && command
-          raise ArgumentError, "Only one of 'code' and 'command' attributes may be specified"
+          raise ArgumentError, "Only one of 'code' and 'command' properties may be specified"
         end
         if arg && configuration_name
-          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
+          raise ArgumentError, "The 'code' and 'command' properties may not be used together"
         end
+
         set_or_return(
           :code,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
       def configuration_name(arg = nil)
         if arg && code
-          raise ArgumentError, "Attribute `configuration_name` may not be set if `code` is set"
+          raise ArgumentError, "Property `configuration_name` may not be set if `code` is set"
         end
+
         set_or_return(
           :configuration_name,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
       def command(arg = nil)
         if arg && code
-          raise ArgumentError, "The 'code' and 'command' attributes may not be used together"
+          raise ArgumentError, "The 'code' and 'command' properties may not be used together"
         end
+
         set_or_return(
           :command,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
       def configuration_data(arg = nil)
         if arg && configuration_data_script
-          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' properties may not be used together"
         end
+
         set_or_return(
           :configuration_data,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
       def configuration_data_script(arg = nil)
         if arg && configuration_data
-          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' attributes may not be used together"
+          raise ArgumentError, "The 'configuration_data' and 'configuration_data_script' properties may not be used together"
         end
+
         set_or_return(
           :configuration_data_script,
           arg,
-          :kind_of => [ String ]
+          kind_of: [ String ]
         )
       end
 
@@ -104,37 +121,18 @@ class Chef
         end
       end
 
-      def flags(arg = nil)
-        set_or_return(
-          :flags,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
+      property :flags, Hash,
+        description: "Pass parameters to the DSC script that is specified by the command property. Parameters are defined as key-value pairs, where the value of each key is the parameter to pass. This property may not be used in the same recipe as the code property."
 
-      def cwd(arg = nil)
-        set_or_return(
-          :cwd,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :cwd, String,
+        description: "The current working directory."
 
-      def environment(arg = nil)
-        set_or_return(
-          :environment,
-          arg,
-          :kind_of => [ Hash ]
-        )
-      end
+      property :environment, Hash,
+        description: "A Hash of environment variables in the form of ({'ENV_VARIABLE' => 'VALUE'}). (These variables must exist for a command to be run successfully)."
 
-      def timeout(arg = nil)
-        set_or_return(
-          :timeout,
-          arg,
-          :kind_of => [ Integer ]
-        )
-      end
+      property :timeout, Integer,
+        description: "The amount of time (in seconds) a command is to wait before timing out.",
+        desired_state: false
     end
   end
 end

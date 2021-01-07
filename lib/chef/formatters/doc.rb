@@ -1,5 +1,6 @@
-require "chef/formatters/base"
-require "chef/config"
+require_relative "base"
+require_relative "../config"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module Formatters
@@ -8,8 +9,7 @@ class Chef
     # show context.
     class Doc < Formatters::Base
 
-      attr_reader :start_time, :end_time, :successful_audits, :failed_audits
-      private :successful_audits, :failed_audits
+      attr_reader :start_time, :end_time
 
       cli_name(:doc)
 
@@ -18,8 +18,6 @@ class Chef
 
         @updated_resources = 0
         @up_to_date_resources = 0
-        @successful_audits = 0
-        @failed_audits = 0
         @start_time = Time.now
         @end_time = @start_time
         @skipped_resources = 0
@@ -42,8 +40,10 @@ class Chef
         message
       end
 
-      def run_start(version)
-        puts_line "Starting Chef Client, version #{version}"
+      def run_start(version, run_status)
+        puts_line "Starting #{ChefUtils::Dist::Infra::PRODUCT}, version #{version}"
+        puts_line "Patents: #{ChefUtils::Dist::Org::PATENTS}"
+        puts_line "Targeting node: #{Chef::Config.target_mode.host}" if Chef::Config.target_mode?
         puts_line "OpenSSL FIPS 140 mode enabled" if Chef::Config[:fips]
       end
 
@@ -51,19 +51,16 @@ class Chef
         @up_to_date_resources + @updated_resources + @skipped_resources
       end
 
-      def total_audits
-        successful_audits + failed_audits
-      end
-
       def run_completed(node)
         @end_time = Time.now
         # Print out deprecations.
-        if !deprecations.empty?
+        unless deprecations.empty?
           puts_line ""
           puts_line "Deprecated features used!"
-          deprecations.each do |message, locations|
+          deprecations.each do |message, details|
+            locations = details[:locations]
             if locations.size == 1
-              puts_line "  #{message} at #{locations.size} location:"
+              puts_line "  #{message} at 1 location:"
             else
               puts_line "  #{message} at #{locations.size} locations:"
             end
@@ -74,49 +71,42 @@ class Chef
                 prefix = "      "
               end
             end
+            unless details[:url].nil?
+              puts_line "   See #{details[:url]} for further details."
+            end
           end
           puts_line ""
         end
         if Chef::Config[:why_run]
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources would have been updated"
+          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources would have been updated"
         else
-          puts_line "Chef Client finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
-          if total_audits > 0
-            puts_line "  #{successful_audits}/#{total_audits} controls succeeded"
-          end
+          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} finished, #{@updated_resources}/#{total_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 
       def run_failed(exception)
         @end_time = Time.now
         if Chef::Config[:why_run]
-          puts_line "Chef Client failed. #{@updated_resources} resources would have been updated"
+          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} failed. #{@updated_resources} resources would have been updated"
         else
-          puts_line "Chef Client failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
-          if total_audits > 0
-            puts_line "  #{successful_audits} controls succeeded"
-          end
+          puts_line "#{ChefUtils::Dist::Infra::PRODUCT} failed. #{@updated_resources} resources updated in #{pretty_elapsed_time}"
         end
       end
 
       # Called right after ohai runs.
-      def ohai_completed(node)
-      end
+      def ohai_completed(node); end
 
       # Already have a client key, assuming this node has registered.
-      def skipping_registration(node_name, config)
-      end
+      def skipping_registration(node_name, config); end
 
       # About to attempt to register as +node_name+
       def registration_start(node_name, config)
         puts_line "Creating a new client identity for #{node_name} using the validator key."
       end
 
-      def registration_completed
-      end
+      def registration_completed; end
 
-      def node_load_start(node_name, config)
-      end
+      def node_load_start(node_name, config); end
 
       # Failed to load node data from the server
       def node_load_failed(node_name, exception, config)
@@ -125,8 +115,7 @@ class Chef
 
       # Default and override attrs from roles have been computed, but not yet applied.
       # Normal attrs from JSON have been added to the node.
-      def node_load_completed(node, expanded_run_list, config)
-      end
+      def node_load_completed(node, expanded_run_list, config); end
 
       def policyfile_loaded(policy)
         puts_line "Using policy '#{policy["name"]}' at revision '#{policy["revision_id"]}'"
@@ -144,22 +133,18 @@ class Chef
       end
 
       # Called when the cookbook collection is returned from the server.
-      def cookbook_resolution_complete(cookbook_collection)
-      end
+      def cookbook_resolution_complete(cookbook_collection); end
 
       # Called before unneeded cookbooks are removed
-      def cookbook_clean_start
-      end
+      def cookbook_clean_start; end
 
       # Called after the file at +path+ is removed. It may be removed if the
       # cookbook containing it was removed from the run list, or if the file was
       # removed from the cookbook.
-      def removed_cookbook_file(path)
-      end
+      def removed_cookbook_file(path); end
 
       # Called when cookbook cleaning is finished.
-      def cookbook_clean_complete
-      end
+      def cookbook_clean_complete; end
 
       # Called before cookbook sync starts
       def cookbook_sync_start(cookbook_count)
@@ -173,8 +158,7 @@ class Chef
       end
 
       # Called when an individual file in a cookbook has been updated
-      def updated_cookbook_file(cookbook_name, path)
-      end
+      def updated_cookbook_file(cookbook_name, path); end
 
       # Called after all cookbooks have been sync'd.
       def cookbook_sync_complete
@@ -213,12 +197,10 @@ class Chef
       end
 
       # Called after a file in a cookbook is loaded.
-      def file_loaded(path)
-      end
+      def file_loaded(path); end
 
       # Called when recipes have been loaded.
-      def recipe_load_complete
-      end
+      def recipe_load_complete; end
 
       # Called before convergence starts
       def converge_start(run_context)
@@ -235,37 +217,6 @@ class Chef
         converge_complete
       end
 
-      # Called before audit phase starts
-      def audit_phase_start(run_status)
-        puts_line "Starting audit phase"
-      end
-
-      def audit_phase_complete(audit_output)
-        puts_line audit_output
-        puts_line "Auditing complete"
-      end
-
-      def audit_phase_failed(error, audit_output)
-        puts_line audit_output
-        puts_line ""
-        puts_line "Audit phase exception:"
-        indent
-        puts_line "#{error.message}"
-        if error.backtrace
-          error.backtrace.each do |l|
-            puts_line l
-          end
-        end
-      end
-
-      def control_example_success(control_group_name, example_data)
-        @successful_audits += 1
-      end
-
-      def control_example_failure(control_group_name, example_data, error)
-        @failed_audits += 1
-      end
-
       # Called before action is executed on a resource.
       def resource_action_start(resource, action, notification_type = nil, notifier = nil)
         if resource.cookbook_name && resource.recipe_name
@@ -280,17 +231,17 @@ class Chef
           @current_recipe = resource_recipe
           indent
         end
-        # TODO: info about notifies
-        start_line "* #{resource} action #{action}", :stream => resource
+        # @todo info about notifies
+        start_line "* #{resource} action #{action}", stream: resource
         indent
       end
 
       def resource_update_progress(resource, current, total, interval)
-        @progress[resource] ||= 0
+        @progress[resource] ||= -1
 
-        percent_complete = (current.to_f / total.to_f * 100).to_i
+        percent_complete = (current.to_f / total.to_f * 100).to_i unless total.to_f == 0.0
 
-        if percent_complete > @progress[resource]
+        if percent_complete && percent_complete > @progress[resource]
 
           @progress[resource] = percent_complete
 
@@ -301,8 +252,7 @@ class Chef
       end
 
       # Called when a resource fails, but will retry.
-      def resource_failed_retriable(resource, action, retry_count, exception)
-      end
+      def resource_failed_retriable(resource, action, retry_count, exception); end
 
       # Called when a resource fails and will not be retried.
       def resource_failed(resource, action, exception)
@@ -314,28 +264,26 @@ class Chef
       def resource_skipped(resource, action, conditional)
         @skipped_resources += 1
         # TODO: more info about conditional
-        puts " (skipped due to #{conditional.short_description})", :stream => resource
+        puts " (skipped due to #{conditional.short_description})", stream: resource
         unindent
       end
 
       # Called after #load_current_resource has run.
-      def resource_current_state_loaded(resource, action, current_resource)
-      end
+      def resource_current_state_loaded(resource, action, current_resource); end
 
       # Called when a resource has no converge actions, e.g., it was already correct.
       def resource_up_to_date(resource, action)
         @up_to_date_resources += 1
-        puts " (up to date)", :stream => resource
+        puts " (up to date)", stream: resource unless resource.suppress_up_to_date_messages?
         unindent
       end
 
       def resource_bypassed(resource, action, provider)
-        puts " (Skipped: whyrun not supported by provider #{provider.class.name})", :stream => resource
+        puts " (Skipped: whyrun not supported by provider #{provider.class.name})", stream: resource
         unindent
       end
 
-      def output_record(line)
-      end
+      def output_record(line); end
 
       # Called when a change has been made to a resource. May be called multiple
       # times per resource, e.g., a file may have its content updated, and then
@@ -344,10 +292,11 @@ class Chef
         prefix = Chef::Config[:why_run] ? "Would " : ""
         Array(update).each do |line|
           next if line.nil?
+
           output_record line
-          if line.kind_of? String
+          if line.is_a? String
             start_line "- #{prefix}#{line}", :green
-          elsif line.kind_of? Array
+          elsif line.is_a? Array
             # Expanded output - delta
             # @todo should we have a resource_update_delta callback?
             line.each do |detail|
@@ -371,7 +320,7 @@ class Chef
       end
 
       def stream_output(stream, output, options = {})
-        print(output, { :stream => stream }.merge(options))
+        print(output, { stream: stream }.merge(options))
       end
 
       # Called before handlers run
@@ -396,6 +345,7 @@ class Chef
       # in whyrun mode, in order to allow execution to continue
       def whyrun_assumption(action, resource, message)
         return unless message
+
         [ message ].flatten.each do |line|
           start_line("* #{line}", :yellow)
         end
@@ -404,20 +354,22 @@ class Chef
       # Called when an assertion declared by a provider fails
       def provider_requirement_failed(action, resource, exception, message)
         return unless message
+
         color = Chef::Config[:why_run] ? :yellow : :red
         [ message ].flatten.each do |line|
           start_line("* #{line}", color)
         end
       end
 
-      def deprecation(message, location = caller(2..2)[0])
+      # (see Base#deprecation)
+      def deprecation(deprecation, _location = nil)
         if Chef::Config[:treat_deprecation_warnings_as_errors]
           super
+        elsif !deprecation.silenced?
+          # Save non-silenced deprecations to the screen until the end.
+          deprecations[deprecation.message] ||= { url: deprecation.url, locations: Set.new }
+          deprecations[deprecation.message][:locations] << deprecation.location
         end
-
-        # Save deprecations to the screen until the end
-        deprecations[message] ||= Set.new
-        deprecations[message] << location
       end
 
       def indent

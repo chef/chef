@@ -1,6 +1,6 @@
 #
 # Author:: Mark Mzyk (<mmzyk@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,11 +51,11 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
       allow_any_instance_of(Chef::FileAccessControl).to receive(:define_resource_requirements)
       allow_any_instance_of(Chef::FileAccessControl).to receive(:describe_changes)
 
-      passwd_struct = OpenStruct.new(:name => "root", :passwd => "x",
-                                     :uid => 0, :gid => 0, :dir => "/root",
-                                     :shell => "/bin/bash")
+      passwd_struct = OpenStruct.new(name: "root", passwd: "x",
+                                     uid: 0, gid: 0, dir: "/root",
+                                     shell: "/bin/bash")
 
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: "root", passwd: "x", gid: 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
       allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end
@@ -75,11 +75,11 @@ describe Chef::Mixin::EnforceOwnershipAndPermissions do
       allow_any_instance_of(Chef::FileAccessControl).to receive(:uid_from_resource).and_return(0)
       allow_any_instance_of(Chef::FileAccessControl).to receive(:describe_changes)
 
-      passwd_struct = OpenStruct.new(:name => "root", :passwd => "x",
-                                     :uid => 0, :gid => 0, :dir => "/root",
-                                     :shell => "/bin/bash")
+      passwd_struct = OpenStruct.new(name: "root", passwd: "x",
+                                     uid: 0, gid: 0, dir: "/root",
+                                     shell: "/bin/bash")
 
-      group_struct = OpenStruct.new(:name => "root", :passwd => "x", :gid => 0)
+      group_struct = OpenStruct.new(name: "root", passwd: "x", gid: 0)
       allow(Etc).to receive(:getpwuid).and_return(passwd_struct)
       allow(Etc).to receive(:getgrgid).and_return(group_struct)
     end

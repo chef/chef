@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,15 +22,15 @@ describe Chef::RunList::RunListItem do
 
   describe "when creating from a Hash" do
     it "raises an exception when the hash doesn't have a :type key" do
-      expect { Chef::RunList::RunListItem.new(:name => "tatft") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new(name: "tatft") }.to raise_error(ArgumentError)
     end
 
     it "raises an exception when the hash doesn't have an :name key" do
-      expect { Chef::RunList::RunListItem.new(:type => "R") }.to raise_error(ArgumentError)
+      expect { Chef::RunList::RunListItem.new(type: "R") }.to raise_error(ArgumentError)
     end
 
     it "sets the name and type as given in the hash" do
-      item = Chef::RunList::RunListItem.new(:type => "fuuu", :name => "uuuu")
+      item = Chef::RunList::RunListItem.new(type: "fuuu", name: "uuuu")
       expect(item.to_s).to eq("fuuu[uuuu]")
     end
 

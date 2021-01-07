@@ -1,6 +1,6 @@
-require "chef/chef_fs/file_system/chef_server/rest_list_entry"
-require "chef/chef_fs/data_handler/organization_invites_data_handler"
-require "chef/json_compat"
+require_relative "rest_list_entry"
+require_relative "../../data_handler/organization_invites_data_handler"
+require_relative "../../../json_compat"
 
 class Chef
   module ChefFS
@@ -40,19 +40,19 @@ class Chef
           end
 
           def write(contents)
-            desired_invites = minimize_value(Chef::JSONCompat.parse(contents, :create_additions => false))
+            desired_invites = minimize_value(Chef::JSONCompat.parse(contents, create_additions: false))
             actual_invites = _read_json.inject({}) { |h, val| h[val["username"]] = val["id"]; h }
             invites = actual_invites.keys
             (desired_invites - invites).each do |invite|
-              begin
-                rest.post(api_path, { "user" => invite })
-              rescue Net::HTTPServerException => e
-                if e.response.code == "409"
-                  Chef::Log.warn("Could not invite #{invite} to organization #{org}: #{api_error_text(e.response)}")
-                else
-                  raise
-                end
+
+              rest.post(api_path, { "user" => invite })
+            rescue Net::HTTPClientException => e
+              if e.response.code == "409"
+                Chef::Log.warn("Could not invite #{invite} to organization #{org}: #{api_error_text(e.response)}")
+              else
+                raise
               end
+
             end
             (invites - desired_invites).each do |invite|
               rest.delete(File.join(api_path, actual_invites[invite]))

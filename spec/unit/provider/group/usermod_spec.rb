@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,30 +34,27 @@ describe Chef::Provider::Group::Usermod do
 
     describe "with an empty members array" do
       before do
-        allow(@new_resource).to receive(:append).and_return(true)
-        allow(@new_resource).to receive(:members).and_return([])
+        @new_resource.append(true)
+        @new_resource.members([])
       end
 
       it "should log an appropriate message" do
-        expect(@provider).not_to receive(:shell_out!)
+        expect(@provider).not_to receive(:shell_out_compacted!)
         @provider.modify_group_members
       end
     end
 
     describe "with supplied members" do
       platforms = {
-        "openbsd" => "-G",
-        "netbsd" => "-G",
-        "solaris" => "-a -G",
-        "suse" => "-a -G",
-        "opensuse" => "-a -G",
-        "smartos" => "-G",
-        "omnios" => "-G",
+        "openbsd" => [ "-G" ],
+        "netbsd" => [ "-G" ],
+        "smartos" => [ "-G" ],
+        "omnios" => [ "-G" ],
       }
 
       before do
-        allow(@new_resource).to receive(:members).and_return(%w{all your base})
-        allow(File).to receive(:exists?).and_return(true)
+        @new_resource.members(%w{all your base})
+        allow(File).to receive(:exist?).and_return(true)
       end
 
       it "should raise an error when setting the entire group directly" do
@@ -73,8 +70,8 @@ describe Chef::Provider::Group::Usermod do
         @provider.load_current_resource
         @provider.instance_variable_set("@group_exists", true)
         @provider.action = :modify
-        allow(@new_resource).to receive(:append).and_return(true)
-        allow(@new_resource).to receive(:excluded_members).and_return(["someone"])
+        @new_resource.append(true)
+        @new_resource.excluded_members(["someone"])
         expect { @provider.run_action(@provider.process_resource_requirements) }.to raise_error(Chef::Exceptions::Group, "excluded_members is not supported by #{@provider}")
       end
 
@@ -84,10 +81,10 @@ describe Chef::Provider::Group::Usermod do
           current_resource.members([ ])
           @provider.current_resource = current_resource
           @node.automatic_attrs[:platform] = platform
-          allow(@new_resource).to receive(:append).and_return(true)
-          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel all")
-          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel your")
-          expect(@provider).to receive(:shell_out!).with("usermod #{flags} wheel base")
+          @new_resource.append(true)
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "all")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "your")
+          expect(@provider).to receive(:shell_out_compacted!).with("usermod", *flags, "wheel", "base")
           @provider.modify_group_members
         end
       end
@@ -96,19 +93,19 @@ describe Chef::Provider::Group::Usermod do
 
   describe "when loading the current resource" do
     before(:each) do
-      allow(File).to receive(:exists?).and_return(false)
+      allow(File).to receive(:exist?).and_return(false)
       @provider.action = :create
       @provider.define_resource_requirements
     end
 
     it "should raise an error if the required binary /usr/sbin/usermod doesn't exist" do
-      allow(File).to receive(:exists?).and_return(true)
-      expect(File).to receive(:exists?).with("/usr/sbin/usermod").and_return(false)
+      allow(File).to receive(:exist?).and_return(true)
+      expect(File).to receive(:exist?).with("/usr/sbin/usermod").and_return(false)
       expect { @provider.process_resource_requirements }.to raise_error(Chef::Exceptions::Group)
     end
 
     it "shouldn't raise an error if the required binaries exist" do
-      allow(File).to receive(:exists?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
       expect { @provider.process_resource_requirements }.not_to raise_error
     end
   end

@@ -3,7 +3,7 @@
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: John Keiser (<jkeiser@ospcode.com>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,31 +19,30 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/mash"
-require "chef/mixin/params_validate"
-require "chef/mixin/from_file"
-require "chef/version_constraint"
-require "chef/server_api"
+require_relative "config"
+require_relative "mash"
+require_relative "mixin/params_validate"
+require_relative "mixin/from_file"
+require_relative "version_constraint"
+require_relative "server_api"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Environment
 
-    DEFAULT = "default"
+    DEFAULT = "default".freeze
 
     include Chef::Mixin::ParamsValidate
     include Chef::Mixin::FromFile
 
-    attr_accessor :chef_server_rest
-
-    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:[\s]+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:[\s]+).+)$/
+    COMBINED_COOKBOOK_CONSTRAINT = /(.+)(?:\s+)((?:#{Chef::VersionConstraint::OPS.join('|')})(?:\s+).+)$/.freeze
 
     def initialize(chef_server_rest: nil)
       @name = ""
       @description = ""
       @default_attributes = Mash.new
       @override_attributes = Mash.new
-      @cookbook_versions = Hash.new
+      @cookbook_versions = {}
       @chef_server_rest = chef_server_rest
     end
 
@@ -59,7 +58,7 @@ class Chef
       set_or_return(
         :name,
         arg,
-        { :regex => /^[\-[:alnum:]_]+$/, :kind_of => String }
+        { regex: /^[\-[:alnum:]_]+$/, kind_of: String }
       )
     end
 
@@ -67,7 +66,7 @@ class Chef
       set_or_return(
         :description,
         arg,
-        :kind_of => String
+        kind_of: String
       )
     end
 
@@ -75,7 +74,7 @@ class Chef
       set_or_return(
         :default_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -87,7 +86,7 @@ class Chef
       set_or_return(
         :override_attributes,
         arg,
-        :kind_of => Hash
+        kind_of: Hash
       )
     end
 
@@ -100,8 +99,8 @@ class Chef
         :cookbook_versions,
         arg,
         {
-          :kind_of => Hash,
-          :callbacks => {
+          kind_of: Hash,
+          callbacks: {
             "should be a valid set of cookbook version requirements" => lambda { |cv| Chef::Environment.validate_cookbook_versions(cv) },
           },
         }
@@ -110,17 +109,17 @@ class Chef
 
     def cookbook(cookbook, version)
       validate({
-        :version => version,
+        version: version,
       }, {
-        :version => {
-          :callbacks => { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } },
+        version: {
+          callbacks: { "should be a valid version requirement" => lambda { |v| Chef::Environment.validate_cookbook_version(v) } },
         },
       })
       @cookbook_versions[cookbook] = version
     end
 
-    def to_hash
-      result = {
+    def to_h
+      {
         "name" => @name,
         "description" => @description,
         "cookbook_versions" => @cookbook_versions,
@@ -129,11 +128,12 @@ class Chef
         "default_attributes" => @default_attributes,
         "override_attributes" => @override_attributes,
       }
-      result
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      Chef::JSONCompat.to_json(to_hash, *a)
+      Chef::JSONCompat.to_json(to_h, *a)
     end
 
     def update_from!(o)
@@ -157,7 +157,7 @@ class Chef
       # reset because everything we need will be in the params, this is necessary because certain constraints
       # may have been removed in the params and need to be removed from cookbook_versions as well.
       bkup_cb_versions = cookbook_versions
-      cookbook_versions(Hash.new)
+      cookbook_versions({})
       valid = true
 
       begin
@@ -171,7 +171,7 @@ class Chef
       unless params[:cookbook_version].nil?
         params[:cookbook_version].each do |index, cookbook_constraint_spec|
           unless cookbook_constraint_spec.nil? || cookbook_constraint_spec.size == 0
-            valid = valid && update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
+            valid &&= update_cookbook_constraint_from_param(index, cookbook_constraint_spec)
           end
         end
       end
@@ -216,11 +216,6 @@ class Chef
       end
     end
 
-    def self.json_create(o)
-      Chef.log_deprecation("Auto inflation of JSON data is deprecated. Please use Chef::Environment#from_hash")
-      from_hash(o)
-    end
-
     def self.from_hash(o)
       environment = new
       environment.name(o["name"])
@@ -233,7 +228,7 @@ class Chef
 
     def self.list(inflate = false)
       if inflate
-        response = Hash.new
+        response = {}
         Chef::Search::Query.new.search(:environment) do |e|
           response[e.name] = e unless e.nil?
         end
@@ -247,7 +242,7 @@ class Chef
       if Chef::Config[:solo_legacy_mode]
         load_from_file(name)
       else
-        self.from_hash(chef_server_rest.get("environments/#{name}"))
+        from_hash(chef_server_rest.get("environments/#{name}"))
       end
     end
 
@@ -259,11 +254,11 @@ class Chef
       js_file = File.join(Chef::Config[:environment_path], "#{name}.json")
       rb_file = File.join(Chef::Config[:environment_path], "#{name}.rb")
 
-      if File.exists?(js_file)
+      if File.exist?(js_file)
         # from_json returns object.class => json_class in the JSON.
         hash = Chef::JSONCompat.parse(IO.read(js_file))
         from_hash(hash)
-      elsif File.exists?(rb_file)
+      elsif File.exist?(rb_file)
         environment = Chef::Environment.new
         environment.name(name)
         environment.from_file(rb_file)
@@ -280,8 +275,9 @@ class Chef
     def save
       begin
         chef_server_rest.put("environments/#{@name}", self)
-      rescue Net::HTTPServerException => e
+      rescue Net::HTTPClientException => e
         raise e unless e.response.code == "404"
+
         chef_server_rest.post("environments", self)
       end
       self
@@ -301,25 +297,24 @@ class Chef
     end
 
     def self.validate_cookbook_versions(cv)
-      return false unless cv.kind_of?(Hash)
-      cv.each do |cookbook, version|
+      return false unless cv.is_a?(Hash)
+
+      cv.each_value do |version|
         return false unless Chef::Environment.validate_cookbook_version(version)
       end
       true
     end
 
     def self.validate_cookbook_version(version)
-      begin
-        if Chef::Config[:solo_legacy_mode]
-          raise Chef::Exceptions::IllegalVersionConstraint,
-                "Environment cookbook version constraints not allowed in chef-solo"
-        else
-          Chef::VersionConstraint.new version
-          true
-        end
-      rescue ArgumentError
-        false
+      if Chef::Config[:solo_legacy_mode]
+        raise Chef::Exceptions::IllegalVersionConstraint,
+          "Environment cookbook version constraints not allowed in #{ChefUtils::Dist::Solo::PRODUCT}"
+      else
+        Chef::VersionConstraint.new version
+        true
       end
+    rescue ArgumentError
+      false
     end
 
   end

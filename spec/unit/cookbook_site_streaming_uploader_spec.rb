@@ -25,8 +25,7 @@ class FakeTempfile
     @basename = basename
   end
 
-  def close
-  end
+  def close; end
 
   def path
     "#{@basename}.ZZZ"
@@ -48,10 +47,6 @@ describe Chef::CookbookSiteStreamingUploader do
     it "should create the cookbook tmp dir" do
       cookbook = @loader[:openldap]
       files_count = Dir.glob(File.join(@cookbook_repo, cookbook.name.to_s, "**", "*"), File::FNM_DOTMATCH).count { |file| File.file?(file) }
-
-      # The fixture cookbook contains a spec/spec_helper.rb file, which is not
-      # a part of any cookbook segment, so it is not uploaded.
-      files_count -= 1
 
       expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
       expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
@@ -106,22 +101,22 @@ describe Chef::CookbookSiteStreamingUploader do
 
     it "should be able to receive files to attach as argument" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :myfile => File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
+        myfile: File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
       })
     end
 
     it "should be able to receive strings to attach as argument" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :mystring => "Lorem ipsum",
+        mystring: "Lorem ipsum",
       })
     end
 
     it "should be able to receive strings and files as argument at the same time" do
       Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
-        :myfile1 => File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
-        :mystring1 => "Lorem ipsum",
-        :myfile2 => File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
-        :mystring2 => "Dummy text",
+        myfile1: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring1: "Lorem ipsum",
+        myfile2: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
+        mystring2: "Dummy text",
       })
     end
 

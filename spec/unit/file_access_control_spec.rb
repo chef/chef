@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ describe Chef::FileAccessControl do
         # we have to re-load the file so the proper
         # platform specific module is mixed in
         @node = Chef::Node.new
-        load File.join(File.dirname(__FILE__), "..", "..", "lib", "chef", "file_access_control.rb")
+        load File.join(__dir__, "..", "..", "lib", "chef", "file_access_control.rb")
         @resource = Chef::Resource::File.new("/tmp/a_file.txt")
         @resource.owner("toor")
         @resource.group("wheel")
@@ -36,7 +36,7 @@ describe Chef::FileAccessControl do
         @run_context = Chef::RunContext.new(@node, {}, @events)
         @current_resource = Chef::Resource::File.new("/tmp/different_file.txt")
         @provider_requirements = Chef::Provider::ResourceRequirements.new(@resource, @run_context)
-        @provider = double("File provider", :requirements => @provider_requirements, :manage_symlink_access? => false)
+        @provider = double("File provider", requirements: @provider_requirements, manage_symlink_access?: false)
 
         @fac = Chef::FileAccessControl.new(@current_resource, @resource, @provider)
       end
@@ -61,7 +61,7 @@ describe Chef::FileAccessControl do
     end
 
     it "determines the uid of the owner specified by the resource" do
-      expect(Etc).to receive(:getpwnam).with("toor").and_return(OpenStruct.new(:uid => 2342))
+      expect(Etc).to receive(:getpwnam).with("toor").and_return(OpenStruct.new(uid: 2342))
       expect(@fac.target_uid).to eq(2342)
     end
 
@@ -93,13 +93,13 @@ describe Chef::FileAccessControl do
     end
 
     it "wraps uids to their negative complements to correctly handle negative uids" do
-      # More: Mac OS X (at least) has negative UIDs for 'nobody' and some other
+      # More: macOS (at least) has negative UIDs for 'nobody' and some other
       # users. Ruby doesn't believe in negative UIDs so you get the diminished radix
       # complement (i.e., it wraps around the maximum size of C unsigned int) of these
       # uids. So we have to get ruby and negative uids to smoke the peace pipe
       # with each other.
       @resource.owner("nobody")
-      expect(Etc).to receive(:getpwnam).with("nobody").and_return(OpenStruct.new(:uid => (4294967294)))
+      expect(Etc).to receive(:getpwnam).with("nobody").and_return(OpenStruct.new(uid: (4294967294)))
       expect(@fac.target_uid).to eq(-2)
     end
 
@@ -107,7 +107,7 @@ describe Chef::FileAccessControl do
       # More: when OSX userIDs are created by ActiveDirectory sync, it tends to use huge numbers
       #  which had been incorrectly wrapped.  It does not look like the OSX IDs go below -2
       @resource.owner("bigdude")
-      expect(Etc).to receive(:getpwnam).with("bigdude").and_return(OpenStruct.new(:uid => (4294967286)))
+      expect(Etc).to receive(:getpwnam).with("bigdude").and_return(OpenStruct.new(uid: (4294967286)))
       expect(@fac.target_uid).to eq(4294967286)
     end
 
@@ -153,7 +153,7 @@ describe Chef::FileAccessControl do
     end
 
     it "determines the gid of the group specified by the resource" do
-      expect(Etc).to receive(:getgrnam).with("wheel").and_return(OpenStruct.new(:gid => 2342))
+      expect(Etc).to receive(:getgrnam).with("wheel").and_return(OpenStruct.new(gid: 2342))
       expect(@fac.target_gid).to eq(2342)
     end
 
@@ -273,7 +273,7 @@ describe Chef::FileAccessControl do
 
     it "sets the file's mode as specified in the resource when the current modes are incorrect" do
       # stat returns modes like 0100644 (octal) => 33188 (decimal)
-      #@fac.stub(:stat).and_return(OpenStruct.new(:mode => 33188))
+      # @fac.stub(:stat).and_return(OpenStruct.new(:mode => 33188))
       @current_resource.mode("0644")
       expect(File).to receive(:chmod).with(256, "/tmp/different_file.txt")
       @fac.set_mode
@@ -286,7 +286,7 @@ describe Chef::FileAccessControl do
     end
 
     it "does not set the file's mode when the current modes are correct" do
-      #@fac.stub(:stat).and_return(OpenStruct.new(:mode => 0100400))
+      # @fac.stub(:stat).and_return(OpenStruct.new(:mode => 0100400))
       @current_resource.mode("0400")
       expect(File).not_to receive(:chmod)
       @fac.set_mode
@@ -294,7 +294,7 @@ describe Chef::FileAccessControl do
     end
 
     it "sets all access controls on a file" do
-      allow(@fac).to receive(:stat).and_return(OpenStruct.new(:owner => 99, :group => 99, :mode => 0100444))
+      allow(@fac).to receive(:stat).and_return(OpenStruct.new(owner: 99, group: 99, mode: 0100444))
       @resource.mode(0400)
       @resource.owner(0)
       @resource.group(0)

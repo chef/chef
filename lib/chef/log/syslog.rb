@@ -1,7 +1,7 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
 # Author:: SAWANOBORI Yukihiko (<sawanoboriyu@higanworks.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +18,8 @@
 
 require "logger"
 require "syslog-logger"
-require "chef/mixin/unformatter"
+require_relative "../mixin/unformatter"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Log
@@ -32,14 +33,14 @@ class Chef
 
       attr_accessor :sync, :formatter
 
-      def initialize(program_name = "chef-client", facility = ::Syslog::LOG_DAEMON, logopts = nil)
+      def initialize(program_name = ChefUtils::Dist::Infra::CLIENT, facility = ::Syslog::LOG_DAEMON, logopts = nil)
         super
         return if defined? ::Logger::Syslog::SYSLOG
+
         ::Logger::Syslog.const_set :SYSLOG, SYSLOG
       end
 
-      def close
-      end
+      def close; end
     end
   end
 end

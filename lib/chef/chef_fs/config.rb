@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/log"
-require "chef/chef_fs/path_utils"
+require_relative "../log"
+require_relative "path_utils"
 
 class Chef
   module ChefFS
@@ -44,7 +44,7 @@ class Chef
         "users" => "user",
         "policies" => "policy",
         "policy_groups" => "policy_group",
-      }
+      }.freeze
       INFLECTIONS.each { |k, v| k.freeze; v.freeze }
       INFLECTIONS.freeze
 
@@ -66,7 +66,7 @@ class Chef
       # upgrade/migration of older Chef Servers, so they should be considered
       # frozen in time.
 
-      CHEF_11_OSS_STATIC_OBJECTS = %w{cookbooks cookbook_artifacts data_bags environments roles}.freeze
+      CHEF_11_OSS_STATIC_OBJECTS = %w{cookbooks data_bags environments roles}.freeze
       CHEF_11_OSS_DYNAMIC_OBJECTS = %w{clients nodes users}.freeze
       RBAC_OBJECT_NAMES = %w{acls containers groups }.freeze
       CHEF_12_OBJECTS = %w{ cookbook_artifacts policies policy_groups client_keys }.freeze
@@ -150,7 +150,7 @@ class Chef
               hosted_everything or allow repo_mode to default}
         end
         # Default to getting *everything* from the server.
-        if !@chef_config[:repo_mode]
+        unless @chef_config[:repo_mode]
           if is_hosted?
             @chef_config[:repo_mode] = "hosted_everything"
           else
@@ -164,7 +164,7 @@ class Chef
       attr_reader :cookbook_version
 
       def is_hosted?
-        @chef_config[:chef_server_url] =~ /\/+organizations\/.+/
+        @chef_config[:chef_server_url] =~ %r{/+organizations/.+}
       end
 
       def chef_fs
@@ -172,8 +172,8 @@ class Chef
       end
 
       def create_chef_fs
-        require "chef/chef_fs/file_system/chef_server/chef_server_root_dir"
-        Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, :cookbook_version => @cookbook_version)
+        require_relative "file_system/chef_server/chef_server_root_dir"
+        Chef::ChefFS::FileSystem::ChefServer::ChefServerRootDir.new("remote", @chef_config, cookbook_version: @cookbook_version)
       end
 
       def local_fs
@@ -181,7 +181,7 @@ class Chef
       end
 
       def create_local_fs
-        require "chef/chef_fs/file_system/repository/chef_repository_file_system_root_dir"
+        require_relative "file_system/repository/chef_repository_file_system_root_dir"
         Chef::ChefFS::FileSystem::Repository::ChefRepositoryFileSystemRootDir.new(object_paths, Array(chef_config[:chef_repo_path]).flatten, @chef_config)
       end
 
@@ -272,6 +272,7 @@ class Chef
             # cookbooks -> cookbook_path
             singular_name = INFLECTIONS[object_name]
             raise "Unknown object name #{object_name}" unless singular_name
+
             variable_name = "#{singular_name}_path"
             paths = Array(@chef_config[variable_name]).flatten
             result[object_name] = paths.map { |path| File.expand_path(path) }

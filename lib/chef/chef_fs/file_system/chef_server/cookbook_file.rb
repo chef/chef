@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/http/simple"
-require "openssl"
+require_relative "../base_fs_object"
+require_relative "../../../http/simple"
+require "digest" unless defined?(Digest)
 
 class Chef
   module ChefFS
@@ -37,20 +37,14 @@ class Chef
           end
 
           def read
-            begin
-              tmpfile = rest.streaming_request(file[:url])
-            rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading #{file[:url]}: #{e}")
-            rescue Net::HTTPServerException => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "#{e.message} retrieving #{file[:url]}")
-            end
-
-            begin
-              tmpfile.open
-              tmpfile.read
-            ensure
-              tmpfile.close!
-            end
+            tmpfile = rest.streaming_request(file[:url])
+            File.open(tmpfile, "rb", &:read)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading #{file[:url]}: #{e}")
+          rescue Net::HTTPClientException => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "#{e.message} retrieving #{file[:url]}")
+          rescue Errno::ENOENT
+            raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
 
           def rest
@@ -75,7 +69,7 @@ class Chef
           private
 
           def calc_checksum(value)
-            OpenSSL::Digest::MD5.hexdigest(value)
+            ::Digest::MD5.hexdigest(value)
           end
         end
       end

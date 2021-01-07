@@ -18,7 +18,7 @@ class Chef
 
       # @api private
       def has_resource_definition?(name)
-        run_context.definitions.has_key?(name)
+        run_context.definitions.key?(name)
       end
 
       # Processes the arguments and block as a resource definition.

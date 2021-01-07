@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,16 +15,25 @@
 # limitations under the License.
 #
 
-require "chef/resource/user"
+require_relative "../user"
 
 class Chef
   class Resource
     class User
       class WindowsUser < Chef::Resource::User
-        resource_name :windows_user
+        unified_mode true
 
         provides :windows_user
         provides :user, os: "windows"
+
+        property :full_name, String,
+          description: "The full name of the user.",
+          introduced: "14.6"
+
+        # Override the property from the parent class to coerce to integer.
+        property :uid, [ String, Integer, NilClass ], # nil for backwards compat
+          description: "The numeric user identifier.",
+          coerce: proc { |n| n && Integer(n) rescue n }
       end
     end
   end

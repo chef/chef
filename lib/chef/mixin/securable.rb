@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -24,7 +24,7 @@ class Chef
         set_or_return(
           :owner,
           arg,
-          :regex => Chef::Config[:user_valid_regex]
+          regex: Chef::Config[:user_valid_regex]
         )
       end
 
@@ -34,7 +34,7 @@ class Chef
         set_or_return(
           :group,
           arg,
-          :regex => Chef::Config[:group_valid_regex]
+          regex: Chef::Config[:group_valid_regex]
         )
       end
 
@@ -42,14 +42,14 @@ class Chef
         set_or_return(
           :mode,
           arg,
-          :callbacks => {
+          callbacks: {
             "not in valid numeric range" => lambda do |m|
-              if m.kind_of?(String)
+              if m.is_a?(String)
                 m =~ /^0/ || m = "0#{m}"
               end
 
               # Windows does not support the sticky or setuid bits
-              if Chef::Platform.windows?
+              if ChefUtils.windows?
                 Integer(m) <= 0777 && Integer(m) >= 0
               else
                 Integer(m) <= 07777 && Integer(m) >= 0
@@ -59,17 +59,14 @@ class Chef
         )
       end
 
-      #==WindowsMacros
       # Defines methods for adding attributes to a chef resource to describe
       # Windows file security metadata.
       #
       # This module is meant to be used to extend a class (instead of
       # `include`-ing). A class is automatically extended with this module when
       # it includes WindowsSecurableAttributes.
-      # --
-      # TODO should this be separated into different files?
+      # @todo should this be separated into different files?
       module WindowsMacros
-        # === rights_attribute
         # "meta-method" for dynamically creating rights attributes on resources.
         #
         # Multiple rights attributes can be declared. This enables resources to
@@ -100,7 +97,7 @@ class Chef
         #
         # * `:permissions`: Integer of Windows permissions flags, 1..2^32
         # or one of `[:full_control, :modify, :read_execute, :read, :write]`
-        # * `:principals`:  String or Array of Strings represnting usernames on
+        # * `:principals`:  String or Array of Strings representing usernames on
         # the system.
         # * `:applies_to_children` (optional): Boolean
         # * `:applies_to_self` (optional): Boolean
@@ -110,19 +107,19 @@ class Chef
           # equivalent to something like:
           # def rights(permissions=nil, principals=nil, args_hash=nil)
           define_method(name) do |permissions = nil, principals = nil, args_hash = nil|
-            rights = self.instance_variable_get("@#{name}".to_sym)
+            rights = instance_variable_get("@#{name}".to_sym)
             unless permissions.nil?
               input = {
-                :permissions => permissions,
-                :principals => principals,
+                permissions: permissions,
+                principals: principals,
               }
               input.merge!(args_hash) unless args_hash.nil?
 
-              validations = { :permissions => { :required => true },
-                              :principals => { :required => true, :kind_of => [String, Array] },
-                              :applies_to_children => { :equal_to => [ true, false, :containers_only, :objects_only ] },
-                              :applies_to_self => { :kind_of => [ TrueClass, FalseClass ] },
-                              :one_level_deep => { :kind_of => [ TrueClass, FalseClass ] },
+              validations = { permissions: { required: true },
+                              principals: { required: true, kind_of: [String, Array] },
+                              applies_to_children: { equal_to: [ true, false, :containers_only, :objects_only ] },
+                              applies_to_self: { kind_of: [ TrueClass, FalseClass ] },
+                              one_level_deep: { kind_of: [ TrueClass, FalseClass ] },
                             }
               validate(input, validations)
 
@@ -131,23 +128,23 @@ class Chef
                   if permission < 0 || permission > 1 << 32
                     raise ArgumentError, "permissions flags must be positive and <= 32 bits (#{permission})"
                   end
-                elsif !([:full_control, :modify, :read_execute, :read, :write].include?(permission.to_sym))
-                  raise ArgumentError, "permissions parameter must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
+                elsif !(%i{full_control modify read_execute read write}.include?(permission.to_sym))
+                  raise ArgumentError, "permissions property must be :full_control, :modify, :read_execute, :read, :write or an integer representing Windows permission flags"
                 end
               end
 
               [ principals ].flatten.each do |principal|
-                if !principal.is_a?(String)
-                  raise ArgumentError, "principals parameter must be a string or array of strings representing usernames"
+                unless principal.is_a?(String)
+                  raise ArgumentError, "principals property must be a string or array of strings representing usernames"
                 end
               end
 
               if input[:applies_to_children] == false
                 if input[:applies_to_self] == false
-                  raise ArgumentError, "'rights' attribute must specify either :applies_to_children or :applies_to_self."
+                  raise ArgumentError, "'rights' property must specify either :applies_to_children or :applies_to_self."
                 end
                 if input[:one_level_deep] == true
-                  raise ArgumentError, "'rights' attribute specified :one_level_deep without specifying :applies_to_children."
+                  raise ArgumentError, "'rights' property specified :one_level_deep without specifying :applies_to_children."
                 end
               end
               rights ||= []
@@ -162,7 +159,6 @@ class Chef
         end
       end
 
-      #==WindowsSecurableAttributes
       # Defines #inherits to describe Windows file security ACLs on the
       # including class
       module WindowsSecurableAttributes
@@ -171,19 +167,19 @@ class Chef
           set_or_return(
             :inherits,
             arg,
-            :kind_of => [ TrueClass, FalseClass ]
+            kind_of: [ TrueClass, FalseClass ]
           )
         end
       end
 
-      if RUBY_PLATFORM =~ /mswin|mingw|windows/
+      if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
         include WindowsSecurableAttributes
       end
 
       # Callback that fires when included; will extend the including class
       # with WindowsMacros and define #rights and #deny_rights on it.
       def self.included(including_class)
-        if RUBY_PLATFORM =~ /mswin|mingw|windows/
+        if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
           including_class.extend(WindowsMacros)
           # create a default 'rights' attribute
           including_class.rights_attribute(:rights)

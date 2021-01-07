@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,15 +16,15 @@
 # limitations under the License.
 #
 
-require "chef/cookbook_manifest"
+require_relative "../cookbook_manifest"
 require "chef_zero/data_store/memory_store"
 require "chef_zero/data_store/data_already_exists_error"
 require "chef_zero/data_store/data_not_found_error"
-require "chef/chef_fs/file_pattern"
-require "chef/chef_fs/file_system"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/file_system/memory/memory_root"
-require "fileutils"
+require_relative "file_pattern"
+require_relative "file_system"
+require_relative "file_system/exceptions"
+require_relative "file_system/memory/memory_root"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   module ChefFS
@@ -172,11 +172,11 @@ class Chef
           @memory_store.create_dir(path, name, *options)
         else
           with_parent_dir(path + [name], *options) do |parent, name|
-            begin
-              parent.create_child(name, nil)
-            rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
-              raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
-            end
+
+            parent.create_child(name, nil)
+          rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
+            raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
+
           end
         end
       end
@@ -204,13 +204,13 @@ class Chef
           @memory_store.create(path, name, data, *options)
 
         elsif path[0] == "cookbooks" && path.length == 2
-          # Do nothing.  The entry gets created when the cookbook is created.
+        # Do nothing.  The entry gets created when the cookbook is created.
 
         # /policy_groups/GROUP/policies/NAME
         elsif path[0] == "policy_groups" && path[2] == "policies"
           # Just set or create the proper entry in the hash
           update_json(to_chef_fs_path(path[0..1]), {}, *options) do |group|
-            if policies.has_key?(path[3])
+            if policies.key?(path[3])
               raise ChefZero::DataStore::DataAlreadyExistsError.new(path, group)
             end
 
@@ -246,16 +246,16 @@ class Chef
           end
 
         else
-          if !data.is_a?(String)
+          unless data.is_a?(String)
             raise "set only works with strings"
           end
 
           with_parent_dir(path + [name], *options) do |parent, name|
-            begin
-              parent.create_child(name, data)
-            rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
-              raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
-            end
+
+            parent.create_child(name, data)
+          rescue Chef::ChefFS::FileSystem::AlreadyExistsError => e
+            raise ChefZero::DataStore::DataAlreadyExistsError.new(to_zero_path(e.entry), e)
+
           end
         end
       end
@@ -265,7 +265,7 @@ class Chef
           @memory_store.get(path)
 
         elsif path[0] == "file_store" && path[1] == "repo"
-          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path[2..-1].join("/"))
+          entry = Chef::ChefFS::FileSystem.resolve_path(chef_fs, path[2..].join("/"))
           begin
             entry.read
           rescue Chef::ChefFS::FileSystem::NotFoundError => e
@@ -279,6 +279,7 @@ class Chef
           if !policy_group["policies"] || !policy_group["policies"][path[3]]
             raise ChefZero::DataStore::DataNotFoundError.new(path, entry)
           end
+
           # The policy group looks like:
           # {
           #   "policies": {
@@ -311,7 +312,7 @@ class Chef
             cookbook_type = path[0]
             result = nil
             begin
-              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_hash
+              result = Chef::CookbookManifest.new(entry.chef_object, policy_mode: cookbook_type == "cookbook_artifacts").to_h
             rescue Chef::ChefFS::FileSystem::NotFoundError => e
               raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
@@ -319,14 +320,14 @@ class Chef
             result.each_pair do |key, value|
               if value.is_a?(Array)
                 value.each do |file|
-                  if file.is_a?(Hash) && file.has_key?("checksum")
+                  if file.is_a?(Hash) && file.key?("checksum")
                     relative = ["file_store", "repo", cookbook_type]
                     if chef_fs.versioned_cookbooks || cookbook_type == "cookbook_artifacts"
                       relative << "#{path[1]}-#{path[2]}"
                     else
                       relative << path[1]
                     end
-                    relative = relative + file[:path].split("/")
+                    relative += file[:path].split("/")
                     file["url"] = ChefZero::RestBase.build_uri(request.base_uri, relative)
                   end
                 end
@@ -334,7 +335,7 @@ class Chef
             end
 
             if cookbook_type == "cookbook_artifacts"
-              result["metadata"] = result["metadata"].to_hash
+              result["metadata"] = result["metadata"].to_h
               result["metadata"].delete_if do |key, value|
                 value == [] ||
                   (value == {} && !%w{dependencies attributes recipes}.include?(key)) ||
@@ -348,11 +349,11 @@ class Chef
 
         else
           with_entry(path) do |entry|
-            begin
-              entry.read
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-            end
+
+            entry.read
+          rescue Chef::ChefFS::FileSystem::NotFoundError => e
+            raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+
           end
         end
       end
@@ -361,7 +362,7 @@ class Chef
         if use_memory_store?(path)
           @memory_store.set(path, data, *options)
         else
-          if !data.is_a?(String)
+          unless data.is_a?(String)
             raise "set only works with strings: #{path} = #{data.inspect}"
           end
 
@@ -398,9 +399,10 @@ class Chef
         # DELETE /policy_groups/GROUP/policies/POLICY
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
           update_json(to_chef_fs_path(path[0..1]), {}) do |group|
-            unless group["policies"] && group["policies"].has_key?(path[3])
+            unless group["policies"] && group["policies"].key?(path[3])
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             group["policies"].delete(path[3])
             group
           end
@@ -413,6 +415,7 @@ class Chef
             if result.size == members.size
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           end
 
@@ -424,20 +427,21 @@ class Chef
             if result.size == invitations.size
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           end
 
         else
           with_entry(path) do |entry|
-            begin
-              if %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length >= 3
-                entry.delete(true)
-              else
-                entry.delete(false)
-              end
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+
+            if %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length >= 3
+              entry.delete(true)
+            else
+              entry.delete(false)
             end
+          rescue Chef::ChefFS::FileSystem::NotFoundError => e
+            raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+
           end
         end
       end
@@ -457,20 +461,21 @@ class Chef
             policies.children.each do |policy|
               # We want to delete just the ones that == POLICY
               next unless policy.name.rpartition("-")[0] == path[1]
+
               policy.delete(false)
               FileSystemCache.instance.delete!(policy.file_path)
               found_policy = true
             end
-            raise ChefZero::DataStore::DataNotFoundError.new(path) if !found_policy
+            raise ChefZero::DataStore::DataNotFoundError.new(path) unless found_policy
           end
 
         else
           with_entry(path) do |entry|
-            begin
-              entry.delete(options.include?(:recursive))
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-            end
+
+            entry.delete(options.include?(:recursive))
+          rescue Chef::ChefFS::FileSystem::NotFoundError => e
+            raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
+
           end
         end
       end
@@ -482,11 +487,11 @@ class Chef
         # LIST /policies
         elsif path == [ "policies" ]
           with_entry([ path[0] ]) do |policies|
-            begin
-              policies.children.map { |policy| policy.name[0..-6].rpartition("-")[0] }.uniq
-            rescue Chef::ChefFS::FileSystem::NotFoundError
-              []
-            end
+
+            policies.children.map { |policy| policy.name[0..-6].rpartition("-")[0] }.uniq
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            []
+
           end
 
         # LIST /policies/POLICY/revisions
@@ -502,6 +507,7 @@ class Chef
               revisions << revision if name == path[1]
             end
             raise ChefZero::DataStore::DataNotFoundError.new(path) if revisions.empty?
+
             revisions
           end
 
@@ -518,32 +524,33 @@ class Chef
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 1
           with_entry(path) do |entry|
-            begin
-              if path[0] == "cookbook_artifacts"
-                entry.children.map { |child| child.name.rpartition("-")[0] }.uniq
-              elsif chef_fs.versioned_cookbooks
-                # /cookbooks/name-version -> /cookbooks/name
-                entry.children.map { |child| split_name_version(child.name)[0] }.uniq
-              else
-                entry.children.map { |child| child.name }
-              end
-            rescue Chef::ChefFS::FileSystem::NotFoundError
-              # If the cookbooks dir doesn't exist, we have no cookbooks (not 404)
-              []
+
+            if path[0] == "cookbook_artifacts"
+              entry.children.map { |child| child.name.rpartition("-")[0] }.uniq
+            elsif chef_fs.versioned_cookbooks
+              # /cookbooks/name-version -> /cookbooks/name
+              entry.children.map { |child| split_name_version(child.name)[0] }.uniq
+            else
+              entry.children.map(&:name)
             end
+          rescue Chef::ChefFS::FileSystem::NotFoundError
+            # If the cookbooks dir doesn't exist, we have no cookbooks (not 404)
+            []
+
           end
 
         elsif %w{cookbooks cookbook_artifacts}.include?(path[0]) && path.length == 2
           if chef_fs.versioned_cookbooks || path[0] == "cookbook_artifacts"
             result = with_entry([ path[0] ]) do |entry|
               # list /cookbooks/name = filter /cookbooks/name-version down to name
-              entry.children.map { |child| split_name_version(child.name) }.
-              select { |name, version| name == path[1] }.
-              map { |name, version| version }
+              entry.children.map { |child| split_name_version(child.name) }
+                .select { |name, version| name == path[1] }
+                .map { |name, version| version }
             end
             if result.empty?
               raise ChefZero::DataStore::DataNotFoundError.new(path)
             end
+
             result
           else
             # list /cookbooks/name = <single version>
@@ -553,16 +560,16 @@ class Chef
 
         else
           result = with_entry(path) do |entry|
-            begin
-              entry.children.map { |c| zero_filename(c) }.sort
-            rescue Chef::ChefFS::FileSystem::NotFoundError => e
-              # /cookbooks, /data, etc. never return 404
-              if path_always_exists?(path)
-                []
-              else
-                raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-              end
+
+            entry.children.map { |c| zero_filename(c) }.sort
+          rescue Chef::ChefFS::FileSystem::NotFoundError => e
+            # /cookbooks, /data, etc. never return 404
+            if path_always_exists?(path)
+              []
+            else
+              raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
             end
+
           end
 
           # Older versions of chef-zero do not understand policies and cookbook_artifacts,
@@ -581,7 +588,7 @@ class Chef
         # /policy_groups/NAME/policies/POLICYNAME
         elsif path[0] == "policy_groups" && path[2] == "policies" && path.length == 4
           group = get_json(to_chef_fs_path(path[0..1]), {})
-          group["policies"] && group["policies"].has_key?(path[3])
+          group["policies"] && group["policies"].key?(path[3])
 
         else
           path_always_exists?(path) || Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path)).exists?
@@ -611,7 +618,7 @@ class Chef
       private
 
       def use_memory_store?(path)
-        return path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == %w{environments _default}
+        path[0] == "sandboxes" || path[0] == "file_store" && path[1] == "checksums" || path == %w{environments _default}
       end
 
       def write_cookbook(path, data, *options)
@@ -628,7 +635,7 @@ class Chef
         cookbook.each_pair do |key, value|
           if value.is_a?(Array)
             value.each do |file|
-              if file.is_a?(Hash) && file.has_key?("checksum")
+              if file.is_a?(Hash) && file.key?("checksum")
                 file_data = @memory_store.get(["file_store", "checksums", file["checksum"]])
                 cookbook_fs.add_file(File.join(cookbook_path, file["path"]), file_data)
               end
@@ -638,7 +645,7 @@ class Chef
 
         # Create the .uploaded-cookbook-version.json
         cookbooks = chef_fs.child(cookbook_type)
-        if !cookbooks.exists?
+        unless cookbooks.exists?
           cookbooks = chef_fs.create_child(cookbook_type)
         end
         # We are calling a cookbooks-specific API, so get multiplexed_dirs out of the way if it is there
@@ -717,8 +724,8 @@ class Chef
             path[-1] = "#{path[-1]}.json"
           end
 
-          # /acls/containers|nodes|... do NOT drop into the next elsif, and do
-          # not get .json appended
+        # /acls/containers|nodes|... do NOT drop into the next elsif, and do
+        # not get .json appended
 
         # /nodes|clients|.../x.json
         elsif path.length == 2
@@ -768,7 +775,7 @@ class Chef
           end
 
         elsif path.length == 2 && path[0] != "cookbooks"
-          path[1] = path[1][0..-6]
+          path[1] = path[1].gsub(/\.(rb|json)$/, "")
         end
 
         path
@@ -779,15 +786,13 @@ class Chef
       end
 
       def path_always_exists?(path)
-        return path.length == 1 && BASE_DIRNAMES.include?(path[0])
+        path.length == 1 && BASE_DIRNAMES.include?(path[0])
       end
 
       def with_entry(path)
-        begin
-          yield Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
-        rescue Chef::ChefFS::FileSystem::NotFoundError => e
-          raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
-        end
+        yield Chef::ChefFS::FileSystem.resolve_path(chef_fs, to_chef_fs_path(path))
+      rescue Chef::ChefFS::FileSystem::NotFoundError => e
+        raise ChefZero::DataStore::DataNotFoundError.new(to_zero_path(e.entry), e)
       end
 
       def with_parent_dir(path, *options)
@@ -848,6 +853,7 @@ class Chef
 
       def ensure_dir(entry)
         return entry if entry.exists?
+
         parent = entry.parent
         if parent
           ensure_dir(parent)

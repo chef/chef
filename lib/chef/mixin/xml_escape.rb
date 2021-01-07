@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2005-2016, Sam Ruby
 # License:: Apache License, Version 2.0
 #
@@ -46,7 +46,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require "chef/log"
+require_relative "../log"
 
 begin
   require "fast_xs"
@@ -73,8 +73,8 @@ class Chef
           137 => 8240, # per mille sign
           138 => 352, # latin capital letter s with caron
           139 => 8249, # single left-pointing angle quotation mark
-          140 =>  338, # latin capital ligature oe
-          142 =>  381, # latin capital letter z with caron
+          140 => 338, # latin capital ligature oe
+          142 => 381, # latin capital letter z with caron
           145 => 8216, # left single quotation mark
           146 => 8217, # right single quotation mark
           147 => 8220, # left double quotation mark
@@ -86,28 +86,26 @@ class Chef
           153 => 8482, # trade mark sign
           154 => 353, # latin small letter s with caron
           155 => 8250, # single right-pointing angle quotation mark
-          156 =>  339, # latin small ligature oe
-          158 =>  382, # latin small letter z with caron
-          159 =>  376 # latin capital letter y with diaeresis
-        }
+          156 => 339, # latin small ligature oe
+          158 => 382, # latin small letter z with caron
+          159 => 376, # latin capital letter y with diaeresis
+        }.freeze
 
         # http://www.w3.org/TR/REC-xml/#dt-chardata
         PREDEFINED = {
           38 => "&amp;", # ampersand
           60 => "&lt;",  # left angle bracket
-          62 => "&gt;" # right angle bracket
-        }
+          62 => "&gt;", # right angle bracket
+        }.freeze
 
         # http://www.w3.org/TR/REC-xml/#charsets
         VALID = [[0x9, 0xA, 0xD], (0x20..0xD7FF),
-          (0xE000..0xFFFD), (0x10000..0x10FFFF)]
+          (0xE000..0xFFFD), (0x10000..0x10FFFF)].freeze
 
         def xml_escape(unescaped_str)
-          begin
-            unescaped_str.unpack("U*").map { |char| xml_escape_char!(char) }.join
-          rescue
-            unescaped_str.unpack("C*").map { |char| xml_escape_char!(char) }.join
-          end
+          unescaped_str.unpack("U*").map { |char| xml_escape_char!(char) }.join
+        rescue
+          unescaped_str.unpack("C*").map { |char| xml_escape_char!(char) }.join
         end
 
         private

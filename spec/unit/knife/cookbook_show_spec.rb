@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
-# License:: Apache License, eersion 2.0
+# Copyright:: Copyright (c) Chef Software Inc.
+# License:: Apache License, version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 # limitations under the License.
 #
 
-# rename to cookbook not coookbook
 require "spec_helper"
 
 describe Chef::Knife::CookbookShow do
@@ -28,31 +27,31 @@ describe Chef::Knife::CookbookShow do
     allow(Chef::CookbookVersion).to receive(:load).and_return(cb)
   end
 
-  let (:knife) do
+  let(:knife) do
     knife = Chef::Knife::CookbookShow.new
     knife.config = {}
     knife.name_args = [ "cookbook_name" ]
     knife
   end
 
-  let (:cb) do
+  let(:cb) do
     cb = Chef::CookbookVersion.new("cookbook_name")
     cb.manifest = manifest
     cb
   end
 
-  let (:rest) { double(Chef::ServerAPI) }
+  let(:rest) { double(Chef::ServerAPI) }
 
-  let (:content) { "Example recipe text" }
+  let(:content) { "Example recipe text" }
 
-  let (:manifest) do
+  let(:manifest) do
     {
-      "recipes" => [
+      "all_files" => [
         {
-          :name => "default.rb",
-          :path => "recipes/default.rb",
-          :checksum => "1234",
-          :url => "http://example.org/files/default.rb",
+          name: "recipes/default.rb",
+          path: "recipes/default.rb",
+          checksum: "1234",
+          url: "http://example.org/files/default.rb",
         },
       ],
     }
@@ -69,7 +68,7 @@ describe Chef::Knife::CookbookShow do
     end
 
     describe "with 1 argument: versions" do
-      let (:response) do
+      let(:response) do
         {
           "cookbook_name" => {
             "url" => "http://url/cookbooks/cookbook_name",
@@ -101,9 +100,42 @@ describe Chef::Knife::CookbookShow do
         knife.name_args << "0.1.0"
       end
 
+      let(:output) do
+        { "cookbook_name" => "cookbook_name",
+          "name" => "cookbook_name-0.0.0",
+          "frozen?" => false,
+          "version" => "0.0.0",
+          "metadata" => {
+            "name" => nil,
+            "description" => "",
+            "eager_load_libraries" => true,
+            "long_description" => "",
+            "maintainer" => "",
+            "maintainer_email" => "",
+            "license" => "All rights reserved",
+            "platforms" => {},
+            "dependencies" => {},
+            "providing" => {},
+            "recipes" => {},
+            "version" => "0.0.0",
+            "source_url" => "",
+            "issues_url" => "",
+            "privacy" => false,
+            "chef_versions" => [],
+            "ohai_versions" => [],
+            "gems" => [],
+          },
+          "recipes" =>
+          [{ "name" => "recipes/default.rb",
+             "path" => "recipes/default.rb",
+             "checksum" => "1234",
+             "url" => "http://example.org/files/default.rb" }],
+        }
+      end
+
       it "should show the specific part of a cookbook" do
         expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
-        expect(knife).to receive(:output).with(cb)
+        expect(knife).to receive(:output).with(output)
         knife.run
       end
     end
@@ -115,7 +147,7 @@ describe Chef::Knife::CookbookShow do
 
       it "should print the json of the part" do
         expect(Chef::CookbookVersion).to receive(:load).with("cookbook_name", "0.1.0").and_return(cb)
-        expect(knife).to receive(:output).with(cb.manifest["recipes"])
+        expect(knife).to receive(:output).with(cb.files_for("recipes"))
         knife.run
       end
     end
@@ -137,34 +169,34 @@ describe Chef::Knife::CookbookShow do
       before(:each) do
         knife.name_args = [ "cookbook_name", "0.1.0", "files", "afile.rb" ]
         cb.manifest = {
-          "files" => [
+          "all_files" => [
             {
-              :name => "afile.rb",
-              :path => "files/host-examplehost.example.org/afile.rb",
-              :checksum => "1111",
-              :specificity => "host-examplehost.example.org",
-              :url => "http://example.org/files/1111",
+              name: "files/afile.rb",
+              path: "files/host-examplehost.example.org/afile.rb",
+              checksum: "1111",
+              specificity: "host-examplehost.example.org",
+              url: "http://example.org/files/1111",
             },
             {
-              :name => "afile.rb",
-              :path => "files/ubuntu-9.10/afile.rb",
-              :checksum => "2222",
-              :specificity => "ubuntu-9.10",
-              :url => "http://example.org/files/2222",
+              name: "files/afile.rb",
+              path: "files/ubuntu-9.10/afile.rb",
+              checksum: "2222",
+              specificity: "ubuntu-9.10",
+              url: "http://example.org/files/2222",
             },
             {
-              :name => "afile.rb",
-              :path => "files/ubuntu/afile.rb",
-              :checksum => "3333",
-              :specificity => "ubuntu",
-              :url => "http://example.org/files/3333",
+              name: "files/afile.rb",
+              path: "files/ubuntu/afile.rb",
+              checksum: "3333",
+              specificity: "ubuntu",
+              url: "http://example.org/files/3333",
             },
             {
-              :name => "afile.rb",
-              :path => "files/default/afile.rb",
-              :checksum => "4444",
-              :specificity => "default",
-              :url => "http://example.org/files/4444",
+              name: "files/afile.rb",
+              path: "files/default/afile.rb",
+              checksum: "4444",
+              specificity: "default",
+              url: "http://example.org/files/4444",
             },
           ],
         }

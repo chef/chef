@@ -1,6 +1,6 @@
 # Author:: Seth Falcon (<seth@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,14 +14,14 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-require "chef/version_class"
+require_relative "version_class"
 
 class Chef
   class VersionConstraint
-    DEFAULT_CONSTRAINT = ">= 0.0.0"
-    STANDARD_OPS = %w{< > <= >=}
-    OPS = %w{< > = <= >= ~>}
-    PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/
+    DEFAULT_CONSTRAINT = ">= 0.0.0".freeze
+    STANDARD_OPS = %w{< > <= >=}.freeze
+    OPS = %w{< > = <= >= ~>}.freeze
+    PATTERN = /^(#{OPS.join('|')}) *([0-9].*)$/.freeze
     VERSION_CLASS = Chef::Version
 
     attr_reader :op, :version
@@ -90,7 +90,7 @@ class Chef
         parse(constraint_spec.first)
       else
         msg = "only one version constraint operation is supported, but you gave #{constraint_spec.size} "
-        msg << "['#{constraint_spec.join(', ')}']"
+        msg << "['#{constraint_spec.join(", ")}']"
         raise Chef::Exceptions::InvalidVersionConstraint, msg
       end
     end

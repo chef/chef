@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,7 +37,7 @@ describe Chef::Handler do
       @run_status.exception = @exception
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new("lolz"), Chef::Resource::ZenMaster.new("tzu")]
-      @all_resources.first.updated = true
+      @all_resources.first.updated_by_last_action true
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now
@@ -118,7 +118,7 @@ describe Chef::Handler do
     before do
       @run_context = Chef::RunContext.new(@node, {}, @events)
       @all_resources = [Chef::Resource::Cat.new("foo"), Chef::Resource::ZenMaster.new("moo")]
-      @all_resources.first.updated = true
+      @all_resources.first.updated_by_last_action true
       @run_context.resource_collection.all_resources.replace(@all_resources)
       @run_status.run_context = @run_context
       @start_time = Time.now

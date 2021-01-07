@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Christopher Walters (<cw@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,13 +21,17 @@ class Chef
   module Mixin
     module FromFile
 
+      # Source path from which the object was loaded
+      attr_accessor :source_file
+
       # Loads a given ruby file, and runs instance_eval against it in the context of the current
       # object.
       #
       # Raises an IOError if the file cannot be found, or is not readable.
       def from_file(filename)
-        if File.exists?(filename) && File.readable?(filename)
-          self.instance_eval(IO.read(filename), filename, 1)
+        self.source_file = filename
+        if File.file?(filename) && File.readable?(filename)
+          instance_eval(IO.read(filename), filename, 1)
         else
           raise IOError, "Cannot open or read #{filename}!"
         end
@@ -38,8 +42,9 @@ class Chef
       #
       # Raises an IOError if the file cannot be found, or is not readable.
       def class_from_file(filename)
-        if File.exists?(filename) && File.readable?(filename)
-          self.class_eval(IO.read(filename), filename, 1)
+        self.source_file = filename
+        if File.file?(filename) && File.readable?(filename)
+          class_eval(IO.read(filename), filename, 1)
         else
           raise IOError, "Cannot open or read #{filename}!"
         end

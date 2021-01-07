@@ -2,8 +2,7 @@
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Graeme Mathieson (<mathie@woss.name>)
 #
-# Copyright 2011-2016, Chef Software Inc.
-# Copyright 2014-2016, Chef Software, Inc <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,16 +17,52 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/resource/package"
+require_relative "../provider/package"
+require_relative "package"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
     class HomebrewPackage < Chef::Resource::Package
-      resource_name :homebrew_package
+      unified_mode true
+
+      provides :homebrew_package
       provides :package, os: "darwin"
 
-      property :homebrew_user, [ String, Integer ]
+      description "Use the **homebrew_package** resource to manage packages for the macOS platform. Note: Starting with #{ChefUtils::Dist::Infra::PRODUCT} 16 the homebrew resource now accepts an array of packages for installing multiple packages at once."
+      introduced "12.0"
+      examples <<~DOC
+      **Install a package**:
+
+      ```ruby
+      homebrew_package 'git'
+      ```
+
+      **Install multiple packages at once**:
+
+      ```ruby
+      homebrew_package %w(git fish ruby)
+      ```
+
+      **Specify the Homebrew user with a UUID**
+
+      ```ruby
+      homebrew_package 'git' do
+        homebrew_user 1001
+      end
+      ```
+
+      **Specify the Homebrew user with a string**:
+
+      ```ruby
+      homebrew_package 'vim' do
+        homebrew_user 'user1'
+      end
+      ```
+      DOC
+
+      property :homebrew_user, [ String, Integer ],
+        description: "The name or uid of the Homebrew owner to be used by #{ChefUtils::Dist::Infra::PRODUCT} when executing a command."
 
     end
   end

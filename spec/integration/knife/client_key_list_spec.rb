@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "date"
@@ -41,11 +42,11 @@ describe "knife client key list", :workstation do
     end
 
     it "shows detailed output" do
-      knife("client key list -w cons").should_succeed <<EOM
-expired:    http://127.0.0.1:8900/clients/cons/keys/expired (expired)
-new:        http://127.0.0.1:8900/clients/cons/keys/new
-next_month: http://127.0.0.1:8900/clients/cons/keys/next_month
-EOM
+      knife("client key list -w cons").should_succeed <<~EOM
+        expired:    http://127.0.0.1:8900/clients/cons/keys/expired (expired)
+        new:        http://127.0.0.1:8900/clients/cons/keys/new
+        next_month: http://127.0.0.1:8900/clients/cons/keys/next_month
+      EOM
     end
 
     it "lists the expired keys for a client" do

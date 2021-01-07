@@ -1,6 +1,6 @@
 #
 # Author:: Nathan Williams (<nath.e.will@gmail.com>)
-# Copyright:: Copyright 2016, Nathan Williams
+# Copyright:: Copyright 2016-2018, Nathan Williams
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,16 +19,13 @@
 require "spec_helper"
 
 describe Chef::Resource::SystemdUnit do
-  before(:each) do
-    @resource = Chef::Resource::SystemdUnit.new("sysstat-collect.timer")
-  end
-
-  let(:unit_content_string) { "[Unit]\nDescription = Run system activity accounting tool every 10 minutes\n\n[Timer]\nOnCalendar = *:00/10\n\n[Install]\nWantedBy = sysstat.service\n" }
-
+  let(:resource) { Chef::Resource::SystemdUnit.new("sysstat-collect.timer") }
+  let(:unit_content_string) { "[Unit]\nDescription = Run system activity accounting tool every 10 minutes\nDocumentation = foo\nDocumentation = bar\n\n[Timer]\nOnCalendar = *:00/10\n\n[Install]\nWantedBy = sysstat.service\n" }
   let(:unit_content_hash) do
     {
       "Unit" => {
         "Description" => "Run system activity accounting tool every 10 minutes",
+        "Documentation" => %w{foo bar},
       },
       "Timer" => {
         "OnCalendar" => "*:00/10",
@@ -39,77 +36,77 @@ describe Chef::Resource::SystemdUnit do
     }
   end
 
-  it "creates a new Chef::Resource::SystemdUnit" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::SystemdUnit)
+  it "the unit_name property is the name_property" do
+    expect(resource.unit_name).to eql("sysstat-collect.timer")
   end
 
-  it "should have a name" do
-    expect(@resource.name).to eql("sysstat-collect.timer")
+  it "sets the default action as :nothing" do
+    expect(resource.action).to eql([:nothing])
   end
 
-  it "has a default action of nothing" do
-    expect(@resource.action).to eql([:nothing])
-  end
-
-  it "supports appropriate unit actions" do
-    expect { @resource.action :create }.not_to raise_error
-    expect { @resource.action :delete }.not_to raise_error
-    expect { @resource.action :enable }.not_to raise_error
-    expect { @resource.action :disable }.not_to raise_error
-    expect { @resource.action :mask }.not_to raise_error
-    expect { @resource.action :unmask }.not_to raise_error
-    expect { @resource.action :start }.not_to raise_error
-    expect { @resource.action :stop }.not_to raise_error
-    expect { @resource.action :restart }.not_to raise_error
-    expect { @resource.action :reload }.not_to raise_error
-    expect { @resource.action :wrong }.to raise_error(ArgumentError)
+  it "supports :create, :delete, :disable, :enable, :mask, :preset, :reenable, :reload, :reload_or_restart, :reload_or_try_restart, :restart, :revert, :start, :stop, :try_restart, :unmask actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
+    expect { resource.action :disable }.not_to raise_error
+    expect { resource.action :enable }.not_to raise_error
+    expect { resource.action :mask }.not_to raise_error
+    expect { resource.action :preset }.not_to raise_error
+    expect { resource.action :reenable }.not_to raise_error
+    expect { resource.action :reload }.not_to raise_error
+    expect { resource.action :reload_or_restart }.not_to raise_error
+    expect { resource.action :reload_or_try_restart }.not_to raise_error
+    expect { resource.action :restart }.not_to raise_error
+    expect { resource.action :revert }.not_to raise_error
+    expect { resource.action :start }.not_to raise_error
+    expect { resource.action :stop }.not_to raise_error
+    expect { resource.action :try_restart }.not_to raise_error
+    expect { resource.action :unmask }.not_to raise_error
   end
 
   it "accepts boolean state properties" do
-    expect { @resource.active false }.not_to raise_error
-    expect { @resource.active true }.not_to raise_error
-    expect { @resource.active "yes" }.to raise_error(ArgumentError)
+    expect { resource.active false }.not_to raise_error
+    expect { resource.active true }.not_to raise_error
+    expect { resource.active "yes" }.to raise_error(ArgumentError)
 
-    expect { @resource.enabled true }.not_to raise_error
-    expect { @resource.enabled false }.not_to raise_error
-    expect { @resource.enabled "no" }.to raise_error(ArgumentError)
+    expect { resource.enabled true }.not_to raise_error
+    expect { resource.enabled false }.not_to raise_error
+    expect { resource.enabled "no" }.to raise_error(ArgumentError)
 
-    expect { @resource.masked true }.not_to raise_error
-    expect { @resource.masked false }.not_to raise_error
-    expect { @resource.masked :nope }.to raise_error(ArgumentError)
+    expect { resource.masked true }.not_to raise_error
+    expect { resource.masked false }.not_to raise_error
+    expect { resource.masked :nope }.to raise_error(ArgumentError)
 
-    expect { @resource.static true }.not_to raise_error
-    expect { @resource.static false }.not_to raise_error
-    expect { @resource.static "yep" }.to raise_error(ArgumentError)
+    expect { resource.static true }.not_to raise_error
+    expect { resource.static false }.not_to raise_error
+    expect { resource.static "yep" }.to raise_error(ArgumentError)
   end
 
   it "accepts the content property" do
-    expect { @resource.content nil }.not_to raise_error
-    expect { @resource.content "test" }.not_to raise_error
-    expect { @resource.content({}) }.not_to raise_error
-    expect { @resource.content 5 }.to raise_error(ArgumentError)
+    expect { resource.content nil }.not_to raise_error
+    expect { resource.content "test" }.not_to raise_error
+    expect { resource.content({}) }.not_to raise_error
+    expect { resource.content 5 }.to raise_error(ArgumentError)
   end
 
   it "accepts the user property" do
-    expect { @resource.user nil }.not_to raise_error
-    expect { @resource.user "deploy" }.not_to raise_error
-    expect { @resource.user 5 }.to raise_error(ArgumentError)
+    expect { resource.user nil }.not_to raise_error
+    expect { resource.user "deploy" }.not_to raise_error
+    expect { resource.user 5 }.to raise_error(ArgumentError)
   end
 
   it "accepts the triggers_reload property" do
-    expect { @resource.triggers_reload true }.not_to raise_error
-    expect { @resource.triggers_reload false }.not_to raise_error
-    expect { @resource.triggers_reload "no" }.to raise_error(ArgumentError)
+    expect { resource.triggers_reload true }.not_to raise_error
+    expect { resource.triggers_reload false }.not_to raise_error
+    expect { resource.triggers_reload "no" }.to raise_error(ArgumentError)
   end
 
   it "reports its state" do
-    @resource.active true
-    @resource.enabled true
-    @resource.masked false
-    @resource.static false
-    @resource.content "test"
-    state = @resource.state
+    resource.active true
+    resource.enabled true
+    resource.masked false
+    resource.static false
+    resource.content "test"
+    state = resource.state_for_resource_reporter
     expect(state[:active]).to eq(true)
     expect(state[:enabled]).to eq(true)
     expect(state[:masked]).to eq(false)
@@ -118,16 +115,16 @@ describe Chef::Resource::SystemdUnit do
   end
 
   it "returns the unit name as its identity" do
-    expect(@resource.identity).to eq("sysstat-collect.timer")
+    expect(resource.identity).to eq("sysstat-collect.timer")
   end
 
   it "serializes to ini with a string-formatted content property" do
-    @resource.content(unit_content_string)
-    expect(@resource.to_ini).to eq unit_content_string
+    resource.content(unit_content_string)
+    expect(resource.to_ini).to eq unit_content_string
   end
 
   it "serializes to ini with a hash-formatted content property" do
-    @resource.content(unit_content_hash)
-    expect(@resource.to_ini).to eq unit_content_string
+    resource.content(unit_content_hash)
+    expect(resource.to_ini).to eq unit_content_string
   end
 end

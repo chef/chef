@@ -1,6 +1,6 @@
 #
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,9 +25,7 @@ describe Chef::Resource::CookbookFile do
   let(:source) { "java.response" }
   let(:cookbook_name) { "java" }
   let(:expected_content) do
-    content = File.open(File.join(CHEF_SPEC_DATA, "cookbooks", "java", "files", "default", "java.response"), "rb") do |f|
-      f.read
-    end
+    content = File.open(File.join(CHEF_SPEC_DATA, "cookbooks", "java", "files", "default", "java.response"), "rb", &:read)
     content.force_encoding(Encoding::BINARY) if content.respond_to?(:force_encoding)
     content
   end
@@ -70,11 +68,11 @@ describe Chef::Resource::CookbookFile do
     let(:path) { File.join(windows_non_temp_dir, make_tmpname(file_base)) }
 
     before do
-      FileUtils.mkdir_p(windows_non_temp_dir) if Chef::Platform.windows?
+      FileUtils.mkdir_p(windows_non_temp_dir) if ChefUtils.windows?
     end
 
     after do
-      FileUtils.rm_r(windows_non_temp_dir) if Chef::Platform.windows? && File.exists?(windows_non_temp_dir)
+      FileUtils.rm_r(windows_non_temp_dir) if ChefUtils.windows? && File.exist?(windows_non_temp_dir)
     end
 
   end

@@ -1,6 +1,7 @@
+#
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: William Albenzi (<walbenzi@gmail.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,23 +17,23 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class RoleEnvRunListAdd < Knife
 
       deps do
-        require "chef/role"
-        require "chef/json_compat"
+        require_relative "../role"
+        require_relative "../json_compat"
       end
 
-      banner "knife role env_run_list add [ROLE] [ENVIRONMENT] [ENTRY[,ENTRY]] (options)"
+      banner "knife role env_run_list add [ROLE] [ENVIRONMENT] [ENTRY [ENTRY]] (options)"
 
       option :after,
-        :short => "-a ITEM",
-        :long  => "--after ITEM",
-        :description => "Place the ENTRY in the run list after ITEM"
+        short: "-a ITEM",
+        long: "--after ITEM",
+        description: "Place the ENTRY in the run list after ITEM."
 
       def add_to_env_run_list(role, environment, entries, after = nil)
         if after
@@ -67,12 +68,12 @@ class Chef
 
         if @name_args.size > 2
           # Check for nested lists and create a single plain one
-          entries = @name_args[2..-1].map do |entry|
-            entry.split(",").map { |e| e.strip }
+          entries = @name_args[2..].map do |entry|
+            entry.split(",").map(&:strip)
           end.flatten
         else
           # Convert to array and remove the extra spaces
-          entries = @name_args[2].split(",").map { |e| e.strip }
+          entries = @name_args[2].split(",").map(&:strip)
         end
 
         add_to_env_run_list(role, environment, entries, config[:after])

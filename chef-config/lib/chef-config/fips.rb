@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,12 +16,14 @@
 # limitations under the License.
 #
 
+require "chef-utils" unless defined?(ChefUtils::CANARY)
+
 module ChefConfig
 
   def self.fips?
-    if ChefConfig.windows?
+    if ChefUtils.windows?
       begin
-        require "win32/registry"
+        require "win32/registry" unless defined?(Win32::Registry)
       rescue LoadError
         return false
       end

@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ class Chef
 
           if found_error_in_cookbooks?
             traceback = filtered_bt.map { |line| "  #{line}" }.join("\n")
-            error_description.section("Cookbook Trace:", traceback)
+            error_description.section("Cookbook Trace: (most recent call first)", traceback)
             error_description.section("Relevant File Content:", context)
           end
 
@@ -108,21 +108,21 @@ class Chef
         def culprit_backtrace_entry
           @culprit_backtrace_entry ||= begin
             bt_entry = filtered_bt.first
-            Chef::Log.debug("Backtrace entry for compile error: '#{bt_entry}'")
+            Chef::Log.trace("Backtrace entry for compile error: '#{bt_entry}'")
             bt_entry
           end
         end
 
         def culprit_line
           @culprit_line ||= begin
-            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:([\d]+)/, 1].to_i
-            Chef::Log.debug("Line number of compile error: '#{line_number}'")
+            line_number = culprit_backtrace_entry[/^(?:.\:)?[^:]+:(\d+)/, 1].to_i
+            Chef::Log.trace("Line number of compile error: '#{line_number}'")
             line_number
           end
         end
 
         def culprit_file
-          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):([\d]+)/, 1]
+          @culprit_file ||= culprit_backtrace_entry[/^((?:.\:)?[^:]+):(\d+)/, 1]
         end
 
         def filtered_bt
@@ -138,7 +138,7 @@ class Chef
             begin
               filters = Array(Chef::Config.cookbook_path).map { |p| /^#{Regexp.escape(p)}/i }
               r = exception.backtrace.select { |line| filters.any? { |filter| line =~ filter } }
-              Chef::Log.debug("Filtered backtrace of compile error: #{r.join(",")}")
+              Chef::Log.trace("Filtered backtrace of compile error: #{r.join(",")}")
               r
             end
         end

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,34 +16,35 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/repository/acls_dir"
-require "chef/chef_fs/file_system/repository/clients_dir"
-require "chef/chef_fs/file_system/repository/cookbooks_dir"
-require "chef/chef_fs/file_system/repository/cookbook_artifacts_dir"
-require "chef/chef_fs/file_system/repository/containers_dir"
-require "chef/chef_fs/file_system/repository/data_bags_dir"
-require "chef/chef_fs/file_system/repository/environments_dir"
-require "chef/chef_fs/file_system/repository/groups_dir"
-require "chef/chef_fs/file_system/repository/nodes_dir"
-require "chef/chef_fs/file_system/repository/policy_groups_dir"
-require "chef/chef_fs/file_system/repository/roles_dir"
-require "chef/chef_fs/file_system/repository/users_dir"
-require "chef/chef_fs/file_system/repository/client_keys_dir"
-require "chef/chef_fs/file_system/repository/file_system_entry"
-require "chef/chef_fs/file_system/repository/policies_dir"
-require "chef/chef_fs/file_system/repository/versioned_cookbooks_dir"
-require "chef/chef_fs/file_system/multiplexed_dir"
-require "chef/chef_fs/data_handler/client_data_handler"
-require "chef/chef_fs/data_handler/client_key_data_handler"
-require "chef/chef_fs/data_handler/environment_data_handler"
-require "chef/chef_fs/data_handler/node_data_handler"
-require "chef/chef_fs/data_handler/policy_data_handler"
-require "chef/chef_fs/data_handler/policy_group_data_handler"
-require "chef/chef_fs/data_handler/role_data_handler"
-require "chef/chef_fs/data_handler/user_data_handler"
-require "chef/chef_fs/data_handler/group_data_handler"
-require "chef/chef_fs/data_handler/container_data_handler"
+require_relative "../base_fs_dir"
+require_relative "acls_dir"
+require_relative "clients_dir"
+require_relative "cookbooks_dir"
+require_relative "cookbook_artifacts_dir"
+require_relative "containers_dir"
+require_relative "data_bags_dir"
+require_relative "environments_dir"
+require_relative "groups_dir"
+require_relative "nodes_dir"
+require_relative "policy_groups_dir"
+require_relative "roles_dir"
+require_relative "users_dir"
+require_relative "client_keys_dir"
+require_relative "file_system_entry"
+require_relative "policies_dir"
+require_relative "versioned_cookbooks_dir"
+require_relative "../multiplexed_dir"
+require_relative "../../data_handler/client_data_handler"
+require_relative "../../data_handler/client_key_data_handler"
+require_relative "../../data_handler/environment_data_handler"
+require_relative "../../data_handler/node_data_handler"
+require_relative "../../data_handler/policy_data_handler"
+require_relative "../../data_handler/policy_group_data_handler"
+require_relative "../../data_handler/role_data_handler"
+require_relative "../../data_handler/user_data_handler"
+require_relative "../../data_handler/group_data_handler"
+require_relative "../../data_handler/container_data_handler"
+require_relative "../../../win32/security" if ChefUtils.windows?
 
 class Chef
   module ChefFS
@@ -83,19 +84,19 @@ class Chef
           attr_reader :child_paths
           attr_reader :versioned_cookbooks
 
-          CHILDREN = %w{org.json invitations.json members.json}
+          CHILDREN = %w{org.json invitations.json members.json}.freeze
 
           def children
             @children ||= begin
                             result = child_paths.keys.sort.map { |name| make_child_entry(name) }
                             result += CHILDREN.map { |name| make_child_entry(name) }
-                            result.select { |c| c && c.exists? }.sort_by { |c| c.name }
+                            result.select { |c| c && c.exists? }.sort_by(&:name)
                           end
           end
 
           def can_have_child?(name, is_dir)
             if is_dir
-              child_paths.has_key?(name)
+              child_paths.key?(name)
             elsif root_dir
               CHILDREN.include?(name)
             else
@@ -108,10 +109,23 @@ class Chef
               child = root_dir.create_child(name, file_contents)
             else
               child_paths[name].each do |path|
-                begin
-                  Dir.mkdir(path)
-                rescue Errno::EEXIST
+
+                ::FileUtils.mkdir_p(path)
+                ::FileUtils.chmod(0700, path)
+                if ChefUtils.windows?
+                  all_mask = Chef::ReservedNames::Win32::API::Security::GENERIC_ALL
+                  administrators = Chef::ReservedNames::Win32::Security::SID.Administrators
+                  owner = Chef::ReservedNames::Win32::Security::SID.default_security_object_owner
+                  dacl = Chef::ReservedNames::Win32::Security::ACL.create([
+                    Chef::ReservedNames::Win32::Security::ACE.access_allowed(owner, all_mask),
+                    Chef::ReservedNames::Win32::Security::ACE.access_allowed(administrators, all_mask),
+                  ])
+                  so = Chef::ReservedNames::Win32::Security::SecurableObject.new(path)
+                  so.owner = owner
+                  so.set_dacl(dacl, false)
                 end
+              rescue Errno::EEXIST
+
               end
               child = make_child_entry(name)
             end
@@ -126,15 +140,15 @@ class Chef
           # Used to print out a human-readable file system description
           def fs_description
             repo_paths = root_paths || [ File.dirname(child_paths["cookbooks"][0]) ]
-            result = "repository at #{repo_paths.join(', ')}\n"
+            result = "repository at #{repo_paths.join(", ")}"
             if versioned_cookbooks
-              result << "  Multiple versions per cookbook\n"
+              result << " (Multiple versions per cookbook)"
             else
-              result << "  One version per cookbook\n"
+              result << " (One version per cookbook)"
             end
             child_paths.each_pair do |name, paths|
               if paths.any? { |path| !repo_paths.include?(File.dirname(path)) }
-                result << "  #{name} at #{paths.join(', ')}\n"
+                result << "  #{name} at #{paths.join(", ")}\n"
               end
             end
             result
@@ -147,7 +161,7 @@ class Chef
           # members.json and org.json may be found.
           #
           def root_dir
-            existing_paths = root_paths.select { |path| File.exists?(path) }
+            existing_paths = root_paths.select { |path| File.exist?(path) }
             if existing_paths.size > 0
               MultiplexedDir.new(existing_paths.map do |path|
                 dir = FileSystemEntry.new(name, parent, path)
@@ -165,14 +179,16 @@ class Chef
           #
           def make_child_entry(name)
             if CHILDREN.include?(name)
-              return nil if !root_dir
+              return nil unless root_dir
+
               return root_dir.child(name)
             end
 
-            paths = (child_paths[name] || []).select { |path| File.exists?(path) }
+            paths = (child_paths[name] || []).select { |path| File.exist?(path) }
             if paths.size == 0
               return NonexistentFSObject.new(name, self)
             end
+
             case name
             when "acls"
               dirs = paths.map { |path| AclsDir.new(name, self, path) }

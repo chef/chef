@@ -1,7 +1,7 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/event_loggers/base"
-require "chef/platform/query_helpers"
-require "chef/mixin/unformatter"
+require_relative "../event_loggers/base"
+require_relative "../platform/query_helpers"
+require_relative "../mixin/unformatter"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Log
@@ -36,7 +37,7 @@ class Chef
       FATAL_EVENT_ID = 10104
 
       # Since we must install the event logger, this is not really configurable
-      SOURCE = "Chef"
+      SOURCE = ChefUtils::Dist::Infra::SHORT.freeze
 
       include Chef::Mixin::Unformatter
 
@@ -46,51 +47,50 @@ class Chef
         @eventlog = eventlog || ::Win32::EventLog.open("Application")
       end
 
-      def close
-      end
+      def close; end
 
       def info(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => INFO_EVENT_ID,
-          :data => [msg]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: INFO_EVENT_ID,
+          data: [msg]
         )
       end
 
       def warn(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::WARN_TYPE,
-          :source => SOURCE,
-          :event_id => WARN_EVENT_ID,
-          :data => [msg]
+          event_type: ::Win32::EventLog::WARN_TYPE,
+          source: SOURCE,
+          event_id: WARN_EVENT_ID,
+          data: [msg]
         )
       end
 
       def debug(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::INFO_TYPE,
-          :source => SOURCE,
-          :event_id => DEBUG_EVENT_ID,
-          :data => [msg]
+          event_type: ::Win32::EventLog::INFO_TYPE,
+          source: SOURCE,
+          event_id: DEBUG_EVENT_ID,
+          data: [msg]
         )
       end
 
       def error(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::ERROR_TYPE,
-          :source => SOURCE,
-          :event_id => ERROR_EVENT_ID,
-          :data => [msg]
+          event_type: ::Win32::EventLog::ERROR_TYPE,
+          source: SOURCE,
+          event_id: ERROR_EVENT_ID,
+          data: [msg]
         )
       end
 
       def fatal(msg)
         @eventlog.report_event(
-          :event_type => ::Win32::EventLog::ERROR_TYPE,
-          :source => SOURCE,
-          :event_id => FATAL_EVENT_ID,
-          :data => [msg]
+          event_type: ::Win32::EventLog::ERROR_TYPE,
+          source: SOURCE,
+          event_id: FATAL_EVENT_ID,
+          data: [msg]
         )
       end
 

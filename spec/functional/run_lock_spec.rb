@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,13 +15,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require File.expand_path("../../spec_helper", __FILE__)
+require "spec_helper"
 require "chef/client"
 
 describe Chef::RunLock do
 
   # This behavior works on windows, but the tests use fork :(
-  describe "when locking the chef-client run", :unix_only => true do
+  describe "when locking the chef-client run", unix_only: true do
 
     ##
     # Lockfile location and helpers
@@ -61,17 +61,17 @@ describe Chef::RunLock do
     let!(:p1) { ClientProcess.new(self, "p1") }
     let!(:p2) { ClientProcess.new(self, "p2") }
     after(:each) do |example|
-      begin
-        p1.stop
-        p2.stop
-      rescue
-        example.exception = $!
-        raise
-      ensure
-        if example.exception
-          print_events
-        end
+
+      p1.stop
+      p2.stop
+    rescue
+      example.exception = $!
+      raise
+    ensure
+      if example.exception
+        print_events
       end
+
     end
 
     def print_events
@@ -150,7 +150,7 @@ describe Chef::RunLock do
           end
         end
 
-        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+        it "sets FD_CLOEXEC on the lockfile", supports_cloexec: true do
           run_lock = File.open(lockfile)
           expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
         end
@@ -197,7 +197,7 @@ describe Chef::RunLock do
           end
         end
 
-        it "sets FD_CLOEXEC on the lockfile", :supports_cloexec => true do
+        it "sets FD_CLOEXEC on the lockfile", supports_cloexec: true do
           run_lock = File.open(lockfile)
           expect(run_lock.fcntl(Fcntl::F_GETFD, 0) & Fcntl::FD_CLOEXEC).to eq(Fcntl::FD_CLOEXEC)
         end
@@ -334,6 +334,7 @@ describe Chef::RunLock do
       loop do
         line = readline_nonblock(read_from_process)
         break if line.nil?
+
         event, time = line.split("@")
         example.log_event("#{name}.last_event got #{event}")
         example.log_event("[#{name}] #{event}", time.strip)
@@ -346,7 +347,7 @@ describe Chef::RunLock do
       example.log_event("#{name}.run_to(#{to_event.inspect})")
 
       # Start the process if it's not started
-      start if !pid
+      start unless pid
 
       # Tell the process what to stop at (also means it can go)
       write_to_process.print "#{to_event}\n"
@@ -370,7 +371,7 @@ describe Chef::RunLock do
     def run_to_completion
       example.log_event("#{name}.run_to_completion")
       # Start the process if it's not started
-      start if !pid
+      start unless pid
 
       # Tell the process to stop at nothing (no blocking)
       @write_to_process.print "nothing\n"
@@ -403,6 +404,12 @@ describe Chef::RunLock do
           example.log_event("#{name}.stop finished (pid #{pid} wasn't running)")
         end
       end
+
+      # close the IO.pipes so we don't leak them as open filehandles
+      @read_from_process.close rescue nil
+      @write_to_tests.close rescue nil
+      @read_from_tests.close rescue nil
+      @write_to_process.close rescue nil
     end
 
     def fire_event(event)
@@ -428,6 +435,7 @@ describe Chef::RunLock do
 
     class TestRunLock < Chef::RunLock
       attr_accessor :client_process
+
       def create_lock
         super
         client_process.fire_event("created lock")
@@ -437,21 +445,21 @@ describe Chef::RunLock do
     def start
       example.log_event("#{name}.start")
       @pid = fork do
-        begin
-          Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
-            run_lock = TestRunLock.new(example.lockfile)
-            run_lock.client_process = self
-            fire_event("started")
-            run_lock.acquire
-            fire_event("acquired lock")
-            run_lock.save_pid
-            fire_event("saved pid")
-            exit!(0)
-          end
-        rescue
-          fire_event($!.message.lines.join(" // "))
-          raise
+
+        Timeout.timeout(CLIENT_PROCESS_TIMEOUT) do
+          run_lock = TestRunLock.new(example.lockfile)
+          run_lock.client_process = self
+          fire_event("started")
+          run_lock.acquire
+          fire_event("acquired lock")
+          run_lock.save_pid
+          fire_event("saved pid")
+          exit!(0)
         end
+      rescue
+        fire_event($!.message.lines.join(" // "))
+        raise
+
       end
       example.log_event("#{name}.start forked (pid #{pid})")
     end
@@ -461,7 +469,7 @@ describe Chef::RunLock do
       buffer << fd.read_nonblock(1) while buffer[-1] != "\n"
 
       buffer
-    #rescue IO::EAGAINUnreadable
+    # rescue IO::EAGAINUnreadable
     rescue IO::WaitReadable
       unless buffer == ""
         sleep 0.1

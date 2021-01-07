@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,20 +19,17 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 metadata = {
-  :mac_osx_only => true,
-  :requires_root => true,
-  :not_supported_on_mac_osx_106 => true,
+  macos_1013: true,
+  requires_root: true,
 }
 
 describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metadata do
   include Chef::Mixin::ShellOut
 
   def clean_user
-    begin
-      shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
-    rescue Mixlib::ShellOut::ShellCommandFailed
-      # Raised when the user is already cleaned
-    end
+    shell_out!("/usr/bin/dscl . -delete '/Users/#{username}'")
+  rescue Mixlib::ShellOut::ShellCommandFailed
+    # Raised when the user is already cleaned
   end
 
   def user_should_exist
@@ -124,13 +121,7 @@ describe "Chef::Resource::User with Chef::Provider::User::Dscl provider", metada
 
   describe "when password is being set via shadow hash" do
     let(:password) do
-      if node[:platform_version].start_with?("10.7.")
-        # On Mac 10.7 we only need to set the password
-        "c9b3bd1a0cde797eef0eff16c580dab996ba3a21961cccc\
-d0f5e65c61558243e50b1a490088bd4824e3b35562d383ca02260398\
-ef1979b302212ec1c5383d1d05fc8d843"
-      else
-        "c734b6e4787c3727bb35e29fdd92b97c\
+      "c734b6e4787c3727bb35e29fdd92b97c\
 1de12df509577a045728255ec7c6c5f5\
 c18efa05ed02b682ffa7ebc05119900e\
 b1d4880833aa7a190afc13e2bf0936b8\
@@ -138,7 +129,6 @@ b1d4880833aa7a190afc13e2bf0936b8\
 9464a8c234f3919082400b4f939bb77b\
 c5adbbac718b7eb99463a7b679571e0f\
 1c9fef2ef08d0b9e9c2bcf644eed2ffc"
-      end
     end
 
     let(:iterations) { 25000 }

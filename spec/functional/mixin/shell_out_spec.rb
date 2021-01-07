@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,13 +20,13 @@ require "spec_helper"
 describe Chef::Mixin::ShellOut do
   include Chef::Mixin::ShellOut
 
-  describe "shell_out_with_systems_locale" do
+  describe "shell_out default_env: false" do
     describe "when environment['LC_ALL'] is not set" do
       it "should use the default shell_out setting" do
         cmd = if windows?
-                shell_out_with_systems_locale("echo %LC_ALL%")
+                shell_out("echo %LC_ALL%", default_env: false)
               else
-                shell_out_with_systems_locale("echo $LC_ALL")
+                shell_out("echo $LC_ALL", default_env: false)
               end
 
         expect(cmd.stdout.chomp).to match_environment_variable("LC_ALL")
@@ -36,9 +36,9 @@ describe Chef::Mixin::ShellOut do
     describe "when environment['LC_ALL'] is set" do
       it "should use the option's setting" do
         cmd = if windows?
-                shell_out_with_systems_locale("echo %LC_ALL%", :environment => { "LC_ALL" => "POSIX" })
+                shell_out("echo %LC_ALL%", environment: { "LC_ALL" => "POSIX" }, default_env: false)
               else
-                shell_out_with_systems_locale("echo $LC_ALL", :environment => { "LC_ALL" => "POSIX" })
+                shell_out("echo $LC_ALL", environment: { "LC_ALL" => "POSIX" }, default_env: false)
               end
 
         expect(cmd.stdout.chomp).to eq "POSIX"

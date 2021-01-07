@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,12 +15,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/params_validate"
-require "chef/mixin/create_path"
-require "chef/exceptions"
-require "chef/json_compat"
-require "fileutils"
-require "chef/util/path_helper"
+require_relative "mixin/params_validate"
+require_relative "mixin/create_path"
+require_relative "exceptions"
+require_relative "json_compat"
+require "fileutils" unless defined?(FileUtils)
+require_relative "util/path_helper"
 
 class Chef
   class FileCache
@@ -42,12 +42,12 @@ class Chef
       def store(path, contents, perm = 0640)
         validate(
           {
-            :path => path,
-            :contents => contents,
+            path: path,
+            contents: contents,
           },
           {
-            :path => { :kind_of => String },
-            :contents => { :kind_of => String },
+            path: { kind_of: String },
+            contents: { kind_of: String },
           }
         )
 
@@ -68,12 +68,12 @@ class Chef
       def move_to(file, path)
         validate(
           {
-            :file => file,
-            :path => path,
+            file: file,
+            path: path,
           },
           {
-            :file => { :kind_of => String },
-            :path => { :kind_of => String },
+            file: { kind_of: String },
+            path: { kind_of: String },
           }
         )
 
@@ -105,14 +105,15 @@ class Chef
       def load(path, read = true)
         validate(
           {
-            :path => path,
+            path: path,
           },
           {
-            :path => { :kind_of => String },
+            path: { kind_of: String },
           }
         )
         cache_path = create_cache_path(path, false)
         raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
+
         if read
           File.read(cache_path)
         else
@@ -131,10 +132,10 @@ class Chef
       def delete(path)
         validate(
           {
-            :path => path,
+            path: path,
           },
           {
-            :path => { :kind_of => String },
+            path: { kind_of: String },
           }
         )
         cache_path = create_cache_path(path, false)
@@ -157,7 +158,7 @@ class Chef
       # === Returns
       # [String] - An array of file cache keys matching the glob
       def find(glob_pattern)
-        keys = Array.new
+        keys = []
         Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(file_cache_path), glob_pattern)].each do |f|
           if File.file?(f)
             keys << f[/^#{Regexp.escape(Dir[Chef::Util::PathHelper.escape_glob_dir(file_cache_path)].first) + File::Separator}(.+)/, 1]
@@ -175,13 +176,13 @@ class Chef
       # === Returns
       # True:: If the file exists
       # False:: If it does not
-      def has_key?(path)
+      def key?(path)
         validate(
           {
-            :path => path,
+            path: path,
           },
           {
-            :path => { :kind_of => String },
+            path: { kind_of: String },
           }
         )
         full_path = create_cache_path(path, false)
@@ -191,6 +192,8 @@ class Chef
           false
         end
       end
+
+      alias_method :has_key?, :key?
 
       # Create a full path to a given file in the cache. By default,
       # also creates the path if it does not exist.

@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -23,34 +24,34 @@ describe "knife node from file", :workstation do
 
   # include_context "default config options"
 
-  let (:node_dir) { "#{@repository_dir}/nodes" }
+  let(:node_dir) { "#{@repository_dir}/nodes" }
 
   when_the_chef_server "is empty" do
     when_the_repository "has some nodes" do
       before do
 
-        file "nodes/cons.json", <<EOM
-{
-  "name": "cons",
-  "chef_environment": "_default",
-  "run_list": [
-  "recipe[cons]"
-]
-,
-  "normal": {
-    "tags": [
+        file "nodes/cons.json", <<~EOM
+          {
+            "name": "cons",
+            "chef_environment": "_default",
+            "run_list": [
+            "recipe[cons]"
+          ]
+          ,
+            "normal": {
+              "tags": [
 
-    ]
-  }
-}
-EOM
+              ]
+            }
+          }
+        EOM
 
       end
 
       it "uploads a single file" do
-        knife("node from file #{node_dir}/cons.json").should_succeed stderr: <<EOM
-Updated Node cons
-EOM
+        knife("node from file #{node_dir}/cons.json").should_succeed stderr: <<~EOM
+          Updated Node cons
+        EOM
       end
 
     end

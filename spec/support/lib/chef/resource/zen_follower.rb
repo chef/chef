@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,10 +22,12 @@ class Chef
   class Resource
     class ZenFollower < Chef::Resource
 
+      provides :zen_follower
+
       provides :follower, platform: "zen"
 
       def master(arg = nil)
-        if !arg.nil?
+        unless arg.nil?
           @master = arg
         end
         @master

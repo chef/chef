@@ -2,7 +2,7 @@
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
@@ -19,17 +19,25 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/openbsd"
-require "chef/mixin/shell_out"
+require_relative "package"
+require_relative "../provider/package/openbsd"
 
 class Chef
   class Resource
     class OpenbsdPackage < Chef::Resource::Package
-      include Chef::Mixin::ShellOut
-
-      resource_name :openbsd_package
+      unified_mode true
+      provides :openbsd_package
       provides :package, os: "openbsd"
+
+      description "Use the **openbsd_package** resource to manage packages for the OpenBSD platform."
+      introduced "12.1"
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

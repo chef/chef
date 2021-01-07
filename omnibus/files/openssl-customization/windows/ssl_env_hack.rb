@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 #
 
 # This script sets the SSL_CERT_FILE environment variable to the CA cert bundle
-# that ships with omnibus packages of Chef and Chef DK. If this environment
-# variable is already configured, this script is a no-op.
+# that ships with omnibus packages of Chef Infra Client and Chef Workstation. If
+# this environment variable is already configured, this script is a no-op.
 #
 # This is required to make Chef tools use https URLs out of the box.
 
 unless ENV.key?("SSL_CERT_FILE")
-  base_dirs = File.dirname(__FILE__).split(File::SEPARATOR)
+  base_dirs = __dir__.split(File::SEPARATOR)
 
   (base_dirs.length - 1).downto(0) do |i|
     candidate_ca_bundle = File.join(base_dirs[0..i] + [ "ssl/certs/cacert.pem" ])

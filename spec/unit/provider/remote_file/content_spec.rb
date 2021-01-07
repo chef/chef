@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -84,7 +84,7 @@ describe Chef::Provider::RemoteFile::Content do
 
     describe "when the fetcher returns nil for the tempfile" do
       before do
-        http_fetcher = double("Chef::Provider::RemoteFile::HTTP", :fetch => nil)
+        http_fetcher = double("Chef::Provider::RemoteFile::HTTP", fetch: nil)
         expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
       end
 
@@ -97,7 +97,7 @@ describe Chef::Provider::RemoteFile::Content do
 
       let(:mtime) { Time.now }
       let(:tempfile) { double("Tempfile") }
-      let(:http_fetcher) { double("Chef::Provider::RemoteFile::HTTP", :fetch => tempfile) }
+      let(:http_fetcher) { double("Chef::Provider::RemoteFile::HTTP", fetch: tempfile) }
 
       before do
         expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri, new_resource, current_resource).and_return(http_fetcher)
@@ -159,9 +159,9 @@ describe Chef::Provider::RemoteFile::Content do
 
   describe "when there is an array of sources and the first fails" do
 
-    # https://github.com/opscode/chef/pull/1358#issuecomment-40853299
+    # https://github.com/chef/chef/pull/1358#issuecomment-40853299
     def create_exception(exception_class)
-      if [ Net::HTTPServerException, Net::HTTPFatalError ].include? exception_class
+      if [ Net::HTTPClientException, Net::HTTPFatalError ].include? exception_class
         exception_class.new("message", { "something" => 1 })
       else
         exception_class.new
@@ -177,9 +177,10 @@ describe Chef::Provider::RemoteFile::Content do
       Errno::ENOENT,
       Errno::EACCES,
       Timeout::Error,
-      Net::HTTPServerException,
+      Net::HTTPClientException,
       Net::HTTPFatalError,
       Net::FTPError,
+      Errno::ETIMEDOUT,
     ].each do |exception|
       describe "with an exception of #{exception}" do
         before do
@@ -198,7 +199,7 @@ describe Chef::Provider::RemoteFile::Content do
           before do
             @tempfile = double("Tempfile")
             mtime = Time.now
-            http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
+            http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", fetch: @tempfile)
             expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri1, new_resource, current_resource).and_return(http_fetcher_works)
           end
 
@@ -235,7 +236,7 @@ describe Chef::Provider::RemoteFile::Content do
       expect(URI).not_to receive(:parse).with(new_resource.source[1])
       @tempfile = double("Tempfile")
       mtime = Time.now
-      http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", :fetch => @tempfile)
+      http_fetcher_works = double("Chef::Provider::RemoteFile::HTTP", fetch: @tempfile)
       expect(Chef::Provider::RemoteFile::Fetcher).to receive(:for_resource).with(@uri0, new_resource, current_resource).and_return(http_fetcher_works)
     end
 

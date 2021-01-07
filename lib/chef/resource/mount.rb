@@ -1,7 +1,7 @@
 #
 # Author:: Joshua Timberman (<joshua@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,169 +17,87 @@
 # limitations under the License.
 #
 
-require "chef/resource"
+require_relative "../resource"
 
 class Chef
   class Resource
     class Mount < Chef::Resource
+      description "Use the **mount** resource to manage a mounted file system."
+      unified_mode true
 
-      identity_attr :device
-
-      state_attrs :mount_point, :device_type, :fstype, :username, :password, :domain
+      provides :mount
 
       default_action :mount
-      allowed_actions :mount, :umount, :remount, :enable, :disable
+      allowed_actions :mount, :umount, :unmount, :remount, :enable, :disable
 
-      def initialize(name, run_context = nil)
-        super
-        @mount_point = name
-        @device = nil
-        @device_type = :device
-        @fsck_device = "-"
-        @fstype = "auto"
-        @options = ["defaults"]
-        @dump = 0
-        @pass = 2
-        @mounted = false
-        @enabled = false
-        @supports = { :remount => false }
-        @username = nil
-        @password = nil
-        @domain = nil
-      end
+      # this is a poor API please do not re-use this pattern
+      property :supports, [Array, Hash],
+        description: "Specify a Hash of supported mount features.",
+        default: lazy { { remount: false } },
+        coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
-      def mount_point(arg = nil)
-        set_or_return(
-          :mount_point,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :password, String,
+        description: "Windows only:. Use to specify the password for username.",
+        sensitive: true
 
-      def device(arg = nil)
-        set_or_return(
-          :device,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :mount_point, String, name_property: true,
+               coerce: proc { |arg| arg.chomp("/") }, # Removed "/" from the end of str, because it was causing idempotency issue.
+               description: "The directory (or path) in which the device is to be mounted. Defaults to the name of the resource block if not provided."
 
-      def device_type(arg = nil)
-        real_arg = arg.kind_of?(String) ? arg.to_sym : arg
-        valid_devices = if RUBY_PLATFORM =~ /solaris/i
-                          [ :device ]
-                        else
-                          [ :device, :label, :uuid ]
-                        end
-        set_or_return(
-          :device_type,
-          real_arg,
-          :equal_to => valid_devices
-        )
-      end
+      property :device, String, identity: true,
+               description: "Required for :umount and :remount actions (for the purpose of checking the mount command output for presence). The special block device or remote node, a label, or a uuid to be mounted."
 
-      def fsck_device(arg = nil)
-        set_or_return(
-          :fsck_device,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :device_type, [String, Symbol],
+        description: "The type of device: :device, :label, or :uuid",
+        coerce: proc { |arg| arg.is_a?(String) ? arg.to_sym : arg },
+        default: :device,
+        equal_to: RUBY_PLATFORM.match?(/solaris/i) ? %i{ device } : %i{ device label uuid }
 
-      def fstype(arg = nil)
-        set_or_return(
-          :fstype,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      # @todo this should get refactored away: https://github.com/chef/chef/issues/7621
+      property :mounted, [TrueClass, FalseClass], default: false, skip_docs: true
 
-      def options(arg = nil)
-        ret = set_or_return(
-                            :options,
-                            arg,
-                            :kind_of => [ Array, String ]
-                            )
+      property :fsck_device, String,
+        description: "Solaris only: The fsck device.",
+        default: "-"
 
-        if ret.is_a? String
-          ret.tr(",", " ").split(/ /)
-        else
-          ret
-        end
-      end
+      property :fstype, [String, nil],
+        description: "The file system type (fstype) of the device.",
+        default: "auto"
 
-      def dump(arg = nil)
-        set_or_return(
-          :dump,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
+      property :options, [Array, String, nil],
+        description: "An array or comma separated list of options for the mount.",
+        coerce: proc { |arg| mount_options(arg) }, # Please see #mount_options method.
+        default: %w{defaults}
 
-      def pass(arg = nil)
-        set_or_return(
-          :pass,
-          arg,
-          :kind_of => [ Integer, FalseClass ]
-        )
-      end
+      property :dump, [Integer, FalseClass],
+        description: "The dump frequency (in days) used while creating a file systems table (fstab) entry.",
+        default: 0
 
-      def mounted(arg = nil)
-        set_or_return(
-          :mounted,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :pass, [Integer, FalseClass],
+        description: "The pass number used by the file system check (fsck) command while creating a file systems table (fstab) entry.",
+        default: 2
 
-      def enabled(arg = nil)
-        set_or_return(
-          :enabled,
-          arg,
-          :kind_of => [ TrueClass, FalseClass ]
-        )
-      end
+      property :enabled, [TrueClass, FalseClass],
+        description: "Use to specify if a mounted file system is enabled.",
+        default: false
 
-      def supports(args = {})
-        if args.is_a? Array
-          args.each { |arg| @supports[arg] = true }
-        elsif args.any?
-          @supports = args
-        else
-          @supports
-        end
-      end
+      property :username, String,
+        description: "Windows only: Use to specify the user name."
 
-      def username(arg = nil)
-        set_or_return(
-          :username,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def password(arg = nil)
-        set_or_return(
-          :password,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
-
-      def domain(arg = nil)
-        set_or_return(
-          :domain,
-          arg,
-          :kind_of => [ String ]
-        )
-      end
+      property :domain, String,
+        description: "Windows only: Use to specify the domain in which the `username` and `password` are located."
 
       private
 
       # Used by the AIX provider to set fstype to nil.
-      # TODO use property to make nil a valid value for fstype
+      # @todo use property to make nil a valid value for fstype
       def clear_fstype
         @fstype = nil
+      end
+
+      # Returns array of string without leading and trailing whitespace.
+      def mount_options(options)
+        (options.is_a?(String) ? options.split(",") : options).collect(&:strip)
       end
 
     end

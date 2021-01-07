@@ -45,17 +45,29 @@ describe "Chef::Resource.property validation" do
       def self.blah
         "class#{Namer.next_index}"
       end
+
+      action :doit do
+        # this needs to not reference any properties
+      end
+
+      action :doit2 do
+        # this needs to not reference any properties
+      end
     end
   end
 
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
   let(:resource) do
-    resource_class.new("blah")
+    resource_class.new("blah", run_context)
   end
 
   def self.english_join(values)
     return "<nothing>" if values.size == 0
     return values[0].inspect if values.size == 1
-    "#{values[0..-2].map { |v| v.inspect }.join(", ")} and #{values[-1].inspect}"
+
+    "#{values[0..-2].map(&:inspect).join(", ")} and #{values[-1].inspect}"
   end
 
   def self.with_property(*properties, &block)
@@ -100,13 +112,10 @@ describe "Chef::Resource.property validation" do
         expect(resource.x).to be_nil
       end
       unless tags.include?(:nillable)
-        it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
+        it "changing x to nil does a set" do
           resource.instance_eval { @x = "default" }
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect(resource.x nil).to eq "default"
-          expect(resource.x).to eq "default"
+          expect(resource.x nil).to eq nil
+          expect(resource.x).to eq nil
         end
       end
     end
@@ -116,13 +125,10 @@ describe "Chef::Resource.property validation" do
           expect(resource.x nil).to be_nil
           expect(resource.x).to be_nil
         end
-        it "changing x to nil warns that the get will change to a set in Chef 13 and does not change the value" do
+        it "changing x to nil does a set" do
           resource.instance_eval { @x = "default" }
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect(resource.x nil).to eq "default"
-          expect(resource.x).to eq "default"
+          expect(resource.x nil).to eq nil
+          expect(resource.x).to eq nil
         end
       end
     elsif tags.include?(:nillable)
@@ -134,26 +140,17 @@ describe "Chef::Resource.property validation" do
           expect(resource.x).to eq nil
         end
       end
+    elsif tags.include?(:delayed_nil_default_failure)
+      it "property :x, #{validation}, default: nil warns that the default is invalid" do
+        expect { resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__) }.not_to raise_error
+        expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed, /Property x must be one of: .*  You passed nil./
+      end
+    elsif tags.include?(:skip_nil_default)
+      # intentionally left blank
     else
       it "property :x, #{validation}, default: nil warns that the default is invalid" do
-        expect { resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__) }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-          /Default value nil is invalid for property x of resource chef_resource_property_spec_(\d+). Possible fixes: 1. Remove 'default: nil' if nil means 'undefined'. 2. Set a valid default value if there is a reasonable one. 3. Allow nil as a valid value of your property \(for example, 'property :x, \[ String, nil \], default: nil'\)./
-      end
-      context "With property :x, #{validation}, default: nil" do
-        before do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__)
-          Chef::Config[:treat_deprecation_warnings_as_errors] = true
-        end
-
-        it "changing x to nil emits a warning that the value is invalid and does not change the value" do
-          resource.instance_eval { @x = "default" }
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /nil is an invalid value for x of resource chef_resource_property_spec_(\d+). In Chef 13, this warning will change to an error./
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect(resource.x nil).to eq "default"
-          expect(resource.x).to eq "default"
-        end
+        expect { resource_class.class_eval("property :x, #{validation}, default: nil", __FILE__, __LINE__) }.to raise_error Chef::Exceptions::ValidationFailed,
+          /Property x must be one of: .*  You passed nil./
       end
     end
   end
@@ -174,12 +171,10 @@ describe "Chef::Resource.property validation" do
         it "set to invalid value raises ValidationFailed" do
           expect { resource.x 10 }.to raise_error Chef::Exceptions::ValidationFailed
         end
-        it "set to nil emits a deprecation warning and does a get" do
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        it "set to nil does a set" do
           resource.x "str"
-          expect(resource.x nil).to eq "str"
-          expect(resource.x).to eq "str"
+          expect(resource.x nil).to eq nil
+          expect(resource.x).to eq nil
         end
       end
       context "when the variable does not have an initial value" do
@@ -206,12 +201,9 @@ describe "Chef::Resource.property validation" do
         it "get succeeds" do
           expect(resource.x).to eq "default"
         end
-        it "set(nil) emits a warning that the value will be set, but does not set the value" do
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError,
-            /An attempt was made to change x from "default" to nil by calling x\(nil\). In Chef 12, this does a get rather than a set. In Chef 13, this will change to set the value to nil./
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          expect(resource.x nil).to eq "default"
-          expect(resource.x).to eq "default"
+        it "set(nil) does a set" do
+          expect(resource.x nil).to eq nil
+          expect(resource.x).to eq nil
         end
         it "set to valid value succeeds" do
           expect(resource.x "str").to eq "str"
@@ -251,19 +243,19 @@ describe "Chef::Resource.property validation" do
       [ :b ]
 
     validation_test ":a, is: :b",
-      [ :a, :b ],
+      %i{a b},
       [ :c ]
 
     validation_test ":a, is: [ :b, :c ]",
-      [ :a, :b, :c ],
+      %i{a b c},
       [ :d ]
 
     validation_test "[ :a, :b ], is: :c",
-      [ :a, :b, :c ],
+      %i{a b c},
       [ :d ]
 
     validation_test "[ :a, :b ], is: [ :c, :d ]",
-      [ :a, :b, :c, :d ],
+      %i{a b c d},
       [ :e ]
 
     validation_test "nil",
@@ -299,12 +291,12 @@ describe "Chef::Resource.property validation" do
       [ :b ]
 
     validation_test "is: [ :a, :b ]",
-      [ :a, :b ],
-      [ [ :a, :b ] ]
+      %i{a b},
+      [ %i{a b} ]
 
     validation_test "is: [ [ :a, :b ] ]",
-      [ [ :a, :b ] ],
-      [ :a, :b ]
+      [ %i{a b} ],
+      %i{a b}
 
     # Regex
     validation_test "is: /abc/",
@@ -328,11 +320,17 @@ describe "Chef::Resource.property validation" do
     # Proc
     validation_test "is: proc { |x| x }",
       [ true, 1 ],
-      [ false ]
+      [ false ],
+      # this is somewhat complicated, we test adding `default: nil` and that the default fails, but with a proc the
+      # validation is delayed until access, so we have to test after access not after declaring the default
+      :delayed_nil_default_failure
 
     validation_test "is: proc { |x| x > blah }",
       [ 10 ],
-      [ -1 ]
+      [ -1 ],
+      # here the test of adding `default: nil` just causes the proc to explode because nil gets passed to the proc
+      # which throws a NoMethodError on NilClass for the `>` method.
+      :skip_nil_default
 
     validation_test "is: nil",
       [ ],
@@ -366,13 +364,13 @@ describe "Chef::Resource.property validation" do
       :nil_is_valid
 
     validation_test "equal_to: [ :a, :b ]",
-      [ :a, :b ],
-      [ [ :a, :b ] ],
+      %i{a b},
+      [ %i{a b} ],
       :nil_is_valid
 
     validation_test "equal_to: [ [ :a, :b ] ]",
-      [ [ :a, :b ] ],
-      [ :a, :b ],
+      [ %i{a b} ],
+      %i{a b},
       :nil_is_valid
 
     validation_test "equal_to: nil",
@@ -589,15 +587,34 @@ describe "Chef::Resource.property validation" do
       it "value nil emits a validation failed error because it must have a value" do
         expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
       end
-      context "and value is set to something other than nil" do
-        before { resource.x 10 }
-        it "value nil emits a deprecation warning and does a get" do
-          expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
-          resource.x 1
-          expect(resource.x nil).to eq 1
-          expect(resource.x).to eq 1
-        end
+      it "fails if it is not specified, on running the action, even if it is not referenced" do
+        expect { resource.run_action(:doit) }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+    end
+
+    with_property ":x, required: %i{doit}" do
+      it "fails if it is not specified, on running the doit action, even if it is not referenced" do
+        expect { resource.run_action(:doit) }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+
+      it "does not fail if it is not specified, on running the doit2 action" do
+        expect { resource.run_action(:doit2) }.not_to raise_error
+      end
+    end
+
+    with_property ":x, String, required: true" do
+      it "if x is not specified, retrieval fails" do
+        expect { resource.x }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+      it "value nil is not valid (required means 'not nil')" do
+        expect { resource.x nil }.to raise_error Chef::Exceptions::ValidationFailed
+      end
+      it "value '1' is valid" do
+        expect(resource.x "1").to eq "1"
+        expect(resource.x).to eq "1"
+      end
+      it "value 1 is invalid" do
+        expect { resource.x 1 }.to raise_error Chef::Exceptions::ValidationFailed
       end
     end
 
@@ -625,12 +642,9 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil emits a deprecation warning and does a get" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        resource.x 1
-        expect(resource.x nil).to eq 1
-        expect(resource.x).to eq 1
+      it "value nil sets to the default" do
+        # this mildly complicated because the default of a name property is a lazy evaluator to the actual resource.name
+        expect(resource.x nil).to be_a(Chef::DelayedEvaluator)
       end
     end
 
@@ -642,12 +656,54 @@ describe "Chef::Resource.property validation" do
         expect(resource.x 1).to eq 1
         expect(resource.x).to eq 1
       end
-      it "value nil is invalid" do
-        expect { resource.x nil }.to raise_error Chef::Exceptions::DeprecatedFeatureError
-        Chef::Config[:treat_deprecation_warnings_as_errors] = false
-        resource.x 1
-        expect(resource.x nil).to eq 1
-        expect(resource.x).to eq 1
+      it "value nil sets the default" do
+        expect(resource.x nil).to eq 10
+        expect(resource.x).to eq 10
+      end
+    end
+  end
+
+  context "nil setting default" do
+    with_property ":x, String" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq nil
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets the default" do
+        resource.x "2"
+        expect(resource.x nil).to eq nil
+        expect(resource.x).to eq nil
+      end
+    end
+    with_property ":x, String, default: '1'" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq "1"
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets the default" do
+        resource.x "2"
+        expect(resource.x nil).to eq "1"
+        expect(resource.x).to eq "1"
+      end
+    end
+    with_property ":x, [ String, nil ] , default: '1'" do
+      it "if x is not specified, the default is returned" do
+        expect(resource.x).to eq "1"
+      end
+      it "value '2' is valid" do
+        expect(resource.x "2").to eq "2"
+        expect(resource.x).to eq "2"
+      end
+      it "value nil sets to nil" do
+        resource.x "2"
+        expect(resource.x nil).to eq nil
+        expect(resource.x).to eq nil
       end
     end
   end
@@ -675,15 +731,13 @@ describe "Chef::Resource.property validation" do
         end
 
         it "value '1' is invalid" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
           expect { resource.x "1" }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        it "value nil does a get" do
-          Chef::Config[:treat_deprecation_warnings_as_errors] = false
+        it "value nil does a set" do
           resource.x 1
           resource.x nil
-          expect(resource.x).to eq 1
+          expect(resource.x).to eq nil
         end
       end
     end
@@ -709,11 +763,20 @@ describe "Chef::Resource.property validation" do
           expect { resource.x "1" }.to raise_error Chef::Exceptions::ValidationFailed
         end
 
-        it "value nil does a get" do
+        it "value nil does a set" do
           resource.x 1
           resource.x nil
-          expect(resource.x).to eq 1
+          expect(resource.x).to eq nil
         end
+      end
+    end
+  end
+
+  context "custom validation messages" do
+    with_property ":x, String, validation_message: 'Must be a string, fool'" do
+      it "raise with the correct error message" do
+        expect { resource.x 1 }.to raise_error Chef::Exceptions::ValidationFailed,
+          "Must be a string, fool"
       end
     end
   end

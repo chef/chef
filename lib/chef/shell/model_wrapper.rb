@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/mixin/convert_to_class_name"
-require "chef/mixin/language"
+require_relative "../mixin/convert_to_class_name"
+require_relative "../dsl/data_query"
 
 module Shell
   class ModelWrapper
@@ -33,6 +33,7 @@ module Shell
 
     def search(query)
       return all if query.to_s == "all"
+
       results = []
       Chef::Search::Query.new.search(@model_symbol, format_query(query)) do |obj|
         if block_given?
@@ -81,7 +82,7 @@ module Shell
     # the user wanted instead of the URI=>object stuff
     def list_objects
       objects = @model_class.method(:list).arity == 0 ? @model_class.list : @model_class.list(true)
-      objects.map { |obj| Array(obj).find { |o| o.kind_of?(@model_class) } }
+      objects.map { |obj| Array(obj).find { |o| o.is_a?(@model_class) } }
     end
 
     def format_query(query)

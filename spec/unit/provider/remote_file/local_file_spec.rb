@@ -31,7 +31,7 @@ describe Chef::Provider::RemoteFile::LocalFile do
   context "when parsing source path on windows" do
 
     before do
-      allow(Chef::Platform).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
     describe "when given local unix path" do
@@ -84,8 +84,8 @@ describe Chef::Provider::RemoteFile::LocalFile do
 
   describe "when fetching the object" do
 
-    let(:tempfile) { double("Tempfile", :path => "/tmp/foo/bar/nyan.png", :close => nil) }
-    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", :tempfile => tempfile) }
+    let(:tempfile) { double("Tempfile", path: "/tmp/foo/bar/nyan.png", close: nil) }
+    let(:chef_tempfile) { double("Chef::FileContentManagement::Tempfile", tempfile: tempfile) }
 
     before do
       current_resource.source("file:///nyan_cat.png")

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/mixin/shell_out"
+require_relative "../../mixin/shell_out"
 
 class Chef
   class Knife
     class CookbookSCMRepo
 
-      DIRTY_REPO = /^[\s]+M/
+      DIRTY_REPO = /^\s+M/.freeze
 
       include Chef::Mixin::ShellOut
 
@@ -50,7 +50,7 @@ class Chef
           exit 1
         end
         if use_current_branch
-          @default_branch = get_current_branch()
+          @default_branch = get_current_branch
         end
         unless branch_exists?(default_branch)
           ui.error "The default branch '#{default_branch}' does not exist"
@@ -58,7 +58,7 @@ class Chef
           exit 1
         end
         cmd = git("status --porcelain")
-        if cmd.stdout =~ DIRTY_REPO
+        if DIRTY_REPO.match?(cmd.stdout)
           ui.error "You have uncommitted changes to your cookbook repo (#{repo_path}):"
           ui.msg cmd.stdout
           ui.info "Commit or stash your changes before importing cookbooks"
@@ -122,7 +122,7 @@ class Chef
         git("branch --no-color").stdout.lines.any? { |l| l =~ /\s#{Regexp.escape(branch_name)}(?:\s|$)/ }
       end
 
-      def get_current_branch()
+      def get_current_branch
         ref = git("symbolic-ref HEAD").stdout
         ref.chomp.split("/")[2]
       end
@@ -131,9 +131,9 @@ class Chef
 
       def git_repo?(directory)
         if File.directory?(File.join(directory, ".git"))
-          return true
+          true
         elsif File.dirname(directory) == directory
-          return false
+          false
         else
           git_repo?(File.dirname(directory))
         end
@@ -151,7 +151,7 @@ class Chef
       end
 
       def git(command)
-        shell_out!("git #{command}", :cwd => repo_path)
+        shell_out!("git #{command}", cwd: repo_path)
       end
 
     end

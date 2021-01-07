@@ -56,19 +56,22 @@ class Chef
         # 2. Put the actual values in the order of the defaults
         # 3. Move any other values to the end
         #
-        # == Example
-        #
+        # @example
         #   normalize_hash({x: 100, c: 2, a: 1}, { a: 10, b: 20, c: 30})
         #   -> { a: 1, b: 20, c: 2, x: 100}
         #
         def normalize_hash(object, defaults)
           # Make a normalized result in the specified order for diffing
           result = {}
-          defaults.each_pair do |key, default|
-            result[key] = object.has_key?(key) ? object[key] : default
+          defaults.each_pair do |key, value|
+            result[key] = object.is_a?(Hash) && object.key?(key) ? object[key] : value
           end
-          object.each_pair do |key, value|
-            result[key] = value if !result.has_key?(key)
+          if object.is_a?(Hash)
+            object.each_pair do |key, value|
+              result[key] = value unless result.key?(key)
+            end
+          else
+            Chef::Log.warn "Encountered invalid object during normalization. Using these defaults #{defaults}"
           end
           result
         end
@@ -111,7 +114,7 @@ class Chef
         def from_ruby(path)
           r = chef_class.new
           r.from_file(path)
-          r.to_hash
+          r.to_h
         end
 
         #
@@ -140,8 +143,7 @@ class Chef
         # the keys specified in "keys"; anything else must be emitted by the
         # caller.
         #
-        # == Example
-        #
+        # @example
         #   to_ruby_keys({"name" => "foo", "environment" => "desert", "foo": "bar"}, [ "name", "environment" ])
         #   ->
         #   'name "foo"
@@ -195,7 +197,7 @@ class Chef
         def verify_integrity(object, entry)
           base_name = remove_file_extension(entry.name)
           if object["name"] != base_name
-            yield("Name must be '#{base_name}' (is '#{object['name']}')")
+            yield("Name must be '#{base_name}' (is '#{object["name"]}')")
           end
         end
 

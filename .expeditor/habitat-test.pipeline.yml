@@ -1,0 +1,62 @@
+---
+expeditor:
+  defaults:
+    buildkite:
+      timeout_in_minutes: 60
+      retry:
+        automatic:
+          limit: 1
+
+steps:
+
+- label: ":linux: Validate Linux"
+  commands:
+    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux
+    - 'echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX"'
+    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
+    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":linux: Validate Linux (kernel2)"
+  commands:
+    - sudo ./.expeditor/scripts/install-hab.sh x86_64-linux-kernel2
+    - 'echo "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2"'
+    - sudo hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
+    - sudo ./habitat/tests/test.sh $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
+- label: ":windows: Validate Habitat Builds of Chef Infra"
+  commands:
+    - powershell -File ./.expeditor/scripts/ensure-minimum-viable-hab.ps1
+    - 'Write-Host "--- :hammer_and_wrench: Installing $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS"'
+    - hab pkg install $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+    - powershell -File ./habitat/tests/test.ps1 -PackageIdentifier $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS
+  expeditor:
+    executor:
+      windows:
+        privileged: true
+        single-use: true
+
+# Wait for the package testing to succeed before promoting whatever was tested.
+- wait
+
+- label: ":habicat: Promoting packages to the current channel."
+  commands:
+    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUX current x86_64-linux
+    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64LINUXKERNEL2 current x86_64-linux-kernel2
+    - hab pkg promote $EXPEDITOR_PKG_IDENTS_CHEFINFRACLIENTX86_64WINDOWS current x86_64-windows
+  expeditor:
+    executor:
+      docker:
+    secrets:
+      HAB_AUTH_TOKEN:
+        path: account/static/habitat/chef-ci
+        field: auth_token

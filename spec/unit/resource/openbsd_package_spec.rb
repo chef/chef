@@ -2,7 +2,7 @@
 # Authors:: AJ Christensen (<aj@chef.io>)
 #           Richard Manyanza (<liseki@nyikacraftsmen.com>)
 #           Scott Bonds (<scott@ggr.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2014-2016, Richard Manyanza, Scott Bonds
 # License:: Apache License, Version 2.0
 #
@@ -20,28 +20,38 @@
 #
 
 require "spec_helper"
-require "ostruct"
 
 describe Chef::Resource::OpenbsdPackage do
-
-  before(:each) do
-    @node = Chef::Node.new
-    @events = Chef::EventDispatch::Dispatcher.new
-    @run_context = Chef::RunContext.new(@node, {}, @events)
-    @resource = Chef::Resource::OpenbsdPackage.new("foo", @run_context)
-  end
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+  let(:resource) { Chef::Resource::OpenbsdPackage.new("foo", run_context) }
 
   describe "Initialization" do
-    it "should return a Chef::Resource::OpenbsdPackage" do
-      expect(@resource).to be_a_kind_of(Chef::Resource::OpenbsdPackage)
+    it "is a subclass of Chef::Resource::Package" do
+      expect(resource).to be_a_kind_of(Chef::Resource::Package)
     end
 
-    it "should set the resource_name to :openbsd_package" do
-      expect(@resource.resource_name).to eql(:openbsd_package)
+    it "sets the resource_name to :openbsd_package" do
+      expect(resource.resource_name).to eql(:openbsd_package)
     end
 
-    it "should not set the provider" do
-      expect(@resource.provider).to be_nil
+    it "sets the default action as :install" do
+      expect(resource.action).to eql([:install])
+    end
+
+    it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+      expect { resource.action :install }.not_to raise_error
+      expect { resource.action :lock }.not_to raise_error
+      expect { resource.action :purge }.not_to raise_error
+      expect { resource.action :reconfig }.not_to raise_error
+      expect { resource.action :remove }.not_to raise_error
+      expect { resource.action :unlock }.not_to raise_error
+      expect { resource.action :upgrade }.not_to raise_error
+    end
+
+    it "does not set the provider" do
+      expect(resource.provider).to be_nil
     end
   end
 

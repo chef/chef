@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife/core/text_formatter"
+require_relative "text_formatter"
 
 class Chef
   class Knife
@@ -25,20 +25,27 @@ class Chef
       # Allows includer knife commands to  return multiple attributes
       # @brief knife node show NAME -a ATTR1 -a ATTR2
       module MultiAttributeReturnOption
-        # :nodoc:
+        # @private
         def self.included(includer)
           includer.class_eval do
-            @attrs_to_show = []
+            option :field_separator,
+              short: "-S SEPARATOR",
+              long: "--field-separator SEPARATOR",
+              description: "Character separator used to delineate nesting in --attribute filters (default \".\")"
+
             option :attribute,
-              :short => "-a ATTR1 [-a ATTR2]",
-              :long => "--attribute ATTR1 [--attribute ATTR2] ",
-              :proc => lambda { |val| @attrs_to_show << val },
-              :description => "Show one or more attributes"
+              short: "-a ATTR1 [-a ATTR2]",
+              long: "--attribute ATTR1 [--attribute ATTR2] ",
+              description: "Show one or more attributes",
+              proc: Proc.new { |arg, accumulator|
+                accumulator ||= []
+                accumulator << arg
+                accumulator
+              }
           end
         end
       end
 
-      #==Chef::Knife::Core::GenericPresenter
       # The base presenter class for displaying structured data in knife commands.
       # This is not an abstract base class, and it is suitable for displaying
       # most kinds of objects that knife needs to display.
@@ -47,7 +54,7 @@ class Chef
         attr_reader :ui
         attr_reader :config
 
-        # Instaniates a new GenericPresenter. This is generally handled by the
+        # Instantiates a new GenericPresenter. This is generally handled by the
         # Chef::Knife::UI object, though you need to match the signature of this
         # method if you intend to use your own presenter instead.
         def initialize(ui, config)
@@ -80,10 +87,10 @@ class Chef
           when :json
             Chef::JSONCompat.to_json_pretty(data)
           when :yaml
-            require "yaml"
+            require "yaml" unless defined?(YAML)
             YAML.dump(data)
           when :pp
-            require "stringio"
+            require "stringio" unless defined?(StringIO)
             # If you were looking for some attribute and there is only one match
             # just dump the attribute value
             if config[:attribute] && data.length == 1
@@ -173,32 +180,35 @@ class Chef
           config[:attribute] || config[:run_list]
         end
 
+        # GenericPresenter is used in contexts where MultiAttributeReturnOption
+        # is not, so we need to set the default value here rather than as part
+        # of the CLI option.
+        def attribute_field_separator
+          config[:field_separator] || "."
+        end
+
         def extract_nested_value(data, nested_value_spec)
-          nested_value_spec.split(".").each do |attr|
-            if data.nil?
-              nil # don't get no method error on nil
-              # Must check :[] before attr because spec can include
-              #   `keys` - want the key named `keys`, not a list of
-              #   available keys.
-            elsif data.respond_to?(:[]) && data.has_key?(attr)
-              data = data[attr]
-            elsif data.respond_to?(attr.to_sym)
-              data = data.send(attr.to_sym)
-            else
-              data = begin
-                       data.send(attr.to_sym)
-                     rescue NoMethodError
-                       nil
-                     end
-            end
+          nested_value_spec.split(attribute_field_separator).each do |attr|
+            data =
+              if data.is_a?(Array)
+                data[attr.to_i]
+              elsif data.respond_to?(:[], false) && data.respond_to?(:key?) && data.key?(attr)
+                data[attr]
+              elsif data.respond_to?(attr.to_sym, false)
+                # handles -a chef_environment and other things that hang of the node and aren't really attributes
+                data.public_send(attr.to_sym)
+              else
+                nil
+              end
           end
-          ( !data.kind_of?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
+          # necessary (?) for coercing objects (the run_list object?) to hashes
+          ( !data.is_a?(Array) && data.respond_to?(:to_hash) ) ? data.to_hash : data
         end
 
         def format_cookbook_list_for_display(item)
           if config[:with_uri]
             item.inject({}) do |collected, (cookbook, versions)|
-              collected[cookbook] = Hash.new
+              collected[cookbook] = {}
               versions["versions"].each do |ver|
                 collected[cookbook][ver["version"]] = ver["url"]
               end
@@ -209,9 +219,9 @@ class Chef
               collected[cookbook] = versions["versions"].map { |v| v["version"] }
               collected
             end
-            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map { |name| name.size }.max + 2
+            key_length = versions_by_cookbook.empty? ? 0 : versions_by_cookbook.keys.map(&:size).max + 2
             versions_by_cookbook.sort.map do |cookbook, versions|
-              "#{cookbook.ljust(key_length)} #{versions.join('  ')}"
+              "#{cookbook.ljust(key_length)} #{versions.join("  ")}"
             end
           end
         end

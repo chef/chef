@@ -1,6 +1,6 @@
 #--
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,18 +15,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require "chef/client"
-require "forwardable"
+require_relative "client"
+require "forwardable" unless defined?(Forwardable)
 
 class Chef
-  # == Chef::Handler
   # The base class for an Exception or Notification Handler. Create your own
   # handler by subclassing Chef::Handler. When a Chef run fails with an
   # uncaught Exception, Chef will set the +run_status+ on your handler and call
   # +report+
   #
-  # ===Example:
-  #
+  # @example
   #   require 'net/smtp'
   #
   #   module MyOrg
@@ -236,13 +234,14 @@ class Chef
 
     # The main entry point for report handling. Subclasses should override this
     # method with their own report handling logic.
-    def report
-    end
+    def report; end
 
     # Runs the report handler, rescuing and logging any errors it may cause.
     # This ensures that all handlers get a chance to run even if one fails.
     # This method should not be overridden by subclasses unless you know what
     # you're doing.
+    #
+    # @api private
     def run_report_safely(run_status)
       run_report_unsafe(run_status)
     rescue Exception => e
@@ -261,7 +260,7 @@ class Chef
 
     # Return the Hash representation of the run_status
     def data
-      @run_status.to_hash
+      @run_status.to_h
     end
 
   end

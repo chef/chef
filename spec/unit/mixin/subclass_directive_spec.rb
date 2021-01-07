@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -31,9 +31,9 @@ class ChildWithoutDirective < SubclassDirectiveParent
 end
 
 describe Chef::Mixin::Uris do
-  let (:child) { SubclassDirectiveChild.new }
+  let(:child) { SubclassDirectiveChild.new }
 
-  let (:other_child) { ChildWithoutDirective.new }
+  let(:other_child) { ChildWithoutDirective.new }
 
   it "the child instance has the directive set" do
     expect(child.behave_differently?).to be true

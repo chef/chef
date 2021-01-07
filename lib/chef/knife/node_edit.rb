@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
@@ -24,18 +24,18 @@ class Chef
     class NodeEdit < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
-        require "chef/knife/core/node_editor"
+        require_relative "../node"
+        require_relative "../json_compat"
+        require_relative "core/node_editor"
       end
 
       banner "knife node edit NODE (options)"
 
       option :all_attributes,
-        :short => "-a",
-        :long => "--all",
-        :boolean => true,
-        :description => "Display all attributes when editing"
+        short: "-a",
+        long: "--all",
+        boolean: true,
+        description: "Display all attributes when editing."
 
       def run
         if node_name.nil?
@@ -46,7 +46,7 @@ class Chef
 
         updated_node = node_editor.edit_node
         if updated_values = node_editor.updated?
-          ui.info "Saving updated #{updated_values.join(', ')} on node #{node.name}"
+          ui.info "Saving updated #{updated_values.join(", ")} on node #{node.name}"
           updated_node.save
         else
           ui.info "Node not updated, skipping node save"

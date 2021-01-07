@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/log"
+require_relative "../log"
 
 class Chef
   module DSL
@@ -29,16 +29,6 @@ class Chef
       def load_recipe(recipe_name)
         run_context.load_recipe(recipe_name, current_cookbook: cookbook_name)
       end
-
-      def require_recipe(*args)
-        Chef::Log.warn("require_recipe is deprecated and will be removed in a future release, please use include_recipe")
-        include_recipe(*args)
-      end
-
     end
   end
 end
-
-# **DEPRECATED**
-# This used to be part of chef/mixin/language_include_recipe. Load the file to activate the deprecation code.
-require "chef/mixin/language_include_recipe"

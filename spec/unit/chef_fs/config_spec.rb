@@ -1,6 +1,6 @@
 #
 # Author:: Jess Mink (<jmink@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,12 +18,12 @@
 
 require "spec_helper"
 require "chef/exceptions"
-require "lib/chef/chef_fs/config.rb"
+require "lib/chef/chef_fs/config"
 
 describe Chef::ChefFS::Config do
   describe "initialize" do
     it "warns when hosted setups use 'everything'" do
-      base_config = Hash.new()
+      base_config = {}
       base_config[:repo_mode] = "everything"
       base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
@@ -34,7 +34,7 @@ describe Chef::ChefFS::Config do
     end
 
     it "doesn't warn when hosted setups use 'hosted_everything'" do
-      base_config = Hash.new()
+      base_config = {}
       base_config[:repo_mode] = "hosted_everything"
       base_config[:chef_server_url] = "http://foo.com/organizations/fake_org/"
 
@@ -45,7 +45,7 @@ describe Chef::ChefFS::Config do
     end
 
     it "doesn't warn when non-hosted setups use 'everything'" do
-      base_config = Hash.new()
+      base_config = {}
       base_config[:repo_mode] = "everything"
       base_config[:chef_server_url] = "http://foo.com/"
 
@@ -203,8 +203,8 @@ describe Chef::ChefFS::Config do
         })
       end
 
-      let (:path) { "/roles/foo.json" }
-      let (:entry) { Entry.new(path) }
+      let(:path) { "/roles/foo.json" }
+      let(:entry) { Entry.new(path) }
 
       it "returns the entry's path if the cwd isn't in the config" do
         cfg = Chef::ChefFS::Config.new(config, "/my_repo/cookbooks")

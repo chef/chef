@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,6 +17,7 @@
 # limitations under the License.
 #
 
+require "spec_helper"
 require "support/shared/unit/provider/file"
 
 describe Chef::Provider::File do
@@ -32,9 +33,10 @@ describe Chef::Provider::File do
     content = double("Chef::Provider::File::Content")
   end
 
-  let(:node) { double("Chef::Node") }
-  let(:events) { double("Chef::Events").as_null_object } # mock all the methods
-  let(:run_context) { double("Chef::RunContext", :node => node, :events => events) }
+  let(:node) { Chef::Node.new }
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
+  let(:run_context) { Chef::RunContext.new(node, {}, events) }
+
   let(:enclosing_directory) do
     canonicalize_path(File.expand_path(File.join(CHEF_SPEC_DATA, "templates")))
   end

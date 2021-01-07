@@ -23,14 +23,15 @@ class Chef
     class Windows
       class NetUse
       end
+
       class Volume
       end
     end
   end
 end
 
-GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\"
-REMOTE = "\\\\server-name\\path"
+GUID = "\\\\?\\Volume{578e72b5-6e70-11df-b5c5-000c29d4a7d9}\\".freeze
+REMOTE = "\\\\server-name\\path".freeze
 
 describe Chef::Provider::Mount::Windows do
   before(:each) do
@@ -99,10 +100,10 @@ describe Chef::Provider::Mount::Windows do
       end
 
       it "should mount the filesystem if it is not mounted" do
-        expect(@vol).to receive(:add).with(:remote => @new_resource.device,
-                                           :username => @new_resource.username,
-                                           :domainname => @new_resource.domain,
-                                           :password => @new_resource.password)
+        expect(@vol).to receive(:add).with(remote: @new_resource.device,
+                                           username: @new_resource.username,
+                                           domainname: @new_resource.domain,
+                                           password: @new_resource.password)
         @provider.mount_fs
       end
 

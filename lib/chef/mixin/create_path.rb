@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -29,11 +29,11 @@ class Chef
       # === Returns
       # The created file_path.
       def create_path(file_path)
-        unless file_path.kind_of?(String) || file_path.kind_of?(Array)
+        unless file_path.is_a?(String) || file_path.is_a?(Array)
           raise ArgumentError, "file_path must be a string or an array!"
         end
 
-        if file_path.kind_of?(String)
+        if file_path.is_a?(String)
           file_path = File.expand_path(file_path).split(File::SEPARATOR)
           file_path.shift if file_path[0] == ""
           # Check if path starts with a separator or drive letter (Windows)
@@ -53,19 +53,17 @@ class Chef
       private
 
       def create_dir(path)
-        begin
-          # When doing multithreaded downloads into the file cache, the following
-          # interleaving raises an error here:
-          #
-          # thread1                                     thread2
-          # File.directory?(create_path) <- false
-          #                                             File.directory?(create_path) <- false
-          #                                             Dir.mkdir(create_path)
-          # Dir.mkdir(create_path) <- raises Errno::EEXIST
-          Chef::Log.debug("Creating directory #{path}")
-          Dir.mkdir(path)
-        rescue Errno::EEXIST
-        end
+        # When doing multithreaded downloads into the file cache, the following
+        # interleaving raises an error here:
+        #
+        # thread1                                     thread2
+        # File.directory?(create_path) <- false
+        #                                             File.directory?(create_path) <- false
+        #                                             Dir.mkdir(create_path)
+        # Dir.mkdir(create_path) <- raises Errno::EEXIST
+        Chef::Log.trace("Creating directory #{path}")
+        Dir.mkdir(path)
+      rescue Errno::EEXIST
       end
 
     end

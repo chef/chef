@@ -1,5 +1,5 @@
-sh -c '
-<%= "export https_proxy=\"#{knife_config[:bootstrap_proxy]}\"" if knife_config[:bootstrap_proxy] -%>
+<%= "https_proxy=\"#{@config[:bootstrap_proxy]}\" export https_proxy" if @config[:bootstrap_proxy] %>
+<%= "no_proxy=\"#{@config[:bootstrap_no_proxy]}\" export no_proxy" if @config[:bootstrap_no_proxy] %>
 
 if test "x$TMPDIR" = "x"; then
   tmp="/tmp"
@@ -37,7 +37,7 @@ capture_tmp_stderr() {
 # do_wget URL FILENAME
 do_wget() {
   echo "trying wget..."
-  wget <%= "--proxy=on " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_wget_options] %> -O "$2" "$1" 2>$tmp_dir/stderr
+  wget <%= "--proxy=on " if @config[:bootstrap_proxy] %> <%= @config[:bootstrap_wget_options] %> -O "$2" "$1" 2>$tmp_dir/stderr
   rc=$?
   # check for 404
   grep "ERROR 404" $tmp_dir/stderr 2>&1 >/dev/null
@@ -57,7 +57,7 @@ do_wget() {
 # do_curl URL FILENAME
 do_curl() {
   echo "trying curl..."
-  curl -sL <%= "--proxy \"#{knife_config[:bootstrap_proxy]}\" " if knife_config[:bootstrap_proxy] %> <%= knife_config[:bootstrap_curl_options] %> -D $tmp_dir/stderr -o "$2" "$1" 2>$tmp_dir/stderr
+  curl -sL <%= "--proxy \"#{@config[:bootstrap_proxy]}\" " if @config[:bootstrap_proxy] %> <%= @config[:bootstrap_curl_options] %> -D $tmp_dir/stderr -o "$2" "$1" 2>$tmp_dir/stderr
   rc=$?
   # check for 404
   grep "404 Not Found" $tmp_dir/stderr 2>&1 >/dev/null
@@ -162,16 +162,22 @@ do_download() {
   return 16
 }
 
-<% if knife_config[:bootstrap_install_command] %>
-  <%= knife_config[:bootstrap_install_command] %>
+<%# Run any custom commands before installing chef-client -%>
+<%# Ex. wait for cloud-init to complete -%>
+<% if @config[:bootstrap_preinstall_command] %>
+  <%= @config[:bootstrap_preinstall_command] %>
+<% end %>
+
+<% if @config[:bootstrap_install_command] %>
+  <%= @config[:bootstrap_install_command] %>
 <% else %>
-  install_sh="<%= knife_config[:bootstrap_url] ? knife_config[:bootstrap_url] : "https://omnitruck-direct.chef.io/chef/install.sh" %>"
-  if test -f /usr/bin/chef-client; then
-    echo "-----> Existing Chef installation detected"
+  install_sh="<%= @config[:bootstrap_url] ? @config[:bootstrap_url] : "https://omnitruck.chef.io/chef/install.sh" %>"
+  if test -f /usr/bin/<%= ChefUtils::Dist::Infra::CLIENT %>; then
+    echo "-----> Existing <%= ChefUtils::Dist::Infra::PRODUCT %> installation detected"
   else
-    echo "-----> Installing Chef Omnibus (<%= latest_current_chef_version_string %>)"
+    echo "-----> Installing Chef Omnibus (<%= @config[:channel] %>/<%= version_to_install %>)"
     do_download ${install_sh} $tmp_dir/install.sh
-    sh $tmp_dir/install.sh -P chef <%= latest_current_chef_version_string %>
+    sh $tmp_dir/install.sh -P <%= @config[:bootstrap_product] %> -c <%= @config[:channel] %> -v <%= version_to_install %>
   fi
 <% end %>
 
@@ -182,24 +188,24 @@ fi
 mkdir -p /etc/chef
 
 <% if client_pem -%>
-cat > /etc/chef/client.pem <<EOP
+(umask 077 && (cat > /etc/chef/client.pem <<'EOP'
 <%= ::File.read(::File.expand_path(client_pem)) %>
 EOP
-chmod 0600 /etc/chef/client.pem
+)) || exit 1
 <% end -%>
 
 <% if validation_key -%>
-cat > /etc/chef/validation.pem <<EOP
+(umask 077 && (cat > /etc/chef/validation.pem <<'EOP'
 <%= validation_key %>
 EOP
-chmod 0600 /etc/chef/validation.pem
+)) || exit 1
 <% end -%>
 
 <% if encrypted_data_bag_secret -%>
-cat > /etc/chef/encrypted_data_bag_secret <<EOP
+(umask 077 && (cat > /etc/chef/encrypted_data_bag_secret <<'EOP'
 <%= encrypted_data_bag_secret %>
 EOP
-chmod 0600 /etc/chef/encrypted_data_bag_secret
+)) || exit 1
 <% end -%>
 
 <% unless trusted_certs.empty? -%>
@@ -208,21 +214,21 @@ mkdir -p /etc/chef/trusted_certs
 <% end -%>
 
 <%# Generate Ohai Hints -%>
-<% unless @chef_config[:knife][:hints].nil? || @chef_config[:knife][:hints].empty? -%>
+<% unless @config[:hints].nil? || @config[:hints].empty? -%>
 mkdir -p /etc/chef/ohai/hints
 
-<% @chef_config[:knife][:hints].each do |name, hash| -%>
-cat > /etc/chef/ohai/hints/<%= name %>.json <<EOP
+<% @config[:hints].each do |name, hash| -%>
+cat > /etc/chef/ohai/hints/<%= name %>.json <<'EOP'
 <%= Chef::JSONCompat.to_json(hash) %>
 EOP
 <% end -%>
 <% end -%>
 
-cat > /etc/chef/client.rb <<EOP
+cat > /etc/chef/client.rb <<'EOP'
 <%= config_content %>
 EOP
 
-cat > /etc/chef/first-boot.json <<EOP
+cat > /etc/chef/first-boot.json <<'EOP'
 <%= Chef::JSONCompat.to_json(first_boot) %>
 EOP
 
@@ -231,6 +237,6 @@ mkdir -p /etc/chef/client.d
 <%= client_d %>
 <% end -%>
 
-echo "Starting the first Chef Client run..."
+echo "Starting the first <%= ChefUtils::Dist::Infra::PRODUCT %> Client run..."
 
-<%= start_chef %>'
+<%= start_chef %>

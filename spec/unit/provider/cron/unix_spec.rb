@@ -37,36 +37,41 @@ describe Chef::Provider::Cron::Unix do
     end
   end
 
-  let(:status) { double("Process::Status", :exitstatus => exitstatus) }
+  let(:status) { double("Process::Status", exitstatus: exitstatus) }
   let(:exitstatus) { 0 }
-  let(:shell_out) { double("Mixlib::ShellOut", :status => status, :stdout => stdout, :stderr => stderr) }
+  let(:shell_out) { double("Mixlib::ShellOut", status: status, stdout: stdout, stderr: stderr) }
+
+  let(:logger) { double("Mixlib::Log::Child").as_null_object }
 
   it "is a Chef::Provider:Cron" do
     expect(provider).to be_a(Chef::Provider::Cron)
   end
 
+  before do
+    allow(run_context).to receive(:logger).and_return(logger)
+  end
   describe "read_crontab" do
     let(:stderr) { "" }
     let(:stdout) do
-      String.new(<<-CRONTAB)
-0 2 * * * /some/other/command
+      String.new(<<~CRONTAB)
+        0 2 * * * /some/other/command
 
-# Chef Name: something else
-* 5 * * * /bin/true
+        # Chef Name: something else
+        * 5 * * * /bin/true
 
-# Another comment
+        # Another comment
       CRONTAB
     end
 
     before do
-      allow(Chef::Log).to receive(:debug)
+      allow(logger).to receive(:trace)
       allow(shell_out).to receive(:format_for_exception).and_return("formatted command output")
-      allow(provider).to receive(:shell_out).with("/usr/bin/crontab -l", :user => username).and_return(shell_out)
+      allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", "-l", user: username).and_return(shell_out)
     end
 
     it "should call crontab -l with the user" do
       provider.send(:read_crontab)
-      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab -l", :user => username)
+      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", "-l", user: username)
     end
 
     it "should return the contents of the crontab" do
@@ -83,12 +88,12 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab)
-        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+        expect(logger).to have_received(:trace).with("formatted command output")
       end
     end
 
     context "when any other error occurs" do
-      let (:exitstatus) { 2 }
+      let(:exitstatus) { 2 }
 
       it "should raise an exception if another error occurs" do
         expect do
@@ -98,7 +103,7 @@ describe Chef::Provider::Cron::Unix do
 
       it "logs the crontab output to debug" do
         provider.send(:read_crontab) rescue nil
-        expect(Chef::Log).to have_received(:debug).with("formatted command output")
+        expect(logger).to have_received(:trace).with("formatted command output")
       end
     end
   end
@@ -106,7 +111,7 @@ describe Chef::Provider::Cron::Unix do
   describe "write_crontab" do
     let(:stdout) { "" }
     let(:stderr) { "" }
-    let(:tempfile) { double("foo", :path => "/tmp/foo", :close => true) }
+    let(:tempfile) { double("foo", path: "/tmp/foo", close: true) }
 
     before do
       expect(Tempfile).to receive(:new).and_return(tempfile)
@@ -114,12 +119,12 @@ describe Chef::Provider::Cron::Unix do
       expect(tempfile).to receive(:chmod).with(420)
       expect(tempfile).to receive(:close!)
       allow(tempfile).to receive(:<<)
-      allow(provider).to receive(:shell_out).with("/usr/bin/crontab #{tempfile.path}", :user => username).and_return(shell_out)
+      allow(provider).to receive(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username).and_return(shell_out)
     end
 
     it "should call crontab for the user" do
       provider.send(:write_crontab, "Foo")
-      expect(provider).to have_received(:shell_out).with("/usr/bin/crontab #{tempfile.path}", :user => username)
+      expect(provider).to have_received(:shell_out_compacted).with("/usr/bin/crontab", tempfile.path, user: username)
     end
 
     it "should call crontab with a file containing the crontab" do

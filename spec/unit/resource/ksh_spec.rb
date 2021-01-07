@@ -1,6 +1,6 @@
 #
 # Author:: Nolan Davidson (<nolan.davidson@gmail.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,21 +20,26 @@ require "spec_helper"
 
 describe Chef::Resource::Ksh do
 
-  before(:each) do
-    @resource = Chef::Resource::Ksh.new("fakey_fakerton")
+  let(:resource) { Chef::Resource::Ksh.new("fakey_fakerton") }
+
+  it "is a subclass of Chef::Resource::Script" do
+    expect(resource).to be_a_kind_of(Chef::Resource::Script)
   end
 
-  it "should create a new Chef::Resource::Ksh" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::Ksh)
+  it "has a resource name of :ksh" do
+    expect(resource.resource_name).to eql(:ksh)
   end
 
-  it "should have a resource name of :ksh" do
-    expect(@resource.resource_name).to eql(:ksh)
+  it "sets the default action as :run" do
+    expect(resource.action).to eql([:run])
   end
 
-  it "should have an interpreter of ksh" do
-    expect(@resource.interpreter).to eql("ksh")
+  it "supports :run action" do
+    expect { resource.action :run }.not_to raise_error
+  end
+
+  it "has an interpreter of ksh" do
+    expect(resource.interpreter).to eql("ksh")
   end
 
 end

@@ -1,7 +1,6 @@
-# encoding: UTF-8
 #
 # Author:: Kaustubh Deorukhkar (<kaustubh@clogeny.com>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,7 +17,6 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 require "fileutils"
 
@@ -29,18 +27,18 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   # Platform specific validation routines.
   def service_should_be_started(file_name)
     # The existence of this file indicates that the service was started.
-    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_truthy
+    expect(File.exist?("#{Dir.tmpdir}/#{file_name}")).to be_truthy
   end
 
   def service_should_be_stopped(file_name)
-    expect(File.exists?("#{Dir.tmpdir}/#{file_name}")).to be_falsey
+    expect(File.exist?("#{Dir.tmpdir}/#{file_name}")).to be_falsey
   end
 
   def valide_symlinks(expected_output, run_level = nil, status = nil, priority = nil)
     directory = []
     if priority.is_a? Hash
       priority.each do |level, o|
-        directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? 'S' : 'K')}#{o[1]}#{new_resource.service_name}"
+        directory << "/etc/rc.d/rc#{level}.d/#{(o[0] == :start ? "S" : "K")}#{o[1]}#{new_resource.service_name}"
       end
       directory
     else
@@ -57,9 +55,10 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
 
   # Actual tests
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::Service.new("chefinittest", run_context)
     new_resource.provider Chef::Provider::Service::AixInit
-    new_resource.supports({ :status => true, :restart => true, :reload => true })
+    new_resource.supports({ status: true, restart: true, reload: true })
     new_resource
   end
 
@@ -69,12 +68,12 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
   end
 
   before(:all) do
-    File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
-    FileUtils.cp("#{File.join(File.dirname(__FILE__), "/../assets/chefinittest")}", "/etc/rc.d/init.d/chefinittest")
+    File.delete("/etc/rc.d/init.d/chefinittest") if File.exist?("/etc/rc.d/init.d/chefinittest")
+    FileUtils.cp((File.join(__dir__, "/../assets/chefinittest")).to_s, "/etc/rc.d/init.d/chefinittest")
   end
 
   after(:all) do
-    File.delete("/etc/rc.d/init.d/chefinittest") if File.exists?("/etc/rc.d/init.d/chefinittest")
+    File.delete("/etc/rc.d/init.d/chefinittest") if File.exist?("/etc/rc.d/init.d/chefinittest")
   end
 
   before(:each) do
@@ -166,7 +165,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
       end
 
       after do
-        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exist?("/etc/rc.d/rc2.d/chefinittest")
       end
 
       it "creates symlink with status K" do
@@ -182,7 +181,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
       end
 
       after do
-        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exist?("/etc/rc.d/rc2.d/chefinittest")
       end
 
       it "creates a symlink with status K and a priority" do
@@ -199,7 +198,7 @@ describe Chef::Resource::Service, :requires_root, :aix_only do
       end
 
       after do
-        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exists?("/etc/rc.d/rc2.d/chefinittest")
+        File.delete("/etc/rc.d/rc2.d/Schefinittest") if File.exist?("/etc/rc.d/rc2.d/chefinittest")
       end
 
       it "create symlink with status stop (K) and a priority " do

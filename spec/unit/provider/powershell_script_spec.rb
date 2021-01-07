@@ -1,6 +1,6 @@
 #
 # Author:: Adam Edwards (<adamed@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,89 +18,44 @@
 
 require "spec_helper"
 describe Chef::Provider::PowershellScript, "action_run" do
+  let(:events) { Chef::EventDispatch::Dispatcher.new }
 
-  let(:powershell_version) { nil }
-  let(:node) do
-    node = Chef::Node.new
-    node.default["kernel"] = Hash.new
-    node.default["kernel"][:machine] = :x86_64.to_s
-    if ! powershell_version.nil?
-      node.default[:languages] = { :powershell => { :version => powershell_version } }
-    end
-    node
+  let(:run_context) { Chef::RunContext.new(Chef::Node.new, {}, events) }
+
+  let(:new_resource) do
+    Chef::Resource::PowershellScript.new("run some powershell code", run_context)
   end
 
   let(:provider) do
-    empty_events = Chef::EventDispatch::Dispatcher.new
-    run_context = Chef::RunContext.new(node, {}, empty_events)
-    new_resource = Chef::Resource::PowershellScript.new("run some powershell code", run_context)
     Chef::Provider::PowershellScript.new(new_resource, run_context)
   end
 
-  context "when setting interpreter flags" do
-    context "on nano" do
-      before(:each) do
-        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(true)
-        allow(provider).to receive(:is_forced_32bit).and_return(false)
-        os_info_double = double("os_info")
-        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
-        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
-      end
-
-      it "sets the -Command flag as the last flag" do
-        flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
-        expect(flags.pop).to eq("-Command")
-      end
+  describe "#command" do
+    before(:each) do
+      allow(provider).to receive(:basepath).and_return("C:\\Windows\\system32")
+      allow(ChefUtils).to receive(:windows?).and_return(true)
     end
 
-    context "not on nano" do
-      before(:each) do
-        allow(Chef::Platform).to receive(:windows_nano_server?).and_return(false)
-        allow(provider).to receive(:is_forced_32bit).and_return(false)
-        os_info_double = double("os_info")
-        allow(provider.run_context.node["kernel"]).to receive(:[]).with("os_info").and_return(os_info_double)
-        allow(os_info_double).to receive(:[]).with("system_directory").and_return("C:\\Windows\\system32")
-      end
+    it "includes the user's flags after the default flags when building the command" do
+      new_resource.flags = "-InputFormat Fabulous"
+      provider.send(:script_file_path=, "C:\\Temp\\Script.ps1")
 
-      it "sets the -File flag as the last flag" do
-        flags = provider.command.split(" ").keep_if { |flag| flag =~ /^-/ }
-        expect(flags.pop).to eq("-File")
-      end
+      expected = <<~CMD.strip
+        "C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe" -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None -InputFormat Fabulous -File "C:\\Temp\\Script.ps1"
+      CMD
 
-      let(:execution_policy_flag) do
-        execution_policy_index = 0
-        provider_flags = provider.flags.split(" ")
-        execution_policy_specified = false
+      expect(provider.command).to eq(expected)
+    end
 
-        provider_flags.find do |value|
-          execution_policy_index += 1
-          execution_policy_specified = value.casecmp("-ExecutionPolicy".downcase).zero?
-        end
+    it "uses pwsh when given the pwsh interpreter" do
+      new_resource.interpreter = "pwsh"
+      provider.send(:script_file_path=, "C:\\Temp\\Script.ps1")
 
-        execution_policy = execution_policy_specified ? provider_flags[execution_policy_index] : nil
-      end
+      expected = <<~CMD.strip
+        "pwsh" -NoLogo -NonInteractive -NoProfile -ExecutionPolicy Bypass -InputFormat None  -File "C:\\Temp\\Script.ps1"
+      CMD
 
-      context "when running with an unspecified PowerShell version" do
-        let(:powershell_version) { nil }
-        it "sets the -ExecutionPolicy flag to 'Unrestricted' by default" do
-          expect(execution_policy_flag.downcase).to eq("unrestricted".downcase)
-        end
-      end
-
-      { "2.0" => "Unrestricted",
-        "2.5" => "Unrestricted",
-        "3.0" => "Bypass",
-        "3.6" => "Bypass",
-        "4.0" => "Bypass",
-        "5.0" => "Bypass" }.each do |version_policy|
-        let(:powershell_version) { version_policy[0].to_f }
-        context "when running PowerShell version #{version_policy[0]}" do
-          let(:powershell_version) { version_policy[0].to_f }
-          it "sets the -ExecutionPolicy flag to '#{version_policy[1]}'" do
-            expect(execution_policy_flag.downcase).to eq(version_policy[1].downcase)
-          end
-        end
-      end
+      expect(provider.command).to eq(expected)
     end
   end
 end

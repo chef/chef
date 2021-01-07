@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "pathname"
+require_relative "../knife"
+require "pathname" unless defined?(Pathname)
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   module ChefFS
@@ -25,11 +26,11 @@ class Chef
       # Workaround for CHEF-3932
       def self.deps
         super do
-          require "chef/config"
-          require "chef/chef_fs/parallelizer"
-          require "chef/chef_fs/config"
-          require "chef/chef_fs/file_pattern"
-          require "chef/chef_fs/path_utils"
+          require_relative "../config"
+          require_relative "parallelizer"
+          require_relative "config"
+          require_relative "file_pattern"
+          require_relative "path_utils"
           yield
         end
       end
@@ -40,21 +41,19 @@ class Chef
         # Ensure we always get to do our includes, whether subclass calls deps or not
         c.deps do
         end
-
-        c.options.merge!(options)
       end
 
       option :repo_mode,
-        :long => "--repo-mode MODE",
-        :description => "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
+        long: "--repo-mode MODE",
+        description: "Specifies the local repository layout.  Values: static, everything, hosted_everything.  Default: everything/hosted_everything"
 
       option :chef_repo_path,
-        :long => "--chef-repo-path PATH",
-        :description => "Overrides the location of chef repo. Default is specified by chef_repo_path in the config"
+        long: "--chef-repo-path PATH",
+        description: "Overrides the location of #{ChefUtils::Dist::Infra::PRODUCT} repo. Default is specified by chef_repo_path in the config"
 
       option :concurrency,
-        :long => "--concurrency THREADS",
-        :description => "Maximum number of simultaneous requests to send (default: 10)"
+        long: "--concurrency THREADS",
+        description: "Maximum number of simultaneous requests to send (default: 10)"
 
       def configure_chef
         super

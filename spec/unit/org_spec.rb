@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@chef.io)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,7 +52,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it anything but a string" do
-      expect { org.name Hash.new }.to raise_error(ArgumentError)
+      expect { org.name({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -63,7 +63,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it anything but a string" do
-      expect { org.name Hash.new }.to raise_error(ArgumentError)
+      expect { org.name({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -74,7 +74,7 @@ describe Chef::Org do
     end
 
     it "raises an ArgumentError if you feed it something lame" do
-      expect { org.private_key Hash.new }.to raise_error(ArgumentError)
+      expect { org.private_key({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -164,7 +164,7 @@ describe Chef::Org do
 
     describe "create" do
       it "creates a new org via the API" do
-        expect(rest).to receive(:post).with("organizations", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
+        expect(rest).to receive(:post).with("organizations", { name: "foobar", full_name: "foo bar bat" }).and_return({})
         org.create
       end
     end
@@ -181,7 +181,7 @@ describe Chef::Org do
 
     describe "update" do
       it "updates an existing org on via the API" do
-        expect(rest).to receive(:put).with("organizations/foobar", { :name => "foobar", :full_name => "foo bar bat" }).and_return({})
+        expect(rest).to receive(:put).with("organizations/foobar", { name: "foobar", full_name: "foo bar bat" }).and_return({})
         org.update
       end
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,6 +18,15 @@
 
 require "spec_helper"
 require "chef/node_map"
+
+class Foo; end
+class Bar; end
+
+class FooResource < Chef::Resource; end
+class BarResource < Chef::Resource; end
+
+class FooProvider < Chef::Provider; end
+class BarProvider < Chef::Provider; end
 
 describe Chef::NodeMap do
 
@@ -95,9 +104,65 @@ describe Chef::NodeMap do
     end
 
     it "returns nil when the platform_family does not match" do
-      allow(node).to receive(:[]).with(:os).and_return("linux")
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
+      node.automatic["os"] = "linux"
+      node.automatic["platform_family"] = "debian"
       expect(node_map.get(node, :thing)).to eql(nil)
+    end
+  end
+
+  describe "platform version checks" do
+    before do
+      node_map.set(:thing, :foo, platform_family: "rhel", platform_version: ">= 7")
+    end
+
+    it "handles non-x.y.z platform versions without throwing an exception" do
+      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+      allow(node).to receive(:[]).with(:platform_version).and_return("7.19.2.2F")
+      expect(node_map.get(node, :thing)).to eql(:foo)
+    end
+
+    it "handles non-x.y.z platform versions without throwing an exception when the match fails" do
+      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
+      allow(node).to receive(:[]).with(:platform_version).and_return("4.19.2.2F")
+      expect(node_map.get(node, :thing)).to eql(nil)
+    end
+  end
+
+  describe "ordering classes" do
+    it "last writer wins when its reverse alphabetic order" do
+      node_map.set(:thing, Foo)
+      node_map.set(:thing, Bar)
+      expect(node_map.get(node, :thing)).to eql(Bar)
+    end
+
+    it "last writer wins when its alphabetic order" do
+      node_map.set(:thing, Bar)
+      node_map.set(:thing, Foo)
+      expect(node_map.get(node, :thing)).to eql(Foo)
+    end
+  end
+
+  describe "deleting classes" do
+    it "deletes a class and removes the mapping completely" do
+      node_map.set(:thing, Bar)
+      expect( node_map.delete_class(Bar) ).to include({ thing: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.get(node, :thing) ).to eql(nil)
+    end
+
+    it "deletes a class and leaves the mapping that still has an entry" do
+      node_map.set(:thing, Bar)
+      node_map.set(:thing, Foo)
+      expect( node_map.delete_class(Bar) ).to eql({ thing: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.get(node, :thing) ).to eql(Foo)
+    end
+
+    it "handles deleting classes from multiple keys" do
+      node_map.set(:thing1, Bar)
+      node_map.set(:thing2, Bar)
+      node_map.set(:thing2, Foo)
+      expect( node_map.delete_class(Bar) ).to eql({ thing1: [{ klass: Bar, target_mode: nil }], thing2: [{ klass: Bar, target_mode: nil }] })
+      expect( node_map.get(node, :thing1) ).to eql(nil)
+      expect( node_map.get(node, :thing2) ).to eql(Foo)
     end
   end
 
@@ -109,26 +174,26 @@ describe Chef::NodeMap do
     end
 
     it "returns the value when the node matches" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-      allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+      node.automatic["platform_family"] = "rhel"
+      node.automatic["platform_version"] = "7.0"
       expect(node_map.get(node, :thing)).to eql(:foo)
     end
 
     it "returns nil when the block does not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-      allow(node).to receive(:[]).with(:platform_version).and_return("6.4")
+      node.automatic["platform_family"] = "rhel"
+      node.automatic["platform_version"] = "6.4"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
     it "returns nil when the platform_family filter does not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
-      allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+      node.automatic["platform_family"] = "debian"
+      node.automatic["platform_version"] = "7.0"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
     it "returns nil when both do not match" do
-      allow(node).to receive(:[]).with(:platform_family).and_return("debian")
-      allow(node).to receive(:[]).with(:platform_version).and_return("6.0")
+      node.automatic["platform_family"] = "debian"
+      node.automatic["platform_version"] = "6.0"
       expect(node_map.get(node, :thing)).to eql(nil)
     end
 
@@ -138,32 +203,73 @@ describe Chef::NodeMap do
       end
 
       it "returns the value when the node matches" do
-        allow(node).to receive(:[]).with(:platform_family).and_return("rhel")
-        allow(node).to receive(:[]).with(:platform_version).and_return("7.0")
+        node.automatic["platform_family"] = "rhel"
+        node.automatic["platform_version"] = "7.0"
         expect(node_map.get(node, :thing)).to eql(:foo)
       end
     end
   end
 
-  describe "resource back-compat testing" do
-    before :each do
-      Chef::Config[:treat_deprecation_warnings_as_errors] = false
+  # When in target mode, only match when target_mode is explicitly supported
+  context "when target mode is enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(true)
     end
 
-    it "should handle :on_platforms => :all" do
-      node_map.set(:chef_gem, :foo, :on_platforms => :all)
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :chef_gem)).to eql(:foo)
+    it "returns the value when target_mode matches" do
+      node_map.set(:something, :network, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:network)
     end
-    it "should handle :on_platforms => [ 'windows' ]" do
-      node_map.set(:dsc_script, :foo, :on_platforms => [ "windows" ])
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :dsc_script)).to eql(:foo)
+
+    it "returns nil when target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(nil)
     end
-    it "should handle :on_platform => :all" do
-      node_map.set(:link, :foo, :on_platform => :all)
-      allow(node).to receive(:[]).with(:platform).and_return("windows")
-      expect(node_map.get(node, :link)).to eql(:foo)
+  end
+
+  # When not in target mode, match regardless of target_mode filter
+  context "when target mode is not enabled" do
+    before do
+      allow(Chef::Config).to receive(:target_mode?).and_return(false)
+    end
+
+    it "returns the value if target_mode matches" do
+      node_map.set(:something, :local, target_mode: true)
+      expect(node_map.get(node, :something)).to eql(:local)
+    end
+
+    it "returns the value if target_mode does not match" do
+      node_map.set(:something, :local, target_mode: false)
+      expect(node_map.get(node, :something)).to eql(:local)
+    end
+  end
+
+  describe "locked mode" do
+    context "while unlocked" do
+      it "allows setting the same key twice" do
+        expect(Chef::Log).to_not receive(:warn)
+        node_map.set(:foo, FooResource)
+        node_map.set(:foo, BarResource)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+    end
+
+    context "while locked" do
+      it "warns on setting the same key twice" do
+        expect(Chef::Log).to receive(:warn).with(/Resource foo/)
+        node_map.set(:foo, FooResource)
+        node_map.lock!
+        node_map.set(:foo, BarResource)
+        expect(node_map.get(node, :foo)).to eql(BarResource)
+      end
+
+      it "warns on setting the same key twice for a provider" do
+        expect(Chef::Log).to receive(:warn).with(/Provider foo/)
+        node_map.set(:foo, FooProvider)
+        node_map.lock!
+        node_map.set(:foo, BarProvider)
+        expect(node_map.get(node, :foo)).to eql(BarProvider)
+      end
     end
   end
 

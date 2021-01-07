@@ -1,6 +1,6 @@
 #--
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,7 +27,7 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
 
     @description = Chef::Formatters::ErrorDescription.new("Error Expanding RunList:")
     @outputter = Chef::Formatters::IndentableOutputStream.new(StringIO.new, STDERR)
-    #@outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
+    # @outputter = Chef::Formatters::IndentableOutputStream.new(STDOUT, STDERR)
   end
 
   describe "when explaining a missing role error" do
@@ -55,9 +55,9 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @response_body = "forbidden"
       @response = Net::HTTPForbidden.new("1.1", "403", "(response) forbidden")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) forbidden", @response)
+      @exception = Net::HTTPClientException.new("(exception) forbidden", @response)
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com")
 
       @inspector.add_explanation(@description)
     end
@@ -73,12 +73,12 @@ describe Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector do
       @response_body = "check your key and node name"
       @response = Net::HTTPUnauthorized.new("1.1", "401", "(response) unauthorized")
       allow(@response).to receive(:body).and_return(@response_body)
-      @exception = Net::HTTPServerException.new("(exception) unauthorized", @response)
+      @exception = Net::HTTPClientException.new("(exception) unauthorized", @response)
 
       @inspector = Chef::Formatters::ErrorInspectors::RunListExpansionErrorInspector.new(@node, @exception)
-      allow(@inspector).to receive(:config).and_return(:node_name => "unit-test.example.com",
-                                                       :client_key => "/etc/chef/client.pem",
-                                                       :chef_server_url => "http://chef.example.com")
+      allow(@inspector).to receive(:config).and_return(node_name: "unit-test.example.com",
+                                                       client_key: "/etc/chef/client.pem",
+                                                       chef_server_url: "http://chef.example.com")
 
       @inspector.add_explanation(@description)
     end

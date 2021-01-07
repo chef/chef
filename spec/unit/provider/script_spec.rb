@@ -34,81 +34,34 @@ describe Chef::Provider::Script, "action_run" do
 
   let(:provider) { Chef::Provider::Script.new(new_resource, run_context) }
 
-  let(:tempfile) { Tempfile.open("rspec-provider-script") }
+  describe "#command" do
+    it "is only the intepreter in quotes by default" do
+      expect(provider.command.strip).to eq(%q{"perl"})
+    end
 
-  before(:each) do
-    allow(provider).to receive(:shell_out!).and_return(true)
-    allow(provider).to receive(:script_file).and_return(tempfile)
-  end
-
-  context "#script_file" do
-    it "creates a temporary file to store the script" do
-      allow(provider).to receive(:script_file).and_call_original
-      expect(provider.script_file).to be_an_instance_of(Tempfile)
+    it "is the interpreter in quotes with the flags when flags are used" do
+      new_resource.flags "-f"
+      expect(provider.command).to eq(%q{"perl" -f})
     end
   end
 
-  context "#unlink_script_file" do
-    it "unlinks the tempfile" do
-      tempfile_path = tempfile.path
-      provider.unlink_script_file
-      expect(File.exist?(tempfile_path)).to be false
-    end
-  end
-
-  context "#set_owner_and_group" do
-    it "sets the owner and group for the script file" do
-      new_resource.user "toor"
-      new_resource.group "wheel"
-      expect(FileUtils).to receive(:chown).with("toor", "wheel", tempfile.path)
-      provider.set_owner_and_group
-    end
-  end
-
-  context "with the script file set to the correct owner and group" do
+  describe "#action_run" do
     before do
-      allow(provider).to receive(:set_owner_and_group)
+      allow(provider).to receive(:stream_to_stdout?).and_return(false)
     end
 
-    describe "when writing the script to the file" do
-      it "should put the contents of the script in the temp file" do
-        allow(provider).to receive(:unlink_script_file) # stub to avoid remove
-        provider.action_run
-        expect(IO.read(tempfile.path)).to eq("$| = 1; print 'i like beans'\n")
-        provider.unlink_script_file
-      end
+    it "should call shell_out! with the command and correct options" do
+      opts = {
+        timeout: 3600,
+        returns: 0,
+        default_env: false,
+        log_level: :info,
+        log_tag: "script[run some perl code]",
+        input: "$| = 1; print 'i like beans'",
+      }
 
-      it "closes before executing the script and unlinks it when finished" do
-        tempfile_path = tempfile.path
-        provider.action_run
-        expect(tempfile).to be_closed
-        expect(File.exist?(tempfile_path)).to be false
-      end
-    end
-
-    describe "when running the script" do
-      let (:default_opts) do
-        { timeout: 3600, returns: 0, log_level: :info, log_tag: "script[run some perl code]" }
-      end
-
-      before do
-        allow(STDOUT).to receive(:tty?).and_return(false)
-      end
-
-      it 'should set the command to "interpreter"  "tempfile"' do
-        expect(provider.command).to eq(%Q{"perl"  "#{tempfile.path}"})
-      end
-
-      it "should call shell_out! with the command" do
-        expect(provider).to receive(:shell_out!).with(provider.command, default_opts).and_return(true)
-        provider.action_run
-      end
-
-      it "should set the command to 'interpreter flags tempfile'" do
-        new_resource.flags "-f"
-        expect(provider.command).to eq(%Q{"perl" -f "#{tempfile.path}"})
-      end
+      expect(provider).to receive(:shell_out!).with(provider.command, opts).and_return(true)
+      provider.action_run
     end
   end
-
 end

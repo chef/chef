@@ -4,13 +4,13 @@ def without_deprecation_warnings(&block)
   old_treat_deprecation_warnings_as_errors = Chef::Config[:treat_deprecation_warnings_as_errors]
   Chef::Config[:treat_deprecation_warnings_as_errors] = false
   begin
-    block.call
+    yield
   ensure
     Chef::Config[:treat_deprecation_warnings_as_errors] = old_treat_deprecation_warnings_as_errors
   end
 end
 
-action :pass_buck do
+def action_pass_buck
   lwrp_foo :prepared_thumbs do
     action :prepare_thumbs
     # We know there will be a deprecation error here; head it off

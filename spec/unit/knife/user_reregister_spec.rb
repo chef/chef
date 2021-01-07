@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (<steve@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::UserReregister do
   let(:knife) { Chef::Knife::UserReregister.new }
-  let(:user_mock) { double("user_mock", :private_key => "private_key") }
+  let(:user_mock) { double("user_mock", private_key: "private_key") }
   let(:stdout) { StringIO.new }
 
   before do
@@ -30,24 +30,6 @@ describe Chef::Knife::UserReregister do
     allow(knife.ui).to receive(:stdout).and_return(stdout)
     allow(knife.ui).to receive(:stderr).and_return(stdout)
     allow(user_mock).to receive(:username).and_return("a_user")
-  end
-
-  # delete this once OSC11 support is gone
-  context "when the username field is not supported by the server" do
-    before do
-      allow(knife).to receive(:run_osc_11_user_reregister).and_raise(SystemExit)
-      allow(user_mock).to receive(:username).and_return(nil)
-    end
-
-    it "displays the osc warning" do
-      expect(knife.ui).to receive(:warn).with(knife.osc_11_warning)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
-
-    it "forwards the command to knife osc_user edit" do
-      expect(knife).to receive(:run_osc_11_user_reregister)
-      expect { knife.run }.to raise_error(SystemExit)
-    end
   end
 
   it "prints usage and exits when a user name is not provided" do

@@ -1,6 +1,6 @@
 #
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/config"
-require "chef/data_bag_item"
-require "chef/encrypted_data_bag_item/decryptor"
-require "chef/encrypted_data_bag_item/encryptor"
-require "open-uri"
+require_relative "config"
+Chef.autoload :DataBagItem, File.expand_path("data_bag_item", __dir__)
+require_relative "encrypted_data_bag_item/decryptor"
+require_relative "encrypted_data_bag_item/encryptor"
 
 # An EncryptedDataBagItem represents a read-only data bag item where
 # all values, except for the value associated with the id key, have
@@ -47,8 +46,8 @@ require "open-uri"
 # such nodes in the infrastructure.
 #
 class Chef::EncryptedDataBagItem
-  ALGORITHM = "aes-256-cbc"
-  AEAD_ALGORITHM = "aes-256-gcm"
+  ALGORITHM = "aes-256-cbc".freeze
+  AEAD_ALGORITHM = "aes-256-gcm".freeze
 
   #
   # === Synopsis
@@ -84,9 +83,11 @@ class Chef::EncryptedDataBagItem
     raise ArgumentError, "assignment not supported for #{self.class}"
   end
 
-  def to_hash
+  def to_h
     @enc_hash.keys.inject({}) { |hash, key| hash[key] = self[key]; hash }
   end
+
+  alias_method :to_hash, :to_h
 
   def self.encrypt_data_bag_item(plain_hash, secret)
     plain_hash.inject({}) do |h, (key, val)|
@@ -121,17 +122,19 @@ class Chef::EncryptedDataBagItem
   #
   def self.load(data_bag, name, secret = nil)
     raw_hash = Chef::DataBagItem.load(data_bag, name)
-    secret = secret || self.load_secret
-    self.new(raw_hash, secret)
+    secret ||= load_secret
+    new(raw_hash, secret)
   end
 
   def self.load_secret(path = nil)
+    require "open-uri" unless defined?(OpenURI)
     path ||= Chef::Config[:encrypted_data_bag_secret]
-    if !path
-      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path('/etc/chef/encrypted_data_bag_secret')}"
+    unless path
+      raise ArgumentError, "No secret specified and no secret found at #{Chef::Config.platform_specific_path(ChefConfig::Config.etc_chef_dir) + "/encrypted_data_bag_secret"}"
     end
+
     secret = case path
-             when /^\w+:\/\//
+             when %r{^\w+://}
                # We have a remote key
                begin
                  Kernel.open(path).read.strip
@@ -141,14 +144,16 @@ class Chef::EncryptedDataBagItem
                  raise ArgumentError, "Remote key not found at '#{path}'"
                end
              else
-               if !File.exist?(path)
+               unless File.exist?(path)
                  raise Errno::ENOENT, "file not found '#{path}'"
                end
+
                IO.read(path).strip
              end
     if secret.size < 1
       raise ArgumentError, "invalid zero length secret in '#{path}'"
     end
+
     secret
   end
 

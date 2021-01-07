@@ -1,6 +1,6 @@
 #
 # Author:: Ezra Zygmuntowicz (<ezra@engineyard.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
-require "chef/mixin/command"
-require "chef/resource/package"
-require "chef/util/path_helper"
+require_relative "../package"
+require_relative "../../resource/portage_package"
+require_relative "../../util/path_helper"
 
 class Chef
   class Provider
@@ -29,13 +28,13 @@ class Chef
         provides :package, platform: "gentoo"
         provides :portage_package
 
-        PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}
+        PACKAGE_NAME_PATTERN = %r{^(?:([^/]+)/)?([^/]+)$}.freeze
 
         def load_current_resource
-          @current_resource = Chef::Resource::Package.new(@new_resource.name)
-          @current_resource.package_name(@new_resource.package_name)
+          @current_resource = Chef::Resource::PortagePackage.new(new_resource.name)
+          current_resource.package_name(new_resource.package_name)
 
-          category, pkg = %r{^#{PACKAGE_NAME_PATTERN}$}.match(@new_resource.package_name)[1, 2]
+          category, pkg = PACKAGE_NAME_PATTERN.match(new_resource.package_name)[1, 2]
 
           globsafe_category = category ? Chef::Util::PathHelper.escape_glob_dir(category) : nil
           globsafe_pkg = Chef::Util::PathHelper.escape_glob_dir(pkg)
@@ -47,59 +46,54 @@ class Chef
           end.compact
 
           if versions.size > 1
-            atoms = versions.map { |v| v.first }.sort
+            atoms = versions.map(&:first).sort
             categories = atoms.map { |v| v.split("/")[0] }.uniq
             if !category && categories.size > 1
-              raise Chef::Exceptions::Package, "Multiple packages found for #{@new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
+              raise Chef::Exceptions::Package, "Multiple packages found for #{new_resource.package_name}: #{atoms.join(" ")}. Specify a category."
             end
           elsif versions.size == 1
-            @current_resource.version(versions.first.last)
-            Chef::Log.debug("#{@new_resource} current version #{$1}")
+            current_resource.version(versions.first.last)
+            logger.trace("#{new_resource} current version #{$1}")
           end
 
-          @current_resource
+          current_resource
         end
 
-        def parse_emerge(package, txt)
-          availables = {}
-          found_package_name = nil
-
-          txt.each_line do |line|
-            if line =~ /\*\s+#{PACKAGE_NAME_PATTERN}/
-              found_package_name = $&.delete("*").strip
-              if package =~ /\// #the category is specified
-                if found_package_name == package
-                  availables[found_package_name] = nil
-                end
-              else #the category is not specified
-                if found_package_name.split("/").last == package
-                  availables[found_package_name] = nil
-                end
-              end
-            end
-
-            if line =~ /Latest version available: (.*)/ && availables.has_key?(found_package_name)
-              availables[found_package_name] = $1.strip
-            end
-          end
-
-          if availables.size > 1
-            # shouldn't happen if a category is specified so just use `package`
-            raise Chef::Exceptions::Package, "Multiple emerge results found for #{package}: #{availables.keys.join(" ")}. Specify a category."
-          end
-
-          availables.values.first
+        def raise_error_for_query(msg)
+          raise Chef::Exceptions::Package, "Query for '#{new_resource.package_name}' #{msg}"
         end
 
         def candidate_version
           return @candidate_version if @candidate_version
 
-          status = shell_out("emerge --color n --nospinner --search #{@new_resource.package_name.split('/').last}")
-          available, installed = parse_emerge(@new_resource.package_name, status.stdout)
-          @candidate_version = available
+          pkginfo = shell_out("portageq", "best_visible", "/", new_resource.package_name)
 
-          unless status.exitstatus == 0
-            raise Chef::Exceptions::Package, "emerge --search failed - #{status.inspect}!"
+          if pkginfo.exitstatus != 0
+            pkginfo.stderr.each_line do |line|
+              # cspell:disable-next-line
+              if /[Uu]nqualified atom .*match.* multiple/.match?(line)
+                raise_error_for_query("matched multiple packages (please specify a category):\n#{pkginfo.inspect}")
+              end
+            end
+
+            if pkginfo.stdout.strip.empty?
+              raise_error_for_query("did not find a matching package:\n#{pkginfo.inspect}")
+            end
+
+            raise_error_for_query("resulted in an unknown error:\n#{pkginfo.inspect}")
+          end
+
+          if pkginfo.stdout.lines.count > 1
+            raise_error_for_query("produced unexpected output (multiple lines):\n#{pkginfo.inspect}")
+          end
+
+          pkginfo.stdout.chomp!
+          if /-r\d+$/.match?(pkginfo.stdout)
+            # Latest/Best version of the package is a revision (-rX).
+            @candidate_version = pkginfo.stdout.split(/(?<=-)/).last(2).join
+          else
+            # Latest/Best version of the package is NOT a revision (-rX).
+            @candidate_version = pkginfo.stdout.split("-").last
           end
 
           @candidate_version
@@ -113,7 +107,7 @@ class Chef
             pkg = "~#{name}-#{$1}"
           end
 
-          shell_out!( "emerge -g --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}" )
+          shell_out!( "emerge", "-g", "--color", "n", "--nospinner", "--quiet", options, pkg )
         end
 
         def upgrade_package(name, version)
@@ -121,13 +115,13 @@ class Chef
         end
 
         def remove_package(name, version)
-          if version
-            pkg = "=#{@new_resource.package_name}-#{version}"
-          else
-            pkg = "#{@new_resource.package_name}"
-          end
+          pkg = if version
+                  "=#{new_resource.package_name}-#{version}"
+                else
+                  new_resource.package_name.to_s
+                end
 
-          shell_out!( "emerge --unmerge --color n --nospinner --quiet#{expand_options(@new_resource.options)} #{pkg}" )
+          shell_out!( "emerge", "--unmerge", "--color", "n", "--nospinner", "--quiet", options, pkg )
         end
 
         def purge_package(name, version)

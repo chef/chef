@@ -1,6 +1,6 @@
 #
 # Author:: Steven Danna (steve@chef.io)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,7 +26,7 @@ describe Chef::UserV1 do
     @user = Chef::UserV1.new
   end
 
-  shared_examples_for "string fields with no contraints" do
+  shared_examples_for "string fields with no constraints" do
     it "should let you set the public key" do
       expect(@user.send(method, "some_string")).to eq("some_string")
     end
@@ -37,7 +37,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it something lame" do
-      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+      expect { @user.send(method, {}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -57,7 +57,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it anything but true or false" do
-      expect { @user.send(method, Hash.new) }.to raise_error(ArgumentError)
+      expect { @user.send(method, {}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -95,7 +95,7 @@ describe Chef::UserV1 do
     end
 
     it "should throw an ArgumentError if you feed it anything but a string" do
-      expect { @user.username Hash.new }.to raise_error(ArgumentError)
+      expect { @user.username({}) }.to raise_error(ArgumentError)
     end
   end
 
@@ -109,49 +109,49 @@ describe Chef::UserV1 do
 
   describe "string fields" do
     describe "public_key" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :public_key }
       end
     end
 
     describe "private_key" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :private_key }
       end
     end
 
     describe "display_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :display_name }
       end
     end
 
     describe "first_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :first_name }
       end
     end
 
     describe "middle_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :middle_name }
       end
     end
 
     describe "last_name" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :last_name }
       end
     end
 
     describe "email" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :email }
       end
     end
 
     describe "password" do
-      it_should_behave_like "string fields with no contraints" do
+      it_should_behave_like "string fields with no constraints" do
         let(:method) { :password }
       end
     end
@@ -311,10 +311,10 @@ describe Chef::UserV1 do
   end
 
   describe "Versioned API Interactions" do
-    let(:response_406) { OpenStruct.new(:code => "406") }
-    let(:exception_406) { Net::HTTPServerException.new("406 Not Acceptable", response_406) }
+    let(:response_406) { OpenStruct.new(code: "406") }
+    let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
 
-    before (:each) do
+    before(:each) do
       @user = Chef::UserV1.new
       allow(@user).to receive(:chef_root_rest_v0).and_return(double("chef rest root v0 object"))
       allow(@user).to receive(:chef_root_rest_v1).and_return(double("chef rest root v1 object"))
@@ -334,13 +334,13 @@ describe Chef::UserV1 do
 
       let(:payload) do
         {
-          :username => "some_username",
-          :display_name => "some_display_name",
-          :first_name => "some_first_name",
-          :middle_name => "some_middle_name",
-          :last_name => "some_last_name",
-          :email => "some_email",
-          :password => "some_password",
+          username: "some_username",
+          display_name: "some_display_name",
+          first_name: "some_first_name",
+          middle_name: "some_middle_name",
+          last_name: "some_last_name",
+          email: "some_email",
+          password: "some_password",
         }
       end
 
@@ -356,14 +356,14 @@ describe Chef::UserV1 do
       context "when server API V1 is not valid on the Chef Server receiving the request" do
         let(:payload) do
           {
-            :username => "some_username",
-            :display_name => "some_display_name",
-            :first_name => "some_first_name",
-            :middle_name => "some_middle_name",
-            :last_name => "some_last_name",
-            :email => "some_email",
-            :password => "some_password",
-            :public_key => "some_public_key",
+            username: "some_username",
+            display_name: "some_display_name",
+            first_name: "some_first_name",
+            middle_name: "some_middle_name",
+            last_name: "some_last_name",
+            email: "some_email",
+            password: "some_password",
+            public_key: "some_public_key",
           }
         end
 
@@ -373,8 +373,8 @@ describe Chef::UserV1 do
         end
 
         context "when the server returns a 400" do
-          let(:response_400) { OpenStruct.new(:code => "400") }
-          let(:exception_400) { Net::HTTPServerException.new("400 Bad Request", response_400) }
+          let(:response_400) { OpenStruct.new(code: "400") }
+          let(:exception_400) { Net::HTTPClientException.new("400 Bad Request", response_400) }
 
           context "when the 400 was due to public / private key fields no longer being supported" do
             let(:response_body_400) { '{"error":["Since Server API v1, all keys must be updated via the keys endpoint. "]}' }
@@ -444,12 +444,12 @@ describe Chef::UserV1 do
     describe "create" do
       let(:payload) do
         {
-          :username => "some_username",
-          :display_name => "some_display_name",
-          :first_name => "some_first_name",
-          :last_name => "some_last_name",
-          :email => "some_email",
-          :password => "some_password",
+          username: "some_username",
+          display_name: "some_display_name",
+          first_name: "some_first_name",
+          last_name: "some_last_name",
+          email: "some_email",
+          password: "some_password",
         }
       end
       before do
@@ -473,7 +473,7 @@ describe Chef::UserV1 do
       context "when handling API V1" do
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
+          expect(@user.chef_root_rest_v1).to receive(:post).with("users", payload.merge({ middle_name: "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is valid on the Chef Server receiving the request
@@ -496,7 +496,7 @@ describe Chef::UserV1 do
 
         it "creates a new user via the API with a middle_name when it exists" do
           @user.middle_name "some_middle_name"
-          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({ :middle_name => "some_middle_name" })).and_return({})
+          expect(@user.chef_root_rest_v0).to receive(:post).with("users", payload.merge({ middle_name: "some_middle_name" })).and_return({})
           @user.create
         end
       end # when server API V1 is not valid on the Chef Server receiving the request
@@ -535,7 +535,7 @@ describe Chef::UserV1 do
   end # Versioned API Interactions
 
   describe "API Interactions" do
-    before (:each) do
+    before(:each) do
       @user = Chef::UserV1.new
       @user.username "foobar"
       @http_client = double("Chef::ServerAPI mock")

@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,11 +17,11 @@
 #
 
 require "spec_helper"
-require "functional/resource/base"
 require "timeout"
 
 describe Chef::Resource::Execute do
   let(:resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     resource = Chef::Resource::Execute.new("foo_resource", run_context)
     resource.command("echo hello")
     resource
@@ -87,8 +87,8 @@ describe Chef::Resource::Execute do
   describe "when parent resource sets :environment" do
     before do
       resource.environment({
-        "SAWS_SECRET"  => "supersecret",
-        "SAWS_KEY"     => "qwerty",
+        "SAWS_SECRET" => "supersecret",
+        "SAWS_KEY" => "qwerty",
       })
     end
 
@@ -106,7 +106,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] != "regularsecret"'}, {
-        :environment => { "SGCE_SECRET" => "regularsecret" },
+        environment: { "SGCE_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -114,7 +114,7 @@ describe Chef::Resource::Execute do
 
     it "guard adds additional values in its :environment and does not run" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SGCE_SECRET"] == "regularsecret"'}, {
-        :environment => { "SGCE_SECRET" => "regularsecret" },
+        environment: { "SGCE_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action
@@ -122,7 +122,7 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] != "regularsecret"'}, {
-        :environment => { "SAWS_SECRET" => "regularsecret" },
+        environment: { "SAWS_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).to be_updated_by_last_action
@@ -130,10 +130,22 @@ describe Chef::Resource::Execute do
 
     it "guard overwrites value with its :environment and does not runs" do
       resource.only_if %{ruby -e 'exit 1 if ENV["SAWS_SECRET"] == "regularsecret"'}, {
-        :environment => { "SAWS_SECRET" => "regularsecret" },
+        environment: { "SAWS_SECRET" => "regularsecret" },
       }
       resource.run_action(:run)
       expect(resource).not_to be_updated_by_last_action
+    end
+  end
+
+  describe "when a guard is specified" do
+    describe "when using the default guard interpreter" do
+      let(:guard_interpreter_resource) { nil }
+      it_behaves_like "a resource with a guard specifying an alternate user identity"
+    end
+
+    describe "when using the execute resource as the guard interpreter" do
+      let(:guard_interpreter_resource) { :execute }
+      it_behaves_like "a resource with a guard specifying an alternate user identity"
     end
   end
 
@@ -150,5 +162,10 @@ describe Chef::Resource::Execute do
       resource.timeout 0.1
       expect { resource.run_action(:run) }.to raise_error(Mixlib::ShellOut::CommandTimeout)
     end
+  end
+
+  describe "when running with an alternate user identity" do
+    let(:resource_command_property) { :command }
+    it_behaves_like "an execute resource that supports alternate user identity"
   end
 end

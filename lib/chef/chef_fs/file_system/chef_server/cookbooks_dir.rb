@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,13 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/chef_server/cookbook_dir"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/file_system/repository/chef_repository_file_system_cookbook_dir"
-require "chef/mixin/file_class"
+require_relative "rest_list_dir"
+require_relative "cookbook_dir"
+require_relative "../exceptions"
+require_relative "../repository/chef_repository_file_system_cookbook_dir"
+require_relative "../../../mixin/file_class"
 
-require "tmpdir"
+require "tmpdir" unless defined?(Dir.mktmpdir)
 
 class Chef
   module ChefFS
@@ -60,7 +60,7 @@ class Chef
             upload_cookbook(other, options)
           rescue Timeout::Error => e
             raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
-          rescue Net::HTTPServerException => e
+          rescue Net::HTTPClientException => e
             case e.response.code
             when "409"
               raise Chef::ChefFS::FileSystem::CookbookFrozenError.new(:write, self, e, "Cookbook #{other.name} is frozen")
@@ -72,19 +72,36 @@ class Chef
           end
 
           def upload_cookbook(other, options)
-            cookbook_to_upload = other.chef_object
-            cookbook_to_upload.freeze_version if options[:freeze]
-            uploader = Chef::CookbookUploader.new(cookbook_to_upload, :force => options[:force], :rest => root.chef_rest)
+            cookbook = other.chef_object if other.chef_object
+            raise Chef::Exceptions::MetadataNotFound.new(cookbook.root_paths[0], cookbook.name) unless cookbook.has_metadata_file?
 
-            with_actual_cookbooks_dir(other.parent.file_path) do
-              uploader.upload_cookbooks
+            if cookbook
+              Chef::CookbookLoader.copy_to_tmp_dir_from_array([cookbook]) do |tmp_cl|
+                tmp_cl.load_cookbooks
+                tmp_cl.compile_metadata
+                tmp_cl.freeze_versions if options[:freeze]
+                cookbook_for_upload = []
+                tmp_cl.each do |cookbook_name, cookbook|
+                  cookbook_for_upload << cookbook
+                end
+
+                uploader = Chef::CookbookUploader.new(cookbook_for_upload, force: options[:force], rest: chef_rest)
+
+                with_actual_cookbooks_dir(other.parent.file_path) do
+                  uploader.upload_cookbooks
+                end
+              end
             end
+          end
+
+          def chef_rest
+            Chef::ServerAPI.new(root.chef_rest.url, root.chef_rest.options.merge(version_class: Chef::CookbookManifestVersions))
           end
 
           # Work around the fact that CookbookUploader doesn't understand chef_repo_path (yet)
           def with_actual_cookbooks_dir(actual_cookbook_path)
             old_cookbook_path = Chef::Config.cookbook_path
-            Chef::Config.cookbook_path = actual_cookbook_path if !Chef::Config.cookbook_path
+            Chef::Config.cookbook_path = actual_cookbook_path unless Chef::Config.cookbook_path
 
             yield
           ensure

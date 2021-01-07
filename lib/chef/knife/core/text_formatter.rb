@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ class Chef
           @ui = ui
           @data = if data.respond_to?(:display_hash)
                     data.display_hash
-                  elsif data.kind_of?(Array)
+                  elsif data.is_a?(Array)
                     data
                   elsif data.respond_to?(:to_hash)
                     data.to_hash
@@ -48,7 +48,7 @@ class Chef
             justify_width = data.keys.map { |k| k.to_s.size }.max.to_i + 1
             data.sort.each do |key, value|
               # key: ['value'] should be printed as key: value
-              if value.kind_of?(Array) && value.size == 1 && is_singleton(value[0])
+              if value.is_a?(Array) && value.size == 1 && is_singleton(value[0])
                 value = value[0]
               end
               if is_singleton(value)
@@ -62,7 +62,7 @@ class Chef
                 lines.each { |line| buffer << "  #{line}\n" }
               end
             end
-          elsif data.kind_of?(Array)
+          elsif data.is_a?(Array)
             data.each_index do |index|
               item = data[index]
               buffer << text_format(data[index])
@@ -77,7 +77,7 @@ class Chef
         end
 
         def is_singleton(value)
-          !(value.kind_of?(Array) || value.respond_to?(:keys))
+          !(value.is_a?(Array) || value.respond_to?(:keys))
         end
       end
     end

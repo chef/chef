@@ -1,4 +1,4 @@
-require "chef/chef_fs/data_handler/data_handler_base"
+require_relative "data_handler_base"
 
 class Chef
   module ChefFS
@@ -19,7 +19,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "name"
+          key == "name"
         end
 
         # There is no chef_class for users, nor does to_ruby work.

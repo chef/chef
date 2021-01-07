@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system_cache"
+require_relative "../../file_system_cache"
 
 class Chef
   module ChefFS
@@ -71,9 +71,10 @@ class Chef
 
           def children
             return FileSystemCache.instance.children(file_path) if FileSystemCache.instance.exist?(file_path)
-            children = dir_ls.sort.
-              map { |child_name| make_child_entry(child_name) }.
-              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
+
+            children = dir_ls.sort
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
             FileSystemCache.instance.set_children(file_path, children)
           rescue Errno::ENOENT => e
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
@@ -84,6 +85,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+
             FileSystemCache.instance.delete!(child.file_path)
             if file_contents
               child.write(file_contents)
@@ -102,7 +104,7 @@ class Chef
             children.empty?
           end
 
-          # Public API callied by chef_fs/file_system
+          # Public API called by chef_fs/file_system
           def child(name)
             possible_child = make_child_entry(name)
             if possible_child.name_valid?
@@ -122,6 +124,7 @@ class Chef
             if exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, self)
             end
+
             begin
               FileSystemCache.instance.delete!(file_path)
               Dir.mkdir(file_path)
@@ -136,9 +139,10 @@ class Chef
 
           def delete(recurse)
             if exists?
-              if !recurse
+              unless recurse
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
+
               FileUtils.rm_r(file_path)
               FileSystemCache.instance.delete!(file_path)
             else
@@ -147,7 +151,7 @@ class Chef
           end
 
           def exists?
-            File.exists?(file_path)
+            File.exist?(file_path)
           end
 
           protected

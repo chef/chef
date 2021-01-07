@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -113,7 +113,7 @@ shared_examples_for "a content deploy strategy" do
       path
     end
 
-    def unix_invariant_properies(stat_struct)
+    def unix_invariant_properties(stat_struct)
       unix_invariants.inject({}) do |property_map, property|
         property_map[property] = stat_struct.send(property)
         property_map
@@ -137,7 +137,7 @@ shared_examples_for "a content deploy strategy" do
       content_deployer.deploy(staging_file_path, target_file_path)
       updated_info = File.stat(target_file_path)
 
-      expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
+      expect(unix_invariant_properties(original_info)).to eq(unix_invariant_properties(updated_info))
     end
 
     it "maintains invariant properties on Windows", :windows_only do
@@ -164,7 +164,7 @@ shared_examples_for "a content deploy strategy" do
         content_deployer.deploy(staging_file_path, target_file_path)
         updated_info = File.stat(target_file_path)
 
-        expect(unix_invariant_properies(original_info)).to eq(unix_invariant_properies(updated_info))
+        expect(unix_invariant_properties(original_info)).to eq(unix_invariant_properties(updated_info))
       end
 
     end
@@ -175,20 +175,20 @@ end
 describe Chef::FileContentManagement::Deploy::Cp do
 
   let(:unix_invariants) do
-    [
-      :uid,
-      :gid,
-      :mode,
-      :ino,
-    ]
+    %i{
+      uid
+      gid
+      mode
+      ino
+    }
   end
 
   let(:security_descriptor_invariants) do
-    [
-      :owner,
-      :group,
-      :dacl,
-    ]
+    %i{
+      owner
+      group
+      dacl
+    }
   end
 
   it_should_behave_like "a content deploy strategy"
@@ -198,11 +198,11 @@ end
 describe Chef::FileContentManagement::Deploy::MvUnix, :unix_only do
 
   let(:unix_invariants) do
-    [
-      :uid,
-      :gid,
-      :mode,
-    ]
+    %i{
+      uid
+      gid
+      mode
+    }
   end
 
   it_should_behave_like "a content deploy strategy"
@@ -216,11 +216,11 @@ describe Chef::FileContentManagement::Deploy::MvWindows, :windows_only do
   context "when a file has no sacl" do
 
     let(:security_descriptor_invariants) do
-      [
-       :owner,
-       :group,
-       :dacl,
-      ]
+      %i{
+       owner
+       group
+       dacl
+      }
     end
 
     it_should_behave_like "a content deploy strategy"

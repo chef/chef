@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -56,7 +56,7 @@ describe Chef::Knife::SslFetch do
   context "when a specific URI is given" do
     let(:name_args) { %w{https://example.test:10443/foo} }
 
-    it "fetchs the SSL configuration against the given host" do
+    it "fetches the SSL configuration against the given host" do
       expect(ssl_fetch.host).to eq("example.test")
       expect(ssl_fetch.port).to eq(10443)
     end
@@ -68,12 +68,12 @@ describe Chef::Knife::SslFetch do
 
     it "prints an error and exits" do
       expect { ssl_fetch.run }.to raise_error(SystemExit)
-      expected_stdout = <<-E
-USAGE: knife ssl fetch [URL] (options)
-E
-      expected_stderr = <<-E
-ERROR: Given URI: `foo.test' is invalid
-E
+      expected_stdout = <<~E
+        USAGE: knife ssl fetch [URL] (options)
+      E
+      expected_stderr = <<~E
+        ERROR: Given URI: `foo.test' is invalid
+      E
       expect(stdout_io.string).to eq(expected_stdout)
       expect(stderr_io.string).to eq(expected_stderr)
     end
@@ -84,12 +84,12 @@ E
 
       it "prints an error and exits" do
         expect { ssl_fetch.run }.to raise_error(SystemExit)
-        expected_stdout = <<-E
-USAGE: knife ssl fetch [URL] (options)
-E
-        expected_stderr = <<-E
-ERROR: Given URI: `#{name_args[0]}' is invalid
-E
+        expected_stdout = <<~E
+          USAGE: knife ssl fetch [URL] (options)
+        E
+        expected_stderr = <<~E
+          ERROR: Given URI: `#{name_args[0]}' is invalid
+        E
         expect(stdout_io.string).to eq(expected_stdout)
         expect(stderr_io.string).to eq(expected_stderr)
       end
@@ -106,6 +106,24 @@ E
       expect(ssl_fetch.normalize_cn("Billy-Bob's Super Awesome CA!")).to eq("Billy-Bob_s_Super_Awesome_CA_")
     end
 
+  end
+
+  describe "#cn_of" do
+    let(:certificate) { double("Certificate", subject: subject) }
+
+    describe "when the certificate has a common name" do
+      let(:subject) { [["CN", "common name"]] }
+      it "returns the common name" do
+        expect(ssl_fetch.cn_of(certificate)).to eq("common name")
+      end
+    end
+
+    describe "when the certificate does not have a common name" do
+      let(:subject) { [] }
+      it "returns nil" do
+        expect(ssl_fetch.cn_of(certificate)).to eq(nil)
+      end
+    end
   end
 
   describe "fetching the remote cert chain" do
@@ -169,15 +187,35 @@ E
       end
 
       it "tells the user their URL is for a non-ssl service" do
-        expected_error_text = <<-ERROR_TEXT
-ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
-ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
-ERROR_TEXT
+        expected_error_text = <<~ERROR_TEXT
+          ERROR: The service at the given URI (http://foo.example.com) does not accept SSL connections
+          ERROR: Perhaps you meant to connect to 'https://foo.example.com'?
+        ERROR_TEXT
 
         run
         expect(stderr).to include(expected_error_text)
       end
 
+    end
+
+    describe "when the certificate does not have a CN" do
+      let(:self_signed_crt_path) { File.join(CHEF_SPEC_DATA, "trusted_certs", "example_no_cn.crt") }
+      let(:self_signed_crt) { OpenSSL::X509::Certificate.new(File.read(self_signed_crt_path)) }
+
+      before do
+        expect(ssl_fetch).to receive(:proxified_socket).with("foo.example.com", 8443).and_return(tcp_socket)
+        expect(OpenSSL::SSL::SSLSocket).to receive(:new).with(tcp_socket, ssl_fetch.noverify_peer_ssl_context).and_return(ssl_socket)
+        expect(ssl_socket).to receive(:connect)
+        expect(ssl_socket).to receive(:peer_cert_chain).and_return([self_signed_crt])
+        expect(Time).to receive(:new).and_return(1)
+      end
+
+      it "fetches the certificate and writes it to a file in the trusted_certs_dir" do
+        run
+        stored_cert_path = File.join(trusted_certs_dir, "foo.example.com_1.crt")
+        expect(File).to exist(stored_cert_path)
+        expect(File.read(stored_cert_path)).to eq(File.read(self_signed_crt_path))
+      end
     end
 
   end

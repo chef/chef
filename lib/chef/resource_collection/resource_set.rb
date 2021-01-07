@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Ball (<tball@chef.io>)
-# Copyright:: Copyright 2014-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/resource"
-require "chef/resource_collection/resource_collection_serialization"
+require_relative "../resource"
+require_relative "resource_collection_serialization"
 
 class Chef
   class ResourceCollection
@@ -26,14 +26,17 @@ class Chef
 
       # Matches a multiple resource lookup specification,
       # e.g., "service[nginx,unicorn]"
-      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/
+      MULTIPLE_RESOURCE_MATCH = /^(.+)\[(.+?),(.+)\]$/.freeze
 
       # Matches a single resource lookup specification,
       # e.g., "service[nginx]"
-      SINGLE_RESOURCE_MATCH = /^(.+)\[(.+)\]$/
+      SINGLE_RESOURCE_MATCH = /^(.+)\[(.*)\]$/.freeze
+
+      # Matches e.g. "apt_update" with no name
+      NAMELESS_RESOURCE_MATCH = /^([^\[\]\s]+)$/.freeze
 
       def initialize
-        @resources_by_key = Hash.new
+        @resources_by_key = {}
       end
 
       def keys
@@ -50,22 +53,26 @@ class Chef
 
       def lookup(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to lookup" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key[key]
         unless res
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 
       def delete(key)
         raise ArgumentError, "Must pass a Chef::Resource or String to delete" unless key.is_a?(String) || key.is_a?(Chef::Resource)
+
         key = key.to_s
         res = @resources_by_key.delete(key)
 
         if res == @resources_by_key.default
           raise Chef::Exceptions::ResourceNotFound, "Cannot find a resource matching #{key} (did you define it first?)"
         end
+
         res
       end
 
@@ -82,7 +89,7 @@ class Chef
       # Raises an ArgumentError if you feed it bad lookup information
       # Raises a Runtime Error if it can't find the resources you are looking for.
       def find(*args)
-        results = Array.new
+        results = []
         args.each do |arg|
           case arg
             when Hash
@@ -116,20 +123,24 @@ class Chef
       # * Chef::Exceptions::InvalidResourceSpecification for all invalid input.
       def validate_lookup_spec!(query_object)
         case query_object
-          when Chef::Resource
-            true
-          when SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH
-            true
-          when Hash
+          when Chef::Resource, SINGLE_RESOURCE_MATCH, MULTIPLE_RESOURCE_MATCH, NAMELESS_RESOURCE_MATCH, Hash
             true
           when String
             raise Chef::Exceptions::InvalidResourceSpecification,
-                  "The string `#{query_object}' is not valid for resource collection lookup. Correct syntax is `resource_type[resource_name]'"
+              "The string `#{query_object}' is not valid for resource collection lookup. Correct syntax is `resource_type[resource_name]'"
           else
             raise Chef::Exceptions::InvalidResourceSpecification,
-                  "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
-              "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
+              "The object `#{query_object.inspect}' is not valid for resource collection lookup. " +
+                "Use a String like `resource_type[resource_name]' or a Chef::Resource object"
         end
+      end
+
+      def self.from_hash(o)
+        collection = new
+        rl = o["instance_vars"]["@resources_by_key"]
+        resources = rl.merge(rl) { |k, r| Chef::Resource.from_hash(r) }
+        collection.instance_variable_set(:@resources_by_key, resources)
+        collection
       end
 
       private
@@ -139,34 +150,50 @@ class Chef
       end
 
       def find_resource_by_hash(arg)
-        results = Array.new
+        results = []
         arg.each do |resource_type, name_list|
-          instance_names = name_list.kind_of?(Array) ? name_list : [ name_list ]
+          instance_names = name_list.is_a?(Array) ? name_list : [ name_list ]
           instance_names.each do |instance_name|
             results << lookup(create_key(resource_type, instance_name))
           end
         end
-        return results
+        results
       end
 
       def find_resource_by_string(arg)
-        results = Array.new
-        case arg
-          when MULTIPLE_RESOURCE_MATCH
-            resource_type = $1
-            arg =~ /^.+\[(.+)\]$/
-            resource_list = $1
-            resource_list.split(",").each do |instance_name|
-              results << lookup(create_key(resource_type, instance_name))
-            end
-          when SINGLE_RESOURCE_MATCH
+        begin
+          if arg =~ SINGLE_RESOURCE_MATCH
             resource_type = $1
             name = $2
-            results << lookup(create_key(resource_type, name))
+            return [ lookup(create_key(resource_type, name)) ]
+          end
+        rescue Chef::Exceptions::ResourceNotFound => e
+          if arg =~ MULTIPLE_RESOURCE_MATCH
+            begin
+              results = []
+              resource_type = $1
+              arg =~ /^.+\[(.+)\]$/
+              resource_list = $1
+              resource_list.split(",").each do |instance_name|
+                results << lookup(create_key(resource_type, instance_name))
+              end
+              Chef.deprecated(:multiresource_match, "The resource_collection multi-resource syntax is deprecated")
+              return results
+            rescue  Chef::Exceptions::ResourceNotFound
+              raise e
+            end
           else
-            raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
+            raise e
+          end
         end
-        return results
+
+        if arg =~ NAMELESS_RESOURCE_MATCH
+          resource_type = $1
+          name = ""
+          return [ lookup(create_key(resource_type, name)) ]
+        end
+
+        raise ArgumentError, "Bad string format #{arg}, you must have a string like resource_type[name]!"
       end
     end
   end

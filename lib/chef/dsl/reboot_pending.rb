@@ -1,6 +1,6 @@
 # Author:: Bryan McLellan <btm@loftninjas.org>
 # Author:: Seth Chisamore <schisamo@chef.io>
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/dsl/platform_introspection"
-require "chef/dsl/registry_helper"
+require_relative "platform_introspection"
+require_relative "registry_helper"
 
 class Chef
   module DSL
@@ -30,28 +30,21 @@ class Chef
       # Note that we will silently miss any other platform-specific reboot notices besides Windows+Ubuntu.
       def reboot_pending?
         # don't break when used as a mixin in contexts without #node (e.g. specs).
-        if self.respond_to?(:node, true) && node.run_context.reboot_requested?
+        if respond_to?(:node, true) && node.run_context.reboot_requested?
           true
         elsif platform?("windows")
           # PendingFileRenameOperations contains pairs (REG_MULTI_SZ) of filenames that cannot be updated
           # due to a file being in use (usually a temporary file and a system file)
           # \??\c:\temp\test.sys!\??\c:\winnt\system32\test.sys
           # http://technet.microsoft.com/en-us/library/cc960241.aspx
-          registry_value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { :name => "PendingFileRenameOperations" }) ||
+          registry_value_exists?('HKLM\SYSTEM\CurrentControlSet\Control\Session Manager', { name: "PendingFileRenameOperations" }) ||
 
-          # RebootRequired key contains Update IDs with a value of 1 if they require a reboot.
-          # The existence of RebootRequired alone is sufficient on my Windows 8.1 workstation in Windows Update
+            # RebootRequired key contains Update IDs with a value of 1 if they require a reboot.
+            # The existence of RebootRequired alone is sufficient on my Windows 8.1 workstation in Windows Update
             registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired') ||
 
-          # Vista + Server 2008 and newer may have reboots pending from CBS
-            registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending') ||
-
-          # The mere existence of the UpdateExeVolatile key should indicate a pending restart for certain updates
-          # http://support.microsoft.com/kb/832475
-            Chef::Platform.windows_server_2003? &&
-              (registry_key_exists?('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile') &&
-              !registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0].nil? &&
-              [1, 2, 3].include?(registry_get_values('HKLM\SOFTWARE\Microsoft\Updates\UpdateExeVolatile').select { |v| v[:name] == "Flags" }[0][:data]))
+            # Vista + Server 2008 and newer may have reboots pending from CBS
+            registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         elsif platform?("ubuntu")
           # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
           File.exists?("/var/run/reboot-required")

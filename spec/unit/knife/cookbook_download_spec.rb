@@ -47,44 +47,62 @@ describe Chef::Knife::CookbookDownload do
         @rest_mock = double("rest")
         allow(@knife).to receive(:rest).and_return(@rest_mock)
 
-        @manifest_data = {
-          :recipes => [
-            { "path" => "recipes/foo.rb",
-              "url" => "http://example.org/files/foo.rb" },
-            { "path" => "recipes/bar.rb",
-              "url" => "http://example.org/files/bar.rb" },
-          ],
-          :templates => [
-            { "path" => "templates/default/foo.erb",
-              "url" => "http://example.org/files/foo.erb" },
-            { "path" => "templates/default/bar.erb",
-              "url" => "http://example.org/files/bar.erb" },
-          ],
-          :attributes => [
-            { "path" => "attributes/default.rb",
-              "url" => "http://example.org/files/default.rb" },
-          ],
-        }
-
-        @cookbook_mock = double("cookbook")
-        allow(@cookbook_mock).to receive(:version).and_return("1.0.0")
-        allow(@cookbook_mock).to receive(:manifest).and_return(@manifest_data)
-        expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0").
-          and_return(@cookbook_mock)
+        expect(Chef::CookbookVersion).to receive(:load).with("foobar", "1.0.0")
+          .and_return(cookbook)
       end
 
-      it "should determine which version if one was not explicitly specified" do
-        allow(@cookbook_mock).to receive(:manifest).and_return({})
-        expect(@knife).to receive(:determine_version).and_return("1.0.0")
-        expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
-        allow(Chef::CookbookVersion).to receive(:COOKBOOK_SEGEMENTS).and_return([])
-        @knife.run
+      let(:manifest_data) do
+        {
+          all_files: [
+            {
+              "path" => "recipes/foo.rb",
+              "name" => "recipes/foo.rb",
+              "url" => "http://example.org/files/foo.rb",
+            },
+            {
+              "path" => "recipes/bar.rb",
+              "name" => "recipes/bar.rb",
+              "url" => "http://example.org/files/bar.rb",
+            },
+            {
+              "path" => "templates/default/foo.erb",
+              "name" => "templates/foo.erb",
+              "url" => "http://example.org/files/foo.erb",
+            },
+            {
+              "path" => "templates/default/bar.erb",
+              "name" => "templates/bar.erb",
+              "url" => "http://example.org/files/bar.erb",
+            },
+            {
+              "path" => "attributes/default.rb",
+              "name" => "attributes/default.rb",
+              "url" => "http://example.org/files/default.rb",
+            },
+          ],
+        }
+      end
+
+      let(:cookbook) do
+        cb = Chef::CookbookVersion.new("foobar")
+        cb.version = "1.0.0"
+        cb.manifest = manifest_data
+        cb
+      end
+
+      describe "and no version" do
+        let(:manifest_data) { { all_files: [] } }
+        it "should determine which version to download" do
+          expect(@knife).to receive(:determine_version).and_return("1.0.0")
+          expect(File).to receive(:exist?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
+          @knife.run
+        end
       end
 
       describe "and a version" do
         before(:each) do
           @knife.name_args << "1.0.0"
-          @files = @manifest_data.values.map { |v| v.map { |i| i["path"] } }.flatten.uniq
+          @files = manifest_data.values.map { |v| v.map { |i| i["path"] } }.flatten.uniq
           @files_mocks = {}
           @files.map { |f| File.basename(f) }.flatten.uniq.each do |f|
             @files_mocks[f] = double("#{f}_mock")
@@ -93,43 +111,43 @@ describe Chef::Knife::CookbookDownload do
         end
 
         it "should print an error and exit if the cookbook download directory already exists" do
-          expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(true)
-          expect(@knife.ui).to receive(:fatal).with(/\/var\/tmp\/chef\/foobar-1\.0\.0 exists/i)
+          expect(File).to receive(:exist?).with("/var/tmp/chef/foobar-1.0.0").and_return(true)
+          expect(@knife.ui).to receive(:fatal).with(%r{/var/tmp/chef/foobar-1\.0\.0 exists}i)
           expect { @knife.run }.to raise_error(SystemExit)
         end
 
         describe "when downloading the cookbook" do
           before(:each) do
             @files.map { |f| File.dirname(f) }.flatten.uniq.each do |dir|
-              expect(FileUtils).to receive(:mkdir_p).with("/var/tmp/chef/foobar-1.0.0/#{dir}").
-                at_least(:once)
+              expect(FileUtils).to receive(:mkdir_p).with("/var/tmp/chef/foobar-1.0.0/#{dir}")
+                .at_least(:once)
             end
 
             @files_mocks.each_pair do |file, mock|
-              expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}").
-                and_return(mock)
+              expect(@rest_mock).to receive(:streaming_request).with("http://example.org/files/#{file}")
+                .and_return(mock)
             end
 
             @files.each do |f|
-              expect(FileUtils).to receive(:mv).
-                with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
+              expect(FileUtils).to receive(:mv)
+                .with("/var/tmp/#{File.basename(f)}", "/var/tmp/chef/foobar-1.0.0/#{f}")
             end
           end
 
           it "should download the cookbook when the cookbook download directory doesn't exist" do
-            expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
+            expect(File).to receive(:exist?).with("/var/tmp/chef/foobar-1.0.0").and_return(false)
             @knife.run
             %w{attributes recipes templates}.each do |segment|
-              expect(@stderr.string).to match /downloading #{segment}/im
+              expect(@stderr.string).to match(/downloading #{segment}/im)
             end
-            expect(@stderr.string).to match /downloading foobar cookbook version 1\.0\.0/im
-            expect(@stderr.string).to match /cookbook downloaded to \/var\/tmp\/chef\/foobar-1\.0\.0/im
+            expect(@stderr.string).to match(/downloading foobar cookbook version 1\.0\.0/im)
+            expect(@stderr.string).to match %r{cookbook downloaded to /var/tmp/chef/foobar-1\.0\.0}im
           end
 
           describe "with -f or --force" do
             it "should remove the existing the cookbook download directory if it exists" do
               @knife.config[:force] = true
-              expect(File).to receive(:exists?).with("/var/tmp/chef/foobar-1.0.0").and_return(true)
+              expect(File).to receive(:exist?).with("/var/tmp/chef/foobar-1.0.0").and_return(true)
               expect(FileUtils).to receive(:rm_rf).with("/var/tmp/chef/foobar-1.0.0")
               @knife.run
             end
@@ -164,8 +182,8 @@ describe Chef::Knife::CookbookDownload do
     describe "with -N or --latest" do
       it "should return and set the version to the latest version" do
         @knife.config[:latest] = true
-        expect(@knife).to receive(:available_versions).at_least(:once).
-          and_return(["1.0.0", "1.1.0", "2.0.0"])
+        expect(@knife).to receive(:available_versions).at_least(:once)
+          .and_return(["1.0.0", "1.1.0", "2.0.0"])
         @knife.determine_version
         expect(@knife.version.to_s).to eq("2.0.0")
       end
@@ -178,26 +196,26 @@ describe Chef::Knife::CookbookDownload do
     end
 
     it "should return nil if there are no versions" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        with("foobar").
-        and_return(nil)
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .with("foobar")
+        .and_return(nil)
       expect(@knife.available_versions).to eq(nil)
     end
 
     it "should return the available versions" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        with("foobar").
-        and_return(["1.1.0", "2.0.0", "1.0.0"])
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .with("foobar")
+        .and_return(["1.1.0", "2.0.0", "1.0.0"])
       expect(@knife.available_versions).to eq([Chef::Version.new("1.0.0"),
                                            Chef::Version.new("1.1.0"),
                                            Chef::Version.new("2.0.0")])
     end
 
     it "should avoid multiple API calls to the server" do
-      expect(Chef::CookbookVersion).to receive(:available_versions).
-        once.
-        with("foobar").
-        and_return(["1.1.0", "2.0.0", "1.0.0"])
+      expect(Chef::CookbookVersion).to receive(:available_versions)
+        .once
+        .with("foobar")
+        .and_return(["1.1.0", "2.0.0", "1.0.0"])
       @knife.available_versions
       @knife.available_versions
     end

@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,8 +26,8 @@ class Chef
       end
 
       def method_missing(method_sym, *arguments, &block)
-        if method_sym.to_s =~ /^action_/
-          Chef::Log.debug("NoOp-ing for #{method_sym}")
+        if /^action_/.match?(method_sym.to_s)
+          logger.trace("NoOp-ing for #{method_sym}")
         else
           super
         end

@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 #
 
 require "spec_helper"
-if Chef::Platform.windows?
+if ChefUtils.windows?
   require "chef/application/windows_service_manager"
 end
 
@@ -33,7 +33,7 @@ end
 # directories.
 #
 
-describe "Chef::Application::WindowsServiceManager", :windows_only, :system_windows_service_gem_only, :appveyor_only do
+describe "Chef::Application::WindowsServiceManager", :windows_only, :system_windows_service_gem_only do
 
   include_context "using Win32::Service"
 
@@ -43,7 +43,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
     end
 
     it "throws an error with required missing options" do
-      [:service_name, :service_display_name, :service_description, :service_file_path].each do |key|
+      %i{service_name service_display_name service_description service_file_path}.each do |key|
         service_def = test_service.dup
         service_def.delete(key)
 
@@ -125,7 +125,7 @@ describe "Chef::Application::WindowsServiceManager", :windows_only, :system_wind
         it "start should start the service", :volatile do
           service_manager.run(["-a", "start"])
           expect(test_service_state).to eq("running")
-          expect(File.exists?(test_service_file)).to be_truthy
+          expect(File.exist?(test_service_file)).to be_truthy
         end
 
         it "stop should not affect the service" do

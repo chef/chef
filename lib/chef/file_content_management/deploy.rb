@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "chef/file_content_management/deploy/cp"
-require "chef/file_content_management/deploy/mv_unix"
-if Chef::Platform.windows?
-  require "chef/file_content_management/deploy/mv_windows"
+require_relative "deploy/cp"
+require_relative "deploy/mv_unix"
+if ChefUtils.windows?
+  require_relative "deploy/mv_windows"
 end
 
 class Chef
@@ -27,9 +27,9 @@ class Chef
     class Deploy
       def self.strategy(atomic_update)
         if atomic_update
-          Chef::Platform.windows? ? MvWindows.new() : MvUnix.new()
+          ChefUtils.windows? ? MvWindows.new : MvUnix.new
         else
-          Cp.new()
+          Cp.new
         end
       end
     end

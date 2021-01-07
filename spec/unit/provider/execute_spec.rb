@@ -1,6 +1,6 @@
 #
 # Author:: Prajakta Purohit (<prajakta@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -26,14 +26,15 @@ describe Chef::Provider::Execute do
   let(:provider) { Chef::Provider::Execute.new(new_resource, run_context) }
   let(:current_resource) { Chef::Resource::Ifconfig.new("foo_resource", run_context) }
   # You will be the same object, I promise.
-  @live_stream = Chef::EventDispatch::EventsOutputStream.new(run_context.events, :name => :execute)
+  @live_stream = Chef::EventDispatch::EventsOutputStream.new(Chef::EventDispatch::Dispatcher.new, name: :execute)
 
   let(:opts) do
     {
-      timeout:      3600,
-      returns:      0,
-      log_level:    :info,
-      log_tag:      new_resource.to_s,
+      timeout: 3600,
+      returns: 0,
+      log_level: :info,
+      default_env: false,
+      log_tag: new_resource.to_s,
     }
   end
 
@@ -41,16 +42,9 @@ describe Chef::Provider::Execute do
 
   before do
     allow(Chef::EventDispatch::EventsOutputStream).to receive(:new) { @live_stream }
-    allow(ChefConfig).to receive(:windows?) { false }
-    @original_log_level = Chef::Log.level
+    allow(ChefUtils).to receive(:windows?) { false }
     Chef::Log.level = :info
     allow(STDOUT).to receive(:tty?).and_return(false)
-  end
-
-  after do
-    Chef::Log.level = @original_log_level
-    Chef::Config[:always_stream_execute] = false
-    Chef::Config[:daemon] = false
   end
 
   describe "#initialize" do
@@ -83,7 +77,25 @@ describe Chef::Provider::Execute do
       expect(new_resource).to be_updated
     end
 
-    it "if you pass a command attribute, it runs the command" do
+    # this next test is tightly coupled to the implementation of the underlying shell_out mixin that we're using
+    # but the point is to ensure that we are not picking up the PATH mangling and locale-variable mangling that the internal
+    # shell_out API uses.  we are asserting that we emulate `ls -la` when the user does `execute "ls -la"`, and to
+    # do that we get dirty and start mocking the implementation of the shell_out mixin itself.  while arguments like
+    # "timeout", "returns", "log_level" and "log_tag" appear here, we MUST NOT have an "environment" or "env" argument
+    # that we are passing to Mixlib::ShellOut by default -- ever.  you might have to add some other argument here from
+    # time to time, but you MUST NOT change the environment.
+    it "does not use shell_out in such a way as to insert extra environment variables" do
+      mock = instance_double(Mixlib::ShellOut)
+      expect(Mixlib::ShellOut).to receive(:new).with("foo_resource", { timeout: 3600, returns: 0, log_level: :info, log_tag: "execute[foo_resource]" }).and_return(mock)
+      expect(mock).to receive(:live_stream=).with(nil)
+      allow(mock).to receive(:live_stream)
+      expect(mock).to receive(:run_command)
+      expect(mock).to receive(:error!)
+      provider.run_action(:run)
+      expect(new_resource).to be_updated
+    end
+
+    it "if you pass a command property, it runs the command" do
       new_resource.command "/usr/argelbargle/bin/oogachacka 12345"
       expect(provider).to receive(:shell_out!).with(new_resource.command, opts)
       expect(provider).to receive(:converge_by).with("execute #{new_resource.command}").and_call_original
@@ -92,7 +104,7 @@ describe Chef::Provider::Execute do
       expect(new_resource).to be_updated
     end
 
-    it "should honor sensitive attribute" do
+    it "should honor sensitive property" do
       new_resource.sensitive true
       # Since the resource is sensitive, it should not have :live_stream set
       opts.delete(:live_stream)
@@ -118,19 +130,9 @@ describe Chef::Provider::Execute do
         new_resource.creates "foo_resource"
       end
 
-      it "should warn in Chef-12", chef: "< 13" do
-        expect(Chef::Log).to receive(:warn).with(/relative path/)
-        expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
+      it "should raise if user specified relative path without cwd for Chef-13" do
         expect(provider).not_to receive(:shell_out!)
-        provider.run_action(:run)
-        expect(new_resource).not_to be_updated
-      end
-
-      it "should raise if user specified relative path without cwd for Chef-13", chef: ">= 13" do
-        expect(Chef::Log).to receive(:warn).with(/relative path/)
-        expect(FileTest).to receive(:exist?).with(new_resource.creates).and_return(true)
-        expect(provider).not_to receive(:shell_out!)
-        expect { provider.run_action(:run) }.to raise_error # @todo: add a real error for Chef-13
+        expect { provider.run_action(:run) }.to raise_error(Chef::Exceptions::Execute)
       end
     end
 
@@ -238,6 +240,5 @@ describe Chef::Provider::Execute do
 
       end
     end
-
   end
 end

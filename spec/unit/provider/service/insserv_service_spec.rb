@@ -1,6 +1,6 @@
 #
 # Author:: Bryan McLellan <btm@loftninjas.org>
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,20 +23,20 @@ describe Chef::Provider::Service::Insserv do
     @node = Chef::Node.new
     @events = Chef::EventDispatch::Dispatcher.new
     @run_context = Chef::RunContext.new(@node, {}, @events)
-    @node.automatic_attrs[:command] = { :ps => "ps -ax" }
+    @node.automatic_attrs[:command] = { ps: "ps -ax" }
 
     @new_resource = Chef::Resource::Service.new("initgrediant")
     @current_resource = Chef::Resource::Service.new("initgrediant")
 
     @provider = Chef::Provider::Service::Insserv.new(@new_resource, @run_context)
-    @status = double("Process::Status mock", :exitstatus => 0, :stdout => "")
+    @status = double("Process::Status mock", exitstatus: 0, stdout: "")
     allow(@provider).to receive(:shell_out!).and_return(@status)
   end
 
   describe "load_current_resource" do
     describe "when startup links exist" do
       before do
-        allow(Dir).to receive(:glob).with("/etc/rc**/S*initgrediant").and_return(["/etc/rc5.d/S18initgrediant", "/etc/rc2.d/S18initgrediant", "/etc/rc4.d/S18initgrediant", "/etc/rc3.d/S18initgrediant"])
+        allow(Dir).to receive(:glob).with("/etc/rc*/**/S*initgrediant").and_return(["/etc/rc.d/rc5.d/S18initgrediant", "/etc/rc.d/rc2.d/S18initgrediant", "/etc/rc.d/rc4.d/S18initgrediant", "/etc/rc.d/rc3.d/S18initgrediant"])
       end
 
       it "sets the current enabled status to true" do
@@ -47,7 +47,7 @@ describe Chef::Provider::Service::Insserv do
 
     describe "when startup links do not exist" do
       before do
-        allow(Dir).to receive(:glob).with("/etc/rc**/S*initgrediant").and_return([])
+        allow(Dir).to receive(:glob).with("/etc/rc*/**/S*initgrediant").and_return([])
       end
 
       it "sets the current enabled status to false" do

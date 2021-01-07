@@ -63,7 +63,7 @@ describe Chef::EventDispatch::DSL do
     resource = Chef::Resource::RubyBlock.new("foo", run_context)
     resource.block {}
     resource.run_action(:run)
-    expect(calls).to eq([:started, :updated])
+    expect(calls).to eq(%i{started updated})
   end
 
   it "preserve instance variables across handler callbacks" do

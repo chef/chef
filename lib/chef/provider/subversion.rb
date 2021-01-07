@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@kallistec.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,13 +16,12 @@
 # limitations under the License.
 #
 
-#TODO subversion and git should both extend from a base SCM provider.
+# TODO subversion and git should both extend from a base SCM provider.
 
-require "chef/log"
-require "chef/provider"
-require "chef/mixin/command"
+require_relative "../log"
+require_relative "../provider"
 require "chef-config/mixin/fuzzy_hostname_matcher"
-require "fileutils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   class Provider
@@ -30,21 +29,16 @@ class Chef
 
       provides :subversion
 
-      SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/
+      SVN_INFO_PATTERN = /^([\w\s]+): (.+)$/.freeze
 
-      include Chef::Mixin::Command
       include ChefConfig::Mixin::FuzzyHostnameMatcher
 
-      def whyrun_supported?
-        true
-      end
-
       def load_current_resource
-        @current_resource = Chef::Resource::Subversion.new(@new_resource.name)
+        @current_resource = Chef::Resource::Subversion.new(new_resource.name)
 
-        unless [:export, :force_export].include?(Array(@new_resource.action).first)
+        unless %i{export force_export}.include?(Array(new_resource.action).first)
           if current_revision = find_current_revision
-            @current_resource.revision current_revision
+            current_resource.revision current_revision
           end
         end
       end
@@ -53,47 +47,47 @@ class Chef
         requirements.assert(:all_actions) do |a|
           # Make sure the parent dir exists, or else fail.
           # for why run, print a message explaining the potential error.
-          parent_directory = ::File.dirname(@new_resource.destination)
+          parent_directory = ::File.dirname(new_resource.destination)
           a.assertion { ::File.directory?(parent_directory) }
           a.failure_message(Chef::Exceptions::MissingParentDirectory,
-            "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{parent_directory} does not exist")
+            "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{parent_directory} does not exist")
           a.whyrun("Directory #{parent_directory} does not exist, assuming it would have been created")
         end
       end
 
-      def action_checkout
+      action :checkout do
         if target_dir_non_existent_or_empty?
-          converge_by("perform checkout of #{@new_resource.repository} into #{@new_resource.destination}") do
+          converge_by("perform checkout of #{new_resource.repository} into #{new_resource.destination}") do
             shell_out!(checkout_command, run_options)
           end
         else
-          Chef::Log.debug "#{@new_resource} checkout destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.trace "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 
-      def action_export
+      action :export do
         if target_dir_non_existent_or_empty?
           action_force_export
         else
-          Chef::Log.debug "#{@new_resource} export destination #{@new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.trace "#{new_resource} export destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 
-      def action_force_export
-        converge_by("export #{@new_resource.repository} into #{@new_resource.destination}") do
+      action :force_export do
+        converge_by("export #{new_resource.repository} into #{new_resource.destination}") do
           shell_out!(export_command, run_options)
         end
       end
 
-      def action_sync
+      action :sync do
         assert_target_directory_valid!
-        if ::File.exist?(::File.join(@new_resource.destination, ".svn"))
+        if ::File.exist?(::File.join(new_resource.destination, ".svn"))
           current_rev = find_current_revision
-          Chef::Log.debug "#{@new_resource} current revision: #{current_rev} target revision: #{revision_int}"
+          logger.trace "#{new_resource} current revision: #{current_rev} target revision: #{revision_int}"
           unless current_revision_matches_target_revision?
-            converge_by("sync #{@new_resource.destination} from #{@new_resource.repository}") do
+            converge_by("sync #{new_resource.destination} from #{new_resource.repository}") do
               shell_out!(sync_command, run_options)
-              Chef::Log.info "#{@new_resource} updated to revision: #{revision_int}"
+              logger.info "#{new_resource} updated to revision: #{revision_int}"
             end
           end
         else
@@ -102,24 +96,24 @@ class Chef
       end
 
       def sync_command
-        c = scm :update, @new_resource.svn_arguments, verbose, authentication, proxy, "-r#{revision_int}", @new_resource.destination
-        Chef::Log.debug "#{@new_resource} updated working copy #{@new_resource.destination} to revision #{@new_resource.revision}"
+        c = scm :update, new_resource.svn_arguments, verbose, authentication, proxy, "-r#{revision_int}", new_resource.destination
+        logger.trace "#{new_resource} updated working copy #{new_resource.destination} to revision #{new_resource.revision}"
         c
       end
 
       def checkout_command
-        c = scm :checkout, @new_resource.svn_arguments, verbose, authentication, proxy,
-          "-r#{revision_int}", @new_resource.repository, @new_resource.destination
-        Chef::Log.info "#{@new_resource} checked out #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
+        c = scm :checkout, new_resource.svn_arguments, verbose, authentication, proxy,
+          "-r#{revision_int}", new_resource.repository, new_resource.destination
+        logger.info "#{new_resource} checked out #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
         c
       end
 
       def export_command
         args = ["--force"]
-        args << @new_resource.svn_arguments << verbose << authentication << proxy <<
-          "-r#{revision_int}" << @new_resource.repository << @new_resource.destination
+        args << new_resource.svn_arguments << verbose << authentication << proxy <<
+          "-r#{revision_int}" << new_resource.repository << new_resource.destination
         c = scm :export, *args
-        Chef::Log.info "#{@new_resource} exported #{@new_resource.repository} at revision #{@new_resource.revision} to #{@new_resource.destination}"
+        logger.info "#{new_resource} exported #{new_resource.repository} at revision #{new_resource.revision} to #{new_resource.destination}"
         c
       end
 
@@ -128,11 +122,11 @@ class Chef
       # If the specified revision is an integer, trust it.
       def revision_int
         @revision_int ||= begin
-          if @new_resource.revision =~ /^\d+$/
-            @new_resource.revision
+          if /^\d+$/.match?(new_resource.revision)
+            new_resource.revision
           else
-            command = scm(:info, @new_resource.repository, @new_resource.svn_info_args, authentication, "-r#{@new_resource.revision}")
-            svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0, 1])).stdout
+            command = scm(:info, new_resource.repository, new_resource.svn_info_args, authentication, "-r#{new_resource.revision}")
+            svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
 
             extract_revision_info(svn_info)
           end
@@ -142,28 +136,35 @@ class Chef
       alias :revision_slug :revision_int
 
       def find_current_revision
-        return nil unless ::File.exist?(::File.join(@new_resource.destination, ".svn"))
+        return nil unless ::File.exist?(::File.join(new_resource.destination, ".svn"))
+
         command = scm(:info)
-        svn_info = shell_out!(command, run_options(:cwd => cwd, :returns => [0, 1])).stdout
+        svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
 
         extract_revision_info(svn_info)
       end
 
       def current_revision_matches_target_revision?
-        (!@current_resource.revision.nil?) && (revision_int.strip.to_i == @current_resource.revision.strip.to_i)
+        (!current_resource.revision.nil?) && (revision_int.strip.to_i == current_resource.revision.strip.to_i)
       end
 
       def run_options(run_opts = {})
-        run_opts[:user] = @new_resource.user if @new_resource.user
-        run_opts[:group] = @new_resource.group if @new_resource.group
-        run_opts[:timeout] = @new_resource.timeout if @new_resource.timeout
+        env = {}
+        if new_resource.user
+          run_opts[:user] = new_resource.user
+          env["HOME"] = get_homedir(new_resource.user)
+        end
+        run_opts[:group] = new_resource.group if new_resource.group
+        run_opts[:timeout] = new_resource.timeout if new_resource.timeout
+        env.merge!(new_resource.environment) if new_resource.environment
+        run_opts[:environment] = env unless env.empty?
         run_opts
       end
 
       private
 
       def cwd
-        @new_resource.destination
+        new_resource.destination
       end
 
       def verbose
@@ -181,7 +182,8 @@ class Chef
         rev = (repo_attrs["Last Changed Rev"] || repo_attrs["Revision"])
         rev.strip! if rev
         raise "Could not parse `svn info` data: #{svn_info}" if repo_attrs.empty?
-        Chef::Log.debug "#{@new_resource} resolved revision #{@new_resource.revision} to #{rev}"
+
+        logger.trace "#{new_resource} resolved revision #{new_resource.revision} to #{rev}"
         rev
       end
 
@@ -190,14 +192,15 @@ class Chef
       # switch, since Capistrano will check for that prompt in the output
       # and will respond appropriately.
       def authentication
-        return "" unless @new_resource.svn_username
-        result = "--username #{@new_resource.svn_username} "
-        result << "--password #{@new_resource.svn_password} "
+        return "" unless new_resource.svn_username
+
+        result = "--username #{new_resource.svn_username} "
+        result << "--password #{new_resource.svn_password} "
         result
       end
 
       def proxy
-        repo_uri = URI.parse(@new_resource.repository)
+        repo_uri = URI.parse(new_resource.repository)
         proxy_uri = Chef::Config.proxy_uri(repo_uri.scheme, repo_uri.host, repo_uri.port)
         return "" if proxy_uri.nil?
 
@@ -208,24 +211,38 @@ class Chef
 
       def scm(*args)
         binary = svn_binary
-        binary = "\"#{binary}\"" if binary =~ /\s/
+        binary = "\"#{binary}\"" if /\s/.match?(binary)
         [binary, *args].compact.join(" ")
       end
 
       def target_dir_non_existent_or_empty?
-        !::File.exist?(@new_resource.destination) || Dir.entries(@new_resource.destination).sort == [".", ".."]
+        !::File.exist?(new_resource.destination) || Dir.entries(new_resource.destination).sort == [".", ".."]
       end
 
       def svn_binary
-        @new_resource.svn_binary ||
-          (Chef::Platform.windows? ? "svn.exe" : "svn")
+        new_resource.svn_binary ||
+          (ChefUtils.windows? ? "svn.exe" : "svn")
       end
 
       def assert_target_directory_valid!
-        target_parent_directory = ::File.dirname(@new_resource.destination)
+        target_parent_directory = ::File.dirname(new_resource.destination)
         unless ::File.directory?(target_parent_directory)
-          msg = "Cannot clone #{@new_resource} to #{@new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
+          msg = "Cannot clone #{new_resource} to #{new_resource.destination}, the enclosing directory #{target_parent_directory} does not exist"
           raise Chef::Exceptions::MissingParentDirectory, msg
+        end
+      end
+
+      # Returns the home directory of the user
+      # @param [String] user must be a string.
+      # @return [String] the home directory of the user.
+      #
+      def get_homedir(user)
+        require "etc" unless defined?(Etc)
+        case user
+        when Integer
+          Etc.getpwuid(user).dir
+        else
+          Etc.getpwnam(user.to_s).dir
         end
       end
     end

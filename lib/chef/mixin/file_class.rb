@@ -2,7 +2,7 @@
 # Author:: Mark Mzyk <mmzyk@chef.io>
 # Author:: Seth Chisamore <schisamo@chef.io>
 # Author:: Bryan McLellan <btm@chef.io>
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,8 +23,8 @@ class Chef
     module FileClass
 
       def file_class
-        @host_os_file ||= if Chef::Platform.windows?
-                            require "chef/win32/file"
+        @host_os_file ||= if ChefUtils.windows?
+                            require_relative "../win32/file"
                             Chef::ReservedNames::Win32::File
                           else
                             ::File

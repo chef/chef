@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,78 +20,99 @@ require "spec_helper"
 
 describe Chef::Resource::RemoteDirectory do
 
-  before(:each) do
-    @resource = Chef::Resource::RemoteDirectory.new("/etc/dunk")
+  let(:resource) { Chef::Resource::RemoteDirectory.new("/etc/dunk") }
+
+  it "the path property is the name_property" do
+    expect(resource.path).to eql("/etc/dunk")
   end
 
-  it "should create a new Chef::Resource::RemoteDirectory" do
-    expect(@resource).to be_a_kind_of(Chef::Resource)
-    expect(@resource).to be_a_kind_of(Chef::Resource::RemoteDirectory)
+  it "sets the default action as :create" do
+    expect(resource.action).to eql([:create])
   end
 
-  it "should set the path to the first argument to new" do
-    expect(@resource.path).to eql("/etc/dunk")
+  it "supports :create, :create_if_missing, :delete actions" do
+    expect { resource.action :create }.not_to raise_error
+    expect { resource.action :create_if_missing }.not_to raise_error
+    expect { resource.action :delete }.not_to raise_error
   end
 
-  it "should accept a string for the remote directory source" do
-    @resource.source "foo"
-    expect(@resource.source).to eql("foo")
+  it "accepts a String for the cookbook property" do
+    resource.cookbook "foo"
+    expect(resource.cookbook).to eql("foo")
   end
 
-  it "should have the basename of the remote directory resource as the default source" do
-    expect(@resource.source).to eql("dunk")
+  it "accepts a String for the source property" do
+    resource.source "foo"
+    expect(resource.source).to eql("foo")
   end
 
-  it "should accept a number for the remote files backup" do
-    @resource.files_backup 1
-    expect(@resource.files_backup).to eql(1)
+  it "uses the basename of the pat property as the default value of the source property" do
+    resource.path "/foo/bar"
+    expect(resource.source).to eql("bar")
   end
 
-  it "should accept false for the remote files backup" do
-    @resource.files_backup false
-    expect(@resource.files_backup).to eql(false)
+  it "files_backup property defaults to 5" do
+    expect(resource.files_backup).to eql(5)
   end
 
-  it "should accept 3 or 4 digets for the files_mode" do
-    @resource.files_mode 100
-    expect(@resource.files_mode).to eql(100)
-    @resource.files_mode 1000
-    expect(@resource.files_mode).to eql(1000)
+  it "accepts an Integer for the files_backup property" do
+    resource.files_backup 1
+    expect(resource.files_backup).to eql(1)
   end
 
-  it "should accept a string or number for the files group" do
-    @resource.files_group "heart"
-    expect(@resource.files_group).to eql("heart")
-    @resource.files_group 1000
-    expect(@resource.files_group).to eql(1000)
+  it "accepts false for the files_backup property" do
+    resource.files_backup false
+    expect(resource.files_backup).to eql(false)
   end
 
-  it "should accept a string or number for the files owner" do
-    @resource.files_owner "heart"
-    expect(@resource.files_owner).to eql("heart")
-    @resource.files_owner 1000
-    expect(@resource.files_owner).to eql(1000)
+  it "accepts 3 or 4 digits for the files_mode property" do
+    resource.files_mode 100
+    expect(resource.files_mode).to eql(100)
+    resource.files_mode 1000
+    expect(resource.files_mode).to eql(1000)
+  end
+
+  it "accepts a String or number for the files_group property" do
+    resource.files_group "heart"
+    expect(resource.files_group).to eql("heart")
+    resource.files_group 1000
+    expect(resource.files_group).to eql(1000)
+  end
+
+  it "accepts a String or number for the files_owner property" do
+    resource.files_owner "heart"
+    expect(resource.files_owner).to eql("heart")
+    resource.files_owner 1000
+    expect(resource.files_owner).to eql(1000)
+  end
+
+  it "overwrite property has the default value of true" do
+    expect(resource.overwrite).to be true
+  end
+
+  it "recursive property has the default value of true" do
+    expect(resource.recursive).to be true
   end
 
   describe "when it has cookbook, files owner, files mode, and source" do
     before do
-      @resource.path("/var/path/")
-      @resource.cookbook("pokemon.rb")
-      @resource.files_owner("root")
-      @resource.files_group("supergroup")
-      @resource.files_mode("0664")
-      @resource.source("/var/source/")
+      resource.path("/var/path/")
+      resource.cookbook("pokemon.rb")
+      resource.files_owner("root")
+      resource.files_group("supergroup")
+      resource.files_mode("0664")
+      resource.source("/var/source/")
     end
 
     it "describes its state" do
-      state = @resource.state
+      state = resource.state_for_resource_reporter
       expect(state[:files_owner]).to eq("root")
       expect(state[:files_group]).to eq("supergroup")
       expect(state[:files_mode]).to eq("0664")
     end
 
-    it "returns the path  as its identity" do
-      expect(@resource.identity).to eq("/var/path/")
+    it "returns the path as its identity" do
+      expect(resource.identity).to eq("/var/path/")
     end
   end
 end

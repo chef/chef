@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/api"
+require_relative "../api"
 
 class Chef
   module ReservedNames::Win32
@@ -43,7 +43,7 @@ class Chef
 
         ffi_lib "psapi"
 
-        safe_attach_function :GetProcessMemoryInfo, [ :HANDLE, :pointer, :DWORD ], :BOOL
+        safe_attach_function :GetProcessMemoryInfo, %i{HANDLE pointer DWORD}, :BOOL
 
       end
     end

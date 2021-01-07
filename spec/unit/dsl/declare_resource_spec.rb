@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,7 +19,7 @@ require "spec_helper"
 
 describe Chef::ResourceCollection do
   let(:run_context) do
-    cookbook_repo = File.expand_path(File.join(File.dirname(__FILE__), "..", "..", "data", "cookbooks"))
+    cookbook_repo = File.expand_path(File.join(__dir__, "..", "..", "data", "cookbooks"))
     cookbook_loader = Chef::CookbookLoader.new(cookbook_repo)
     cookbook_loader.load_cookbooks
     node = Chef::Node.new
@@ -30,6 +30,15 @@ describe Chef::ResourceCollection do
 
   let(:recipe) do
     Chef::Recipe.new("hjk", "test", run_context)
+  end
+
+  describe "mixed in correctly" do
+    it "the resources() method winds up in the right classes" do
+      methods = %i{resources find_resource find_resource! edit_resource edit_resource! delete_resource delete_resource! declare_resource build_resource}
+      expect(Chef::Resource.instance_methods).to include(*methods)
+      expect(Chef::Recipe.instance_methods).to include(*methods)
+      expect(Chef::Provider.instance_methods).to include(*methods)
+    end
   end
 
   describe "#declare_resource" do

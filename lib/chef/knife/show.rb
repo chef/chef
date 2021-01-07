@@ -1,21 +1,37 @@
-require "chef/chef_fs/knife"
+#
+# License:: Apache License, Version 2.0
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+require_relative "../chef_fs/knife"
 
 class Chef
   class Knife
     class Show < Chef::ChefFS::Knife
-      banner "knife show [PATTERN1 ... PATTERNn]"
+      banner "knife show [PATTERN1 ... PATTERNn] (options)"
 
       category "path-based"
 
       deps do
-        require "chef/chef_fs/file_system"
-        require "chef/chef_fs/file_system/exceptions"
+        require_relative "../chef_fs/file_system"
+        require_relative "../chef_fs/file_system/exceptions"
       end
 
       option :local,
-        :long => "--local",
-        :boolean => true,
-        :description => "Show local files instead of remote"
+        long: "--local",
+        boolean: true,
+        description: "Show local files instead of remote."
 
       def run
         # Get the matches (recursively)

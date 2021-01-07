@@ -2,6 +2,7 @@
 # Author:: Michael Leinartas (<mleinartas@gmail.com>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright 2010-2016, Michael Leinartas
+# Copyright:: Copyright (c) Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,36 +18,81 @@
 # limitations under the License.
 #
 
+require_relative "../resource"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "ohai" unless defined?(Ohai::System)
+
 class Chef
   class Resource
     class Ohai < Chef::Resource
+      unified_mode true
 
-      identity_attr :name
+      provides :ohai
 
-      state_attrs :plugin
+      description "Use the **ohai** resource to reload the Ohai configuration on a node. This allows recipes that change system attributes (like a recipe that adds a user) to refer to those attributes later on during the #{ChefUtils::Dist::Infra::PRODUCT} run."
 
-      default_action :reload
+      examples <<~DOC
+      Reload All Ohai Plugins
 
-      def initialize(name, run_context = nil)
-        super
-        @name = name
-        @plugin = nil
+      ```ruby
+      ohai 'reload' do
+        action :reload
+      end
+      ```
+
+      Reload A Single Ohai Plugin
+
+      ```ruby
+      ohai 'reload' do
+        plugin 'ipaddress'
+        action :reload
+      end
+      ```
+
+      Reload Ohai after a new user is created
+
+      ```ruby
+      ohai 'reload_passwd' do
+        action :nothing
+        plugin 'etc'
       end
 
-      def plugin(arg = nil)
-        set_or_return(
-          :plugin,
-          arg,
-          :kind_of => [ String ]
-        )
+      user 'daemon_user' do
+        home '/dev/null'
+        shell '/sbin/nologin'
+        system true
+        notifies :reload, 'ohai[reload_passwd]', :immediately
       end
 
-      def name(arg = nil)
-        set_or_return(
-          :name,
-          arg,
-          :kind_of => [ String ]
-        )
+      ruby_block 'just an example' do
+        block do
+          # These variables will now have the new values
+          puts node['etc']['passwd']['daemon_user']['uid']
+          puts node['etc']['passwd']['daemon_user']['gid']
+        end
+      end
+      ```
+      DOC
+
+      property :plugin, String,
+        description: "Specific Ohai attribute data to reload. This property behaves similar to specifying attributes when running Ohai on the command line and takes the attribute that you wish to reload instead of the actual plugin name. For instance, you can pass `ipaddress` to reload `node['ipaddress']` even though that data comes from the `Network` plugin. If this property is not specified, #{ChefUtils::Dist::Infra::PRODUCT} will reload all plugins."
+
+      def load_current_resource
+        true
+      end
+
+      action :reload do
+        converge_by("re-run ohai and merge results into node attributes") do
+          ohai = ::Ohai::System.new
+
+          # If new_resource.plugin is nil, ohai will reload all the plugins
+          # Otherwise it will only reload the specified plugin
+          # Note that any changes to plugins, or new plugins placed on
+          # the path are picked up by ohai.
+          ohai.all_plugins new_resource.plugin
+          node.automatic_attrs.merge! ohai.data
+          logger.info("#{new_resource} reloaded")
+        end
       end
     end
   end

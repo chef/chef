@@ -1,6 +1,6 @@
 #
 # Author:: Lamont Granquist (<lamont@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,20 +30,20 @@ describe Chef::Provider::Template::Content do
 
   let(:new_resource) do
     double("Chef::Resource::Template (new)",
-         :cookbook_name => "openldap",
-         :recipe_name => "default",
-         :source_line => "/Users/lamont/solo/cookbooks/openldap/recipes/default.rb:2:in `from_file'",
-         :source_line_file => "/Users/lamont/solo/cookbooks/openldap/recipes/default.rb",
-         :source_line_number => "2",
-         :source => "openldap_stuff.conf.erb",
-         :name => "openldap_stuff.conf",
-         :path => resource_path,
-         :local => false,
-         :cookbook => nil,
-         :variables => {},
-         :inline_helper_blocks => {},
-         :inline_helper_modules => [],
-         :helper_modules => [])
+      cookbook_name: "openldap",
+      recipe_name: "default",
+      source_line: "/Users/lamont/solo/cookbooks/openldap/recipes/default.rb:2:in `from_file'",
+      source_line_file: "/Users/lamont/solo/cookbooks/openldap/recipes/default.rb",
+      source_line_number: "2",
+      source: "openldap_stuff.conf.erb",
+      name: "openldap_stuff.conf",
+      path: resource_path,
+      local: false,
+      cookbook: nil,
+      variables: {},
+      inline_helper_blocks: {},
+      inline_helper_modules: [],
+      helper_modules: [])
   end
 
   let(:rendered_file_locations) do
@@ -58,7 +58,7 @@ describe Chef::Provider::Template::Content do
     cl.load_cookbooks
     cookbook_collection = Chef::CookbookCollection.new(cl)
     node = Chef::Node.new
-    double("Chef::Resource::RunContext", :node => node, :cookbook_collection => cookbook_collection)
+    double("Chef::Resource::RunContext", node: node, cookbook_collection: cookbook_collection)
   end
 
   let(:content) do
@@ -130,39 +130,39 @@ describe Chef::Provider::Template::Content do
   describe "when using location helpers" do
     let(:new_resource) do
       double("Chef::Resource::Template (new)",
-             :cookbook_name => "openldap",
-             :recipe_name => "default",
-             :source_line => CHEF_SPEC_DATA + "/cookbooks/openldap/recipes/default.rb:2:in `from_file'",
-             :source_line_file => CHEF_SPEC_DATA + "/cookbooks/openldap/recipes/default.rb",
-             :source_line_number => "2",
-             :source => "helpers.erb",
-             :name => "helpers.erb",
-             :path => CHEF_SPEC_DATA + "/cookbooks/openldap/templates/default/helpers.erb",
-             :local => false,
-             :cookbook => nil,
-             :variables => {},
-             :inline_helper_blocks => {},
-             :inline_helper_modules => [],
-             :helper_modules => [])
+        cookbook_name: "openldap",
+        recipe_name: "default",
+        source_line: CHEF_SPEC_DATA + "/cookbooks/openldap/recipes/default.rb:2:in `from_file'",
+        source_line_file: CHEF_SPEC_DATA + "/cookbooks/openldap/recipes/default.rb",
+        source_line_number: "2",
+        source: "helpers.erb",
+        name: "helpers.erb",
+        path: CHEF_SPEC_DATA + "/cookbooks/openldap/templates/default/helpers.erb",
+        local: false,
+        cookbook: nil,
+        variables: {},
+        inline_helper_blocks: {},
+        inline_helper_modules: [],
+        helper_modules: [])
     end
 
     it "creates the template with the rendered content" do
-      expect(IO.read(content.tempfile.path)).to eql <<EOF
-openldap
-default
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
-2
-helpers.erb
-#{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
-openldap
-default
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
-#{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
-2
-helpers.erb
-#{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
-EOF
+      expect(IO.read(content.tempfile.path)).to eql <<~EOF
+        openldap
+        default
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
+        2
+        helpers.erb
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
+        openldap
+        default
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb:2:in `from_file'
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/recipes/default.rb
+        2
+        helpers.erb
+        #{CHEF_SPEC_DATA}/cookbooks/openldap/templates/default/helpers.erb
+      EOF
     end
 
   end

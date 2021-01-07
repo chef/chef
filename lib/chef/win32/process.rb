@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/process"
-require "chef/win32/api/psapi"
-require "chef/win32/error"
-require "chef/win32/handle"
-require "ffi"
+require_relative "api/process"
+require_relative "api/psapi"
+require_relative "error"
+require_relative "handle"
+require "ffi" unless defined?(FFI)
 
 class Chef
   module ReservedNames::Win32
@@ -82,8 +82,8 @@ class Chef
         (call_succeeded != 0) && (is_64_bit_process_result.get_int(0) != 0)
       end
 
-        # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
-        # AND the PROCESS_VM_READ right
+      # Must have PROCESS_QUERY_INFORMATION or PROCESS_QUERY_LIMITED_INFORMATION rights,
+      # AND the PROCESS_VM_READ right
       def self.get_process_memory_info(handle)
         memory_info = PROCESS_MEMORY_COUNTERS.new
         unless GetProcessMemoryInfo(handle.handle, memory_info, memory_info.size)

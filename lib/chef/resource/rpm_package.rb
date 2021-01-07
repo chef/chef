@@ -16,17 +16,28 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/rpm"
+require_relative "package"
 
 class Chef
   class Resource
     class RpmPackage < Chef::Resource::Package
-      resource_name :rpm_package
-      provides :rpm_package, os: %w{linux aix}
+      unified_mode true
 
-      property :allow_downgrade, [ true, false ], default: false, desired_state: false
+      provides :rpm_package
 
+      description "Use the **rpm_package** resource to manage packages using the RPM Package Manager."
+
+      property :allow_downgrade, [ TrueClass, FalseClass ],
+        description: "Allow downgrading a package to satisfy requested version requirements.",
+        default: true,
+        desired_state: false
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

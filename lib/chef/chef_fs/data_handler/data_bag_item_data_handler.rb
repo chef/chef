@@ -1,10 +1,12 @@
-require "chef/chef_fs/data_handler/data_handler_base"
-require "chef/data_bag_item"
+require_relative "data_handler_base"
+require_relative "../../data_bag_item"
 
 class Chef
   module ChefFS
     module DataHandler
       class DataBagItemDataHandler < DataHandlerBase
+        RESERVED_NAMES = /^(node|role|environment|client)$/.freeze
+
         def normalize(data_bag_item, entry)
           # If it's wrapped with raw_data, unwrap it.
           if data_bag_item["json_class"] == "Chef::DataBagItem" && data_bag_item["raw_data"]
@@ -35,7 +37,7 @@ class Chef
         end
 
         def preserve_key?(key)
-          return key == "id"
+          key == "id"
         end
 
         def chef_class
@@ -43,6 +45,7 @@ class Chef
         end
 
         # Verify that the JSON hash for this type has a key that matches its name.
+        # Also check that the data bag name is not a reserved search index name.
         #
         # @param object [Object] JSON hash of the object
         # @param entry [Chef::ChefFS::FileSystem::BaseFSObject] filesystem object we are verifying
@@ -51,7 +54,9 @@ class Chef
         def verify_integrity(object, entry)
           base_name = remove_dot_json(entry.name)
           if object["raw_data"]["id"] != base_name
-            yield("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object['raw_data']['id']}')")
+            yield("ID in #{entry.path_for_printing} must be '#{base_name}' (is '#{object["raw_data"]["id"]}')")
+          elsif RESERVED_NAMES.match?(entry.parent.name)
+            yield("Data bag name ('#{entry.parent.name}') must not match #{RESERVED_NAMES.inspect}")
           end
         end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -100,7 +100,7 @@ describe Chef::RunStatus do
 
       describe "and some have been updated" do
         before do
-          @all_resources.first.updated = true
+          @all_resources.first.updated_by_last_action true
         end
 
         it "lists the updated resources" do

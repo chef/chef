@@ -1,6 +1,6 @@
 #
 # Author:: Thom May (<thom@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,7 +22,7 @@ require "chef/chef_fs/file_system/base_fs_object"
 require "chef/chef_fs/file_system/exceptions"
 require "chef/chef_fs/file_system/nonexistent_fs_object"
 
-CHILD_FILES = %w{ test1.json test2.json skip test3.json skip2 test4 }
+CHILD_FILES = %w{ test1.json test2.json skip test3.json skip2 test4 }.freeze
 
 class TestDirectory < Chef::ChefFS::FileSystem::Repository::Directory
   def make_child_entry(name)
@@ -88,7 +88,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     it "returns a non existent object otherwise" do
-      file_double = instance_double(TestFile, :name_valid? => false)
+      file_double = instance_double(TestFile, name_valid?: false)
       expect(TestFile).to receive(:new).with("test_child", test_directory).and_return(file_double)
       expect(test_directory.child("test_child")).to be_an_instance_of(Chef::ChefFS::FileSystem::NonexistentFSObject)
     end
@@ -106,7 +106,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     it "filters invalid names" do
-      expect(test_directory.children.map { |c| c.name }).to eql %w{ test1.json test2.json test3.json }
+      expect(test_directory.children.map(&:name)).to eql %w{ test1.json test2.json test3.json }
     end
   end
 
@@ -152,7 +152,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
     end
 
     after do
-      FileUtils.rmdir(tmp_dir)
+      FileUtils.rm_rf(tmp_dir)
     end
   end
 

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,9 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/win32/security"
-require "chef/win32/security/acl"
-require "chef/win32/security/sid"
+require_relative "../security"
+require_relative "acl"
+require_relative "sid"
 
 class Chef
   module ReservedNames::Win32
@@ -42,10 +42,10 @@ class Chef
         # compare an existing ACE with one you want to create.
         def predict_rights_mask(generic_mask)
           mask = generic_mask
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
-          #mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_READ if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_WRITE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_EXECUTE if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_EXECUTE) != 0
+          # mask |= Chef::ReservedNames::Win32::API::Security::STANDARD_RIGHTS_ALL if (mask | Chef::ReservedNames::Win32::API::Security::GENERIC_ALL) != 0
           if type == :SE_FILE_OBJECT
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_READ if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_READ) != 0
             mask |= Chef::ReservedNames::Win32::API::Security::FILE_GENERIC_WRITE if (mask & Chef::ReservedNames::Win32::API::Security::GENERIC_WRITE) != 0
@@ -71,36 +71,36 @@ class Chef
         end
 
         def dacl=(val)
-          Security.set_named_security_info(path, type, :dacl => val)
+          Security.set_named_security_info(path, type, dacl: val)
         end
 
         # You don't set dacl_inherits without also setting dacl,
         # because Windows gets angry and denies you access.  So
         # if you want to do that, you may as well do both at once.
         def set_dacl(dacl, dacl_inherits)
-          Security.set_named_security_info(path, type, :dacl => dacl, :dacl_inherits => dacl_inherits)
+          Security.set_named_security_info(path, type, dacl: dacl, dacl_inherits: dacl_inherits)
         end
 
         def group=(val)
-          Security.set_named_security_info(path, type, :group => val)
+          Security.set_named_security_info(path, type, group: val)
         end
 
         def owner=(val)
           # TODO to fix serious permissions problems, we may need to enable SeBackupPrivilege.  But we might need it (almost) everywhere else, too.
           Security.with_privileges("SeTakeOwnershipPrivilege", "SeRestorePrivilege") do
-            Security.set_named_security_info(path, type, :owner => val)
+            Security.set_named_security_info(path, type, owner: val)
           end
         end
 
         def sacl=(val)
           Security.with_privileges("SeSecurityPrivilege") do
-            Security.set_named_security_info(path, type, :sacl => val)
+            Security.set_named_security_info(path, type, sacl: val)
           end
         end
 
         def set_sacl(sacl, sacl_inherits)
           Security.with_privileges("SeSecurityPrivilege") do
-            Security.set_named_security_info(path, type, :sacl => sacl, :sacl_inherits => sacl_inherits)
+            Security.set_named_security_info(path, type, sacl: sacl, sacl_inherits: sacl_inherits)
           end
         end
       end

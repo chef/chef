@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,29 +21,23 @@ module ChefConfig
   # logger for `ChefConfig.logger`
   class NullLogger
 
-    def <<(_msg)
-    end
+    def <<(_msg); end
 
-    def add(_severity, _message = nil, _progname = nil)
-    end
+    def add(_severity, _message = nil, _progname = nil); end
 
-    def debug(_progname = nil, &block)
-    end
+    def trace(_progname = nil, &block); end
 
-    def info(_progname = nil, &block)
-    end
+    def debug(_progname = nil, &block); end
 
-    def warn(_progname = nil, &block)
-    end
+    def info(_progname = nil, &block); end
 
-    def deprecation(_progname = nil, &block)
-    end
+    def warn(_progname = nil, &block); end
 
-    def error(_progname = nil, &block)
-    end
+    def deprecation(_progname = nil, &block); end
 
-    def fatal(_progname = nil, &block)
-    end
+    def error(_progname = nil, &block); end
+
+    def fatal(_progname = nil, &block); end
 
   end
 

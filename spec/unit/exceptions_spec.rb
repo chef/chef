@@ -3,7 +3,7 @@
 # Author:: Christopher Walters (<cw@chef.io>)
 # Author:: Kyle Goodwin (<kgoodwin@primerevenue.com>)
 # Copyright:: Copyright 2010-2016, Thomas Bishop
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,7 +25,7 @@ describe Chef::Exceptions do
   exception_to_super_class = {
     Chef::Exceptions::Application => RuntimeError,
     Chef::Exceptions::Cron => RuntimeError,
-    Chef::Exceptions::Env => RuntimeError,
+    Chef::Exceptions::WindowsEnv => RuntimeError,
     Chef::Exceptions::Exec => RuntimeError,
     Chef::Exceptions::FileNotFound => RuntimeError,
     Chef::Exceptions::Package => RuntimeError,
@@ -68,6 +68,8 @@ describe Chef::Exceptions do
     Chef::Exceptions::EnvironmentNotFound => RuntimeError,
     Chef::Exceptions::InvalidVersionConstraint => ArgumentError,
     Chef::Exceptions::IllegalVersionConstraint => NotImplementedError,
+    Chef::Exceptions::RegKeyValuesTypeMissing => ArgumentError,
+    Chef::Exceptions::RegKeyValuesDataMissing => ArgumentError,
   }
 
   exception_to_super_class.each do |exception, expected_super_class|

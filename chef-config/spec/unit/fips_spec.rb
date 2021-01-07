@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright (c) 2016 Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,12 @@
 require "chef-config/fips"
 require "spec_helper"
 
+begin
+  require "win32/registry" unless defined?(Win32::Registry)
+rescue LoadError
+  # not on unix
+end
+
 RSpec.describe "ChefConfig.fips?" do
   let(:enabled) { "0" }
 
@@ -26,7 +32,7 @@ RSpec.describe "ChefConfig.fips?" do
     let(:fips_path) { "/proc/sys/crypto/fips_enabled" }
 
     before(:each) do
-      allow(ChefConfig).to receive(:windows?).and_return(false)
+      allow(ChefUtils).to receive(:windows?).and_return(false)
       allow(::File).to receive(:exist?).with(fips_path).and_return(true)
       allow(::File).to receive(:read).with(fips_path).and_return(enabled)
     end
@@ -63,7 +69,7 @@ RSpec.describe "ChefConfig.fips?" do
     let(:win_reg_entry) { { "Enabled" => enabled } }
 
     before(:each) do
-      allow(ChefConfig).to receive(:windows?).and_return(true)
+      allow(ChefUtils).to receive(:windows?).and_return(true)
       allow(Win32::Registry::HKEY_LOCAL_MACHINE).to receive(:open).with(fips_key, arch).and_yield(win_reg_entry)
     end
 

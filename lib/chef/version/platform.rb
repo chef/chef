@@ -14,8 +14,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/version_class"
+require_relative "../version_class"
 
+# NOTE: this is fairly badly broken for its purpose and should not be used
+#       unless it gets fixed.
+
+# this strictly wants x, x.y, or x.y.z version constraints in the target and
+# will fail hard if it does not match.  the semantics that we need here is that
+# it must always do the best job that it can do and consume as much of the
+# offered version as it can.  since we accept arbitrarily parsed strings into
+# node[:platform_version] out of dozens or potentially hundreds of operating
+# systems this parsing code needs to be fixed to never raise.  the Gem::Version
+# class is a better model, and in fact it might be a substantially better approach
+# to base this class on Gem::Version and then do pre-mangling of things like windows
+# version strings via e.g. `.gsub(/R/, '.')`.  the raising behavior of this parser
+# however, breaks the ProviderResolver in a not just buggy but a "completely unfit
+# for purpose" way.
+#
+# TL;DR: MUST follow the second part of "Be conservative in what you send,
+# be liberal in what you accept"
+#
 class Chef
   class Version
     class Platform < Chef::Version

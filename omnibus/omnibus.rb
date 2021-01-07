@@ -1,5 +1,5 @@
 #
-# This file is used to configure the Omnibus projects in this repo. It contains
+# This file is used to configure the Chef Infra Client project. It contains
 # some minimal configuration examples for working with Omnibus. For a full list
 # of configurable options, please see the documentation for +omnibus/config.rb+.
 #
@@ -29,11 +29,9 @@
 env_omnibus_windows_arch = (ENV["OMNIBUS_WINDOWS_ARCH"] || "").downcase
 env_omnibus_windows_arch = :x86 unless %w{x86 x64}.include?(env_omnibus_windows_arch)
 
-windows_arch   env_omnibus_windows_arch
+windows_arch env_omnibus_windows_arch
 
-# Disable git caching
-# ------------------------------
-# use_git_caching false
+use_git_caching true
 
 # Enable S3 asset caching
 # ------------------------------
@@ -52,3 +50,4 @@ fetcher_read_timeout 120
 # local_software_dirs ['/path/to/local/software']
 
 fatal_transitive_dependency_licensing_warnings true
+fips_mode (ENV["OMNIBUS_FIPS_MODE"] || "").casecmp("true") >= 0

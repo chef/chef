@@ -1,6 +1,6 @@
 #--
 # Author:: Andrea Campi (<andrea.campi@zephirworks.com>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -43,19 +43,11 @@ class Chef
       protected
 
       def template_source_name(name, options)
-        if options[:source]
-          options[:source]
-        else
-          name
-        end
+        options[:source] || name
       end
 
       def find_cookbook_name(options)
-        if options[:cookbook]
-          options[:cookbook]
-        else
-          @cookbook_name
-        end
+        options[:cookbook] || @cookbook_name
       end
     end
   end

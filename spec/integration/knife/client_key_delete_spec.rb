@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -31,9 +32,9 @@ describe "knife client key delete", :workstation do
     it "deletes a client" do
       out = "Do you really want to delete the key named new for the client named car? (Y/N) "
       knife("client key create -k new car")
-      knife("client key delete car new", input: "Y").should_succeed stdout: out, stderr: <<EOM
-Deleted key named new for the client named car
-EOM
+      knife("client key delete car new", input: "Y").should_succeed stdout: out, stderr: <<~EOM
+        Deleted key named new for the client named car
+      EOM
 
       knife("client key list car").should_succeed ""
     end

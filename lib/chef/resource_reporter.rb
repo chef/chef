@@ -1,9 +1,9 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Prajakta Purohit (prajakta@chef.io>)
-# Auther:: Tyler Cloke (<tyler@opscode.com>)
+# Author:: Tyler Cloke (<tyler@opscode.com>)
 #
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,95 +19,44 @@
 # limitations under the License.
 #
 
-require "uri"
-require "securerandom"
-require "chef/event_dispatch/base"
+require_relative "event_dispatch/base"
 
 class Chef
   class ResourceReporter < EventDispatch::Base
+    def for_json(action_record)
+      new_resource = action_record.new_resource
+      current_resource = action_record.current_resource
 
-    ResourceReport = Struct.new(:new_resource,
-                                :current_resource,
-                                :action,
-                                :exception,
-                                :elapsed_time) do
+      as_hash = {}
+      as_hash["type"]     = new_resource.resource_name.to_sym
+      as_hash["name"]     = new_resource.name.to_s
+      as_hash["id"]       = new_resource.identity.to_s
+      as_hash["after"]    = new_resource.state_for_resource_reporter
+      as_hash["before"]   = current_resource ? current_resource.state_for_resource_reporter : {}
+      as_hash["duration"] = ( action_record.elapsed_time * 1000 ).to_i.to_s
+      as_hash["delta"]    = new_resource.diff if new_resource.respond_to?("diff")
+      as_hash["delta"]    = "" if as_hash["delta"].nil?
 
-      def self.new_with_current_state(new_resource, action, current_resource)
-        report = new
-        report.new_resource = new_resource
-        report.action = action
-        report.current_resource = current_resource
-        report
+      # TODO: rename as "action"
+      as_hash["result"] = action_record.action.to_s
+      if new_resource.cookbook_name
+        as_hash["cookbook_name"] = new_resource.cookbook_name
+        as_hash["cookbook_version"] = new_resource.cookbook_version.version
       end
 
-      def self.new_for_exception(new_resource, action)
-        report = new
-        report.new_resource = new_resource
-        report.action = action
-        report
-      end
+      as_hash
+    end
 
-      # Future: Some resources store state information that does not convert nicely
-      # to json. We can't call a resource's state method here, since there are conflicts
-      # with some LWRPs, so we can't override a resource's state method to return
-      # json-friendly state data.
-      #
-      # The registry key resource returns json-friendly state data through its state
-      # attribute, and uses a read-only variable for fetching true state data. If
-      # we have conflicts with other resources reporting json incompatible state, we
-      # may want to extend the state_attrs API with the ability to rename POST'd
-      # attrs.
-      def for_json
-        as_hash = {}
-        as_hash["type"]   = new_resource.resource_name.to_sym
-        as_hash["name"]   = new_resource.name.to_s
-        as_hash["id"]     = new_resource.identity.to_s
-        as_hash["after"]  = new_resource.state_for_resource_reporter
-        as_hash["before"] = current_resource ? current_resource.state_for_resource_reporter : {}
-        as_hash["duration"] = (elapsed_time * 1000).to_i.to_s
-        as_hash["delta"]  = new_resource.diff if new_resource.respond_to?("diff")
-        as_hash["delta"]  = "" if as_hash["delta"].nil?
-
-        # TODO: rename as "action"
-        as_hash["result"] = action.to_s
-        if success?
-        else
-          #as_hash["result"] = "failed"
-        end
-        if new_resource.cookbook_name
-          as_hash["cookbook_name"] = new_resource.cookbook_name
-          as_hash["cookbook_version"] = new_resource.cookbook_version.version
-        end
-
-        as_hash
-      end
-
-      def finish
-        self.elapsed_time = new_resource.elapsed_time
-      end
-
-      def success?
-        !self.exception
-      end
-    end # End class ResouceReport
-
-    attr_reader :updated_resources
     attr_reader :status
     attr_reader :exception
-    attr_reader :run_id
     attr_reader :error_descriptions
+    attr_reader :action_collection
+    attr_reader :rest_client
 
-    PROTOCOL_VERSION = "0.1.0"
+    PROTOCOL_VERSION = "0.1.0".freeze
 
     def initialize(rest_client)
-      if Chef::Config[:enable_reporting] && !Chef::Config[:why_run]
-        @reporting_enabled = true
-      else
-        @reporting_enabled = false
-      end
-      @updated_resources = []
-      @total_res_count = 0
-      @pending_update  = nil
+      @pending_update = nil
       @status = "success"
       @exception = nil
       @rest_client = rest_client
@@ -121,8 +70,8 @@ class Chef
       if reporting_enabled?
         begin
           resource_history_url = "reports/nodes/#{node_name}/runs"
-          server_response = @rest_client.post(resource_history_url, { :action => :start, :run_id => run_id,
-                                                                      :start_time => start_time.to_s }, headers)
+          server_response = rest_client.post(resource_history_url, { action: :start, run_id: run_id,
+                                                                     start_time: start_time.to_s }, headers)
         rescue Timeout::Error, Errno::EINVAL, Errno::ECONNRESET, EOFError, Net::HTTPBadResponse, Net::HTTPHeaderSyntaxError, Net::ProtocolError => e
           handle_error_starting_run(e, resource_history_url)
         end
@@ -154,53 +103,15 @@ class Chef
           Chef::Log.info(message + reason + reporting_status)
         else
           reporting_status = "Disabling reporting for run."
-          Chef::Log.debug(message + reason + reporting_status)
+          Chef::Log.trace(message + reason + reporting_status)
         end
       end
 
-      @reporting_enabled = false
+      @runs_endpoint_failed = true
     end
 
     def run_id
       @run_status.run_id
-    end
-
-    def resource_current_state_loaded(new_resource, action, current_resource)
-      unless nested_resource?(new_resource)
-        @pending_update = ResourceReport.new_with_current_state(new_resource, action, current_resource)
-      end
-    end
-
-    def resource_up_to_date(new_resource, action)
-      @total_res_count += 1
-      @pending_update = nil unless nested_resource?(new_resource)
-    end
-
-    def resource_skipped(resource, action, conditional)
-      @total_res_count += 1
-      @pending_update = nil unless nested_resource?(resource)
-    end
-
-    def resource_updated(new_resource, action)
-      @total_res_count += 1
-    end
-
-    def resource_failed(new_resource, action, exception)
-      @total_res_count += 1
-      unless nested_resource?(new_resource)
-        @pending_update ||= ResourceReport.new_for_exception(new_resource, action)
-        @pending_update.exception = exception
-      end
-      description = Formatters::ErrorMapper.resource_failed(new_resource, action, exception)
-      @error_descriptions = description.for_json
-    end
-
-    def resource_completed(new_resource)
-      if @pending_update && !nested_resource?(new_resource)
-        @pending_update.finish
-        @updated_resources << @pending_update
-        @pending_update = nil
-      end
     end
 
     def run_completed(node)
@@ -222,17 +133,22 @@ class Chef
       @expanded_run_list = run_list_expansion
     end
 
+    def action_collection_registration(action_collection)
+      @action_collection = action_collection
+      action_collection.register(self) if reporting_enabled?
+    end
+
     def post_reporting_data
       if reporting_enabled?
         run_data = prepare_run_data
         resource_history_url = "reports/nodes/#{node_name}/runs/#{run_id}"
         Chef::Log.info("Sending resource update report (run-id: #{run_id})")
-        Chef::Log.debug run_data.inspect
+        Chef::Log.trace run_data.inspect
         compressed_data = encode_gzip(Chef::JSONCompat.to_json(run_data))
-        Chef::Log.debug("Sending compressed run data...")
+        Chef::Log.trace("Sending compressed run data...")
         # Since we're posting compressed data we can not directly call post which expects JSON
         begin
-          @rest_client.raw_request(:POST, resource_history_url, headers({ "Content-Encoding" => "gzip" }), compressed_data)
+          rest_client.raw_request(:POST, resource_history_url, headers({ "Content-Encoding" => "gzip" }), compressed_data)
         rescue StandardError => e
           if e.respond_to? :response
             Chef::FileCache.store("failed-reporting-data.json", Chef::JSONCompat.to_json_pretty(run_data), 0640)
@@ -242,7 +158,7 @@ class Chef
           end
         end
       else
-        Chef::Log.debug("Server doesn't support resource history, skipping resource report.")
+        Chef::Log.trace("Server doesn't support resource history, skipping resource report.")
       end
     end
 
@@ -263,15 +179,24 @@ class Chef
       @run_status.end_time
     end
 
+    # get only the top level resources and strip out the subcollections
+    def updated_resources
+      @updated_resources ||= action_collection&.filtered_collection(max_nesting: 0, up_to_date: false, skipped: false, unprocessed: false) || {}
+    end
+
+    def total_res_count
+      updated_resources.count
+    end
+
     def prepare_run_data
       run_data = {}
       run_data["action"] = "end"
-      run_data["resources"] = updated_resources.map do |resource_record|
-        resource_record.for_json
+      run_data["resources"] = updated_resources.map do |action_record|
+        for_json(action_record)
       end
       run_data["status"] = @status
       run_data["run_list"] = Chef::JSONCompat.to_json(@run_status.node.run_list)
-      run_data["total_res_count"] = @total_res_count.to_s
+      run_data["total_res_count"] = total_res_count.to_s
       run_data["data"] = {}
       run_data["start_time"] = start_time.to_s
       run_data["end_time"] = end_time.to_s
@@ -303,18 +228,10 @@ class Chef
       @error_descriptions = description.for_json
     end
 
-    def reporting_enabled?
-      @reporting_enabled
-    end
-
     private
 
-    # If we are getting messages about a resource while we are in the middle of
-    # another resource's update, we assume that the nested resource is just the
-    # implementation of a provider, and we want to hide it from the reporting
-    # output.
-    def nested_resource?(new_resource)
-      @pending_update && @pending_update.new_resource != new_resource
+    def reporting_enabled?
+      Chef::Config[:enable_reporting] && !Chef::Config[:why_run] && !@runs_endpoint_failed
     end
 
     def encode_gzip(data)

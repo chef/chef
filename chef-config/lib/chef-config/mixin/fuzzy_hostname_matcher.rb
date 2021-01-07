@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,17 +20,27 @@ module ChefConfig
   module Mixin
     module FuzzyHostnameMatcher
 
+      #
+      # Check to see if a hostname matches a match string. Used to see if hosts fall under our no_proxy config
+      #
+      # @param [String] hostname the hostname to check
+      # @param [String] matches the pattern to match
+      #
+      # @return [Boolean]
+      #
       def fuzzy_hostname_match_any?(hostname, matches)
-        return matches.to_s.split(/\s*,\s*/).compact.any? do |m|
-          fuzzy_hostname_match?(hostname, m)
-        end if (hostname != nil) && (matches != nil)
+        if hostname && matches
+          return matches.to_s.split(/\s*,\s*/).compact.any? do |m|
+            fuzzy_hostname_match?(hostname, m)
+          end
+        end
 
         false
       end
 
       def fuzzy_hostname_match?(hostname, match)
         # Do greedy matching by adding wildcard if it is not specified
-        match = "*" + match if !match.start_with?("*")
+        match = "*" + match unless match.start_with?("*")
         Fuzzyurl.matches?(Fuzzyurl.mask(hostname: match), hostname)
       end
 

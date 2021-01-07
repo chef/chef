@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,6 +19,7 @@
 class Chef
   class Resource
     class Cat < Chef::Resource
+      provides :cat
 
       attr_accessor :action
 
@@ -28,7 +29,7 @@ class Chef
       end
 
       def pretty_kitty(arg = nil)
-        if arg == true || arg == false
+        if [true, false].include?(arg)
           @pretty_kitty = arg
         end
         @pretty_kitty

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,78 +16,76 @@
 # limitations under the License.
 #
 
-require "chef/exceptions"
-require "chef/dsl/recipe"
+require_relative "../provider"
+require_relative "../exceptions"
+require_relative "../dsl/recipe"
 
 class Chef
   class Resource
-    module ActionClass
+    class ActionClass < Chef::Provider
       include Chef::DSL::Recipe
 
       def to_s
         "#{new_resource || "<no resource>"} action #{action ? action.inspect : "<no action>"}"
       end
 
-      def whyrun_supported?
+      def return_load_current_value
+        resource = nil
+        if new_resource.respond_to?(:load_current_value!)
+          resource = new_resource.class.new(new_resource.name, new_resource.run_context)
+
+          # copy the non-desired state, the identity properties and name property to the new resource
+          # (the desired state values must be loaded by load_current_value)
+          resource.class.properties.each_value do |property|
+            if !property.desired_state? || property.identity? || property.name_property?
+              property.set(resource, new_resource.send(property.name)) if new_resource.class.properties[property.name].is_set?(new_resource)
+            end
+          end
+
+          # we support optionally passing the new_resource as an arg to load_current_value and
+          # load_current_value can raise in order to clear the current_resource to nil
+          begin
+            if resource.method(:load_current_value!).arity > 0
+              resource.load_current_value!(new_resource)
+            else
+              resource.load_current_value!
+            end
+          rescue Chef::Exceptions::CurrentValueDoesNotExist
+            resource = nil
+          end
+        end
+        resource
+      end
+
+      # build the before state (current_resource)
+      def load_current_resource
+        @current_resource = return_load_current_value
+      end
+
+      # build the after state (after_resource)
+      def load_after_resource
+        @after_resource = return_load_current_value
+      end
+
+      def self.include_resource_dsl?
         true
       end
 
-      #
-      # If load_current_value! is defined on the resource, use that.
-      #
-      def load_current_resource
-        if new_resource.respond_to?(:load_current_value!)
-          # dup the resource and then reset desired-state properties.
-          current_resource = new_resource.dup
-
-          # We clear desired state in the copy, because it is supposed to be actual state.
-          # We keep identity properties and non-desired-state, which are assumed to be
-          # "control" values like `recurse: true`
-          current_resource.class.properties.each do |name, property|
-            if property.desired_state? && !property.identity? && !property.name_property?
-              property.reset(current_resource)
-            end
-          end
-
-          # Call the actual load_current_value! method. If it raises
-          # CurrentValueDoesNotExist, set current_resource to `nil`.
-          begin
-            # If the user specifies load_current_value do |desired_resource|, we
-            # pass in the desired resource as well as the current one.
-            if current_resource.method(:load_current_value!).arity > 0
-              current_resource.load_current_value!(new_resource)
-            else
-              current_resource.load_current_value!
-            end
-          rescue Chef::Exceptions::CurrentValueDoesNotExist
-            current_resource = nil
-          end
-        end
-
-        @current_resource = current_resource
-      end
-
-      def self.included(other)
-        other.extend(ClassMethods)
-        other.use_inline_resources
-        other.include_resource_dsl true
-      end
-
-      module ClassMethods
+      class << self
         #
         # The Chef::Resource class this ActionClass was declared against.
         #
         # @return [Class] The Chef::Resource class this ActionClass was declared against.
         #
         attr_accessor :resource_class
+      end
 
-        def to_s
-          "#{resource_class} action provider"
-        end
+      def self.to_s
+        "#{resource_class} action provider"
+      end
 
-        def inspect
-          to_s
-        end
+      def self.inspect
+        to_s
       end
     end
   end

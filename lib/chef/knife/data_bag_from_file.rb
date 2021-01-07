@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Seth Falcon (<seth@chef.io>)
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,9 +17,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/util/path_helper"
-require "chef/knife/data_bag_secret_options"
+require_relative "../knife"
+require_relative "data_bag_secret_options"
 
 class Chef
   class Knife
@@ -27,20 +26,20 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require "chef/data_bag"
-        require "chef/data_bag_item"
-        require "chef/knife/core/object_loader"
-        require "chef/json_compat"
-        require "chef/encrypted_data_bag_item"
+        require_relative "../util/path_helper"
+        require_relative "../data_bag"
+        require_relative "../data_bag_item"
+        require_relative "core/object_loader"
+        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
       category "data bag"
 
       option :all,
-        :short => "-a",
-        :long  => "--all",
-        :description => "Upload all data bags or all items for specified data bags"
+        short: "-a",
+        long: "--all",
+        description: "Upload all data bags or all items for specified data bags."
 
       def loader
         @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
@@ -84,7 +83,7 @@ class Chef
         items ||= find_all_data_bag_items(data_bag)
         item_paths = normalize_item_paths(items)
         item_paths.each do |item_path|
-          item = loader.load_from("#{data_bags_path}", data_bag, item_path)
+          item = loader.load_from((data_bags_path).to_s, data_bag, item_path)
           item = if encryption_secret_provided?
                    Chef::EncryptedDataBagItem.encrypt_data_bag_item(item, read_secret)
                  else
@@ -99,7 +98,7 @@ class Chef
       end
 
       def normalize_item_paths(args)
-        paths = Array.new
+        paths = []
         args.each do |path|
           if File.directory?(path)
             paths.concat(Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*.json")))

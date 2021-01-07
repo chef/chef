@@ -1,5 +1,5 @@
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,17 +15,25 @@
 # limitations under the License.
 #
 
-require "chef/resource/script"
-require "chef/provider/script"
+require_relative "script"
 
 class Chef
   class Resource
     class Python < Chef::Resource::Script
+      unified_mode true
+
+      provides :python
+
       def initialize(name, run_context = nil)
         super
         @interpreter = "python"
       end
 
+      description "Use the **python** resource to execute scripts using the Python interpreter."\
+                  " This resource may also use any of the actions and properties that are available"\
+                  " to the **execute** resource. Commands that are executed with this resource are (by"\
+                  " their nature) not idempotent, as they are typically unique to the environment in"\
+                  " which they are run. Use `not_if` and `only_if` to guard this resource for idempotence."
     end
   end
 end

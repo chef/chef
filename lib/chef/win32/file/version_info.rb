@@ -1,6 +1,6 @@
 #
 # Author:: Matt Wrock (<matt@mattwrock.com>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/win32/file"
+require_relative "../file"
 
 class Chef
   module ReservedNames::Win32
@@ -28,31 +28,32 @@ class Chef
 
         def initialize(file_name)
           raise Errno::ENOENT, file_name unless ::File.exist?(file_name)
+
           @file_version_info = retrieve_file_version_info(file_name)
         end
 
         # defining method for each predefined version resource string
         # see https://msdn.microsoft.com/en-us/library/windows/desktop/ms647464(v=vs.85).aspx
-        [
-          :Comments,
-          :CompanyName,
-          :FileDescription,
-          :FileVersion,
-          :InternalName,
-          :LegalCopyright,
-          :LegalTrademarks,
-          :OriginalFilename,
-          :ProductName,
-          :ProductVersion,
-          :PrivateBuild,
-          :SpecialBuild,
-        ].each do |method|
+        %i{
+          Comments
+          CompanyName
+          FileDescription
+          FileVersion
+          InternalName
+          LegalCopyright
+          LegalTrademarks
+          OriginalFilename
+          ProductName
+          ProductVersion
+          PrivateBuild
+          SpecialBuild
+        }.each do |method|
           define_method method do
-            begin
-              get_version_info_string(method.to_s)
-            rescue Chef::Exceptions::Win32APIError
-              return nil
-            end
+
+            get_version_info_string(method.to_s)
+          rescue Chef::Exceptions::Win32APIError
+            return nil
+
           end
         end
 

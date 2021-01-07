@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 require "chef/knife/list"
@@ -59,93 +60,95 @@ describe "chef_repo_path tests", :workstation do
 
       it "knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff" do
         Chef::Config.delete(:chef_repo_path)
-        knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<EOM
-/clients/
-/clients/client3.json
-/cookbooks/
-/cookbooks/cookbook3/
-/cookbooks/cookbook3/metadata.rb
-/data_bags/
-/data_bags/bag3/
-/data_bags/bag3/item3.json
-/environments/
-/environments/env3.json
-/nodes/
-/nodes/node3.json
-/roles/
-/roles/role3.json
-/users/
-/users/user3.json
-EOM
+        knife("list --local -Rfp --chef-repo-path #{path_to("chef_repo2")} /").should_succeed <<~EOM
+          /clients/
+          /clients/client3.json
+          /cookbooks/
+          /cookbooks/cookbook3/
+          /cookbooks/cookbook3/metadata.rb
+          /data_bags/
+          /data_bags/bag3/
+          /data_bags/bag3/item3.json
+          /environments/
+          /environments/env3.json
+          /nodes/
+          /nodes/node3.json
+          /roles/
+          /roles/role3.json
+          /users/
+          /users/user3.json
+        EOM
       end
 
-      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+      # "Skipping for BK... As Windows 2019 has 8dot3name disabled by default"
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only, :skip_buildkite do
         Chef::Config.delete(:chef_repo_path)
-        knife("list --local -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<EOM
-/clients/
-/clients/client3.json
-/cookbooks/
-/cookbooks/cookbook3/
-/cookbooks/cookbook3/metadata.rb
-/data_bags/
-/data_bags/bag3/
-/data_bags/bag3/item3.json
-/environments/
-/environments/env3.json
-/nodes/
-/nodes/node3.json
-/roles/
-/roles/role3.json
-/users/
-/users/user3.json
-EOM
+        knife("list --local -Rfp --chef-repo-path #{path_to("chef_r~1")} /").should_succeed <<~EOM
+          /clients/
+          /clients/client3.json
+          /cookbooks/
+          /cookbooks/cookbook3/
+          /cookbooks/cookbook3/metadata.rb
+          /data_bags/
+          /data_bags/bag3/
+          /data_bags/bag3/item3.json
+          /environments/
+          /environments/env3.json
+          /nodes/
+          /nodes/node3.json
+          /roles/
+          /roles/role3.json
+          /users/
+          /users/user3.json
+        EOM
       end
 
-      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only do
+      # "Skipping for BK... As Windows 2019 has 8dot3name disabled by default"
+      it "knife list --local -Rfp --chef-repo-path chef_r~1 / grabs chef_repo2 stuff", :windows_only, :skip_buildkite do
         Chef::Config.delete(:chef_repo_path)
-        knife("list -z -Rfp --chef-repo-path #{path_to('chef_r~1')} /").should_succeed <<EOM
-/acls/
-/acls/clients/
-/acls/clients/client3.json
-/acls/containers/
-/acls/cookbook_artifacts/
-/acls/cookbooks/
-/acls/cookbooks/cookbook3.json
-/acls/data_bags/
-/acls/data_bags/bag3.json
-/acls/environments/
-/acls/environments/env3.json
-/acls/groups/
-/acls/nodes/
-/acls/nodes/node3.json
-/acls/organization.json
-/acls/policies/
-/acls/policy_groups/
-/acls/roles/
-/acls/roles/role3.json
-/clients/
-/clients/client3.json
-/containers/
-/cookbook_artifacts/
-/cookbooks/
-/cookbooks/cookbook3/
-/cookbooks/cookbook3/metadata.rb
-/data_bags/
-/data_bags/bag3/
-/data_bags/bag3/item3.json
-/environments/
-/environments/env3.json
-/groups/
-/invitations.json
-/members.json
-/nodes/
-/nodes/node3.json
-/org.json
-/policies/
-/policy_groups/
-/roles/
-/roles/role3.json
-EOM
+        knife("list -z -Rfp --chef-repo-path #{path_to("chef_r~1")} /").should_succeed <<~EOM
+          /acls/
+          /acls/clients/
+          /acls/clients/client3.json
+          /acls/containers/
+          /acls/cookbook_artifacts/
+          /acls/cookbooks/
+          /acls/cookbooks/cookbook3.json
+          /acls/data_bags/
+          /acls/data_bags/bag3.json
+          /acls/environments/
+          /acls/environments/env3.json
+          /acls/groups/
+          /acls/nodes/
+          /acls/nodes/node3.json
+          /acls/organization.json
+          /acls/policies/
+          /acls/policy_groups/
+          /acls/roles/
+          /acls/roles/role3.json
+          /clients/
+          /clients/client3.json
+          /containers/
+          /cookbook_artifacts/
+          /cookbooks/
+          /cookbooks/cookbook3/
+          /cookbooks/cookbook3/metadata.rb
+          /data_bags/
+          /data_bags/bag3/
+          /data_bags/bag3/item3.json
+          /environments/
+          /environments/env3.json
+          /groups/
+          /invitations.json
+          /members.json
+          /nodes/
+          /nodes/node3.json
+          /org.json
+          /policies/
+          /policy_groups/
+          /roles/
+          /roles/role3.json
+        EOM
       end
 
       context "when all _paths are set to alternates" do
@@ -157,24 +160,24 @@ EOM
         end
 
         it "knife list --local -Rfp --chef-repo-path chef_repo2 / grabs chef_repo2 stuff" do
-          knife("list --local -Rfp --chef-repo-path #{path_to('chef_repo2')} /").should_succeed <<EOM
-/clients/
-/clients/client3.json
-/cookbooks/
-/cookbooks/cookbook3/
-/cookbooks/cookbook3/metadata.rb
-/data_bags/
-/data_bags/bag3/
-/data_bags/bag3/item3.json
-/environments/
-/environments/env3.json
-/nodes/
-/nodes/node3.json
-/roles/
-/roles/role3.json
-/users/
-/users/user3.json
-EOM
+          knife("list --local -Rfp --chef-repo-path #{path_to("chef_repo2")} /").should_succeed <<~EOM
+            /clients/
+            /clients/client3.json
+            /cookbooks/
+            /cookbooks/cookbook3/
+            /cookbooks/cookbook3/metadata.rb
+            /data_bags/
+            /data_bags/bag3/
+            /data_bags/bag3/item3.json
+            /environments/
+            /environments/env3.json
+            /nodes/
+            /nodes/node3.json
+            /roles/
+            /roles/role3.json
+            /users/
+            /users/user3.json
+          EOM
         end
 
         context "when cwd is at the top level" do
@@ -194,34 +197,34 @@ EOM
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client2.json
-cookbooks/
-cookbooks/cookbook2/
-cookbooks/cookbook2/metadata.rb
-data_bags/
-data_bags/bag2/
-data_bags/bag2/item2.json
-environments/
-environments/env2.json
-nodes/
-nodes/node2.json
-roles/
-roles/role2.json
-users/
-users/user2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client2.json
+              cookbooks/
+              cookbooks/cookbook2/
+              cookbooks/cookbook2/metadata.rb
+              data_bags/
+              data_bags/bag2/
+              data_bags/bag2/item2.json
+              environments/
+              environments/env2.json
+              nodes/
+              nodes/node2.json
+              roles/
+              roles/role2.json
+              users/
+              users/user2.json
+            EOM
           end
         end
 
         context "when cwd is inside data_bags2" do
           before { cwd "data_bags2" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag2/
-bag2/item2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag2/
+              bag2/item2.json
+            EOM
           end
           it "knife list --local -Rfp ../roles lists roles" do
             knife("list --local -Rfp ../roles").should_succeed "/roles/role2.json\n"
@@ -239,24 +242,24 @@ EOM
         context "when cwd is at the top level" do
           before { cwd "." }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client2.json
-cookbooks/
-cookbooks/cookbook2/
-cookbooks/cookbook2/metadata.rb
-data_bags/
-data_bags/bag2/
-data_bags/bag2/item2.json
-environments/
-environments/env2.json
-nodes/
-nodes/node2.json
-roles/
-roles/role2.json
-users/
-users/user2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client2.json
+              cookbooks/
+              cookbooks/cookbook2/
+              cookbooks/cookbook2/metadata.rb
+              data_bags/
+              data_bags/bag2/
+              data_bags/bag2/item2.json
+              environments/
+              environments/env2.json
+              nodes/
+              nodes/node2.json
+              roles/
+              roles/role2.json
+              users/
+              users/user2.json
+            EOM
           end
         end
 
@@ -277,10 +280,10 @@ EOM
         context "when cwd is inside data_bags2" do
           before { cwd "data_bags2" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag2/
-bag2/item2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag2/
+              bag2/item2.json
+            EOM
           end
         end
       end
@@ -310,34 +313,34 @@ EOM
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client3.json
-cookbooks/
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env3.json
-nodes/
-nodes/node3.json
-roles/
-roles/role3.json
-users/
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env3.json
+              nodes/
+              nodes/node3.json
+              roles/
+              roles/role3.json
+              users/
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
           before { cwd "chef_repo2/data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
       end
@@ -359,12 +362,12 @@ EOM
             file "clients2/blah.json", {}
           end
           it "knife show /clients/blah.json succeeds" do
-            knife("show --local /clients/blah.json").should_succeed <<EOM
-/clients/blah.json:
-{
+            knife("show --local /clients/blah.json").should_succeed <<~EOM
+              /clients/blah.json:
+              {
 
-}
-EOM
+              }
+            EOM
           end
         end
 
@@ -374,14 +377,14 @@ EOM
             file "cookbooks2/blah/metadata.rb", ""
           end
           it "knife list -Rfp cookbooks shows files in blah" do
-            knife("list --local -Rfp /cookbooks").should_succeed <<EOM
-/cookbooks/blah/
-/cookbooks/blah/metadata.rb
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-EOM
+            knife("list --local -Rfp /cookbooks").should_succeed <<~EOM
+              /cookbooks/blah/
+              /cookbooks/blah/metadata.rb
+              /cookbooks/cookbook1/
+              /cookbooks/cookbook1/metadata.rb
+              /cookbooks/cookbook2/
+              /cookbooks/cookbook2/metadata.rb
+            EOM
           end
         end
 
@@ -391,14 +394,14 @@ EOM
             file "cookbooks2/blah/metadata.rb", ""
           end
           it "knife list -Rfp cookbooks shows files in blah" do
-            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, :stderr => "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
-/cookbooks/blah/
-/cookbooks/blah/metadata.rb
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-EOM
+            knife("list --local -Rfp /cookbooks").should_succeed(<<~EOM, stderr: "WARN: Cookbook 'blah' is empty or entirely chefignored at #{Chef::Config.cookbook_path[0]}/blah\n")
+              /cookbooks/blah/
+              /cookbooks/blah/metadata.rb
+              /cookbooks/cookbook1/
+              /cookbooks/cookbook1/metadata.rb
+              /cookbooks/cookbook2/
+              /cookbooks/cookbook2/metadata.rb
+            EOM
           end
         end
 
@@ -408,14 +411,14 @@ EOM
             file "cookbooks2/blah/metadata.rb", ""
           end
           it "knife list -Rfp cookbooks shows files in the first cookbook and not the second" do
-            knife("list --local -Rfp /cookbooks").should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
-/cookbooks/blah/
-/cookbooks/blah/metadata.json
-/cookbooks/cookbook1/
-/cookbooks/cookbook1/metadata.rb
-/cookbooks/cookbook2/
-/cookbooks/cookbook2/metadata.rb
-EOM
+            knife("list --local -Rfp /cookbooks").should_succeed(<<~EOM, stderr: "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.cookbook_path[0]}/blah and #{Chef::Config.cookbook_path[1]}/blah\n")
+              /cookbooks/blah/
+              /cookbooks/blah/metadata.json
+              /cookbooks/cookbook1/
+              /cookbooks/cookbook1/metadata.rb
+              /cookbooks/cookbook2/
+              /cookbooks/cookbook2/metadata.rb
+            EOM
           end
         end
 
@@ -425,14 +428,14 @@ EOM
             file "data_bags2/blah/item.json", ""
           end
           it "knife list -Rfp data_bags shows files in blah" do
-            knife("list --local -Rfp /data_bags").should_succeed <<EOM
-/data_bags/bag/
-/data_bags/bag/item.json
-/data_bags/bag2/
-/data_bags/bag2/item2.json
-/data_bags/blah/
-/data_bags/blah/item.json
-EOM
+            knife("list --local -Rfp /data_bags").should_succeed <<~EOM
+              /data_bags/bag/
+              /data_bags/bag/item.json
+              /data_bags/bag2/
+              /data_bags/bag2/item2.json
+              /data_bags/blah/
+              /data_bags/blah/item.json
+            EOM
           end
         end
 
@@ -442,14 +445,14 @@ EOM
             file "data_bags2/blah/item2.json", ""
           end
           it "knife list -Rfp data_bags shows only items in data_bags1" do
-            knife("list --local -Rfp /data_bags").should_succeed(<<EOM, :stderr => "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
-/data_bags/bag/
-/data_bags/bag/item.json
-/data_bags/bag2/
-/data_bags/bag2/item2.json
-/data_bags/blah/
-/data_bags/blah/item1.json
-EOM
+            knife("list --local -Rfp /data_bags").should_succeed(<<~EOM, stderr: "WARN: Child with name 'blah' found in multiple directories: #{Chef::Config.data_bag_path[0]}/blah and #{Chef::Config.data_bag_path[1]}/blah\n")
+              /data_bags/bag/
+              /data_bags/bag/item.json
+              /data_bags/bag2/
+              /data_bags/bag2/item2.json
+              /data_bags/blah/
+              /data_bags/blah/item1.json
+            EOM
           end
         end
 
@@ -459,12 +462,12 @@ EOM
             file "environments2/blah.json", {}
           end
           it "knife show /environments/blah.json succeeds" do
-            knife("show --local /environments/blah.json").should_succeed <<EOM
-/environments/blah.json:
-{
+            knife("show --local /environments/blah.json").should_succeed <<~EOM
+              /environments/blah.json:
+              {
 
-}
-EOM
+              }
+            EOM
           end
         end
 
@@ -474,12 +477,12 @@ EOM
             file "nodes2/blah.json", {}
           end
           it "knife show /nodes/blah.json succeeds" do
-            knife("show --local /nodes/blah.json").should_succeed <<EOM
-/nodes/blah.json:
-{
+            knife("show --local /nodes/blah.json").should_succeed <<~EOM
+              /nodes/blah.json:
+              {
 
-}
-EOM
+              }
+            EOM
           end
         end
 
@@ -489,12 +492,12 @@ EOM
             file "roles2/blah.json", {}
           end
           it "knife show /roles/blah.json succeeds" do
-            knife("show --local /roles/blah.json").should_succeed <<EOM
-/roles/blah.json:
-{
+            knife("show --local /roles/blah.json").should_succeed <<~EOM
+              /roles/blah.json:
+              {
 
-}
-EOM
+              }
+            EOM
           end
         end
 
@@ -504,12 +507,12 @@ EOM
             file "users2/blah.json", {}
           end
           it "knife show /users/blah.json succeeds" do
-            knife("show --local /users/blah.json").should_succeed <<EOM
-/users/blah.json:
-{
+            knife("show --local /users/blah.json").should_succeed <<~EOM
+              /users/blah.json:
+              {
 
-}
-EOM
+              }
+            EOM
           end
         end
 
@@ -523,57 +526,57 @@ EOM
         context "when cwd is inside the data_bags directory" do
           before { cwd "data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag2/
-bag2/item2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag2/
+              bag2/item2.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client1.json
-clients/client2.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook2/
-cookbooks/cookbook2/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-data_bags/bag2/
-data_bags/bag2/item2.json
-environments/
-environments/env1.json
-environments/env2.json
-nodes/
-nodes/node1.json
-nodes/node2.json
-roles/
-roles/role1.json
-roles/role2.json
-users/
-users/user1.json
-users/user2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client1.json
+              clients/client2.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook2/
+              cookbooks/cookbook2/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              data_bags/bag2/
+              data_bags/bag2/item2.json
+              environments/
+              environments/env1.json
+              environments/env2.json
+              nodes/
+              nodes/node1.json
+              nodes/node2.json
+              roles/
+              roles/role1.json
+              roles/role2.json
+              users/
+              users/user1.json
+              users/user2.json
+            EOM
           end
         end
 
         context "when cwd is inside data_bags2" do
           before { cwd "data_bags2" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag2/
-bag2/item2.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag2/
+              bag2/item2.json
+            EOM
           end
         end
       end
@@ -592,90 +595,90 @@ EOM
         context "when cwd is at the top level" do
           before { cwd "." }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client1.json
-clients/client3.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env1.json
-environments/env3.json
-nodes/
-nodes/node1.json
-nodes/node3.json
-roles/
-roles/role1.json
-roles/role3.json
-users/
-users/user1.json
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client1.json
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env1.json
+              environments/env3.json
+              nodes/
+              nodes/node1.json
+              nodes/node3.json
+              roles/
+              roles/role1.json
+              roles/role3.json
+              users/
+              users/user1.json
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside the data_bags directory" do
           before { cwd "data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client1.json
-clients/client3.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env1.json
-environments/env3.json
-nodes/
-nodes/node1.json
-nodes/node3.json
-roles/
-roles/role1.json
-roles/role3.json
-users/
-users/user1.json
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client1.json
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env1.json
+              environments/env3.json
+              nodes/
+              nodes/node1.json
+              nodes/node3.json
+              roles/
+              roles/role1.json
+              roles/role3.json
+              users/
+              users/user1.json
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
           before { cwd "chef_repo2/data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
       end
@@ -706,34 +709,34 @@ EOM
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client3.json
-cookbooks/
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env3.json
-nodes/
-nodes/node3.json
-roles/
-roles/role3.json
-users/
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env3.json
+              nodes/
+              nodes/node3.json
+              roles/
+              roles/role3.json
+              users/
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
           before { cwd "chef_repo2/data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
       end
@@ -753,97 +756,97 @@ EOM
         context "when cwd is at the top level" do
           before { cwd "." }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client1.json
-clients/client3.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env1.json
-environments/env3.json
-nodes/
-nodes/node1.json
-nodes/node3.json
-roles/
-roles/role1.json
-roles/role3.json
-users/
-users/user1.json
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client1.json
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env1.json
+              environments/env3.json
+              nodes/
+              nodes/node1.json
+              nodes/node3.json
+              roles/
+              roles/role1.json
+              roles/role3.json
+              users/
+              users/user1.json
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside the data_bags directory" do
           before { cwd "data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client1.json
-clients/client3.json
-cookbooks/
-cookbooks/cookbook1/
-cookbooks/cookbook1/metadata.rb
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-data_bags/bag3/
-data_bags/bag3/item3.json
-environments/
-environments/env1.json
-environments/env3.json
-nodes/
-nodes/node1.json
-nodes/node3.json
-roles/
-roles/role1.json
-roles/role3.json
-users/
-users/user1.json
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client1.json
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook1/
+              cookbooks/cookbook1/metadata.rb
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              data_bags/bag3/
+              data_bags/bag3/item3.json
+              environments/
+              environments/env1.json
+              environments/env3.json
+              nodes/
+              nodes/node1.json
+              nodes/node3.json
+              roles/
+              roles/role1.json
+              roles/role3.json
+              users/
+              users/user1.json
+              users/user3.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2/data_bags" do
           before { cwd "chef_repo2/data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-bag3/
-bag3/item3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+              bag3/
+              bag3/item3.json
+            EOM
           end
         end
       end
 
       context "when data_bag_path and chef_repo_path are set, and nothing else" do
         before :each do
-          %w{client cookbook  environment node role user}.each do |object_name|
+          %w{client cookbook environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.data_bag_path = File.join(Chef::Config.chef_repo_path, "data_bags")
@@ -860,34 +863,34 @@ EOM
         context "when cwd is inside the data_bags directory" do
           before { cwd "data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+            EOM
           end
         end
 
         context "when cwd is inside chef_repo2" do
           before { cwd "chef_repo2" }
           it "knife list --local -Rfp lists everything" do
-            knife("list --local -Rfp").should_succeed <<EOM
-clients/
-clients/client3.json
-cookbooks/
-cookbooks/cookbook3/
-cookbooks/cookbook3/metadata.rb
-data_bags/
-data_bags/bag/
-data_bags/bag/item.json
-environments/
-environments/env3.json
-nodes/
-nodes/node3.json
-roles/
-roles/role3.json
-users/
-users/user3.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              clients/
+              clients/client3.json
+              cookbooks/
+              cookbooks/cookbook3/
+              cookbooks/cookbook3/metadata.rb
+              data_bags/
+              data_bags/bag/
+              data_bags/bag/item.json
+              environments/
+              environments/env3.json
+              nodes/
+              nodes/node3.json
+              roles/
+              roles/role3.json
+              users/
+              users/user3.json
+            EOM
           end
         end
 
@@ -903,7 +906,7 @@ EOM
         include_context "default config options"
 
         before :each do
-          %w{client cookbook  environment node role user}.each do |object_name|
+          %w{client cookbook environment node role user}.each do |object_name|
             Chef::Config.delete("#{object_name}_path".to_sym)
           end
           Chef::Config.delete(:chef_repo_path)
@@ -911,27 +914,27 @@ EOM
         end
 
         it "knife list --local -Rfp / lists data bags" do
-          knife("list --local -Rfp /").should_succeed <<EOM
-/data_bags/
-/data_bags/bag/
-/data_bags/bag/item.json
-EOM
+          knife("list --local -Rfp /").should_succeed <<~EOM
+            /data_bags/
+            /data_bags/bag/
+            /data_bags/bag/item.json
+          EOM
         end
 
         it "knife list --local -Rfp /data_bags lists data bags" do
-          knife("list --local -Rfp /data_bags").should_succeed <<EOM
-/data_bags/bag/
-/data_bags/bag/item.json
-EOM
+          knife("list --local -Rfp /data_bags").should_succeed <<~EOM
+            /data_bags/bag/
+            /data_bags/bag/item.json
+          EOM
         end
 
         context "when cwd is inside the data_bags directory" do
           before { cwd "data_bags" }
           it "knife list --local -Rfp lists data bags" do
-            knife("list --local -Rfp").should_succeed <<EOM
-bag/
-bag/item.json
-EOM
+            knife("list --local -Rfp").should_succeed <<~EOM
+              bag/
+              bag/item.json
+            EOM
           end
         end
       end

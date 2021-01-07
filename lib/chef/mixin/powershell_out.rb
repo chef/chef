@@ -1,5 +1,5 @@
 #--
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/mixin/shell_out"
-require "chef/mixin/windows_architecture_helper"
+require_relative "shell_out"
+require_relative "windows_architecture_helper"
 
 class Chef
   module Mixin
@@ -28,19 +28,24 @@ class Chef
       # can be set to :i386 or :x86_64 to force the windows architecture.
       #
       # @param script [String] script to run
+      # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
       # @param options [Hash] options hash
       # @return [Mixlib::Shellout] mixlib-shellout object
       def powershell_out(*command_args)
         script = command_args.first
         options = command_args.last.is_a?(Hash) ? command_args.last : nil
+        interpreter = command_args[1].is_a?(Symbol) ? command_args[1] : :powershell
 
-        run_command_with_os_architecture(script, options)
+        raise ArgumentError, "Expected interpreter of :powershell or :pwsh" unless %i{powershell pwsh}.include?(interpreter)
+
+        run_command_with_os_architecture(script, interpreter, options)
       end
 
       # Run a command under powershell with the same API as shell_out!
       # (raises exceptions on errors)
       #
       # @param script [String] script to run
+      # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
       # @param options [Hash] options hash
       # @return [Mixlib::Shellout] mixlib-shellout object
       def powershell_out!(*command_args)
@@ -56,17 +61,18 @@ class Chef
       # because chef-client runs as a 32-bit app on 64-bit windows).
       #
       # @param script [String] script to run
+      # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
       # @param options [Hash] options hash
       # @return [Mixlib::Shellout] mixlib-shellout object
-      def run_command_with_os_architecture(script, options)
+      def run_command_with_os_architecture(script, interpreter, options)
         options ||= {}
         options = options.dup
         arch = options.delete(:architecture)
 
         with_os_architecture(nil, architecture: arch) do
           shell_out(
-            build_powershell_command(script),
-            options
+            build_powershell_command(script, interpreter),
+            **options
           )
         end
       end
@@ -74,8 +80,9 @@ class Chef
       # Helper to build a powershell command around the script to run.
       #
       # @param script [String] script to run
-      # @retrurn [String] powershell command to execute
-      def build_powershell_command(script)
+      # @param interpreter [Symbol] the interpreter type, `:powershell` or `:pwsh`
+      # @return [String] powershell command to execute
+      def build_powershell_command(script, interpreter)
         flags = [
           # Hides the copyright banner at startup.
           "-NoLogo",
@@ -86,12 +93,12 @@ class Chef
           # always set the ExecutionPolicy flag
           # see http://technet.microsoft.com/en-us/library/ee176961.aspx
           "-ExecutionPolicy Unrestricted",
-          # Powershell will hang if STDIN is redirected
+          # PowerShell will hang if STDIN is redirected
           # http://connect.microsoft.com/PowerShell/feedback/details/572313/powershell-exe-can-hang-if-stdin-is-redirected
           "-InputFormat None",
         ]
 
-        "powershell.exe #{flags.join(' ')} -Command \"#{script}\""
+        "#{interpreter}.exe #{flags.join(" ")} -Command \"#{script.gsub('"', '\"')}\""
       end
     end
   end

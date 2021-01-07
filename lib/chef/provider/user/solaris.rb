@@ -2,7 +2,7 @@
 # Author:: Stephen Nelson-Smith (<sns@chef.io>)
 # Author:: Jon Ramsey (<jonathon.ramsey@gmail.com>)
 # Author:: Dave Eddy (<dave@daveeddy.com>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # Copyright:: Copyright 2015-2016, Dave Eddy
 # License:: Apache License, Version 2.0
 #
@@ -18,49 +18,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "chef/provider/user/useradd"
+require_relative "../user"
 
 class Chef
   class Provider
     class User
-      class Solaris < Chef::Provider::User::Useradd
+      class Solaris < Chef::Provider::User
         provides :solaris_user
-        provides :user, os: %w{omnios solaris2}
-        UNIVERSAL_OPTIONS = [[:comment, "-c"], [:gid, "-g"], [:shell, "-s"], [:uid, "-u"]]
+        provides :user, os: %w{openindiana illumos omnios solaris2 smartos}
 
-        attr_writer :password_file
-
-        def initialize(new_resource, run_context)
-          @password_file = "/etc/shadow"
-          super
-        end
+        PASSWORD_FILE = "/etc/shadow".freeze
 
         def create_user
-          super
+          shell_out!("useradd", universal_options, useradd_options, new_resource.username)
           manage_password
         end
 
         def manage_user
           manage_password
-          super
+          return if universal_options.empty? && usermod_options.empty?
+
+          shell_out!("usermod", universal_options, usermod_options, new_resource.username)
+        end
+
+        def remove_user
+          shell_out!("userdel", userdel_options, new_resource.username)
         end
 
         def check_lock
-          shadow_line = shell_out!("getent", "shadow", new_resource.username).stdout.strip rescue nil
+          user = IO.read(PASSWORD_FILE).match(/^#{Regexp.escape(new_resource.username)}:([^:]*):/)
 
-          # if the command fails we return nil, this can happen if the user
-          # in question doesn't exist
-          return nil if shadow_line.nil?
+          # If we're in whyrun mode, and the user is not created, we assume it will be
+          return false if whyrun_mode? && user.nil?
 
-          # convert "dave:NP:16507::::::\n" to "NP"
-          fields = shadow_line.split(":")
+          raise Chef::Exceptions::User, "Cannot determine if #{new_resource} is locked!" if user.nil?
 
-          # '*LK*...' and 'LK' are both considered locked,
-          # so look for LK at the beginning of the shadow entry
-          # optionally surrounded by '*'
-          @locked = !!fields[1].match(/^\*?LK\*?/)
-
-          @locked
+          @locked = user[1].start_with?("*LK*")
         end
 
         def lock_user
@@ -73,19 +66,66 @@ class Chef
 
         private
 
-        def manage_password
-          if @current_resource.password != @new_resource.password && @new_resource.password
-            Chef::Log.debug("#{@new_resource} setting password to #{@new_resource.password}")
-            write_shadow_file
+        def universal_options
+          opts = []
+          opts << "-c" << new_resource.comment if should_set?(:comment)
+          opts << "-g" << new_resource.gid if should_set?(:gid)
+          opts << "-s" << new_resource.shell if should_set?(:shell)
+          opts << "-u" << new_resource.uid if should_set?(:uid)
+          opts << "-d" << new_resource.home if updating_home?
+          opts << "-o" if new_resource.non_unique
+          if updating_home?
+            if new_resource.manage_home
+              logger.trace("#{new_resource} managing the users home directory")
+              opts << "-m"
+            else
+              logger.trace("#{new_resource} setting home to #{new_resource.home}")
+            end
           end
+          opts
         end
 
+        def usermod_options
+          opts = []
+          opts += [ "-u", new_resource.uid ] if new_resource.non_unique
+          if updating_home?
+            if new_resource.manage_home
+              opts << "-m"
+            end
+          end
+          opts
+        end
+
+        def userdel_options
+          opts = []
+          opts << "-r" if new_resource.manage_home
+          opts << "-f" if new_resource.force
+          opts
+        end
+
+        # Solaris does not support system users and has no '-r' option, solaris also
+        # lacks '-M' and defaults to no-manage-home.
+        def useradd_options
+          opts = []
+          opts << "-m" if new_resource.manage_home
+          opts
+        end
+
+        def manage_password
+          return unless current_resource.password != new_resource.password && new_resource.password
+
+          logger.trace("#{new_resource} setting password to #{new_resource.password}")
+          write_shadow_file
+        end
+
+        # XXX: this was straight copypasta'd back in 2013 and I don't think we've ever evaluated using
+        # a pipe to passwd(1) or evaluating modern ruby-shadow.  See https://github.com/chef/chef/pull/721
         def write_shadow_file
           buffer = Tempfile.new("shadow", "/etc")
-          ::File.open(@password_file) do |shadow_file|
+          ::File.open(PASSWORD_FILE) do |shadow_file|
             shadow_file.each do |entry|
               user = entry.split(":").first
-              if user == @new_resource.username
+              if user == new_resource.username
                 buffer.write(updated_password(entry))
               else
                 buffer.write(entry)
@@ -95,20 +135,20 @@ class Chef
           buffer.close
 
           # FIXME: mostly duplicates code with file provider deploying a file
-          s = ::File.stat(@password_file)
-          mode = s.mode & 07777
+          s = ::File.stat(PASSWORD_FILE)
+          mode = s.mode & 0o7777
           uid  = s.uid
           gid  = s.gid
 
           FileUtils.chown uid, gid, buffer.path
           FileUtils.chmod mode, buffer.path
 
-          FileUtils.mv buffer.path, @password_file
+          FileUtils.mv buffer.path, PASSWORD_FILE
         end
 
         def updated_password(entry)
           fields = entry.split(":")
-          fields[1] = @new_resource.password
+          fields[1] = new_resource.password
           fields[2] = days_since_epoch
           fields.join(":")
         end

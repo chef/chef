@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Tim Hinderliter (<tim@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,9 +35,9 @@ describe Chef::Knife do
 
   let(:config_loader) do
     instance_double("WorkstationConfigLoader",
-                    load: nil, no_config_found?: false,
-                    config_location: config_location,
-                    :chef_config_dir => "/etc/chef")
+      load: nil, no_config_found?: false,
+      config_location: config_location,
+      chef_config_dir: "/etc/chef")
   end
 
   before(:each) do
@@ -47,6 +47,7 @@ describe Chef::Knife do
 
     allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
     allow(config_loader).to receive(:explicit_config_file=)
+    allow(config_loader).to receive(:profile=)
 
     # Prevent gratuitous code reloading:
     allow(Chef::Knife).to receive(:load_commands)
@@ -54,7 +55,7 @@ describe Chef::Knife do
     allow(knife.ui).to receive(:print)
     allow(Chef::Log).to receive(:init)
     allow(Chef::Log).to receive(:level)
-    [:debug, :info, :warn, :error, :crit].each do |level_sym|
+    %i{debug info warn error crit}.each do |level_sym|
       allow(Chef::Log).to receive(level_sym)
     end
     allow(Chef::Knife).to receive(:puts)
@@ -144,9 +145,9 @@ describe Chef::Knife do
     end
 
     it "finds a subcommand class based on ARGV" do
-      Chef::Knife.subcommands["cookbook_site_vendor"] = :CookbookSiteVendor
+      Chef::Knife.subcommands["cookbook_site_install"] = :CookbookSiteInstall
       Chef::Knife.subcommands["cookbook"] = :Cookbook
-      expect(Chef::Knife.subcommand_class_from(%w{cookbook site vendor --help foo bar baz})).to eq(:CookbookSiteVendor)
+      expect(Chef::Knife.subcommand_class_from(%w{cookbook site install --help foo bar baz})).to eq(:CookbookSiteInstall)
     end
 
     it "special case sets the subcommand_loader to GemGlobLoader when running rehash" do
@@ -165,7 +166,8 @@ describe Chef::Knife do
         "X-Chef-Version" => Chef::VERSION,
         "Host" => "api.opscode.piab",
         "X-REMOTE-REQUEST-ID" => request_id,
-    } end
+    }
+    end
 
     let(:request_id) { "1234" }
 
@@ -204,7 +206,7 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "confirms that the headers include X-Remote-Request-Id" do
@@ -219,15 +221,15 @@ describe Chef::Knife do
         KnifeSpecs.send :remove_const, :TestYourself
       end
       Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.kind_of?(Class) }
+      Chef::Knife.subcommands.each { |name, klass| Chef::Knife.subcommands.delete(name) unless klass.is_a?(Class) }
     end
 
     it "merges the global knife CLI options" do
       extra_opts = {}
-      extra_opts[:editor] = { :long => "--editor EDITOR",
-                              :description => "Set the editor to use for interactive commands",
-                              :short => "-e EDITOR",
-                              :default => "/usr/bin/vim" }
+      extra_opts[:editor] = { long: "--editor EDITOR",
+                              description: "Set the editor to use for interactive commands",
+                              short: "-e EDITOR",
+                              default: "/usr/bin/vim" }
 
       # there is special hackery to return the subcommand instance going on here.
       command = Chef::Knife.run(%w{test yourself}, extra_opts)
@@ -279,11 +281,36 @@ describe Chef::Knife do
       expect(other_deps_loaded).to be_truthy
     end
 
+    describe "working with unmerged configuration in #config_source" do
+      let(:command) { KnifeSpecs::TestYourself.new([]) }
+
+      before do
+        KnifeSpecs::TestYourself.option(:opt_with_default,
+          short: "-D VALUE",
+          default: "default-value")
+      end
+      # This supports a use case used by plugins, where the pattern
+      # seems to follow:
+      #   cmd = KnifeCommand.new
+      #   cmd.config[:config_key] = value
+      #   cmd.run
+      #
+      # This bypasses Knife::run and the `merge_configs` call it
+      # performs - config_source should break when that happens.
+      context "when config is fed in directly without a merge" do
+        it "retains the value but returns nil as a config source" do
+          command.config[:test1] = "value"
+          expect(command.config[:test1]).to eq "value"
+          expect(command.config_source(:test1)).to eq nil
+        end
+      end
+
+    end
     describe "merging configuration options" do
       before do
         KnifeSpecs::TestYourself.option(:opt_with_default,
-                                        :short => "-D VALUE",
-                                        :default => "default-value")
+          short: "-D VALUE",
+          default: "default-value")
       end
 
       it "sets the default log_location to STDERR for Chef::Log warnings" do
@@ -298,29 +325,50 @@ describe Chef::Knife do
         expect(Chef::Config[:log_level]).to eql(:warn)
       end
 
-      it "prefers the default value if no config or command line value is present" do
-        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+      it "prefers the default value from option definition if no config or command line value is present and reports the source as default" do
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("default-value")
+        expect(knife_command.config_source(:opt_with_default)).to eq(:cli_default)
       end
 
-      it "prefers a value in Chef::Config[:knife] to the default" do
+      it "prefers a value in Chef::Config[:knife] to the default and reports the source as config" do
         Chef::Config[:knife][:opt_with_default] = "from-knife-config"
-        knife_command = KnifeSpecs::TestYourself.new([]) #empty argv
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("from-knife-config")
+        expect(knife_command.config_source(:opt_with_default)).to eq(:config)
       end
 
-      it "prefers a value from command line over Chef::Config and the default" do
-        Chef::Config[:knife][:opt_with_default] = "from-knife-config"
+      it "prefers a value from command line over Chef::Config and the default and reports the source as CLI" do
         knife_command = KnifeSpecs::TestYourself.new(["-D", "from-cli"])
         knife_command.configure_chef
         expect(knife_command.config[:opt_with_default]).to eq("from-cli")
+        expect(knife_command.config_source(:opt_with_default)).to eq(:cli)
       end
 
       it "merges `listen` config to Chef::Config" do
-        Chef::Knife.run(%w{test yourself --no-listen}, Chef::Application::Knife.options)
+        knife_command = Chef::Knife.run(%w{test yourself --no-listen}, Chef::Application::Knife.options)
         expect(Chef::Config[:listen]).to be(false)
+        expect(knife_command.config_source(:listen)).to eq(:cli)
+      end
+
+      it "merges Chef::Config[:knife] values into the config hash even if they have no cli keys" do
+        Chef::Config[:knife][:opt_with_no_cli_key] = "from-knife-config"
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
+        knife_command.configure_chef
+        expect(knife_command.config[:opt_with_no_cli_key]).to eq("from-knife-config")
+        expect(knife_command.config_source(:opt_with_no_cli_key)).to eq(:config)
+      end
+
+      it "merges Chef::Config[:knife] default values into the config hash even if they have no cli keys" do
+        Chef::Config.config_context :knife do
+          default :opt_with_no_cli_key, "from-knife-default"
+        end
+        knife_command = KnifeSpecs::TestYourself.new([]) # empty argv
+        knife_command.configure_chef
+        expect(knife_command.config[:opt_with_no_cli_key]).to eq("from-knife-default")
+        expect(knife_command.config_source(:opt_with_no_cli_key)).to eq(:config_default)
       end
 
       context "verbosity is one" do
@@ -329,8 +377,9 @@ describe Chef::Knife do
         before do
           knife.config[:verbosity] = 1
           knife.config[:config_file] = fake_config
-          config_loader = double("Chef::WorkstationConfigLoader", :load => true, :no_config_found? => false, :chef_config_dir => "/etc/chef", :config_location => fake_config)
+          config_loader = double("Chef::WorkstationConfigLoader", load: true, no_config_found?: false, chef_config_dir: "/etc/chef", config_location: fake_config)
           allow(config_loader).to receive(:explicit_config_file=).with(fake_config).and_return(fake_config)
+          allow(config_loader).to receive(:profile=)
           allow(Chef::WorkstationConfigLoader).to receive(:new).and_return(config_loader)
         end
 
@@ -342,24 +391,55 @@ describe Chef::Knife do
         end
       end
 
-      it "does not humanize the exception if Chef::Config[:verbosity] is two" do
-        Chef::Config[:verbosity] = 2
-        allow(knife).to receive(:run).and_raise(Exception)
-        expect(knife).not_to receive(:humanize_exception)
-        expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
+      # -VV (2) is debug, -VVV (3) is trace
+      [ 2, 3 ].each do |verbosity|
+        it "does not humanize the exception if Chef::Config[:verbosity] is #{verbosity}" do
+          Chef::Config[:verbosity] = verbosity
+          allow(knife).to receive(:run).and_raise(Exception)
+          expect(knife).not_to receive(:humanize_exception)
+          expect { knife.run_with_pretty_exceptions }.to raise_error(Exception)
+        end
       end
     end
+
+    describe "setting arbitrary configuration with --config-option" do
+
+      let(:stdout) { StringIO.new }
+
+      let(:stderr) { StringIO.new }
+
+      let(:stdin) { StringIO.new }
+
+      let(:ui) { Chef::Knife::UI.new(stdout, stderr, stdin, disable_editing: true) }
+
+      let(:subcommand) do
+        KnifeSpecs::TestYourself.options = Chef::Application::Knife.options.merge(KnifeSpecs::TestYourself.options)
+        KnifeSpecs::TestYourself.new(%w{--config-option badly_formatted_arg}).tap do |cmd|
+          cmd.ui = ui
+        end
+      end
+
+      it "sets arbitrary configuration via --config-option" do
+        Chef::Knife.run(%w{test yourself --config-option arbitrary_config_thing=hello}, Chef::Application::Knife.options)
+        expect(Chef::Config[:arbitrary_config_thing]).to eq("hello")
+      end
+
+      it "handles errors in arbitrary configuration" do
+        expect(subcommand).to receive(:exit).with(1)
+        subcommand.configure_chef
+        expect(stderr.string).to include("ERROR: Unparsable config option \"badly_formatted_arg\"")
+        expect(stdout.string).to include(subcommand.opt_parser.to_s)
+      end
+    end
+
   end
 
   describe "when first created" do
 
-    let(:knife) { KnifeSpecs::TestYourself.new(%w{with some args -s scrogramming}) }
-
-    before do
-      unless KnifeSpecs.const_defined?(:TestYourself)
-        Kernel.load(File.join(CHEF_SPEC_DATA, "knife_subcommand", "test_yourself.rb"))
-      end
-    end
+    let(:knife) {
+      Kernel.load "spec/data/knife_subcommand/test_yourself.rb"
+      KnifeSpecs::TestYourself.new(%w{with some args -s scrogramming})
+    }
 
     it "it parses the options passed to it" do
       expect(knife.config[:scro]).to eq("scrogramming")
@@ -370,6 +450,8 @@ describe Chef::Knife do
     end
 
     it "does not have lazy dependencies loaded" do
+      skip "unstable with randomization... prolly needs more isolation"
+
       expect(knife.class.test_deps_loaded).not_to be_truthy
     end
   end
@@ -390,8 +472,8 @@ describe Chef::Knife do
     it "formats 401s nicely" do
       response = Net::HTTPUnauthorized.new("1.1", "401", "Unauthorized")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no syncronize your clock?"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("401 Unauthorized", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no syncronize your clock?"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("401 Unauthorized", response))
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(/ERROR: Failed to authenticate to/)
       expect(stderr.string).to match(/Response:  y u no syncronize your clock\?/)
@@ -400,32 +482,54 @@ describe Chef::Knife do
     it "formats 403s nicely" do
       response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u no administrator"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("403 Forbidden", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
       allow(knife).to receive(:username).and_return("sadpanda")
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action})
-      expect(stderr.string).to match(%r{Response:  y u no administrator})
+      expect(stderr.string).to match(/ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action/)
+      expect(stderr.string).to match(/Response:  y u no administrator/)
+    end
+
+    context "when proxy servers are set" do
+      before do
+        ENV["http_proxy"] = "xyz"
+      end
+
+      after do
+        ENV.delete("http_proxy")
+      end
+
+      it "formats proxy errors nicely" do
+        response = Net::HTTPForbidden.new("1.1", "403", "Forbidden")
+        response.instance_variable_set(:@read, true)
+        allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u no administrator"))
+        allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("403 Forbidden", response))
+        allow(knife).to receive(:username).and_return("sadpanda")
+        knife.run_with_pretty_exceptions
+        expect(stderr.string).to match(/ERROR: You authenticated successfully to http.+ as sadpanda but you are not authorized for this action/)
+        expect(stderr.string).to match(/ERROR: There are proxy servers configured, your server url may need to be added to NO_PROXY./)
+        expect(stderr.string).to match(/Response:  y u no administrator/)
+      end
     end
 
     it "formats 400s nicely" do
       response = Net::HTTPBadRequest.new("1.1", "400", "Bad Request")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "y u search wrong"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("400 Bad Request", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "y u search wrong"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("400 Bad Request", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: The data in your request was invalid})
-      expect(stderr.string).to match(%r{Response: y u search wrong})
+      expect(stderr.string).to match(/ERROR: The data in your request was invalid/)
+      expect(stderr.string).to match(/Response: y u search wrong/)
     end
 
     it "formats 404s nicely" do
       response = Net::HTTPNotFound.new("1.1", "404", "Not Found")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nothing to see here"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("404 Not Found", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nothing to see here"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("404 Not Found", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: The object you are looking for could not be found})
-      expect(stderr.string).to match(%r{Response: nothing to see here})
+      expect(stderr.string).to match(/ERROR: The object you are looking for could not be found/)
+      expect(stderr.string).to match(/Response: nothing to see here/)
     end
 
     it "formats 406s (non-supported API version error) nicely" do
@@ -433,63 +537,63 @@ describe Chef::Knife do
       response.instance_variable_set(:@read, true) # I hate you, net/http.
 
       # set the header
-      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(:min_version => "0", :max_version => "1", :request_version => "10000000")
+      response["x-ops-server-api-version"] = Chef::JSONCompat.to_json(min_version: "0", max_version: "1", request_version: "10000000")
 
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("406 Not Acceptable", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("406 Not Acceptable", response))
 
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to include("The request that Knife sent was using API version 10000000")
-      expect(stderr.string).to include("The Chef server you sent the request to supports a min API verson of 0 and a max API version of 1")
-      expect(stderr.string).to include("Please either update your Chef client or server to be a compatible set")
+      expect(stderr.string).to match(/The request that .* sent was using API version 10000000./)
+      expect(stderr.string).to match(/The server you sent the request to supports a min API version of 0 and a max API version of 1./)
+      expect(stderr.string).to match(/Please either update your .* or the server to be a compatible set./)
     end
 
     it "formats 500s nicely" do
       response = Net::HTTPInternalServerError.new("1.1", "500", "Internal Server Error")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sad trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sad trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("500 Internal Server Error", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: internal server error})
-      expect(stderr.string).to match(%r{Response: sad trombone})
+      expect(stderr.string).to match(/ERROR: internal server error/)
+      expect(stderr.string).to match(/Response: sad trombone/)
     end
 
     it "formats 502s nicely" do
       response = Net::HTTPBadGateway.new("1.1", "502", "Bad Gateway")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "sadder trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "sadder trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("502 Bad Gateway", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: bad gateway})
-      expect(stderr.string).to match(%r{Response: sadder trombone})
+      expect(stderr.string).to match(/ERROR: bad gateway/)
+      expect(stderr.string).to match(/Response: sadder trombone/)
     end
 
     it "formats 503s nicely" do
       response = Net::HTTPServiceUnavailable.new("1.1", "503", "Service Unavailable")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "saddest trombone"))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "saddest trombone"))
       allow(knife).to receive(:run).and_raise(Net::HTTPFatalError.new("503 Service Unavailable", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: Service temporarily unavailable})
-      expect(stderr.string).to match(%r{Response: saddest trombone})
+      expect(stderr.string).to match(/ERROR: Service temporarily unavailable/)
+      expect(stderr.string).to match(/Response: saddest trombone/)
     end
 
     it "formats other HTTP errors nicely" do
       response = Net::HTTPPaymentRequired.new("1.1", "402", "Payment Required")
       response.instance_variable_set(:@read, true) # I hate you, net/http.
-      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(:error => "nobugfixtillyoubuy"))
-      allow(knife).to receive(:run).and_raise(Net::HTTPServerException.new("402 Payment Required", response))
+      allow(response).to receive(:body).and_return(Chef::JSONCompat.to_json(error: "nobugfixtillyoubuy"))
+      allow(knife).to receive(:run).and_raise(Net::HTTPClientException.new("402 Payment Required", response))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: Payment Required})
-      expect(stderr.string).to match(%r{Response: nobugfixtillyoubuy})
+      expect(stderr.string).to match(/ERROR: Payment Required/)
+      expect(stderr.string).to match(/Response: nobugfixtillyoubuy/)
     end
 
     it "formats NameError and NoMethodError nicely" do
       allow(knife).to receive(:run).and_raise(NameError.new("Undefined constant FUUU"))
       knife.run_with_pretty_exceptions
-      expect(stderr.string).to match(%r{ERROR: knife encountered an unexpected error})
-      expect(stderr.string).to match(%r{This may be a bug in the 'knife' knife command or plugin})
-      expect(stderr.string).to match(%r{Exception: NameError: Undefined constant FUUU})
+      expect(stderr.string).to match(/ERROR: .* encountered an unexpected error/)
+      expect(stderr.string).to match(/This may be a bug in the 'knife' .* command or plugin/)
+      expect(stderr.string).to match(/Exception: NameError: Undefined constant FUUU/)
     end
 
     it "formats missing private key errors nicely" do
@@ -497,7 +601,7 @@ describe Chef::Knife do
       allow(knife).to receive(:api_key).and_return("/home/root/.chef/no-key-here.pem")
       knife.run_with_pretty_exceptions
       expect(stderr.string).to match(%r{ERROR: Your private key could not be loaded from /home/root/.chef/no-key-here.pem})
-      expect(stderr.string).to match(%r{Check your configuration file and ensure that your private key is readable})
+      expect(stderr.string).to match(/Check your configuration file and ensure that your private key is readable/)
     end
 
     it "formats connection refused errors nicely" do
@@ -506,8 +610,8 @@ describe Chef::Knife do
       # Errno::ECONNREFUSED message differs by platform
       # *nix = Errno::ECONNREFUSED: Connection refused
       # win32: Errno::ECONNREFUSED: No connection could be made because the target machine actively refused it.
-      expect(stderr.string).to match(%r{ERROR: Network Error: .* - y u no shut up})
-      expect(stderr.string).to match(%r{Check your knife configuration and network settings})
+      expect(stderr.string).to match(/ERROR: Network Error: .* - y u no shut up/)
+      expect(stderr.string).to match(/Check your .* configuration and network settings/)
     end
 
     it "formats SSL errors nicely and suggests to use `knife ssl check` and `knife ssl fetch`" do
@@ -516,13 +620,13 @@ describe Chef::Knife do
 
       knife.run_with_pretty_exceptions
 
-      expected_message = <<-MSG
-ERROR: Could not establish a secure connection to the server.
-Use `knife ssl check` to troubleshoot your SSL configuration.
-If your Chef Server uses a self-signed certificate, you can use
-`knife ssl fetch` to make knife trust the server's certificates.
-MSG
-      expect(stderr.string).to include(expected_message)
+      expected_message = <<~MSG
+        ERROR: Could not establish a secure connection to the server.
+        Use `.* ssl check` to troubleshoot your SSL configuration.
+        If your server uses a self-signed certificate, you can use
+        `.* ssl fetch` to make .* trust the server's certificates.
+      MSG
+      expect(stderr.string).to match(expected_message)
     end
 
   end

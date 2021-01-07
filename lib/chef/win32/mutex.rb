@@ -1,6 +1,6 @@
 #
 # Author:: Serdar Sutay (<serdar@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/win32/api/synchronization"
-require "chef/win32/unicode"
+require_relative "api/synchronization"
+require_relative "unicode"
 
 class Chef
   module ReservedNames::Win32
@@ -55,7 +55,7 @@ class Chef
           when WAIT_ABANDONED
             # Previous owner of the mutex died before it can release the
             # mutex. Log a warning and continue.
-            Chef::Log.debug "Existing owner of the mutex exited prematurely."
+            Chef::Log.trace "Existing owner of the mutex exited prematurely."
             break
           when WAIT_OBJECT_0
             # Mutex is successfully acquired.
@@ -68,7 +68,7 @@ class Chef
       end
 
       #####################################################
-      # Releaes the mutex
+      # Releases the mutex
       def release
         # http://msdn.microsoft.com/en-us/library/windows/desktop/ms685066(v=vs.85).aspx
         # Note that release method needs to be called more than once
@@ -95,7 +95,7 @@ if other threads attempt to acquire the mutex.")
         @handle = OpenMutexW(SYNCHRONIZE, true, name.to_wstring)
 
         if @handle == 0
-          # Mutext doesn't exist so create one.
+          # Mutex doesn't exist so create one.
           # In the initial creation of the mutex initial_owner is set to
           # false so that mutex will not be acquired until someone calls
           # acquire.

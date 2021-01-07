@@ -1,8 +1,8 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Matthew Kent (<mkent@magoazul.com>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
-# Copyright:: Copyright 2010-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -34,12 +34,19 @@ describe Chef::Knife::CookbookMetadataFromFile do
   end
 
   after do
-    if File.exists?(@tgt)
+    if File.exist?(@tgt)
       File.unlink(@tgt)
     end
   end
 
   describe "run" do
+    it "should print usage and exit when a FILE is not provided" do
+      @knife.name_args = []
+      expect(@knife).to receive(:show_usage)
+      expect(@knife.ui).to receive(:fatal).with(/You must specify the FILE./)
+      expect { @knife.run }.to raise_error(SystemExit)
+    end
+
     it "should determine cookbook name from path" do
       expect(@md).to receive(:name).with(no_args)
       expect(@md).to receive(:name).with("quick_start")

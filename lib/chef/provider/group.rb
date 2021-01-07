@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,22 +16,14 @@
 # limitations under the License.
 #
 
-require "chef/provider"
-require "chef/mixin/shell_out"
-require "chef/mixin/command"
-require "etc"
+require_relative "../provider"
+require "etc" unless defined?(Etc)
 
 class Chef
   class Provider
     class Group < Chef::Provider
-      include Chef::Mixin::ShellOut
-      include Chef::Mixin::Command
       attr_accessor :group_exists
       attr_accessor :change_desc
-
-      def whyrun_supported?
-        true
-      end
 
       def initialize(new_resource, run_context)
         super
@@ -39,40 +31,40 @@ class Chef
       end
 
       def load_current_resource
-        @current_resource = Chef::Resource::Group.new(@new_resource.name)
-        @current_resource.group_name(@new_resource.group_name)
+        @current_resource = Chef::Resource::Group.new(new_resource.name)
+        current_resource.group_name(new_resource.group_name)
 
         group_info = nil
         begin
-          group_info = Etc.getgrnam(@new_resource.group_name)
-        rescue ArgumentError => e
+          group_info = Etc.getgrnam(new_resource.group_name)
+        rescue ArgumentError
           @group_exists = false
-          Chef::Log.debug("#{@new_resource} group does not exist")
+          logger.trace("#{new_resource} group does not exist")
         end
 
         if group_info
-          @new_resource.gid(group_info.gid) unless @new_resource.gid
-          @current_resource.gid(group_info.gid)
-          @current_resource.members(group_info.mem)
+          new_resource.gid(group_info.gid) unless new_resource.gid
+          current_resource.gid(group_info.gid)
+          current_resource.members(group_info.mem)
         end
 
-        @current_resource
+        current_resource
       end
 
       def define_resource_requirements
         requirements.assert(:modify) do |a|
           a.assertion { @group_exists }
-          a.failure_message(Chef::Exceptions::Group, "Cannot modify #{@new_resource} - group does not exist!")
-          a.whyrun("Group #{@new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
+          a.failure_message(Chef::Exceptions::Group, "Cannot modify #{new_resource} - group does not exist!")
+          a.whyrun("Group #{new_resource} does not exist. Unless it would have been created earlier in this run, this attempt to modify it would fail.")
         end
 
         requirements.assert(:all_actions) do |a|
           # Make sure that the resource doesn't contain any common
           # user names in the members and exclude_members properties.
-          if !@new_resource.members.nil? && !@new_resource.excluded_members.nil?
-            common_members = @new_resource.members & @new_resource.excluded_members
+          if !new_resource.members.nil? && !new_resource.excluded_members.nil?
+            common_members = new_resource.members & new_resource.excluded_members
             a.assertion { common_members.empty? }
-            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(', ')}'")
+            a.failure_message(Chef::Exceptions::ConflictingMembersInGroup, "Attempting to both add and remove users from a group: '#{common_members.join(", ")}'")
             # No why-run alternative
           end
         end
@@ -86,41 +78,48 @@ class Chef
       # <false>:: If a change is not required
       def compare_group
         @change_desc = [ ]
-        if @new_resource.gid.to_s != @current_resource.gid.to_s
-          @change_desc << "change gid #{@current_resource.gid} to #{@new_resource.gid}"
+        unless group_gid_match?
+          @change_desc << "change gid #{current_resource.gid} to #{new_resource.gid}"
         end
 
-        if @new_resource.append
+        if new_resource.append
           missing_members = []
-          @new_resource.members.each do |member|
+          new_resource.members.each do |member|
             next if has_current_group_member?(member)
+
             validate_member!(member)
             missing_members << member
           end
-          if missing_members.length > 0
+          unless missing_members.empty?
             @change_desc << "add missing member(s): #{missing_members.join(", ")}"
           end
 
           members_to_be_removed = []
-          @new_resource.excluded_members.each do |member|
+          new_resource.excluded_members.each do |member|
             if has_current_group_member?(member)
               members_to_be_removed << member
             end
           end
-          if members_to_be_removed.length > 0
+          unless members_to_be_removed.empty?
             @change_desc << "remove existing member(s): #{members_to_be_removed.join(", ")}"
           end
-        else
-          if @new_resource.members != @current_resource.members
-            @change_desc << "replace group members with new list of members"
-          end
+        elsif !group_members_match?
+          @change_desc << "replace group members with new list of members: #{new_resource.members.join(", ")}"
         end
 
         !@change_desc.empty?
       end
 
+      def group_gid_match?
+        new_resource.gid.to_s == current_resource.gid.to_s
+      end
+
+      def group_members_match?
+        [new_resource.members].flatten.sort == [current_resource.members].flatten.sort
+      end
+
       def has_current_group_member?(member)
-        @current_resource.members.include?(member)
+        current_resource.members.include?(member)
       end
 
       def validate_member!(member)
@@ -129,47 +128,47 @@ class Chef
         true
       end
 
-      def action_create
+      action :create do
         case @group_exists
         when false
-          converge_by("create group #{@new_resource.group_name}") do
+          converge_by("create group #{new_resource.group_name}") do
             create_group
-            Chef::Log.info("#{@new_resource} created")
+            logger.info("#{new_resource} created")
           end
         else
           if compare_group
-            converge_by(["alter group #{@new_resource.group_name}"] + change_desc) do
+            converge_by(["alter group #{new_resource.group_name}"] + change_desc) do
               manage_group
-              Chef::Log.info("#{@new_resource} altered")
+              logger.info("#{new_resource} altered: #{change_desc.join(", ")}")
             end
           end
         end
       end
 
-      def action_remove
-        if @group_exists
-          converge_by("remove group #{@new_resource.group_name}") do
-            remove_group
-            Chef::Log.info("#{@new_resource} removed")
-          end
+      action :remove do
+        return unless @group_exists
+
+        converge_by("remove group #{new_resource.group_name}") do
+          remove_group
+          logger.info("#{new_resource} removed")
         end
       end
 
-      def action_manage
-        if @group_exists && compare_group
-          converge_by(["manage group #{@new_resource.group_name}"] + change_desc) do
-            manage_group
-            Chef::Log.info("#{@new_resource} managed")
-          end
+      action :manage do
+        return unless @group_exists && compare_group
+
+        converge_by(["manage group #{new_resource.group_name}"] + change_desc) do
+          manage_group
+          logger.info("#{new_resource} managed: #{change_desc.join(", ")}")
         end
       end
 
-      def action_modify
-        if compare_group
-          converge_by(["modify group #{@new_resource.group_name}"] + change_desc) do
-            manage_group
-            Chef::Log.info("#{@new_resource} modified")
-          end
+      action :modify do
+        return unless compare_group
+
+        converge_by(["modify group #{new_resource.group_name}"] + change_desc) do
+          manage_group
+          logger.info("#{new_resource} modified: #{change_desc.join(", ")}")
         end
       end
 

@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,32 +16,34 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/core/node_presenter"
+require_relative "../knife"
+require_relative "core/node_presenter"
+require_relative "core/formatting_options"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Knife
     class NodeShow < Knife
 
-      include Knife::Core::NodeFormattingOptions
+      include Knife::Core::FormattingOptions
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
+        require_relative "../node"
+        require_relative "../json_compat"
       end
 
       banner "knife node show NODE (options)"
 
       option :run_list,
-        :short => "-r",
-        :long => "--run-list",
-        :description => "Show only the run list"
+        short: "-r",
+        long: "--run-list",
+        description: "Show only the run list."
 
       option :environment,
-        :short        => "-E",
-        :long         => "--environment",
-        :description  => "Show only the Chef environment"
+        short: "-E",
+        long: "--environment",
+        description: "Show only the #{ChefUtils::Dist::Infra::PRODUCT} environment."
 
       def run
         ui.use_presenter Knife::Core::NodePresenter
@@ -55,11 +57,6 @@ class Chef
 
         node = Chef::Node.load(@node_name)
         output(format_for_display(node))
-        self.class.attrs_to_show = []
-      end
-
-      def self.attrs_to_show=(attrs)
-        @attrs_to_show = attrs
       end
     end
   end

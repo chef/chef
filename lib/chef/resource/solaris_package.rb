@@ -1,7 +1,7 @@
 #
 # Author:: Toomas Pelberg (<toomasp@gmx.net>)
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,23 @@
 # limitations under the License.
 #
 
-require "chef/resource/package"
-require "chef/provider/package/solaris"
+require_relative "package"
 
 class Chef
   class Resource
     class SolarisPackage < Chef::Resource::Package
-      resource_name :solaris_package
-      provides :package, os: "solaris2", platform_family: "nexentacore"
-      provides :package, os: "solaris2", platform_family: "solaris2", platform_version: "<= 5.10"
+      unified_mode true
+
+      provides :solaris_package
+
+      description "Use the **solaris_package** resource to manage packages on the Solaris platform."
+
+      property :package_name, String,
+        description: "An optional property to set the package name if it differs from the resource block's name.",
+        identity: true
+
+      property :version, String,
+        description: "The version of a package to be installed or upgraded."
     end
   end
 end

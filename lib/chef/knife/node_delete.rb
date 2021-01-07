@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,29 +16,29 @@
 # limitations under the License.
 #
 
-require "chef/knife"
+require_relative "../knife"
 
 class Chef
   class Knife
     class NodeDelete < Knife
 
       deps do
-        require "chef/node"
-        require "chef/json_compat"
+        require_relative "../node"
+        require_relative "../json_compat"
       end
 
-      banner "knife node delete NODE (options)"
+      banner "knife node delete [NODE [NODE]] (options)"
 
       def run
-        @node_name = @name_args[0]
-
-        if @node_name.nil?
+        if @name_args.length == 0
           show_usage
-          ui.fatal("You must specify a node name")
+          ui.fatal("You must specify at least one node name")
           exit 1
         end
 
-        delete_object(Chef::Node, @node_name)
+        @name_args.each do |node_name|
+          delete_object(Chef::Node, node_name)
+        end
       end
 
     end

@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "chef/log"
+require_relative "log"
 
 class Chef
 
@@ -26,11 +26,11 @@ class Chef
   # the values specified by a value object, usually a Chef::Resource.
   class FileAccessControl
 
-    if RUBY_PLATFORM =~ /mswin|mingw|windows/
-      require "chef/file_access_control/windows"
+    if RUBY_PLATFORM.match?(/mswin|mingw|windows/)
+      require_relative "file_access_control/windows"
       include FileAccessControl::Windows
     else
-      require "chef/file_access_control/unix"
+      require_relative "file_access_control/unix"
       include FileAccessControl::Unix
     end
 

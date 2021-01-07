@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,25 +17,62 @@
 # limitations under the License.
 #
 
-VERSION = IO.read(File.expand_path("../VERSION", __FILE__)).strip
+# we need this to resolve files required by lib/chef/dist
+$LOAD_PATH.unshift(File.expand_path("chef-config/lib", __dir__))
 
-require "rubygems"
-require "chef/version"
-require "chef-config/package_task"
-require "rdoc/task"
-require_relative "tasks/rspec"
-require_relative "tasks/maintainers"
-require_relative "tasks/cbgb"
-require_relative "tasks/dependencies"
-require_relative "tasks/changelog"
-
-ChefConfig::PackageTask.new(File.expand_path("..", __FILE__), "Chef", "chef") do |package|
-  package.component_paths = ["chef-config"]
-  package.generate_version_class = true
+begin
+  require_relative "tasks/rspec"
+  require_relative "tasks/dependencies"
+  require_relative "tasks/docs"
+  require_relative "tasks/spellcheck"
+  require_relative "chef-utils/lib/chef-utils/dist" unless defined?(ChefUtils::Dist)
+rescue LoadError => e
+  puts "Skipping missing rake dep: #{e}"
 end
-# Add a conservative dependency update to version:bump (which was created by PackageTask)
-task "version:bump" => %w{version:bump_patch version:update}
-task "version:bump" => %w{version:bump_patch version:update}
+
+require "bundler/gem_helper"
+
+ENV["CHEF_LICENSE"] = "accept-no-persist"
+
+namespace :pre_install do
+  desc "Runs 'rake install' for the gems that live in subdirectories in this repo"
+  task :install_gems_from_dirs do
+    %w{chef-utils chef-config}.each do |gem|
+      path = ::File.join(::File.dirname(__FILE__), gem)
+      Dir.chdir(path) do
+        sh("rake install")
+      end
+    end
+  end
+
+  desc "Renders the powershell extensions with distro flavoring"
+  task :render_powershell_extension do
+    require "erb"
+    template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
+    psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
+    FileUtils.mkdir_p psm1_path
+    template = ERB.new(IO.read(template_file))
+    chef_psm1 = template.result
+    File.open(::File.join(psm1_path, "chef.psm1"), "w") { |f| f.write(chef_psm1) }
+  end
+
+  task all: ["pre_install:install_gems_from_dirs", "pre_install:render_powershell_extension"]
+end
+
+# hack in all the preinstall tasks to occur before the traditional install task
+task install: "pre_install:all"
+
+# make sure we build the correct gemspec on windows
+gemspec = Gem.win_platform? ? "chef-universal-mingw32" : "chef"
+Bundler::GemHelper.install_tasks name: gemspec
+
+# this gets appended to the normal bundler install helper
+task :install do
+  chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
+  Dir.chdir(chef_bin_path) do
+    sh("rake install:force")
+  end
+end
 
 task :pedant, :chef_zero_spec
 
@@ -51,6 +88,25 @@ task :register_eventlog do
   end
 end
 
+desc "Copies powershell_exec related binaries from the latest built Habitat Packages"
+task :update_chef_exec_dll do
+  raise "This task must be run on Windows since we are installing a Windows targeted package!" unless Gem.win_platform?
+
+  require "mkmf"
+  raise "Unable to locate Habitat cli. Please install Habitat cli before invoking this task!" unless find_executable "hab"
+
+  sh("hab pkg install chef/chef-powershell-shim")
+  sh("hab pkg install chef/chef-powershell-shim-x86")
+  x64 = `hab pkg path chef/chef-powershell-shim`.chomp.tr('\\', "/")
+  x86 = `hab pkg path chef/chef-powershell-shim-x86`.chomp.tr('\\', "/")
+  FileUtils.rm_rf(Dir["distro/ruby_bin_folder/AMD64/*"])
+  FileUtils.rm_rf(Dir["distro/ruby_bin_folder/x86/*"])
+  puts "Copying #{x64}/bin/* to distro/ruby_bin_folder/AMD64"
+  FileUtils.cp_r(Dir["#{x64}/bin/*"], "distro/ruby_bin_folder/AMD64")
+  puts "Copying #{x86}/bin/* to distro/ruby_bin_folder/x86"
+  FileUtils.cp_r(Dir["#{x86}/bin/*"], "distro/ruby_bin_folder/x86")
+end
+
 begin
   require "chefstyle"
   require "rubocop/rake_task"
@@ -58,21 +114,5 @@ begin
     task.options += ["--display-cop-names", "--no-color"]
   end
 rescue LoadError
-  puts "chefstyle/rubocop is not available.  gem install chefstyle to do style checking."
-end
-
-begin
-  require "yard"
-  DOC_FILES = [ "README.rdoc", "LICENSE", "spec/tiny_server.rb", "lib/**/*.rb" ]
-  namespace :yard do
-    desc "Create YARD documentation"
-
-    YARD::Rake::YardocTask.new(:html) do |t|
-      t.files = DOC_FILES
-      t.options = ["--format", "html"]
-    end
-  end
-
-rescue LoadError
-  puts "yard is not available. (sudo) gem install yard to generate yard documentation."
+  puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
 end

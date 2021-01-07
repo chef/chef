@@ -3,7 +3,7 @@
 # ./knife - Chef CLI interface
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright 2009-2018, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,8 +18,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "rubygems"
-$:.unshift(File.expand_path(File.join(File.dirname(__FILE__), "..", "lib")))
+$:.unshift(File.expand_path(File.join(__dir__, "..", "lib")))
 require "chef/application/knife"
 
 Chef::Application::Knife.new.run

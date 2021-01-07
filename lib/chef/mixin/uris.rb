@@ -1,6 +1,6 @@
 #
 # Author:: Jay Mundrawala (<jdm@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,10 @@
 # limitations under the License.
 #
 
-require "uri"
-require "addressable/uri"
+autoload :URI, "uri"
+module Addressable
+  autoload :URI, "addressable/uri"
+end
 
 class Chef
   module Mixin
@@ -31,12 +33,10 @@ class Chef
       end
 
       def as_uri(source)
-        begin
-          URI.parse(source)
-        rescue URI::InvalidURIError
-          Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
-          URI.parse(Addressable::URI.encode(source))
-        end
+        URI.parse(source)
+      rescue URI::InvalidURIError
+        Chef::Log.warn("#{source} was an invalid URI. Trying to escape invalid characters")
+        URI.parse(Addressable::URI.encode(source))
       end
 
     end

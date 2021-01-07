@@ -1,7 +1,7 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
 # Author:: Juanje Ojeda (<juanje.ojeda@gmail.com>)
-# Copyright:: Copyright 2011-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -57,7 +57,7 @@ describe Chef::Knife::Core::ObjectLoader do
         it_behaves_like "Chef object", chef_class
       end
 
-      #NOTE: This is check for the bug described at CHEF-2352
+      # NOTE: This is check for the bug described at CHEF-2352
       describe "when the file is a JSON" do
         describe "and it has defined 'json_class'" do
           before do

@@ -1,6 +1,6 @@
 #
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -21,22 +21,32 @@ require "support/shared/unit/resource/static_provider_resolution"
 
 describe Chef::Resource::SolarisPackage, "initialize" do
 
-  %w{solaris2 nexentacore}.each do |platform_family|
-    static_provider_resolution(
-      resource: Chef::Resource::SolarisPackage,
-      provider: Chef::Provider::Package::Solaris,
-      name: :solaris_package,
-      action: :install,
-      os: "solaris2",
-      platform_family: platform_family
-    )
+  static_provider_resolution(
+    resource: Chef::Resource::SolarisPackage,
+    provider: Chef::Provider::Package::Solaris,
+    name: :solaris_package,
+    action: :install,
+    os: "solaris2",
+    platform_family: "solaris2"
+  )
+
+  let(:resource) { Chef::Resource::SolarisPackage.new("foo") }
+
+  it "sets the package_name to the name provided" do
+    expect(resource.package_name).to eql("foo")
   end
 
-  before(:each) do
-    @resource = Chef::Resource::SolarisPackage.new("foo")
+  it "sets the default action as :install" do
+    expect(resource.action).to eql([:install])
   end
 
-  it "should set the package_name to the name provided" do
-    expect(@resource.package_name).to eql("foo")
+  it "supports :install, :lock, :purge, :reconfig, :remove, :unlock, :upgrade actions" do
+    expect { resource.action :install }.not_to raise_error
+    expect { resource.action :lock }.not_to raise_error
+    expect { resource.action :purge }.not_to raise_error
+    expect { resource.action :reconfig }.not_to raise_error
+    expect { resource.action :remove }.not_to raise_error
+    expect { resource.action :unlock }.not_to raise_error
+    expect { resource.action :upgrade }.not_to raise_error
   end
 end

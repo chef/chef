@@ -16,42 +16,22 @@
 # limitations under the License.
 #
 
-require "chef/resource/service"
+require_relative "service"
 
 class Chef
   class Resource
     class MacosxService < Chef::Resource::Service
+      unified_mode true
 
-      provides :macosx_service, os: "darwin"
+      provides :macosx_service
       provides :service, os: "darwin"
 
-      identity_attr :service_name
+      description "Use the **macosx_service** resource to manage services on the macOS platform."
 
-      state_attrs :enabled, :running
+      property :plist, String,
+        description: "A plist to use in the case where the filename and label for the service do not match."
 
-      def initialize(name, run_context = nil)
-        super
-        @plist = nil
-        @session_type = nil
-      end
-
-      # This will enable user to pass a plist in the case
-      # that the filename and label for the service dont match
-      def plist(arg = nil)
-        set_or_return(
-          :plist,
-          arg,
-          :kind_of => String
-        )
-      end
-
-      def session_type(arg = nil)
-        set_or_return(
-          :session_type,
-          arg,
-          :kind_of => String
-        )
-      end
+      property :session_type, String
 
     end
   end

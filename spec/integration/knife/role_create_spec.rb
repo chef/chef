@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "support/shared/context/config"
 
@@ -33,7 +34,7 @@ describe "knife role create", :workstation do
     it "refuses to add an existing role" do
       pending "Knife role create must not blindly overwrite an existing role"
       knife("role create bah").should_succeed out
-      expect { knife("role create bah") }.to raise_error(Net::HTTPServerException)
+      expect { knife("role create bah") }.to raise_error(Net::HTTPClientException)
     end
 
   end

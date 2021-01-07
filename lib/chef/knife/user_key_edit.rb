@@ -1,6 +1,6 @@
 #
 # Author:: Tyler Cloke (tyler@chef.io)
-# Copyright:: Copyright 2015-2016, Chef Software, Inc
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/knife"
-require "chef/knife/key_edit_base"
+require_relative "../knife"
+require_relative "key_edit_base"
 
 class Chef
   class Knife
@@ -31,6 +31,10 @@ class Chef
       include Chef::Knife::KeyEditBase
 
       banner "knife user key edit USER KEYNAME (options)"
+
+      deps do
+        require_relative "key_edit"
+      end
 
       attr_reader :actor
 

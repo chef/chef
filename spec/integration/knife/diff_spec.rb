@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,6 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/knife/diff"
 
@@ -46,19 +47,19 @@ describe "knife diff", :workstation do
         end
 
         it "knife diff reports everything as deleted" do
-          knife("diff --name-status /").should_succeed <<EOM
-D\t/clients/chef-validator.json
-D\t/clients/chef-webui.json
-D\t/clients/x.json
-D\t/cookbooks/x
-D\t/data_bags/x
-D\t/environments/_default.json
-D\t/environments/x.json
-D\t/nodes/x.json
-D\t/roles/x.json
-D\t/users/admin.json
-D\t/users/x.json
-EOM
+          knife("diff --name-status /").should_succeed <<~EOM
+            D\t/clients/chef-validator.json
+            D\t/clients/chef-webui.json
+            D\t/clients/x.json
+            D\t/cookbooks/x
+            D\t/data_bags/x
+            D\t/environments/_default.json
+            D\t/environments/x.json
+            D\t/nodes/x.json
+            D\t/roles/x.json
+            D\t/users/admin.json
+            D\t/users/x.json
+          EOM
         end
       end
 
@@ -92,17 +93,17 @@ EOM
 
         context "except the role file" do
           before do
-            file "roles/x.json", <<EOM
-{
-  "foo": "bar"
-}
-EOM
+            file "roles/x.json", <<~EOM
+              {
+                "foo": "bar"
+              }
+            EOM
           end
 
           it "knife diff reports the role as different" do
-            knife("diff --name-status /").should_succeed <<EOM
-M\t/roles/x.json
-EOM
+            knife("diff --name-status /").should_succeed <<~EOM
+              M\t/roles/x.json
+            EOM
           end
         end
 
@@ -120,32 +121,32 @@ EOM
           end
 
           it "knife diff reports the new files as added" do
-            knife("diff --name-status /").should_succeed <<EOM
-A\t/clients/y.json
-A\t/cookbooks/x/blah.rb
-A\t/cookbooks/y
-A\t/data_bags/x/z.json
-A\t/data_bags/y
-A\t/environments/y.json
-A\t/nodes/y.json
-A\t/roles/y.json
-A\t/users/y.json
-EOM
+            knife("diff --name-status /").should_succeed <<~EOM
+              A\t/clients/y.json
+              A\t/cookbooks/x/blah.rb
+              A\t/cookbooks/y
+              A\t/data_bags/x/z.json
+              A\t/data_bags/y
+              A\t/environments/y.json
+              A\t/nodes/y.json
+              A\t/roles/y.json
+              A\t/users/y.json
+            EOM
           end
 
           context "when cwd is the data_bags directory" do
             before { cwd "data_bags" }
             it "knife diff reports different data bags" do
-              knife("diff --name-status").should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
+              knife("diff --name-status").should_succeed <<~EOM
+                A\tx/z.json
+                A\ty
+              EOM
             end
             it "knife diff * reports different data bags" do
-              knife("diff --name-status *").should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
+              knife("diff --name-status *").should_succeed <<~EOM
+                A\tx/z.json
+                A\ty
+              EOM
             end
           end
         end
@@ -153,15 +154,15 @@ EOM
 
       when_the_repository "is empty" do
         it "knife diff reports everything as deleted" do
-          knife("diff --name-status /").should_succeed <<EOM
-D\t/clients
-D\t/cookbooks
-D\t/data_bags
-D\t/environments
-D\t/nodes
-D\t/roles
-D\t/users
-EOM
+          knife("diff --name-status /").should_succeed <<~EOM
+            D\t/clients
+            D\t/cookbooks
+            D\t/data_bags
+            D\t/environments
+            D\t/nodes
+            D\t/roles
+            D\t/users
+          EOM
         end
       end
     end
@@ -179,18 +180,18 @@ EOM
         end
 
         it "knife diff /cookbooks/x shows differences" do
-          knife("diff --name-status /cookbooks/x").should_succeed <<EOM
-M\t/cookbooks/x/metadata.rb
-D\t/cookbooks/x/onlyin1.0.1.rb
-A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          knife("diff --name-status /cookbooks/x").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            D\t/cookbooks/x/onlyin1.0.1.rb
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
         end
 
         it "knife diff --diff-filter=MAT does not show deleted files" do
-          knife("diff --diff-filter=MAT --name-status /cookbooks/x").should_succeed <<EOM
-M\t/cookbooks/x/metadata.rb
-A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          knife("diff --diff-filter=MAT --name-status /cookbooks/x").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
         end
       end
 
@@ -210,11 +211,11 @@ EOM
         end
 
         it "knife diff /cookbooks/x shows the differences" do
-          knife("diff --name-status /cookbooks/x").should_succeed <<EOM
-M\t/cookbooks/x/metadata.rb
-D\t/cookbooks/x/onlyin1.0.1.rb
-A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          knife("diff --name-status /cookbooks/x").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            D\t/cookbooks/x/onlyin1.0.1.rb
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
         end
       end
 
@@ -224,11 +225,11 @@ EOM
         end
 
         it "knife diff /cookbooks/x shows the differences" do
-          knife("diff --name-status /cookbooks/x").should_succeed <<EOM
-M\t/cookbooks/x/metadata.rb
-D\t/cookbooks/x/onlyin0.9.9.rb
-A\t/cookbooks/x/onlyin1.0.0.rb
-EOM
+          knife("diff --name-status /cookbooks/x").should_succeed <<~EOM
+            M\t/cookbooks/x/metadata.rb
+            D\t/cookbooks/x/onlyin0.9.9.rb
+            A\t/cookbooks/x/onlyin1.0.0.rb
+          EOM
         end
       end
     end
@@ -247,7 +248,7 @@ EOM
         end
         when_the_chef_server "has an environment with a different value" do
           before { environment "x", { "description" => "hi" } }
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x",
@@ -277,7 +278,7 @@ EOM
             environment "x", {}
           end
 
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x"
@@ -291,7 +292,7 @@ EOM
           before do
             environment "x", { "description" => "lo" }
           end
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
    "name": "x",
@@ -309,15 +310,17 @@ EOM
       when_the_repository "has an environment with bad JSON" do
         before { file "environments/x.json", "{" }
         it "knife diff reports an error and does a textual diff" do
-          error_text = "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF"
+          error_text = "WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF"
           error_match = Regexp.new(Regexp.escape(error_text))
-          knife("diff /environments/x.json").should_succeed(/-  "name": "x"/, :stderr => error_match)
+          knife("diff /environments/x.json").should_succeed(/-  "name": "x"/, stderr: error_match)
         end
       end
     end
   end # without versioned cookbooks
 
-  with_versioned_cookbooks do
+  context "with versioned cookbooks" do
+    before { Chef::Config[:versioned_cookbooks] = true }
+
     when_the_chef_server "has one of each thing" do
       before do
         client "x", "{}"
@@ -341,19 +344,19 @@ EOM
         end
 
         it "knife diff reports everything as deleted" do
-          knife("diff --name-status /").should_succeed <<EOM
-D\t/clients/chef-validator.json
-D\t/clients/chef-webui.json
-D\t/clients/x.json
-D\t/cookbooks/x-1.0.0
-D\t/data_bags/x
-D\t/environments/_default.json
-D\t/environments/x.json
-D\t/nodes/x.json
-D\t/roles/x.json
-D\t/users/admin.json
-D\t/users/x.json
-EOM
+          knife("diff --name-status /").should_succeed <<~EOM
+            D\t/clients/chef-validator.json
+            D\t/clients/chef-webui.json
+            D\t/clients/x.json
+            D\t/cookbooks/x-1.0.0
+            D\t/data_bags/x
+            D\t/environments/_default.json
+            D\t/environments/x.json
+            D\t/nodes/x.json
+            D\t/roles/x.json
+            D\t/users/admin.json
+            D\t/users/x.json
+          EOM
         end
       end
 
@@ -386,17 +389,17 @@ EOM
 
         context "except the role file" do
           before do
-            file "roles/x.json", <<EOM
-{
-  "foo": "bar"
-}
-EOM
+            file "roles/x.json", <<~EOM
+              {
+                "foo": "bar"
+              }
+            EOM
           end
 
           it "knife diff reports the role as different" do
-            knife("diff --name-status /").should_succeed <<EOM
-M\t/roles/x.json
-EOM
+            knife("diff --name-status /").should_succeed <<~EOM
+              M\t/roles/x.json
+            EOM
           end
         end
 
@@ -415,33 +418,33 @@ EOM
           end
 
           it "knife diff reports the new files as added" do
-            knife("diff --name-status /").should_succeed <<EOM
-A\t/clients/y.json
-A\t/cookbooks/x-1.0.0/blah.rb
-A\t/cookbooks/x-2.0.0
-A\t/cookbooks/y-1.0.0
-A\t/data_bags/x/z.json
-A\t/data_bags/y
-A\t/environments/y.json
-A\t/nodes/y.json
-A\t/roles/y.json
-A\t/users/y.json
-EOM
+            knife("diff --name-status /").should_succeed <<~EOM
+              A\t/clients/y.json
+              A\t/cookbooks/x-1.0.0/blah.rb
+              A\t/cookbooks/x-2.0.0
+              A\t/cookbooks/y-1.0.0
+              A\t/data_bags/x/z.json
+              A\t/data_bags/y
+              A\t/environments/y.json
+              A\t/nodes/y.json
+              A\t/roles/y.json
+              A\t/users/y.json
+            EOM
           end
 
           context "when cwd is the data_bags directory" do
             before { cwd "data_bags" }
             it "knife diff reports different data bags" do
-              knife("diff --name-status").should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
+              knife("diff --name-status").should_succeed <<~EOM
+                A\tx/z.json
+                A\ty
+              EOM
             end
             it "knife diff * reports different data bags" do
-              knife("diff --name-status *").should_succeed <<EOM
-A\tx/z.json
-A\ty
-EOM
+              knife("diff --name-status *").should_succeed <<~EOM
+                A\tx/z.json
+                A\ty
+              EOM
             end
           end
         end
@@ -449,15 +452,15 @@ EOM
 
       when_the_repository "is empty" do
         it "knife diff reports everything as deleted" do
-          knife("diff --name-status /").should_succeed <<EOM
-D\t/clients
-D\t/cookbooks
-D\t/data_bags
-D\t/environments
-D\t/nodes
-D\t/roles
-D\t/users
-EOM
+          knife("diff --name-status /").should_succeed <<~EOM
+            D\t/clients
+            D\t/cookbooks
+            D\t/data_bags
+            D\t/environments
+            D\t/nodes
+            D\t/roles
+            D\t/users
+          EOM
         end
       end
     end
@@ -475,9 +478,9 @@ EOM
         end
 
         it "knife diff /cookbooks shows differences" do
-          knife("diff --name-status /cookbooks").should_succeed <<EOM
-D\t/cookbooks/x-1.0.1
-EOM
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x-1.0.1
+          EOM
         end
 
         it "knife diff --diff-filter=MAT does not show deleted files" do
@@ -501,10 +504,10 @@ EOM
         end
 
         it "knife diff /cookbooks shows the differences" do
-          knife("diff --name-status /cookbooks").should_succeed <<EOM
-D\t/cookbooks/x-1.0.1
-A\t/cookbooks/x-1.0.0
-EOM
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x-1.0.1
+            A\t/cookbooks/x-1.0.0
+          EOM
         end
       end
 
@@ -514,10 +517,10 @@ EOM
         end
 
         it "knife diff /cookbooks shows the differences" do
-          knife("diff --name-status /cookbooks").should_succeed <<EOM
-D\t/cookbooks/x-0.9.9
-A\t/cookbooks/x-1.0.0
-EOM
+          knife("diff --name-status /cookbooks").should_succeed <<~EOM
+            D\t/cookbooks/x-0.9.9
+            A\t/cookbooks/x-1.0.0
+          EOM
         end
       end
     end
@@ -533,7 +536,7 @@ EOM
         end
         when_the_chef_server "has an environment with a different value" do
           before { environment "x", { "description" => "hi" } }
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x",
@@ -560,7 +563,7 @@ EOM
         end
         when_the_chef_server "has an environment with no value" do
           before { environment "x", {} }
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
 -  "name": "x"
@@ -574,7 +577,7 @@ EOM
           before do
             environment "x", { "description" => "lo" }
           end
-          it "knife diff reports the difference", :skip => (RUBY_VERSION < "1.9") do
+          it "knife diff reports the difference" do
             knife("diff /environments/x.json").should_succeed(/
  {
    "name": "x",
@@ -592,9 +595,9 @@ EOM
       when_the_repository "has an environment with bad JSON" do
         before { file "environments/x.json", "{" }
         it "knife diff reports an error and does a textual diff" do
-          error_text = "WARN: Parse error reading #{path_to('environments/x.json')} as JSON: parse error: premature EOF"
+          error_text = "WARN: Parse error reading #{path_to("environments/x.json")} as JSON: parse error: premature EOF"
           error_match = Regexp.new(Regexp.escape(error_text))
-          knife("diff /environments/x.json").should_succeed(/-  "name": "x"/, :stderr => error_match)
+          knife("diff /environments/x.json").should_succeed(/-  "name": "x"/, stderr: error_match)
         end
       end
     end

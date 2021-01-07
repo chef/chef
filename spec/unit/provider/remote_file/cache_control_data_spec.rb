@@ -1,6 +1,6 @@
 #
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,8 +45,8 @@ describe Chef::Provider::RemoteFile::CacheControlData do
   context "when loading data for an unknown URI" do
 
     before do
-      expect(Chef::FileCache).to receive(:has_key?).with(cache_path).and_return(false)
-      expect(Chef::FileCache).to receive(:has_key?).with(old_cache_path).and_return(false)
+      expect(Chef::FileCache).to receive(:key?).with(cache_path).and_return(false)
+      expect(Chef::FileCache).to receive(:key?).with(old_cache_path).and_return(false)
     end
 
     context "and there is no current copy of the file" do
@@ -93,7 +93,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
 
     context "when the cache control data uses sha256 for its name" do
       before do
-        expect(Chef::FileCache).to receive(:has_key?).with(cache_path).and_return(true)
+        expect(Chef::FileCache).to receive(:key?).with(cache_path).and_return(true)
         expect(Chef::FileCache).to receive(:load).with(cache_path).and_return(cache_json_data)
       end
 
@@ -118,7 +118,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       context "and the cached checksum matches the on-disk copy" do
         context "when the filename uses sha256" do
           before do
-            expect(Chef::FileCache).not_to receive(:has_key?).with(old_cache_path)
+            expect(Chef::FileCache).not_to receive(:key?).with(old_cache_path)
           end
           it "populates the cache control data" do
             expect(cache_control_data.etag).to eq(etag)
@@ -148,8 +148,8 @@ describe Chef::Provider::RemoteFile::CacheControlData do
 
     context "when the filename uses md5" do
       before do
-        expect(Chef::FileCache).to receive(:has_key?).with(cache_path).and_return(false)
-        expect(Chef::FileCache).to receive(:has_key?).with(old_cache_path).and_return(true)
+        expect(Chef::FileCache).to receive(:key?).with(cache_path).and_return(false)
+        expect(Chef::FileCache).to receive(:key?).with(old_cache_path).and_return(true)
         expect(Chef::FileCache).to receive(:load).with(old_cache_path).and_return(cache_json_data)
       end
 
@@ -182,7 +182,7 @@ describe Chef::Provider::RemoteFile::CacheControlData do
       cache_control_data.checksum = fetched_file_checksum
     end
 
-    it "serializes its attributes to JSON" do
+    it "serializes its properties to JSON" do
       # we have to test this separately because ruby 1.8 hash order is unstable
       # so we can't count on the order of the keys in the json format.
 

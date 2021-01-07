@@ -1,6 +1,6 @@
 #
 # Author:: Prabhu Das (<prabhu.das@clogeny.com>)
-# Copyright:: Copyright 2013-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require "functional/resource/base"
 require "chef/mixin/shell_out"
 
 # Run the test only for AIX platform.
-describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform] != "aix" do
+describe Chef::Resource::BffPackage, :requires_root, external: ohai[:platform] != "aix" do
   include Chef::Mixin::ShellOut
 
   let(:new_resource) do
+    run_context = Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
     new_resource = Chef::Resource::BffPackage.new(@pkg_name, run_context)
     new_resource.source @pkg_path
     new_resource
@@ -31,12 +31,12 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
 
   def bff_pkg_should_be_installed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(0)
-    ::File.exists?("/usr/PkgA/bin/acommand")
+    ::File.exist?("/usr/PkgA/bin/acommand")
   end
 
   def bff_pkg_should_be_removed(resource)
     expect(shell_out("lslpp -L #{resource.name}").exitstatus).to eq(1)
-    !::File.exists?("/usr/PkgA/bin/acommand")
+    !::File.exist?("/usr/PkgA/bin/acommand")
   end
 
   before(:all) do
@@ -62,7 +62,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
 
   context "package install action with options" do
     it "should install a package" do
-      new_resource.options("-e/tmp/installp.log")
+      new_resource.options("-e#{Dir.tmpdir}/installp.log")
       new_resource.run_action(:install)
       bff_pkg_should_be_installed(new_resource)
     end
@@ -108,7 +108,7 @@ describe Chef::Resource::BffPackage, :requires_root, :external => ohai[:platform
     end
 
     it "should remove an installed package" do
-      new_resource.options("-e/tmp/installp.log")
+      new_resource.options("-e#{Dir.tmpdir}/installp.log")
       new_resource.run_action(:remove)
       bff_pkg_should_be_removed(new_resource)
     end

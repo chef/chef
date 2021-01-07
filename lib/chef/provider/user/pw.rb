@@ -1,6 +1,6 @@
 #
 # Author:: Stephen Haynes (<sh@nomitor.com>)
-# Copyright:: Copyright 2009-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/user"
+require_relative "../user"
 
 class Chef
   class Provider
@@ -27,49 +27,45 @@ class Chef
 
         def load_current_resource
           super
-          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{@new_resource}" unless ::File.exists?("/usr/sbin/pw")
+          raise Chef::Exceptions::User, "Could not find binary /usr/sbin/pw for #{new_resource}" unless ::File.exist?("/usr/sbin/pw")
         end
 
         def create_user
-          command = "pw useradd"
-          command << set_options
-          run_command(:command => command)
+          shell_out!("pw", "useradd", set_options)
           modify_password
         end
 
         def manage_user
-          command = "pw usermod"
-          command << set_options
-          run_command(:command => command)
+          shell_out!("pw", "usermod", set_options)
           modify_password
         end
 
         def remove_user
-          command = "pw userdel #{@new_resource.username}"
-          command << " -r" if @new_resource.supports[:manage_home]
-          run_command(:command => command)
+          command = [ "pw", "userdel", new_resource.username ]
+          command << "-r" if new_resource.manage_home
+          shell_out!(command)
         end
 
         def check_lock
-          case @current_resource.password
-          when /^\*LOCKED\*/
-            @locked = true
-          else
-            @locked = false
-          end
+          @locked = case current_resource.password
+                    when /^\*LOCKED\*/
+                      true
+                    else
+                      false
+                    end
           @locked
         end
 
         def lock_user
-          run_command(:command => "pw lock #{@new_resource.username}")
+          shell_out!("pw", "lock", new_resource.username)
         end
 
         def unlock_user
-          run_command(:command => "pw unlock #{@new_resource.username}")
+          shell_out!("pw", "unlock", new_resource.username)
         end
 
         def set_options
-          opts = " #{@new_resource.username}"
+          opts = [ new_resource.username ]
 
           field_list = {
             "comment" => "-c",
@@ -78,35 +74,30 @@ class Chef
             "uid" => "-u",
             "shell" => "-s",
           }
-          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort_by { |a| a[0] }.each do |field, option|
             field_symbol = field.to_sym
-            if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
-              if @new_resource.send(field_symbol)
-                Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field_symbol)}")
-                opts << " #{option} '#{@new_resource.send(field_symbol)}'"
-              end
+            next unless current_resource.send(field_symbol) != new_resource.send(field_symbol)
+
+            if new_resource.send(field_symbol)
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
+              opts << option
+              opts << new_resource.send(field_symbol)
             end
           end
-          if @new_resource.supports[:manage_home]
-            Chef::Log.debug("#{@new_resource} is managing the users home directory")
-            opts << " -m"
+          if new_resource.manage_home
+            logger.trace("#{new_resource} is managing the users home directory")
+            opts << "-m"
           end
           opts
         end
 
         def modify_password
-          if (not @new_resource.password.nil?) && (@current_resource.password != @new_resource.password)
-            Chef::Log.debug("#{new_resource} updating password")
-            command = "pw usermod #{@new_resource.username} -H 0"
-            status = popen4(command, :waitlast => true) do |pid, stdin, stdout, stderr|
-              stdin.puts "#{@new_resource.password}"
-            end
-
-            unless status.exitstatus == 0
-              raise Chef::Exceptions::User, "pw failed - #{status.inspect}!"
-            end
+          if !new_resource.password.nil? && (current_resource.password != new_resource.password)
+            logger.trace("#{new_resource} updating password")
+            command = "pw usermod #{new_resource.username} -H 0"
+            shell_out!(command, input: new_resource.password.to_s)
           else
-            Chef::Log.debug("#{new_resource} no change needed to password")
+            logger.trace("#{new_resource} no change needed to password")
           end
         end
       end

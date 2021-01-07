@@ -108,7 +108,7 @@ describe Chef::Provider::RemoteFile::FTP do
 
     before do
       current_resource.checksum(current_resource_checksum)
-      #Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
+      # Chef::Provider::RemoteFile::CacheControlData.should_receive(:load_and_validate).with(uri, current_resource_checksum).and_return(cache_control_data)
     end
 
     it "should connect to the host from the uri on the default port 21" do

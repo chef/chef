@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_object"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/role"
-require "chef/node"
-require "chef/json_compat"
+require_relative "../base_fs_object"
+require_relative "../exceptions"
+require_relative "../../../role"
+require_relative "../../../node"
+require_relative "../../../json_compat"
 
 class Chef
   module ChefFS
@@ -30,6 +30,7 @@ class Chef
           def initialize(name, parent, exists = nil)
             super(name, parent)
             @exists = exists
+            @this_object_cache = nil
           end
 
           def data_handler
@@ -69,7 +70,14 @@ class Chef
           def exists?
             if @exists.nil?
               begin
-                @exists = parent.children.any? { |child| child.api_child_name == api_child_name }
+                @this_object_cache = rest.get(api_path)
+                @exists = true
+              rescue Net::HTTPClientException => e
+                if e.response.code == "404"
+                  @exists = false
+                else
+                  raise
+                end
               rescue Chef::ChefFS::FileSystem::NotFoundError
                 @exists = false
               end
@@ -78,35 +86,33 @@ class Chef
           end
 
           def delete(recurse)
-            begin
-              rest.delete(api_path)
-            rescue Timeout::Error => e
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+            rest.delete(api_path)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
+          rescue Net::HTTPClientException => e
+            if e.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-            rescue Net::HTTPServerException => e
-              if e.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-              else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:delete, self, e, "Timeout deleting: #{e}")
-              end
             end
           end
 
           def read
-            Chef::JSONCompat.to_json_pretty(minimize_value(_read_json))
+            # Minimize the value (get rid of defaults) so the results don't look terrible
+            Chef::JSONCompat.to_json_pretty(normalize_value(_read_json))
           end
 
           def _read_json
-            begin
-              # Minimize the value (get rid of defaults) so the results don't look terrible
-              root.get_json(api_path)
-            rescue Timeout::Error => e
-              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
-            rescue Net::HTTPServerException => e
-              if $!.response.code == "404"
-                raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
-              else
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "HTTP error reading: #{e}")
-              end
+            @this_object_cache ? JSON.parse(@this_object_cache) : root.get_json(api_path)
+          rescue Timeout::Error => e
+            raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "Timeout reading: #{e}")
+          rescue Net::HTTPClientException => e
+            if $!.response.code == "404"
+              raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
+            else
+              raise Chef::ChefFS::FileSystem::OperationFailedError.new(:read, self, e, "HTTP error reading: #{e}")
             end
           end
 
@@ -116,7 +122,11 @@ class Chef
           end
 
           def minimize_value(value)
-            data_handler.minimize(data_handler.normalize(value, self), self)
+            data_handler.minimize(normalize_value(value), self)
+          end
+
+          def normalize_value(value)
+            data_handler.normalize(value, self)
           end
 
           def compare_to(other)
@@ -148,6 +158,9 @@ class Chef
             other_value = minimize_value(other_value)
             other_value_json = Chef::JSONCompat.to_json_pretty(other_value)
 
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+
             [ value == other_value, value_json, other_value_json ]
           end
 
@@ -156,6 +169,9 @@ class Chef
           end
 
           def write(file_contents)
+            # free up cache - it will be hydrated on next check for exists?
+            @this_object_cache = nil
+
             begin
               object = Chef::JSONCompat.parse(file_contents)
             rescue Chef::Exceptions::JSON::ParseError => e
@@ -165,7 +181,7 @@ class Chef
             if data_handler
               object = data_handler.normalize_for_put(object, self)
               data_handler.verify_integrity(object, self) do |error|
-                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, nil, "#{error}")
+                raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, nil, error.to_s)
               end
             end
 
@@ -173,7 +189,7 @@ class Chef
               rest.put(api_path, object)
             rescue Timeout::Error => e
               raise Chef::ChefFS::FileSystem::OperationFailedError.new(:write, self, e, "Timeout writing: #{e}")
-            rescue Net::HTTPServerException => e
+            rescue Net::HTTPClientException => e
               if e.response.code == "404"
                 raise Chef::ChefFS::FileSystem::NotFoundError.new(self, e)
               else
@@ -183,11 +199,9 @@ class Chef
           end
 
           def api_error_text(response)
-            begin
-              Chef::JSONCompat.parse(response.body)["error"].join("\n")
-            rescue
-              response.body
-            end
+            Chef::JSONCompat.parse(response.body)["error"].join("\n")
+          rescue
+            response.body
           end
         end
 

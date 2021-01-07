@@ -1,6 +1,6 @@
 #
 # Author:: Seth Chisamore (<schisamo@chef.io>)
-# Copyright:: Copyright 2011-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -51,7 +51,7 @@ describe Chef::Resource::File do
   end
 
   let(:resource_with_relative_path) do
-    create_resource(:use_relative_path => true)
+    create_resource(use_relative_path: true)
   end
 
   let(:unmanaged_content) do

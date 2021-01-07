@@ -1,6 +1,8 @@
+binstubs
+.bundle
 vendor/bundle
 pkg/*
-.kitchen.local.yml
+kitchen.local.yml
 bin/*
 files/chef-server-cookbooks/cache/
 files/msi/ChefClient-Config.wxi
@@ -9,3 +11,4 @@ vendor/cookbooks
 build_timestamp
 ldd.out
 Berksfile.lock
+Gemfile.local

@@ -1,6 +1,6 @@
 #
 # Author:: Doug MacEachern (<dougm@vmware.com>)
-# Copyright:: Copyright 2010-2016, VMware, Inc.
+# Copyright:: Copyright 2010-2019, VMware, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,9 @@
 # limitations under the License.
 #
 
-require "chef/provider/user"
-require "chef/exceptions"
-if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-  require "chef/util/windows/net_user"
-end
+require_relative "../user"
+require_relative "../../exceptions"
+require_relative "../../util/windows/net_user" if Chef::Platform.windows?
 
 class Chef
   class Provider
@@ -31,31 +29,30 @@ class Chef
 
         def initialize(new_resource, run_context)
           super
-          @net_user = Chef::Util::Windows::NetUser.new(@new_resource.username)
+          @net_user = Chef::Util::Windows::NetUser.new(new_resource.username)
         end
 
         def load_current_resource
-          if @new_resource.gid
-            Chef::Log.warn("The 'gid' attribute is not implemented by the Windows platform. Please use the 'group' resource to assign a user to a group.")
+          if new_resource.gid
+            logger.warn("The 'gid' (or 'group') property is not implemented on the Windows platform. Please use the `members` property of the  'group' resource to assign a user to a group.")
           end
 
-          @current_resource = Chef::Resource::User.new(@new_resource.name)
-          @current_resource.username(@new_resource.username)
-          user_info = nil
+          @current_resource = Chef::Resource::User::WindowsUser.new(new_resource.name)
+          current_resource.username(new_resource.username)
           begin
             user_info = @net_user.get_info
-
-            @current_resource.uid(user_info[:user_id])
-            @current_resource.comment(user_info[:full_name])
-            @current_resource.home(user_info[:home_dir])
-            @current_resource.shell(user_info[:script_path])
+            current_resource.uid(user_info[:user_id])
+            current_resource.full_name(user_info[:full_name])
+            current_resource.comment(user_info[:comment])
+            current_resource.home(user_info[:home_dir])
+            current_resource.shell(user_info[:script_path])
           rescue Chef::Exceptions::UserIDNotFound => e
             # e.message should be "The user name could not be found" but checking for that could cause a localization bug
             @user_exists = false
-            Chef::Log.debug("#{@new_resource} does not exist (#{e.message})")
+            logger.trace("#{new_resource} does not exist (#{e.message})")
           end
 
-          @current_resource
+          current_resource
         end
 
         # Check to see if the user needs any changes
@@ -64,13 +61,20 @@ class Chef
         # <true>:: If a change is required
         # <false>:: If the users are identical
         def compare_user
-          unless @net_user.validate_credentials(@new_resource.password)
-            Chef::Log.debug("#{@new_resource} password has changed")
-            return true
+          @change_desc = []
+          unless @net_user.validate_credentials(new_resource.password)
+            @change_desc << "update password"
           end
-          [ :uid, :comment, :home, :shell ].any? do |user_attrib|
-            !@new_resource.send(user_attrib).nil? && @new_resource.send(user_attrib) != @current_resource.send(user_attrib)
+
+          %i{uid comment home shell full_name}.any? do |user_attrib|
+            new_val = new_resource.send(user_attrib)
+            cur_val = current_resource.send(user_attrib)
+            if !new_val.nil? && new_val != cur_val
+              @change_desc << "change #{user_attrib} from #{cur_val} to #{new_val}"
+            end
           end
+
+          !@change_desc.empty?
         end
 
         def create_user
@@ -98,26 +102,26 @@ class Chef
         end
 
         def set_options
-          opts = { :name => @new_resource.username }
+          opts = { name: new_resource.username }
 
           field_list = {
-            "comment" => "full_name",
+            "full_name" => "full_name",
+            "comment" => "comment",
             "home" => "home_dir",
             "uid" => "user_id",
             "shell" => "script_path",
             "password" => "password",
           }
 
-          field_list.sort { |a, b| a[0] <=> b[0] }.each do |field, option|
+          field_list.sort_by { |a| a[0] }.each do |field, option|
             field_symbol = field.to_sym
-            if @current_resource.send(field_symbol) != @new_resource.send(field_symbol)
-              if @new_resource.send(field_symbol)
-                unless field_symbol == :password
-                  Chef::Log.debug("#{@new_resource} setting #{field} to #{@new_resource.send(field_symbol)}")
-                end
-                opts[option.to_sym] = @new_resource.send(field_symbol)
-              end
+            next unless current_resource.send(field_symbol) != new_resource.send(field_symbol)
+            next unless new_resource.send(field_symbol)
+
+            unless field_symbol == :password
+              logger.trace("#{new_resource} setting #{field} to #{new_resource.send(field_symbol)}")
             end
+            opts[option.to_sym] = new_resource.send(field_symbol)
           end
           opts
         end

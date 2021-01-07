@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -41,7 +41,7 @@ describe Chef::ApiClient do
   end
 
   it "only allows string values for the name" do
-    expect { @client.name Hash.new }.to raise_error(ArgumentError)
+    expect { @client.name({}) }.to raise_error(ArgumentError)
   end
 
   it "has an admin flag attribute" do
@@ -55,7 +55,7 @@ describe Chef::ApiClient do
 
   it "allows only boolean values for the admin flag" do
     expect { @client.admin(false) }.not_to raise_error
-    expect { @client.admin(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.admin({}) }.to raise_error(ArgumentError)
   end
 
   it "has a 'validator' flag attribute" do
@@ -69,7 +69,7 @@ describe Chef::ApiClient do
 
   it "allows only boolean values for the 'validator' flag" do
     expect { @client.validator(false) }.not_to raise_error
-    expect { @client.validator(Hash.new) }.to raise_error(ArgumentError)
+    expect { @client.validator({}) }.to raise_error(ArgumentError)
   end
 
   it "has a public key attribute" do
@@ -79,7 +79,7 @@ describe Chef::ApiClient do
 
   it "accepts only String values for the public key" do
     expect { @client.public_key "" }.not_to raise_error
-    expect { @client.public_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.public_key({}) }.to raise_error(ArgumentError)
   end
 
   it "has a private key attribute" do
@@ -89,7 +89,7 @@ describe Chef::ApiClient do
 
   it "accepts only String values for the private key" do
     expect { @client.private_key "" }.not_to raise_error
-    expect { @client.private_key Hash.new }.to raise_error(ArgumentError)
+    expect { @client.private_key({}) }.to raise_error(ArgumentError)
   end
 
   describe "when serializing to JSON" do
@@ -280,13 +280,13 @@ describe Chef::ApiClient do
     context "and the client does not exist on the server" do
       before do
         @a_404_response = Net::HTTPNotFound.new("404 not found and such", nil, nil)
-        @a_404_exception = Net::HTTPServerException.new("404 not found exception", @a_404_response)
+        @a_404_exception = Net::HTTPClientException.new("404 not found exception", @a_404_response)
 
         expect(@http_client).to receive(:get).with("clients/lost-my-key").and_raise(@a_404_exception)
       end
 
       it "raises a 404 error" do
-        expect { Chef::ApiClient.reregister("lost-my-key") }.to raise_error(Net::HTTPServerException)
+        expect { Chef::ApiClient.reregister("lost-my-key") }.to raise_error(Net::HTTPClientException)
       end
     end
 
@@ -302,9 +302,9 @@ describe Chef::ApiClient do
           @api_client_with_key = Chef::ApiClient.new
           @api_client_with_key.name("lost-my-key")
           @api_client_with_key.private_key("the new private key")
-          expect(@http_client).to receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
-            and_return(@api_client_with_key)
+          expect(@http_client).to receive(:put)
+            .with("clients/lost-my-key", name: "lost-my-key", admin: false, validator: false, private_key: true)
+            .and_return(@api_client_with_key)
         end
 
         it "returns an ApiClient with a private key" do
@@ -320,9 +320,9 @@ describe Chef::ApiClient do
       context "and the client exists on a Chef 10-like server" do
         before do
           @api_client_with_key = { "name" => "lost-my-key", "private_key" => "the new private key" }
-          expect(@http_client).to receive(:put).
-            with("clients/lost-my-key", :name => "lost-my-key", :admin => false, :validator => false, :private_key => true).
-            and_return(@api_client_with_key)
+          expect(@http_client).to receive(:put)
+            .with("clients/lost-my-key", name: "lost-my-key", admin: false, validator: false, private_key: true)
+            .and_return(@api_client_with_key)
         end
 
         it "returns an ApiClient with a private key" do

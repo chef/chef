@@ -1,6 +1,6 @@
 #
 # Author:: AJ Christensen (<aj@hjksolutions.com>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "chef/provider/service/init"
+require_relative "init"
 
 class Chef
   class Provider
@@ -28,15 +28,15 @@ class Chef
         # @api private
         attr_accessor :current_run_levels
 
-        provides :service, platform_family: %w{rhel fedora suse} do |node|
-          Chef::Platform::ServiceHelpers.service_resource_providers.include?(:redhat)
+        provides :service, platform_family: "rpm_based" do
+          redhatrcd?
         end
 
-        CHKCONFIG_ON = /\d:on/
-        CHKCONFIG_MISSING = /No such/
+        CHKCONFIG_ON = /\d:on/.freeze
+        CHKCONFIG_MISSING = /No such/.freeze
 
         def self.supports?(resource, action)
-          Chef::Platform::ServiceHelpers.config_for_service(resource.service_name).include?(:initd)
+          service_script_exist?(:initd, resource.service_name)
         end
 
         def initialize(new_resource, run_context)
@@ -56,7 +56,7 @@ class Chef
 
           requirements.assert(:all_actions) do |a|
             chkconfig_file = "/sbin/chkconfig"
-            a.assertion { ::File.exists? chkconfig_file  }
+            a.assertion { ::File.exist? chkconfig_file }
             a.failure_message Chef::Exceptions::Service, "#{chkconfig_file} does not exist!"
           end
 
@@ -80,14 +80,14 @@ class Chef
 
           super
 
-          if ::File.exists?("/sbin/chkconfig")
-            chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", :returns => [0, 1])
+          if ::File.exist?("/sbin/chkconfig")
+            chkconfig = shell_out!("/sbin/chkconfig --list #{current_resource.service_name}", returns: [0, 1])
             unless run_levels.nil? || run_levels.empty?
               all_levels_match = true
-              chkconfig.stdout.split(/\s+/)[1..-1].each do |level|
+              chkconfig.stdout.split(/\s+/)[1..].each do |level|
                 index = level.split(":").first
                 status = level.split(":").last
-                if level =~ CHKCONFIG_ON
+                if CHKCONFIG_ON.match?(level)
                   @current_run_levels << index.to_i
                   all_levels_match = false unless run_levels.include?(index.to_i)
                 else
@@ -106,18 +106,18 @@ class Chef
 
         # @api private
         def levels
-          (run_levels.nil? || run_levels.empty?) ? "" : "--level #{run_levels.join('')} "
+          (run_levels.nil? || run_levels.empty?) ? "" : "--level #{run_levels.join("")} "
         end
 
-        def enable_service()
+        def enable_service
           unless run_levels.nil? || run_levels.empty?
             disable_levels = current_run_levels - run_levels
-            shell_out! "/sbin/chkconfig --level #{disable_levels.join('')} #{new_resource.service_name} off" unless disable_levels.empty?
+            shell_out! "/sbin/chkconfig --level #{disable_levels.join("")} #{new_resource.service_name} off" unless disable_levels.empty?
           end
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} on"
         end
 
-        def disable_service()
+        def disable_service
           shell_out! "/sbin/chkconfig #{levels}#{new_resource.service_name} off"
         end
       end

@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +16,11 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs/file_system/base_fs_dir"
-require "chef/chef_fs/file_system/chef_server/rest_list_dir"
-require "chef/chef_fs/file_system/exceptions"
-require "chef/chef_fs/path_utils"
-require "fileutils"
+require_relative "../base_fs_dir"
+require_relative "../chef_server/rest_list_dir"
+require_relative "../exceptions"
+require_relative "../../path_utils"
+require "fileutils" unless defined?(FileUtils)
 
 class Chef
   module ChefFS
@@ -80,9 +80,9 @@ class Chef
 
           def children
             # Except cookbooks and data bag dirs, all things must be json files
-            Dir.entries(file_path).sort.
-              map { |child_name| make_child_entry(child_name) }.
-              select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
+            Dir.entries(file_path).sort
+              .map { |child_name| make_child_entry(child_name) }
+              .select { |new_child| new_child.fs_entry_valid? && can_have_child?(new_child.name, new_child.dir?) }
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end
@@ -92,6 +92,7 @@ class Chef
             if child.exists?
               raise Chef::ChefFS::FileSystem::AlreadyExistsError.new(:create_child, child)
             end
+
             if file_contents
               child.write(file_contents)
             else
@@ -108,9 +109,10 @@ class Chef
 
           def delete(recurse)
             if dir?
-              if !recurse
+              unless recurse
                 raise MustDeleteRecursivelyError.new(self, $!)
               end
+
               FileUtils.rm_r(file_path)
             else
               File.delete(file_path)
@@ -120,11 +122,11 @@ class Chef
           end
 
           def exists?
-            File.exists?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
+            File.exist?(file_path) && (parent.nil? || parent.can_have_child?(name, dir?))
           end
 
           def read
-            File.open(file_path, "rb") { |f| f.read }
+            File.open(file_path, "rb", &:read)
           rescue Errno::ENOENT
             raise Chef::ChefFS::FileSystem::NotFoundError.new(self, $!)
           end

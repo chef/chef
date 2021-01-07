@@ -1,6 +1,6 @@
 
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software, Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,7 +16,16 @@
 # limitations under the License.
 #
 
-require "chef/provider/package"
+require_relative "../../package"
+
+#
+# BUGGY AND DEPRECATED:  This ruby code is known to not match the python implementation for version comparisons.
+# The APIs here should probably be converted to talk to the PythonHelper or just abandoned completely.
+#
+# e.g. this should just use Chef::Provider::Package::Yum::PythonHelper.instance.compare_versions(x,y)
+#
+# The python_helper could be extended to support additional APIs in here to remove the ruby code entirely.
+#
 
 class Chef
   class Provider
@@ -37,7 +46,7 @@ class Chef
               lead = 0
               tail = evr.size
 
-              if %r{^([\d]+):}.match(evr) # rubocop:disable Performance/RedundantMatch
+              if /^(\d+):/.match(evr) # rubocop:disable Performance/RedundantMatch
                 epoch = $1.to_i
                 lead = $1.length + 1
               elsif evr[0].ord == ":".ord
@@ -45,7 +54,7 @@ class Chef
                 lead = 1
               end
 
-              if %r{:?.*-(.*)$}.match(evr) # rubocop:disable Performance/RedundantMatch
+              if /:?.*-(.*)$/.match(evr) # rubocop:disable Performance/RedundantMatch
                 release = $1
                 tail = evr.length - release.length - lead - 1
 
@@ -124,9 +133,7 @@ class Chef
                 while (x_pos <= x_pos_max) && (isalnum(x[x_pos]) == false)
                   x_pos += 1 # +1 over pos_max if end of string
                 end
-                while (y_pos <= y_pos_max) && (isalnum(y[y_pos]) == false)
-                  y_pos += 1
-                end
+                y_pos += 1 while (y_pos <= y_pos_max) && (isalnum(y[y_pos]) == false)
 
                 # if we hit the end of either we are done matching segments
                 if (x_pos == x_pos_max + 1) || (y_pos == y_pos_max + 1)
@@ -145,29 +152,21 @@ class Chef
                   x_seg_pos += 1
 
                   # gather up our digits
-                  while (x_seg_pos <= x_pos_max) && isdigit(x[x_seg_pos])
-                    x_seg_pos += 1
-                  end
+                  x_seg_pos += 1 while (x_seg_pos <= x_pos_max) && isdigit(x[x_seg_pos])
                   # copy the segment but not the unmatched character that x_seg_pos will
                   # refer to
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) && isdigit(y[y_seg_pos])
-                    y_seg_pos += 1
-                  end
+                  y_seg_pos += 1 while (y_seg_pos <= y_pos_max) && isdigit(y[y_seg_pos])
                   y_comp = y[y_pos, y_seg_pos - y_pos]
                 else
                   # we are comparing strings
                   x_seg_is_num = false
 
-                  while (x_seg_pos <= x_pos_max) && isalpha(x[x_seg_pos])
-                    x_seg_pos += 1
-                  end
+                  x_seg_pos += 1 while (x_seg_pos <= x_pos_max) && isalpha(x[x_seg_pos])
                   x_comp = x[x_pos, x_seg_pos - x_pos]
 
-                  while (y_seg_pos <= y_pos_max) && isalpha(y[y_seg_pos])
-                    y_seg_pos += 1
-                  end
+                  y_seg_pos += 1 while (y_seg_pos <= y_pos_max) && isalpha(y[y_seg_pos])
                   y_comp = y[y_pos, y_seg_pos - y_pos]
                 end
 
@@ -210,9 +209,9 @@ class Chef
 
               # the most unprocessed characters left wins
               if (x_pos_max - x_pos) > (y_pos_max - y_pos)
-                return 1
+                1
               else
-                return -1
+                -1
               end
             end
 
@@ -230,17 +229,17 @@ class Chef
               @v = args[1]
               @r = args[2]
             else
-              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " +
+              raise ArgumentError, "Expecting either 'epoch-version-release' or 'epoch, " \
                 "version, release'"
             end
           end
           attr_reader :e, :v, :r
-          alias :epoch :e
-          alias :version :v
-          alias :release :r
+          alias epoch e
+          alias version v
+          alias release r
 
           def self.parse(*args)
-            self.new(*args)
+            new(*args)
           end
 
           def <=>(other)
@@ -317,7 +316,7 @@ class Chef
               return cmp
             end
 
-            return 0
+            0
           end
         end
 
@@ -339,7 +338,7 @@ class Chef
               @a = args[4]
               @provides = args[5]
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " +
+              raise ArgumentError, "Expecting either 'name, epoch-version-release, arch, provides' " \
                 "or 'name, epoch, version, release, arch, provides'"
             end
 
@@ -349,8 +348,8 @@ class Chef
             end
           end
           attr_reader :n, :a, :version, :provides
-          alias :name :n
-          alias :arch :a
+          alias name n
+          alias arch a
 
           def <=>(other)
             compare(other)
@@ -395,7 +394,7 @@ class Chef
               end
             end
 
-            return 0
+            0
           end
 
           def to_s
@@ -423,7 +422,7 @@ class Chef
               @version = RPMVersion.new(e, v, r)
               @flag = args[4] || :==
             else
-              raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " +
+              raise ArgumentError, "Expecting either 'name, epoch-version-release, flag' or " \
                 "'name, epoch, version, release, flag'"
             end
           end
@@ -434,25 +433,25 @@ class Chef
           # "mtr >= 2:0.71-3.0"
           # "mta"
           def self.parse(string)
-            if %r{^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$}.match(string) # rubocop:disable Performance/RedundantMatch
+            if /^(\S+)\s+(>|>=|=|==|<=|<)\s+(\S+)$/.match(string) # rubocop:disable Performance/RedundantMatch
               name = $1
-              if $2 == "="
-                flag = :==
-              else
-                flag = :"#{$2}"
-              end
+              flag = if $2 == "="
+                       :==
+                     else
+                       :"#{$2}"
+                     end
               version = $3
 
-              return self.new(name, version, flag)
+              new(name, version, flag)
             else
               name = string
-              return self.new(name, nil, nil)
+              new(name, nil, nil)
             end
           end
 
           # Test if another RPMDependency satisfies our requirements
           def satisfy?(y)
-            unless y.kind_of?(RPMDependency)
+            unless y.is_a?(RPMDependency)
               raise ArgumentError, "Expecting an RPMDependency object"
             end
 
@@ -481,7 +480,7 @@ class Chef
               return true
             end
 
-            return false
+            false
           end
         end
 
@@ -504,11 +503,11 @@ class Chef
         class RPMDb
           def initialize
             # package name => [ RPMPackage, RPMPackage ] of different versions
-            @rpms = Hash.new
+            @rpms = {}
             # package nevra => RPMPackage for lookups
-            @index = Hash.new
+            @index = {}
             # provide name (aka feature) => [RPMPackage, RPMPackage] each providing this feature
-            @provides = Hash.new
+            @provides = {}
             # RPMPackages listed as available
             @available = Set.new
             # RPMPackages listed as installed
@@ -516,16 +515,16 @@ class Chef
           end
 
           def [](package_name)
-            self.lookup(package_name)
+            lookup(package_name)
           end
 
           # Lookup package_name and return a descending array of package objects
           def lookup(package_name)
             pkgs = @rpms[package_name]
             if pkgs
-              return pkgs.sort.reverse
+              pkgs.sort.reverse
             else
-              return nil
+              nil
             end
           end
 
@@ -537,11 +536,11 @@ class Chef
           # The available/installed state can be overwritten for existing packages.
           def push(*args)
             args.flatten.each do |new_rpm|
-              unless new_rpm.kind_of?(RPMDbPackage)
+              unless new_rpm.is_a?(RPMDbPackage)
                 raise ArgumentError, "Expecting an RPMDbPackage object"
               end
 
-              @rpms[new_rpm.n] ||= Array.new
+              @rpms[new_rpm.n] ||= []
 
               # we may already have this one, like when the installed list is refreshed
               idx = @index[new_rpm.nevra]
@@ -552,7 +551,7 @@ class Chef
                 @rpms[new_rpm.n] << new_rpm
 
                 new_rpm.provides.each do |provide|
-                  @provides[provide.name] ||= Array.new
+                  @provides[provide.name] ||= []
                   @provides[provide.name] << new_rpm
                 end
 
@@ -574,7 +573,7 @@ class Chef
           end
 
           def <<(*args)
-            self.push(args)
+            push(args)
           end
 
           def clear
@@ -596,7 +595,7 @@ class Chef
           def size
             @rpms.size
           end
-          alias :length :size
+          alias length size
 
           def available_size
             @available.size
@@ -615,7 +614,7 @@ class Chef
           end
 
           def whatprovides(rpmdep)
-            unless rpmdep.kind_of?(RPMDependency)
+            unless rpmdep.is_a?(RPMDependency)
               raise ArgumentError, "Expecting an RPMDependency object"
             end
 
@@ -632,7 +631,7 @@ class Chef
               end
             end
 
-            return what
+            what
           end
         end
 

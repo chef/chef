@@ -1,6 +1,6 @@
 #
 # Author:: John Keiser (<jkeiser@chef.io>)
-# Copyright:: Copyright 2012-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require "chef/chef_fs"
-require "pathname"
+require_relative "../chef_fs"
+require "pathname" unless defined?(Pathname)
 
 class Chef
   module ChefFS
@@ -42,6 +42,7 @@ class Chef
 
       def self.join(*parts)
         return "" if parts.length == 0
+
         # Determine if it started with a slash
         absolute = parts[0].length == 0 || parts[0].length > 0 && parts[0] =~ /^#{regexp_path_separator}/
         # Remove leading and trailing slashes from each part so that the join will work (and the slash at the end will go away)
@@ -57,7 +58,7 @@ class Chef
       end
 
       def self.regexp_path_separator
-        Chef::ChefFS.windows? ? '[\/\\\\]' : "/"
+        ChefUtils.windows? ? '[\/\\\\]' : "/"
       end
 
       # Given a server path, determines if it is absolute.
@@ -70,9 +71,9 @@ class Chef
       # part that actually exists.  The paths operated on here are not Chef-FS paths.
       # These are OS paths that may contain symlinks but may not also fully exist.
       #
-      # If /x is a symlink to /blarghle, and has no subdirectories, then:
-      # PathUtils.realest_path('/x/y/z') == '/blarghle/y/z'
-      # PathUtils.realest_path('/x/*/z') == '/blarghle/*/z'
+      # If /x is a symlink to /foo_bar, and has no subdirectories, then:
+      # PathUtils.realest_path('/x/y/z') == '/foo_bar/y/z'
+      # PathUtils.realest_path('/x/*/z') == '/foo_bar/*/z'
       # PathUtils.realest_path('/*/y/z') == '/*/y/z'
       #
       # TODO: Move this to wherever util/path_helper is these days.
@@ -87,10 +88,11 @@ class Chef
           # This can occur if a path such as "C:" is given.  Ruby gives the parent as "C:."
           # for reasons only it knows.
           raise ArgumentError "Invalid path segment #{path}" if parent_path.length > path.length
+
           begin
             path = File.realpath(path)
             break
-          rescue Errno::ENOENT
+          rescue Errno::ENOENT, Errno::EINVAL
             suffix << File.basename(path)
             path = parent_path
             parent_path = File.dirname(path)
@@ -99,9 +101,9 @@ class Chef
         File.join(path, *suffix.reverse)
       end
 
-      # Compares two path fragments according to the case-sentitivity of the host platform.
+      # Compares two path fragments according to the case-sensitivity of the host platform.
       def self.os_path_eq?(left, right)
-        Chef::ChefFS.windows? ? left.casecmp(right) == 0 : left == right
+        ChefUtils.windows? ? left.casecmp(right) == 0 : left == right
       end
 
       # Given two general OS-dependent file paths, determines the relative path of the
@@ -113,9 +115,10 @@ class Chef
       def self.descendant_path(path, ancestor)
         candidate_fragment = path[0, ancestor.length]
         return nil unless PathUtils.os_path_eq?(candidate_fragment, ancestor)
+
         if ancestor.length == path.length
           ""
-        elsif path[ancestor.length, 1] =~ /#{PathUtils.regexp_path_separator}/
+        elsif /#{PathUtils.regexp_path_separator}/.match?(path[ancestor.length, 1])
           path[ancestor.length + 1..-1]
         else
           nil

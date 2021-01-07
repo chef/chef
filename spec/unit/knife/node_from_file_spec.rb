@@ -1,6 +1,6 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
-# Copyright:: Copyright 2008-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +25,12 @@ describe Chef::Knife::NodeFromFile do
     Chef::Config[:node_name] = "webmonkey.example.com"
     @knife = Chef::Knife::NodeFromFile.new
     @knife.config = {
-      :print_after => nil,
+      print_after: nil,
     }
     @knife.name_args = [ "adam.rb" ]
     allow(@knife).to receive(:output).and_return(true)
     allow(@knife).to receive(:confirm).and_return(true)
-    @node = Chef::Node.new()
+    @node = Chef::Node.new
     allow(@node).to receive(:save)
     allow(@knife.loader).to receive(:load_from).and_return(@node)
     @stdout = StringIO.new

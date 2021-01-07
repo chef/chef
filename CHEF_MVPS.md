@@ -1,22 +1,78 @@
-### Chef is proud of our community!
+# Chef is proud of our community
 
 Every release of Chef we pick someone from the community to name as the Most Valuable Player for that release. It could be someone who provided a big feature, reported a security vulnerability, or someone doing great things in the community that we want to highlight.
 
-In addition to the Hall of Fame and MVP recipients, three individuals are awarded the distinction of "Awesome Community Chef" each year at ChefConf.
+In addition to the Hall of Fame and MVP recipients, a number of individuals are awarded the distinction
+of "Awesome Community Chef" each year at ChefConf.
 
-#### Hall of Fame
+## Lifetime Community Chef Award
+
+The Lifetime Community Chef Award is a recognition of years of investment by a member of the community, and is awarded only occasionally.
+
+- [2020](https://blog.chef.io/congratulations-awesome-community-chefs-2020/)
+  - [Mandi Walls](https://github.com/lnxchk)
+- [2019](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/)
+  - [Nathen Harvey](https://github.com/NathenHarvey)
+
+## Awesome Community Chefs
+
+Each year at ChefConf, a number of individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
+
+- [2020](https://blog.chef.io/congratulations-awesome-community-chefs-2020/)
+  - [Bastien Jove](https://github.com/tensibai)
+  - [Lance Albertson](https://github.com/ramereth)
+  - [Marc Chamberland](https://github.com/bobchaos)
+- [2019][USA](https://blog.chef.io/congratulations-to-our-2019-awesome-community-chefs/), [Europe](https://blog.chef.io/congratulations-to-our-chefconf-london-2019-award-winners/)
+  - [Graham Weldon](https://github.com/predominant)
+  - [Jason Field](https://github.com/xorima)
+  - [Joshua Basch](https://github.com/HT154)
+  - [Karl Fischer](https://github.com/kmf)
+  - [Nathen Harvey](https://github.com/NathenHarvey)
+  - [Robb Kidd](https://github.com/RobbKidd)
+  - [Tomas Heinen](https://github.com/tecracer-theinen)
+- [2018](https://blog.chef.io/2018/05/24/2018-awesome-community-chefs/)
+  - [Dan Webb](https://github.com/damacus)
+  - [Romain Sertelon](https://github.com/rsertelon)
+  - [Edmund Haselwanter](https://github.com/ehaselwanter)
+  - [Tim Smith](https://github.com/tas50)
+  - [Joshua Timberman](https://github.com/jtimberman)
+- [2017](https://blog.chef.io/2017/06/08/awesome-community-chefs-2017-award-winners/)
+  - [Ben Dang](https://github.com/bdangit)
+  - [Annie Hedgpeth](https://github.com/anniehedgpeth)
+  - [Sean O'Meara](https://github.com/someara)
+  - [Nell Shamrell-Harrington](https://github.com/nellshamrell)
+- [2016](https://blog.chef.io/2016/08/31/awesome-community-chefs-2016/)
+  - [Mike Fiedler](https://github.com/miketheman)
+  - [Doug Ireton](https://github.com/dougireton)
+  - [Stuart Preston](https://github.com/stuartpreston)
+  - [Seth Thomas](https://github.com/cheeseplus)
+- 2015
+  - [Jon Cowie](https://github.com/jonlives)
+  - [Noah Kantrowitz](https://github.com/coderanger)
+  - [Matt Wrock](https://github.com/mwrock)
+- 2014
+  - [Ranjib Dey](https://github.com/ranjib)
+  - [Miah Johnson](https://github.com/miah)
+  - [Seth Vargo](https://github.com/sethvargo)
+  - [Eric Wolfe](https://github.com/atomic-penguin)
+- 2013
+  - [Bryan Berry](https://github.com/bryanwb)
+  - [Fletcher Nichol](https://github.com/fnichol)
+  - [Jamie Winsor](https://github.com/reset)
+
+## Hall of Fame
 
 After receiving three MVP awards, we add someone to the hall of fame. We want to express our gratitude to their continuing participation and give newer community members the opportunity to be recognized.
 
-* Matthew Kent
-* Doug MacEachern
-* Tollef Fog Heen
-* Thom May
-* Bryan Berry
-* Bryan McLellan
-* Jeff Blaine
+- Matthew Kent
+- Doug MacEachern
+- Tollef Fog Heen
+- Thom May
+- Bryan Berry
+- Bryan McLellan
+- Jeff Blaine
 
-#### The MVP recipients
+## The MVP recipients
 
 | Release | Date | MVP |
 |---------|------|-----|
@@ -89,20 +145,3 @@ After receiving three MVP awards, we add someone to the hall of fame. We want to
 | [Chef 0.5.4](https://www.chef.io/blog/2009/02/13/chef-0-5-4/) | 2009-02-13 | Arjuna Christensen |
 | [Chef 0.5.2](https://www.chef.io/blog/2009/02/01/chef-0-5-2-and-ohai-0-1-4/) | 2009-02-01 | Bryan McLellan |
 
-#### Awesome Community Chefs
-
-Each year at ChefConf, three individuals are awarded the Awesome Community Chef award. The Awesome Community Chef awards are a way for the community to recognize a few of the individuals who have made a dramatic impact and have helped further the cause.
-
-* 2013
-  * [Bryan Berry](https://github.com/bryanwb)
-  * [Fletcher Nichol](https://github.com/fnichol)
-  * [Jamie Winsor](https://github.com/reset)
-* 2014
-  * [Ranjib Dey](https://github.com/ranjib)
-  * [Miah Johnson](https://github.com/miah)
-  * [Seth Vargo](https://github.com/sethvargo)
-  * [Eric Wolfe](https://github.com/atomic-penguin)
-* 2015
-  * [Jon Cowie](https://github.com/jonlives)
-  * [Noah Kantrowitz](https://github.com/coderanger)
-  * [Matt Wrock](https://github.com/mwrock)

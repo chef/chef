@@ -1,5 +1,5 @@
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2015-2016, Chef Software Inc.
+# Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "forwardable"
-require "chef/util/path_helper"
-require "chef/log"
+require "forwardable" unless defined?(Forwardable)
+require_relative "mixin/versioned_api"
+require_relative "util/path_helper"
+require_relative "cookbook/manifest_v0"
+require_relative "cookbook/manifest_v2"
+require_relative "log"
 
 class Chef
 
@@ -24,17 +27,11 @@ class Chef
   # to a Chef Server.
   class CookbookManifest
 
-    # Duplicates the same constant in CookbookVersion. We cannot remove it
-    # there because it is treated by other code as part of CookbookVersion's
-    # public API (also used in some deprecated methods).
-    COOKBOOK_SEGMENTS = [ :resources, :providers, :recipes, :definitions, :libraries, :attributes, :files, :templates, :root_files ].freeze
-
     extend Forwardable
 
     attr_reader :cookbook_version
 
     def_delegator :@cookbook_version, :root_paths
-    def_delegator :@cookbook_version, :segment_filenames
     def_delegator :@cookbook_version, :name
     def_delegator :@cookbook_version, :identifier
     def_delegator :@cookbook_version, :metadata
@@ -43,11 +40,11 @@ class Chef
     def_delegator :@cookbook_version, :frozen_version?
 
     # Create a new CookbookManifest object for the given `cookbook_version`.
-    # You can subsequently call #to_hash to get a Hash representation of the
+    # You can subsequently call #to_h to get a Hash representation of the
     # cookbook_version in the "manifest" format, or #to_json to get a JSON
     # representation of the cookbook_version.
     #
-    # The inferface for this behavior is expected to change as we implement new
+    # The interface for this behavior is expected to change as we implement new
     # manifest formats. The entire class should be considered a private API for
     # now.
     #
@@ -56,10 +53,7 @@ class Chef
     #   the format used by the `cookbook_artifacts` endpoint (for policyfiles).
     #   Setting this option also changes the behavior of #save_url and
     #   #force_save_url such that CookbookVersions will be uploaded to the new
-    #   `cookbook_artifacts` API. This endpoint is currently under active
-    #   development and the format is expected to change frequently, therefore
-    #   the result of #manifest, #to_hash, and #to_json will not be stable when
-    #   `policy_mode` is enabled.
+    #   `cookbook_artifacts` API.
     def initialize(cookbook_version, policy_mode: false)
       @cookbook_version = cookbook_version
       @policy_mode = !!policy_mode
@@ -125,15 +119,14 @@ class Chef
       @policy_mode
     end
 
-    def to_hash
-      result = manifest.dup
-      result["frozen?"] = frozen_version?
-      result["chef_type"] = "cookbook_version"
-      result.to_hash
+    def to_h
+      CookbookManifestVersions.to_h(self)
     end
 
+    alias_method :to_hash, :to_h
+
     def to_json(*a)
-      result = to_hash
+      result = to_h
       result["json_class"] = "Chef::CookbookVersion"
       Chef::JSONCompat.to_json(result, *a)
     end
@@ -164,15 +157,59 @@ class Chef
     # make the corresponding changes to the cookbook_version object. Required
     # to provide backward compatibility with CookbookVersion#manifest= method.
     def update_from(new_manifest)
-      @manifest = Mash.new new_manifest
+      @manifest = Chef::CookbookManifestVersions.from_hash(new_manifest)
       @checksums = extract_checksums_from_manifest(@manifest)
       @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
+    end
 
-      COOKBOOK_SEGMENTS.each do |segment|
-        next unless @manifest.has_key?(segment)
-        filenames = @manifest[segment].map { |manifest_record| manifest_record["name"] }
+    # @api private
+    # takes a list of hashes
+    def add_files_to_manifest(files)
+      manifest[:all_files].concat(Array(files))
+      @checksums = extract_checksums_from_manifest(@manifest)
+      @manifest_records_by_path = extract_manifest_records_by_path(@manifest)
+    end
 
-        cookbook_version.replace_segment_filenames(segment, filenames)
+    def files_for(part)
+      return root_files if part.to_s == "root_files"
+
+      manifest[:all_files].select do |file|
+        seg = file[:name].split("/")[0]
+        part.to_s == seg
+      end
+    end
+
+    def each_file(excluded_parts: [], &block)
+      excluded_parts = Array(excluded_parts).map(&:to_s)
+
+      manifest[:all_files].each do |file|
+        seg = file[:name].split("/")[0]
+        next if excluded_parts.include?(seg)
+
+        yield file if block_given?
+      end
+    end
+
+    def by_parent_directory
+      @by_parent_directory ||=
+        manifest[:all_files].inject({}) do |memo, file|
+          parts = file[:name].split("/")
+          parent = if parts.length == 1
+                     "root_files"
+                   else
+                     parts[0]
+                   end
+
+          memo[parent] ||= []
+          memo[parent] << file
+          memo
+        end
+    end
+
+    def root_files
+      manifest[:all_files].select do |file|
+        segment, name = file[:name].split("/")
+        name.nil? || segment == "root_files"
       end
     end
 
@@ -186,15 +223,7 @@ class Chef
     # See #preferred_manifest_record for a description an individual manifest record.
     def generate_manifest
       manifest = Mash.new({
-        :recipes => Array.new,
-        :definitions => Array.new,
-        :libraries => Array.new,
-        :attributes => Array.new,
-        :files => Array.new,
-        :templates => Array.new,
-        :resources => Array.new,
-        :providers => Array.new,
-        :root_files => Array.new,
+        all_files: [],
       })
       @checksums = {}
 
@@ -203,24 +232,24 @@ class Chef
         raise "Cookbook #{name} does not have root_paths! Cannot generate manifest."
       end
 
-      COOKBOOK_SEGMENTS.each do |segment|
-        segment_filenames(segment).each do |segment_file|
-          next if File.directory?(segment_file)
+      @cookbook_version.all_files.each do |file|
+        next if File.directory?(file)
 
-          path, specificity = parse_segment_file_from_root_paths(segment, segment_file)
-          file_name = File.basename(path)
+        name, path, specificity = parse_file_from_root_paths(file)
 
-          csum = checksum_cookbook_file(segment_file)
-          @checksums[csum] = segment_file
-          rs = Mash.new({
-            :name => file_name,
-            :path => path,
-            :checksum => csum,
-            :specificity => specificity,
-          })
+        csum = checksum_cookbook_file(file)
+        @checksums[csum] = file
+        rs = Mash.new({
+          name: name,
+          path: path,
+          checksum: csum,
+          specificity: specificity,
+          # full_path is not a part of the normal manifest, but is very useful to keep around.
+          # uploaders should strip this out.
+          full_path: file,
+        })
 
-          manifest[segment] << rs
-        end
+        manifest[:all_files] << rs
       end
 
       manifest[:metadata] = metadata
@@ -238,38 +267,42 @@ class Chef
       @manifest = manifest
     end
 
-    def parse_segment_file_from_root_paths(segment, segment_file)
+    def parse_file_from_root_paths(file)
       root_paths.each do |root_path|
-        pathname = Chef::Util::PathHelper.relative_path_from(root_path, segment_file)
+        pathname = Chef::Util::PathHelper.relative_path_from(root_path, file)
 
         parts = pathname.each_filename.take(2)
         # Check if path is actually under root_path
         next if parts[0] == ".."
-        if segment == :templates || segment == :files
+
+        # if we have a root_file, such as metadata.rb, the first part will be "."
+        return [ "root_files/#{pathname}", pathname.to_s, "default" ] if parts.length == 1
+
+        segment = parts[0]
+
+        name = File.join(segment, pathname.basename.to_s)
+
+        if %w{templates files}.include?(segment)
           # Check if pathname looks like files/foo or templates/foo (unscoped)
           if pathname.each_filename.to_a.length == 2
             # Use root_default in case the same path exists at root_default and default
-            return [ pathname.to_s, "root_default" ]
+            return [ name, pathname.to_s, "root_default" ]
           else
-            return [ pathname.to_s, parts[1] ]
+            return [ name, pathname.to_s, parts[1] ]
           end
         else
-          return [ pathname.to_s, "default" ]
+          return [ name, pathname.to_s, "default" ]
         end
       end
-      Chef::Log.error("Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}.")
-      raise "Cookbook file #{segment_file} not under cookbook root paths #{root_paths.inspect}."
+      Chef::Log.error("Cookbook file #{file} not under cookbook root paths #{root_paths.inspect}.")
+      raise "Cookbook file #{file} not under cookbook root paths #{root_paths.inspect}."
     end
 
     def extract_checksums_from_manifest(manifest)
-      checksums = {}
-      COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
-        manifest[segment].each do |manifest_record|
-          checksums[manifest_record[:checksum]] = nil
-        end
+      manifest[:all_files].inject({}) do |memo, manifest_record|
+        memo[manifest_record[:checksum]] = nil
+        memo
       end
-      checksums
     end
 
     def checksum_cookbook_file(filepath)
@@ -277,14 +310,22 @@ class Chef
     end
 
     def extract_manifest_records_by_path(manifest)
-      manifest_records_by_path = {}
-      COOKBOOK_SEGMENTS.each do |segment|
-        next unless manifest.has_key?(segment)
-        manifest[segment].each do |manifest_record|
-          manifest_records_by_path[manifest_record[:path]] = manifest_record
-        end
+      manifest[:all_files].inject({}) do |memo, manifest_record|
+        memo[manifest_record[:path]] = manifest_record
+        memo
       end
-      manifest_records_by_path
     end
+
+  end
+
+  class CookbookManifestVersions
+
+    extend Chef::Mixin::VersionedAPIFactory
+    add_versioned_api_class Chef::Cookbook::ManifestV0
+    add_versioned_api_class Chef::Cookbook::ManifestV2
+
+    def_versioned_delegator :from_hash
+    def_versioned_delegator :to_hash
+    def_versioned_delegator :to_h
   end
 end
