@@ -4484,7 +4484,7 @@ Per <https://discourse.chef.io/t/regression-in-chef-client-13-7-16/12518/1> , th
 
 - Updated libxml2 to 2.9.7; fixes: [CVE-2017-15412](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-15412)
 
-# What's New in 13.7
+# What's New in 13.7.16
 
 ## The `windows_task` Resource should be better behaved
 
@@ -4529,7 +4529,7 @@ The chocolatey cookbook's chocolatey_package resource originally contained an :u
 - OpenSSL has been upgraded to 1.0.2n to resolve [CVE-2017-3738](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3738), [CVE-2017-3737](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3737), [CVE-2017-3736](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3736), and [CVE-2017-3735](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3735).
 - Ruby has been upgraded to 2.4.3 to resolve [CVE-2017-17405](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-17405)
 
-## Ohai 13.7 Release Notes
+## Ohai 13.7
 
 ### Network Tunnel Information
 
@@ -4558,11 +4558,11 @@ The mdadm plugin has been updated to properly handle arrays with more than 10 di
 - OpenSSL has been upgraded to 1.0.2m to resolve [CVE-2017-3735](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3735) and [CVE-2017-3736](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-3736)
 - RubyGems has been upgraded to 2.6.14 to resolve [CVE-2017-0903](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2017-0903)
 
-# What's New in 13.6
+# What's New in 13.6.0
 
 ## `deploy` Resource Is Deprecated
 
-The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated, to be removed in Chef 14\. This is being done because this resource is considered overcomplicated and error-prone in the modern Chef ecosystem. A compatibility cookbook will be available to help users migrate during the Chef 14 release cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource) for more information.
+The `deploy` resource (and its alter ego `deploy_revision`) have been deprecated, to be removed in Chef 14. This is being done because this resource is considered overcomplicated and error-prone in the modern Chef ecosystem. A compatibility cookbook will be available to help users migrate during the Chef 14 release cycle. See [the deprecation documentation](https://docs.chef.io/deprecations_deploy_resource) for more information.
 
 ## zypper_package supports package downgrades
 
@@ -4578,7 +4578,7 @@ It's no longer possible to create data bags named `node`, `role`, `client`, or `
 
 If both dnf and yum were installed, in some circumstances the yum provider might choose to run dnf, which is not what we intended it to do. It now properly runs yum, all the time.
 
-## Ohai 13.6 Release Notes
+## Ohai 13.6
 
 ### Critical Plugins
 
@@ -4606,17 +4606,11 @@ In Ohai 13 we replaced the filesystem and cloud plugins with the filesystem2 and
 
 # What's New in 13.5
 
-## Mount's password property is now marked as sensitive
+- **The mount resource's password property is now marked as **sensitive** Passwords passed to mount won't show up in logs.
+- **The windows_task resource now correctly handles start_day** Previously, the resource would accept any date that was formatted correctly in the local locale, unlike the Windows cookbook and Windows itself. We now support only the MM/DD/YYYY format, in keeping with the Windows cookbook.
+-   **InSpec updated to 1.39.1**
 
-This means that passwords passed to mount won't show up in logs.
-
-## The `windows_task` resource now correctly handles `start_day`
-
-Previously, the resource would accept any date that was formatted correctly in the local locale, unlike the Windows cookbook and Windows itself. We now only support the `MM/DD/YYYY` format, in common with the Windows cookbook.
-
-## InSpec updated to 1.39.1
-
-## Ohai 13.5 Release Notes
+## Ohai 13.5
 
 ### Correctly detect IPv6 routes ending in ::
 
@@ -5227,7 +5221,7 @@ The core of chef hasn't used this to implement the Recipe DSL since 12.5.1 and i
 
 ### Simplify Recipe DSL wiring
 
-Support for actions with spaces and hyphens in the action name has been dropped. Resources and property names with spaces and hyphens most likely never worked in Chef-12\. UTF-8 characters have always been supported and still are.
+Support for actions with spaces and hyphens in the action name has been dropped. Resources and property names with spaces and hyphens most likely never worked in Chef-12. UTF-8 characters have always been supported and still are.
 
 ### `easy_install` resource has been removed
 
@@ -5346,7 +5340,7 @@ The implementation switched to `shell_out_with_systems_locale` to match `execute
 
 ### Chef Client will now exit using the RFC062 defined exit codes
 
-Chef Client will only exit with exit codes defined in RFC 062\. This allows other tooling to respond to how a Chef run completes. Attempting to exit Chef Client with an unsupported exit code (either via `Chef::Application.fatal!` or `Chef::Application.exit!`) will result in an exit code of 1 (GENERIC_FAILURE) and a warning in the event log.
+Chef Client will only exit with exit codes defined in RFC 062. This allows other tooling to respond to how a Chef run completes. Attempting to exit Chef Client with an unsupported exit code (either via `Chef::Application.fatal!` or `Chef::Application.exit!`) will result in an exit code of 1 (GENERIC_FAILURE) and a warning in the event log.
 
 When Chef Client is running as a forked process on unix systems, the standardized exit codes are used by the child process. To actually have Chef Client return the standard exit code, `client_fork false` will need to be set in Chef Client's configuration file.
 
@@ -5402,12 +5396,12 @@ CVEs:
  -  [CVE-2016-9842](https://www.cvedetails.com/cve/CVE-2016-9842/)
  -  [CVE-2016-9843](https://www.cvedetails.com/cve/CVE-2016-9843/)
 
-## On Debian based systems, correctly prefer Systemd to Upstart
+## On Debian prefer Systemd to Upstart
 
 On Debian systems, packages that support systemd will often ship both an
 old style init script and a systemd unit file. When this happened, Chef
 would incorrectly choose Upstart rather than Systemd as the service
-provider. We now pick Systemd.
+provider. Chef will now prefer systemd where available.
 
 ## Handle the supports pseudo-property more gracefully
 
@@ -5416,10 +5410,10 @@ many cookbooks also have a property named support, and Chef 12 was
 incorrectly giving a deprecation notice in that case, preventing users
 from properly testing their cookbooks for upgrades.
 
-## Don't crash when we downgrade from Chef 13 to Chef 12
+## Don't crash if downgrading from Chef 13 to 12
 
 On systems where Chef 13 had been run, Chef 12 would crash as the
-on disk cookbook format has changed. Chef 12 now correctly ignores the
+on-disk cookbook format has changed. Chef 12 now correctly ignores the
 unexpected files.
 
 ## Provide better system information when Chef crashes
