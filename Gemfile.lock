@@ -149,12 +149,13 @@ GEM
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
     chef-vault (4.1.0)
-    chef-zero (15.0.3)
+    chef-zero (15.0.4)
       ffi-yajl (~> 2.2)
       hashie (>= 2.0, < 5.0)
       mixlib-log (>= 2.0, < 4.0)
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
+      webrick
     cheffish (16.0.12)
       chef-zero (>= 14.0)
       net-ssh
@@ -362,6 +363,7 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
+    webrick (1.7.0)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.4.1)
       ffi
