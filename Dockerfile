@@ -26,7 +26,7 @@ ARG VERSION=15.15.0
 ENV VERSION ${EXPEDITOR_VERSION:-${VERSION}}
 ENV CHANNEL ${EXPEDITOR_CHANNEL:-${CHANNEL}}
 
-RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/7/chef-${VERSION}-1.el7.x86_64.rpm" -O /tmp/chef-client.rpm && \
+RUN wget "http://packages.chef.io/files/${CHANNEL}/chef/${VERSION}/el/6/chef-${VERSION}-1.el6.x86_64.rpm" -O /tmp/chef-client.rpm && \
     rpm2cpio /tmp/chef-client.rpm | cpio -idmv && \
     rm -rf /tmp/chef-client.rpm
 
