@@ -16,7 +16,7 @@ class Chef
       def_delegators :node, :logger
 
       def enabled?
-        audit_cookbook_present = recipes.include?("audit::default")
+        audit_cookbook_present = recipes.include?("audit::default") || recipes.include?("audit")
 
         logger.info("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
         logger.info("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
