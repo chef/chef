@@ -109,6 +109,12 @@ class Chef
         key
       end
 
+      def [](index)
+        value = super
+        value = value.call while value.is_a?(Proc)
+        value
+      end
+
       prepend Chef::Node::Mixin::StateTracking
       prepend Chef::Node::Mixin::ImmutablizeArray
     end
@@ -185,6 +191,12 @@ class Chef
         e.dup
       rescue TypeError
         e
+      end
+
+      def [](key)
+        value = super
+        value = value.call while value.is_a?(Proc)
+        value
       end
 
       prepend Chef::Node::Mixin::StateTracking
