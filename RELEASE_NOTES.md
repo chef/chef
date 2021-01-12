@@ -34,7 +34,7 @@ Parsing of plist files has been improved in the `plist`, `macosx_service`, `osx_
 
 The `user` resource on Windows hosts now properly handles `uid` values passed as strings instead of integers. Thanks for reporting this issue [@jaymzh](https://github.com/jaymzh)!
 
-#### yum_repostiory
+#### yum_repository
 
 The `yum_repository` resource has been updated with a new `reposdir` property to control the path where the Yum repository configuration files will be written. Thanks for suggesting this [@wildcrazyman](https://github.com/wildcrazyman)!
 
