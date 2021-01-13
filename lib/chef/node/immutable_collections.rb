@@ -109,7 +109,7 @@ class Chef
         key
       end
 
-      def [](index)
+      def [](*args)
         value = super
         value = value.call while value.is_a?(Proc)
         value
@@ -193,7 +193,7 @@ class Chef
         e
       end
 
-      def [](key)
+      def [](*args)
         value = super
         value = value.call while value.is_a?(Proc)
         value
