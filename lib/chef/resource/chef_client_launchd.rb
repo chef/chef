@@ -23,7 +23,7 @@ class Chef
 
       provides :chef_client_launchd
 
-      description "Use the **chef_client_launchd** resource to configure the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule."
+      description "Use the **chef_client_launchd** resource to configure the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule on macOS systems."
       introduced "16.5"
       examples <<~DOC
         **Set the #{ChefUtils::Dist::Infra::PRODUCT} to run on a schedule**:
