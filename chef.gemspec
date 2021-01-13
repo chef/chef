@@ -51,7 +51,7 @@ Gem::Specification.new do |s|
   s.add_dependency "iniparse", "~> 1.4"
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
-  s.add_dependency "uuidtools", "~> 2.1.5"
+  s.add_dependency "uuidtools", "~> 2.2.0"
 
   s.add_dependency "proxifier", "~> 1.0"
 
