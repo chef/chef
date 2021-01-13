@@ -50,7 +50,7 @@ end
 
 group(:development, :test) do
   gem "rake"
-  gem "rspec"
+  gem "rspec", "=3.9.0" # remove pin once https://github.com/chef/chef/issues/10817 is resolved
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
