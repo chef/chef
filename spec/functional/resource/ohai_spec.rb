@@ -19,10 +19,6 @@
 require "spec_helper"
 
 describe Chef::Resource::Ohai do
-  let(:ohai) do
-    OHAI_SYSTEM
-  end
-
   let(:node) { Chef::Node.new }
 
   let(:run_context) do
@@ -34,13 +30,9 @@ describe Chef::Resource::Ohai do
 
   shared_examples_for "reloaded :uptime" do
     it "should reload :uptime" do
-      initial_uptime = ohai[:uptime]
-
-      # Sleep for a second so the uptime gets updated.
-      sleep 1
-
+      expect(node[:uptime_seconds]).to be nil
       ohai_resource.run_action(:reload)
-      expect(node[:uptime]).not_to eq(initial_uptime)
+      expect(Integer(node[:uptime_seconds])).to be_an(Integer)
     end
   end
 
