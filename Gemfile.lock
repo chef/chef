@@ -63,7 +63,7 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
+      uuidtools (>= 2.1.5, < 3.0)
     chef (17.0.40-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
@@ -100,7 +100,7 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
+      uuidtools (>= 2.1.5, < 3.0)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)
       win32-event (~> 0.6.1)
