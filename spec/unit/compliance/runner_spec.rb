@@ -12,29 +12,28 @@ describe Chef::Compliance::Runner do
   end
 
   describe "#enabled?" do
+
     it "is true if the node attributes have audit profiles and the audit cookbook is not present" do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-      node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).to be_enabled
     end
 
     it "is false if the node attributes have audit profiles and the audit cookbook is present" do
+      stub_const("::Reporter::ChefAutomate", true)
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-      node.automatic["recipes"] = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
       node.normal["audit"]["profiles"] = {}
-      node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is present" do
-      node.normal["audit"]["profiles"] = {}
+      stub_const("::Reporter::ChefAutomate", true)
       node.automatic["recipes"] = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
 
       expect(runner).not_to be_enabled
