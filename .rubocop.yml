@@ -1,10 +1,11 @@
 AllCops:
-  TargetRubyVersion: 2.6
+  TargetRubyVersion: 2.7
   Exclude:
     - "spec/data/**/*"
     - "vendor/**/*"
     - "pkg/**/*"
-    - "chef-config/pkg/**/*"
+    - "chef-config/**/*"
+    - "chef-utils/**/*"
     - "habitat/**/*"
 Security/Eval:
   Enabled: false
@@ -28,5 +29,3 @@ Chef/Ruby/UnlessDefinedRequire:
   Include:
     - 'lib/**/*'
     - 'chef-bin/**/*'
-    - 'chef-config/lib/**/*'
-    - 'chef-utils/lib/**/*'

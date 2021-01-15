@@ -162,7 +162,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on oracle7" do
-    let(:options) { { platform: "oracle", version: "7.6" } }
+    let(:options) { { platform: "oracle", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -174,7 +174,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on redhat7" do
-    let(:options) { { platform: "redhat", version: "7.6" } }
+    let(:options) { { platform: "redhat", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end

@@ -1,0 +1,7 @@
+AllCops:
+  TargetRubyVersion: 2.6
+
+# set additional paths
+Chef/Ruby/UnlessDefinedRequire:
+  Include:
+    - 'lib/**/*'
