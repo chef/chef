@@ -1,5 +1,15 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## UNRELEASED 17.0 Scratch Pad
+
+This section serves to track things we should later document here for 17.0
+
+- Dropped support for Ruby 2.6
+- Lazy attribute loading: https://github.com/chef/chef/pull/10861
+- Compliance Phase in GA: https://github.com/chef/chef/pull/10547
+- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
+- remove support for RHEL 6 i386 / Ubuntu 16.04
+
 ## What's New in 16.9
 
 ### Knife Improvements
