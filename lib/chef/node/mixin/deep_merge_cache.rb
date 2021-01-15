@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+require_relative "../../delayed_evaluator"
+
 class Chef
   class Node
     module Mixin
@@ -53,7 +55,7 @@ class Chef
                   # save all the work of computing node[key]
                   deep_merge_cache[key.to_s] = merged_attributes(key)
                 end
-          ret = ret.call while ret.is_a?(Proc)
+          ret = ret.call while ret.is_a?(::Chef::DelayedEvaluator)
           ret
         end
 
