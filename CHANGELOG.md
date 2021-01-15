@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Test chef-utils and chef-config on Ruby 2.6 still [#10885](https://github.com/chef/chef/pull/10885) ([tas50](https://github.com/tas50))
 - Remove Ruby 2.6 tests [#10884](https://github.com/chef/chef/pull/10884) ([tas50](https://github.com/tas50))
 - Manually install necessary Ruby for verify pipeline [#10869](https://github.com/chef/chef/pull/10869) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
@@ -13,6 +14,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test chef-utils and chef-config on Ruby 2.6 still [#10885](https://github.com/chef/chef/pull/10885) ([tas50](https://github.com/tas50)) <!-- 17.0.43 -->
 - Remove Ruby 2.6 tests [#10884](https://github.com/chef/chef/pull/10884) ([tas50](https://github.com/tas50)) <!-- 17.0.43 -->
 - Manually install necessary Ruby for verify pipeline [#10869](https://github.com/chef/chef/pull/10869) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 17.0.43 -->
 - Add support for client.d files in chef-shell [#10880](https://github.com/chef/chef/pull/10880) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.43 -->
