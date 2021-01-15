@@ -9,6 +9,7 @@ This section serves to track things we should later document here for 17.0
 - Compliance Phase in GA: https://github.com/chef/chef/pull/10547
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
 - remove support for RHEL 6 i386 / Ubuntu 16.04
+- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
 
 ## What's New in 16.9
 
