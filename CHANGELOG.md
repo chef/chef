@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release unreleased -->
+## Unreleased
+
+#### Merged Pull Requests
+- Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.9.20 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.9.20 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
