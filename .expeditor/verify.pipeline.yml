@@ -367,8 +367,9 @@ steps:
 - label: "Kitchen: Amazon Linux 2"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-amazonlinux-2
+    - bundle exec kitchen test end-to-end-amazonlinux-2
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -382,8 +383,9 @@ steps:
 - label: "Kitchen: Ubuntu 18.04"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-1804
+    - bundle exec kitchen test end-to-end-ubuntu-1804
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -397,8 +399,9 @@ steps:
 - label: "Kitchen: Ubuntu 20.04"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2004
+    - bundle exec kitchen test end-to-end-ubuntu-2004
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -412,8 +415,9 @@ steps:
 - label: "Kitchen: Ubuntu 21.04"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-ubuntu-2104
+    - bundle exec kitchen test end-to-end-ubuntu-2104
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -427,8 +431,9 @@ steps:
 - label: "Kitchen: Debian 9"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-9
+    - bundle exec kitchen test end-to-end-debian-9
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -442,8 +447,9 @@ steps:
 - label: "Kitchen: Debian 10"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-10
+    - bundle exec kitchen test end-to-end-debian-10
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -457,8 +463,9 @@ steps:
 - label: "Kitchen: Debian 11"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-debian-11
+    - bundle exec kitchen test end-to-end-debian-11
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -472,8 +479,9 @@ steps:
 - label: "Kitchen: CentOS 6"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-6
+    - bundle exec kitchen test end-to-end-centos-6
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -487,8 +495,9 @@ steps:
 - label: "Kitchen: CentOS 7"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-7
+    - bundle exec kitchen test end-to-end-centos-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -502,8 +511,9 @@ steps:
 - label: "Kitchen: CentOS 8"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-centos-8
+    - bundle exec kitchen test end-to-end-centos-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -517,8 +527,9 @@ steps:
 - label: "Kitchen: Oracle Linux 7"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-oraclelinux-7
+    - bundle exec kitchen test end-to-end-oraclelinux-7
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -532,8 +543,9 @@ steps:
 - label: "Kitchen: Oracle Linux 8"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-oraclelinux-8
+    - bundle exec kitchen test end-to-end-oraclelinux-8
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -547,8 +559,9 @@ steps:
 - label: "Kitchen: Fedora latest"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-fedora-latest
+    - bundle exec kitchen test end-to-end-fedora-latest
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
@@ -562,8 +575,9 @@ steps:
 - label: "Kitchen: openSUSE Leap: 15"
   commands:
     - .expeditor/scripts/bk_linux_exec.sh
+    - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
-    - /opt/omnibus-toolchain/bin/bundle exec kitchen test end-to-end-opensuse-leap-15
+    - bundle exec kitchen test end-to-end-opensuse-leap-15
   artifact_paths:
     - $PWD/.kitchen/logs/kitchen.log
   env:
