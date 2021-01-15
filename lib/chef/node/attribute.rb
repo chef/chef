@@ -596,7 +596,7 @@ class Chef
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
-                deep_merge!(safe_dup(merge_onto[key]), merge_with_value)
+                deep_merge!(safe_dup(merge_onto.internal_get(key)), merge_with_value)
               else
                 merge_with_value
               end
@@ -632,7 +632,7 @@ class Chef
           merge_with.each do |key, merge_with_value|
             value =
               if merge_onto.key?(key)
-                hash_only_merge!(safe_dup(merge_onto[key]), merge_with_value)
+                hash_only_merge!(safe_dup(merge_onto.internal_get(key)), merge_with_value)
               else
                 merge_with_value
               end
