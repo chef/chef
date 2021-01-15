@@ -12,6 +12,32 @@ expeditor:
 steps:
 
 #########################################################################
+  # Tests Ruby 2.6
+#########################################################################
+
+- label: "chef-utils Unit :ruby: 2.6"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - cd chef-utils
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04:2.6
+
+- label: "chef-config Unit :ruby: 2.6"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - cd chef-config
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04:2.6
+
+#########################################################################
   # Tests Ruby 2.7
 #########################################################################
 
