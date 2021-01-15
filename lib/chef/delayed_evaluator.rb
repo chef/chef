@@ -17,5 +17,9 @@
 
 class Chef
   class DelayedEvaluator < Proc
+    def dup
+      # super returns a "Proc" (which seems buggy) so re-wrap it
+      self.class.new(&super) # rubocop:disable Layout/SpaceAroundKeyword
+    end
   end
 end

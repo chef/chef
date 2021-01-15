@@ -19,6 +19,7 @@ require_relative "common_api"
 require_relative "mixin/state_tracking"
 require_relative "mixin/immutablize_array"
 require_relative "mixin/immutablize_hash"
+require_relative "../delayed_evaluator"
 
 class Chef
   class Node
@@ -109,6 +110,12 @@ class Chef
         key
       end
 
+      def [](*args)
+        value = super
+        value = value.call while value.is_a?(::Chef::DelayedEvaluator)
+        value
+      end
+
       prepend Chef::Node::Mixin::StateTracking
       prepend Chef::Node::Mixin::ImmutablizeArray
     end
@@ -185,6 +192,12 @@ class Chef
         e.dup
       rescue TypeError
         e
+      end
+
+      def [](*args)
+        value = super
+        value = value.call while value.is_a?(::Chef::DelayedEvaluator)
+        value
       end
 
       prepend Chef::Node::Mixin::StateTracking
