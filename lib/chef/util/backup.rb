@@ -64,7 +64,7 @@ class Chef
       end
 
       def backup_path
-        @backup_path ||= ::File.join(prefix, backup_filename)
+        @backup_path ||= PathHelper.cleanpath(::File.join(prefix, backup_filename))
       end
 
       def do_backup
@@ -83,7 +83,7 @@ class Chef
         fn = Regexp.escape(::File.basename(path))
         Dir.entries(::File.dirname(backup_path)).select do |f|
           !!(f =~ /\A#{fn}.chef-[0-9.]*\B/)
-        end.map { |f| ::File.join(::File.dirname(backup_path), f) }
+        end.map { |f| PathHelper.cleanpath(::File.join(::File.dirname(backup_path), f)) }
       end
 
       def sorted_backup_files
