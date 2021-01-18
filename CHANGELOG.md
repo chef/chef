@@ -2,18 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.21 -->
-## [v16.9.21](https://github.com/chef/chef/tree/v16.9.21) (2021-01-18)
+<!-- latest_release 16.9.22 -->
+## [v16.9.22](https://github.com/chef/chef/tree/v16.9.22) (2021-01-18)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10891](https://github.com/chef/chef/pull/10891) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
-- Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp))
+- Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10888](https://github.com/chef/chef/pull/10888) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.9.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10888](https://github.com/chef/chef/pull/10888) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.22 -->
 - Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10891](https://github.com/chef/chef/pull/10891) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.21 -->
 - Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.9.20 -->
 <!-- release_rollup -->
