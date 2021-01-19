@@ -358,7 +358,7 @@ module Shell
         end
 
         # even if we couldn't load that, we need to tell Chef::Config what
-        # the file was so it sets confdir and d_dir and such properly
+        # the file was so it sets conf dir and d_dir and such properly
         Chef::Config[:config_file] = config[:config_file]
 
         # now attempt to load any relevant dot-dirs
