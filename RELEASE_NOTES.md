@@ -783,7 +783,7 @@ The Chef Infra Client 16.0.287 release includes important bug fixes for the Chef
 - Resolves several failures in the `launchd` resource.
 - Removes an extra `.java` file on Windows installations that would cause a failure in the IIS 8.5 Server Security Technical Implementation Guide audit.
 - Updates the `windows_printer` resource so that the driver property will only be required when using the `:create` action.
-- Fixes the incorrectly spelled `knife user invite recind` command to be `knife user invite rescind`.
+- Fixes the incorrectly spelled `knife user invite recind` command to be `knife user invite rescind`. [//]: # "cspell:disable-line"
 - Update Chef InSpec to 4.8.111 with several minor improvements.
 
 ## What's New in 16.0.275
