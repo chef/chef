@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 023e6bf1221e9ab92a6809c9f04f55973178f0b1
-  branch: master
+  revision: e44d2ec8f1593bc8495771fd92405f188163d07b
+  branch: lcg/remove-ohai-dep
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
@@ -32,8 +32,8 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.416.0)
-    aws-sdk-core (3.111.1)
+    aws-partitions (1.417.0)
+    aws-sdk-core (3.111.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
       aws-sigv4 (~> 1.1)
@@ -333,7 +333,7 @@ GEM
       rspec-support (~> 3.10.0)
     rspec-support (3.10.1)
     ruby-progressbar (1.11.0)
-    ruby2_keywords (0.0.2)
+    ruby2_keywords (0.0.4)
     rubyntlm (0.6.2)
     rubyzip (2.3.0)
     sawyer (0.8.2)
