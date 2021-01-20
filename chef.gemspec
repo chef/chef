@@ -1,4 +1,13 @@
 $:.unshift(File.dirname(__FILE__) + "/lib")
+vs_path = File.expand_path("chef-utils/lib/chef-utils/version_string.rb", __dir__)
+
+if File.exist?(vs_path)
+  # this is the moral equivalent of a require_relative since bundler makes require_relative here fail hard
+  eval(IO.read(vs_path))
+else
+  # if the path doesn't exist then we're just in the wild gem and not in the git repo
+  require "chef-utils/version_string"
+end
 require "chef/version"
 
 Gem::Specification.new do |s|
