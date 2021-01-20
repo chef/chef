@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.24 -->
-## [v16.9.24](https://github.com/chef/chef/tree/v16.9.24) (2021-01-20)
+<!-- latest_release 16.9.25 -->
+## [v16.9.25](https://github.com/chef/chef/tree/v16.9.25) (2021-01-20)
 
 #### Merged Pull Requests
-- Fix ohai resource spec [#10897](https://github.com/chef/chef/pull/10897) ([tas50](https://github.com/tas50))
+- Add support for client.d files in chef-shell [#10899](https://github.com/chef/chef/pull/10899) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.9.20 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add support for client.d files in chef-shell [#10899](https://github.com/chef/chef/pull/10899) ([tas50](https://github.com/tas50)) <!-- 16.9.25 -->
 - Fix ohai resource spec [#10897](https://github.com/chef/chef/pull/10897) ([tas50](https://github.com/tas50)) <!-- 16.9.24 -->
 - Updated uuidtools version [#10898](https://github.com/chef/chef/pull/10898) ([tas50](https://github.com/tas50)) <!-- 16.9.23 -->
 - Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10888](https://github.com/chef/chef/pull/10888) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.22 -->
