@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.47 -->
-## [v17.0.47](https://github.com/chef/chef/tree/v17.0.47) (2021-01-20)
+<!-- latest_release 17.0.48 -->
+## [v17.0.48](https://github.com/chef/chef/tree/v17.0.48) (2021-01-20)
 
 #### Merged Pull Requests
-- Add backup functionality to windows_task [#10894](https://github.com/chef/chef/pull/10894) ([kimbernator](https://github.com/kimbernator))
+- Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10903](https://github.com/chef/chef/pull/10903) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10903](https://github.com/chef/chef/pull/10903) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.48 -->
 - Add backup functionality to windows_task [#10894](https://github.com/chef/chef/pull/10894) ([kimbernator](https://github.com/kimbernator)) <!-- 17.0.47 -->
 - Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10893](https://github.com/chef/chef/pull/10893) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.46 -->
 - Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10889](https://github.com/chef/chef/pull/10889) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.45 -->
