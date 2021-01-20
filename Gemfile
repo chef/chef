@@ -1,5 +1,8 @@
 source "https://rubygems.org"
 
+# pin until issues with Windows builds in 1.14.2 are resolved
+gem "ffi", "=1.13.1"
+
 # Note we do not use the gemspec DSL which restricts to the
 # gemspec for the current platform and filters out other platforms
 # during a bundle lock operation. We actually want dependencies from
@@ -50,7 +53,7 @@ end
 
 group(:development, :test) do
   gem "rake"
-  gem "rspec"
+  gem "rspec", "=3.9.0" # remove pin once https://github.com/chef/chef/issues/10817 is resolved
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
