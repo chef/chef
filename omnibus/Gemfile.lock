@@ -16,8 +16,10 @@ GIT
       ruby-progressbar (~> 1.7)
       thor (>= 0.18, < 2.0)
 
-PATH
-  remote: ../../omnibus-software
+GIT
+  remote: https://github.com/chef/omnibus-software
+  revision: a9459267b27360a25fbfac0159cc0b9d1d244dfd
+  branch: lcg/dont-ship-chef-dev-gems
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
