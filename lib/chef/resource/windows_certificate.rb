@@ -76,7 +76,7 @@ class Chef
         default: "MY", equal_to: ["TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER", "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING", "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST", "DISALLOWED"]
 
       property :user_store, [TrueClass, FalseClass],
-        description: "Use the CurrentUser store if set to true or the LocalMachine store if set to false.",
+        description: "Use the `CurrentUser` store instead of the default `LocalMachine` store.",
         default: false
 
       property :cert_path, String,
