@@ -31,7 +31,7 @@ Chef InSpec has been updated from 4.24.8 to 4.25.1:
 
 - Updated the package resource on FreeBSD to work with recent changes to the pkgng executable. Thanks [@mrtazz](https://github.com/mrtazz/)
 - Added a missing dependency in the chef-zero binary that could cause failures when running chef-zero.
-- Resolved failures running the audit cookbook from our yet to be fully released Chef Infra Compliance Phase. As it turns out this dark launch was not as dark as we had hoped.
+- Resolved failures when running the audit cookbook from our yet-to-be-fully-released Chef Infra Compliance Phase. As it turns out, this dark launch was not as dark as we had hoped.
 
 ## What's New in 16.9
 
