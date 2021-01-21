@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: f4db7ac0acf30214aa1d236d5a8a2143c6c04481
-  branch: lcg/dont-ship-chef-dev-gems
+  revision: 05f70739fb4a14d5c117c620ba7bb24dce6fd538
+  branch: master
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
@@ -64,12 +64,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.9.20)
+    chef (16.9.29)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
-      chef-config (= 16.9.20)
-      chef-utils (= 16.9.20)
+      chef-config (= 16.9.29)
+      chef-utils (= 16.9.29)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -100,13 +100,13 @@ GEM
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
-    chef (16.9.20-universal-mingw32)
+      uuidtools (>= 2.1.5, < 3.0)
+    chef (16.9.29-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
-      chef-config (= 16.9.20)
-      chef-utils (= 16.9.20)
+      chef-config (= 16.9.29)
+      chef-utils (= 16.9.29)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -138,7 +138,7 @@ GEM
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
+      uuidtools (>= 2.1.5, < 3.0)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)
       win32-event (~> 0.6.1)
@@ -150,9 +150,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (16.9.20)
+    chef-config (16.9.29)
       addressable
-      chef-utils (= 16.9.20)
+      chef-utils (= 16.9.29)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -161,7 +161,7 @@ GEM
       chef-config
       concurrent-ruby (~> 1.0)
       ffi-yajl (~> 2.2)
-    chef-utils (16.9.20)
+    chef-utils (16.9.29)
     chef-vault (4.1.0)
     chef-zero (15.0.4)
       ffi-yajl (~> 2.2)
@@ -399,7 +399,7 @@ GEM
       tty-screen (~> 0.8)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
-    uuidtools (2.1.5)
+    uuidtools (2.2.0)
     webrick (1.7.0)
     win32-api (1.5.3-universal-mingw32)
     win32-certstore (0.4.1)
