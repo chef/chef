@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.49 -->
-## [v17.0.49](https://github.com/chef/chef/tree/v17.0.49) (2021-01-20)
+<!-- latest_release 17.0.50 -->
+## [v17.0.50](https://github.com/chef/chef/tree/v17.0.50) (2021-01-21)
 
 #### Merged Pull Requests
-- Bump inspec-core-bin to 4.25.1 [#10907](https://github.com/chef/chef/pull/10907) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Add release notes for 16.9.29 [#10910](https://github.com/chef/chef/pull/10910) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add release notes for 16.9.29 [#10910](https://github.com/chef/chef/pull/10910) ([tas50](https://github.com/tas50)) <!-- 17.0.50 -->
 - Bump inspec-core-bin to 4.25.1 [#10907](https://github.com/chef/chef/pull/10907) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.49 -->
 - Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10903](https://github.com/chef/chef/pull/10903) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.48 -->
 - Add backup functionality to windows_task [#10894](https://github.com/chef/chef/pull/10894) ([kimbernator](https://github.com/kimbernator)) <!-- 17.0.47 -->
