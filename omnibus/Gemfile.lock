@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 1cff56e31219e2851d2651e9b92fffd15e42bd00
+  revision: 05f70739fb4a14d5c117c620ba7bb24dce6fd538
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -362,7 +362,7 @@ GEM
       winrm (~> 2.0)
       winrm-elevated (~> 1.0)
       winrm-fs (~> 1.1)
-    thor (1.0.1)
+    thor (1.1.0)
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
