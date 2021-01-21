@@ -22,7 +22,7 @@ Chef InSpec has been updated from 4.24.8 to 4.25.1:
 
 ### Bug Fixes
 
-- Resolved failures running chef-client on some Windows systems.
+- Resolved failures from running `chef-client` on some Windows systems.
 - Compliance Phase: Improved detection of the `audit` cookbook when it is used for compliance reporting.
 - chef-shell: Added support for loading configs in `client.d` directories - Thanks [@jaymzh](https://github.com/jaymzh)!
 - Duplicate gems in our packaging have been removed to further shrink the package sizes and improve load time.
