@@ -18,7 +18,7 @@ This section serves to track things we should later document here for 17.0
 Chef InSpec has been updated from 4.24.8 to 4.25.1:
 
 - OpenSSH Client on Windows can now be tested with the ssh_config and sshd_config resources. Thanks [@rgeissert](https://github.com/rgeissert)!
-- The `--reporter-message-truncation` option now also truncates the `code_desc` field, preventing failures sending large reports to Automate.
+- The `--reporter-message-truncation` option now also truncates the `code_desc` field, preventing failures when sending large reports to Automate.
 
 ### Bug Fixes
 
