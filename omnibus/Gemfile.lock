@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: a9459267b27360a25fbfac0159cc0b9d1d244dfd
+  revision: f4db7ac0acf30214aa1d236d5a8a2143c6c04481
   branch: lcg/dont-ship-chef-dev-gems
   specs:
     omnibus-software (4.0.0)
