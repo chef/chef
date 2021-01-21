@@ -2,37 +2,34 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.29 -->
-## [v16.9.29](https://github.com/chef/chef/tree/v16.9.29) (2021-01-20)
-
-#### Merged Pull Requests
-- Update InSpec to 4.25 [#10908](https://github.com/chef/chef/pull/10908) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.9.20 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update InSpec to 4.25 [#10908](https://github.com/chef/chef/pull/10908) ([tas50](https://github.com/tas50)) <!-- 16.9.29 -->
-- Pin rspec until we can resolve failures with 3.10 [#10904](https://github.com/chef/chef/pull/10904) ([tas50](https://github.com/tas50)) <!-- 16.9.28 -->
-- Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10902](https://github.com/chef/chef/pull/10902) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.27 -->
-- Compliance Phase: even better audit cookbook detection [#10900](https://github.com/chef/chef/pull/10900) ([tas50](https://github.com/tas50)) <!-- 16.9.26 -->
-- Add support for client.d files in chef-shell [#10899](https://github.com/chef/chef/pull/10899) ([tas50](https://github.com/tas50)) <!-- 16.9.25 -->
-- Fix ohai resource spec [#10897](https://github.com/chef/chef/pull/10897) ([tas50](https://github.com/tas50)) <!-- 16.9.24 -->
-- Updated uuidtools version [#10898](https://github.com/chef/chef/pull/10898) ([tas50](https://github.com/tas50)) <!-- 16.9.23 -->
-- Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10888](https://github.com/chef/chef/pull/10888) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.22 -->
-- Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10891](https://github.com/chef/chef/pull/10891) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.21 -->
-- Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 16.9.20 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.9.29](https://github.com/chef/chef/tree/v16.9.29) (2021-01-21)
+
+#### Merged Pull Requests
+- Manually install necessary Ruby for verify pipeline [#10871](https://github.com/chef/chef/pull/10871) ([christopher-snapp](https://github.com/christopher-snapp))
+- Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10891](https://github.com/chef/chef/pull/10891) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10888](https://github.com/chef/chef/pull/10888) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Updated uuidtools version [#10898](https://github.com/chef/chef/pull/10898) ([tas50](https://github.com/tas50))
+- Fix ohai resource spec [#10897](https://github.com/chef/chef/pull/10897) ([tas50](https://github.com/tas50))
+- Add support for client.d files in chef-shell [#10899](https://github.com/chef/chef/pull/10899) ([tas50](https://github.com/tas50))
+- Compliance Phase: even better audit cookbook detection [#10900](https://github.com/chef/chef/pull/10900) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10902](https://github.com/chef/chef/pull/10902) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Pin rspec until we can resolve failures with 3.10 [#10904](https://github.com/chef/chef/pull/10904) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.25 [#10908](https://github.com/chef/chef/pull/10908) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.9.20](https://github.com/chef/chef/tree/v16.9.20) (2021-01-13)
 
 #### Merged Pull Requests
 - Update chef-zero to 15.0.4 to resolve missing dep failures [#10857](https://github.com/chef/chef/pull/10857) ([tas50](https://github.com/tas50))
 - Compliance phase: change the audit cb checker to use the recipes list on the node [#10866](https://github.com/chef/chef/pull/10866) ([tas50](https://github.com/tas50))
 - adapt to FreeBSD pkgng sysexit changes [#10867](https://github.com/chef/chef/pull/10867) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.9.17](https://github.com/chef/chef/tree/v16.9.17) (2021-01-09)
 
