@@ -1,7 +1,7 @@
 #
 # Author:: Adam Jacob (<adam@chef.io>)
 # Author:: Daniel DeLeo (<dan@chef.io>)
-# Copyright:: Copyright 2008-2019, Chef Software Inc.
+# Copyright:: Copyright, Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,15 +17,19 @@
 # limitations under the License.
 #
 
+# we need this to resolve files required by lib/chef/dist
+$LOAD_PATH.unshift(File.expand_path("chef-config/lib", __dir__))
+
 begin
   require_relative "tasks/rspec"
   require_relative "tasks/dependencies"
-  require_relative "tasks/announce"
   require_relative "tasks/docs"
-  require_relative "lib/chef/dist"
+  require_relative "lib/chef/dist" unless defined?(Chef::Dist)
 rescue LoadError => e
   puts "Skipping missing rake dep: #{e}"
 end
+
+require "bundler/gem_helper"
 
 ENV["CHEF_LICENSE"] = "accept-no-persist"
 
@@ -38,6 +42,7 @@ task :super_install do
   end
 
   # Templating the powershell extensions so we can inject distro constants
+  require "erb"
   template_file = ::File.join(::File.dirname(__FILE__), "distro", "templates", "powershell", "chef", "chef.psm1.erb")
   psm1_path = ::File.join(::File.dirname(__FILE__), "distro", "powershell", "chef")
   FileUtils.mkdir_p psm1_path
@@ -55,8 +60,9 @@ Bundler::GemHelper.install_tasks name: gemspec
 # this gets appended to the normal bundler install helper
 task :install do
   chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
-  Dir.chdir(chef_bin_path)
-  sh("rake install:force")
+  Dir.chdir(chef_bin_path) do
+    sh("rake install:force")
+  end
 end
 
 task :pedant, :chef_zero_spec
@@ -81,16 +87,4 @@ begin
   end
 rescue LoadError
   puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
-end
-
-begin
-  require "yard"
-  DOC_FILES = [ "spec/tiny_server.rb", "lib/**/*.rb" ].freeze
-
-  YARD::Rake::YardocTask.new(:docs) do |t|
-    t.files = DOC_FILES
-    t.options = ["--format", "html"]
-  end
-rescue LoadError
-  puts "yard is not available. bundle install first to make sure all dependencies are installed."
 end
