@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 16.9.30 -->
+## [v16.9.30](https://github.com/chef/chef/tree/v16.9.30) (2021-01-22)
+
+#### Merged Pull Requests
+- Backport of changes necessary for removal of dev gems [#10914](https://github.com/chef/chef/pull/10914) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.9.29 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Backport of changes necessary for removal of dev gems [#10914](https://github.com/chef/chef/pull/10914) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.9.30 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
