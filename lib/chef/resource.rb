@@ -152,7 +152,7 @@ class Chef
         arg.each do |action|
           validate(
             { action: action },
-            { action: { kind_of: Symbol, equal_to: allowed_actions } }
+            { action: { kind_of: Symbol, equal_to: allowed_actions.to_h.keys } }
           )
         end
         @action = arg
@@ -176,7 +176,7 @@ class Chef
       arg.map do |action|
         validate(
           { action: action },
-          { action: { kind_of: Symbol, equal_to: allowed_actions } }
+          { action: { kind_of: Symbol, equal_to: allowed_actions.to_h.keys } }
         )
         # the resource effectively sends a delayed notification to itself
         run_context.add_delayed_action(Notification.new(self, action, self, run_context.unified_mode))
@@ -992,23 +992,56 @@ class Chef
     #
     # The list of allowed actions for the resource.
     #
-    # @param actions [Array<Symbol>] The list of actions to add to allowed_actions.
+    # @param actions [Array<Symbol,Hash>] The list of actions to add to allowed_actions.
     #
-    # @return [Array<Symbol>] The list of actions, as symbols.
-    #
+    # @return [Array<Symbol>] The hash of allowed actions { ACTION => DESCRIPTION }
     def self.allowed_actions(*actions)
-      @allowed_actions ||=
-        if superclass.respond_to?(:allowed_actions)
-          superclass.allowed_actions.dup
-        else
-          [ :nothing ]
+      if superclass.respond_to?(:allowed_actions)
+        superclass.allowed_actions.each_pair { |k, v| add_allowed_action(k, v) }
+      else
+        add_allowed_action(:nothing, nil)
+      end
+
+      actions.each do |action|
+        case action
+        when String, Symbol
+          add_allowed_action(action, nil)
+        when Hash
+          action.each_pair do |k, v|
+            add_allowed_action(k, v)
+          end
+        when Array
+          action.each do |k|
+            add_allowed_action(k, nil)
+          end
+
         end
-      @allowed_actions |= actions.flatten
+      end
+      @allowed_actions
     end
 
+    # TODO - should this be addaction too?  Does it need to multi-input -
     def self.allowed_actions=(value)
+      @allowed_actions = {}
+
+      # Hey this looks just like that function above, let's consolidate it?
+      case value
+      when String,Symbol
+
       @allowed_actions = value.uniq
     end
+
+    # @private
+    #
+    def self.add_allowed_action(action, description)
+      action = action.to_sym
+      @allowed_actions ||= {}
+      if @default_action.nil? || @default_action == :nothing
+        @default_action = Array[action]
+      end
+      @allowed_actions[action] ||= description
+    end
+
 
     #
     # The action that will be run if no other action is specified.
@@ -1024,9 +1057,12 @@ class Chef
     # @return [Array<Symbol>] The default actions for the resource.
     #
     def self.default_action(action_name = NOT_PASSED)
+
       unless action_name.equal?(NOT_PASSED)
         @default_action = Array(action_name).map(&:to_sym)
-        self.allowed_actions |= @default_action
+        @default_action.each do |action|
+          self.add_allowed_action(action, nil)
+        end
       end
 
       if defined?(@default_action) && @default_action
@@ -1038,8 +1074,8 @@ class Chef
       end
     end
 
-    def self.default_action=(action_name)
-      default_action action_name
+    def self.default_action=(action)
+      default_action action
     end
 
     # Define an action on this resource.
@@ -1071,11 +1107,23 @@ class Chef
     #
     # @return The Action class implementing the action
     #
-    def self.action(action, &recipe_block)
+    #New usage:
+    # action :blah, description: "blah" do
+    # end
+    # Better?
+    # action blah: "blah" do
+    # end
+    # Former, I think it's clearer what you're doing.
+    #
+    def self.action(action, description: nil, &recipe_block)
       action = action.to_sym
       declare_action_class
       action_class.action(action, &recipe_block)
-      self.allowed_actions += [ action ]
+      # Since it was declared, add it to permitted actions.
+      self.add_allowed_action(action, description)
+
+      # TODO Make this action the default action here ? Nah, let's let add_allowed_action handle that.
+      # TODO Ideally we wonly want to set up the default action in _one_ place.
       default_action action if Array(default_action) == [:nothing]
     end
 

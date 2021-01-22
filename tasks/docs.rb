@@ -130,13 +130,9 @@ namespace :docs_site do
     # @return [Hash]
     #
     def action_list(actions)
-      list = {}
-      actions.sort.each do |action|
-        # nothing is a special case that sources the content from the docs site
-        list[action.to_sym] = (action == "nothing" ? { "shortcode" => "resources_common_actions_nothing.md" } : { "markdown" => nil })
-      end
-
-      list
+      actions = actions.map { |k, v| [k.to_sym, { "markdown" => v } ] }.to_h
+      actions[:nothing] = { "shortcode" => "resources_common_actions_nothing.md"}
+      actions
     end
 
     # TODO:
@@ -266,6 +262,8 @@ namespace :docs_site do
       r["resource"] = name
       r["resource_description_list"] = build_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
+      #require 'pry'; binding.pry
+
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
@@ -282,6 +280,7 @@ namespace :docs_site do
     resources.each do |resource, data|
       # skip some resources we don't directly document
       next if RESOURCES_TO_SKIP.include?(resource)
+
 
       next if ENV["DEBUG"] && !(resource == ENV["DEBUG"])
 
