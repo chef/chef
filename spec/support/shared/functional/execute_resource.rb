@@ -68,7 +68,7 @@ shared_context "a command that can be executed as an alternate user" do
 end
 
 shared_examples_for "an execute resource that supports alternate user identity" do
-  context "when running on Windows", :windows_only, :windows_service_requires_assign_token do
+  context "when running on Windows", :windows_only do
 
     include_context "a command that can be executed as an alternate user"
 
@@ -102,7 +102,7 @@ shared_examples_for "an execute resource that supports alternate user identity" 
 end
 
 shared_examples_for "a resource with a guard specifying an alternate user identity" do
-  context "when running on Windows", :windows_only, :windows_service_requires_assign_token do
+  context "when running on Windows", :windows_only do
     include_context "alternate user identity"
 
     let(:resource_command_property) { :command }
