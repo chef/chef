@@ -884,10 +884,15 @@ class Chef
     # @return [Array<Symbol>] The list of actions this Resource is allowed to
     #   have.
     #
+
+    # TODO - do we need this writer?
     attr_writer :allowed_actions
 
+
+
+
     def allowed_actions(value = NOT_PASSED)
-      # TODO - why do we support assignment of allwoed actions
+      # TODO - why do we support assignment of allowed actions
       # from the instance?
       if value != NOT_PASSED
         @allowed_actions = Chef::Resource.convert_actions(value)
@@ -994,7 +999,7 @@ class Chef
     #
     # The list of allowed actions for the resource.
     #
-    # @param actions [Array<Symbol,Hash>] The list of actions to add to allowed_actions.
+    # @param actions [String,Symbol,Array<Symbol>,Array<String>,Hash<Symbol,String>] The list of actions to add to allowed_actions.
     #
     # @return Hash<Symbol,String> The hash of allowed actions { :ACTION => DESCRIPTION }
     def self.allowed_actions(*actions)
@@ -1017,7 +1022,11 @@ class Chef
       end
     end
 
-    # private
+    # @api private
+    # Converts a mixed array to a proper actions hash in
+    # the form Hash<Symbol, String|nil>
+    # Array elements can be:
+    # String, Symbol, Hash<Symbol, String>,  Array<String>, Array<Symbol>
     def self.convert_actions(*actions)
       {}.tap do |o|
         actions.each do |action|
@@ -1026,18 +1035,24 @@ class Chef
             o[action.to_sym] = nil
           when Hash
             action.each_pair do |k, v|
-              o[k] = v
+              o[k.to_sym] = v
             end
           when Array
             action.each do |k|
-              o[k] = nil
+              o[k.to_sym] = nil
             end
           end
         end
       end
     end
 
-    # private
+    # @api private
+    #
+    # Uniquely Adds an action and its description to the hash of allowed actions.
+    # If an action is already defined and does not have a description,
+    # the description will be replaced with the one provided.
+    #
+    # If there is no default_action, action will be made the default_action.
     def self.add_allowed_action(action, description)
       action = action.to_sym
       @allowed_actions ||= {}
@@ -1112,24 +1127,29 @@ class Chef
     #
     # @return The Action class implementing the action
     #
-    #New usage:
+    # TODO Reviewer Discussion Note:
+    #
     # action :blah, description: "blah" do
+    #   ...
     # end
-    # Better?
+    #
+    # Alternative tried, but was messier:
     # action blah: "blah" do
+    #   ..
     # end
-    # Former, I think it's clearer what you're doing.
     #
     def self.action(action, description: nil, &recipe_block)
       action = action.to_sym
       declare_action_class
       action_class.action(action, &recipe_block)
-      # Since it was declared, add it to permitted actions.
       self.add_allowed_action(action, description)
 
-      # TODO Make this action the default action here ? Nah, let's let add_allowed_action handle that.
-      # TODO Ideally we wonly want to set up the default action in _one_ place.
-      default_action action if Array(default_action) == [:nothing]
+      # TODO - didn't see any tests for default-action adding behaviors
+      # NOTE add_allowed_action now sets default_action
+
+      # NOTE - I don't think this previously did return this even though func desc says so,
+      # esp if the default action was set.
+      action_class
     end
 
     # Define a method to load up this resource's properties with the current
