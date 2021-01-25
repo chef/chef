@@ -122,7 +122,8 @@ class Chef
         end
       end
 
-      action :install do
+      action :install, description: "Add alternative source" do
+
         if path_priority != new_resource.priority
           converge_by("adding alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}") do
             output = shell_out(alternatives_cmd, "--install", new_resource.link, new_resource.link_name, new_resource.path, new_resource.priority)
@@ -133,7 +134,7 @@ class Chef
         end
       end
 
-      action :set do
+      action :set, description: "set alternative" do
         if current_path != new_resource.path
           converge_by("setting alternative #{new_resource.link_name} #{new_resource.path}") do
             output = shell_out(alternatives_cmd, "--set", new_resource.link_name, new_resource.path)
@@ -144,7 +145,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove alternative" do
         if path_exists?
           converge_by("removing alternative #{new_resource.link_name} #{new_resource.path}") do
             shell_out(alternatives_cmd, "--remove", new_resource.link_name, new_resource.path)
@@ -152,13 +153,13 @@ class Chef
         end
       end
 
-      action :auto do
+      action :auto, description: "Set auto alternative" do
         converge_by("setting auto alternative #{new_resource.link_name}") do
           shell_out(alternatives_cmd, "--auto", new_resource.link_name)
         end
       end
 
-      action :refresh do
+      action :refresh, description: "Refresh alternative" do
         converge_by("refreshing alternative #{new_resource.link_name}") do
           shell_out(alternatives_cmd, "--refresh", new_resource.link_name)
         end

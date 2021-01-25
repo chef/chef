@@ -131,7 +131,7 @@ class Chef
 
       end
 
-      action :apply do
+      action :apply, description: "Apply a sysctl value" do
         description "Apply a sysctl value."
 
         converge_if_changed do
@@ -152,7 +152,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a sysctl value" do
         description "Remove a sysctl value."
 
         # only converge the resource if the file actually exists to delete
