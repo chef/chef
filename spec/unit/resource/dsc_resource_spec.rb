@@ -41,7 +41,7 @@ describe Chef::Resource::DscResource do
     end
 
     it "has an ed_actions property with only the `:run` and `:nothing` properties" do
-      expect(dsc_test_resource.allowed_actions.to_set).to eq(%i{run nothing}.to_set)
+      expect(dsc_test_resource.allowed_actions.keys).to eq(%i{run nothing})
     end
 
     it "allows the resource property to be set" do
