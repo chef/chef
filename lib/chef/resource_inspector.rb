@@ -40,7 +40,6 @@ class Chef
       data = {}
       data[:description] = resource.description
       # data[:deprecated] = resource.deprecated || false
-      #require 'pry'; binding.pry
       data[:default_action] = resource.default_action
       data[:actions] = resource.allowed_actions
       data[:examples] = resource.examples

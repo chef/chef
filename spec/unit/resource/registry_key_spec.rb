@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::RegistryKey, "initialize" do
+describe Chef::Resource::RegistryKey, "initialize", :focus do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
   it "sets the resource_name to :registry_key" do
@@ -52,9 +52,9 @@ describe Chef::Resource::RegistryKey, "initialize" do
     expect(resource.action).to eql([:create])
   end
 
-  %w{create create_if_missing delete delete_key}.each do |action|
+  %i{create create_if_missing delete delete_key}.each do |action|
     it "allows action #{action}" do
-      expect(resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
+      expect(resource.allowed_actions.has_key?(action)).to eql(true)
     end
   end
 end

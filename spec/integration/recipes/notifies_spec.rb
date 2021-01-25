@@ -18,7 +18,7 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
-describe "notifications" do
+describe "notifications", :focus do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
@@ -189,7 +189,7 @@ describe "notifications" do
 
       result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
       # the delayed notification from the sub-resource is de-duplicated by the notification already in the parent run_context
-      expect(result.stdout).to match(/\* notify_group\[quux\] action run\s+\* notifying_test\[whatever\] action run\s+\* notify_group\[bar\] action run\s+\* log\[baz\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/)
+      expect(result.stdout).to match(/\* notify_group\[quux\] action run\s+\* notifying_test\[whatever\] action run\s+\* notify_group\[bar\] action run\s+\* log\[baz\] action write\s+\* log\[foo\] action write\s+\* log\[baz\] action write/m)
       # and only run once
       expect(result.stdout).not_to match(/\* log\[foo\] action write.*\* log\[foo\] action write/)
       result.error!

@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::Alternatives do
+describe Chef::Resource::Alternatives, :focus do
   let(:node) { Chef::Node.new }
   let(:events) { Chef::EventDispatch::Dispatcher.new }
   let(:run_context) { Chef::RunContext.new(node, {}, events) }

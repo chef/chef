@@ -21,7 +21,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource do
+describe Chef::Resource, :focus do
   let(:cookbook_repo_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
   let(:cookbook_collection) { Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo_path)) }
   let(:node) { Chef::Node.new }
@@ -132,7 +132,6 @@ describe Chef::Resource do
       resource_subclass.state_attrs(:group, :mode)
       expect(resource_subclass.state_attrs).to match_array(%i{checksum owner group mode})
     end
-
   end
 
   describe "when a set of state attributes has been declared" do
@@ -189,12 +188,16 @@ describe Chef::Resource do
     let(:prior_resource) do
       prior_resource = Chef::Resource.new("funk")
       prior_resource.source_line
-      prior_resource.allowed_actions << :funkytown
+      # TODO This raises a good question , where/how often
+      # are people using this directly because it's an array?
+      # I would think we want to discoursage that - if you want to
+      # add an action, the API for that is 'actions'.
+      prior_resource.allowed_actions :funkytown
       prior_resource.action(:funkytown)
       prior_resource
     end
     before(:each) do
-      resource.allowed_actions << :funkytown
+      resource.allowed_actions(:funkytown)
       run_context.resource_collection << prior_resource
     end
 

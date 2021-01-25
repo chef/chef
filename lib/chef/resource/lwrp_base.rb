@@ -61,6 +61,7 @@ class Chef
             define_singleton_method(:inspect) { to_s }
           end
 
+          #TODO this will fail now because I left this here
           Chef::Log.trace("Loaded contents of #{filename} into resource #{resource_name} (#{resource_class})")
 
           # wire up the default resource name after the class is parsed only if we haven't declared one.
@@ -74,13 +75,9 @@ class Chef
 
         # Adds +action_names+ to the list of valid actions for this resource.
         # Does not include superclass's action list when appending.
+        # # TODO - do we want to support
         def actions(*action_names)
-          action_names = action_names.flatten
-          if !action_names.empty? && !@allowed_actions
-            self.allowed_actions = ([ :nothing ] + action_names).uniq
-          else
             allowed_actions(*action_names)
-          end
         end
         alias :actions= :allowed_actions=
 

@@ -122,19 +122,7 @@ class Chef
         end
       end
 
-      action :action1_with_no_text do
-        description "test 2"
-        puts "test 2"
-      end
-
-      action :action2_with_text, description: "This does something REALLY exciting, but still experimental" do
-        puts "test 3"
-      end
-
-      allowed_actions  install: "Install something", remove: "Remove something"
-
       action :install do
-        description "test 1"
         if path_priority != new_resource.priority
           converge_by("adding alternative #{new_resource.link} #{new_resource.link_name} #{new_resource.path} #{new_resource.priority}") do
             output = shell_out(alternatives_cmd, "--install", new_resource.link, new_resource.link_name, new_resource.path, new_resource.priority)

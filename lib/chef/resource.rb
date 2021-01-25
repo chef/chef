@@ -120,7 +120,7 @@ class Chef
       @before = nil
       @params = {}
       @provider = nil
-      @allowed_actions = self.class.allowed_actions.to_a
+      @allowed_actions = self.class.allowed_actions
       @action = self.class.default_action
       @updated = false
       @updated_by_last_action = false
@@ -887,8 +887,10 @@ class Chef
     attr_writer :allowed_actions
 
     def allowed_actions(value = NOT_PASSED)
+      # TODO - why do we support assignment of allwoed actions
+      # from the instance?
       if value != NOT_PASSED
-        self.allowed_actions = value
+        @allowed_actions = Chef::Resource.convert_actions(value)
       end
       @allowed_actions
     end
@@ -994,7 +996,7 @@ class Chef
     #
     # @param actions [Array<Symbol,Hash>] The list of actions to add to allowed_actions.
     #
-    # @return [Array<Symbol>] The hash of allowed actions { ACTION => DESCRIPTION }
+    # @return Hash<Symbol,String> The hash of allowed actions { :ACTION => DESCRIPTION }
     def self.allowed_actions(*actions)
       if superclass.respond_to?(:allowed_actions)
         superclass.allowed_actions.each_pair { |k, v| add_allowed_action(k, v) }
@@ -1002,37 +1004,40 @@ class Chef
         add_allowed_action(:nothing, nil)
       end
 
-      actions.each do |action|
-        case action
-        when String, Symbol
-          add_allowed_action(action, nil)
-        when Hash
-          action.each_pair do |k, v|
-            add_allowed_action(k, v)
-          end
-        when Array
-          action.each do |k|
-            add_allowed_action(k, nil)
-          end
-
-        end
+      convert_actions(*actions).each_pair do |k, v|
+        add_allowed_action(k, v)
       end
       @allowed_actions
     end
 
-    # TODO - should this be addaction too?  Does it need to multi-input -
-    def self.allowed_actions=(value)
-      @allowed_actions = {}
-
-      # Hey this looks just like that function above, let's consolidate it?
-      case value
-      when String,Symbol
-
-      @allowed_actions = value.uniq
+    def self.allowed_actions=(*actions)
+      @allowed_actions = nil
+      convert_actions(*actions).each_pair do |k, v|
+        add_allowed_action(k, v)
+      end
     end
 
-    # @private
-    #
+    # private
+    def self.convert_actions(*actions)
+      {}.tap do |o|
+        actions.each do |action|
+          case action
+          when String, Symbol
+            o[action.to_sym] = nil
+          when Hash
+            action.each_pair do |k, v|
+              o[k] = v
+            end
+          when Array
+            action.each do |k|
+              o[k] = nil
+            end
+          end
+        end
+      end
+    end
+
+    # private
     def self.add_allowed_action(action, description)
       action = action.to_sym
       @allowed_actions ||= {}

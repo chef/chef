@@ -24,7 +24,7 @@ require "chef/mixin/convert_to_class_name"
 module LwrpConstScopingConflict
 end
 
-describe "LWRP" do
+describe "LWRP", :focus do
   include Chef::Mixin::ConvertToClassName
 
   before do
@@ -190,8 +190,8 @@ describe "LWRP" do
       expect(get_lwrp(:lwrp_foo).to_s).to eq "Custom resource lwrp_foo from cookbook lwrp"
     end
 
-    it "should add the specified actions to the allowed_actions array" do
-      expect(get_lwrp(:lwrp_foo).new("blah").allowed_actions).to include(:pass_buck, :twiddle_thumbs)
+    it "should add the specified actions to the allowed_actions hash" do
+      expect(get_lwrp(:lwrp_foo).new("blah").allowed_actions.keys).to include(:pass_buck, :twiddle_thumbs)
     end
 
     it "should set the specified action as the default action" do
@@ -286,8 +286,8 @@ describe "LWRP" do
           Class.new(parent)
         end
 
-        it "delegates #actions to the parent" do
-          expect(child.actions).to eq(%i{nothing eat sleep})
+        it "inherits parent's defined actions" do
+          expect(child.actions.keys).to eq(%i{nothing eat sleep})
         end
 
         it "delegates #default_action to the parent" do
@@ -303,8 +303,8 @@ describe "LWRP" do
           end
         end
 
-        it "does not delegate #actions to the parent" do
-          expect(child.actions).to eq(%i{nothing dont_eat dont_sleep})
+        it "inherits parent's defined actions and includes its own" do
+          expect(child.actions.keys.sort).to eq(%i{nothing dont_eat dont_sleep eat sleep}.sort)
         end
 
         it "does not delegate #default_action to the parent" do
@@ -322,7 +322,7 @@ describe "LWRP" do
         end
 
         it "amends actions when they are already defined" do
-          expect(child.actions).to eq(%i{nothing eat sleep drink})
+          expect(child.actions.keys).to eq(%i{nothing eat sleep drink})
         end
       end
     end
@@ -337,13 +337,13 @@ describe "LWRP" do
         resource_class.new("blah")
       end
       it "actions includes those actions" do
-        expect(resource_class.actions).to eq %i{nothing eat sleep}
+        expect(resource_class.actions.keys).to eq %i{nothing eat sleep}
       end
       it "allowed_actions includes those actions" do
-        expect(resource_class.allowed_actions).to eq %i{nothing eat sleep}
+        expect(resource_class.allowed_actions.keys).to eq %i{nothing eat sleep}
       end
       it "resource.allowed_actions includes those actions" do
-        expect(resource.allowed_actions).to eq %i{nothing eat sleep}
+        expect(resource.allowed_actions.keys).to eq %i{nothing eat sleep}
       end
     end
 
@@ -357,13 +357,13 @@ describe "LWRP" do
         resource_class.new("blah")
       end
       it "actions includes those actions" do
-        expect(resource_class.actions).to eq %i{nothing eat sleep}
+        expect(resource_class.actions.keys).to eq %i{nothing eat sleep}
       end
       it "allowed_actions includes those actions" do
-        expect(resource_class.allowed_actions).to eq %i{nothing eat sleep}
+        expect(resource_class.allowed_actions.keys).to eq %i{nothing eat sleep}
       end
       it "resource.allowed_actions includes those actions" do
-        expect(resource.allowed_actions).to eq %i{nothing eat sleep}
+        expect(resource.allowed_actions.keys).to eq %i{nothing eat sleep}
       end
     end
   end
@@ -535,7 +535,7 @@ describe "LWRP" do
         $interior_ruby_block_2 = nil
         # resource type doesn't matter, so make an existing resource type work with provider.
         @resource = get_lwrp(:lwrp_foo).new("morpheus", run_context)
-        @resource.allowed_actions << :test
+        @resource.allowed_actions(:test)
         @resource.action(:test)
         @resource.provider(get_dynamic_lwrp_provider(:lwrp_inline_compiler))
       end

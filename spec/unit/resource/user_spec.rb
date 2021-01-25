@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::User, "initialize" do
+describe Chef::Resource::User, "initialize", :focus do
   let(:resource) { Chef::Resource::User.new("notarealuser") }
 
   it "sets the resource_name to nil" do
@@ -45,9 +45,9 @@ describe Chef::Resource::User, "initialize" do
     end
   end
 
-  %w{create remove modify manage lock unlock}.each do |action|
+  %i{create remove modify manage lock unlock}.each do |action|
     it "allows action #{action}" do
-      expect(resource.allowed_actions.detect { |a| a == action.to_sym }).to eql(action.to_sym)
+      expect(resource.allowed_actions.has_key?(action)).to eql true
     end
   end
 
