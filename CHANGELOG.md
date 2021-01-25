@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.54 -->
-## [v17.0.54](https://github.com/chef/chef/tree/v17.0.54) (2021-01-25)
+<!-- latest_release 17.0.55 -->
+## [v17.0.55](https://github.com/chef/chef/tree/v17.0.55) (2021-01-25)
 
 #### Merged Pull Requests
-- load_current_resource for systemd_unit more efficiently [#10925](https://github.com/chef/chef/pull/10925) ([joshuamiller01](https://github.com/joshuamiller01))
+- Pull in the latest Ohai [#10929](https://github.com/chef/chef/pull/10929) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Pull in the latest Ohai [#10929](https://github.com/chef/chef/pull/10929) ([tas50](https://github.com/tas50)) <!-- 17.0.55 -->
 - load_current_resource for systemd_unit more efficiently [#10925](https://github.com/chef/chef/pull/10925) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 17.0.54 -->
 - fix typo in release notes [#10924](https://github.com/chef/chef/pull/10924) ([IanMadd](https://github.com/IanMadd)) <!-- 17.0.53 -->
 - Don&#39;t ship dev gems in the shipping artifact [#10913](https://github.com/chef/chef/pull/10913) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.51 -->
