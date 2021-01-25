@@ -1,7 +1,7 @@
 require "spec_helper"
 require "support/shared/integration/integration_helper"
 
-describe "Recipe DSL methods", :focus do
+describe "Recipe DSL methods" do
   include IntegrationSupport
 
   module Namer

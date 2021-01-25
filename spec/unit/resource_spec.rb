@@ -21,7 +21,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource, :focus do
+describe Chef::Resource do
   let(:cookbook_repo_path) { File.join(CHEF_SPEC_DATA, "cookbooks") }
   let(:cookbook_collection) { Chef::CookbookCollection.new(Chef::CookbookLoader.new(cookbook_repo_path)) }
   let(:node) { Chef::Node.new }

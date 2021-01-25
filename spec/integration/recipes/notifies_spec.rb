@@ -18,7 +18,7 @@ require "spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
-describe "notifications", :focus do
+describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 

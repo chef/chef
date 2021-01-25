@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::RegistryKey, "initialize", :focus do
+describe Chef::Resource::RegistryKey, "initialize" do
   let(:resource) { Chef::Resource::RegistryKey.new('HKCU\Software\Raxicoricofallapatorius') }
 
   it "sets the resource_name to :registry_key" do

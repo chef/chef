@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-describe Chef::Resource::User, "initialize", :focus do
+describe Chef::Resource::User, "initialize" do
   let(:resource) { Chef::Resource::User.new("notarealuser") }
 
   it "sets the resource_name to nil" do

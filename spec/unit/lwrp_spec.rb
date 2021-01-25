@@ -24,7 +24,7 @@ require "chef/mixin/convert_to_class_name"
 module LwrpConstScopingConflict
 end
 
-describe "LWRP", :focus do
+describe "LWRP" do
   include Chef::Mixin::ConvertToClassName
 
   before do
