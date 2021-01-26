@@ -22,6 +22,11 @@ Lint/ShadowingOuterLocalVariable:
   Enabled: false
 Lint/IneffectiveAccessModifier:
   Enabled: false
+Lint/InterpolationCheck:
+  Enabled: true
+  Exclude:
+    - 'spec/unit/property_spec.rb'
+    - 'spec/functional/shell_spec.rb'
 
 # set additional paths
 Chef/Ruby/UnlessDefinedRequire:
