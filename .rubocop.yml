@@ -27,6 +27,10 @@ Lint/InterpolationCheck:
   Exclude:
     - 'spec/unit/property_spec.rb'
     - 'spec/functional/shell_spec.rb'
+Lint/DeprecatedConstants:
+  Enabled: true
+  Exclude:
+    - chef/lib/chef/node/attribute.rb # false alarms
 
 # set additional paths
 Chef/Ruby/UnlessDefinedRequire:
