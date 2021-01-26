@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: a226b7d33c2119003dc47839e8c5559a22bf5ab9
+  revision: b5cb2d3e4bbcb77fb5c6ed3357e89c670d64682f
   branch: master
   specs:
-    chefstyle (1.5.9)
-      rubocop (= 1.7.0)
+    chefstyle (1.6.0)
+      rubocop (= 1.8.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -307,15 +307,15 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.4)
-    rubocop (1.7.0)
+    rubocop (1.8.1)
       parallel (~> 1.10)
-      parser (>= 2.7.1.5)
+      parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
       rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
+      unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
