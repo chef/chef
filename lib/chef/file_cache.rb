@@ -79,7 +79,7 @@ class Chef
 
         file_path_array = File.split(path)
         file_name = file_path_array.pop
-        if File.exists?(file) && File.writable?(file)
+        if File.exist?(file) && File.writable?(file)
           FileUtils.mv(
             file,
             File.join(create_cache_path(File.join(file_path_array), true), file_name)
@@ -112,7 +112,7 @@ class Chef
           }
         )
         cache_path = create_cache_path(path, false)
-        raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exists?(cache_path)
+        raise Chef::Exceptions::FileNotFound, "Cannot find #{cache_path} for #{path}!" unless File.exist?(cache_path)
 
         if read
           File.read(cache_path)
@@ -139,7 +139,7 @@ class Chef
           }
         )
         cache_path = create_cache_path(path, false)
-        if File.exists?(cache_path)
+        if File.exist?(cache_path)
           File.unlink(cache_path)
         end
         true
@@ -186,7 +186,7 @@ class Chef
           }
         )
         full_path = create_cache_path(path, false)
-        if File.exists?(full_path)
+        if File.exist?(full_path)
           true
         else
           false
