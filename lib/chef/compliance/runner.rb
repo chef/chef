@@ -4,6 +4,7 @@ require_relative "default_attributes"
 require_relative "reporter/automate"
 require_relative "reporter/chef_server_automate"
 require_relative "reporter/compliance_enforcer"
+require_relative "reporter/cli"
 require_relative "reporter/json_file"
 
 class Chef
@@ -241,6 +242,8 @@ class Chef
           Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
           Chef::Compliance::Reporter::ComplianceEnforcer.new
+        when "cli"
+          Chef::Compliance::Reporter::Cli.new
         else
           raise "'#{reporter_type}' is not a supported reporter for Compliance Phase."
         end
