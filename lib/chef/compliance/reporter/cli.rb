@@ -27,7 +27,7 @@ class Chef
         def format_result(result)
           output = []
           found = false
-          if result[:status] == 'failed'
+          if result[:status] == "failed"
             if result[:code_desc]
               found = true
               output << "         \033[31m\xE2\x9D\x8C #{result[:code_desc]}\033[0m"
@@ -41,7 +41,7 @@ class Chef
                 prefix = "\xE2\x9D\x8C"
                 result[:message].split(/\n/).reject(&:empty?).each do |m|
                   output << "         \033[31m#{prefix}#{m}\033[0m"
-                  prefix = ''
+                  prefix = ""
                 end
               end
               found = true
