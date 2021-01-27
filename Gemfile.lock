@@ -28,11 +28,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.61)
+    chef (17.0.62)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.61)
-      chef-utils (= 17.0.61)
+      chef-config (= 17.0.62)
+      chef-utils (= 17.0.62)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -64,11 +64,11 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.0.61-universal-mingw32)
+    chef (17.0.62-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.61)
-      chef-utils (= 17.0.61)
+      chef-config (= 17.0.62)
+      chef-utils (= 17.0.62)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -115,15 +115,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.61)
-      chef (= 17.0.61)
+    chef-bin (17.0.62)
+      chef (= 17.0.62)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.61)
+    chef-config (17.0.62)
       addressable
-      chef-utils (= 17.0.61)
+      chef-utils (= 17.0.62)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -132,7 +132,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.61)
+    chef-utils (17.0.62)
 
 GEM
   remote: https://rubygems.org/
@@ -322,7 +322,7 @@ GEM
     ruby-progressbar (1.11.0)
     ruby-shadow (2.5.0)
     ruby2_keywords (0.0.4)
-    rubyntlm (0.6.2)
+    rubyntlm (0.6.3)
     rubyzip (2.3.0)
     semverse (3.0.0)
     sslshake (1.3.1)
@@ -394,7 +394,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.5)
+    winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
@@ -402,7 +402,7 @@ GEM
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
-      rubyntlm (~> 0.6.0, >= 0.6.1)
+      rubyntlm (~> 0.6.0, >= 0.6.3)
     winrm-elevated (1.2.3)
       erubi (~> 1.8)
       winrm (~> 2.0)
