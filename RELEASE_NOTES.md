@@ -16,8 +16,8 @@ This section serves to track things we should later document here for 17.0
 
 ### Improvements
 
-- Resolved orphaned PowerShell processes when using Compliance Remediation content
-- Reduced install size by up to 5%
+- Resolved orphaned PowerShell processes when using Compliance Remediation content.
+- Reduced Chef Infra Client install size by up to 5%.
 
 ### Chef InSpec 4.26.4
 
