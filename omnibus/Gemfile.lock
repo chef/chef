@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 05f70739fb4a14d5c117c620ba7bb24dce6fd538
+  revision: 197c8958259ed98b9e3766a7b41a384219d844c7
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.419.0)
+    aws-partitions (1.420.0)
     aws-sdk-core (3.111.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -183,6 +183,8 @@ GEM
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     faraday-net_http (1.0.1)
+    faraday_middleware (1.0.0)
+      faraday (~> 1.0)
     ffi (1.14.2)
     ffi (1.14.2-x64-mingw32)
     ffi (1.14.2-x86-mingw32)
@@ -201,17 +203,18 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.25.1)
+    inspec-core (4.26.4)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
+      faraday_middleware (~> 1.0)
       hashie (>= 3.4, < 5.0)
       license-acceptance (>= 0.2.13, < 3.0)
       method_source (>= 0.8, < 2.0)
       mixlib-log (~> 3.0)
       multipart-post (~> 2.0)
       parallel (~> 1.9)
-      parslet (>= 1.5, < 3.0)
+      parslet (>= 1.5, < 2.0)
       pry (~> 0.13)
       rspec (>= 3.9, < 3.11)
       rspec-its (~> 1.2)
@@ -298,7 +301,7 @@ GEM
       train-core
       wmi-lite (~> 1.0)
     parallel (1.20.1)
-    parslet (2.0.0)
+    parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     pedump (0.6.1)
@@ -334,7 +337,7 @@ GEM
     rspec-support (3.10.1)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
-    rubyntlm (0.6.2)
+    rubyntlm (0.6.3)
     rubyzip (2.3.0)
     sawyer (0.8.2)
       addressable (>= 2.3.5)
@@ -368,7 +371,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.4.8)
+    train-core (3.4.9)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -423,7 +426,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.5)
+    winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
@@ -431,7 +434,7 @@ GEM
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
-      rubyntlm (~> 0.6.0, >= 0.6.1)
+      rubyntlm (~> 0.6.0, >= 0.6.3)
     winrm-elevated (1.2.3)
       erubi (~> 1.8)
       winrm (~> 2.0)
