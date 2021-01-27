@@ -217,6 +217,16 @@ class Chef
         description: "Execute the bootstrap via sudo with password.",
         boolean: false
 
+      # runtime - su user
+      option :su_user,
+        long: "--su-user NAME",
+        description: "The su - USER name to perform bootstrap command using a non-root user."
+
+      # runtime - su user password
+      option :su_password,
+        long: "--su-password PASSWORD",
+        description: "The su USER password for authentication."
+
       # runtime - client_builder
       option :chef_node_name,
         short: "-N NAME",
@@ -591,13 +601,31 @@ class Chef
       def perform_bootstrap(remote_bootstrap_script_path)
         ui.info("Bootstrapping #{ui.color(server_name, :bold)}")
         cmd = bootstrap_command(remote_bootstrap_script_path)
-        r = connection.run_command(cmd) do |data|
+        bootstrap_run_command(cmd)
+      end
+
+      # Actual bootstrap command to be run on the node.
+      # Handles recursive calls if su USER failed to authenticate.
+      def bootstrap_run_command(cmd)
+        r = connection.run_command(cmd) do |data, channel|
           ui.msg("#{ui.color(" [#{connection.hostname}]", :cyan)} #{data}")
+          channel.send_data("#{config[:su_password] || config[:connection_password]}\n") if data.match?("Password:")
         end
+
         if r.exit_status != 0
           ui.error("The following error occurred on #{server_name}:")
-          ui.error(r.stderr)
-          exit 1
+          ui.error("#{r.stdout} #{r.stderr}".strip)
+          exit(r.exit_status)
+        end
+      rescue Train::UserError => e
+        limit ||= 0
+        if e.reason == :bad_su_user_password && limit < 3
+          limit += 1
+          ui.warn("Failed to authenticate su - #{config[:su_user]} to #{server_name}")
+          config[:su_password] = ui.ask("Enter password for su - #{config[:su_user]}@#{server_name}:", echo: false)
+          retry
+        else
+          raise
         end
       end
 
@@ -1082,7 +1110,17 @@ class Chef
         if connection.windows?
           "cmd.exe /C #{remote_path}"
         else
-          "sh #{remote_path}"
+          cmd = "sh #{remote_path}"
+
+          if config[:su_user]
+            # su - USER is subject to required an interactive console
+            # Otherwise, it will raise: su: must be run from a terminal
+            set_transport_options(pty: true)
+            cmd = "su - #{config[:su_user]} -c '#{cmd}'"
+            cmd = "sudo " << cmd if config[:use_sudo]
+          end
+
+          cmd
         end
       end
 
@@ -1136,6 +1174,18 @@ class Chef
         return options[:session_timeout][:default] if timeout.nil?
 
         timeout.to_i
+      end
+
+      # Train::Transports::SSH::Connection#transport_options
+      # Append the options to connection transport_options
+      #
+      # @param opts [Hash] the opts to be added to connection transport_options.
+      # @return [Hash] transport_options if the opts contains any option to be set.
+      #
+      def set_transport_options(opts)
+        return unless opts.is_a?(Hash) || !opts.empty?
+
+        connection&.connection&.transport_options&.merge! opts
       end
     end
   end
