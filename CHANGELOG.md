@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.63 -->
-## [v17.0.63](https://github.com/chef/chef/tree/v17.0.63) (2021-01-27)
+<!-- latest_release 17.0.64 -->
+## [v17.0.64](https://github.com/chef/chef/tree/v17.0.64) (2021-01-27)
 
 #### Merged Pull Requests
-- Bump train-core to 3.4.9 [#10945](https://github.com/chef/chef/pull/10945) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Update systemd_unit.rb to make Cookstyle compliant [#10937](https://github.com/chef/chef/pull/10937) ([cpressland](https://github.com/cpressland))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update systemd_unit.rb to make Cookstyle compliant [#10937](https://github.com/chef/chef/pull/10937) ([cpressland](https://github.com/cpressland)) <!-- 17.0.64 -->
 - Bump train-core to 3.4.9 [#10945](https://github.com/chef/chef/pull/10945) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.63 -->
 - Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10944](https://github.com/chef/chef/pull/10944) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.62 -->
 - handles su - USER session to perform bootstrap [#10410](https://github.com/chef/chef/pull/10410) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 17.0.61 -->
