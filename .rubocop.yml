@@ -30,7 +30,7 @@ Lint/InterpolationCheck:
 Lint/DeprecatedConstants:
   Enabled: true
   Exclude:
-    - chef/lib/chef/node/attribute.rb # false alarms
+    - lib/chef/node/attribute.rb # false alarms
 
 
 # This cop shouldn't alert on the helper / specs itself
