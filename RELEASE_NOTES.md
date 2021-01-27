@@ -10,6 +10,31 @@ This section serves to track things we should later document here for 17.0
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
 - remove support for RHEL 6 i386 / Ubuntu 16.04
 - don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
+- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
+
+## What's New in 16.9.32
+
+### Improvements
+
+- Resolved orphaned PowerShell processes when using Compliance Remediation content.
+- Reduced Chef Infra Client install size by up to 5%.
+
+### Chef InSpec 4.26.4
+
+Chef InSpec has been updated from 4.25.1 to 4.26.4.
+
+#### New Features
+
+- You can now directly refer to settings in the `nginx_conf` resource using the `its` syntax. Thanks [@rgeissert](https://github.com/rgeissert)!
+- You can now specify the shell type for WinRM connections using the `--winrm-shell-type` option. Thanks [@catriona1](https://github.com/catriona1)!
+- Plugin settings can now be set programmatically. Thanks [@tecracer-theinen](https:/github.com/tecracer-theinen)!
+
+#### Bug Fixes
+
+- Updated the `oracledb_session` to use more general invocation options. Thanks [@pacopal](https://github.com/pacopal)!
+- Fixed an error with the `http` resource in Chef Infra Client by including `faraday_middleware` in the gemspec.
+- Fixed an incompatibility between `parslet` and `toml` in Chef Infra Client.
+- Improved programmatic plugin configuration.
 
 ## What's New in 16.9.29
 
