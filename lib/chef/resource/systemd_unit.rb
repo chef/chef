@@ -34,7 +34,7 @@ class Chef
 
       ```ruby
       systemd_unit 'etcd.service' do
-        content({Unit: {
+        content(Unit: {
                   Description: 'Etcd',
                   Documentation: ['https://coreos.com/etcd', 'man:etcd(1)'],
                   After: 'network.target',
@@ -46,7 +46,7 @@ class Chef
                 },
                 Install: {
                   WantedBy: 'multi-user.target',
-                }})
+                })
         action [:create, :enable]
       end
       ```
