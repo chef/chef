@@ -2,23 +2,21 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.32 -->
-## [v16.9.32](https://github.com/chef/chef/tree/v16.9.32) (2021-01-27)
-
-#### Merged Pull Requests
-- Update inspec to 4.26.4 and train to 3.4.9 [#10947](https://github.com/chef/chef/pull/10947) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.9.29 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Update inspec to 4.26.4 and train to 3.4.9 [#10947](https://github.com/chef/chef/pull/10947) ([tas50](https://github.com/tas50)) <!-- 16.9.32 -->
-- Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10943](https://github.com/chef/chef/pull/10943) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.31 -->
-- Backport of changes necessary for removal of dev gems [#10914](https://github.com/chef/chef/pull/10914) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 16.9.30 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.9.32](https://github.com/chef/chef/tree/v16.9.32) (2021-01-28)
+
+#### Merged Pull Requests
+- Backport of changes necessary for removal of dev gems [#10914](https://github.com/chef/chef/pull/10914) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10943](https://github.com/chef/chef/pull/10943) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update inspec to 4.26.4 and train to 3.4.9 [#10947](https://github.com/chef/chef/pull/10947) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.9.29](https://github.com/chef/chef/tree/v16.9.29) (2021-01-21)
 
 #### Merged Pull Requests
@@ -32,7 +30,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10902](https://github.com/chef/chef/pull/10902) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Pin rspec until we can resolve failures with 3.10 [#10904](https://github.com/chef/chef/pull/10904) ([tas50](https://github.com/tas50))
 - Update InSpec to 4.25 [#10908](https://github.com/chef/chef/pull/10908) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.9.20](https://github.com/chef/chef/tree/v16.9.20) (2021-01-13)
 
