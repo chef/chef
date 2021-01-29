@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: a226b7d33c2119003dc47839e8c5559a22bf5ab9
+  revision: b5cb2d3e4bbcb77fb5c6ed3357e89c670d64682f
   branch: master
   specs:
-    chefstyle (1.5.9)
-      rubocop (= 1.7.0)
+    chefstyle (1.6.0)
+      rubocop (= 1.8.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -28,11 +28,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.58)
+    chef (17.0.66)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.58)
-      chef-utils (= 17.0.58)
+      chef-config (= 17.0.66)
+      chef-utils (= 17.0.66)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -64,11 +64,11 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.0.58-universal-mingw32)
+    chef (17.0.66-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.58)
-      chef-utils (= 17.0.58)
+      chef-config (= 17.0.66)
+      chef-utils (= 17.0.66)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -115,15 +115,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.58)
-      chef (= 17.0.58)
+    chef-bin (17.0.66)
+      chef (= 17.0.66)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.58)
+    chef-config (17.0.66)
       addressable
-      chef-utils (= 17.0.58)
+      chef-utils (= 17.0.66)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -132,7 +132,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.58)
+    chef-utils (17.0.66)
 
 GEM
   remote: https://rubygems.org/
@@ -179,6 +179,8 @@ GEM
       multipart-post (>= 1.2, < 3)
       ruby2_keywords
     faraday-net_http (1.0.1)
+    faraday_middleware (1.0.0)
+      faraday (~> 1.0)
     fauxhai-ng (8.7.0)
       net-ssh
     ffi (1.13.1)
@@ -200,17 +202,18 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.25.1)
+    inspec-core (4.26.4)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
+      faraday_middleware (~> 1.0)
       hashie (>= 3.4, < 5.0)
       license-acceptance (>= 0.2.13, < 3.0)
       method_source (>= 0.8, < 2.0)
       mixlib-log (~> 3.0)
       multipart-post (~> 2.0)
       parallel (~> 1.9)
-      parslet (>= 1.5, < 3.0)
+      parslet (>= 1.5, < 2.0)
       pry (~> 0.13)
       rspec (>= 3.9, < 3.11)
       rspec-its (~> 1.2)
@@ -222,8 +225,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.25.1)
-      inspec-core (= 4.25.1)
+    inspec-core-bin (4.26.4)
+      inspec-core (= 4.26.4)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -270,7 +273,7 @@ GEM
     parallel (1.20.1)
     parser (3.0.0.0)
       ast (~> 2.4.1)
-    parslet (2.0.0)
+    parslet (1.8.2)
     pastel (0.8.0)
       tty-color (~> 0.5)
     plist (3.6.0)
@@ -307,22 +310,22 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.4)
-    rubocop (1.7.0)
+    rubocop (1.8.1)
       parallel (~> 1.10)
-      parser (>= 2.7.1.5)
+      parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
       rubocop-ast (>= 1.2.0, < 2.0)
       ruby-progressbar (~> 1.7)
-      unicode-display_width (>= 1.4.0, < 2.0)
+      unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
     ruby-prof (1.2.0)
     ruby-progressbar (1.11.0)
     ruby-shadow (2.5.0)
     ruby2_keywords (0.0.4)
-    rubyntlm (0.6.2)
+    rubyntlm (0.6.3)
     rubyzip (2.3.0)
     semverse (3.0.0)
     sslshake (1.3.1)
@@ -335,7 +338,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
-    train-core (3.4.7)
+    train-core (3.4.9)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
@@ -394,7 +397,7 @@ GEM
     win32-taskscheduler (2.0.4)
       ffi
       structured_warnings
-    winrm (2.3.5)
+    winrm (2.3.6)
       builder (>= 2.1.2)
       erubi (~> 1.8)
       gssapi (~> 1.2)
@@ -402,7 +405,7 @@ GEM
       httpclient (~> 2.2, >= 2.2.0.2)
       logging (>= 1.6.1, < 3.0)
       nori (~> 2.0)
-      rubyntlm (~> 0.6.0, >= 0.6.1)
+      rubyntlm (~> 0.6.0, >= 0.6.3)
     winrm-elevated (1.2.3)
       erubi (~> 1.8)
       winrm (~> 2.0)

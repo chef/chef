@@ -1,17 +1,25 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.58 -->
-## [v17.0.58](https://github.com/chef/chef/tree/v17.0.58) (2021-01-26)
+<!-- latest_release 17.0.66 -->
+## [v17.0.66](https://github.com/chef/chef/tree/v17.0.66) (2021-01-27)
 
 #### Merged Pull Requests
-- Fix an interpolation mistake in an error message + turn on the cop [#10935](https://github.com/chef/chef/pull/10935) ([tas50](https://github.com/tas50))
+- Add 16.9.32 release notes [#10949](https://github.com/chef/chef/pull/10949) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add 16.9.32 release notes [#10949](https://github.com/chef/chef/pull/10949) ([tas50](https://github.com/tas50)) <!-- 17.0.66 -->
+- Bump inspec-core-bin to 4.26.4 [#10946](https://github.com/chef/chef/pull/10946) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.65 -->
+- Update systemd_unit.rb to make Cookstyle compliant [#10937](https://github.com/chef/chef/pull/10937) ([cpressland](https://github.com/cpressland)) <!-- 17.0.64 -->
+- Bump train-core to 3.4.9 [#10945](https://github.com/chef/chef/pull/10945) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.63 -->
+- Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10944](https://github.com/chef/chef/pull/10944) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.62 -->
+- handles su - USER session to perform bootstrap [#10410](https://github.com/chef/chef/pull/10410) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 17.0.61 -->
+- Bump train-core to 3.4.8 [#10940](https://github.com/chef/chef/pull/10940) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.60 -->
+- Enable Deprecated Constants Cop [#10936](https://github.com/chef/chef/pull/10936) ([tas50](https://github.com/tas50)) <!-- 17.0.59 -->
 - Fix an interpolation mistake in an error message + turn on the cop [#10935](https://github.com/chef/chef/pull/10935) ([tas50](https://github.com/tas50)) <!-- 17.0.58 -->
 - Replace deprecated File.exists? with File.exist? in more places [#10934](https://github.com/chef/chef/pull/10934) ([tas50](https://github.com/tas50)) <!-- 17.0.57 -->
 - Update Ohai to 17.0.10 [#10931](https://github.com/chef/chef/pull/10931) ([tas50](https://github.com/tas50)) <!-- 17.0.56 -->
