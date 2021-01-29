@@ -41,7 +41,11 @@ class Chef
       data[:description] = resource.description
       # data[:deprecated] = resource.deprecated || false
       data[:default_action] = resource.default_action
-      data[:actions] = resource.allowed_actions
+      data[:actions] = {}
+      resource.allowed_actions.each do |action|
+        data[:actions][action] = resource.action_description(action)
+      end
+
       data[:examples] = resource.examples
       data[:introduced] = resource.introduced
       data[:preview] = resource.preview_resource
