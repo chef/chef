@@ -446,8 +446,8 @@ class Chef
                   # requested new_resource.version constraints
                   logger.trace("#{new_resource} has no existing installed version. Installing install #{candidate_version}")
                   target_version_array.push(candidate_version)
-                elsif version_equals?(current_version, new_version)
-                  # this is a short-circuit to avoid needing to (expensively) query the candidate_version which must come later
+                elsif !use_magic_version? && version_equals?(current_version, new_version)
+                  # this is a short-circuit (mostly for the rubygems provider) to avoid needing to expensively query the candidate_version which must come later
                   logger.trace("#{new_resource} #{package_name} #{new_version} is already installed")
                   target_version_array.push(nil)
                 elsif candidate_version.nil?
