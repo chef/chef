@@ -24,39 +24,45 @@ class Chef
 
         private
 
+        # pastel.decorate is a lightweight replacement for highline.color
+        def pastel
+          @pastel ||= begin
+            require "pastel" unless defined?(Pastel)
+            Pastel.new
+          end
+        end
+
         def format_result(result)
           output = []
           found = false
           if result[:status] == "failed"
             if result[:code_desc]
               found = true
-              output << "         \033[31m\xE2\x9D\x8C #{result[:code_desc]}\033[0m"
+              output << pastel.red("         #{result[:code_desc]}")
             end
             if result[:message]
               if found
                 result[:message].split(/\n/).reject(&:empty?).each do |m|
-                  output << "            \033[31m#{m}\033[0m"
+                  output << pastel.red("            #{m}")
                 end
               else
-                prefix = "\xE2\x9D\x8C"
                 result[:message].split(/\n/).reject(&:empty?).each do |m|
-                  output << "         \033[31m#{prefix}#{m}\033[0m"
-                  prefix = ""
+                  output << pastel.red("         #{prefix}#{m}")
                 end
               end
               found = true
             end
             unless found
-              output << "         \033[31m\xE2\x9D\x8C #{result[:status]}\033[0m"
+              output << pastel.red("         #{result[:status]}")
             end
           else
             found = false
             if result[:code_desc]
               found = true
-              output << "         \033[32m\xE2\x9C\x94 #{result[:code_desc]}\033[0m"
+              output << pastel.green("         #{result[:code_desc]}")
             end
             unless found
-              output << "         \033[32m\xE2\x9C\x94 #{result[:status]}\033[0m"
+              output << pastel.green("         #{result[:status]}")
             end
           end
           output
