@@ -126,17 +126,14 @@ namespace :docs_site do
 
     #
     # Build the actions section of the resource yaml
+    # as a hash of actions to markdown descriptions.
     #
     # @return [Hash]
     #
     def action_list(actions)
-      list = {}
-      actions.sort.each do |action|
-        # nothing is a special case that sources the content from the docs site
-        list[action.to_sym] = (action == "nothing" ? { "shortcode" => "resources_common_actions_nothing.md" } : { "markdown" => nil })
-      end
-
-      list
+      actions = actions.map { |k, v| [k.to_sym, { "markdown" => v } ] }.to_h
+      actions[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
+      actions
     end
 
     # TODO:
