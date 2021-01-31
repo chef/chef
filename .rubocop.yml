@@ -22,6 +22,25 @@ Lint/ShadowingOuterLocalVariable:
   Enabled: false
 Lint/IneffectiveAccessModifier:
   Enabled: false
+Lint/InterpolationCheck:
+  Enabled: true
+  Exclude:
+    - 'spec/unit/property_spec.rb'
+    - 'spec/functional/shell_spec.rb'
+Lint/DeprecatedConstants:
+  Enabled: true
+  Exclude:
+    - lib/chef/node/attribute.rb # false alarms
+
+
+# This cop shouldn't alert on the helper / specs itself
+Chef/Ruby/LegacyPowershellOutMethods:
+  Exclude:
+    - 'lib/chef/mixin/powershell_out.rb'
+    - 'spec/functional/mixin/powershell_out_spec.rb'
+    - 'spec/unit/mixin/powershell_out_spec.rb'
+    - 'lib/chef/resource/windows_feature_powershell.rb' # https://github.com/chef/chef/issues/10927
+    - 'lib/chef/provider/package/powershell.rb' # https://github.com/chef/chef/issues/10926
 
 # set additional paths
 Chef/Ruby/UnlessDefinedRequire:

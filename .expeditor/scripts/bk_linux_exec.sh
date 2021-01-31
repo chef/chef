@@ -11,21 +11,29 @@ sudo systemctl start docker
 echo "--- Installing package deps"
 sudo yum install -y gcc gcc-c++ openssl-devel readline-devel zlib-devel
 
-# Install omnibus-toolchain for git bundler and gem
-echo "--- Installing omnibus toolchain"
-curl -fsSL https://chef.io/chef/install.sh | sudo bash -s -- -P omnibus-toolchain
+# Install ASDF
+echo "--- Installing asdf to ${HOME}/.asdf"
+git clone https://github.com/asdf-vm/asdf.git "${HOME}/.asdf"
+cd "${HOME}/.asdf"; git checkout "$(git describe --abbrev=0 --tags)"; cd -
+. "${HOME}/.asdf/asdf.sh"
+
+# Install Ruby
+ruby_version=$(sed -n '/"ruby"/{s/.*version: "//;s/"//;p;}' omnibus_overrides.rb)
+echo "--- Installing Ruby $ruby_version"
+asdf plugin add ruby
+asdf install ruby $ruby_version
+asdf global ruby $ruby_version
 
 # Set Environment Variables
 export BUNDLE_GEMFILE=$PWD/kitchen-tests/Gemfile
 export FORCE_FFI_YAJL=ext
 export CHEF_LICENSE="accept-silent"
-export PATH=$PATH:/opt/omnibus-toolchain/embedded/bin
 
 # Update Gems
 echo "--- Installing Gems"
 echo 'gem: --no-document' >> ~/.gemrc
 sudo iptables -L DOCKER || ( echo "DOCKER iptables chain missing" ; sudo iptables -N DOCKER )
-/opt/omnibus-toolchain/bin/bundle install --jobs=3 --retry=3 --path=../vendor/bundle
+bundle install --jobs=3 --retry=3 --path=../vendor/bundle
 
 echo "--- Config information"
 

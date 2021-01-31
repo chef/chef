@@ -66,7 +66,7 @@ class Chef
 
           @snippet ||= begin
             if (file = parse_source) && (line = parse_line(file))
-              return nil unless ::File.exists?(file)
+              return nil unless ::File.exist?(file)
 
               lines = IO.readlines(file)
 
