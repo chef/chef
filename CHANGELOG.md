@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.66 -->
-## [v17.0.66](https://github.com/chef/chef/tree/v17.0.66) (2021-01-27)
+<!-- latest_release 17.0.67 -->
+## [v17.0.67](https://github.com/chef/chef/tree/v17.0.67) (2021-01-31)
 
 #### Merged Pull Requests
-- Add 16.9.32 release notes [#10949](https://github.com/chef/chef/pull/10949) ([tas50](https://github.com/tas50))
+- Fix DNF version comparison bug [#10951](https://github.com/chef/chef/pull/10951) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix DNF version comparison bug [#10951](https://github.com/chef/chef/pull/10951) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.67 -->
 - Add 16.9.32 release notes [#10949](https://github.com/chef/chef/pull/10949) ([tas50](https://github.com/tas50)) <!-- 17.0.66 -->
 - Bump inspec-core-bin to 4.26.4 [#10946](https://github.com/chef/chef/pull/10946) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.65 -->
 - Update systemd_unit.rb to make Cookstyle compliant [#10937](https://github.com/chef/chef/pull/10937) ([cpressland](https://github.com/cpressland)) <!-- 17.0.64 -->
