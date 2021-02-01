@@ -1,5 +1,63 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
+## UNRELEASED 17.0 Scratch Pad
+
+This section serves to track things we should later document here for 17.0
+
+- Dropped support for Ruby 2.6
+- Lazy attribute loading: https://github.com/chef/chef/pull/10861
+- Compliance Phase in GA: https://github.com/chef/chef/pull/10547
+- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
+- remove support for RHEL 6 i386 / Ubuntu 16.04
+- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
+- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
+
+## What's New in 16.9.32
+
+### Improvements
+
+- Resolved orphaned PowerShell processes when using Compliance Remediation content.
+- Reduced Chef Infra Client install size by up to 5%.
+
+### Chef InSpec 4.26.4
+
+Chef InSpec has been updated from 4.25.1 to 4.26.4.
+
+#### New Features
+
+- You can now directly refer to settings in the `nginx_conf` resource using the `its` syntax. Thanks [@rgeissert](https://github.com/rgeissert)!
+- You can now specify the shell type for WinRM connections using the `--winrm-shell-type` option. Thanks [@catriona1](https://github.com/catriona1)!
+- Plugin settings can now be set programmatically. Thanks [@tecracer-theinen](https:/github.com/tecracer-theinen)!
+
+#### Bug Fixes
+
+- Updated the `oracledb_session` to use more general invocation options. Thanks [@pacopal](https://github.com/pacopal)!
+- Fixed an error with the `http` resource in Chef Infra Client by including `faraday_middleware` in the gemspec.
+- Fixed an incompatibility between `parslet` and `toml` in Chef Infra Client.
+- Improved programmatic plugin configuration.
+
+## What's New in 16.9.29
+
+### Chef InSpec 4.25.1
+
+Chef InSpec has been updated from 4.24.8 to 4.25.1:
+
+- OpenSSH Client on Windows can now be tested with the ssh_config and sshd_config resources. Thanks [@rgeissert](https://github.com/rgeissert)!
+- The `--reporter-message-truncation` option now also truncates the `code_desc` field, preventing failures when sending large reports to Automate.
+
+### Bug Fixes
+
+- Resolved failures from running `chef-client` on some Windows systems.
+- Compliance Phase: Improved detection of the `audit` cookbook when it is used for compliance reporting.
+- chef-shell: Added support for loading configs in `client.d` directories - Thanks [@jaymzh](https://github.com/jaymzh)!
+- Duplicate gems in our packaging have been removed to further shrink the package sizes and improve load time.
+
+## What's New in 16.9.20
+
+- Updated the package resource on FreeBSD to work with recent changes to the pkgng executable. Thanks [@mrtazz](https://github.com/mrtazz/)
+- Added a missing dependency in the chef-zero binary that could cause failures when running chef-zero.
+- Resolved failures when running the audit cookbook from our yet-to-be-fully-released Chef Infra Compliance Phase. As it turns out, this dark launch was not as dark as we had hoped.
+
 ## What's New in 16.9
 
 ### Knife Improvements
@@ -34,7 +92,7 @@ Parsing of plist files has been improved in the `plist`, `macosx_service`, `osx_
 
 The `user` resource on Windows hosts now properly handles `uid` values passed as strings instead of integers. Thanks for reporting this issue [@jaymzh](https://github.com/jaymzh)!
 
-#### yum_repostiory
+#### yum_repository
 
 The `yum_repository` resource has been updated with a new `reposdir` property to control the path where the Yum repository configuration files will be written. Thanks for suggesting this [@wildcrazyman](https://github.com/wildcrazyman)!
 
@@ -772,7 +830,7 @@ The Chef Infra Client 16.0.287 release includes important bug fixes for the Chef
 - Resolves several failures in the `launchd` resource.
 - Removes an extra `.java` file on Windows installations that would cause a failure in the IIS 8.5 Server Security Technical Implementation Guide audit.
 - Updates the `windows_printer` resource so that the driver property will only be required when using the `:create` action.
-- Fixes the incorrectly spelled `knife user invite recind` command to be `knife user invite rescind`.
+- Fixes the incorrectly spelled `knife user invite recind` command to be `knife user invite rescind`. [//]: # "cspell:disable-line"
 - Update Chef InSpec to 4.8.111 with several minor improvements.
 
 ## What's New in 16.0.275
@@ -875,7 +933,7 @@ depends 'windows', '>> 1.0'
 
 #### Logging Improvements May Cause Behavior Changes
 
-We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to *both- the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 #### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 

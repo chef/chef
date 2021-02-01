@@ -1,17 +1,56 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.32 -->
-## [v17.0.32](https://github.com/chef/chef/tree/v17.0.32) (2021-01-06)
+<!-- latest_release 17.0.67 -->
+## [v17.0.67](https://github.com/chef/chef/tree/v17.0.67) (2021-01-31)
 
 #### Merged Pull Requests
-- Add Chef Infra Client 15.15 release notes [#10847](https://github.com/chef/chef/pull/10847) ([tas50](https://github.com/tas50))
+- Fix DNF version comparison bug [#10951](https://github.com/chef/chef/pull/10951) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix DNF version comparison bug [#10951](https://github.com/chef/chef/pull/10951) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.67 -->
+- Add 16.9.32 release notes [#10949](https://github.com/chef/chef/pull/10949) ([tas50](https://github.com/tas50)) <!-- 17.0.66 -->
+- Bump inspec-core-bin to 4.26.4 [#10946](https://github.com/chef/chef/pull/10946) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.65 -->
+- Update systemd_unit.rb to make Cookstyle compliant [#10937](https://github.com/chef/chef/pull/10937) ([cpressland](https://github.com/cpressland)) <!-- 17.0.64 -->
+- Bump train-core to 3.4.9 [#10945](https://github.com/chef/chef/pull/10945) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.63 -->
+- Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10944](https://github.com/chef/chef/pull/10944) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.62 -->
+- handles su - USER session to perform bootstrap [#10410](https://github.com/chef/chef/pull/10410) ([vsingh-msys](https://github.com/vsingh-msys)) <!-- 17.0.61 -->
+- Bump train-core to 3.4.8 [#10940](https://github.com/chef/chef/pull/10940) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.60 -->
+- Enable Deprecated Constants Cop [#10936](https://github.com/chef/chef/pull/10936) ([tas50](https://github.com/tas50)) <!-- 17.0.59 -->
+- Fix an interpolation mistake in an error message + turn on the cop [#10935](https://github.com/chef/chef/pull/10935) ([tas50](https://github.com/tas50)) <!-- 17.0.58 -->
+- Replace deprecated File.exists? with File.exist? in more places [#10934](https://github.com/chef/chef/pull/10934) ([tas50](https://github.com/tas50)) <!-- 17.0.57 -->
+- Update Ohai to 17.0.10 [#10931](https://github.com/chef/chef/pull/10931) ([tas50](https://github.com/tas50)) <!-- 17.0.56 -->
+- Pull in the latest Ohai [#10929](https://github.com/chef/chef/pull/10929) ([tas50](https://github.com/tas50)) <!-- 17.0.55 -->
+- load_current_resource for systemd_unit more efficiently [#10925](https://github.com/chef/chef/pull/10925) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 17.0.54 -->
+- fix typo in release notes [#10924](https://github.com/chef/chef/pull/10924) ([IanMadd](https://github.com/IanMadd)) <!-- 17.0.53 -->
+- Don&#39;t ship dev gems in the shipping artifact [#10913](https://github.com/chef/chef/pull/10913) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.51 -->
+- Add release notes for 16.9.29 [#10910](https://github.com/chef/chef/pull/10910) ([tas50](https://github.com/tas50)) <!-- 17.0.50 -->
+- Bump inspec-core-bin to 4.25.1 [#10907](https://github.com/chef/chef/pull/10907) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.49 -->
+- Bump omnibus-software from `023e6bf` to `1cff56e` in /omnibus [#10903](https://github.com/chef/chef/pull/10903) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.48 -->
+- Add backup functionality to windows_task [#10894](https://github.com/chef/chef/pull/10894) ([kimbernator](https://github.com/kimbernator)) <!-- 17.0.47 -->
+- Bump test-kitchen from 2.9.0 to 2.10.0 in /omnibus [#10893](https://github.com/chef/chef/pull/10893) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.46 -->
+- Bump omnibus-software from `869ef4e` to `023e6bf` in /omnibus [#10889](https://github.com/chef/chef/pull/10889) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.45 -->
+- Add support for lazy attributes [#10861](https://github.com/chef/chef/pull/10861) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.44 -->
+- Resolve chefstyle failure [#10886](https://github.com/chef/chef/pull/10886) ([tas50](https://github.com/tas50)) <!-- 17.0.43 -->
+- Test chef-utils and chef-config on Ruby 2.6 still [#10885](https://github.com/chef/chef/pull/10885) ([tas50](https://github.com/tas50)) <!-- 17.0.43 -->
+- Remove Ruby 2.6 tests [#10884](https://github.com/chef/chef/pull/10884) ([tas50](https://github.com/tas50)) <!-- 17.0.43 -->
+- Manually install necessary Ruby for verify pipeline [#10869](https://github.com/chef/chef/pull/10869) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 17.0.43 -->
+- Add support for client.d files in chef-shell [#10880](https://github.com/chef/chef/pull/10880) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.43 -->
+- Compliance Phase: even better audit cookbook detection [#10882](https://github.com/chef/chef/pull/10882) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.42 -->
+- Updated uuidtools version [#10881](https://github.com/chef/chef/pull/10881) ([kapilchouhan99](https://github.com/kapilchouhan99)) <!-- 17.0.41 -->
+- Pin rspec until we can resolve failures with 3.10 [#10879](https://github.com/chef/chef/pull/10879) ([tas50](https://github.com/tas50)) <!-- 17.0.40 -->
+- Fix ohai resource spec [#10874](https://github.com/chef/chef/pull/10874) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.39 -->
+- Fix yard warnings in the chef_vault dsl [#10870](https://github.com/chef/chef/pull/10870) ([tas50](https://github.com/tas50)) <!-- 17.0.38 -->
+- Update the alternatives and chef_client_launchd descriptions [#10873](https://github.com/chef/chef/pull/10873) ([tas50](https://github.com/tas50)) <!-- 17.0.37 -->
+- Fix misspelling in spec/functional/resource/aixinit_service_spec.rb. [#10868](https://github.com/chef/chef/pull/10868) ([coldiron](https://github.com/coldiron)) <!-- 17.0.36 -->
+- Remove the kitchen-azurerm dep for kitchent tests [#10865](https://github.com/chef/chef/pull/10865) ([tas50](https://github.com/tas50)) <!-- 17.0.36 -->
+- Compliance phase: change the audit cb checker to use the recipes list on the node. [#10864](https://github.com/chef/chef/pull/10864) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.35 -->
+- adapt to FreeBSD pkgng sysexit changes [#10813](https://github.com/chef/chef/pull/10813) ([mrtazz](https://github.com/mrtazz)) <!-- 17.0.34 -->
+- Update chef-zero to pull in webrick [#10853](https://github.com/chef/chef/pull/10853) ([tas50](https://github.com/tas50)) <!-- 17.0.33 -->
 - Add Chef Infra Client 15.15 release notes [#10847](https://github.com/chef/chef/pull/10847) ([tas50](https://github.com/tas50)) <!-- 17.0.32 -->
 - load_current_resource for systemd service more efficiently [#10776](https://github.com/chef/chef/pull/10776) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 17.0.31 -->
 - Add 16.9 release notes [#10835](https://github.com/chef/chef/pull/10835) ([tas50](https://github.com/tas50)) <!-- 17.0.30 -->

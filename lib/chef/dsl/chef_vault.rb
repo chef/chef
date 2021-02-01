@@ -32,8 +32,8 @@ class Chef
       # actually a Chef Vault item. This is controlled via
       # +node['chef-vault']['databag_fallback']+.
       # @example
-      # item = chef_vault_item('secrets', 'bacon')
-      # log 'Yeah buddy!' if item['_default']['type']
+      #   item = chef_vault_item('secrets', 'bacon')
+      #   log 'Yeah buddy!' if item['_default']['type']
       # @param [String] bag Name of the data bag to load from.
       # @param [String] id Identifier of the data bag item to load.
       def chef_vault_item(bag, id)
@@ -51,8 +51,8 @@ class Chef
       # the items, so this method strips out the keys for users so that they
       # don't have to do it in their recipes.
       # @example
-      # ids = chef_vault('secrets')
-      # log 'Yeah buddy!' if ids[0] == 'bacon'
+      #   ids = chef_vault('secrets')
+      #   log 'Yeah buddy!' if ids[0] == 'bacon'
       # @param [String] bag Name of the data bag to load from.
       # @return [Array]
       def chef_vault(bag)
@@ -68,8 +68,8 @@ class Chef
       # This allows for easy access to current environment secrets inside
       # of an item.
       # @example
-      # item = chef_vault_item_for_environment('secrets', 'bacon')
-      # log 'Yeah buddy!' if item['type'] == 'applewood_smoked'
+      #   item = chef_vault_item_for_environment('secrets', 'bacon')
+      #   log 'Yeah buddy!' if item['type'] == 'applewood_smoked'
       # @param [String] bag Name of the data bag to load from.
       # @param [String] id Identifier of the data bag item to load.
       # @return [Hash]

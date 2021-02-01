@@ -21,6 +21,7 @@ require_relative "../resource"
 require_relative "../win32/security" if ChefUtils.windows_ruby?
 autoload :ISO8601, "iso8601" if ChefUtils.windows_ruby?
 require_relative "../util/path_helper"
+require_relative "../util/backup"
 require "win32/taskscheduler" if ChefUtils.windows_ruby?
 
 class Chef
@@ -235,6 +236,10 @@ class Chef
       property :start_when_available, [TrueClass, FalseClass],
         introduced: "14.15", default: false,
         description: "To start the task at any time after its scheduled time has passed."
+
+      property :backup, [Integer, FalseClass],
+        introduced: "17.0", default: 5,
+        description: "Number of backups to keep of the task when modified/deleted. Set to false to disable backups."
 
       attr_accessor :exists, :task, :command_arguments
 
@@ -564,6 +569,7 @@ class Chef
 
         def update_task(task)
           converge_by("#{new_resource} task updated") do
+            do_backup
             task.set_account_information(new_resource.user, new_resource.password, new_resource.interactive_enabled)
             task.application_name = new_resource.command if new_resource.command
             task.parameters = new_resource.command_arguments if new_resource.command_arguments
@@ -948,6 +954,11 @@ class Chef
         def get_day(date)
           Date.strptime(date, "%m/%d/%Y").strftime("%a").upcase
         end
+
+        def do_backup
+          file = "C:/Windows/System32/Tasks/#{new_resource.task_name}"
+          Chef::Util::Backup.new(new_resource, file).backup!
+        end
       end
 
       action :create do
@@ -1006,6 +1017,7 @@ class Chef
         if current_resource.exists
           logger.trace "#{new_resource} task exists"
           converge_by("delete scheduled task #{new_resource}") do
+            do_backup
             ts = ::Win32::TaskScheduler.new
             ts.delete(current_resource.task_name)
           end

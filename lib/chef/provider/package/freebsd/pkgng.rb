@@ -42,7 +42,9 @@ class Chef
           end
 
           def current_installed_version
-            pkg_info = shell_out!("pkg", "info", new_resource.package_name, env: nil, returns: [0, 70])
+            # pkgng up to version 1.15.99.7 returns 70 for pkg not found,
+            # later versions return 1
+            pkg_info = shell_out!("pkg", "info", new_resource.package_name, env: nil, returns: [0, 1, 70])
             pkg_info.stdout[/^Version +: (.+)$/, 1]
           end
 

@@ -47,7 +47,7 @@ class Chef
             registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
         elsif platform?("ubuntu")
           # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
-          File.exists?("/var/run/reboot-required")
+          File.exist?("/var/run/reboot-required")
         else
           false
         end

@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 791ff6f30506e8c01c25cc40828ef33c1bb4fb2c
+  revision: b5cb2d3e4bbcb77fb5c6ed3357e89c670d64682f
   branch: master
   specs:
-    chefstyle (1.6.1)
-      rubocop (= 1.9.0)
+    chefstyle (1.6.0)
+      rubocop (= 1.8.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 065e10af8ab2a6bf3db6d9da0db099207454f7d6
+  revision: 0b5a78c8cd641903e3179c0984f55467694f9663
   branch: master
   specs:
-    ohai (17.0.11)
+    ohai (17.0.10)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -37,11 +37,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.32)
+    chef (17.0.67)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.32)
-      chef-utils (= 17.0.32)
+      chef-config (= 17.0.67)
+      chef-utils (= 17.0.67)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -72,12 +72,12 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
-    chef (17.0.32-universal-mingw32)
+      uuidtools (>= 2.1.5, < 3.0)
+    chef (17.0.67-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.32)
-      chef-utils (= 17.0.32)
+      chef-config (= 17.0.67)
+      chef-utils (= 17.0.67)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -109,7 +109,7 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
+      uuidtools (>= 2.1.5, < 3.0)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.3)
       win32-event (~> 0.6.1)
@@ -124,15 +124,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.32)
-      chef (= 17.0.32)
+    chef-bin (17.0.67)
+      chef (= 17.0.67)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.32)
+    chef-config (17.0.67)
       addressable
-      chef-utils (= 17.0.32)
+      chef-utils (= 17.0.67)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -141,7 +141,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.32)
+    chef-utils (17.0.67)
 
 GEM
   remote: https://rubygems.org/
@@ -378,7 +378,7 @@ GEM
       tty-screen (~> 0.8)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
-    uuidtools (2.1.5)
+    uuidtools (2.2.0)
     webmock (3.11.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -447,7 +447,7 @@ DEPENDENCIES
   pry-stack_explorer
   rake
   rb-readline
-  rspec
+  rspec (= 3.9.0)
   ruby-prof (< 1.3.0)
   ruby-shadow
   webmock

@@ -11,12 +11,14 @@ class Chef
     class Runner < EventDispatch::Base
       extend Forwardable
 
-      attr_accessor :run_id, :recipes
+      attr_accessor :run_id
       attr_reader :node
       def_delegators :node, :logger
 
       def enabled?
-        audit_cookbook_present = recipes.include?("audit::default")
+        # Did we parse the libraries file from the audit cookbook?  This class dates back to when Chef Automate was
+        # renamed from Chef Visibility in 2017, so should capture all modern versions of the audit cookbook.
+        audit_cookbook_present = defined?(::Reporter::ChefAutomate)
 
         logger.info("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
         logger.info("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
@@ -35,10 +37,6 @@ class Chef
 
       def run_started(run_status)
         self.run_id = run_status.run_id
-      end
-
-      def run_list_expanded(run_list_expansion)
-        self.recipes = run_list_expansion.recipes
       end
 
       def run_completed(_node, _run_status)

@@ -115,7 +115,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
         # fake code to run through #recipe_snippet
         source_file = [ "if true", "var = non_existent", "end" ]
         allow(IO).to receive(:readlines).and_return(source_file)
-        allow(File).to receive(:exists?).and_return(true)
+        allow(File).to receive(:exist?).and_return(true)
       end
 
       it "parses a Windows path" do
@@ -141,7 +141,7 @@ describe Chef::Formatters::ErrorInspectors::ResourceFailureInspector do
 
       context "when the recipe file does not exist" do
         before do
-          allow(File).to receive(:exists?).and_return(false)
+          allow(File).to receive(:exist?).and_return(false)
           allow(IO).to receive(:readlines).and_raise(Errno::ENOENT)
         end
 

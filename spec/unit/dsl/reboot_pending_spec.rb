@@ -57,12 +57,12 @@ describe Chef::DSL::RebootPending do
         end
 
         it "should return true if /var/run/reboot-required exists" do
-          allow(File).to receive(:exists?).with("/var/run/reboot-required").and_return(true)
+          allow(File).to receive(:exist?).with("/var/run/reboot-required").and_return(true)
           expect(recipe.reboot_pending?).to be_truthy
         end
 
         it "should return false if /var/run/reboot-required does not exist" do
-          allow(File).to receive(:exists?).with("/var/run/reboot-required").and_return(false)
+          allow(File).to receive(:exist?).with("/var/run/reboot-required").and_return(false)
           expect(recipe.reboot_pending?).to be_falsey
         end
       end
