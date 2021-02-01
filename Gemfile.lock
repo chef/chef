@@ -1,17 +1,17 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: a226b7d33c2119003dc47839e8c5559a22bf5ab9
+  revision: 5eb0100dbba7ad54aefff7bab14aabb7ce7a393c
   branch: master
   specs:
-    chefstyle (1.5.9)
-      rubocop (= 1.7.0)
+    chefstyle (1.6.2)
+      rubocop (= 1.9.1)
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: b90f861bb77d0364f208947e57a6579c7eb78fae
+  revision: 065e10af8ab2a6bf3db6d9da0db099207454f7d6
   branch: master
   specs:
-    ohai (17.0.3)
+    ohai (17.0.11)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -28,11 +28,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.32)
+    chef (17.0.68)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.32)
-      chef-utils (= 17.0.32)
+      chef-config (= 17.0.68)
+      chef-utils (= 17.0.68)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -63,12 +63,12 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
-      uuidtools (~> 2.1.5)
-    chef (17.0.32-universal-mingw32)
+      uuidtools (>= 2.1.5, < 3.0)
+    chef (17.0.68-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
-      chef-config (= 17.0.32)
-      chef-utils (= 17.0.32)
+      chef-config (= 17.0.68)
+      chef-utils (= 17.0.68)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -115,15 +115,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.32)
-      chef (= 17.0.32)
+    chef-bin (17.0.68)
+      chef (= 17.0.68)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.32)
+    chef-config (17.0.68)
       addressable
-      chef-utils (= 17.0.32)
+      chef-utils (= 17.0.68)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -132,7 +132,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.32)
+    chef-utils (17.0.68)
 
 GEM
   remote: https://rubygems.org/
@@ -302,7 +302,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.4)
-    rubocop (1.7.0)
+    rubocop (1.9.1)
       parallel (~> 1.10)
       parser (>= 2.7.1.5)
       rainbow (>= 2.2.2, < 4.0)
@@ -360,8 +360,8 @@ GEM
       tty-screen (~> 0.8)
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
-    uuidtools (2.1.5)
-    webmock (3.11.0)
+    uuidtools (2.2.0)
+    webmock (3.11.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
