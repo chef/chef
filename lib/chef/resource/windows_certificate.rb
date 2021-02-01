@@ -218,7 +218,7 @@ class Chef
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
           status = check_string(thumbprint).to_s
-          if thumbprint.length == 40 && status == 'true'
+          if thumbprint.length == 40 && status == "true"
             store.valid?(thumbprint)
           else
             new_thumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
@@ -267,7 +267,7 @@ class Chef
         # this array structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
         # Secondly, we need to pass the proper constant name for each store to win32-certstore but also pass the short name to powershell scripts used here
         def get_cert_location
-          new_resource.user_store ? ["CurrentUser",CERT_SYSTEM_STORE_CURRENT_USER] : ["LocalMachine",CERT_SYSTEM_STORE_LOCAL_MACHINE]
+          new_resource.user_store ? ["CurrentUser", CERT_SYSTEM_STORE_CURRENT_USER] : ["LocalMachine", CERT_SYSTEM_STORE_LOCAL_MACHINE]
         end
 
         def cert_script(persist)
