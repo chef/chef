@@ -8,6 +8,7 @@ source "https://rubygems.org"
 gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
+gem "win32-certstore", git: "https://github.com/chef/win32-certstore.git", branch: "master"
 
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
