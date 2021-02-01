@@ -213,7 +213,7 @@ class Chef
         # If the certificate is not present, verify_cert returns a String: "Certificate not found"
         # But if it is present but expired, it returns a Boolean: false
         # Otherwise, it returns a Boolean: true
-        # updated this method to accept either a subject name or a thumbprint - john mccrae - 1/29/2021
+        # updated this method to accept either a subject name or a thumbprint - 1/29/2021
 
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
@@ -221,8 +221,8 @@ class Chef
           if thumbprint.length == 40 && status == 'true'
             store.valid?(thumbprint)
           else
-            mthumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
-            store.valid?(mthumbprint)
+            new_thumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
+            store.valid?(new_thumbprint)
           end
         end
 
