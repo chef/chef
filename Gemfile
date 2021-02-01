@@ -9,9 +9,6 @@ gem "chef", path: "."
 
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 
-# remove this before sending a Pull Request
-gem "win32-certstore", git: "https://github.com/chef/win32-certstore.git", branch: "master"
-
 gem "chef-utils", path: File.expand_path("chef-utils", __dir__) if File.exist?(File.expand_path("chef-utils", __dir__))
 gem "chef-config", path: File.expand_path("chef-config", __dir__) if File.exist?(File.expand_path("chef-config", __dir__))
 
@@ -53,7 +50,7 @@ end
 
 group(:development, :test) do
   gem "rake"
-  gem "rspec", "=3.9.0" # remove pin once https://github.com/chef/chef/issues/10817 is resolved
+  gem "rspec"
   gem "webmock"
   gem "fauxhai-ng" # for chef-utils gem
 end
