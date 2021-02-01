@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: 65c593140db931e91a25ce6624d99a3248c7288e
+  revision: aeda0bb23bfe19b52fb50a410e67c2727a44dec4
   branch: master
   specs:
-    omnibus (8.0.13)
+    omnibus (8.0.14)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.420.0)
+    aws-partitions (1.422.0)
     aws-sdk-core (3.111.2)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
