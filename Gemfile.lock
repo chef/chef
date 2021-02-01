@@ -3,11 +3,7 @@ GIT
   revision: 5eb0100dbba7ad54aefff7bab14aabb7ce7a393c
   branch: master
   specs:
-<<<<<<< HEAD
-    chefstyle (1.5.9)
-=======
     chefstyle (1.6.2)
->>>>>>> 58d2d70054256b87ccfdb0fb43c490d27af193e0
       rubocop (= 1.9.1)
 
 GIT
