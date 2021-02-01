@@ -75,8 +75,9 @@ class Chef
         description: "The certificate store to manipulate.",
         default: "MY", equal_to: ["TRUSTEDPUBLISHER", "TrustedPublisher", "CLIENTAUTHISSUER", "REMOTE DESKTOP", "ROOT", "TRUSTEDDEVICES", "WEBHOSTING", "CA", "AUTHROOT", "TRUSTEDPEOPLE", "MY", "SMARTCARDROOT", "TRUST", "DISALLOWED"]
 
+      # prior to Chef 16.10 this property was ignored.
       property :user_store, [TrueClass, FalseClass],
-        description: "Use the user store of the local machine store if set to false.",
+        description: "Use the `CurrentUser` store instead of the default `LocalMachine` store.",
         default: false
 
       property :cert_path, String,
@@ -119,7 +120,7 @@ class Chef
         code_script << acl_script(hash)
         guard_script << cert_exists_script(hash)
 
-        powershell_script "setting the acls on #{new_resource.source} in #{cert_location}\\#{new_resource.store_name}" do
+        powershell_script "setting the acls on #{new_resource.source} in #{get_cert_location[0]}\\#{new_resource.store_name}" do
           convert_boolean_return true
           code code_script
           only_if guard_script
@@ -161,25 +162,51 @@ class Chef
       end
 
       action_class do
+
+        CERT_SYSTEM_STORE_LOCAL_MACHINE                    = 0x00020000
+        CERT_SYSTEM_STORE_CURRENT_USER                     = 0x00010000
+
         def add_cert(cert_obj)
-          store = ::Win32::Certstore.open(new_resource.store_name)
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
           store.add(cert_obj)
         end
 
         def add_pfx_cert
           exportable = new_resource.exportable ? 1 : 0
-          store = ::Win32::Certstore.open(new_resource.store_name)
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
           store.add_pfx(new_resource.source, new_resource.pfx_password, exportable)
         end
 
         def delete_cert
           store = ::Win32::Certstore.open(new_resource.store_name)
-          store.delete(new_resource.source)
+          if check_string(new_resource.source) && new_resource.source.length == 40
+            store.delete(new_resource.source)
+          else
+            thumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
+            store.delete(thumbprint)
+          end
         end
 
         def fetch_cert
-          store = ::Win32::Certstore.open(new_resource.store_name)
-          store.get(new_resource.source)
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
+          if check_string(new_resource.source) && new_resource.source.length == 40
+            store.get(new_resource.source)
+          else
+            thumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
+            store.get(thumbprint)
+          end
+        end
+
+        # this Regex verifies whether a string is a hex value (ie. thumbprint) or not
+        def check_string(string)
+          string.scan(/\H/).empty?
+        end
+
+        def get_thumbprint(store_name, location, source)
+          <<-GETTHUMBPRINTCODE
+            $content = Get-ChildItem  -Path Cert:\\#{location}\\#{store_name} | Where-Object {$_.Subject -Match "#{source}"} | Select-Object Thumbprint
+            $content.thumbprint
+          GETTHUMBPRINTCODE
         end
 
         # Checks whether a certificate with the given thumbprint
@@ -187,9 +214,17 @@ class Chef
         # If the certificate is not present, verify_cert returns a String: "Certificate not found"
         # But if it is present but expired, it returns a Boolean: false
         # Otherwise, it returns a Boolean: true
+        # updated this method to accept either a subject name or a thumbprint - 1/29/2021
+
         def verify_cert(thumbprint = new_resource.source)
-          store = ::Win32::Certstore.open(new_resource.store_name)
-          store.valid?(thumbprint)
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: get_cert_location[1])
+          status = check_string(thumbprint).to_s
+          if thumbprint.length == 40 && status == "true"
+            store.valid?(thumbprint)
+          else
+            new_thumbprint = powershell_exec!(get_thumbprint(new_resource.store_name, get_cert_location[0], new_resource.source)).result
+            store.valid?(new_thumbprint)
+          end
         end
 
         def show_or_store_cert(cert_obj)
@@ -230,13 +265,15 @@ class Chef
           out_file.close
         end
 
-        def cert_location
-          @location ||= new_resource.user_store ? "CurrentUser" : "LocalMachine"
+        # this array structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
+        # Secondly, we need to pass the proper constant name for each store to win32-certstore but also pass the short name to powershell scripts used here
+        def get_cert_location
+          new_resource.user_store ? ["CurrentUser", CERT_SYSTEM_STORE_CURRENT_USER] : ["LocalMachine", CERT_SYSTEM_STORE_LOCAL_MACHINE]
         end
 
         def cert_script(persist)
           cert_script = "$cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2"
-          file = Chef::Util::PathHelper.cleanpath(new_resource.source)
+          file = Chef::Util::PathHelper.cleanpath(new_resource.source, get_cert_location[1])
           cert_script << " \"#{file}\""
           if ::File.extname(file.downcase) == ".pfx"
             cert_script << ", \"#{new_resource.pfx_password}\""
@@ -252,14 +289,14 @@ class Chef
         def cert_exists_script(hash)
           <<-EOH
   $hash = #{hash}
-  Test-Path "Cert:\\#{cert_location}\\#{new_resource.store_name}\\$hash"
+  Test-Path "Cert:\\#{get_cert_location[0]}\\#{new_resource.store_name}\\$hash"
           EOH
         end
 
         def within_store_script
           inner_script = yield "$store"
           <<-EOH
-  $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "#{new_resource.store_name}", ([System.Security.Cryptography.X509Certificates.StoreLocation]::#{cert_location})
+  $store = New-Object System.Security.Cryptography.X509Certificates.X509Store "#{new_resource.store_name}", ([System.Security.Cryptography.X509Certificates.StoreLocation]::#{get_cert_location[0]})
   $store.Open([System.Security.Cryptography.X509Certificates.OpenFlags]::ReadWrite)
   #{inner_script}
   $store.Close()
@@ -273,7 +310,7 @@ class Chef
           # and from https://msdn.microsoft.com/en-us/library/windows/desktop/bb204778(v=vs.85).aspx
           set_acl_script = <<-EOH
   $hash = #{hash}
-  $storeCert = Get-ChildItem "cert:\\#{cert_location}\\#{new_resource.store_name}\\$hash"
+  $storeCert = Get-ChildItem "cert:\\#{get_cert_location[0]}\\#{new_resource.store_name}\\$hash"
   if ($storeCert -eq $null) { throw 'no key exists.' }
   $keyname = $storeCert.PrivateKey.CspKeyContainerInfo.UniqueKeyContainerName
   if ($keyname -eq $null) { throw 'no private key exists.' }
@@ -340,7 +377,7 @@ class Chef
             if verify_cert(thumbprint) == true
               Chef::Log.debug("Certificate is already present")
             else
-              converge_by("Adding certificate #{new_resource.source} into Store #{new_resource.store_name}") do
+              converge_by("Adding certificate #{new_resource.source} into #{get_cert_location[0]} Store #{new_resource.store_name}") do
                 if is_pfx
                   add_pfx_cert
                 else
