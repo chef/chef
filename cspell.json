@@ -567,6 +567,7 @@
     "getremotelogin",
     "getspnam",
     "gettext",
+    "GETTHUMBPRINTCODE",
     "gettimezone",
     "gettype",
     "gids",
