@@ -20,12 +20,12 @@ GIT
 PATH
   remote: .
   specs:
-    chef (16.9.32)
+    chef (16.9.33)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
-      chef-config (= 16.9.32)
-      chef-utils (= 16.9.32)
+      chef-config (= 16.9.33)
+      chef-utils (= 16.9.33)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -57,12 +57,12 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (16.9.32-universal-mingw32)
+    chef (16.9.33-universal-mingw32)
       addressable
       bcrypt_pbkdf (= 1.1.0.rc2)
       bundler (>= 1.10)
-      chef-config (= 16.9.32)
-      chef-utils (= 16.9.32)
+      chef-config (= 16.9.33)
+      chef-utils (= 16.9.33)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -109,15 +109,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (16.9.32)
-      chef (= 16.9.32)
+    chef-bin (16.9.33)
+      chef (= 16.9.33)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (16.9.32)
+    chef-config (16.9.33)
       addressable
-      chef-utils (= 16.9.32)
+      chef-utils (= 16.9.33)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -126,7 +126,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (16.9.32)
+    chef-utils (16.9.33)
 
 GEM
   remote: https://rubygems.org/
@@ -341,8 +341,8 @@ GEM
       mixlib-shellout (>= 2.0, < 4.0)
       net-scp (>= 1.2, < 4.0)
       net-ssh (>= 2.9, < 7.0)
-    train-winrm (0.2.11)
-      winrm (~> 2.0)
+    train-winrm (0.2.12)
+      winrm (>= 2.3.6, < 3.0)
       winrm-elevated (~> 1.2.2)
       winrm-fs (~> 1.0)
     tty-box (0.7.0)
@@ -372,7 +372,7 @@ GEM
       hashdiff (>= 0.4.0, < 2.0.0)
     webrick (1.7.0)
     win32-api (1.5.3-universal-mingw32)
-    win32-certstore (0.4.1)
+    win32-certstore (0.5.3)
       ffi
       mixlib-shellout
     win32-event (0.6.3)
