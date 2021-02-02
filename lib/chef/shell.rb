@@ -352,7 +352,7 @@ module Shell
       puts "loading configuration: #{config_msg}"
 
       # load the config (if we have one)
-      if !config[:config_file].nil?
+      unless config[:config_file].nil?
         if File.exist?(config[:config_file]) && File.readable?(config[:config_file])
           Chef::Config.from_file(config[:config_file])
         end
