@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.70 -->
-## [v17.0.70](https://github.com/chef/chef/tree/v17.0.70) (2021-02-01)
+<!-- latest_release 17.0.71 -->
+## [v17.0.71](https://github.com/chef/chef/tree/v17.0.71) (2021-02-02)
 
 #### Merged Pull Requests
-- fix specs for spec 3.10 [#10959](https://github.com/chef/chef/pull/10959) ([lamont-granquist](https://github.com/lamont-granquist))
+- Drop some compliance log messages down to debug output [#10965](https://github.com/chef/chef/pull/10965) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Drop some compliance log messages down to debug output [#10965](https://github.com/chef/chef/pull/10965) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.71 -->
 - fix specs for spec 3.10 [#10959](https://github.com/chef/chef/pull/10959) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.70 -->
 - Bump Ohai to 17.0.12 for Alma Linux support [#10957](https://github.com/chef/chef/pull/10957) ([tas50](https://github.com/tas50)) <!-- 17.0.69 -->
 - Update Ohai to 17.0.11 and Chefstyle to 1.6.2 [#10956](https://github.com/chef/chef/pull/10956) ([tas50](https://github.com/tas50)) <!-- 17.0.68 -->
