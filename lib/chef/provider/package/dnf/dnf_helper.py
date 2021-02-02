@@ -64,7 +64,7 @@ def version_tuple(versionstr):
         tmp = versionstr[colon_index + 1:dash_index]
         if tmp != '':
             v = tmp
-        arch_index = versionstr.find('.', dash_index)
+        arch_index = versionstr.rfind('.', dash_index)
         if arch_index > 0:
             r = versionstr[dash_index + 1:arch_index]
         else:
