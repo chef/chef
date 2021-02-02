@@ -20,8 +20,8 @@ class Chef
         # renamed from Chef Visibility in 2017, so should capture all modern versions of the audit cookbook.
         audit_cookbook_present = defined?(::Reporter::ChefAutomate)
 
-        logger.info("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
-        logger.info("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
+        logger.debug("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
+        logger.debug("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
 
         inspec_profiles.any? && !audit_cookbook_present
       end
