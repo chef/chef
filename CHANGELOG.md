@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.1 -->
-## [v16.10.1](https://github.com/chef/chef/tree/v16.10.1) (2021-02-02)
+<!-- latest_release 16.10.2 -->
+## [v16.10.2](https://github.com/chef/chef/tree/v16.10.2) (2021-02-02)
 
 #### Merged Pull Requests
-- Fix an interpolation mistake in an error message + turn on the cop [#10967](https://github.com/chef/chef/pull/10967) ([tas50](https://github.com/tas50))
+- Fix DNF version comparison bug [#10969](https://github.com/chef/chef/pull/10969) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.9.32 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix DNF version comparison bug [#10969](https://github.com/chef/chef/pull/10969) ([tas50](https://github.com/tas50)) <!-- 16.10.2 -->
 - Fix an interpolation mistake in an error message + turn on the cop [#10967](https://github.com/chef/chef/pull/10967) ([tas50](https://github.com/tas50)) <!-- 16.10.1 -->
 - Replace deprecated File.exists? with File.exist? in more places [#10966](https://github.com/chef/chef/pull/10966) ([tas50](https://github.com/tas50)) <!-- 16.10.0 -->
 - these messages should be debug level output [#10970](https://github.com/chef/chef/pull/10970) ([tas50](https://github.com/tas50)) <!-- 16.9.35 -->
