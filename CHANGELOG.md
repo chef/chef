@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.9.34 -->
-## [v16.9.34](https://github.com/chef/chef/tree/v16.9.34) (2021-02-02)
+<!-- latest_release 16.9.35 -->
+## [v16.9.35](https://github.com/chef/chef/tree/v16.9.35) (2021-02-02)
 
 #### Merged Pull Requests
-- Fix specs failures with spec 3.10 [#10968](https://github.com/chef/chef/pull/10968) ([tas50](https://github.com/tas50))
+- these messages should be debug level output [#10970](https://github.com/chef/chef/pull/10970) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.9.32 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- these messages should be debug level output [#10970](https://github.com/chef/chef/pull/10970) ([tas50](https://github.com/tas50)) <!-- 16.9.35 -->
 - Fix specs failures with spec 3.10 [#10968](https://github.com/chef/chef/pull/10968) ([tas50](https://github.com/tas50)) <!-- 16.9.34 -->
 - Bump kitchen-vagrant from 1.7.2 to 1.8.0 in /omnibus [#10961](https://github.com/chef/chef/pull/10961) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.33 -->
 <!-- release_rollup -->
