@@ -352,13 +352,13 @@ module Shell
       puts "loading configuration: #{config_msg}"
 
       # load the config (if we have one)
-      if !config[:config_file].nil?
+      unless config[:config_file].nil?
         if File.exist?(config[:config_file]) && File.readable?(config[:config_file])
           Chef::Config.from_file(config[:config_file])
         end
 
         # even if we couldn't load that, we need to tell Chef::Config what
-        # the file was so it sets confdir and d_dir and such properly
+        # the file was so it sets conf dir and d_dir and such properly
         Chef::Config[:config_file] = config[:config_file]
 
         # now attempt to load any relevant dot-dirs
