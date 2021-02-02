@@ -46,7 +46,9 @@ describe Chef::Knife::SupermarketShare do
 
     allow(@knife).to receive(:shell_out!).and_return(true)
     @stdout = StringIO.new
+    @stderr = StringIO.new
     allow(@knife.ui).to receive(:stdout).and_return(@stdout)
+    allow(@knife.ui).to receive(:stderr).and_return(@stderr)
   end
 
   describe "run" do
@@ -140,7 +142,9 @@ describe Chef::Knife::SupermarketShare do
       before do
         allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return("/var/tmp/dummy")
         @knife.config = { dry_run: true }
-        allow(@knife).to receive_message_chain(:shell_out!, :stdout).and_return("file")
+        @so = instance_double("Mixlib::ShellOut")
+        allow(@knife).to receive(:shell_out!).and_return(@so)
+        allow(@so).to receive(:stdout).and_return("file")
       end
 
       it "should list files in the tarball" do
@@ -151,7 +155,6 @@ describe Chef::Knife::SupermarketShare do
       end
 
       it "does not upload the cookbook" do
-        allow(@knife).to receive(:shell_out!).and_return(true)
         expect(@knife).not_to receive(:do_upload)
         @knife.run
       end
@@ -164,10 +167,6 @@ describe Chef::Knife::SupermarketShare do
       @upload_response = double("Net::HTTPResponse")
       allow(Chef::CookbookSiteStreamingUploader).to receive(:post).and_return(@upload_response)
 
-      @stdout = StringIO.new
-      @stderr = StringIO.new
-      allow(@knife.ui).to receive(:stdout).and_return(@stdout)
-      allow(@knife.ui).to receive(:stderr).and_return(@stderr)
       allow(File).to receive(:open).and_return(true)
     end
 
