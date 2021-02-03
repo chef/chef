@@ -27,7 +27,7 @@ class Chef
 
       # Controls what is done with the resulting report after the Chef InSpec run.
       # Accepts a single string value or an array of multiple values.
-      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer'
+      # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'cli'
       "reporter" => "json-file",
 
       # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
