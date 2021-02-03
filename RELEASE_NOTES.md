@@ -26,7 +26,7 @@ Chef Infra Client now supports latest generation of AWS metadata services (IMDSv
 
 #### Improved AWS Metadata Gathering
 
-On AWS instances we now gather data from the latest metadata API versions exposing new AWS instance information for use in Infra Cookbooks:
+On AWS instances, we now gather data from the latest metadata API versions, exposing new AWS instance information for use in Infra Cookbooks:
 
 - elastic-gpus/associations/elastic-gpu-id
 - elastic-inference/associations/eia-id
