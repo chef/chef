@@ -59,7 +59,7 @@ Note: In the upcoming release of Chef Workstation you'll be able to skip the `bo
 
 #### Knife Bootstrapping Without Sudo
 
-The `knife boostrap` command now supports elevating privileges on systems without `sudo` by using the `su` command isntead. Use the new `--su-user` and `--su-password` flags to specify credentials for `su`.
+The `knife boostrap` command now supports elevating privileges on systems without `sudo` by using the `su` command instead. Use the new `--su-user` and `--su-password` flags to specify credentials for `su`.
 
 ### Resource Updates
 
