@@ -18,7 +18,7 @@ This section serves to track things we should later document here for 17.0
 
 #### Improved Linux Network Detection
 
-On Linux systems Chef Infra Client now detects all installed NICs on systems with more than 10 interfaces and will populate Ethernet pause frame information if present. Thanks for these improvements [@kuba-moo](https://github.com/kuba-moo) and [@Babar](https://github.com/Babar)!
+On Linux systems, Chef Infra Client now detects all installed NICs on systems with more than 10 interfaces and will populate Ethernet pause frame information if present. Thanks for these improvements [@kuba-moo](https://github.com/kuba-moo) and [@Babar](https://github.com/Babar)!
 
 #### AWS Instance Metadata Service Version 2 (IMDSv2) support
 
