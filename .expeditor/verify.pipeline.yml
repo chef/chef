@@ -608,7 +608,6 @@ steps:
   timeout_in_minutes: 60
   expeditor:
     executor:
-      windows:
-        privileged: true
-        single-use: true
-        shell: ["powershell", "-Command"]
+      docker:
+        host_os: windows
+        shell: [ "powershell", "-Command" ]
