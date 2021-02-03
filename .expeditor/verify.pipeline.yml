@@ -603,6 +603,8 @@ steps:
         single-use: true
 
 - label: ":habicat: Windows plan"
+  env:
+    HAB_LICENSE: "accept-no-persist"
   commands:
     - ./.expeditor/scripts/verify-plan.ps1
   timeout_in_minutes: 60
