@@ -22,7 +22,7 @@ On Linux systems Chef Infra Client now detects all installed NICs on systems wit
 
 #### AWS Instance Metadata Service Version 2 (IMDSv2) support
 
-Chef Infra Client now supports latest generation of AWS metadata services (IMDSv2). This allows you to secure the contents of the metadata endpoint while still exposing this data for use in Chef Infra cookbooks. Thanks for this new functionality [@wilkosz](https://github.com/wilkosz) and [@sawanoboly](https://github.com/sawanoboly)!
+Chef Infra Client now supports the latest generation of AWS metadata services (IMDSv2). This allows you to secure the contents of the metadata endpoint while still exposing this data for use in Chef Infra cookbooks. Thanks for this new functionality [@wilkosz](https://github.com/wilkosz) and [@sawanoboly](https://github.com/sawanoboly)!
 
 #### Improved AWS Metadata Gathering
 
