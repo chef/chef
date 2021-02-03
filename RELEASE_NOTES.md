@@ -65,7 +65,7 @@ The `knife boostrap` command now supports elevating privileges on systems withou
 
 #### dnf_package
 
-The `dnf_package` has been updated to maintain indempotency when using the `:upgrade` action when the RPM release "number" contains a dot (`.`).
+The `dnf_package` has been updated to maintain idempotency when using the `:upgrade` action when the RPM release "number" contains a dot (`.`).
 
 #### windows_certificate
 
