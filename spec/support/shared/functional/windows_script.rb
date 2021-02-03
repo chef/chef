@@ -168,11 +168,11 @@ shared_context Chef::Resource::WindowsScript do
         resource.run_action(:run)
       end
 
-      context "the script is executed with the identity of the current user" do
+      context "the script is executed with the identity of the current user", :windows_service_requires_assign_token do
         it_behaves_like "a script that cannot be accessed by other users if they are not administrators"
       end
 
-      context "the script is executed with an alternate non-admin identity" do
+      context "the script is executed with an alternate non-admin identity", :windows_service_requires_assign_token do
         include_context "alternate user identity"
 
         before do
