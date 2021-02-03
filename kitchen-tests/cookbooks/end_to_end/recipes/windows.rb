@@ -135,37 +135,37 @@ user "phil" do
   action :remove
 end
 
-directory 'C:\mordor' do
-  rights :full_control, 'everyone'
+directory "C:\mordor" do
+  rights :full_control, "everyone"
 end
 
 cookbook_file "c:\\mordor\\steveb.pfx" do
-  source '/certs/steveb.pfx'
+  source "/certs/steveb.pf_"
   action :create_if_missing
 end
 
-windows_certificate 'c:/mordor/steveb.pfx' do
-  pfx_password '1234'
+windows_certificate "c:/mordor/steveb.pfx" do
+  pfx_password "1234"
   action :create
   user_store true
-  store_name 'MY'
+  store_name "MY"
 end
 
 cookbook_file "c:\\mordor\\ca.cert.pem" do
-  source '/certs/ca.cert.pem'
+  source "/certs/ca.cert.pem"
   action :create_if_missing
 end
 
-windows_certificate 'c:/mordor/ca.cert.pem' do
-  store_name 'ROOT'
+windows_certificate "c:/mordor/ca.cert.pem" do
+  store_name "ROOT"
 end
 
 cookbook_file "c:\\mordor\\chef.northwindbaking.com.chained.cert.pem" do
-  source '/certs/chef.northwindbaking.com.chained.cert.pem'
+  source "/certs/chef.northwindbaking.com.chained.cert.pem"
   action :create_if_missing
 end
 
-windows_certificate 'c:/mordor/chef.northwindbaking.com.chained.cert.pem' do
+windows_certificate "c:/mordor/chef.northwindbaking.com.chained.cert.pem" do
   action :create
 end
 
