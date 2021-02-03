@@ -55,7 +55,7 @@ platforms:
       box: bento/almalinux-8
 ```
 
-Note: In the upcoming release of Chef Workstation you'll be able to skip the `box` config and Test Kitchen will automatically map `almalinux-8` to the appropriate Vagrant image.
+Note: In the upcoming release of Chef Workstation, you'll be able to skip the `box` config and Test Kitchen will automatically map `almalinux-8` to the appropriate Vagrant image.
 
 #### Knife Bootstrapping Without Sudo
 
