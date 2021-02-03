@@ -412,6 +412,28 @@ describe Chef::Provider::Service::Systemd do
           with_systemctl_show(systemctl_path, enabled_runtime_and_active)
           expect(provider.is_enabled?).to be false
         end
+
+        it "should shellout to 'is-enabled' and return false if unit file is bad and sysv compat isn't enabled" do
+          bad_and_inactive = <<-STDOUT
+            ActiveState=inactive
+            UnitFileState=bad
+          STDOUT
+          with_systemctl_show(systemctl_path, bad_and_inactive)
+          systemctl_isenabled = [systemctl_path, "--system", "is-enabled", service_name, "--quiet"]
+          expect(provider).to receive(:shell_out).with(*systemctl_isenabled).and_return(shell_out_failure)
+          expect(provider.is_enabled?).to be false
+        end
+
+        it "should shellout to 'is-enabled' and return true if unit file is bad and sysv compat is enabled" do
+          bad_and_inactive = <<-STDOUT
+            ActiveState=inactive
+            UnitFileState=bad
+          STDOUT
+          with_systemctl_show(systemctl_path, bad_and_inactive)
+          systemctl_isenabled = [systemctl_path, "--system", "is-enabled", service_name, "--quiet"]
+          expect(provider).to receive(:shell_out).with(*systemctl_isenabled).and_return(shell_out_success)
+          expect(provider.is_enabled?).to be true
+        end
       end
 
       describe "is_masked?" do
