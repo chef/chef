@@ -202,6 +202,11 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
   end
 
   def is_enabled?
+    # if the service is in sysv compat mode, shellout to determine if enabled
+    if systemd_service_status["UnitFileState"] == "bad"
+      options, args = get_systemctl_options_args
+      return shell_out(systemctl_path, args, "is-enabled", new_resource.service_name, "--quiet", **options).exitstatus == 0
+    end
     # See https://github.com/systemd/systemd/blob/master/src/systemctl/systemctl-is-enabled.c
     # Note: enabled-runtime is excluded because this is volatile, and the state of enabled-runtime
     # specifically means that the service is not enabled
