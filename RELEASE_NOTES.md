@@ -14,6 +14,65 @@ This section serves to track things we should later document here for 17.0
 - Compliance cli report - https://github.com/chef/chef/pull/10939
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
 
+## What's New in 16.10
+
+### Improvements
+
+#### Improved Linux Network Detection
+
+On Linux systems, Chef Infra Client now detects all installed NICs on systems with more than 10 interfaces and will populate Ethernet pause frame information if present. Thanks for these improvements [@kuba-moo](https://github.com/kuba-moo) and [@Babar](https://github.com/Babar)!
+
+#### AWS Instance Metadata Service Version 2 (IMDSv2) support
+
+Chef Infra Client now supports the latest generation of AWS metadata services (IMDSv2). This allows you to secure the contents of the metadata endpoint while still exposing this data for use in Chef Infra cookbooks. Thanks for this new functionality [@wilkosz](https://github.com/wilkosz) and [@sawanoboly](https://github.com/sawanoboly)!
+
+#### Improved AWS Metadata Gathering
+
+On AWS instances, we now gather data from the latest metadata API versions, exposing new AWS instance information for use in Infra Cookbooks:
+
+- elastic-gpus/associations/elastic-gpu-id
+- elastic-inference/associations/eia-id
+- events/maintenance/history
+- events/maintenance/scheduled
+- events/recommendations/rebalance
+- instance-life-cycle
+- network/interfaces/macs/mac/network-card-index
+- placement/availability-zone-id
+- placement/group-name
+- placement/host-id
+- placement/partition-number
+- placement/region
+- spot/instance-action
+
+#### Alma Linux Support
+
+Chef Infra Client now maps [Alma Linux](https://almalinux.org/) to the `rhel` `platform_family` value. Alma Linux is a new open-source RHEL fork produced by the CloudLinux team.
+
+We've also added support for testing cookbooks on Alma Linux with new [Alma Linux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8) for use in Test Kitchen on VirtualBox, Parallels, and VMware. You can use these images today in Test Kitchen by specifying this new box in your config as follows:
+
+```yaml
+platforms:
+  - name: almalinux-8
+    driver:
+      box: bento/almalinux-8
+```
+
+Note: In the upcoming release of Chef Workstation, you'll be able to skip the `box` config and Test Kitchen will automatically map `almalinux-8` to the appropriate Vagrant image.
+
+#### Knife Bootstrapping Without Sudo
+
+The `knife boostrap` command now supports elevating privileges on systems without `sudo` by using the `su` command instead. Use the new `--su-user` and `--su-password` flags to specify credentials for `su`.
+
+### Resource Updates
+
+#### dnf_package
+
+The `dnf_package` has been updated to maintain idempotency when using the `:upgrade` action when the RPM release "number" contains a dot (`.`).
+
+#### windows_certificate
+
+The `windows_certificate` resource now honors the `user_store` property to manage certificates in the User store instead of the System store.
+
 ## What's New in 16.9.32
 
 ### Improvements
