@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.74 -->
-## [v17.0.74](https://github.com/chef/chef/tree/v17.0.74) (2021-02-03)
+<!-- latest_release 17.0.75 -->
+## [v17.0.75](https://github.com/chef/chef/tree/v17.0.75) (2021-02-04)
 
 #### Merged Pull Requests
-- Compliance cli report [#10939](https://github.com/chef/chef/pull/10939) ([aknarts](https://github.com/aknarts))
+- Chef 17: Remove windows service manager capabilities [#10928](https://github.com/chef/chef/pull/10928) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Chef 17: Remove windows service manager capabilities [#10928](https://github.com/chef/chef/pull/10928) ([tas50](https://github.com/tas50)) <!-- 17.0.75 -->
 - Compliance cli report [#10939](https://github.com/chef/chef/pull/10939) ([aknarts](https://github.com/aknarts)) <!-- 17.0.74 -->
 - Handle sysv compat mode when checking enabled status for systemd service [#10976](https://github.com/chef/chef/pull/10976) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 17.0.73 -->
 - Bump omnibus-software from `197c895` to `c523ead` in /omnibus [#10981](https://github.com/chef/chef/pull/10981) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.72 -->
