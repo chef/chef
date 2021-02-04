@@ -1162,6 +1162,52 @@ describe Chef::Resource do
     end
   end
 
+  describe "#action_description" do
+    class TestResource < ::Chef::Resource
+      action :symbol_action, description: "a symbol test" do; end
+      action "string_action", description: "a string test" do; end
+      action :base_action0 do; end
+      action :base_action1, description: "unmodified base action 1 desc" do; end
+      action :base_action2, description: "unmodified base action 2 desc" do; end
+      action :base_action3, description: "unmodified base action 3 desc" do; end
+    end
+
+    it "returns nil when no description was provided for the action" do
+      expect(TestResource.action_description(:base_action0)).to eql(nil)
+    end
+
+    context "when action definition is a string" do
+      it "returns the description whether a symbol or string is used to look it up" do
+        expect(TestResource.action_description("string_action")).to eql("a string test")
+        expect(TestResource.action_description(:string_action)).to eql("a string test")
+      end
+    end
+
+    context "when action definition is a symbol" do
+      it "returns the description whether a symbol or string is used to look up" do
+        expect(TestResource.action_description("symbol_action")).to eql("a symbol test")
+        expect(TestResource.action_description(:symbol_action)).to eql("a symbol test")
+      end
+    end
+
+    context "when inheriting from an existing resource" do
+      class TestResourceChild < TestResource
+        action :base_action2, description: "modified base action 2 desc" do; end
+        action :base_action3 do; end
+      end
+
+      it "returns original description when a described action is not overridden in child resource" do
+        expect(TestResourceChild.action_description(:base_action1)).to eq "unmodified base action 1 desc"
+      end
+      it "returns original description when the child resource overrides an inherited action but NOT its description" do
+        expect(TestResourceChild.action_description(:base_action3)).to eq "unmodified base action 3 desc"
+      end
+      it "returns new description when the child resource overrides an inherited action and its description" do
+        expect(TestResourceChild.action_description(:base_action2)).to eq "modified base action 2 desc"
+      end
+    end
+  end
+
   describe ".default_action" do
     let(:default_action) {}
     let(:resource_class) do
