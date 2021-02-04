@@ -114,3 +114,28 @@ end
 user "phil" do
   action :remove
 end
+
+directory 'C:\mordor' do
+  rights :full_control, "everyone"
+end
+
+cookbook_file "c:\\mordor\\steveb.pfx" do
+  source "/certs/steveb.pfx"
+  action :create_if_missing
+end
+
+windows_certificate "c:/mordor/steveb.pfx" do
+  pfx_password "1234"
+  action :create
+  user_store true
+  store_name "MY"
+end
+
+cookbook_file "c:\\mordor\\ca.cert.pem" do
+  source "/certs/ca.cert.pem"
+  action :create_if_missing
+end
+
+windows_certificate "c:/mordor/ca.cert.pem" do
+  store_name "ROOT"
+end

@@ -14,6 +14,7 @@
   "dictionaries": ["chef"],
   // words - list of words to be always considered correct
   "words": [
+    "northwindbaking",
     "abcz",
     "Abdulin",
     "ABORTIFHUNG",
@@ -567,6 +568,7 @@
     "getremotelogin",
     "getspnam",
     "gettext",
+    "GETTHUMBPRINTCODE",
     "gettimezone",
     "gettype",
     "gids",
@@ -1911,7 +1913,7 @@
     "lib/chef/provider/package/yum/simplejson/**/*",
     "lib/chef/provider/package/yum/simplejson/*",
     "omnibus/resources/chef/**/*",
-    "kitchen-tests/cookbooks/end_to_end/files/*",
+    "kitchen-tests/cookbooks/end_to_end/files/**/*",
     "spec/**",
     "docs_site",
     "distro/ruby_bin_folder/**/*"
