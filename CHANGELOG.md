@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.7 -->
-## [v16.10.7](https://github.com/chef/chef/tree/v16.10.7) (2021-02-04)
+<!-- latest_release 16.10.8 -->
+## [v16.10.8](https://github.com/chef/chef/tree/v16.10.8) (2021-02-04)
 
 #### Merged Pull Requests
-- Add support for resource action descriptions (Backport 10952) [#10986](https://github.com/chef/chef/pull/10986) ([marcparadise](https://github.com/marcparadise))
+- windows_certificate: Fix the user_store property to actually install certificates to the user store [#10987](https://github.com/chef/chef/pull/10987) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.9.32 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- windows_certificate: Fix the user_store property to actually install certificates to the user store [#10987](https://github.com/chef/chef/pull/10987) ([tas50](https://github.com/tas50)) <!-- 16.10.8 -->
 - Add support for resource action descriptions (Backport 10952) [#10986](https://github.com/chef/chef/pull/10986) ([marcparadise](https://github.com/marcparadise)) <!-- 16.10.7 -->
 - Bump omnibus-software from `197c895` to `c523ead` in /omnibus [#10982](https://github.com/chef/chef/pull/10982) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.6 -->
 - Update Ohai to 16.10.6 [#10975](https://github.com/chef/chef/pull/10975) ([tas50](https://github.com/tas50)) <!-- 16.10.5 -->
