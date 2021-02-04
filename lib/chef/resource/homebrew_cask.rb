@@ -53,9 +53,7 @@ class Chef
         description: "The owner of the Homebrew installation.",
         default: lazy { find_homebrew_username }
 
-      action :install do
-        description "Install an application packaged as a Homebrew cask."
-
+      action :install, description: "Install an application packaged as a Homebrew cask" do
         homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         unless casked?
@@ -68,9 +66,7 @@ class Chef
         end
       end
 
-      action :remove do
-        description "Remove an application packaged as a Homebrew cask."
-
+      action :remove, description: "Remove an application packaged as a Homebrew cask" do
         homebrew_tap "homebrew/cask" if new_resource.install_cask
 
         if casked?

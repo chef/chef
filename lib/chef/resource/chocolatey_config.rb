@@ -68,9 +68,7 @@ class Chef
         data ? data.attribute("value").to_s : nil # REXML just returns nil if it can't find anything so avoid an undefined method error
       end
 
-      action :set do
-        description "Sets a Chocolatey config value."
-
+      action :set, description: "Sets a Chocolatey config value." do
         raise "#{new_resource}: When adding a Chocolatey config you must pass the 'value' property!" unless new_resource.value
 
         converge_if_changed do
@@ -78,9 +76,7 @@ class Chef
         end
       end
 
-      action :unset do
-        description "Unsets a Chocolatey config value."
-
+      action :unset, description: "Unsets a Chocolatey config value." do
         if current_resource
           converge_by("unset Chocolatey config '#{new_resource.config_key}'") do
             shell_out!(choco_cmd("unset"))

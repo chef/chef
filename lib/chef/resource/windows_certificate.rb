@@ -127,8 +127,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Deletes a certificate."
+      action :delete, description: "Deletes a certificate" do
         cert_obj = fetch_cert
         if cert_obj
           converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
@@ -139,9 +138,7 @@ class Chef
         end
       end
 
-      action :fetch do
-        description "Fetches a certificate."
-
+      action :fetch, description: "Fetches a certificate" do
         cert_obj = fetch_cert
         if cert_obj
           show_or_store_cert(cert_obj)
@@ -150,9 +147,7 @@ class Chef
         end
       end
 
-      action :verify do
-        description ""
-
+      action :verify, description: "Verifies a certicate and logs the result" do
         out = verify_cert
         if !!out == out
           out = out ? "Certificate is valid" : "Certificate not valid"

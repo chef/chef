@@ -97,8 +97,7 @@ class Chef
         powershell_exec("Get-WinSystemLocale").result["Name"]
       end
 
-      action :update do
-        description "Update the system's locale."
+      action :update, description: "Update the system's locale" do
         converge_if_changed do
           set_system_locale
         end

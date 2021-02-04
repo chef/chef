@@ -140,9 +140,7 @@ class Chef
         state_cmd
       end
 
-      action :write do
-        description "Write the value to the specified domain/key."
-
+      action :write, description: "Write the value to the specified domain/key" do
         converge_if_changed do
           cmd = defaults_modify_cmd
           Chef::Log.debug("Updating defaults value by shelling out: #{cmd.join(" ")}")
@@ -151,9 +149,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Delete a key from a domain."
-
+      action :delete, description: "Delete a key from a domain" do
         # if it's not there there's nothing to remove
         return unless current_resource
 
