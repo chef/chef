@@ -35,6 +35,8 @@ namespace :docs_site do
       text = ""
       text << "#{resource_name} 'name' do\n"
       properties.each do |p|
+        next if p["name"] == "sensitive" # we don't need to document sensitive twice
+
         pretty_default = pretty_default(p["default"])
 
         text << "  #{p["name"].ljust(padding_size)}"
@@ -139,7 +141,9 @@ namespace :docs_site do
     # TODO:
     # - what to do about "lazy default" for default?
     def properties_list(properties)
-      properties.map do |property|
+      properties.filter_map do |property|
+        next if property["name"] == "sensitive" # we don't need to document sensitive twice
+
         default_val = friendly_default_value(property)
 
         values = {}

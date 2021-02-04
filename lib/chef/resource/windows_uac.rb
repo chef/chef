@@ -72,7 +72,7 @@ class Chef
         equal_to: %i{auto_deny secure_prompt_for_creds prompt_for_creds},
         default: :prompt_for_creds
 
-      action :configure do
+      action :configure, description: "Configures UAC by setting registry keys at `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System`" do
         description 'Configures UAC by setting registry keys at \'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\''
 
         registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' do
