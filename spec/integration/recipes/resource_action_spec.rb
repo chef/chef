@@ -223,6 +223,10 @@ module ResourceActionSpec
           ActionJackson.succeeded = ActionJackson.ruby_block_converged
         end
 
+        action :test1, description: "Original description" do
+          true
+        end
+
         def foo_public
           "foo_public!"
         end
@@ -293,7 +297,12 @@ module ResourceActionSpec
             ActionJackalope.jackalope_ran = :access_attribute
             ActionJackalope.succeeded = ActionJackson.succeeded
           end
+
+          action :test1, description: "An old action with a new description" do
+            super
+          end
         end
+
         before do
           ActionJackalope.jackalope_ran = nil
           ActionJackalope.load_current_resource_ran = nil
@@ -342,6 +351,11 @@ module ResourceActionSpec
           expect(ActionJackson.succeeded).to eq "foo!alope blarghle! bar!alope"
           expect(ActionJackalope.jackalope_ran).to eq :access_attribute
           expect(ActionJackalope.succeeded).to eq "foo!alope blarghle! bar!alope"
+        end
+
+        it "allows overridden action to have a description separate from the action defined in the base resource" do
+          expect(ActionJackson.action_description(:test1)).to eql "Original description"
+          expect(ActionJackalope.action_description(:test1)).to eql "An old action with a new description"
         end
 
         it "non-overridden actions run and can access overridden and non-overridden variables (but not necessarily new ones)" do
