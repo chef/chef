@@ -72,7 +72,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove an item that was previously setup to run at login" do
+      action :remove, description: "Remove an item that was previously configured to run at login" do
         registry_key registry_path do
           values [{
             name: new_resource.program_name,

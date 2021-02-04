@@ -92,9 +92,7 @@ class Chef
         default: false,
         introduced: "16.8"
 
-      action :create do
-        description "Creates or updates a certificate."
-
+      action :create, description: "Creates or updates a certificate" do
         # Extension of the certificate
         ext = ::File.extname(new_resource.source)
 
@@ -103,8 +101,7 @@ class Chef
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
-      action :acl_add do
-        description "Adds read-only entries to a certificate's private key ACL."
+      action :acl_add, description: "Adds read-only entries to a certificate's private key ACL" do
 
         if ::File.exist?(new_resource.source)
           hash = "$cert.GetCertHashString()"
@@ -147,7 +144,7 @@ class Chef
         end
       end
 
-      action :verify, description: "Verifies a certicate and logs the result" do
+      action :verify, description: "Verifies a certificate and logs the result" do
         out = verify_cert
         if !!out == out
           out = out ? "Certificate is valid" : "Certificate not valid"
