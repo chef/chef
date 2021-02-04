@@ -186,6 +186,8 @@ class Chef
       end
 
       action :create, description: "Create or modify a Windows share"  do
+        new_resource_users
+
         # we do this here instead of requiring the property because :delete doesn't need path set
         raise "No path property set" unless new_resource.path
 
@@ -306,13 +308,13 @@ class Chef
           property_name = "#{type}_users"
 
           # brand new share, but nothing to set
-          return false if current_resource.nil? && new_resource_users[property_name].empty?
+          return false if current_resource.nil? && instance_variable_get("@#{property_name}").empty?
 
           # brand new share with new permissions to set
-          return true if current_resource.nil? && !new_resource_users[property_name].empty?
+          return true if current_resource.nil? && !instance_variable_get("@#{property_name}").empty?
 
           # there's a difference between the current and desired state
-          return true unless (new_resource_users[property_name] - current_resource.send(property_name)).empty?
+          return true unless (instance_variable_get("@#{property_name}") - current_resource.send(property_name)).empty?
 
           # anything else
           false
@@ -336,18 +338,15 @@ class Chef
         # For change_users remove common full_users from it
         # For read_users remove common full_users as well as change_users
         def new_resource_users
-          users = {}
-          users["full_users"] = new_resource.full_users
-
-          users["change_users"] = new_resource.change_users - new_resource.full_users
-          users["read_users"] = new_resource.read_users - (new_resource.full_users + new_resource.change_users)
-          users
+          @full_users = new_resource.full_users
+          @change_users = new_resource.change_users - new_resource.full_users
+          @read_users = new_resource.read_users - (new_resource.full_users + new_resource.change_users)
         end
 
         # Compare the full_users, change_users and read_users from current_resource and new_resource
         # @returns boolean True/False
         def users_changed?
-          !(current_resource.full_users == new_resource_users["full_users"] && current_resource.change_users == new_resource_users["change_users"] && current_resource.read_users == new_resource_users["read_users"])
+          !(current_resource.full_users == @full_users && current_resource.change_users == @change_users && current_resource.read_users == @read_users)
         end
       end
 
