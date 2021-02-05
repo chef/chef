@@ -85,8 +85,7 @@ class Chef
       alias_method :extract_options, :options
       alias_method :extract_to, :destination
 
-      action :extract do
-        description "Extract and archive file."
+      action :extract, description: "Extract and archive file." do
 
         require_libarchive
 

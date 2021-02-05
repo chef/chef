@@ -87,8 +87,7 @@ class Chef
       property :sensitive, [TrueClass, FalseClass],
         default: true, desired_state: false
 
-      action :join do
-        description "Update the workgroup."
+      action :join, description: "Update the workgroup." do
 
         unless workgroup_member?
           converge_by("join workstation workgroup #{new_resource.workgroup_name}") do

@@ -99,9 +99,7 @@ class Chef
         end
       end
 
-      action :set do
-        description "Sets the node's hostname."
-
+      action :set, description: "Sets the node's hostname" do
         if !windows?
           ohai "reload hostname" do
             plugin "hostname"
