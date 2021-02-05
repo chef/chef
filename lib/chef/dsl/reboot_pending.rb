@@ -45,8 +45,7 @@ class Chef
 
             # Vista + Server 2008 and newer may have reboots pending from CBS
             registry_key_exists?('HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending')
-        elsif platform?("ubuntu")
-          # This should work for Debian as well if update-notifier-common happens to be installed. We need an API for that.
+        elsif platform_family?("debian")
           File.exist?("/var/run/reboot-required")
         else
           false

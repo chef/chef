@@ -51,9 +51,9 @@ describe Chef::DSL::RebootPending do
         end
       end
 
-      context "platform is ubuntu" do
+      context "platform_family is debian" do
         before do
-          allow(recipe).to receive(:platform?).with("ubuntu").and_return(true)
+          allow(recipe).to receive(:platform_family?).with("debian").and_return(true)
         end
 
         it "should return true if /var/run/reboot-required exists" do
