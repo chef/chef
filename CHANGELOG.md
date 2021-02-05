@@ -2,39 +2,36 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.8 -->
-## [v16.10.8](https://github.com/chef/chef/tree/v16.10.8) (2021-02-04)
-
-#### Merged Pull Requests
-- windows_certificate: Fix the user_store property to actually install certificates to the user store [#10987](https://github.com/chef/chef/pull/10987) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.9.32 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- windows_certificate: Fix the user_store property to actually install certificates to the user store [#10987](https://github.com/chef/chef/pull/10987) ([tas50](https://github.com/tas50)) <!-- 16.10.8 -->
-- Add support for resource action descriptions (Backport 10952) [#10986](https://github.com/chef/chef/pull/10986) ([marcparadise](https://github.com/marcparadise)) <!-- 16.10.7 -->
-- Bump omnibus-software from `197c895` to `c523ead` in /omnibus [#10982](https://github.com/chef/chef/pull/10982) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.6 -->
-- Update Ohai to 16.10.6 [#10975](https://github.com/chef/chef/pull/10975) ([tas50](https://github.com/tas50)) <!-- 16.10.5 -->
-- Update Ohai to 16.10.4 [#10973](https://github.com/chef/chef/pull/10973) ([tas50](https://github.com/tas50)) <!-- 16.10.4 -->
-- handles su - USER session to perform bootstrap [#10971](https://github.com/chef/chef/pull/10971) ([tas50](https://github.com/tas50)) <!-- 16.10.3 -->
-- Fix DNF version comparison bug [#10969](https://github.com/chef/chef/pull/10969) ([tas50](https://github.com/tas50)) <!-- 16.10.2 -->
-- Fix an interpolation mistake in an error message + turn on the cop [#10967](https://github.com/chef/chef/pull/10967) ([tas50](https://github.com/tas50)) <!-- 16.10.1 -->
-- Replace deprecated File.exists? with File.exist? in more places [#10966](https://github.com/chef/chef/pull/10966) ([tas50](https://github.com/tas50)) <!-- 16.10.0 -->
-- these messages should be debug level output [#10970](https://github.com/chef/chef/pull/10970) ([tas50](https://github.com/tas50)) <!-- 16.9.35 -->
-- Fix specs failures with spec 3.10 [#10968](https://github.com/chef/chef/pull/10968) ([tas50](https://github.com/tas50)) <!-- 16.9.34 -->
-- Bump kitchen-vagrant from 1.7.2 to 1.8.0 in /omnibus [#10961](https://github.com/chef/chef/pull/10961) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.9.33 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.10.8](https://github.com/chef/chef/tree/v16.10.8) (2021-02-05)
+
+#### Merged Pull Requests
+- Bump kitchen-vagrant from 1.7.2 to 1.8.0 in /omnibus [#10961](https://github.com/chef/chef/pull/10961) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Fix specs failures with spec 3.10 [#10968](https://github.com/chef/chef/pull/10968) ([tas50](https://github.com/tas50))
+- these messages should be debug level output [#10970](https://github.com/chef/chef/pull/10970) ([tas50](https://github.com/tas50))
+- Replace deprecated File.exists? with File.exist? in more places [#10966](https://github.com/chef/chef/pull/10966) ([tas50](https://github.com/tas50))
+- Fix an interpolation mistake in an error message + turn on the cop [#10967](https://github.com/chef/chef/pull/10967) ([tas50](https://github.com/tas50))
+- Fix DNF version comparison bug [#10969](https://github.com/chef/chef/pull/10969) ([tas50](https://github.com/tas50))
+- handles su - USER session to perform bootstrap [#10971](https://github.com/chef/chef/pull/10971) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.10.4 [#10973](https://github.com/chef/chef/pull/10973) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.10.6 [#10975](https://github.com/chef/chef/pull/10975) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `197c895` to `c523ead` in /omnibus [#10982](https://github.com/chef/chef/pull/10982) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Add support for resource action descriptions (Backport 10952) [#10986](https://github.com/chef/chef/pull/10986) ([marcparadise](https://github.com/marcparadise))
+- windows_certificate: Fix the user_store property to actually install certificates to the user store [#10987](https://github.com/chef/chef/pull/10987) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.9.32](https://github.com/chef/chef/tree/v16.9.32) (2021-01-28)
 
 #### Merged Pull Requests
 - Backport of changes necessary for removal of dev gems [#10914](https://github.com/chef/chef/pull/10914) ([lamont-granquist](https://github.com/lamont-granquist))
 - Bump omnibus from `44f1303` to `65c5931` in /omnibus [#10943](https://github.com/chef/chef/pull/10943) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 - Update inspec to 4.26.4 and train to 3.4.9 [#10947](https://github.com/chef/chef/pull/10947) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.9.29](https://github.com/chef/chef/tree/v16.9.29) (2021-01-21)
 
