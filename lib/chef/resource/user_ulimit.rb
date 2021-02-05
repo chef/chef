@@ -106,7 +106,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Delete an existing ulimit configuration file"  do
+      action :delete, description: "Delete an existing ulimit configuration file" do
         file "/etc/security/limits.d/#{new_resource.filename}" do
           action :delete
         end
