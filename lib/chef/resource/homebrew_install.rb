@@ -75,8 +75,6 @@ class Chef
           raise Chef::Exceptions::InsufficientPermissions, msg
         end
 
-        user_home = Dir.home(new_resource.user).freeze
-
         # Creating the basic directory structure needed for Homebrew
         directories = ["bin", "etc", "include", "lib", "sbin", "share", "var", "opt",
                         "share/zsh", "share/zsh/site-functions",
@@ -92,16 +90,12 @@ class Chef
           end
         end
 
-        user_directories = ["#{user_home}", "#{user_home}/Library",
-                            "#{user_home}/Library/Caches", "#{user_home}/Library/Caches/Homebrew"
-        ].freeze
-        user_directories.each do |dir|
-          directory "#{dir}" do
-            mode "0755"
-            owner new_resource.user
-            group "admin"
-            action :create
-          end
+        directory ::File.join(Dir.home(new_resource.user), "/Library/Caches/Homebrew") do
+          mode "0755"
+          owner new_resource.user
+          recursive true
+          group "admin"
+          action :create
         end
 
         if new_resource.xcode_tools_url
