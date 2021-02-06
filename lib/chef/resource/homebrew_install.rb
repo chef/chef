@@ -24,16 +24,19 @@ class Chef
       provides :homebrew_install
 
       description "Use the **homebrew_install** resource to install the Homebrew package manager on macOS systems."
-      introduced "16.8"
+      introduced "16.11"
       examples <<~DOC
       **Install Homebrew using the Internet to download Command Line Tools for Xcode**:
+
       ```ruby
       homebrew_install 'Install Homebrew and xcode command line tools if necessary' do
         user 'someuser'
         action :install
       end
       ```
+
       **Install Homebrew using a customer-managed source to download Command Line Tools for Xcode from**:
+
       ```ruby
       homebrew_install 'Install Homebrew and xcode command line tools if necessary' do
         xcode_tools_url 'https://somewhere.something.com/downloads/command_line_tools.dmg'
