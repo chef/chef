@@ -76,19 +76,15 @@ class Chef
         end
 
         # Creating the basic directory structure needed for Homebrew
-        directories = ["bin", "etc", "include", "lib", "sbin", "share", "var", "opt",
-                        "share/zsh", "share/zsh/site-functions",
-                        "var/homebrew", "var/homebrew/linked",
-                        "Cellar", "Caskroom", "Homebrew", "Frameworks"
-                      ].freeze
-        directories.each do |dir|
-          directory "/usr/local/#{dir}" do
-            mode "0755"
-            owner new_resource.user
-            group "admin"
-            action :create
-          end
-        end
+        ["bin", "etc", "include", "lib", "sbin", "share", "var", "opt", "share/zsh", "share/zsh/site-functions",
+         "var/homebrew", "var/homebrew/linked", "Cellar", "Caskroom", "Homebrew", "Frameworks" ].each do |dir|
+           directory "/usr/local/#{dir}" do
+             mode "0775"
+             owner new_resource.user
+             group "admin"
+             action :create
+           end
+         end
 
         directory ::File.join(Dir.home(new_resource.user), "/Library/Caches/Homebrew") do
           mode "0755"
