@@ -94,6 +94,21 @@ class Chef
           action :create
         end
 
+        script "Initialize the homebrew git source" do
+          interpreter "bash"
+          cwd "/usr/local/Homebrew"
+          code <<-CODEBLOCK
+            git init -q
+            git config remote.origin.url https://github.com/Homebrew/homebrew-core
+            git config remote.origin.fetch +refs/heads/*:refs/remotes/origin/*
+            git config core.autocrlf false
+            git fetch --force origin refs/heads/master:refs/remotes/origin/master
+            git remote set-head origin --auto >/dev/null
+            git reset --hard origin/master\
+          CODEBLOCK
+          user "root"
+        end
+
         if new_resource.xcode_tools_url
           dmg_package new_resource.xcode_tools_pkg_name do
             source new_resource.xcode_tools_url
@@ -114,14 +129,12 @@ class Chef
           action :create
         end
 
-        script "Download and unpack Homebrew" do
-          interpreter "bash"
-          cwd "/usr/local/Homebrew"
-          code <<-CODEBLOCK
-            git init -q
-            unzip #{zip_file} -d /usr/local/Homebrew
-          CODEBLOCK
-          user new_resource.user
+
+        archive_file "Unpack the existing Homebrew files" do
+          path zip_file
+          destination "/usr/local/Homebrew"
+          action :extract
+          overwrite true
         end
 
         script "move files to their correct locations" do
