@@ -48,13 +48,13 @@ class Chef
       DOC
 
       property :xcode_tools_url, String,
-        description: "A url pointing to a 'Command Line Tools for Xcode' dmg file"
+        description: "URL of the `Command Line Tools for Xcode` DMG file."
 
       property :xcode_tools_pkg_name, String,
-        description: "The name of the pkg inside the dmg located at the xcode_tools_url"
+        description: "The name of the pkg inside the DMG specified in the `xcode_tools_url` property."
 
       property :brew_source_url, String,
-        description: "A url pointing to a Homebrew installer",
+        description: "URL of the Homebrew install zipfile.",
         default: "https://codeload.github.com/Homebrew/brew/zip/master"
 
       property :user, String,
