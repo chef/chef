@@ -61,9 +61,13 @@ class Chef
         description: "The user to install Homebrew as. Note: Homebrew cannot be installed as root.",
         required: true
 
+      property :force, [TrueClass, FalseClass],
+        description: "Force the installation of Homebrew even if the `/usr/local/bin/brew` command already exists on the system.",
+        default: false
+
       action :install do
         # Avoid all the work in the below resources if homebrew is already installed
-        return if ::File.exist?("/usr/local/bin/brew")
+        return if !new_resource.force && ::File.exist?("/usr/local/bin/brew")
 
         # check if 'user' is root and raise an exception if so
         if Etc.getpwnam(new_resource.user).uid == 0
