@@ -153,7 +153,7 @@ namespace :docs_site do
         values["default_value"] = default_val unless default_val.nil?
         values["new_in"] = property["introduced"] unless property["introduced"].nil?
         values["allowed_values"] = property["equal_to"].join(", ") unless property["equal_to"].empty?
-        values["description_list"] = [{ "markdown" => property["description"] }]
+        values["description_list"] = split_description_values(property["description"])
         values
       end
     end
@@ -221,7 +221,7 @@ namespace :docs_site do
     # using the markers "Note:" for "note" sections and "Warning:" for "warning" sections.
     # TODO: has the limitation that the plain description section is assumed to come first,
     # and is followed by one or more "note"s or "warning"s sections.
-    def build_description(name, text)
+    def split_description_values(text)
       return [{ "markdown" => nil }] if text.nil?
 
       description_pattern = /(Note:|Warning:)?((?:(?!Note:|Warning:).)*)/m
@@ -246,6 +246,13 @@ namespace :docs_site do
         end
       end
 
+      description
+    end
+
+    # takes the resource description text, splits out warning/note fields and then adds multipackage based notes when appropriate
+    def build_reource_description(name, text)
+      description = split_description_values(text)
+
       # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
       description << { "notes_resource_based_on_package" => true } if %w{apt_package bff_package dnf_package homebrew_package ips_package openbsd_package pacman_package portage_package smartos_package windows_package yum_package zypper_package pacman_package freebsd_package}.include?(name)
 
@@ -265,7 +272,7 @@ namespace :docs_site do
       r.merge!(special_properties(name))
 
       r["resource"] = name
-      r["resource_description_list"] = build_description(name, data["description"])
+      r["resource_description_list"] = build_reource_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
