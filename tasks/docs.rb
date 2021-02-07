@@ -132,8 +132,8 @@ namespace :docs_site do
     #
     # @return [Hash]
     #
-    def action_list(actions)
-      actions = actions.map { |k, v| [k.to_sym, { "markdown" => v } ] }.to_h
+    def action_list(actions, default_action)
+      actions = actions.map { |k, v| [k.to_sym, { "markdown" => k == default_action.first ? "#{v} (default)" : v } ] }.to_h
       actions[:nothing] = { "shortcode" => "resources_common_actions_nothing.md" }
       actions
     end
@@ -277,7 +277,7 @@ namespace :docs_site do
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
       r["syntax_full_properties_list"] = friendly_full_property_list(name, properties)
-      r["actions_list"] = action_list(data["actions"])
+      r["actions_list"] = action_list(data["actions"], data["default_action"] )
       r["properties_list"] = properties_list(properties)
       r["examples"] = data["examples"]
 
