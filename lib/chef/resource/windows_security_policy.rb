@@ -98,7 +98,7 @@ class Chef
         secvalue current_state[desired.secoption.to_s]
       end
 
-      action :set do
+      action :set, description: "Set the Windows security policy" do
         converge_if_changed :secvalue do
           security_option = new_resource.secoption
           security_value = new_resource.secvalue
