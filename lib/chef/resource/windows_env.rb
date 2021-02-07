@@ -192,7 +192,8 @@ class Chef
         end
       end
 
-      action :create do
+      action :create, description: "Create an environment variable. If an environment variable
+      already exists (but does not match), update that environment variable to match." do
         if key_exists?
           if requires_modify_or_create?
             modify_env
@@ -206,7 +207,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an environment variable." do
         if ( ENV[new_resource.key_name] || key_exists? ) && !delete_element
           delete_env
           logger.info("#{new_resource} deleted")
@@ -214,7 +215,8 @@ class Chef
         end
       end
 
-      action :modify do
+      action :modify, description: "Modify an existing environment variable. This prepends the new value
+      to the existing value, using the delimiter specified by the `delim` property." do
         if key_exists?
           if requires_modify_or_create?
             modify_env
