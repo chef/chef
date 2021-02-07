@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.81 -->
-## [v17.0.81](https://github.com/chef/chef/tree/v17.0.81) (2021-02-06)
+<!-- latest_release 17.0.82 -->
+## [v17.0.82](https://github.com/chef/chef/tree/v17.0.82) (2021-02-07)
 
 #### Merged Pull Requests
-- DNF/YUM package: fix abrt errors [#10991](https://github.com/chef/chef/pull/10991) ([lamont-granquist](https://github.com/lamont-granquist))
+- Improve the auto generation of documentation [#10992](https://github.com/chef/chef/pull/10992) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve the auto generation of documentation [#10992](https://github.com/chef/chef/pull/10992) ([tas50](https://github.com/tas50)) <!-- 17.0.82 -->
 - DNF/YUM package: fix abrt errors [#10991](https://github.com/chef/chef/pull/10991) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.81 -->
 - Improve resource automation [#10988](https://github.com/chef/chef/pull/10988) ([tas50](https://github.com/tas50)) <!-- 17.0.79 -->
 - windows_certificate: Fix the `user_store` property to actually install certificates to the user store [#10977](https://github.com/chef/chef/pull/10977) ([tas50](https://github.com/tas50)) <!-- 17.0.78 -->
