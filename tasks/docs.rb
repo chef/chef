@@ -250,7 +250,7 @@ namespace :docs_site do
     end
 
     # takes the resource description text, splits out warning/note fields and then adds multipackage based notes when appropriate
-    def build_reource_description(name, text)
+    def build_resource_description(name, text)
       description = split_description_values(text)
 
       # if we're on a package resource, depending on the OS we want to inject a warning / note that you can just use 'package' instead
@@ -272,7 +272,7 @@ namespace :docs_site do
       r.merge!(special_properties(name))
 
       r["resource"] = name
-      r["resource_description_list"] = build_reource_description(name, data["description"])
+      r["resource_description_list"] = build_resource_description(name, data["description"])
       r["resource_new_in"] = data["introduced"] unless data["introduced"].nil?
       r["syntax_full_code_block"] = generate_resource_block(name, properties, data["default_action"])
       r["syntax_properties_list"] = nil
