@@ -193,8 +193,7 @@ class Chef
         end
       end
 
-      action :create, description: "Create an environment variable. If an environment variable
-      already exists (but does not match), update that environment variable to match." do
+      action :create, description: "Create an environment variable. If an environment variable already exists (but does not match), update that environment variable to match." do
         if key_exists?
           if requires_modify_or_create?
             modify_env
@@ -216,8 +215,7 @@ class Chef
         end
       end
 
-      action :modify, description: "Modify an existing environment variable. This prepends the new value
-      to the existing value, using the delimiter specified by the `delim` property." do
+      action :modify, description: "Modify an existing environment variable. This prepends the new value to the existing value, using the delimiter specified by the `delim` property." do
         if key_exists?
           if requires_modify_or_create?
             modify_env
