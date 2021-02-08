@@ -176,6 +176,7 @@ class Chef
         def resolve_package_versions(pkg)
           current_version = nil
           candidate_version = nil
+          all_versions = []
           run_noninteractive("apt-cache", default_release_options, "policy", pkg).stdout.each_line do |line|
             case line
             when /^\s{2}Installed: (.+)$/
@@ -184,9 +185,34 @@ class Chef
             when /^\s{2}Candidate: (.+)$/
               candidate_version = ( $1 != "(none)" ) ? $1 : nil
               logger.trace("#{new_resource} candidate version for #{pkg} is #{$1}")
+            when /\s+(?:\*\*\* )?(\S+) \d+/
+              all_versions << $1
             end
           end
-          [ current_version, candidate_version ]
+          # This is a bit ugly... really this whole provider needs
+          # to be rewritten to use target_version_array and friends, but
+          # for now this gets us moving
+          idx = package_name_array.index(pkg)
+          chosen_version =
+            if idx
+              user_ver = new_version_array[idx]
+              if user_ver
+                if all_versions.include?(user_ver)
+                  user_ver
+                else
+                  logger.debug("User specified a version that's not available")
+                  nil
+                end
+              else
+                # user didn't specify a version, use candidate
+                candidate_version
+              end
+            else
+              # this probably means we're redirected from a virtual
+              # package, so... just go with candidate version
+              candidate_version
+            end
+          [ current_version, chosen_version ]
         end
 
         def resolve_virtual_package_name(pkg)
