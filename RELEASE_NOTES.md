@@ -13,6 +13,7 @@ This section serves to track things we should later document here for 17.0
 - Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - Compliance cli report - https://github.com/chef/chef/pull/10939
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
+- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
 
 ## What's New in 16.10
 
