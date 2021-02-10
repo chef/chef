@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 1fa20525db43784dc91e647015f2ff46cac15b37
-  branch: master
+  revision: 937bdbdcfbb1cf22fdf155b7f71ecdd2e761009f
+  branch: mp/infra-m1-build-support
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.424.0)
+    aws-partitions (1.426.0)
     aws-sdk-core (3.112.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -312,7 +312,7 @@ GEM
       zhexdump (>= 0.0.2)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.13.1)
+    pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.6)

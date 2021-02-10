@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 gem "omnibus", git: "https://github.com/chef/omnibus", branch: "master"
-gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "master"
+gem "omnibus-software", git: "https://github.com/chef/omnibus-software", branch: "mp/infra-m1-build-support"
 gem "artifactory"
 
 gem "pedump"
