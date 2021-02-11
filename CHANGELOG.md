@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.87 -->
-## [v17.0.87](https://github.com/chef/chef/tree/v17.0.87) (2021-02-10)
+<!-- latest_release 17.0.88 -->
+## [v17.0.88](https://github.com/chef/chef/tree/v17.0.88) (2021-02-11)
 
 #### Merged Pull Requests
-- Bump ffi-libarchive to 1.0.17 [#11000](https://github.com/chef/chef/pull/11000) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump mixlib-archive to 1.1.4 [#11002](https://github.com/chef/chef/pull/11002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-archive to 1.1.4 [#11002](https://github.com/chef/chef/pull/11002) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.88 -->
 - Bump ffi-libarchive to 1.0.17 [#11000](https://github.com/chef/chef/pull/11000) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.87 -->
 - Extend the reboot_pending? helper to all debian-ish platforms [#10989](https://github.com/chef/chef/pull/10989) ([tas50](https://github.com/tas50)) <!-- 17.0.86 -->
 - Fix downgrades in apt_package [#10993](https://github.com/chef/chef/pull/10993) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.85 -->
