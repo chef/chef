@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.92 -->
-## [v17.0.92](https://github.com/chef/chef/tree/v17.0.92) (2021-02-11)
+<!-- latest_release 17.0.93 -->
+## [v17.0.93](https://github.com/chef/chef/tree/v17.0.93) (2021-02-11)
 
 #### Merged Pull Requests
-- Use openssl 1.1.1i for OSX builds  [#11006](https://github.com/chef/chef/pull/11006) ([marcparadise](https://github.com/marcparadise))
+- Bump omnibus-software from `a018c22` to `ef9714f` in /omnibus [#11023](https://github.com/chef/chef/pull/11023) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `a018c22` to `ef9714f` in /omnibus [#11023](https://github.com/chef/chef/pull/11023) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.93 -->
 - Use openssl 1.1.1i for OSX builds  [#11006](https://github.com/chef/chef/pull/11006) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.92 -->
 - Bump omnibus-software from `1fa2052` to `a018c22` in /omnibus [#11009](https://github.com/chef/chef/pull/11009) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.91 -->
 - Add more descriptions for docs generation [#11003](https://github.com/chef/chef/pull/11003) ([tas50](https://github.com/tas50)) <!-- 17.0.90 -->
