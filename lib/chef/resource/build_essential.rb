@@ -119,7 +119,7 @@ class Chef
         end
       end
 
-      action :upgrade, description: "Upgrade build essential (Xcode Command Line) tools on macOS" do
+      action :upgrade, description: "Upgrade the Xcode CLI Tools on macOS hosts. **New in Chef Infra Client 16**" do
 
         if macos?
           pkg_label = xcode_cli_package_label

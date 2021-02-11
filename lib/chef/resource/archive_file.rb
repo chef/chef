@@ -67,7 +67,7 @@ class Chef
 
       property :mode, [String, Integer],
         description: "The mode of the extracted files. Integer values are deprecated as octal values (ex. 0755) would not be interpreted correctly.",
-        default: "755"
+        default: "755", default_description: "'755'"
 
       property :destination, String,
         description: "The file path to extract the archive file to.",
