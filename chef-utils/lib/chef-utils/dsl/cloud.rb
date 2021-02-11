@@ -35,6 +35,17 @@ module ChefUtils
         !node["cloud"].nil?
       end
 
+      # Determine if the current node is running in Alibaba Cloud
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 17.0
+      #
+      # @return [Boolean]
+      #
+      def alibaba?(node = __getnode)
+        node.key?("alibaba")
+      end
+
       # Determine if the current node is running in AWS EC2.
       #
       # @param [Chef::Node] node the node to check

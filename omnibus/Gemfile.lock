@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.8.0)
     aws-eventstream (1.1.0)
-    aws-partitions (1.424.0)
+    aws-partitions (1.426.0)
     aws-sdk-core (3.112.0)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -188,7 +188,7 @@ GEM
     ffi (1.14.2)
     ffi (1.14.2-x64-mingw32)
     ffi (1.14.2-x86-mingw32)
-    ffi-libarchive (1.0.4)
+    ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
       ffi
@@ -249,9 +249,9 @@ GEM
       multi_json (~> 1.14)
     method_source (1.0.0)
     minitar (0.9)
-    mixlib-archive (1.0.7)
+    mixlib-archive (1.1.4)
       mixlib-log
-    mixlib-archive (1.0.7-universal-mingw32)
+    mixlib-archive (1.1.4-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.7)
     mixlib-cli (2.1.8)
@@ -312,7 +312,7 @@ GEM
       zhexdump (>= 0.0.2)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.13.1)
+    pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.6)
