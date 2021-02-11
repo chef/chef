@@ -208,3 +208,7 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
+  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
+  - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
+    actions:
+      - bash:.expeditor/update_dep.sh
