@@ -640,7 +640,7 @@ class Chef
     def rest
       @rest ||= begin
         require_relative "server_api"
-        Chef::ServerAPI.new(Chef::Config[:chef_server_url])
+        Chef::ServerAPI.new(Chef::Config[:chef_server_root])
       end
     end
 
@@ -662,11 +662,5 @@ class Chef
       Chef::Config.init_openssl
     end
 
-    def root_rest
-      @root_rest ||= begin
-        require_relative "server_api"
-        Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "1" })
-      end
-    end
   end
 end

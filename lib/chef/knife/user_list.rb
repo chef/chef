@@ -30,7 +30,7 @@ class Chef
         description: "Show corresponding URIs."
 
       def run
-        results = root_rest.get("users")
+        results = rest.get("users")
         output(format_list_for_display(results))
       end
     end

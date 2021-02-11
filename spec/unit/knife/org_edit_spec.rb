@@ -20,7 +20,7 @@ require "spec_helper"
 
 describe Chef::Knife::OrgEdit do
   let(:knife) { Chef::Knife::OrgEdit.new }
-  let(:root_rest) { double("Chef::ServerAPI") }
+  let(:rest) { double("Chef::ServerAPI") }
 
   before :each do
     Chef::Knife::OrgEdit.load_deps
@@ -31,12 +31,12 @@ describe Chef::Knife::OrgEdit do
   end
 
   it "loads and edits the organisation" do
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(rest)
     original_data = { "org_name" => "my_org" }
     data = { "org_name" => "my_org1" }
-    expect(root_rest).to receive(:get).with("organizations/foobar").and_return(original_data)
+    expect(rest).to receive(:get).with("organizations/foobar").and_return(original_data)
     expect(knife).to receive(:edit_hash).with(original_data).and_return(data)
-    expect(root_rest).to receive(:put).with("organizations/foobar", data)
+    expect(rest).to receive(:put).with("organizations/foobar", data)
     knife.run
   end
 

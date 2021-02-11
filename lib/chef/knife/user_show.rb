@@ -39,9 +39,9 @@ class Chef
           exit 1
         end
 
-        results = root_rest.get("users/#{@user_name}")
+        results = rest.get("users/#{@user_name}")
         if config[:with_orgs]
-          orgs = root_rest.get("users/#{@user_name}/organizations")
+          orgs = rest.get("users/#{@user_name}/organizations")
           results["organizations"] = orgs.map { |o| o["organization"]["name"] }
         end
         output(format_for_display(results))

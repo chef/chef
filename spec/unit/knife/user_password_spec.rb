@@ -23,14 +23,14 @@ Chef::Knife::UserDelete.load_deps
 
 describe Chef::Knife::UserPassword do
 
-  let(:root_rest) { double("Chef::ServerAPI") }
+  let(:rest) { double("Chef::ServerAPI") }
 
   before :each do
     @knife = Chef::Knife::UserPassword.new
     @user_name = "foobar"
     @password = "abc123"
     @user = double("Chef::User")
-    allow(@user).to receive(:root_rest).and_return(root_rest)
+    allow(@user).to receive(:rest).and_return(rest)
     @key = "You don't come into cooking to get rich - Ramsay"
   end
 
@@ -43,9 +43,9 @@ describe Chef::Knife::UserPassword do
       result = { "password" => [], "recovery_authentication_enabled" => true }
       allow(@user).to receive(:[]).with("organization")
 
-      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
-      expect(@user.root_rest).to receive(:get).with("users/#{@user_name}").and_return(result)
-      expect(@user.root_rest).to receive(:put).with("users/#{@user_name}", result)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(rest)
+      expect(@user.rest).to receive(:get).with("users/#{@user_name}").and_return(result)
+      expect(@user.rest).to receive(:put).with("users/#{@user_name}", result)
       expect(@knife.ui).to receive(:msg).with("Authentication info updated for #{@user_name}.")
 
       @knife.run
