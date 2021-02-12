@@ -21,6 +21,14 @@ describe Chef::Compliance::Fetcher::Automate do
         expect(res.target).to eq(expected)
       end
 
+      it "should resolve a compliance URL with a @ in the namespace" do
+        res = Chef::Compliance::Fetcher::Automate.resolve("compliance://name@space/profile_name")
+
+        expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
+        expected = "https://automate.test/compliance/profiles/name@space/profile_name/tar"
+        expect(res.target).to eq(expected)
+      end
+
       it "raises an exception with no data collector token" do
         Chef::Config[:data_collector].delete(:token)
 
