@@ -66,6 +66,7 @@ describe Chef::Provider::Mount::Mount do
 
     describe "when dealing with network mounts" do
       { "nfs" => "nfsserver:/vol/path",
+        "cephfs" => "cephserver:6789:/",
         "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
           it "should detect network fs_spec (#{type})" do
             @new_resource.device fs_spec
