@@ -32,12 +32,12 @@ class Chef
             profile_fetch_url = target[:url]
           else
             # verifies that the target e.g base/ssh exists
-            base_path = "/compliance/profiles/#{uri.host}#{uri.path}"
-
+            profile = sanitize_profile_name(uri)
+            owner, id = profile.split("/")
             profile_path = if target.respond_to?(:key?) && target.key?(:version)
-                             "#{base_path}/version/#{target[:version]}/tar"
+                             "/compliance/profiles/#{owner}/#{id}/version/#{target[:version]}/tar"
                            else
-                             "#{base_path}/tar"
+                             "/compliance/profiles/#{owner}/#{id}/tar"
                            end
 
             url = URI(Chef::Config[:data_collector][:server_url])
@@ -58,6 +58,17 @@ class Chef
           new(profile_fetch_url, config)
         rescue URI::Error => _e
           nil
+        end
+
+        # returns a parsed url for `admin/profile` or `compliance://admin/profile`
+        # TODO: remove in future, copied from inspec to support older versions of inspec
+        def self.sanitize_profile_name(profile)
+          uri = if URI(profile).scheme == "compliance"
+                  URI(profile)
+                else
+                  URI("compliance://#{profile}")
+                end
+          uri.to_s.sub(%r{^compliance:\/\/}, "")
         end
 
         def to_s
