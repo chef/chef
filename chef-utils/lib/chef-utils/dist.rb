@@ -2,14 +2,6 @@
 module ChefUtils
   # This class is not fully implemented, depending on it is not recommended!
   module Dist
-    class Apply
-      # The chef-apply product name
-      PRODUCT = "Chef Infra Apply"
-
-      # The chef-apply binary
-      EXEC = "chef-apply"
-    end
-
     class Automate
       # name of the automate product
       PRODUCT = "Chef Automate"

@@ -411,11 +411,6 @@ function Run-RubyCommand($command, $argList) {
   Run-ExecutableAndWait $ruby """$ruby"" '$commandPath' $fortifiedArgString"
 }
 
-
-function <%= ChefUtils::Dist::Apply::EXEC %> {
-  Run-RubyCommand '<%= ChefUtils::Dist::Apply::EXEC %>' $args
-}
-
 function <%= ChefUtils::Dist::Infra::CLIENT %> {
   Run-RubyCommand '<%= ChefUtils::Dist::Infra::CLIENT %>' $args
 }
@@ -440,7 +435,6 @@ function knife {
   Run-RubyCommand 'knife' $args
 }
 
-Export-ModuleMember -function <%= ChefUtils::Dist::Apply::EXEC %>
 Export-ModuleMember -function <%= ChefUtils::Dist::Infra::CLIENT %>
 Export-ModuleMember -function <%= ChefUtils::Dist::Infra::EXEC %>-service-manager
 Export-ModuleMember -function <%= ChefUtils::Dist::Infra::SHELL %>
