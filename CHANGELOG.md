@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.96 -->
-## [v17.0.96](https://github.com/chef/chef/tree/v17.0.96) (2021-02-12)
+<!-- latest_release 17.0.97 -->
+## [v17.0.97](https://github.com/chef/chef/tree/v17.0.97) (2021-02-13)
 
 #### Merged Pull Requests
-- mount: Fix for network mounts which use the root level as the device [#11031](https://github.com/chef/chef/pull/11031) ([ramereth](https://github.com/ramereth))
+- Stop producing Habitat kernel2 packages [#11037](https://github.com/chef/chef/pull/11037) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop producing Habitat kernel2 packages [#11037](https://github.com/chef/chef/pull/11037) ([tas50](https://github.com/tas50)) <!-- 17.0.97 -->
 - mount: Fix for network mounts which use the root level as the device [#11031](https://github.com/chef/chef/pull/11031) ([ramereth](https://github.com/ramereth)) <!-- 17.0.96 -->
 - Fix automate compliance fetcher for profiles with at signs [#11032](https://github.com/chef/chef/pull/11032) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.95 -->
 - Bump berkshelf from 7.1.0 to 7.2.0 in /omnibus [#11027](https://github.com/chef/chef/pull/11027) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.94 -->
