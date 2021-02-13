@@ -250,9 +250,9 @@ GEM
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.2)
+    mixlib-shellout (3.2.5)
       chef-utils
-    mixlib-shellout (3.2.2-universal-mingw32)
+    mixlib-shellout (3.2.5-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
