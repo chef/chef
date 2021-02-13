@@ -45,13 +45,6 @@ Describe "chef-infra-client" {
         }
     }
 
-    Context "chef-apply" {
-        It "is an executable" {
-            hab pkg exec $PackageIdentifier chef-apply.bat --version
-            $? | Should be $true
-        }
-    }
-
     Context "knife" {
         It "is an executable" {
             hab pkg exec $PackageIdentifier knife.bat --version

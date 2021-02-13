@@ -8,7 +8,7 @@ labels: "Status: Untriaged"
 !!!!!! NOTE: CHEF CLIENT BUGS ONLY !!!!!!
 
 This issue tracker is for the code contained within this repo -- `chef-client`, base `knife` functionality (not
-plugins), `chef-apply`, `chef-solo`, `chef-client -z`, etc.
+plugins), `chef-solo`, `chef-client -z`, etc.
 
 * Requests for new or alternative functionality should be made to [feedback.chef.io](https://feedback.chef.io/forums/301644-chef-product-feedback/category/110832-chef-client)
 * [Chef Server issues](https://github.com/chef/chef-server/issues/new)
