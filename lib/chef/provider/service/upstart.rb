@@ -65,15 +65,8 @@ class Chef
             end
           end
 
-          platform, version = Chef::Platform.find_platform_and_version(run_context.node)
-          if platform == "ubuntu" && (8.04..9.04).cover?(version.to_f)
-            @upstart_job_dir = "/etc/event.d"
-            @upstart_conf_suffix = ""
-          else
-            @upstart_job_dir = "/etc/init"
-            @upstart_conf_suffix = ".conf"
-          end
-
+          @upstart_job_dir = "/etc/init"
+          @upstart_conf_suffix = ".conf"
           @command_success = true # new_resource.status_command= false, means upstart used
           @config_file_found = true
           @upstart_command_success = true
