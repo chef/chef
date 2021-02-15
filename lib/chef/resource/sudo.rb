@@ -71,12 +71,12 @@ class Chef
 
       property :users, [String, Array],
         description: "User(s) to provide sudo privileges to. This property accepts either an array or a comma separated list.",
-        default: lazy { [] },
+        default: [],
         coerce: proc { |x| x.is_a?(Array) ? x : x.split(/\s*,\s*/) }
 
       property :groups, [String, Array],
         description: "Group(s) to provide sudo privileges to. This property accepts either an array or a comma separated list. Leading % on group names is optional.",
-        default: lazy { [] },
+        default: [],
         coerce: proc { |x| coerce_groups(x) }
 
       property :commands, Array,
@@ -108,11 +108,11 @@ class Chef
 
       property :defaults, Array,
         description: "An array of defaults for the user/group.",
-        default: lazy { [] }
+        default: []
 
       property :command_aliases, Array,
         description: "Command aliases that can be used as allowed commands later in the configuration.",
-        default: lazy { [] }
+        default: []
 
       property :setenv, [TrueClass, FalseClass],
         description: "Determines whether or not to permit preservation of the environment with `sudo -E`.",
@@ -120,11 +120,11 @@ class Chef
 
       property :env_keep_add, Array,
         description: "An array of strings to add to `env_keep`.",
-        default: lazy { [] }
+        default: []
 
       property :env_keep_subtract, Array,
         description: "An array of strings to remove from `env_keep`.",
-        default: lazy { [] }
+        default: []
 
       property :visudo_path, String,
         deprecated: true
