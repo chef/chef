@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: ef9714fd7868c15cc34158aa5896b0ae4c9c2eac
+  revision: dd2a33e9b65365539c3226ed3438cb1bc4525964
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -262,9 +262,9 @@ GEM
       mixlib-versioning
       thor
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.2)
+    mixlib-shellout (3.2.5)
       chef-utils
-    mixlib-shellout (3.2.2-universal-mingw32)
+    mixlib-shellout (3.2.5-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
