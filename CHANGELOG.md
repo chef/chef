@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.98 -->
-## [v17.0.98](https://github.com/chef/chef/tree/v17.0.98) (2021-02-13)
+<!-- latest_release 17.0.99 -->
+## [v17.0.99](https://github.com/chef/chef/tree/v17.0.99) (2021-02-15)
 
 #### Merged Pull Requests
-- Fix typo in powershell_script.rb [#11040](https://github.com/chef/chef/pull/11040) ([floh96](https://github.com/floh96))
+- Don&#39;t make upstart service to service on any debian platform families [#11039](https://github.com/chef/chef/pull/11039) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Don&#39;t make upstart service to service on any debian platform families [#11039](https://github.com/chef/chef/pull/11039) ([tas50](https://github.com/tas50)) <!-- 17.0.99 -->
 - Fix typo in powershell_script.rb [#11040](https://github.com/chef/chef/pull/11040) ([floh96](https://github.com/floh96)) <!-- 17.0.98 -->
 - Stop producing Habitat kernel2 packages [#11037](https://github.com/chef/chef/pull/11037) ([tas50](https://github.com/tas50)) <!-- 17.0.97 -->
 - mount: Fix for network mounts which use the root level as the device [#11031](https://github.com/chef/chef/pull/11031) ([ramereth](https://github.com/ramereth)) <!-- 17.0.96 -->
