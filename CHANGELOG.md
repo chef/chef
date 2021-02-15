@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.101 -->
-## [v17.0.101](https://github.com/chef/chef/tree/v17.0.101) (2021-02-15)
+<!-- latest_release 17.0.102 -->
+## [v17.0.102](https://github.com/chef/chef/tree/v17.0.102) (2021-02-15)
 
 #### Merged Pull Requests
-- Remove an Upstart check for Ubuntu 8.04-9.04 [#11038](https://github.com/chef/chef/pull/11038) ([tas50](https://github.com/tas50))
+- Fix hab promotes + compile with -O3 for performance [#11045](https://github.com/chef/chef/pull/11045) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix hab promotes + compile with -O3 for performance [#11045](https://github.com/chef/chef/pull/11045) ([tas50](https://github.com/tas50)) <!-- 17.0.102 -->
 - Remove an Upstart check for Ubuntu 8.04-9.04 [#11038](https://github.com/chef/chef/pull/11038) ([tas50](https://github.com/tas50)) <!-- 17.0.101 -->
 - Bump mixlib-shellout to 3.2.5 [#11041](https://github.com/chef/chef/pull/11041) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.100 -->
 - Don&#39;t make upstart service to service on any debian platform families [#11039](https://github.com/chef/chef/pull/11039) ([tas50](https://github.com/tas50)) <!-- 17.0.99 -->
