@@ -33,7 +33,7 @@ class Chef
         description: "Show auto-generated hidden orgs in output"
 
       def run
-        results = rest.get("organizations")
+        results = root_rest.get("organizations")
         unless config[:all_orgs]
           results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
         end

@@ -114,13 +114,13 @@ class Chef
           end
         end
 
-        final_user = rest.post("users/", user_hash)
+        final_user = root_rest.post("users/", user_hash)
 
         if config[:orgname]
           request_body = { user: user.username }
-          response = rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
+          response = root_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
           association_id = response["uri"].split("/").last
-          rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
+          root_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
         end
 
         ui.info("Created #{user.username}")

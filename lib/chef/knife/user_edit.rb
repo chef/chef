@@ -42,10 +42,10 @@ class Chef
           ui.fatal("You must specify a user name")
           exit 1
         end
-        original_user = rest.get("users/#{@user_name}")
+        original_user = root_rest.get("users/#{@user_name}")
         edited_user = get_updated_user(original_user)
         if original_user != edited_user
-          result = rest.put("users/#{@user_name}", edited_user)
+          result = root_rest.put("users/#{@user_name}", edited_user)
           ui.msg("Saved #{@user_name}.")
           unless result["private_key"].nil?
             if config[:filename]

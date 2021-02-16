@@ -24,7 +24,7 @@ class Chef
 
       def run
         org_name = @name_args[0]
-        ui.output rest.get("organizations/#{org_name}")
+        ui.output root_rest.get("organizations/#{org_name}")
       end
     end
   end

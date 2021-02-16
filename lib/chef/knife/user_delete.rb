@@ -82,7 +82,7 @@ class Chef
       end
 
       def org_memberships(username)
-        org_data = rest.get("users/#{username}/organizations")
+        org_data = root_rest.get("users/#{username}/organizations")
         org_data.map { |org| Chef::Org.new(org["organization"]["name"]) }
       end
 
@@ -109,7 +109,7 @@ class Chef
 
       def delete_user(username)
         ui.stderr.puts "Deleting user #{username}."
-        rest.delete("users/#{username}")
+        root_rest.delete("users/#{username}")
       end
 
       # Error message that says how to removed from org

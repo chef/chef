@@ -47,7 +47,7 @@ class Chef
         # true or false, there is no way of knowing if the user is using ldap or not,
         # so we will update the user every time, instead of checking if we are actually
         # changing anything before we PUT.
-        result = rest.get("users/#{user_name}")
+        result = root_rest.get("users/#{user_name}")
 
         result["password"] = password unless password.nil?
 
@@ -58,7 +58,7 @@ class Chef
         result["recovery_authentication_enabled"] = !config[:enable_external_auth]
 
         begin
-          rest.put("users/#{user_name}", result)
+          root_rest.put("users/#{user_name}", result)
         rescue => e
           raise e
         end

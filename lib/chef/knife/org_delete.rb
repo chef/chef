@@ -25,7 +25,7 @@ class Chef
       def run
         org_name = @name_args[0]
         ui.confirm "Do you want to delete the organization #{org_name}"
-        ui.output rest.delete("organizations/#{org_name}")
+        ui.output root_rest.delete("organizations/#{org_name}")
       end
     end
   end

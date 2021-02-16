@@ -31,7 +31,7 @@ class Chef
           exit 1
         end
 
-        original_org = rest.get("organizations/#{org_name}")
+        original_org = root_rest.get("organizations/#{org_name}")
         edited_org = edit_hash(original_org)
 
         if original_org == edited_org
@@ -40,7 +40,7 @@ class Chef
         end
 
         ui.msg edited_org
-        rest.put("organizations/#{org_name}", edited_org)
+        root_rest.put("organizations/#{org_name}", edited_org)
         ui.msg("Saved #{org_name}.")
       end
     end
