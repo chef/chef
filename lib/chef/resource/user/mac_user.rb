@@ -61,7 +61,7 @@ class Chef
         unified_mode true
 
         provides :mac_user
-        provides :user, platform: "mac_os_x", platform_version: ">= 10.14"
+        provides :user, platform: "mac_os_x"
 
         introduced "15.3"
 

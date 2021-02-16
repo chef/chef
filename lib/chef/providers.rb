@@ -94,7 +94,6 @@ require_relative "provider/service/aixinit"
 require_relative "provider/service/aix"
 
 require_relative "provider/user/aix"
-require_relative "provider/user/dscl"
 require_relative "provider/user/linux"
 require_relative "provider/user/mac"
 require_relative "provider/user/pw"

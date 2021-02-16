@@ -19,9 +19,9 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 metadata = {
-  macos_gte_1014: true,
   requires_root: true,
-}
+  macos_only: true,
+ }
 
 describe "Chef::Resource::User with Chef::Provider::User::MacUser provider", metadata do
   include Chef::Mixin::ShellOut
