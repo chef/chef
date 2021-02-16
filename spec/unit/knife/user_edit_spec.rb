@@ -38,7 +38,7 @@ describe Chef::Knife::UserEdit do
     @key = "You don't come into cooking to get rich - Ramsay"
     allow(result).to receive(:[]).with("private_key").and_return(@key)
 
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
     expect(root_rest).to receive(:get).with("users/my_user2").and_return(data)
     expect(knife).to receive(:get_updated_user).with(data).and_return(edited_data)
     expect(root_rest).to receive(:put).with("users/my_user2", edited_data).and_return(result)

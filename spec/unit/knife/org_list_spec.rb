@@ -33,7 +33,7 @@ describe Chef::Knife::OrgList do
   before :each do
     @org = double("Chef::Org")
     @knife = Chef::Knife::OrgList.new
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
     allow(root_rest).to receive(:get).with("organizations").and_return(orgs)
   end
 

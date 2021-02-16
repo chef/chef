@@ -43,7 +43,7 @@ describe Chef::Knife::UserPassword do
       result = { "password" => [], "recovery_authentication_enabled" => true }
       allow(@user).to receive(:[]).with("organization")
 
-      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
       expect(@user.root_rest).to receive(:get).with("users/#{@user_name}").and_return(result)
       expect(@user.root_rest).to receive(:put).with("users/#{@user_name}", result)
       expect(@knife.ui).to receive(:msg).with("Authentication info updated for #{@user_name}.")

@@ -665,7 +665,7 @@ class Chef
     def root_rest
       @root_rest ||= begin
         require_relative "server_api"
-        Chef::ServerAPI.new(Chef::Config[:chef_server_root], { api_version: "1" })
+        Chef::ServerAPI.new(Chef::Config[:chef_server_root])
       end
     end
   end

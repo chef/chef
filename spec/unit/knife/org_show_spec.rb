@@ -28,7 +28,7 @@ describe Chef::Knife::OrgShow do
     @org_name = "foobar"
     @knife.name_args << @org_name
     @org = double("Chef::Org")
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
     allow(@org).to receive(:root_rest).and_return(root_rest)
   end
 

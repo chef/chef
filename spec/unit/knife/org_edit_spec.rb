@@ -31,7 +31,7 @@ describe Chef::Knife::OrgEdit do
   end
 
   it "loads and edits the organisation" do
-    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_url], { api_version: "1" }).and_return(root_rest)
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
     original_data = { "org_name" => "my_org" }
     data = { "org_name" => "my_org1" }
     expect(root_rest).to receive(:get).with("organizations/foobar").and_return(original_data)
