@@ -185,7 +185,7 @@ class Chef
         [f_users, c_users, r_users]
       end
 
-      action :create, description: "Create or modify a Windows share"  do
+      action :create, description: "Create or modify a Windows share" do
         new_resource_users
 
         # we do this here instead of requiring the property because :delete doesn't need path set
