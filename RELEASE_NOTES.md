@@ -8,7 +8,7 @@ This section serves to track things we should later document here for 17.0
 - Lazy attribute loading: https://github.com/chef/chef/pull/10861
 - Compliance Phase in GA: https://github.com/chef/chef/pull/10547
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
-- remove support for RHEL 6 i386 / Ubuntu 16.04
+- remove support for RHEL 6 i386 / Ubuntu 16.04 / macOS 10.13
 - don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
 - Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - Compliance cli report - https://github.com/chef/chef/pull/10939
