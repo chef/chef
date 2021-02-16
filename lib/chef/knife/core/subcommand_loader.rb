@@ -111,7 +111,20 @@ class Chef
         load_commands
       end
 
-      def load_command(_command_args)
+      def load_command(command_args)
+        return true if @loaded
+        cmd_words = positional_arguments(command_args)
+        partial_path = "#{cmd_words.join("_")}.rb"
+
+        # Take a best shot at loading the command before falling back to loading
+        # all commands.
+        subcommand_files.each do |file|
+          if file.end_with?(partial_path)
+            @loaded = true
+            Kernel.load file
+          end
+        end
+        # If we've set @loaded, this will  noop
         load_commands
       end
 

@@ -22,6 +22,7 @@ require_relative "../knife"
 class Chef
   class Knife
     module AclBase
+      Kernel.puts "LOADING ANYWAY HAHAHAH"
 
       PERM_TYPES = %w{create read update delete grant}.freeze unless defined? PERM_TYPES
       MEMBER_TYPES = %w{client group user}.freeze unless defined? MEMBER_TYPES
