@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.13 -->
-## [v16.10.13](https://github.com/chef/chef/tree/v16.10.13) (2021-02-15)
+<!-- latest_release 16.10.14 -->
+## [v16.10.14](https://github.com/chef/chef/tree/v16.10.14) (2021-02-17)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `ef9714f` to `dd2a33e` in /omnibus [#11053](https://github.com/chef/chef/pull/11053) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus from `ce5edb7` to `c882886` in /omnibus [#11056](https://github.com/chef/chef/pull/11056) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus from `ce5edb7` to `c882886` in /omnibus [#11056](https://github.com/chef/chef/pull/11056) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.14 -->
 - Bump omnibus-software from `ef9714f` to `dd2a33e` in /omnibus [#11053](https://github.com/chef/chef/pull/11053) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.13 -->
 - mount: Fix for network mounts which use the root level as the device [#11035](https://github.com/chef/chef/pull/11035) ([tas50](https://github.com/tas50)) <!-- 16.10.12 -->
 - Update pry-stack_explorer to 0.6.1 [#11034](https://github.com/chef/chef/pull/11034) ([tas50](https://github.com/tas50)) <!-- 16.10.11 -->
