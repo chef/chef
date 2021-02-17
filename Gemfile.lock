@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 35419f5698c727921170ebdec284d764061ac099
+  revision: 42547176e71ea467f11b49df71f5cd799ea6e8be
   branch: master
   specs:
     chefstyle (1.7.1)
@@ -241,9 +241,9 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.1.4)
+    mixlib-archive (1.1.6)
       mixlib-log
-    mixlib-archive (1.1.4-universal-mingw32)
+    mixlib-archive (1.1.6-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.7)
     mixlib-cli (2.1.8)
