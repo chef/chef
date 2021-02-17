@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.107 -->
-## [v17.0.107](https://github.com/chef/chef/tree/v17.0.107) (2021-02-17)
+<!-- latest_release 17.0.108 -->
+## [v17.0.108](https://github.com/chef/chef/tree/v17.0.108) (2021-02-17)
 
 #### Merged Pull Requests
-- Bump omnibus from `f939485` to `c882886` in /omnibus [#11057](https://github.com/chef/chef/pull/11057) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump mixlib-archive to 1.1.6 [#11059](https://github.com/chef/chef/pull/11059) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump mixlib-archive to 1.1.6 [#11059](https://github.com/chef/chef/pull/11059) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.108 -->
 - Bump omnibus from `f939485` to `c882886` in /omnibus [#11057](https://github.com/chef/chef/pull/11057) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.107 -->
 - Update to latest omnibus-software dep for openssl signing fix [#11048](https://github.com/chef/chef/pull/11048) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.106 -->
 - Fully remove user resource support for macOS &lt; 10.14 [#10688](https://github.com/chef/chef/pull/10688) ([tas50](https://github.com/tas50)) <!-- 17.0.105 -->
