@@ -241,9 +241,9 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.1.6)
+    mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.6-universal-mingw32)
+    mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.7)
     mixlib-cli (2.1.8)
