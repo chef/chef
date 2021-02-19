@@ -37,11 +37,10 @@ builder-to-testers-map:
   freebsd-11-amd64:
     - freebsd-11-amd64
     - freebsd-12-amd64
-  mac_os_x-10.13-x86_64:
-    - mac_os_x-10.13-x86_64
+  mac_os_x-10.14-x86_64:
     - mac_os_x-10.14-x86_64
     - mac_os_x-10.15-x86_64
-    - mac_os_x-11.0-x86_64
+    - mac_os_x-11-x86_64
   sles-12-s390x:
     - sles-12-s390x
     - sles-15-s390x
