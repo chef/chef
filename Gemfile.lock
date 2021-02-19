@@ -237,18 +237,18 @@ GEM
       little-plugger (~> 1.1)
       multi_json (~> 1.14)
     method_source (1.0.0)
-    mixlib-archive (1.1.4)
+    mixlib-archive (1.1.7)
       mixlib-log
-    mixlib-archive (1.1.4-universal-mingw32)
+    mixlib-archive (1.1.7-universal-mingw32)
       mixlib-log
     mixlib-authentication (3.0.7)
     mixlib-cli (2.1.8)
     mixlib-config (3.0.9)
       tomlrb
     mixlib-log (3.0.9)
-    mixlib-shellout (3.2.2)
+    mixlib-shellout (3.2.5)
       chef-utils
-    mixlib-shellout (3.2.2-universal-mingw32)
+    mixlib-shellout (3.2.5-universal-mingw32)
       chef-utils
       ffi-win32-extensions (~> 1.0.3)
       win32-process (~> 0.9)
