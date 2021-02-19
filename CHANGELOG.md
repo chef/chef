@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.16 -->
-## [v16.10.16](https://github.com/chef/chef/tree/v16.10.16) (2021-02-19)
+<!-- latest_release 16.10.17 -->
+## [v16.10.17](https://github.com/chef/chef/tree/v16.10.17) (2021-02-19)
 
 #### Merged Pull Requests
-- bump openssl-1.0.2y [#11072](https://github.com/chef/chef/pull/11072) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Stop producing packages for macOS 10.13 [#11078](https://github.com/chef/chef/pull/11078) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.8 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Stop producing packages for macOS 10.13 [#11078](https://github.com/chef/chef/pull/11078) ([tas50](https://github.com/tas50)) <!-- 16.10.17 -->
 - bump openssl-1.0.2y [#11072](https://github.com/chef/chef/pull/11072) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.10.16 -->
 - Bump mixlib-archive, mixlib-shellout and omnibus [#11068](https://github.com/chef/chef/pull/11068) ([tas50](https://github.com/tas50)) <!-- 16.10.15 -->
 - Bump omnibus from `ce5edb7` to `c882886` in /omnibus [#11056](https://github.com/chef/chef/pull/11056) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.14 -->
