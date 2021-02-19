@@ -24,7 +24,7 @@ This section serves to track things we should later document here for 17.0
 
 - Resolved installation failures on some Windows systems
 - Fixed the `mount` resource for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)! 
-- Resolved a failure in the Compliance Phase when the profile name includes an @ symbol.
+- Resolved a Compliance Phase failure with profile names using the `@` symbol.
 
 ### Security
 
