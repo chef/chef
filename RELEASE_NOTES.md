@@ -34,6 +34,10 @@ Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
 * [CVE-2021-23839](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23839)
 * [CVE-2021-23840](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23840)
 
+### Platform Updates
+
+With the release of macOS 11 we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
+
 ## What's New in 16.10
 
 ### Improvements
