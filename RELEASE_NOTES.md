@@ -18,6 +18,22 @@ This section serves to track things we should later document here for 17.0
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - macOS builds now use openSSL 1.1.1
 
+## What's New in 16.10.17
+
+### Bugfixes
+
+- Resolved installation failures on some Windows systems
+- Fixed the `mount` resource for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)! 
+- Resolved a Compliance Phase failure with profile names using the `@` symbol.
+
+### Security
+
+Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
+
+* [CVE-2021-23841](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23841)
+* [CVE-2021-23839](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23839)
+* [CVE-2021-23840](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23840)
+
 ## What's New in 16.10
 
 ### Improvements
