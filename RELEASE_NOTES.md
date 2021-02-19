@@ -23,7 +23,7 @@ This section serves to track things we should later document here for 17.0
 ### Bugfixes
 
 - Resolved installation failures on some Windows systems
-- Fixed the mount resource mount to work with network mounts which use the root level as the device. Thanks [@ramereth](https://github.com/ramereth)! 
+- Fixed the `mount_resource` for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)! 
 - Resolved a failure in the Compliance Phase when the profile name includes an @ symbol.
 
 ### Security
