@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.113 -->
-## [v17.0.113](https://github.com/chef/chef/tree/v17.0.113) (2021-02-19)
+<!-- latest_release 17.0.114 -->
+## [v17.0.114](https://github.com/chef/chef/tree/v17.0.114) (2021-02-19)
 
 #### Merged Pull Requests
-- bump openssl-1.0.2y [#11065](https://github.com/chef/chef/pull/11065) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- 16.10.17 notes [#11080](https://github.com/chef/chef/pull/11080) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- 16.10.17 notes [#11080](https://github.com/chef/chef/pull/11080) ([tas50](https://github.com/tas50)) <!-- 17.0.114 -->
 - bump openssl-1.0.2y [#11065](https://github.com/chef/chef/pull/11065) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 17.0.113 -->
 - Update name of macos builder in Buildkite [#11063](https://github.com/chef/chef/pull/11063) ([tas50](https://github.com/tas50)) <!-- 17.0.112 -->
 - Bump omnibus to 8.1.1 for fastmsi fix [#11071](https://github.com/chef/chef/pull/11071) ([tas50](https://github.com/tas50)) <!-- 17.0.111 -->
