@@ -17,6 +17,7 @@ This section serves to track things we should later document here for 17.0
 - reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - macOS builds now use openSSL 1.1.1
+- Habitat plugin in Ohai - https://github.com/chef/ohai/pull/1623
 
 ## What's New in 16.10.17
 
