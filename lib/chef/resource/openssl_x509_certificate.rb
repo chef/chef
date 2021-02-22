@@ -108,11 +108,11 @@ class Chef
 
       property :extensions, Hash,
         description: "Hash of X509 Extensions entries, in format `{ 'keyUsage' => { 'values' => %w( keyEncipherment digitalSignature), 'critical' => true } }`.",
-        default: lazy { {} }
+        default: {}
 
       property :subject_alt_name, Array,
         description: "Array of Subject Alternative Name entries, in format `DNS:example.com` or `IP:1.2.3.4`.",
-        default: lazy { [] }
+        default: []
 
       property :key_file, String,
         description: "The path to a certificate key file on the filesystem. If the key_file property is specified, the resource will attempt to source a key from this location. If no key file is found, the resource will generate a new key file at this location. If the key_file property is not specified, the resource will generate a key file in the same directory as the generated certificate, with the same name as the generated certificate."

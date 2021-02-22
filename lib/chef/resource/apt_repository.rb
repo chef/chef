@@ -128,7 +128,7 @@ class Chef
 
       property :components, Array,
         description: "Package groupings, such as 'main' and 'stable'.",
-        default: lazy { [] }, default_description: "`main` if using a PPA repository."
+        default: [], default_description: "`main` if using a PPA repository."
 
       property :arch, [String, nil, FalseClass],
         description: "Constrain packages to a particular CPU architecture such as `i386` or `amd64`."
@@ -147,7 +147,7 @@ class Chef
 
       property :key, [String, Array, nil, FalseClass],
         description: "If a keyserver is provided, this is assumed to be the fingerprint; otherwise it can be either the URI of GPG key for the repo, or a cookbook_file.",
-        default: lazy { [] }, coerce: proc { |x| x ? Array(x) : x }
+        default: [], coerce: proc { |x| x ? Array(x) : x }
 
       property :key_proxy, [String, nil, FalseClass],
         description: "If set, a specified proxy is passed to GPG via `http-proxy=`."

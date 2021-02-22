@@ -127,7 +127,7 @@ class Chef
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
-        default: lazy { [] }
+        default: []
 
       action :add do
         # TODO: Replace this with a :create_if_missing action on directory when that exists

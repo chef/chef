@@ -86,11 +86,11 @@ class Chef
 
       property :daemon_options, Array,
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
-        default: lazy { [] }
+        default: []
 
       property :environment, Hash,
         description: "A Hash containing additional arbitrary environment variables under which the launchd daemon will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`.",
-        default: lazy { {} }
+        default: {}
 
       property :nice, [Integer, String],
         description: "The process priority to run the #{ChefUtils::Dist::Infra::CLIENT} process at. A value of -20 is the highest priority and 19 is the lowest priority.",

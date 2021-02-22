@@ -36,7 +36,7 @@ class Chef
 
       property :response_file_variables, Hash,
         description: "A Hash of response file variables in the form of {'VARIABLE' => 'VALUE'}.",
-        default: lazy { {} }, desired_state: false
+        default: {}, desired_state: false
     end
   end
 end

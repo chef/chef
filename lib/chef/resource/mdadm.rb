@@ -39,7 +39,7 @@ class Chef
         description: "The chunk size. This property should not be used for a RAID 1 mirrored pair (i.e. when the `level` property is set to `1`)."
 
       property :devices, Array,
-        default: lazy { [] },
+        default: [],
         description: "The devices to be part of a RAID array."
 
       # @todo this should get refactored away

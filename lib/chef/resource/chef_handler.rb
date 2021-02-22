@@ -182,7 +182,7 @@ class Chef
 
       property :arguments, [Array, Hash],
         description: "Arguments to pass the handler's class initializer.",
-        default: lazy { [] }
+        default: []
 
       property :type, Hash,
         description: "The type of handler to register as, i.e. :report, :exception or both.",
