@@ -19,6 +19,7 @@ This section serves to track things we should later document here for 17.0
 - macOS builds now use openSSL 1.1.1
 - Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
 - New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
+- Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
 
 ## What's New in 16.10.17
 
