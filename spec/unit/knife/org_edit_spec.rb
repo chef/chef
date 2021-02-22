@@ -1,5 +1,5 @@
 #
-# Author:: Steven Danna (<steve@chef.io>)
+# Author:: Snehal Dwivedi (<sdwivedi@msystechnologies.com>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -18,34 +18,29 @@
 
 require "spec_helper"
 
-describe Chef::Knife::UserEdit do
-  let(:knife) { Chef::Knife::UserEdit.new }
+describe Chef::Knife::OrgEdit do
+  let(:knife) { Chef::Knife::OrgEdit.new }
   let(:root_rest) { double("Chef::ServerAPI") }
 
-  before(:each) do
-    @stderr = StringIO.new
-    @stdout = StringIO.new
-    allow(knife.ui).to receive(:stderr).and_return(@stderr)
-    allow(knife.ui).to receive(:stdout).and_return(@stdout)
-    knife.name_args = [ "my_user2" ]
+  before :each do
+    Chef::Knife::OrgEdit.load_deps
+    @org_name = "foobar"
+    knife.name_args << @org_name
+    @org = double("Chef::Org")
     knife.config[:disable_editing] = true
   end
 
-  it "loads and edits the user" do
-    data = { "username" => "my_user2" }
-    edited_data = { "username" => "edit_user2" }
-    result = {}
-    @key = "You don't come into cooking to get rich - Ramsay"
-    allow(result).to receive(:[]).with("private_key").and_return(@key)
-
+  it "loads and edits the organisation" do
     expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
-    expect(root_rest).to receive(:get).with("users/my_user2").and_return(data)
-    expect(knife).to receive(:get_updated_user).with(data).and_return(edited_data)
-    expect(root_rest).to receive(:put).with("users/my_user2", edited_data).and_return(result)
+    original_data = { "org_name" => "my_org" }
+    data = { "org_name" => "my_org1" }
+    expect(root_rest).to receive(:get).with("organizations/foobar").and_return(original_data)
+    expect(knife).to receive(:edit_hash).with(original_data).and_return(data)
+    expect(root_rest).to receive(:put).with("organizations/foobar", data)
     knife.run
   end
 
-  it "prints usage and exits when a user name is not provided" do
+  it "prints usage and exits when a org name is not provided" do
     knife.name_args = []
     expect(knife).to receive(:show_usage)
     expect(knife.ui).to receive(:fatal)

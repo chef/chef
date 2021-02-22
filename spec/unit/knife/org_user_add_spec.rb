@@ -1,5 +1,4 @@
 #
-# Author:: Steven Danna (<steve@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
 #
@@ -16,23 +15,25 @@
 # limitations under the License.
 #
 
-require_relative "../knife"
+require "spec_helper"
+require "chef/org"
 
-class Chef
-  class Knife
-    class UserList < Knife
+describe Chef::Knife::OrgUserAdd do
+  context "with --admin" do
+    subject(:knife) { Chef::Knife::OrgUserAdd.new }
+    let(:org) { double("Chef::Org") }
 
-      banner "knife user list (options)"
+    it "adds the user to admins and billing-admins groups" do
+      allow(Chef::Org).to receive(:new).and_return(org)
 
-      option :with_uri,
-        short: "-w",
-        long: "--with-uri",
-        description: "Show corresponding URIs."
+      knife.config[:admin] = true
+      knife.name_args = %w{testorg testuser}
 
-      def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
-      end
+      expect(org).to receive(:associate_user).with("testuser")
+      expect(org).to receive(:add_user_to_group).with("admins", "testuser")
+      expect(org).to receive(:add_user_to_group).with("billing-admins", "testuser")
+
+      knife.run
     end
   end
 end

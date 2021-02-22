@@ -16,22 +16,28 @@
 # limitations under the License.
 #
 
-require_relative "../knife"
-
 class Chef
   class Knife
-    class UserList < Knife
-
-      banner "knife user list (options)"
+    class OrgList < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org list"
 
       option :with_uri,
-        short: "-w",
         long: "--with-uri",
-        description: "Show corresponding URIs."
+        short: "-w",
+        description: "Show corresponding URIs"
+
+      option :all_orgs,
+        long: "--all-orgs",
+        short: "-a",
+        description: "Show auto-generated hidden orgs in output"
 
       def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
+        results = root_rest.get("organizations")
+        unless config[:all_orgs]
+          results = results.select { |k, v| !(k.length == 20 && k =~ /^[a-z]+$/) }
+        end
+        ui.output(ui.format_list_for_display(results))
       end
     end
   end

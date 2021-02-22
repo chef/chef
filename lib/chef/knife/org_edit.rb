@@ -16,22 +16,32 @@
 # limitations under the License.
 #
 
-require_relative "../knife"
-
 class Chef
   class Knife
-    class UserList < Knife
-
-      banner "knife user list (options)"
-
-      option :with_uri,
-        short: "-w",
-        long: "--with-uri",
-        description: "Show corresponding URIs."
+    class OrgEdit < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org edit ORG"
 
       def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
+        org_name = @name_args[0]
+
+        if org_name.nil?
+          show_usage
+          ui.fatal("You must specify an organization name")
+          exit 1
+        end
+
+        original_org = root_rest.get("organizations/#{org_name}")
+        edited_org = edit_hash(original_org)
+
+        if original_org == edited_org
+          ui.msg("Organization unchanged, not saving.")
+          exit
+        end
+
+        ui.msg edited_org
+        root_rest.put("organizations/#{org_name}", edited_org)
+        ui.msg("Saved #{org_name}.")
       end
     end
   end

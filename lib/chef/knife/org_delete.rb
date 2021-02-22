@@ -16,22 +16,16 @@
 # limitations under the License.
 #
 
-require_relative "../knife"
-
 class Chef
   class Knife
-    class UserList < Knife
-
-      banner "knife user list (options)"
-
-      option :with_uri,
-        short: "-w",
-        long: "--with-uri",
-        description: "Show corresponding URIs."
+    class OrgDelete < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org delete ORG_NAME"
 
       def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
+        org_name = @name_args[0]
+        ui.confirm "Do you want to delete the organization #{org_name}"
+        ui.output root_rest.delete("organizations/#{org_name}")
       end
     end
   end

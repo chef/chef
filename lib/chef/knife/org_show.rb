@@ -16,22 +16,15 @@
 # limitations under the License.
 #
 
-require_relative "../knife"
-
 class Chef
   class Knife
-    class UserList < Knife
-
-      banner "knife user list (options)"
-
-      option :with_uri,
-        short: "-w",
-        long: "--with-uri",
-        description: "Show corresponding URIs."
+    class OrgShow < Knife
+      category "CHEF ORGANIZATION MANAGEMENT"
+      banner "knife org show ORGNAME"
 
       def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
+        org_name = @name_args[0]
+        ui.output root_rest.get("organizations/#{org_name}")
       end
     end
   end
