@@ -574,7 +574,7 @@ describe "Chef::Resource.property" do
         end
       end
 
-      with_property ":x, default: {}" do
+      with_property ":x, default: lazy { {} }" do
         it "when x is not set, it returns {}" do
           expect(resource.x).to eq({})
         end
