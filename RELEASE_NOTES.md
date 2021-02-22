@@ -17,14 +17,15 @@ This section serves to track things we should later document here for 17.0
 - reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - macOS builds now use openSSL 1.1.1
-- Habitat plugin in Ohai - https://github.com/chef/ohai/pull/1623
+- Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
+- New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
 
 ## What's New in 16.10.17
 
 ### Bugfixes
 
 - Resolved installation failures on some Windows systems
-- Fixed the `mount` resource for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)! 
+- Fixed the `mount` resource for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)!
 - Resolved a Compliance Phase failure with profile names using the `@` symbol.
 
 ### Security
@@ -310,7 +311,7 @@ The `zypper_package` resource has been refactored to improve idempotency when sp
 - Performance of system configuration gathering on AIX systems has been improved
 - The `Virtualization` plugin on AIX systems now gathers a state `state` per WPAR and properly gathers LPAR names that include spaces
 
-## Whats New in 16.6
+## What's New in 16.6
 
 ### pwsh Support
 
@@ -1019,7 +1020,7 @@ depends 'windows', '>> 1.0'
 
 #### Logging Improvements May Cause Behavior Changes
 
-We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the location in the `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 #### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
