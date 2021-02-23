@@ -43,7 +43,7 @@ class Chef
         Generate new 1024bit key with the aes-128-cbc cipher
 
         ```ruby
-        openssl_rsa_key '/etc/ssl_files/rsakey_aes128cbc.pem' do
+        openssl_rsa_private_key '/etc/ssl_files/rsakey_aes128cbc.pem' do
           key_length 1024
           key_cipher 'aes-128-cbc'
           action :create
