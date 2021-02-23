@@ -14,6 +14,7 @@
   "dictionaries": ["chef"],
   // words - list of words to be always considered correct
   "words": [
+    "passwordprompt",
     "northwindbaking",
     "abcz",
     "Abdulin",
