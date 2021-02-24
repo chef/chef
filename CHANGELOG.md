@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 16.10.18 -->
+## [v16.10.18](https://github.com/chef/chef/tree/v16.10.18) (2021-02-24)
+
+#### Merged Pull Requests
+- Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.10.17 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth)) <!-- 16.10.18 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
