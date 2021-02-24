@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.123 -->
-## [v17.0.123](https://github.com/chef/chef/tree/v17.0.123) (2021-02-23)
+<!-- latest_release 17.0.124 -->
+## [v17.0.124](https://github.com/chef/chef/tree/v17.0.124) (2021-02-24)
 
 #### Merged Pull Requests
-- Update resolver cookbook usage in test-kitchen tests [#11086](https://github.com/chef/chef/pull/11086) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11098](https://github.com/chef/chef/pull/11098) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11098](https://github.com/chef/chef/pull/11098) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.124 -->
 - Update resolver cookbook usage in test-kitchen tests [#11086](https://github.com/chef/chef/pull/11086) ([ramereth](https://github.com/ramereth)) <!-- 17.0.123 -->
 - Update Ohai to 17.0.22 [#11092](https://github.com/chef/chef/pull/11092) ([tas50](https://github.com/tas50)) <!-- 17.0.122 -->
 - Bump train-core to 3.5.2 [#11091](https://github.com/chef/chef/pull/11091) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.121 -->
