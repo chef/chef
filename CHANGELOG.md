@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.18 -->
-## [v16.10.18](https://github.com/chef/chef/tree/v16.10.18) (2021-02-24)
+<!-- latest_release 16.10.19 -->
+## [v16.10.19](https://github.com/chef/chef/tree/v16.10.19) (2021-02-24)
 
 #### Merged Pull Requests
-- Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11096](https://github.com/chef/chef/pull/11096) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11096](https://github.com/chef/chef/pull/11096) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.19 -->
 - Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth)) <!-- 16.10.18 -->
 <!-- release_rollup -->
 
