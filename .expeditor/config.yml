@@ -212,3 +212,7 @@ subscriptions:
   - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
     actions:
       - bash:.expeditor/update_dep.sh
+  # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
+  - workload: chef/chefstyle:master_completed:pull_request_merged:chef/chefstyle:master:*
+    actions:
+      - bash:.expeditor/update_dep.sh
