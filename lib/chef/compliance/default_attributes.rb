@@ -1,5 +1,5 @@
 # Author:: Stephan Renatus <srenatus@chef.io>
-# Copyright:: (c) 2016-2019, Chef Software Inc. <legal@chef.io>
+# Copyright:: Copyright (c) Chef Software Inc. <legal@chef.io>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -87,7 +87,10 @@ class Chef
 
       # If enabled, a hash representation of the Chef Infra node object will be sent to Chef InSpec in an input
       # named `chef_node`.
-      "chef_node_attribute_enabled" => false
+      "chef_node_attribute_enabled" => false,
+
+      # Should the built-in compliance phase run.
+      "compliance_phase" => true
     )
   end
 end
