@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.20 -->
-## [v16.10.20](https://github.com/chef/chef/tree/v16.10.20) (2021-02-24)
+<!-- latest_release 16.10.21 -->
+## [v16.10.21](https://github.com/chef/chef/tree/v16.10.21) (2021-02-26)
 
 #### Merged Pull Requests
-- Update deps to current and wire up automation [#11102](https://github.com/chef/chef/pull/11102) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `fb0fa04` to `a1e9c90` in /omnibus [#11117](https://github.com/chef/chef/pull/11117) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `fb0fa04` to `a1e9c90` in /omnibus [#11117](https://github.com/chef/chef/pull/11117) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.21 -->
 - Update deps to current and wire up automation [#11102](https://github.com/chef/chef/pull/11102) ([tas50](https://github.com/tas50)) <!-- 16.10.20 -->
 - Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11096](https://github.com/chef/chef/pull/11096) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.19 -->
 - Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth)) <!-- 16.10.18 -->
