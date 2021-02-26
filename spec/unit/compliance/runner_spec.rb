@@ -19,11 +19,11 @@ describe Chef::Compliance::Runner do
       expect(runner).to be_enabled
     end
 
-    it "is false if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is unset" do
+    it "is false if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is false" do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
-      node.normal["audit"]["compliance_mode"] = false
+      node.normal["audit"]["compliance_phase"] = false
 
-      expect(runner).to be_enabled
+      expect(runner).not_to be_enabled
     end
 
     it "is false if the node attributes have audit profiles and the audit cookbook is present" do
@@ -31,6 +31,14 @@ describe Chef::Compliance::Runner do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
 
       expect(runner).not_to be_enabled
+    end
+
+    it "is true if the node attributes have audit profiles and the audit cookbook is present, and the complince mode attribute is true" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
     end
 
     it "is false if the node attributes do not have audit profiles and the audit cookbook is not present" do
@@ -49,6 +57,27 @@ describe Chef::Compliance::Runner do
     it "is false if the node attributes do not have audit attributes and the audit cookbook is not present" do
       node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
       expect(runner).not_to be_enabled
+    end
+
+    it "is true if the node attributes do not have audit profiles and the audit cookbook is not present, and the complince mode attribute is true" do
+      node.normal["audit"]["profiles"] = {}
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
+    end
+
+    it "is true if the node attributes do not have audit profiles and the audit cookbook is present, and the complince mode attribute is true" do
+      stub_const("::Reporter::ChefAutomate", true)
+      node.automatic["recipes"] = %w{ audit::default fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
+
+      expect(runner).to be_enabled
+    end
+
+    it "is true if the node attributes do not have audit attributes and the audit cookbook is not present, and the complince mode attribute is true" do
+      node.automatic["recipes"] = %w{ fancy_cookbook::fanciness tacobell::nachos }
+      node.normal["audit"]["compliance_phase"] = true
+      expect(runner).to be_enabled
     end
   end
 
