@@ -93,41 +93,41 @@ describe Chef::Resource::ChefClientCron do
 
     it "creates a valid command if using all default properties" do
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
 
     it "uses daemon_options if set" do
       resource.daemon_options ["--foo 1", "--bar 2"]
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path} -L /var/log/chef/client.log"
+        "/bin/sleep 123; /opt/chef/bin/chef-client --foo 1 --bar 2 -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
 
     it "uses custom config dir if set" do
       resource.config_directory "/etc/some_other_dir"
-      expect(provider.client_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb -L /var/log/chef/client.log")
+      expect(provider.client_command).to eql("/bin/sleep 123; /opt/chef/bin/chef-client -c /etc/some_other_dir/client.rb >> /var/log/chef/client.log 2>&1")
     end
 
     it "uses custom log files / paths if set" do
       resource.log_file_name "my-client.log"
       resource.log_directory "/var/log/my-chef/"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/my-chef/my-client.log"
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/my-chef/my-client.log 2>&1"
       )
     end
 
     it "uses mailto if set" do
       resource.mailto "bob@example.com"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log || echo \"Chef Infra Client execution failed\""
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1 || echo \"Chef Infra Client execution failed\""
       )
     end
 
     it "uses custom chef-client binary if set" do
       resource.chef_binary_path "/usr/local/bin/chef-client"
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /usr/local/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
+        "/bin/sleep 123; /usr/local/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
 
@@ -141,7 +141,7 @@ describe Chef::Resource::ChefClientCron do
     it "sets the license acceptance flag if set" do
       resource.accept_chef_license true
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} --chef-license accept -L /var/log/chef/client.log"
+        "/bin/sleep 123; /opt/chef/bin/chef-client -c #{root_path} --chef-license accept >> /var/log/chef/client.log 2>&1"
       )
     end
 
@@ -149,7 +149,7 @@ describe Chef::Resource::ChefClientCron do
       allow(provider).to receive(:which).with("nice").and_return("/usr/bin/nice")
       resource.nice(-15)
       expect(provider.client_command).to eql(
-        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c #{root_path} -L /var/log/chef/client.log"
+        "/bin/sleep 123; /usr/bin/nice -n -15 /opt/chef/bin/chef-client -c #{root_path} >> /var/log/chef/client.log 2>&1"
       )
     end
   end
