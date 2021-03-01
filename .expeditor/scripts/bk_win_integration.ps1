@@ -7,6 +7,10 @@ $Env:Path="C:\Program Files\Git\mingw64\bin;C:\Program Files\Git\usr\bin;C:\ruby
 
 winrm quickconfig -q
 
-echo "+++ bundle exec rake spec:integration"
+echo "+++ bundle exec rake spec:integration (chef-client) (chef-client) (chef-client) (chef-client) (chef-client) (chef-client) (chef-client) (chef-client) (chef-client)"
 bundle exec rake spec:integration
 if (-not $?) { throw "Chef integration specs failing." }
+
+echo "+++ bundle exec rake spec:integration (knife)"
+bundle exec rake spec:integration
+if (-not $?) { throw "knife integration specs failing." }

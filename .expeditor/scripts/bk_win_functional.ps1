@@ -23,11 +23,20 @@ if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 Write-Output "--- configure winrm"
 winrm quickconfig -q
 
+# TODO - why not using bk_pwin_prop which does all this?
 Write-Output "--- bundle install"
 bundle config set --local without 'omnibus_package'
 bundle install --jobs=3 --retry=3
-if (-not $?) { throw "Unable to install gem dependencies" }
+if (-not $?) { throw "Unable to install gem dependencies (chef-client)" }
 
-Write-Output "+++ bundle exec rake spec:functional"
+Write-Output "+++ bundle exec rake spec:functional (chef-client) "
 bundle exec rake spec:functional
-if (-not $?) { throw "Chef functional specs failing." }
+if (-not $?) { throw "chef-client functional specs failing." }
+Write-Output "+++ bundle exec rake spec:functional (knife)"
+
+cd knife
+bundle config set --local without 'omnibus_package'
+bundle install --jobs=3 --retry=3
+if (-not $?) { throw "Unable to install gem dependencies (knife)" }
+bundle exec rake spec:functional
+if (-not $?) { throw "knife functional specs failing." }

@@ -46,6 +46,10 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake style
+    - cd /workdir/knife
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake style
+
   expeditor:
     executor:
       docker:
@@ -55,6 +59,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -69,6 +75,8 @@ steps:
     - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
@@ -81,6 +89,9 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+    - cd /workdir/knife
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:
@@ -90,6 +101,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -104,6 +117,8 @@ steps:
     - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
@@ -116,6 +131,9 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+    - cd /workdir/knife
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:
@@ -125,6 +143,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -138,6 +158,8 @@ steps:
     - yum install -y crontabs e2fsprogs
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
@@ -150,6 +172,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:
@@ -160,6 +184,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -172,6 +198,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -186,6 +214,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+    - cd workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:
@@ -195,6 +225,8 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -207,6 +239,8 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -223,6 +257,8 @@ steps:
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:

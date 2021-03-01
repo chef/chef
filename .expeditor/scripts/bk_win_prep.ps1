@@ -10,6 +10,14 @@ echo "bundler version: "
 bundle --version
 if (-not $?) { throw "Can't run Bundler. Is it installed?" }
 
-echo "--- bundle install"
+echo "--- bundle install (chef-client)"
 bundle install --jobs=3 --retry=3  --path=vendor/bundle --without omnibus_package
-if (-not $?) { throw "Unable to install gem dependencies" }
+if (-not $?) { throw "Unable to install gem dependencies (chef client)" }
+
+echo "--- bundle install (chef-client)"
+
+cd /knife
+bundle install --jobs=3 --retry=3  --path=vendor/bundle --without omnibus_package
+if (-not $?) { throw "Unable to install gem dependencies (knife)" }
+cd ..
+
