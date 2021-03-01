@@ -39,19 +39,19 @@ begin
 
   task spec: :component_specs
 
-    desc "Run all specs in spec and knife/spec directories"
+  desc "Run all specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
     t.rspec_opts = %w{--profile}
-    t.pattern = FileList["spec/**/*_spec.rb"] + FileList["knife/spec/**/*_spec.rb"]
+    t.pattern = FileList["spec/**/*_spec.rb"]
   end
 
   namespace :spec do
-    desc "Run all specs in spec and knife/spec directories"
+    desc "Run all specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
       t.verbose = false
       t.rspec_opts = %w{--profile}
-      t.pattern = FileList["spec/**/*_spec.rb"] + FileList["knife/spec/**/*_spec.rb"]
+      t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Print Specdoc for all specs"
@@ -74,7 +74,7 @@ begin
       RSpec::Core::RakeTask.new(sub) do |t|
         t.verbose = false
         t.rspec_opts = %w{--profile}
-        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"] + FileList["knife/spec/#{sub}/**/*_spec.rb"]
+        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
   end
