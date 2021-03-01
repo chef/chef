@@ -213,7 +213,7 @@ class Chef
         #
         def log_command
           if new_resource.append_log_file
-            "-L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+            ">> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           else
             "> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           end
