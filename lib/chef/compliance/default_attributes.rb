@@ -90,7 +90,7 @@ class Chef
       "chef_node_attribute_enabled" => false,
 
       # Should the built-in compliance phase run.  True and false force the behavior.  Nil does magic based on if you have
-      # profies defined but do not have the audit cookbook enabled.
+      # profiles defined but do not have the audit cookbook enabled.
       "compliance_phase" => nil
     )
   end
