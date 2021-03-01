@@ -101,19 +101,19 @@ describe Chef::Provider::User do
     end
 
     it "should return false if append is true and the group member(s) already exists" do
-      @current_resource.members += [ "extra_user" ]
+      @current_resource.members << "extra_user"
       @new_resource.append(true)
       expect(@provider.compare_group).to be_falsey
     end
 
     it "should return true if append is true and the group member(s) do not already exist" do
-      @new_resource.members += [ "extra_user" ]
+      @new_resource.members << "extra_user"
       @new_resource.append(true)
       expect(@provider.compare_group).to be_truthy
     end
 
     it "should return false if append is true and excluded_members include a non existing member" do
-      @new_resource.excluded_members += [ "extra_user" ]
+      @new_resource.excluded_members << "extra_user"
       @new_resource.append(true)
       expect(@provider.compare_group).to be_falsey
     end

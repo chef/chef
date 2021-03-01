@@ -359,10 +359,11 @@ describe Chef::Mixin::ParamsValidate do
     expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
   end
 
-  it "should set and return a default value when the argument is nil, then return the same value" do
+  it "should set and return a default value when the argument is nil, then return a dup of the value" do
     value = "meow"
-    expect(@vo.set_or_return(:test, nil, { default: value }).object_id).to eq(value.object_id)
-    expect(@vo.set_or_return(:test, nil, {}).object_id).to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, { default: value }).object_id).not_to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {}).object_id).not_to eq(value.object_id)
+    expect(@vo.set_or_return(:test, nil, {})).to eql(value)
   end
 
   it "should raise an ArgumentError when argument is nil and required is true" do

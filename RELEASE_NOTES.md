@@ -6,6 +6,7 @@ This section serves to track things we should later document here for 17.0
 
 - Dropped support for Ruby 2.6
 - Lazy attribute loading: https://github.com/chef/chef/pull/10861
+- Duping property defaults: https://github.com/chef/chef/pull/11095
 - Compliance Phase in GA: https://github.com/chef/chef/pull/10547
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
 - remove support for RHEL 6 i386 / Ubuntu 16.04 / macOS 10.13
