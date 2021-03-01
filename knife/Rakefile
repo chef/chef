@@ -14,7 +14,7 @@ end
 begin
   require "chefstyle"
   require "rubocop/rake_task"
-  require_relative "../tasks/rspec.rb"
+  require_relative "../tasks/rspec"
 
   RuboCop::RakeTask.new(:style) do |task|
     task.options += ["-r", "chefstyle", "--display-cop-names", "--no-color"]
