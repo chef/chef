@@ -43,6 +43,35 @@ class Chef
         private_key_acl ["acme\\fred", "pc\\jane"]
       end
       ```
+      **Retrieve the private key from a pfx object**
+
+      ```ruby
+      windows_certificate 'Get the private key for a pfx assigned to the local machine certificate store' do
+        pfx_password         "1234"
+        source               "<something from the subject line of the pfx i.e. CN= >"
+        user_store           false
+        action               :fetch_pfx_key
+      end
+
+      **Retrieve the certificatge from a pfx object**
+
+      ```ruby
+      windows_certificate 'Get the cert for a pfx assigned to the local machine certificate store' do
+        pfx_password         "1234"
+        source               "<something from the subject line of the pfx i.e. CN= >"
+        user_store           false
+        action               :fetch_pfx_cert
+      end
+
+      **Export a PFX object with password to a temporary folder**
+
+      ```ruby
+      windows_certificate 'Get my PFX Object' do
+        pfx_password         "1234"
+        source               "<something from the subject line of the pfx i.e. CN= >"
+        user_store           false
+        action               :fetch_pfx
+      end
 
       **Add cert to trusted intermediate store**
 
