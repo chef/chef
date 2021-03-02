@@ -92,7 +92,9 @@ class Chef
         default: false,
         introduced: "16.8"
 
-      action :create, description: "Creates or updates a certificate" do
+      action :create do
+        description "Creates or updates a certificate."
+
         # Extension of the certificate
         ext = ::File.extname(new_resource.source)
 
@@ -101,7 +103,8 @@ class Chef
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
-      action :acl_add, description: "Adds read-only entries to a certificate's private key ACL" do
+      action :acl_add do
+        description "Adds read-only entries to a certificate's private key ACL."
 
         if ::File.exist?(new_resource.source)
           hash = "$cert.GetCertHashString()"
@@ -124,7 +127,8 @@ class Chef
         end
       end
 
-      action :delete, description: "Deletes a certificate" do
+      action :delete do
+        description "Deletes a certificate."
         cert_obj = fetch_cert
         if cert_obj
           converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
@@ -135,7 +139,9 @@ class Chef
         end
       end
 
-      action :fetch, description: "Fetches a certificate" do
+      action :fetch do
+        description "Fetches a certificate."
+
         cert_obj = fetch_cert
         if cert_obj
           show_or_store_cert(cert_obj)
@@ -144,7 +150,42 @@ class Chef
         end
       end
 
-      action :verify, description: "Verifies a certificate and logs the result" do
+      action :fetch_pfx do
+        description "Fetches a PKCS12 object."
+
+        cert_obj = fetch_pfx
+        if cert_obj
+          show_or_store_cert(cert_obj)
+        else
+          Chef::Log.debug("PFX not found")
+        end
+      end
+
+      action :fetch_pfx_cert do
+        description "Fetches a PKCS12 certificate from an object in the certificate store."
+
+        cert_obj = fetch_pfx_certificate
+        if cert_obj
+          show_or_store_cert(cert_obj)
+        else
+          Chef::Log.debug("PFX not found")
+        end
+      end
+
+      action :fetch_pfx_key do
+        description "Fetches a PKCS12 private key from an object in the certificate store."
+
+        cert_obj = fetch_pfx_private_key
+        if cert_obj
+          show_or_store_cert(cert_obj)
+        else
+          Chef::Log.debug("PFX not found")
+        end
+      end
+
+      action :verify do
+        description ""
+
         out = verify_cert
         if !!out == out
           out = out ? "Certificate is valid" : "Certificate not valid"
@@ -176,6 +217,35 @@ class Chef
         def fetch_cert
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
           store.get(resolve_thumbprint(new_resource.source))
+        end
+
+        # the call to get_pfx looks deceiving, we still pass the store_name and store_location because the ultimate recipient of that data
+        # is a powershell script located in the win32-certstore helper.rb file.
+        # @returns a path in a temporary folder to a pfx container
+        def fetch_pfx
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
+          cert_results = store.get_pfx(resolve_thumbprint(new_resource.source), store_location: native_cert_location, export_password: new_resource.pfx_password)
+          cert_results
+        end
+
+        # @returns a certificate object from the pfx container
+        def fetch_pfx_certificate
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
+          cert_path = store.get_pfx(resolve_thumbprint(new_resource.source), store_location: native_cert_location, export_password: new_resource.pfx_password)
+          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip),new_resource.pfx_password )
+          p12.certificate
+          # ::File.delete(cert_path) if ::File.exist?(cert_path)
+        end
+
+        # the call to get_pfx looks deceiving, we still pass the store_name and store_location because the ultimate recipient of that data
+        # is a powershell script located in the win32-certstore helper.rb file.
+        # @returns a private key from the pfx container
+        def fetch_pfx_private_key
+          store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
+          cert_path = store.get_pfx(resolve_thumbprint(new_resource.source), store_location: native_cert_location, export_password: new_resource.pfx_password)
+          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip),new_resource.pfx_password )
+          p12.key
+          # ::File.delete(cert_path) if ::File.exist?(cert_path)
         end
 
         # Thumbprints should be exactly 40 Hex characters
