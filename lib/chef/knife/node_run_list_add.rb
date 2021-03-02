@@ -23,8 +23,8 @@ class Chef
     class NodeRunListAdd < Knife
 
       deps do
-        require_relative "../node"
-        require_relative "../json_compat"
+        require "chef/node" unless defined?(Chef::Node)
+        require "chef/json_compat" unless defined?(Chef::JSONCompat)
       end
 
       banner "knife node run_list add [NODE] [ENTRY [ENTRY]] (options)"

@@ -19,7 +19,7 @@
 #
 
 require "forwardable" unless defined?(Forwardable)
-require_relative "../../platform/query_helpers"
+require "chef/platform/query_helpers" # MPTD - can't base on defined? because there's no constant added there.
 require_relative "generic_presenter"
 require "tempfile" unless defined?(Tempfile)
 

@@ -17,8 +17,8 @@
 # limitations under the License.
 #
 
-require_relative "../../json_compat"
-require_relative "../../node"
+require "chef/json_compat" unless defined?(Chef::JSONCompat)
+require "chef/node" unless defined?(Chef::Node)
 
 class Chef
   class Knife

@@ -23,8 +23,8 @@ class Chef
     class NodePolicySet < Knife
 
       deps do
-        require_relative "../node"
-        require_relative "../json_compat"
+        require "chef/node" unless defined?(Chef::Node)
+        require "chef/json_compat" unless defined?(Chef::JSONCompat)
       end
 
       banner "knife node policy set NODE POLICY_GROUP POLICY_NAME (options)"

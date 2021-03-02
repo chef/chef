@@ -24,7 +24,7 @@ class Chef
     class RoleRunListSet < Knife
 
       deps do
-        require_relative "../role"
+        require "chef/role" unless defined?(Chef::Role)
       end
 
       banner "knife role run_list set [ROLE] [ENTRIES] (options)"

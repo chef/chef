@@ -23,7 +23,7 @@ class Chef
     class ClientDelete < Knife
 
       deps do
-        require_relative "../api_client_v1"
+        require "chef/api_client_v1" unless defined?(Chef::ApiClientV1)
       end
 
       option :delete_validators,

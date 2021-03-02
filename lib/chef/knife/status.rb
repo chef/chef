@@ -27,7 +27,7 @@ class Chef
       include Knife::Core::FormattingOptions
 
       deps do
-        require_relative "../search/query"
+        require "chef/search/query" unless defined?(Chef::Search::Query)
       end
 
       banner "knife status QUERY (options)"

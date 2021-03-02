@@ -25,7 +25,7 @@ class Chef
 
       deps do
         require_relative "cookbook_delete"
-        require_relative "../cookbook_version"
+        require "chef/cookbook_version" unless defined?(Chef::CookbookVersion)
       end
 
       option :purge, short: "-p", long: "--purge", boolean: true, description: "Permanently remove files from backing data store."

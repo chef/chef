@@ -24,11 +24,11 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   before do
     allow(ChefUtils).to receive(:windows?) { false }
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
+    ChefConfig::PathHelper.class_variable_set(:@@home_dir, home)
   end
 
   after do
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil)
+    ChefConfig::PathHelper.class_variable_set(:@@home_dir, nil)
   end
 
   it "builds a list of the core subcommand file require paths" do
@@ -86,6 +86,9 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
   # source tree of the "primary" chef install, it can be loaded and cause an
   # error. We also want to ensure that we only load builtin commands from the
   # "primary" chef install.
+  #
+  # MPTD - if it's still a supported scenario, this needs to be redone in
+  # a knife-gem world.
   context "when a different version of chef is also installed as a gem" do
 
     let(:all_found_commands) do

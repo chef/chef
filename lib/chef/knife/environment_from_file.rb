@@ -23,7 +23,7 @@ class Chef
     class EnvironmentFromFile < Knife
 
       deps do
-        require_relative "../environment"
+        require "chef/environment" unless defined?(Chef::Environment)
         require_relative "core/object_loader"
       end
 

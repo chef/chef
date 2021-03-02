@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative "../key"
+require "chef/key" unless defined?(Chef::Key)
 
 class Chef
   class Knife

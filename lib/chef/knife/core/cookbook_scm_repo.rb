@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative "../../mixin/shell_out"
+require "chef/mixin/shell_out" unless defined?(Chef::Mixin::ShellOut)
 
 class Chef
   class Knife

@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require_relative "../chef_fs/knife"
+require_relative "../chef_fs/knife" unless defined?(Chef::ChefFS::Knife)
 
 class Chef
   class Knife
@@ -24,8 +24,8 @@ class Chef
       category "path-based"
 
       deps do
-        require_relative "../chef_fs/file_system"
-        require_relative "../run_list"
+        require "chef/chef_fs/file_system" unless defined?(Chef::ChefFS::FileSystem)
+        require "chef/run_list" unless defined?(Chef::RunList)
       end
 
       option :recurse,

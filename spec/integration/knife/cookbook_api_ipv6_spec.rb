@@ -102,7 +102,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
           end
 
           it "downloads the cookbook" do
-            shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", cwd: chef_dir)
+            shell_out!("#{knife} cookbook download apache2 #{knife_config_flag} -d #{cache_path}", cwd: chef_dir)
             expect(Dir["#{cache_path}/*"].map { |entry| File.basename(entry) }).to include("apache2-0.0.1")
           end
         end

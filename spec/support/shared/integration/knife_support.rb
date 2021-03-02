@@ -17,7 +17,6 @@
 
 require "chef/config"
 require "chef/knife"
-require "chef/application/knife"
 require "logger"
 require "chef/log"
 require "chef/chef_fs/file_system_cache"

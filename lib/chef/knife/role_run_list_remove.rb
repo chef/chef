@@ -23,7 +23,7 @@ class Chef
     class RoleRunListRemove < Knife
 
       deps do
-        require_relative "../role"
+        require "chef/role" unless defined?(Chef::Role)
       end
 
       banner "knife role run_list remove [ROLE] [ENTRY] (options)"

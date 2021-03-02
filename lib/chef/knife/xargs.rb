@@ -24,8 +24,8 @@ class Chef
       category "path-based"
 
       deps do
-        require_relative "../chef_fs/file_system"
-        require_relative "../chef_fs/file_system/exceptions"
+        require "chef/chef_fs/file_system" unless defined?(Chef::ChefFS::FileSystem)
+        require "chef/chef_fs/file_system/exceptions" unless defined?(Chef::ChefFS::FileSystem::Exceptions)
       end
 
       # TODO modify to remote-only / local-only pattern (more like delete)

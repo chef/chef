@@ -1,4 +1,5 @@
 #
+# Author:: Steven Danna (<steve@chef.io>)
 # Author:: Tyler Cloke (<tyler@chef.io>)
 # Copyright:: Copyright (c) Chef Software Inc.
 # License:: Apache License, Version 2.0
@@ -26,7 +27,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require_relative "../user_v1"
+        require "chef/user_v1" unless defined?(Chef::UserV1)
       end
 
       option :file,
@@ -58,6 +59,10 @@ class Chef
 
       def user
         @user_field ||= Chef::UserV1.new
+      end
+
+      def create_user_from_hash(hash)
+        Chef::UserV1.from_hash(hash).create
       end
 
       def run

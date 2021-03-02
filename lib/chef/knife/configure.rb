@@ -26,10 +26,10 @@ class Chef
       attr_reader :chef_repo, :new_client_key, :validation_client_name, :validation_key
 
       deps do
-        require_relative "../util/path_helper"
+        require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
         require_relative "client_create"
         require_relative "user_create"
-        require "ohai" unless defined?(Ohai::System)
+        require "ohai" unless defined?(Ohai)
         Chef::Knife::ClientCreate.load_deps
         Chef::Knife::UserCreate.load_deps
       end
@@ -138,7 +138,7 @@ class Chef
 
       # @return [String] the path to the user's .chef directory
       def chef_config_path
-        @chef_config_path ||= Chef::Util::PathHelper.home(".chef")
+        @chef_config_path ||= ChefConfig::PathHelper.home(".chef")
       end
 
       # @return [String] the full path to the config file (credential file)

@@ -29,8 +29,8 @@ class Chef
         description: "Force removal of user from the organization's admins and billing-admins group."
 
       deps do
-        require_relative "../org"
-        require "chef/json_compat"
+        require "chef/org" unless defined?(Chef::Org)
+        require "chef/json_compat" unless defined?(Chef::JSONCompat)
       end
 
       def run

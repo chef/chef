@@ -25,7 +25,7 @@ class Chef
       TABLE_HEADER ||= [" Profile", "Client", "Key", "Server"].freeze
 
       deps do
-        require_relative "../workstation_config_loader"
+        require "chef/workstation_config_loader" unless defined?(Chef::WorkstationConfigLoader)
         require "tty-screen" unless defined?(TTY::Screen)
         require "tty-table" unless defined?(TTY::Table)
       end

@@ -25,7 +25,7 @@ class Chef
       attr_accessor :cookbook_name, :version
 
       deps do
-        require_relative "../cookbook_version"
+        require "chef/cookbook_version" unless defined?(Chef::CookbookVersion)
       end
 
       option :all, short: "-a", long: "--all", boolean: true, description: "Delete all versions of the cookbook."

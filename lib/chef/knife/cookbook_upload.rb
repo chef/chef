@@ -24,11 +24,11 @@ class Chef
   class Knife
     class CookbookUpload < Knife
       deps do
-        require_relative "../mixin/file_class"
+        require "chef/mixin/file_class" unless defined?(Chef::Mixin::FileClass)
         include Chef::Mixin::FileClass
-        require_relative "../exceptions"
-        require_relative "../cookbook_loader"
-        require_relative "../cookbook_uploader"
+        require "chef/exceptions" unless defined?(Chef::Exceptions)
+        require "chef/cookbook_loader" unless defined?(Chef::CookbookLoader)
+        require "chef/cookbook_uploader" unless defined?(Chef::CookbookUploader)
       end
 
       banner "knife cookbook upload [COOKBOOKS...] (options)"

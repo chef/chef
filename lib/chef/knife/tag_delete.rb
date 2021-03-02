@@ -25,7 +25,7 @@ class Chef
     class TagDelete < Knife
 
       deps do
-        require_relative "../node"
+        require "chef/node" unless defined?(Chef::Node)
       end
 
       banner "knife tag delete NODE TAG ..."

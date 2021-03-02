@@ -23,7 +23,7 @@ class Chef
     class ClientList < Knife
 
       deps do
-        require_relative "../api_client_v1"
+        require "chef/api_client_v1" unless defined?(Chef::ApiClientV1)
       end
 
       banner "knife client list (options)"

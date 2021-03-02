@@ -35,7 +35,7 @@ class Chef
       attr_accessor :org_name, :org_full_name
 
       deps do
-        require_relative "../org"
+        require "chef/org" unless defined?(Chef::Org)
       end
 
       def run

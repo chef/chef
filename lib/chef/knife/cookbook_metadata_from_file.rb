@@ -25,7 +25,7 @@ class Chef
     class CookbookMetadataFromFile < Knife
 
       deps do
-        require_relative "../cookbook/metadata"
+        require "chef/cookbook/metadata" unless defined?(Chef::Cookbook::Metadata)
       end
 
       banner "knife cookbook metadata from file FILE (options)"

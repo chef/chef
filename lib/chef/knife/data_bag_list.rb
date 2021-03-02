@@ -23,7 +23,7 @@ class Chef
     class DataBagList < Knife
 
       deps do
-        require_relative "../data_bag"
+        require "chef/data_bag" unless defined?(Chef::DataBag)
       end
 
       banner "knife data bag list (options)"

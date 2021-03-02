@@ -17,7 +17,7 @@
 #
 
 require_relative "bootstrap_context"
-require_relative "../../util/path_helper"
+require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
@@ -331,7 +331,7 @@ class Chef
         def trusted_certs_content
           content = ""
           if chef_config[:trusted_certs_dir]
-            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
+            Dir.glob(File.join(ChefConfig::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "> #{bootstrap_directory}/trusted_certs/#{File.basename(cert)} (\n" +
                 escape_and_echo(IO.read(File.expand_path(cert))) + "\n)\n"
             end

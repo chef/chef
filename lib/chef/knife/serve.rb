@@ -15,7 +15,7 @@
 #
 
 require_relative "../knife"
-require_relative "../local_mode"
+require "local_mode" unless defined?(Chef::LocalMode)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef

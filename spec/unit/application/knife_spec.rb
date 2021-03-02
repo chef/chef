@@ -79,6 +79,7 @@ describe Chef::Application::Knife do
 
   context "validate --format option" do
     it "should set the default format summary" do
+      # MPTD - this appears to be genuinely broken, look closer
       with_argv(*%w{noop knife command}) do
         expect(@knife).to receive(:exit).with(0)
         @knife.run

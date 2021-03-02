@@ -19,6 +19,9 @@
 require "spec_helper"
 require "chef/knife/supermarket_install"
 
+# MPTD - why is this now needed?
+require "mixlib/archive"
+
 describe Chef::Knife::SupermarketInstall do
   let(:knife) { Chef::Knife::SupermarketInstall.new }
   let(:stdout) { StringIO.new }
