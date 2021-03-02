@@ -24,6 +24,8 @@ module Win32
 end
 autoload :OpenSSL, "openssl"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require 'pathname'
+
 
 class Chef
   class Resource
@@ -43,35 +45,6 @@ class Chef
         private_key_acl ["acme\\fred", "pc\\jane"]
       end
       ```
-      **Retrieve the private key from a pfx object**
-
-      ```ruby
-      windows_certificate 'Get the private key for a pfx assigned to the local machine certificate store' do
-        pfx_password         "1234"
-        source               "<something from the subject line of the pfx i.e. CN= >"
-        user_store           false
-        action               :fetch_pfx_key
-      end
-
-      **Retrieve the certificatge from a pfx object**
-
-      ```ruby
-      windows_certificate 'Get the cert for a pfx assigned to the local machine certificate store' do
-        pfx_password         "1234"
-        source               "<something from the subject line of the pfx i.e. CN= >"
-        user_store           false
-        action               :fetch_pfx_cert
-      end
-
-      **Export a PFX object with password to a temporary folder**
-
-      ```ruby
-      windows_certificate 'Get my PFX Object' do
-        pfx_password         "1234"
-        source               "<something from the subject line of the pfx i.e. CN= >"
-        user_store           false
-        action               :fetch_pfx
-      end
 
       **Add cert to trusted intermediate store**
 
@@ -120,6 +93,21 @@ class Chef
         description: "Ensure that imported pfx certificate is exportable. Please provide 'true' if you want the certificate to be exportable.",
         default: false,
         introduced: "16.8"
+
+      property :pfx_key, [TrueClass, FalseClass],
+        description: "A Switch to tell Chef to return the private key associated with a PFX object",
+        default: false,
+        introduced: "16.10"
+
+      property :pfx_certificate, [TrueClass, FalseClass],
+        description: "A Switch to tell Chef to return the certificate associated with a PFX object",
+        default: false,
+        introduced: "16.10"
+
+      property :pfx_outfile, [TrueClass, FalseClass],
+        description: "A Switch to tell Chef to return the the path to an exported PFX object",
+        default: false,
+        introduced: "16.10"
 
       action :create do
         description "Creates or updates a certificate."
@@ -170,45 +158,20 @@ class Chef
 
       action :fetch do
         description "Fetches a certificate."
+        if new_resource.pfx_key
+          cert_obj = fetch_pfx_private_key
+        elsif new_resource.pfx_certificate
+          cert_obj = fetch_pfx_certificate
+        elsif new_resource.pfx_outfile
+          cert_obj = fetch_pfx
+        else
+          cert_obj = fetch_cert
+        end
 
-        cert_obj = fetch_cert
         if cert_obj
           show_or_store_cert(cert_obj)
         else
           Chef::Log.debug("Certificate not found")
-        end
-      end
-
-      action :fetch_pfx do
-        description "Fetches a PKCS12 object."
-
-        cert_obj = fetch_pfx
-        if cert_obj
-          show_or_store_cert(cert_obj)
-        else
-          Chef::Log.debug("PFX not found")
-        end
-      end
-
-      action :fetch_pfx_cert do
-        description "Fetches a PKCS12 certificate from an object in the certificate store."
-
-        cert_obj = fetch_pfx_certificate
-        if cert_obj
-          show_or_store_cert(cert_obj)
-        else
-          Chef::Log.debug("PFX not found")
-        end
-      end
-
-      action :fetch_pfx_key do
-        description "Fetches a PKCS12 private key from an object in the certificate store."
-
-        cert_obj = fetch_pfx_private_key
-        if cert_obj
-          show_or_store_cert(cert_obj)
-        else
-          Chef::Log.debug("PFX not found")
         end
       end
 
