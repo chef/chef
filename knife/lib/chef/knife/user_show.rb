@@ -24,11 +24,11 @@ class Chef
 
       include Knife::Core::MultiAttributeReturnOption
 
-      banner "knife user show USER (options)"
+      deps do
+        require "chef/user_v1" unless defined?(Chef::UserV1)
+      end
 
-      option :with_orgs,
-        long: "--with-orgs",
-        short: "-l"
+      banner "knife user show USER (options)"
 
       def run
         @user_name = @name_args[0]
@@ -39,12 +39,8 @@ class Chef
           exit 1
         end
 
-        results = root_rest.get("users/#{@user_name}")
-        if config[:with_orgs]
-          orgs = root_rest.get("users/#{@user_name}/organizations")
-          results["organizations"] = orgs.map { |o| o["organization"]["name"] }
-        end
-        output(format_for_display(results))
+        user = Chef::UserV1.load(@user_name)
+        output(format_for_display(user))
       end
 
     end

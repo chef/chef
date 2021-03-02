@@ -29,9 +29,11 @@ require_relative "knife/core/subcommand_loader"
 require_relative "knife/core/ui"
 require "chef/local_mode" unless defined?(Chef::LocalMode)
 require "chef/server_api" unless defined?(Chef::ServerAPI)
+# MPTD: This order seems word
 require "http/authenticator" unless defined?(Chef::HTTP::Authenticator)
 require "http/http_request" unless defined?(Chef::HTTP::HTTPRequest)
 require "http" unless defined?(Chef::HTTP)
+# End
 
 # MPTD: using pp at all?  a quick perusal of knife doesn't turn any up, so far.
 require "pp" unless defined?(PP)
@@ -643,7 +645,6 @@ class Chef
 
     def rest
       @rest ||= begin
-        require "chef/server_api" unless defined?(Chef::ServerAPI)
         Chef::ServerAPI.new(Chef::Config[:chef_server_url])
       end
     end
@@ -664,13 +665,6 @@ class Chef
         Chef::Config[:fips] = config[:fips]
       end
       Chef::Config.init_openssl
-    end
-
-    def root_rest
-      @root_rest ||= begin
-        require_relative "server_api"
-        Chef::ServerAPI.new(Chef::Config[:chef_server_root])
-      end
     end
   end
 end

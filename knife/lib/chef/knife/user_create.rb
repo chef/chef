@@ -45,16 +45,6 @@ class Chef
         description: "API V1 (#{ChefUtils::Dist::Server::PRODUCT} 12.1+) only. Prevent server from generating a default key pair for you. Cannot be passed with --user-key.",
         boolean: true
 
-      option :orgname,
-        long: "--orgname ORGNAME",
-        short: "-o ORGNAME",
-        description: "Associate new user to an organization matching ORGNAME"
-
-      option :passwordprompt,
-        long: "--prompt-for-password",
-        short: "-p",
-        description: "Prompt for user password"
-
       banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
 
       def user
@@ -81,11 +71,8 @@ class Chef
         test_mandatory_field(@name_args[4], "email")
         user.email @name_args[4]
 
-        password = config[:passwordprompt] ? prompt_for_password : @name_args[5]
-        unless password
-          ui.fatal "You must either provide a password or use the --prompt-for-password (-p) option"
-          exit 1
-        end
+        test_mandatory_field(@name_args[5], "password")
+        user.password @name_args[5]
 
         if config[:user_key] && config[:prevent_keygen]
           show_usage
@@ -101,47 +88,19 @@ class Chef
           user.public_key File.read(File.expand_path(config[:user_key]))
         end
 
-        user_hash = {
-          username: user.username,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          display_name: "#{user.first_name} #{user.last_name}",
-          email: user.email,
-          password: password,
-        }
+        output = edit_hash(user)
+        final_user = create_user_from_hash(output)
 
-        # Check the file before creating the user so the api is more transactional.
-        if config[:file]
-          file = config[:file]
-          unless File.exist?(file) ? File.writable?(file) : File.writable?(File.dirname(file))
-            ui.fatal "File #{config[:file]} is not writable.  Check permissions."
-            exit 1
-          end
-        end
-
-        final_user = root_rest.post("users/", user_hash)
-
-        if config[:orgname]
-          request_body = { user: user.username }
-          response = root_rest.post("organizations/#{config[:orgname]}/association_requests", request_body)
-          association_id = response["uri"].split("/").last
-          root_rest.put("users/#{user.username}/association_requests/#{association_id}", { response: "accept" })
-        end
-
-        ui.info("Created #{user.username}")
-        if final_user["private_key"]
+        ui.info("Created #{user}")
+        if final_user.private_key
           if config[:file]
             File.open(config[:file], "w") do |f|
-              f.print(final_user["private_key"])
+              f.print(final_user.private_key)
             end
           else
-            ui.msg final_user["private_key"]
+            ui.msg final_user.private_key
           end
         end
-      end
-
-      def prompt_for_password
-        ui.ask("Please enter the user's password: ", echo: false)
       end
     end
   end

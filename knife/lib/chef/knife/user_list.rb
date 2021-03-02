@@ -22,6 +22,12 @@ class Chef
   class Knife
     class UserList < Knife
 
+      deps do
+        # MPTD: Similar to api_client_v1, this lives in Chef but
+        # is not used there, only in knife.
+        require "chef/user_v1" unless defined?(Chef::UserV1)
+      end
+
       banner "knife user list (options)"
 
       option :with_uri,
@@ -30,8 +36,7 @@ class Chef
         description: "Show corresponding URIs."
 
       def run
-        results = root_rest.get("users")
-        output(format_list_for_display(results))
+        output(format_list_for_display(Chef::UserV1.list))
       end
 
     end

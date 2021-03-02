@@ -24,7 +24,7 @@ class Chef
       deps do
         require "chef/json_compat" unless defined?(Chef::JSONCompat)
         require "chef/config" unless defined?(Chef::Config)
-        # MPTD - most of these are alrady included via ../knife
+        # TODO - most of these are alrady included via ../knife
         require "chef/http" unless defined?(Chef::HTTP)
         require "chef/http/authenticator" unless defined?(Chef::HTTP::Authenticator)
         require "chef/http/cookie_manager" unless defined?(Chef::HTTP::CookieManager)
