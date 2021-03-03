@@ -22,7 +22,7 @@ PATH
   specs:
     chef (16.10.22)
       addressable
-      bcrypt_pbkdf (= 1.1.0.rc2)
+      bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
       chef-config (= 16.10.22)
       chef-utils (= 16.10.22)
@@ -59,7 +59,7 @@ PATH
       uuidtools (>= 2.1.5, < 3.0)
     chef (16.10.22-universal-mingw32)
       addressable
-      bcrypt_pbkdf (= 1.1.0.rc2)
+      bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
       chef-config (= 16.10.22)
       chef-utils (= 16.10.22)
@@ -137,9 +137,9 @@ GEM
       mixlib-cli (>= 1.4, < 3.0)
       mixlib-shellout (>= 2.0, < 4.0)
     ast (2.4.2)
-    bcrypt_pbkdf (1.1.0.rc2)
-    bcrypt_pbkdf (1.1.0.rc2-x64-mingw32)
-    bcrypt_pbkdf (1.1.0.rc2-x86-mingw32)
+    bcrypt_pbkdf (1.1.0)
+    bcrypt_pbkdf (1.1.0-x64-mingw32)
+    bcrypt_pbkdf (1.1.0-x86-mingw32)
     binding_of_caller (1.0.0)
       debug_inspector (>= 0.0.1)
     builder (3.2.4)
