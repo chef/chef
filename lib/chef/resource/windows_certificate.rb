@@ -24,8 +24,6 @@ module Win32
 end
 autoload :OpenSSL, "openssl"
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
-require 'pathname'
-
 
 class Chef
   class Resource
@@ -82,7 +80,7 @@ class Chef
         default: false
 
       property :cert_path, String,
-        description: "The path to the certificate."
+        description: "The path to save the certificate to on disk when using the Fetch action. "
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
@@ -224,9 +222,8 @@ class Chef
         def fetch_pfx_certificate
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
           cert_path = store.get_pfx(resolve_thumbprint(new_resource.source), store_location: native_cert_location, export_password: new_resource.pfx_password)
-          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip),new_resource.pfx_password )
+          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip), new_resource.pfx_password )
           p12.certificate
-          # ::File.delete(cert_path) if ::File.exist?(cert_path)
         end
 
         # the call to get_pfx looks deceiving, we still pass the store_name and store_location because the ultimate recipient of that data
@@ -235,9 +232,8 @@ class Chef
         def fetch_pfx_private_key
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
           cert_path = store.get_pfx(resolve_thumbprint(new_resource.source), store_location: native_cert_location, export_password: new_resource.pfx_password)
-          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip),new_resource.pfx_password )
+          p12 = OpenSSL::PKCS12.new(::File.binread(cert_path.strip), new_resource.pfx_password )
           p12.key
-          # ::File.delete(cert_path) if ::File.exist?(cert_path)
         end
 
         # Thumbprints should be exactly 40 Hex characters
