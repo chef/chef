@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.24 -->
-## [v16.10.24](https://github.com/chef/chef/tree/v16.10.24) (2021-03-04)
+<!-- latest_release 16.10.25 -->
+## [v16.10.25](https://github.com/chef/chef/tree/v16.10.25) (2021-03-04)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `a1e9c90` to `a7ed951` in /omnibus [#11132](https://github.com/chef/chef/pull/11132) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- [Backport to chef-16] DNF package: fix abrt errors [#11139](https://github.com/chef/chef/pull/11139) ([dheerajd-msys](https://github.com/dheerajd-msys))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- [Backport to chef-16] DNF package: fix abrt errors [#11139](https://github.com/chef/chef/pull/11139) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.10.25 -->
 - Bump omnibus-software from `a1e9c90` to `a7ed951` in /omnibus [#11132](https://github.com/chef/chef/pull/11132) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.24 -->
 - Update our bcrypt_pbkdf dep to allow the final 1.1.0 release [#11136](https://github.com/chef/chef/pull/11136) ([ramereth](https://github.com/ramereth)) <!-- 16.10.23 -->
 - Use shell redirection in chef_client_cron when append_log_file is true [#11125](https://github.com/chef/chef/pull/11125) ([ramereth](https://github.com/ramereth)) <!-- 16.10.22 -->
