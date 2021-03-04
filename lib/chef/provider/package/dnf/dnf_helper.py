@@ -160,7 +160,7 @@ else:
 
 try:
     while 1:
-        # kill self if we get orphaned (tragic)
+        # stop the process if the parent proc goes away
         ppid = os.getppid()
         if ppid == 1:
             raise RuntimeError("orphaned")
