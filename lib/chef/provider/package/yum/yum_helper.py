@@ -196,6 +196,10 @@ try:
         setup_exit_handler()
         line = inpipe.readline()
 
+        # only way to detect EOF in python
+        if line == "":
+            break
+
         try:
             command = json.loads(line)
         except ValueError, e:
