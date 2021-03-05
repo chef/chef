@@ -18,7 +18,7 @@
 
 require "spec_helper"
 
-require "chef/cookbook_site_streaming_uploader"
+require "chef/knife/core/cookbook_site_streaming_uploader"
 
 class FakeTempfile
   def initialize(basename)
@@ -33,10 +33,10 @@ class FakeTempfile
 
 end
 
-describe Chef::CookbookSiteStreamingUploader do
+describe Chef::Knife::Core::CookbookSiteStreamingUploader do
 
+  let(:subject) { Chef::Knife::Core::CookbookSiteStreamingUploader }
   describe "create_build_dir" do
-
     before(:each) do
       @cookbook_repo = File.expand_path(File.join(CHEF_SPEC_DATA, "cookbooks"))
       @loader = Chef::CookbookLoader.new(@cookbook_repo)
@@ -51,7 +51,7 @@ describe Chef::CookbookSiteStreamingUploader do
       expect(Tempfile).to receive(:new).with("chef-#{cookbook.name}-build").and_return(FakeTempfile.new("chef-#{cookbook.name}-build"))
       expect(FileUtils).to receive(:mkdir_p).exactly(files_count + 1).times
       expect(FileUtils).to receive(:cp).exactly(files_count).times
-      Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
+      subject.create_build_dir(cookbook)
     end
 
   end # create_build_dir
@@ -68,17 +68,17 @@ describe Chef::CookbookSiteStreamingUploader do
 
     it "should send an http request" do
       expect_any_instance_of(Net::HTTP).to receive(:request)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
+      subject.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should read the private key file" do
       expect(File).to receive(:read).with(@secret_filename).and_return(@rsa_key)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
+      subject.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should add the authentication signed header" do
       expect_any_instance_of(Mixlib::Authentication::SigningObject).to receive(:sign).and_return({})
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
+      subject.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should be able to send post requests" do
@@ -87,7 +87,7 @@ describe Chef::CookbookSiteStreamingUploader do
       expect(Net::HTTP::Post).to receive(:new).once.and_return(post)
       expect(Net::HTTP::Put).not_to receive(:new)
       expect(Net::HTTP::Get).not_to receive(:new)
-      Chef::CookbookSiteStreamingUploader.make_request(:post, @uri, "bill", @secret_filename)
+      subject.make_request(:post, @uri, "bill", @secret_filename)
     end
 
     it "should be able to send put requests" do
@@ -96,23 +96,23 @@ describe Chef::CookbookSiteStreamingUploader do
       expect(Net::HTTP::Post).not_to receive(:new)
       expect(Net::HTTP::Put).to receive(:new).once.and_return(put)
       expect(Net::HTTP::Get).not_to receive(:new)
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename)
+      subject.make_request(:put, @uri, "bill", @secret_filename)
     end
 
     it "should be able to receive files to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+      subject.make_request(:put, @uri, "bill", @secret_filename, {
         myfile: File.new(File.join(CHEF_SPEC_DATA, "config.rb")), # a dummy file
       })
     end
 
     it "should be able to receive strings to attach as argument" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+      subject.make_request(:put, @uri, "bill", @secret_filename, {
         mystring: "Lorem ipsum",
       })
     end
 
     it "should be able to receive strings and files as argument at the same time" do
-      Chef::CookbookSiteStreamingUploader.make_request(:put, @uri, "bill", @secret_filename, {
+      subject.make_request(:put, @uri, "bill", @secret_filename, {
         myfile1: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
         mystring1: "Lorem ipsum",
         myfile2: File.new(File.join(CHEF_SPEC_DATA, "config.rb")),
@@ -125,11 +125,11 @@ describe Chef::CookbookSiteStreamingUploader do
   describe "StreamPart" do
     before(:each) do
       @file = File.new(File.join(CHEF_SPEC_DATA, "config.rb"))
-      @stream_part = Chef::CookbookSiteStreamingUploader::StreamPart.new(@file, File.size(@file))
+      @stream_part = Chef::Knife::Core::CookbookSiteStreamingUploader::StreamPart.new(@file, File.size(@file))
     end
 
     it "should create a StreamPart" do
-      expect(@stream_part).to be_instance_of(Chef::CookbookSiteStreamingUploader::StreamPart)
+      expect(@stream_part).to be_instance_of(Chef::Knife::Core::CookbookSiteStreamingUploader::StreamPart)
     end
 
     it "should expose its size" do
@@ -147,11 +147,11 @@ describe Chef::CookbookSiteStreamingUploader do
   describe "StringPart" do
     before(:each) do
       @str = "What a boring string"
-      @string_part = Chef::CookbookSiteStreamingUploader::StringPart.new(@str)
+      @string_part = Chef::Knife::Core::CookbookSiteStreamingUploader::StringPart.new(@str)
     end
 
     it "should create a StringPart" do
-      expect(@string_part).to be_instance_of(Chef::CookbookSiteStreamingUploader::StringPart)
+      expect(@string_part).to be_instance_of(Chef::Knife::Core::CookbookSiteStreamingUploader::StringPart)
     end
 
     it "should expose its size" do
@@ -168,15 +168,15 @@ describe Chef::CookbookSiteStreamingUploader do
     before(:each) do
       @string1 = "stream1"
       @string2 = "stream2"
-      @stream1 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string1)
-      @stream2 = Chef::CookbookSiteStreamingUploader::StringPart.new(@string2)
+      @stream1 = Chef::Knife::Core::CookbookSiteStreamingUploader::StringPart.new(@string1)
+      @stream2 = Chef::Knife::Core::CookbookSiteStreamingUploader::StringPart.new(@string2)
       @parts = [ @stream1, @stream2 ]
 
-      @multipart_stream = Chef::CookbookSiteStreamingUploader::MultipartStream.new(@parts)
+      @multipart_stream = Chef::Knife::Core::CookbookSiteStreamingUploader::MultipartStream.new(@parts)
     end
 
     it "should create a MultipartStream" do
-      expect(@multipart_stream).to be_instance_of(Chef::CookbookSiteStreamingUploader::MultipartStream)
+      expect(@multipart_stream).to be_instance_of(Chef::Knife::Core::CookbookSiteStreamingUploader::MultipartStream)
     end
 
     it "should expose its size" do
