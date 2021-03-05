@@ -26,11 +26,11 @@ class Chef
       include DataBagSecretOptions
 
       deps do
-        require_relative "../util/path_helper"
-        require_relative "../data_bag"
-        require_relative "../data_bag_item"
+        require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
+        require "chef/data_bag" unless defined?(Chef::DataBag)
+        require "chef/data_bag_item" unless defined?(Chef::DataBagItem)
+        require "chef/encrypted_data_bag_item" unless defined?(Chef::EncryptedDataBagItem)
         require_relative "core/object_loader"
-        require_relative "../encrypted_data_bag_item"
       end
 
       banner "knife data bag from file BAG FILE|FOLDER [FILE|FOLDER..] (options)"
@@ -42,7 +42,7 @@ class Chef
         description: "Upload all data bags or all items for specified data bags."
 
       def loader
-        @loader ||= Knife::Core::ObjectLoader.new(DataBagItem, ui)
+        @loader ||= Knife::Core::ObjectLoader.new(Chef::DataBagItem, ui)
       end
 
       def run
@@ -101,7 +101,7 @@ class Chef
         paths = []
         args.each do |path|
           if File.directory?(path)
-            paths.concat(Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(path), "*.json")))
+            paths.concat(Dir.glob(File.join(ChefConfig::PathHelper.escape_glob_dir(path), "*.json")))
           else
             paths << path
           end

@@ -27,10 +27,10 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require_relative "../node"
-        require_relative "../environment"
-        require_relative "../api_client"
-        require_relative "../search/query"
+        require "chef/node" unless defined?(Chef::Node)
+        require "chef/environment" unless defined?(Chef::Environment)
+        require "chef/api_client"  unless defined?(Chef::APIClient)
+        require "chef/search/query" unless defined?(Chef::Search::Query)
       end
 
       include Knife::Core::FormattingOptions

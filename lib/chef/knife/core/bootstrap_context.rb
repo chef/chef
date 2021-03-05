@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require_relative "../../run_list"
-require_relative "../../util/path_helper"
+require "run_list" unless defined?(Chef::RunList)
+require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 require "pathname" unless defined?(Pathname)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
@@ -230,7 +230,7 @@ class Chef
         def trusted_certs_content
           content = ""
           if chef_config[:trusted_certs_dir]
-            Dir.glob(File.join(Chef::Util::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
+            Dir.glob(File.join(ChefConfig::PathHelper.escape_glob_dir(chef_config[:trusted_certs_dir]), "*.{crt,pem}")).each do |cert|
               content << "cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'\n" +
                 IO.read(File.expand_path(cert)) + "\nEOP\n"
             end

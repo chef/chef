@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require_relative "../../node"
-require_relative "../../server_api"
-require_relative "../../api_client/registration"
-require_relative "../../api_client"
+require "chef/node" unless defined?(Chef::Node)
+require "chef/server_api" unless defined?(Chef::ServerAPI)
+require "chef/api_client" unless defined?(Chef::APIClient)
+require "chef/api_client/registration" unless defined?(Chef::APIClient::Registration)
 require "tmpdir" unless defined?(Dir.mktmpdir)
 
 class Chef

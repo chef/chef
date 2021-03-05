@@ -25,10 +25,10 @@ class Chef
       include Chef::Mixin::ShellOut
 
       deps do
-        require_relative "../cookbook_loader"
-        require_relative "../cookbook_uploader"
-        require_relative "../cookbook_site_streaming_uploader"
-        require_relative "../mixin/shell_out"
+        require "chef/cookbook_loader" unless defined?(Chef::CookbookLoader)
+        require "chef/cookbook_uploader" unless defined?(Chef::CookbookUploader)
+        require_relative "core/cookbook_site_streaming_uploader"
+        require "chef/mixin/shell_out" unless defined?(Chef::Mixin::ShellOut)
       end
 
       banner "knife supermarket share COOKBOOK [CATEGORY] (options)"
@@ -72,7 +72,7 @@ class Chef
         if cl.cookbook_exists?(cookbook_name)
           cookbook = cl[cookbook_name]
           Chef::CookbookUploader.new(cookbook).validate_cookbooks
-          tmp_cookbook_dir = Chef::CookbookSiteStreamingUploader.create_build_dir(cookbook)
+          tmp_cookbook_dir = Chef::Knife::Core::CookbookSiteStreamingUploader.create_build_dir(cookbook)
           begin
             Chef::Log.trace("Temp cookbook directory is #{tmp_cookbook_dir.inspect}")
             ui.info("Making tarball #{cookbook_name}.tgz")
@@ -124,7 +124,7 @@ class Chef
 
         category_string = Chef::JSONCompat.to_json({ "category" => cookbook_category })
 
-        http_resp = Chef::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
+        http_resp = Chef::Knife::Core::CookbookSiteStreamingUploader.post(uri, user_id, user_secret_filename, {
           tarball: File.open(cookbook_filename),
           cookbook: category_string,
         })

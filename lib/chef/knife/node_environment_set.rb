@@ -23,7 +23,7 @@ class Chef
     class NodeEnvironmentSet < Knife
 
       deps do
-        require_relative "../node"
+        require "chef/node" unless defined?(Chef::Node)
       end
 
       banner "knife node environment set NODE ENVIRONMENT"

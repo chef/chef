@@ -22,13 +22,14 @@ class Chef
       banner "knife raw REQUEST_PATH (options)"
 
       deps do
-        require_relative "../json_compat"
-        require_relative "../config"
-        require_relative "../http"
-        require_relative "../http/authenticator"
-        require_relative "../http/cookie_manager"
-        require_relative "../http/decompressor"
-        require_relative "../http/json_output"
+        require "chef/json_compat" unless defined?(Chef::JSONCompat)
+        require "chef/config" unless defined?(Chef::Config)
+        # TODO - most of these are alrady included via ../knife
+        require "chef/http" unless defined?(Chef::HTTP)
+        require "chef/http/authenticator" unless defined?(Chef::HTTP::Authenticator)
+        require "chef/http/cookie_manager" unless defined?(Chef::HTTP::CookieManager)
+        require "chef/http/decompressor" unless defined?(Chef::HTTP::Decompressor)
+        require "chef/http/json_output" unless defined?(Chef::HTTP::JSONOutput)
       end
 
       option :method,

@@ -416,10 +416,9 @@ class Chef
 
       deps do
         require "erubis" unless defined?(Erubis)
-
         require "net/ssh" unless defined?(Net::SSH)
-        require_relative "../json_compat"
-        require_relative "../util/path_helper"
+        require "chef/json_compat" unless defined?(Chef::JSONCompat)
+        require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
         require_relative "bootstrap/chef_vault_handler"
         require_relative "bootstrap/client_builder"
         require_relative "bootstrap/train_connector"
@@ -502,7 +501,7 @@ class Chef
         bootstrap_files = []
         bootstrap_files << File.join(__dir__, "bootstrap/templates", "#{template}.erb")
         bootstrap_files << File.join(Knife.chef_config_dir, "bootstrap", "#{template}.erb") if Chef::Knife.chef_config_dir
-        Chef::Util::PathHelper.home(".chef", "bootstrap", "#{template}.erb") { |p| bootstrap_files << p }
+        ChefConfig::PathHelper.home(".chef", "bootstrap", "#{template}.erb") { |p| bootstrap_files << p }
         bootstrap_files << Gem.find_files(File.join("chef", "knife", "bootstrap", "#{template}.erb"))
         bootstrap_files.flatten!
 

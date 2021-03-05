@@ -27,7 +27,7 @@ class Chef
       attr_accessor :cookbook_name
 
       deps do
-        require_relative "../cookbook_version"
+        require "chef/cookbook_version" unless defined?(Chef::CookbookVersion)
       end
 
       banner "knife cookbook download COOKBOOK [VERSION] (options)"

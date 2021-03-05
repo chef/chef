@@ -23,7 +23,7 @@ class Chef
     class EnvironmentList < Knife
 
       deps do
-        require_relative "../environment"
+        require "chef/environment" unless defined?(Chef::Environment)
       end
 
       banner "knife environment list (options)"

@@ -23,13 +23,13 @@ class Chef
     class Ssh < Knife
 
       deps do
-        require_relative "../mixin/shell_out"
+        require "chef/mixin/shell_out" unless defined?(Chef::Mixin::ShellOut)
         require "net/ssh" unless defined?(Net::SSH)
         require "net/ssh/multi"
         require "readline"
-        require_relative "../exceptions"
-        require_relative "../search/query"
-        require_relative "../util/path_helper"
+        require "chef/exceptions" unless defined?(Chef::Exceptions)
+        require "chef/search/query" unless defined?(Chef::Search::Query)
+        require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 
         include Chef::Mixin::ShellOut
       end
@@ -464,7 +464,7 @@ class Chef
 
       def screen
         tf = Tempfile.new("knife-ssh-screen")
-        Chef::Util::PathHelper.home(".screenrc") do |screenrc_path|
+        ChefConfig::PathHelper.home(".screenrc") do |screenrc_path|
           if File.exist? screenrc_path
             tf.puts("source #{screenrc_path}")
           end

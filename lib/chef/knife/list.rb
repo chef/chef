@@ -24,7 +24,7 @@ class Chef
       category "path-based"
 
       deps do
-        require_relative "../chef_fs/file_system"
+        require "chef/chef_fs/file_system" unless defined?(Chef::ChefFS::FileSystem)
         require "tty-screen"
       end
 

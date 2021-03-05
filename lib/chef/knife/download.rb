@@ -24,7 +24,7 @@ class Chef
       category "path-based"
 
       deps do
-        require_relative "../chef_fs/command_line"
+        require "chef/chef_fs/command_line" unless defined?(Chef::ChefFS::CommandLine)
       end
 
       option :recurse,

@@ -25,7 +25,7 @@ class Chef
     class TagList < Knife
 
       deps do
-        require_relative "../node"
+        require "chef/node" unless defined?(Chef::Node)
       end
 
       banner "knife tag list NODE"

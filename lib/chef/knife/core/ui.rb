@@ -19,7 +19,7 @@
 #
 
 require "forwardable" unless defined?(Forwardable)
-require_relative "../../platform/query_helpers"
+require "chef/platform/query_helpers" # NOTE - this require doesn't defined any const we can check.
 require_relative "generic_presenter"
 require "tempfile" unless defined?(Tempfile)
 

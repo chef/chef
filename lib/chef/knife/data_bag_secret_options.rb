@@ -17,8 +17,8 @@
 #
 
 require "mixlib/cli" unless defined?(Mixlib::CLI)
-require_relative "../config"
-require_relative "../encrypted_data_bag_item/check_encrypted"
+require "chef/config" unless defined?(Chef::Config)
+require "encrypted_data_bag_item/check_encrypted" unless defined?(Chef::EncryptedDataBagItem::CheckEncrypted)
 
 class Chef
   class Knife
@@ -60,7 +60,7 @@ class Chef
       def read_secret
         # Moving the non 'compile-time' requires into here to speed up knife command loading
         # IE, if we are not running 'knife data bag *' we don't need to load 'chef/encrypted_data_bag_item'
-        require_relative "../encrypted_data_bag_item"
+        require "chef/encrypted_data_bag_item" unless defined?(Chef::EncryptedDataBagItem)
 
         if config[:cl_secret]
           config[:cl_secret]

@@ -16,8 +16,8 @@
 # limitations under the License.
 #
 
-require_relative "../../version"
-require_relative "../../util/path_helper"
+require_relative "../version"
+require "chef-config/path_helper" unless defined?(ChefConfig::PathHelper)
 class Chef
   class Knife
     class SubcommandLoader
@@ -45,22 +45,24 @@ class Chef
           find_subcommands_via_dirglob
         end
 
-        def find_subcommands_via_dirglob
-          # The "require paths" of the core knife subcommands bundled with chef
-          files = Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(File.expand_path("../../knife", __dir__)), "*.rb")]
-          subcommand_files = {}
-          files.each do |knife_file|
-            rel_path = knife_file[/#{CHEF_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
-            subcommand_files[rel_path] = knife_file
-          end
-          subcommand_files
-        end
+        # This is already inherited from subcommandloader, and it is identical.
+        # def find_subcommands_via_dirglob
+        #   # The "require paths" of the core knife subcommands bundled with chef
+        #   files = Dir[File.join(ChefConfig::PathHelper.escape_glob_dir(File.expand_path("../../knife", __dir__)), "*.rb")]
+        #   subcommand_files = {}
+        #   files.each do |knife_file|
+        #     rel_path = knife_file[/#{KNIFE_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
+        #     subcommand_files[rel_path] = knife_file
+        #   end
+        #   subcommand_files
+        # end
 
         def find_subcommands_via_rubygems
           files = find_files_latest_gems "chef/knife/*.rb"
           subcommand_files = {}
           files.each do |file|
-            rel_path = file[/(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 1]
+
+            rel_path = file[/(.*)(#{Regexp.escape File.join('chef', 'knife', '')}.*)\.rb/, 2]
 
             # When not installed as a gem (ChefDK/appbundler in particular), AND
             # a different version of Chef is installed via gems, `files` will
@@ -82,8 +84,9 @@ class Chef
 
           if check_load_path
             files = $LOAD_PATH.map do |load_path|
-              Dir["#{File.expand_path glob, Chef::Util::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
+              Dir["#{File.expand_path glob, ChefConfig::PathHelper.escape_glob_dir(load_path)}#{Gem.suffix_pattern}"]
             end.flatten.select { |file| File.file? file.untaint }
+
           end
 
           gem_files = latest_gem_specs.map do |spec|
@@ -116,7 +119,7 @@ class Chef
                    spec.require_paths.first
                  end
 
-          glob = File.join(Chef::Util::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
+          glob = File.join(ChefConfig::PathHelper.escape_glob_dir(spec.full_gem_path, dirs), glob)
 
           Dir[glob].map(&:untaint)
         end

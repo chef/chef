@@ -23,7 +23,7 @@ class Chef
     class EnvironmentDelete < Knife
 
       deps do
-        require_relative "../environment"
+        require "chef/environment" unless defined?(Chef::Environment)
       end
 
       banner "knife environment delete ENVIRONMENT (options)"

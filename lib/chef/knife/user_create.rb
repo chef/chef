@@ -26,7 +26,7 @@ class Chef
       attr_accessor :user_field
 
       deps do
-        require_relative "../user_v1"
+        require 'chef/user_v1' unless defined?(Chef::UserV1)
       end
 
       option :file,

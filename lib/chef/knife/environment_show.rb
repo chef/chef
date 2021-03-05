@@ -25,7 +25,7 @@ class Chef
       include Knife::Core::MultiAttributeReturnOption
 
       deps do
-        require_relative "../environment"
+        require "chef/environment" unless defined?(Chef::Environment)
       end
 
       banner "knife environment show ENVIRONMENT (options)"

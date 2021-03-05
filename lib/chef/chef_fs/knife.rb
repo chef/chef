@@ -26,11 +26,11 @@ class Chef
       # Workaround for CHEF-3932
       def self.deps
         super do
-          require_relative "../config"
-          require_relative "parallelizer"
-          require_relative "config"
-          require_relative "file_pattern"
-          require_relative "path_utils"
+          require "chef/config" unless defined?(Chef::Config)
+          require "chef/chef_fs/parallelizer" unless defined?(Chef::ChefFS::Parallelizer)
+          require "chef/chef_fs/config" unless defined?(Chef::ChefFS::Config)
+          require "chef/chef_fs/file_pattern" unless defined?(Chef::ChefFS::FilePattern)
+          require "chef/chef_fs/path_utils" unless defined?(Chef::ChefFS::PathUtils)
           yield
         end
       end
