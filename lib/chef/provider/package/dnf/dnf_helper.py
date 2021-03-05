@@ -101,6 +101,11 @@ while 1:
     if ppid == 1:
         sys.exit(0)
     line = sys.stdin.readline()
+
+    # only way to detect EOF in python
+    if line == "":
+        break
+
     command = json.loads(line)
     if command['action'] == "whatinstalled":
         query(command)
