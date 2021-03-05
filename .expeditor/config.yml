@@ -142,6 +142,21 @@ subscriptions:
   - workload: ruby_gem_published:win32-taskscheduler-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-certstore-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-event-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-mutex-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-eventlog-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-api-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:ffi-yajl-*
     actions:
       - bash:.expeditor/update_dep.sh
