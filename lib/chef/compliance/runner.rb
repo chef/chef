@@ -22,8 +22,13 @@ class Chef
 
         logger.debug("#{self.class}##{__method__}: #{Inspec::Dist::PRODUCT_NAME} profiles? #{inspec_profiles.any?}")
         logger.debug("#{self.class}##{__method__}: audit cookbook? #{audit_cookbook_present}")
+        logger.debug("#{self.class}##{__method__}: compliance phase attr? #{node["audit"]["compliance_phase"]}")
 
-        inspec_profiles.any? && !audit_cookbook_present
+        if node["audit"]["compliance_phase"].nil?
+          inspec_profiles.any? && !audit_cookbook_present
+        else
+          node["audit"]["compliance_phase"]
+        end
       end
 
       def node=(node)
