@@ -138,7 +138,7 @@ class Chef
             logger.info("#{new_resource} created raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
+          logger.debug("#{new_resource} raid device already exists, skipping create (#{new_resource.raid_device})")
         end
       end
 
@@ -151,7 +151,7 @@ class Chef
             logger.info("#{new_resource} assembled raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
+          logger.debug("#{new_resource} raid device already exists, skipping assemble (#{new_resource.raid_device})")
         end
       end
 
@@ -164,7 +164,7 @@ class Chef
             logger.info("#{new_resource} stopped raid device (#{new_resource.raid_device})")
           end
         else
-          logger.trace("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
+          logger.debug("#{new_resource} raid device doesn't exist (#{new_resource.raid_device}) - not stopping")
         end
       end
 

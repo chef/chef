@@ -82,7 +82,7 @@ class Chef
 
       action :enable do
         if current_resource.enabled
-          logger.trace("#{new_resource} already enabled - nothing to do")
+          logger.debug("#{new_resource} already enabled - nothing to do")
         else
           converge_by("enable service #{new_resource}") do
             enable_service
@@ -100,7 +100,7 @@ class Chef
             logger.info("#{new_resource} disabled")
           end
         else
-          logger.trace("#{new_resource} already disabled - nothing to do")
+          logger.debug("#{new_resource} already disabled - nothing to do")
         end
         load_new_resource_state
         new_resource.enabled(false)
@@ -108,7 +108,7 @@ class Chef
 
       action :mask do
         if current_resource.masked
-          logger.trace("#{new_resource} already masked - nothing to do")
+          logger.debug("#{new_resource} already masked - nothing to do")
         else
           converge_by("mask service #{new_resource}") do
             mask_service
@@ -126,7 +126,7 @@ class Chef
             logger.info("#{new_resource} unmasked")
           end
         else
-          logger.trace("#{new_resource} already unmasked - nothing to do")
+          logger.debug("#{new_resource} already unmasked - nothing to do")
         end
         load_new_resource_state
         new_resource.masked(false)
@@ -139,7 +139,7 @@ class Chef
             logger.info("#{new_resource} started")
           end
         else
-          logger.trace("#{new_resource} already running - nothing to do")
+          logger.debug("#{new_resource} already running - nothing to do")
         end
         load_new_resource_state
         new_resource.running(true)
@@ -152,7 +152,7 @@ class Chef
             logger.info("#{new_resource} stopped")
           end
         else
-          logger.trace("#{new_resource} already stopped - nothing to do")
+          logger.debug("#{new_resource} already stopped - nothing to do")
         end
         load_new_resource_state
         new_resource.running(false)

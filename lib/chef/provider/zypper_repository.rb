@@ -33,7 +33,7 @@ class Chef
         if new_resource.gpgautoimportkeys
           install_gpg_key(new_resource.gpgkey)
         else
-          logger.trace("'gpgautoimportkeys' property is set to false. Skipping key import.")
+          logger.debug("'gpgautoimportkeys' property is set to false. Skipping key import.")
         end
 
         declare_resource(:template, "/etc/zypp/repos.d/#{escaped_repo_name}.repo") do
@@ -162,7 +162,7 @@ class Chef
       # @param [String] uri the uri of the local or remote gpg key
       def install_gpg_key(uri)
         unless uri
-          logger.trace("'gpgkey' property not provided or set to nil. Skipping key import.")
+          logger.debug("'gpgkey' property not provided or set to nil. Skipping key import.")
           return
         end
 

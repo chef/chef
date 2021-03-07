@@ -122,7 +122,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def start_service
     if current_resource.running
-      logger.trace("#{new_resource} already running, not starting")
+      logger.debug("#{new_resource} already running, not starting")
     else
       if new_resource.start_command
         super
@@ -135,7 +135,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def stop_service
     unless current_resource.running
-      logger.trace("#{new_resource} not running, not stopping")
+      logger.debug("#{new_resource} not running, not stopping")
     else
       if new_resource.stop_command
         super
@@ -170,7 +170,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def enable_service
     if current_resource.masked || current_resource.indirect
-      logger.trace("#{new_resource} cannot be enabled: it is masked or indirect")
+      logger.debug("#{new_resource} cannot be enabled: it is masked or indirect")
       return
     end
     options, args = get_systemctl_options_args
@@ -179,7 +179,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
 
   def disable_service
     if current_resource.masked || current_resource.indirect
-      logger.trace("#{new_resource} cannot be disabled: it is masked or indirect")
+      logger.debug("#{new_resource} cannot be disabled: it is masked or indirect")
       return
     end
     options, args = get_systemctl_options_args

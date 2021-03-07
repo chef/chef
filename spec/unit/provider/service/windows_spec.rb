@@ -254,7 +254,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       end
 
       it "logs debug message" do
-        expect(logger).to receive(:trace).with("windows_service[#{chef_service_name}] already exists - nothing to do")
+        expect(logger).to receive(:debug).with("windows_service[#{chef_service_name}] already exists - nothing to do")
         provider.action_create
       end
 
@@ -334,7 +334,7 @@ describe Chef::Provider::Service::Windows, "load_current_resource" do
       end
 
       it "logs debug message" do
-        expect(logger).to receive(:trace).with("windows_service[#{chef_service_name}] does not exist - nothing to do")
+        expect(logger).to receive(:debug).with("windows_service[#{chef_service_name}] does not exist - nothing to do")
         provider.action_delete
       end
 

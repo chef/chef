@@ -42,7 +42,7 @@ class Chef
             logger.info("#{new_resource} mounted")
           end
         else
-          logger.trace("#{new_resource} is already mounted")
+          logger.debug("#{new_resource} is already mounted")
         end
       end
 
@@ -53,7 +53,7 @@ class Chef
             logger.info("#{new_resource} unmounted")
           end
         else
-          logger.trace("#{new_resource} is already unmounted")
+          logger.debug("#{new_resource} is already unmounted")
         end
       end
 
@@ -76,7 +76,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} not mounted, nothing to remount")
+          logger.debug("#{new_resource} not mounted, nothing to remount")
         end
       end
 
@@ -87,7 +87,7 @@ class Chef
             logger.info("#{new_resource} enabled")
           end
         else
-          logger.trace("#{new_resource} already enabled")
+          logger.debug("#{new_resource} already enabled")
         end
       end
 
@@ -98,7 +98,7 @@ class Chef
             logger.info("#{new_resource} disabled")
           end
         else
-          logger.trace("#{new_resource} already disabled")
+          logger.debug("#{new_resource} already disabled")
         end
       end
 

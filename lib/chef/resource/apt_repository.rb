@@ -477,7 +477,7 @@ class Chef
             end
           end
         else
-          logger.trace("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
+          logger.debug("/etc/apt/sources.list.d/#{new_resource.repo_name}.list does not exist. Nothing to do")
         end
       end
 

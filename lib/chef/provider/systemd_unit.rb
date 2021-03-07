@@ -107,10 +107,10 @@ class Chef
 
       action :enable do
         if current_resource.static
-          logger.trace("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
+          logger.debug("#{new_resource.unit_name} is a static unit, enabling is a NOP.")
         end
         if current_resource.indirect
-          logger.trace("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
+          logger.debug("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
         end
 
         unless current_resource.enabled || current_resource.static || current_resource.indirect
@@ -123,11 +123,11 @@ class Chef
 
       action :disable do
         if current_resource.static
-          logger.trace("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
+          logger.debug("#{new_resource.unit_name} is a static unit, disabling is a NOP.")
         end
 
         if current_resource.indirect
-          logger.trace("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
+          logger.debug("#{new_resource.unit_name} is an indirect unit, enabling is a NOP.")
         end
 
         if current_resource.enabled && !current_resource.static && !current_resource.indirect
@@ -195,7 +195,7 @@ class Chef
             logger.info("#{new_resource} reloaded")
           end
         else
-          logger.trace("#{new_resource.unit_name} is not active, skipping reload.")
+          logger.debug("#{new_resource.unit_name} is not active, skipping reload.")
         end
       end
 

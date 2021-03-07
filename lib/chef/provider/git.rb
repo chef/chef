@@ -94,7 +94,7 @@ class Chef
           enable_submodules
           add_remotes
         else
-          logger.trace "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
+          logger.debug "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
         end
       end
 

@@ -68,7 +68,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
       end
 
       it "logs a message and sets group's members to 'none'" do
-        expect(logger).to receive(:trace).with("group[wheel] setting group members to: none")
+        expect(logger).to receive(:debug).with("group[wheel] setting group members to: none")
         expect(@provider).to receive(:shell_out_compacted!).with("gpasswd", "-M", "", "wheel")
         @provider.modify_group_members
       end
@@ -88,7 +88,7 @@ describe Chef::Provider::Group::Gpasswd, "modify_group_members" do
 
     describe "when the resource specifies group members" do
       it "should log an appropriate debug message" do
-        expect(logger).to receive(:trace).with("group[wheel] setting group members to: lobster, rage, fist")
+        expect(logger).to receive(:debug).with("group[wheel] setting group members to: lobster, rage, fist")
         allow(@provider).to receive(:shell_out_compacted!)
         @provider.modify_group_members
       end
