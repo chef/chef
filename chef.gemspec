@@ -38,7 +38,7 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.0"
   s.add_dependency "inspec-core", "~> 4.23"
 
-  s.add_dependency "ffi", ">= 1.9.25", "< 1.14.0" # 1.14 breaks i386 windows. It should be fixed in 1.14.3
+  s.add_dependency "ffi", ">= 1.9.25"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"

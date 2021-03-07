@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 2397af29ecc3c3e849d817a8519d32866aab89ff
+  revision: 7b33f59cd06ebee58c0cbc73fe2af45840d2ee1e
   branch: master
   specs:
-    ohai (17.0.24)
+    ohai (17.0.25)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -38,7 +38,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.4.0)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (>= 1.9.25, < 1.14.0)
+      ffi (>= 1.9.25)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -74,7 +74,7 @@ PATH
       diff-lcs (>= 1.2.4, < 1.4.0)
       ed25519 (~> 1.2)
       erubis (~> 2.7)
-      ffi (>= 1.9.25, < 1.14.0)
+      ffi (>= 1.9.25)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
       highline (>= 1.6.9, < 3)
@@ -182,9 +182,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (8.7.0)
       net-ssh
-    ffi (1.13.1)
-    ffi (1.13.1-x64-mingw32)
-    ffi (1.13.1-x86-mingw32)
+    ffi (1.15.0)
+    ffi (1.15.0-x64-mingw32)
+    ffi (1.15.0-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -369,7 +369,7 @@ GEM
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.0)
+    webmock (3.12.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
