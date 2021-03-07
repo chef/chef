@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.0.138 -->
+## [v17.0.138](https://github.com/chef/chef/tree/v17.0.138) (2021-03-07)
 
 #### Merged Pull Requests
+- Update FFI to 1.15.0 [#11151](https://github.com/chef/chef/pull/11151) ([tas50](https://github.com/tas50))
 - Resolve Test Kitchen failures on Oracle 8 [#11140](https://github.com/chef/chef/pull/11140) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update FFI to 1.15.0 [#11151](https://github.com/chef/chef/pull/11151) ([tas50](https://github.com/tas50)) <!-- 17.0.138 -->
 - Resolve Test Kitchen failures on Oracle 8 [#11140](https://github.com/chef/chef/pull/11140) ([tas50](https://github.com/tas50)) <!-- 17.0.137 -->
 - Build place for documenting internal/dev/unsupported commands [#11148](https://github.com/chef/chef/pull/11148) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.137 -->
 - Move idempotency logs to debug [#11149](https://github.com/chef/chef/pull/11149) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.136 -->
