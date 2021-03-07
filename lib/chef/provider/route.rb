@@ -131,7 +131,7 @@ class Chef
       action :add do
         # check to see if load_current_resource found the route
         if is_running
-          logger.trace("#{new_resource} route already active - nothing to do")
+          logger.debug("#{new_resource} route already active - nothing to do")
         else
           command = generate_command(:add)
           converge_by("run #{command.join(" ")} to add route") do
@@ -152,7 +152,7 @@ class Chef
             logger.info("#{new_resource} removed")
           end
         else
-          logger.trace("#{new_resource} route does not exist - nothing to do")
+          logger.debug("#{new_resource} route does not exist - nothing to do")
         end
 
         # for now we always write the file (ugly but its what it is)

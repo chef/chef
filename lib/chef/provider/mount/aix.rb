@@ -140,7 +140,7 @@ class Chef
             shell_out!(command)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
+            logger.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 
@@ -154,7 +154,7 @@ class Chef
 
         def enable_fs
           if @current_resource.enabled && mount_options_unchanged?
-            logger.trace("#{@new_resource} is already enabled - nothing to do")
+            logger.debug("#{@new_resource} is already enabled - nothing to do")
             return nil
           end
 
@@ -211,7 +211,7 @@ class Chef
               contents.each { |line| fstab.puts line }
             end
           else
-            logger.trace("#{@new_resource} is not enabled - nothing to do")
+            logger.debug("#{@new_resource} is not enabled - nothing to do")
           end
         end
 

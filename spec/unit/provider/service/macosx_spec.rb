@@ -259,7 +259,7 @@ describe Chef::Provider::Service::Macosx do
 
             it "shows warning message if service is already running" do
               allow(current_resource).to receive(:running).and_return(true)
-              expect(logger).to receive(:trace).with("macosx_service[#{service_name}] already running, not starting")
+              expect(logger).to receive(:debug).with("macosx_service[#{service_name}] already running, not starting")
 
               provider.start_service
             end
@@ -291,7 +291,7 @@ describe Chef::Provider::Service::Macosx do
 
             it "shows warning message if service is not running" do
               allow(current_resource).to receive(:running).and_return(false)
-              expect(logger).to receive(:trace).with("macosx_service[#{service_name}] not running, not stopping")
+              expect(logger).to receive(:debug).with("macosx_service[#{service_name}] not running, not stopping")
 
               provider.stop_service
             end

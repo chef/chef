@@ -152,7 +152,7 @@ class Chef
         unless ::File.exist?(new_resource.path)
           action_create
         else
-          logger.trace("#{new_resource} exists at #{new_resource.path} taking no action.")
+          logger.debug("#{new_resource} exists at #{new_resource.path} taking no action.")
         end
       end
 

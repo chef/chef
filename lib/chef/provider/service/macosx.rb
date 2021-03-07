@@ -105,7 +105,7 @@ class Chef
 
         def start_service
           if @current_resource.running
-            logger.trace("#{@new_resource} already running, not starting")
+            logger.debug("#{@new_resource} already running, not starting")
           else
             if @new_resource.start_command
               super
@@ -117,7 +117,7 @@ class Chef
 
         def stop_service
           unless @current_resource.running
-            logger.trace("#{@new_resource} not running, not stopping")
+            logger.debug("#{@new_resource} not running, not stopping")
           else
             if @new_resource.stop_command
               super
@@ -153,7 +153,7 @@ class Chef
         #
         def enable_service
           if @current_resource.enabled
-            logger.trace("#{@new_resource} already enabled, not enabling")
+            logger.debug("#{@new_resource} already enabled, not enabling")
           else
             load_service
           end
@@ -161,7 +161,7 @@ class Chef
 
         def disable_service
           unless @current_resource.enabled
-            logger.trace("#{@new_resource} not enabled, not disabling")
+            logger.debug("#{@new_resource} not enabled, not disabling")
           else
             unload_service
           end

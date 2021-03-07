@@ -61,7 +61,7 @@ class Chef
             shell_out!(checkout_command, run_options)
           end
         else
-          logger.trace "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.debug "#{new_resource} checkout destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 
@@ -69,7 +69,7 @@ class Chef
         if target_dir_non_existent_or_empty?
           action_force_export
         else
-          logger.trace "#{new_resource} export destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
+          logger.debug "#{new_resource} export destination #{new_resource.destination} already exists or is a non-empty directory - nothing to do"
         end
       end
 

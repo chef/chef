@@ -85,7 +85,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
       state = current_state
       if state == RUNNING
-        logger.trace "#{@new_resource} already started - nothing to do"
+        logger.debug "#{@new_resource} already started - nothing to do"
       elsif state == START_PENDING
         logger.trace "#{@new_resource} already sent start signal - waiting for start"
         wait_for_state(RUNNING)
@@ -114,7 +114,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be started from state [#{state}]"
       end
     else
-      logger.trace "#{@new_resource} does not exist - nothing to do"
+      logger.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -133,7 +133,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         end
         @new_resource.updated_by_last_action(true)
       elsif state == STOPPED
-        logger.trace "#{@new_resource} already stopped - nothing to do"
+        logger.debug "#{@new_resource} already stopped - nothing to do"
       elsif state == STOP_PENDING
         logger.trace "#{@new_resource} already sent stop signal - waiting for stop"
         wait_for_state(STOPPED)
@@ -141,7 +141,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         raise Chef::Exceptions::Service, "Service #{@new_resource} can't be stopped from state [#{state}]"
       end
     else
-      logger.trace "#{@new_resource} does not exist - nothing to do"
+      logger.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -156,7 +156,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
       end
       @new_resource.updated_by_last_action(true)
     else
-      logger.trace "#{@new_resource} does not exist - nothing to do"
+      logger.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -164,7 +164,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     if Win32::Service.exists?(@new_resource.service_name)
       set_startup_type(:automatic)
     else
-      logger.trace "#{@new_resource} does not exist - nothing to do"
+      logger.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
@@ -172,13 +172,13 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
     if Win32::Service.exists?(@new_resource.service_name)
       set_startup_type(:disabled)
     else
-      logger.trace "#{@new_resource} does not exist - nothing to do"
+      logger.debug "#{@new_resource} does not exist - nothing to do"
     end
   end
 
   action :create do
     if Win32::Service.exists?(new_resource.service_name)
-      logger.trace "#{new_resource} already exists - nothing to do"
+      logger.debug "#{new_resource} already exists - nothing to do"
       return
     end
 
@@ -191,7 +191,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
 
   action :delete do
     unless Win32::Service.exists?(new_resource.service_name)
-      logger.trace "#{new_resource} does not exist - nothing to do"
+      logger.debug "#{new_resource} does not exist - nothing to do"
       return
     end
 
@@ -222,7 +222,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         logger.info("#{@new_resource} enabled")
       end
     else
-      logger.trace("#{@new_resource} already enabled - nothing to do")
+      logger.debug("#{@new_resource} already enabled - nothing to do")
     end
     load_new_resource_state
     @new_resource.enabled(true)
@@ -235,7 +235,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         logger.info("#{@new_resource} disabled")
       end
     else
-      logger.trace("#{@new_resource} already disabled - nothing to do")
+      logger.debug("#{@new_resource} already disabled - nothing to do")
     end
     load_new_resource_state
     @new_resource.enabled(false)
@@ -248,7 +248,7 @@ class Chef::Provider::Service::Windows < Chef::Provider::Service
         set_startup_type(startup_type)
       end
     else
-      logger.trace("#{@new_resource} startup_type already #{startup_type} - nothing to do")
+      logger.debug("#{@new_resource} startup_type already #{startup_type} - nothing to do")
     end
 
     converge_delayed_start
