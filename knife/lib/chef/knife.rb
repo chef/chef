@@ -667,7 +667,7 @@ class Chef
 
     def root_rest
       @root_rest ||= begin
-        require "chef/server_api"  unless defined? Chef::ServerAPI
+        require "chef/server_api" unless defined? Chef::ServerAPI
         Chef::ServerAPI.new(Chef::Config[:chef_server_root])
       end
     end
