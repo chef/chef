@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.139 -->
-## [v17.0.139](https://github.com/chef/chef/tree/v17.0.139) (2021-03-07)
+<!-- latest_release 17.0.140 -->
+## [v17.0.140](https://github.com/chef/chef/tree/v17.0.140) (2021-03-09)
 
 #### Merged Pull Requests
-- Pin win32-certstore to 0.5.x until we resolve failures [#11153](https://github.com/chef/chef/pull/11153) ([tas50](https://github.com/tas50))
+- Add effortless? helper to chef-utils [#11150](https://github.com/chef/chef/pull/11150) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add effortless? helper to chef-utils [#11150](https://github.com/chef/chef/pull/11150) ([tas50](https://github.com/tas50)) <!-- 17.0.140 -->
 - Pin win32-certstore to 0.5.x until we resolve failures [#11153](https://github.com/chef/chef/pull/11153) ([tas50](https://github.com/tas50)) <!-- 17.0.139 -->
 - Update FFI to 1.15.0 [#11151](https://github.com/chef/chef/pull/11151) ([tas50](https://github.com/tas50)) <!-- 17.0.138 -->
 - Resolve Test Kitchen failures on Oracle 8 [#11140](https://github.com/chef/chef/pull/11140) ([tas50](https://github.com/tas50)) <!-- 17.0.137 -->
