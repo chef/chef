@@ -185,7 +185,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(__dir__, "../../../lib/chef/knife/bootstrap/templates", "example.erb")) }
+      let(:builtin_template_path) { File.expand_path(File.join(__dir__, "../../lib/chef/knife/bootstrap/templates", "example.erb")) }
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -558,7 +558,7 @@ describe Chef::Knife::Bootstrap do
     context "when client_d_dir is set" do
       let(:client_d_dir) do
         Chef::Util::PathHelper.cleanpath(
-          File.join(__dir__, "../../data/client.d_00")
+          File.join(__dir__, "../data/client.d_00")
         )
       end
 
@@ -585,7 +585,7 @@ describe Chef::Knife::Bootstrap do
       context "a nested directory structure" do
         let(:client_d_dir) do
           Chef::Util::PathHelper.cleanpath(
-            File.join(__dir__, "../../data/client.d_01")
+            File.join(__dir__, "../data/client.d_01")
           )
         end
         it "creates a file foo/bar.rb" do
