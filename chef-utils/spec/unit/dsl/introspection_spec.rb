@@ -32,6 +32,18 @@ RSpec.describe ChefUtils::DSL::Introspection do
 
   let(:test_instance) { IntrospectionTestClass.new(node) }
 
+  context "#effortless?" do
+    # FIXME: use a real VividMash for these tests instead of stubbing
+    it "is false by default" do
+      expect(node).to receive(:read).with("chef_packages", "chef", "chef_effortless").and_return(nil)
+      expect(ChefUtils.effortless?(node)).to be false
+    end
+    it "is true when ohai reports a effortless" do
+      expect(node).to receive(:read).with("chef_packages", "chef", "chef_effortless").and_return(true)
+      expect(ChefUtils.effortless?(node)).to be true
+    end
+  end
+
   context "#docker?" do
     # FIXME: use a real VividMash for these tests instead of stubbing
     it "is false by default" do

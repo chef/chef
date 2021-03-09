@@ -29,6 +29,17 @@ module ChefUtils
     module Introspection
       include TrainHelpers
 
+      # Determine if the node is using the Chef Effortless pattern in which the Chef Infra Client is packaged using Chef Habitat
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 17.0
+      #
+      # @return [Boolean]
+      #
+      def effortless?(node = __getnode)
+        !!(node && node.read("chef_packages", "chef", "chef_effortless"))
+      end
+
       # Determine if the node is a docker container.
       #
       # @param [Chef::Node] node the node to check
