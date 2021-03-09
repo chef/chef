@@ -1,0 +1,34 @@
+# frozen_string_literal: true
+require "bundler/gem_tasks"
+
+Bundler::GemHelper.install_tasks
+
+
+begin
+  require "rspec/core/rake_task"
+  namespace :spec do
+    %i{unit functional integration stress}.each do |sub|
+      desc "Run the specs under spec/#{sub}"
+      RSpec::Core::RakeTask.new(sub) do |t|
+        t.verbose = false
+        t.rspec_opts = %w{--profile}
+        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
+      end
+    end
+  end
+rescue LoadError
+  puts "rspec not available. bundle install first to make sure all dependencies are installed."
+end
+
+begin
+  require "chefstyle"
+  require "rubocop/rake_task"
+
+  RuboCop::RakeTask.new(:style) do |task|
+    task.options += ["-r", "chefstyle", "--display-cop-names", "--no-color"]
+  end
+rescue LoadError
+  puts "chefstyle/rubocop is not available. bundle install first to make sure all dependencies are installed."
+end
+
+
