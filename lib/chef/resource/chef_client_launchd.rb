@@ -134,7 +134,7 @@ class Chef
           standard_error_path ::File.join(new_resource.log_directory, new_resource.log_file_name)
           program_arguments ["/bin/bash",
                              "-c",
-                             "echo; echo #{ChefUtils::Dist::Infra::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; launchctl unload /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist; sleep 2; echo Now loading the daemon; launchctl load /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
+                             "echo; echo #{ChefUtils::Dist::Infra::PRODUCT} launchd daemon config has been updated. Manually unloading and reloading the daemon; echo Now unloading the daemon; /bin/launchctl unload /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist; sleep 2; echo Now loading the daemon; /bin/launchctl load /Library/LaunchDaemons/com.#{ChefUtils::Dist::Infra::SHORT}.#{ChefUtils::Dist::Infra::CLIENT}.plist"]
           action :enable # enable creates the plist & triggers service restarts on change
         end
 

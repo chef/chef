@@ -78,7 +78,7 @@ describe Chef::Provider::Service::Macosx do
           @getpwuid = double("Etc::Passwd", { name: "mikedodge04" })
           allow(Etc).to receive(:getpwuid).and_return(@getpwuid)
           allow(node).to receive(:[]).with("platform_version").and_return("10.11.1")
-          cmd = "launchctl list #{service_label}"
+          cmd = "/bin/launchctl list #{service_label}"
           allow(provider).to receive(:shell_out)
             .with(/(#{su_cmd} '#{cmd}'|#{cmd})/, default_env: false)
             .and_return(double("Status",
@@ -265,7 +265,7 @@ describe Chef::Provider::Service::Macosx do
             end
 
             it "starts service via launchctl if service found" do
-              cmd = "launchctl load -w " + session + plist
+              cmd = "/bin/launchctl load -w " + session + plist
               expect(provider).to receive(:shell_out)
                 .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
                 .and_return(0)
@@ -297,7 +297,7 @@ describe Chef::Provider::Service::Macosx do
             end
 
             it "stops the service via launchctl if service found" do
-              cmd = "launchctl unload -w " + plist
+              cmd = "/bin/launchctl unload -w " + plist
               expect(provider).to receive(:shell_out)
                 .with(/(#{su_cmd} .#{cmd}.|#{cmd})/, default_env: false)
                 .and_return(0)
