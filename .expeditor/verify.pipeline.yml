@@ -55,11 +55,20 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
-- label: "Integration Ubuntu 18.04 :ruby: 2.7"
+- label: "Integration Ubuntu 18.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04:2.7
+        privileged: true
+
+- label: "Integration Ubuntu 18.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
@@ -68,7 +77,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 18.04 :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -83,12 +92,33 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Unit Ubuntu 18.04 :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y cron locales # needed for functional tests to pass
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04:2.7
+        privileged: true
+
+- label: "Unit Ubuntu 18.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-18.04:2.7
+
+- label: "Unit Ubuntu 18.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
@@ -97,11 +127,21 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
-- label: "Integration Ubuntu 20.04 :ruby: 2.7"
+
+- label: "Integration Ubuntu 20.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+        privileged: true
+
+- label: "Integration Ubuntu 20.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
@@ -110,13 +150,11 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 20.04 :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake spec:functional
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -125,21 +163,40 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Unit Ubuntu 20.04 :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - apt-get update -y
+    - apt-get install -y cron locales # needed for functional tests to pass
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+        privileged: true
+
+- label: "Unit Ubuntu 20.04 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
-    - cd /workdir/knife
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:2.7
+
+- label: "Unit Ubuntu 20.04 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
   expeditor:
     executor:
       docker:
         image: rubydistros/ubuntu-20.04:2.7
-
-- label: "Integration CentOS 7 :ruby: 2.7"
+- label: "Integration CentOS 7 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -152,12 +209,32 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: "Functional CentOS 7 :ruby: 2.7"
+- label: "Integration CentOS 7 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7:2.7
+        privileged: true
+
+- label: "Functional CentOS 7 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7:2.7
+        privileged: true
+
+- label: "Functional CentOS 7 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -166,12 +243,21 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: "Unit CentOS 7 :ruby: 2.7"
+
+- label: "Unit CentOS 7 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/centos-7:2.7
+
+- label: "Unit CentOS 7 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
   expeditor:
@@ -179,12 +265,22 @@ steps:
       docker:
         image: rubydistros/centos-7:2.7
 
-- label: "Integration openSUSE 15 :ruby: 2.7"
+
+- label: "Integration openSUSE [chef] 15 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15:2.7
+        privileged: true
+
+- label: "Integration openSUSE [knife] 15 :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
@@ -193,12 +289,21 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Functional openSUSE 15 :ruby: 2.7"
+- label: "Functional openSUSE 15 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15:2.7
+        privileged: true
+
+- label: "Functional openSUSE 15 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -207,13 +312,22 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Unit openSUSE 15 :ruby: 2.7"
+- label: "Unit openSUSE 15 [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/opensuse-15:2.7
+
+- label: "Unit openSUSE 15 [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - cd workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
   expeditor:
@@ -221,11 +335,20 @@ steps:
       docker:
         image: rubydistros/opensuse-15:2.7
 
-- label: "Integration Fedora :ruby: 2.7"
+- label: "Integration Fedora [chef] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/fedora-latest:2.7
+        privileged: true
+
+- label: "Integration Fedora [knife] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
@@ -234,7 +357,22 @@ steps:
         image: rubydistros/fedora-latest:2.7
         privileged: true
 
-- label: "Functional Fedora :ruby: 2.7"
+- label: "Functional Fedora [chef] :ruby: 2.7"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - dnf install -y crontabs e2fsprogs
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec:functional
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/fedora-latest:2.7
+        privileged: true
+        environment:
+          - FORCE_FFI_YAJL=ext
+          - CHEF_LICENSE=accept-no-persist
+
+- label: "Functional Fedora [knife] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
@@ -251,12 +389,9 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Fedora :ruby: 2.7"
+- label: "Unit Fedora [knife] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake spec:unit
-    - bundle exec rake component_specs
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
   expeditor:
