@@ -29,7 +29,6 @@ require "rspec/mocks"
 require "rexml/document"
 require "webmock/rspec"
 
-require "chef"
 require "chef/knife"
 
 Dir["lib/chef/knife/**/*.rb"]
@@ -42,6 +41,7 @@ require "chef/provider_resolver"
 
 require "chef/mixins"
 require "chef/dsl"
+
 # MPTD Hopefully not, this is a mess to unwind:
 # require "chef/application"
 # require "chef/applications"
