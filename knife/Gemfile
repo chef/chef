@@ -3,9 +3,12 @@ gemspec
 
 source "https://rubygems.org"
 
-gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
-gem "webmock" # testing only
-gem "rake"
+group(:development, :test) do
+  gem "cheffish", ">= 14" # testing only , but why didn't this need to explicit in chef?
+  gem "webmock" # testing only
+  gem "rake"
+end
+
 gem "chef", path: ".."
 gem "ohai", git: "https://github.com/chef/ohai.git", branch: "master"
 gem "chef-utils", path: File.expand_path("../chef-utils", __dir__) if File.exist?(File.expand_path("../chef-utils", __dir__))
