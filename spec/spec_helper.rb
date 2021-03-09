@@ -35,12 +35,6 @@ require "rexml/document"
 require "webmock/rspec"
 
 require "chef"
-require "chef/knife"
-
-Dir["lib/chef/knife/**/*.rb"]
-  .map { |f| f.gsub("lib/", "") }
-  .map { |f| f.gsub(/\.rb$/, "") }
-  .each { |f| require f }
 
 require "chef/resource_resolver"
 require "chef/provider_resolver"
