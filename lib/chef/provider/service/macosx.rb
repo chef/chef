@@ -169,12 +169,12 @@ class Chef
 
         def load_service
           session = @session_type ? "-S #{@session_type} " : ""
-          cmd = "launchctl load -w " + session + @plist
+          cmd = "/bin/launchctl load -w " + session + @plist
           shell_out_as_user(cmd)
         end
 
         def unload_service
-          cmd = "launchctl unload -w " + @plist
+          cmd = "/bin/launchctl unload -w " + @plist
           shell_out_as_user(cmd)
         end
 
@@ -190,7 +190,7 @@ class Chef
         def set_service_status
           return if @plist.nil? || @service_label.to_s.empty?
 
-          cmd = "launchctl list #{@service_label}"
+          cmd = "/bin/launchctl list #{@service_label}"
           res = shell_out_as_user(cmd)
 
           if res.exitstatus == 0
