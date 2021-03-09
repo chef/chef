@@ -20,11 +20,11 @@ GIT
 PATH
   remote: ..
   specs:
-    chef (17.0.134)
+    chef (17.0.135)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.134)
-      chef-utils (= 17.0.134)
+      chef-config (= 17.0.135)
+      chef-utils (= 17.0.135)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -56,23 +56,23 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef-config (17.0.134)
+    chef-config (17.0.135)
       addressable
-      chef-utils (= 17.0.134)
+      chef-utils (= 17.0.135)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
-    chef-utils (17.0.134)
+    chef-utils (17.0.135)
 
 PATH
   remote: .
   specs:
-    knife (17.0.134)
+    knife (17.0.135)
       bcrypt_pbkdf (~> 1.1)
-      chef (= 17.0.134)
-      chef-config (= 17.0.134)
-      chef-utils (= 17.0.134)
+      chef (= 17.0.135)
+      chef-config (= 17.0.135)
+      chef-utils (= 17.0.135)
       chef-vault
       ed25519 (~> 1.2)
       erubis (~> 2.7)
