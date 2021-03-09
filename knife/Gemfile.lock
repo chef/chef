@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 2397af29ecc3c3e849d817a8519d32866aab89ff
+  revision: fd8c1b65dbb087ddb4df3c8e10b88eae239219d0
   branch: master
   specs:
-    ohai (17.0.24)
+    ohai (17.0.26)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -122,8 +122,8 @@ GEM
     cheffish (16.0.12)
       chef-zero (>= 14.0)
       net-ssh
-    chefstyle (1.7.1)
-      rubocop (= 1.10.0)
+    chefstyle (1.7.2)
+      rubocop (= 1.11.0)
     coderay (1.1.3)
     concurrent-ruby (1.1.8)
     crack (0.4.5)
@@ -245,7 +245,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.10.0)
+    rubocop (1.11.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -302,7 +302,7 @@ GEM
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.0)
+    webmock (3.12.1)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
