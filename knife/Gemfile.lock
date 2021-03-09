@@ -56,14 +56,6 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef-config (17.0.135)
-      addressable
-      chef-utils (= 17.0.135)
-      fuzzyurl
-      mixlib-config (>= 2.2.12, < 4.0)
-      mixlib-shellout (>= 2.0, < 4.0)
-      tomlrb (~> 1.2)
-    chef-utils (17.0.135)
 
 PATH
   remote: .
@@ -91,6 +83,22 @@ PATH
       tty-prompt (~> 0.21)
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
+
+PATH
+  remote: /home/marc/projects/chef/chef-config
+  specs:
+    chef-config (17.0.135)
+      addressable
+      chef-utils (= 17.0.135)
+      fuzzyurl
+      mixlib-config (>= 2.2.12, < 4.0)
+      mixlib-shellout (>= 2.0, < 4.0)
+      tomlrb (~> 1.2)
+
+PATH
+  remote: /home/marc/projects/chef/chef-utils
+  specs:
+    chef-utils (17.0.135)
 
 GEM
   remote: https://rubygems.org/
@@ -325,6 +333,8 @@ PLATFORMS
 
 DEPENDENCIES
   chef!
+  chef-config!
+  chef-utils!
   cheffish (>= 14)
   chefstyle
   knife!
