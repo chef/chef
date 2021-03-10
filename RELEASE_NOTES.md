@@ -5,29 +5,40 @@ This file holds "in progress" release notes for the current release under develo
 This section serves to track things we should later document here for 17.0
 
 - Dropped support for Ruby 2.6
-- Lazy attribute loading: https://github.com/chef/chef/pull/10861
-- Duping property defaults: https://github.com/chef/chef/pull/11095
 - Compliance Phase in GA: https://github.com/chef/chef/pull/10547
-- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
 - remove support for RHEL 6 i386 / Ubuntu 16.04 / macOS 10.13
-- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
-- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - Compliance cli report - https://github.com/chef/chef/pull/10939
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
-- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
-- reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
-- Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - macOS builds now use openSSL 1.1.1
+- Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
+- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
+
+
+### Infra Language Improvements
+
+- New effortless? helper - https://github.com/chef/chef/pull/11150
+- Default values in custom resources are now dup'd - https://github.com/chef/chef/pull/11095
+- Lazy attribute loading: https://github.com/chef/chef/pull/10861
+- reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
+
+### Resource Improvements
+
+- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
+- Use shell redirection in chef_client_cron when append_log_file is true - https://github.com/chef/chef/pull/11124
+- Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
+- Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
+- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
+- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
+
+### Ohai 
 - Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
 - New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
-- Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
+- Detect Sangoma Linux in Ohai - https://github.com/chef/ohai/pull/1631
+- Gather additional package information on Windows - https://github.com/chef/ohai/pull/1616
+- Detect guests running in Podman - https://github.com/chef/ohai/pull/1617
 - Improved Docker container detection - https://github.com/chef/ohai/pull/1627
-- Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
-- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
-- New effortless? helper - https://github.com/chef/chef/pull/11150
-- Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
-- Default values in custom resources are now dup'd - https://github.com/chef/chef/pull/11095
-- Use shell redirection in chef_client_cron when append_log_file is true - https://github.com/chef/chef/pull/11124
+- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
+- Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 
 ## What's New in 16.10.17
 
