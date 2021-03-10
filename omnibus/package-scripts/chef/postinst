@@ -99,6 +99,12 @@ ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link che
 # be manually fixed.
 chown -Rh 0:0 $INSTALLER_DIR
 
+# make the base structure for chef to run
+mkdir -p /etc/chef/client.d/
+mkdir -p /etc/chef/accepted_licenses
+mkdir -p /etc/chef/trusted_certs
+mkdir -p /etc/chef/ohai/plugins
+
 echo "Thank you for installing Chef Infra Client! For help getting started visit https://learn.chef.io"
 
 exit 0
