@@ -1915,6 +1915,7 @@
     "omnibus/resources/chef/**/*",
     "kitchen-tests/cookbooks/end_to_end/files/**/*",
     "spec/**",
+    "knife/spec/**",
     "docs_site",
     "distro/ruby_bin_folder/**/*"
   ],
