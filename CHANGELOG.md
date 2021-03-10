@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.142 -->
-## [v17.0.142](https://github.com/chef/chef/tree/v17.0.142) (2021-03-09)
+<!-- latest_release 17.0.143 -->
+## [v17.0.143](https://github.com/chef/chef/tree/v17.0.143) (2021-03-10)
 
 #### Merged Pull Requests
-- Bump Ohai and chefstyle tot the latest [#11156](https://github.com/chef/chef/pull/11156) ([tas50](https://github.com/tas50))
+- Remove installing htop in test [#11157](https://github.com/chef/chef/pull/11157) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove installing htop in test [#11157](https://github.com/chef/chef/pull/11157) ([tas50](https://github.com/tas50)) <!-- 17.0.143 -->
 - Bump Ohai and chefstyle tot the latest [#11156](https://github.com/chef/chef/pull/11156) ([tas50](https://github.com/tas50)) <!-- 17.0.142 -->
 - Use full path for launchctl calls [#11154](https://github.com/chef/chef/pull/11154) ([krackajak](https://github.com/krackajak)) <!-- 17.0.141 -->
 - Add effortless? helper to chef-utils [#11150](https://github.com/chef/chef/pull/11150) ([tas50](https://github.com/tas50)) <!-- 17.0.140 -->
