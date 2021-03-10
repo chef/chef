@@ -3,11 +3,10 @@
 #
 # - must run on /bin/sh on solaris 9
 # - must run on /bin/sh on AIX 6.x
-# - if you think you are a bash wizard, you probably do not understand
-#   this programming language.  do not touch.
+# - this file is sh not bash so do not introduce bash-isms
 # - if you are under 40, get peer review from your elders.
 #
-# Install a full Opscode Client
+# Install Chef Infra Client
 #
 
 PROGNAME=`basename $0`
@@ -64,7 +63,7 @@ EOP
   if [ "" != "$organization" ]; then
     echo "validation_client_name '${organization}-validator'" >> ${CONFIG_DIR}/client.rb
   fi
-  chmod 644 ${CONFIG_DIR}/client.rb
+  chmod 640 ${CONFIG_DIR}/client.rb
 fi
 
 if [ "" != "$validation_key" ]; then
