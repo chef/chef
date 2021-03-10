@@ -41,7 +41,7 @@ steps:
   # Tests Ruby 2.7
 #########################################################################
 
-- label: "Chefstyle [chef and knife] :ruby: 2.7"
+- label: "Chefstyle (:chef: and :knife:) :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -51,7 +51,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
-- label: "Integration Ubuntu 18.04 [chef] :ruby: 2.7"
+- label: "Integration Ubuntu 18.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -73,7 +73,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 18.04 [chef] :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -101,7 +101,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Unit Ubuntu 18.04 [chef] :ruby: 2.7"
+- label: "Unit Ubuntu 18.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -124,7 +124,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
 
 
-- label: "Integration Ubuntu 20.04 [chef] :ruby: 2.7"
+- label: "Integration Ubuntu 20.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -146,7 +146,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 20.04 [chef] :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -172,7 +172,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Unit Ubuntu 20.04 [chef] :ruby: 2.7"
+- label: "Unit Ubuntu 20.04 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -192,7 +192,7 @@ steps:
     executor:
       docker:
         image: rubydistros/ubuntu-20.04:2.7
-- label: "Integration CentOS 7 [chef] :ruby: 2.7"
+- label: "Integration CentOS 7 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -216,7 +216,7 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: "Functional CentOS 7 [chef] :ruby: 2.7"
+- label: "Functional CentOS 7 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
@@ -240,7 +240,7 @@ steps:
         privileged: true
 
 
-- label: "Unit CentOS 7 [chef] :ruby: 2.7"
+- label: "Unit CentOS 7 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -262,7 +262,7 @@ steps:
         image: rubydistros/centos-7:2.7
 
 
-- label: "Integration openSUSE [chef] 15 :ruby: 2.7"
+- label: "Integration openSUSE :chef: 15 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -285,7 +285,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Functional openSUSE 15 [chef] :ruby: 2.7"
+- label: "Functional openSUSE 15 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
@@ -308,7 +308,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Unit openSUSE 15 [chef] :ruby: 2.7"
+- label: "Unit openSUSE 15 :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -331,7 +331,7 @@ steps:
       docker:
         image: rubydistros/opensuse-15:2.7
 
-- label: "Integration Fedora [chef] :ruby: 2.7"
+- label: "Integration Fedora :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -353,7 +353,7 @@ steps:
         image: rubydistros/fedora-latest:2.7
         privileged: true
 
-- label: "Functional Fedora [chef] :ruby: 2.7"
+- label: "Functional Fedora :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
@@ -385,7 +385,7 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Fedora [chef] :ruby: 2.7"
+- label: "Unit Fedora :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
