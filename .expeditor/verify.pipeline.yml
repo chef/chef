@@ -80,8 +80,6 @@ steps:
     - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
-    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake spec:functional
   expeditor:
     executor:
       docker:
@@ -92,7 +90,6 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - apt-get update -y
-    - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
@@ -151,7 +148,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -186,7 +183,7 @@ steps:
 - label: "Unit Ubuntu 20.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
   expeditor:
     executor:
@@ -197,8 +194,6 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
-    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec rake spec:integration
   expeditor:
     executor:
       docker:
@@ -208,7 +203,7 @@ steps:
 - label: "Integration CentOS 7 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
+    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:integration
   expeditor:
     executor:
@@ -388,7 +383,7 @@ steps:
 - label: "Unit Fedora :chef: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
