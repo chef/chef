@@ -62,7 +62,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Integration Ubuntu 18.04 [knife] :ruby: 2.7"
+- label: "Integration Ubuntu 18.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -88,7 +88,7 @@ steps:
         image: rubydistros/ubuntu-18.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 18.04 [knife] :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - apt-get update -y
@@ -112,7 +112,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.7
 
-- label: "Unit Ubuntu 18.04 [knife] :ruby: 2.7"
+- label: "Unit Ubuntu 18.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife
@@ -135,7 +135,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Integration Ubuntu 20.04 [knife] :ruby: 2.7"
+- label: "Integration Ubuntu 20.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -159,7 +159,7 @@ steps:
         image: rubydistros/ubuntu-20.04:2.7
         privileged: true
 
-- label: "Functional Ubuntu 20.04 [knife] :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - apt-get update -y
@@ -183,7 +183,7 @@ steps:
       docker:
         image: rubydistros/ubuntu-20.04:2.7
 
-- label: "Unit Ubuntu 20.04 [knife] :ruby: 2.7"
+- label: "Unit Ubuntu 20.04 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -205,7 +205,7 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: "Integration CentOS 7 [knife] :ruby: 2.7"
+- label: "Integration CentOS 7 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -228,7 +228,7 @@ steps:
         image: rubydistros/centos-7:2.7
         privileged: true
 
-- label: "Functional CentOS 7 [knife] :ruby: 2.7"
+- label: "Functional CentOS 7 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -251,7 +251,7 @@ steps:
       docker:
         image: rubydistros/centos-7:2.7
 
-- label: "Unit CentOS 7 [knife] :ruby: 2.7"
+- label: "Unit CentOS 7 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -274,7 +274,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Integration openSUSE [knife] 15 :ruby: 2.7"
+- label: "Integration openSUSE :knife: 15 :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -297,7 +297,7 @@ steps:
         image: rubydistros/opensuse-15:2.7
         privileged: true
 
-- label: "Functional openSUSE 15 [knife] :ruby: 2.7"
+- label: "Functional openSUSE 15 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -320,7 +320,7 @@ steps:
       docker:
         image: rubydistros/opensuse-15:2.7
 
-- label: "Unit openSUSE 15 [knife] :ruby: 2.7"
+- label: "Unit openSUSE 15 :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -342,7 +342,7 @@ steps:
         image: rubydistros/fedora-latest:2.7
         privileged: true
 
-- label: "Integration Fedora [knife] :ruby: 2.7"
+- label: "Integration Fedora :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -368,7 +368,7 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Functional Fedora [knife] :ruby: 2.7"
+- label: "Functional Fedora :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - dnf install -y crontabs e2fsprogs
@@ -396,7 +396,7 @@ steps:
       docker:
         image: rubydistros/fedora-latest:2.7
 
-- label: "Unit Fedora [knife] :ruby: 2.7"
+- label: "Unit Fedora :knife: :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
     - cd /workdir/knife; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
