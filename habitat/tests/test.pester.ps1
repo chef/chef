@@ -52,13 +52,6 @@ Describe "chef-infra-client" {
         }
     }
 
-    Context "knife" {
-        It "is an executable" {
-            hab pkg exec $PackageIdentifier knife.bat --version
-            $? | Should be $true
-        }
-    }
-
     Context "chef-solo" {
         It "is an executable" {
             hab pkg exec $PackageIdentifier chef-solo.bat --version
