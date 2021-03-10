@@ -41,20 +41,9 @@ steps:
   # Tests Ruby 2.7
 #########################################################################
 
-- label: "Chefstyle [chef] :ruby: 2.7"
+- label: "Chefstyle [chef and knife] :ruby: 2.7"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake style
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:2.7
-
-- label: "Chefstyle [knife] :ruby: 2.7"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep_knife.sh
-    - cd /workdir/knife
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
     - bundle exec rake style
   expeditor:
