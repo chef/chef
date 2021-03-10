@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.10.26 -->
-## [v16.10.26](https://github.com/chef/chef/tree/v16.10.26) (2021-03-06)
+<!-- latest_release 16.10.27 -->
+## [v16.10.27](https://github.com/chef/chef/tree/v16.10.27) (2021-03-10)
 
 #### Merged Pull Requests
-- Backport the ability to disable / enable compliance phase [#11147](https://github.com/chef/chef/pull/11147) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `a7ed951` to `daeb384` in /omnibus [#11165](https://github.com/chef/chef/pull/11165) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `a7ed951` to `daeb384` in /omnibus [#11165](https://github.com/chef/chef/pull/11165) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.27 -->
 - Backport the ability to disable / enable compliance phase [#11147](https://github.com/chef/chef/pull/11147) ([tas50](https://github.com/tas50)) <!-- 16.10.26 -->
 - [Backport to chef-16] DNF package: fix abrt errors [#11139](https://github.com/chef/chef/pull/11139) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.10.25 -->
 - Bump omnibus-software from `a1e9c90` to `a7ed951` in /omnibus [#11132](https://github.com/chef/chef/pull/11132) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.24 -->
