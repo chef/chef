@@ -22,7 +22,6 @@ require "fileutils"
 require "chef/config"
 require "chef/json_compat"
 require "chef/server_api"
-require "support/shared/integration/knife_support"
 require "cheffish/rspec/chef_run_support"
 
 module Cheffish
