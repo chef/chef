@@ -25,6 +25,9 @@ This section serves to track things we should later document here for 17.0
 - Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
 - Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
 - New effortless? helper - https://github.com/chef/chef/pull/11150
+- Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
+- Default values in custom resources are now dup'd - https://github.com/chef/chef/pull/11095
+- Use shell redirection in chef_client_cron when append_log_file is true - https://github.com/chef/chef/pull/11124
 
 ## What's New in 16.10.17
 
