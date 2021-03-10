@@ -45,18 +45,6 @@ class Chef
           find_subcommands_via_dirglob
         end
 
-        # This is already inherited from subcommandloader, and it is identical.
-        # def find_subcommands_via_dirglob
-        #   # The "require paths" of the core knife subcommands bundled with chef
-        #   files = Dir[File.join(ChefConfig::PathHelper.escape_glob_dir(File.expand_path("../../knife", __dir__)), "*.rb")]
-        #   subcommand_files = {}
-        #   files.each do |knife_file|
-        #     rel_path = knife_file[/#{KNIFE_ROOT}#{Regexp.escape(File::SEPARATOR)}(.*)\.rb/, 1]
-        #     subcommand_files[rel_path] = knife_file
-        #   end
-        #   subcommand_files
-        # end
-
         def find_subcommands_via_rubygems
           files = find_files_latest_gems "chef/knife/*.rb"
           subcommand_files = {}
