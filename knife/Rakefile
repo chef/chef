@@ -3,7 +3,6 @@ require "bundler/gem_tasks"
 
 Bundler::GemHelper.install_tasks
 
-
 begin
   require "rspec/core/rake_task"
   namespace :spec do
