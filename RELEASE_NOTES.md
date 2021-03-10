@@ -24,6 +24,7 @@ This section serves to track things we should later document here for 17.0
 - Improved Docker container detection - https://github.com/chef/ohai/pull/1627
 - Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
 - Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
+- New effortless? helper - https://github.com/chef/chef/pull/11150
 
 ## What's New in 16.10.17
 
