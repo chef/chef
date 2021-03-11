@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.145 -->
-## [v17.0.145](https://github.com/chef/chef/tree/v17.0.145) (2021-03-10)
+<!-- latest_release 17.0.146 -->
+## [v17.0.146](https://github.com/chef/chef/tree/v17.0.146) (2021-03-11)
 
 #### Merged Pull Requests
-- Make the /etc/chef directory as part of the install [#11158](https://github.com/chef/chef/pull/11158) ([tas50](https://github.com/tas50))
+- only run file verifiers when the contents changed [#11171](https://github.com/chef/chef/pull/11171) ([joshuamiller01](https://github.com/joshuamiller01))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- only run file verifiers when the contents changed [#11171](https://github.com/chef/chef/pull/11171) ([joshuamiller01](https://github.com/joshuamiller01)) <!-- 17.0.146 -->
 - Make the /etc/chef directory as part of the install [#11158](https://github.com/chef/chef/pull/11158) ([tas50](https://github.com/tas50)) <!-- 17.0.145 -->
 - Bump omnibus-software from `a7ed951` to `daeb384` in /omnibus [#11167](https://github.com/chef/chef/pull/11167) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.144 -->
 - Remove installing htop in test [#11157](https://github.com/chef/chef/pull/11157) ([tas50](https://github.com/tas50)) <!-- 17.0.143 -->
