@@ -11,7 +11,8 @@ This section serves to track things we should later document here for 17.0
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
 - macOS builds now use openSSL 1.1.1
 - Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
-- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
+- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158 / https://github.com/chef/chef/pull/11173
+- macOS m1 packages are now built - https://github.com/chef/chef/pull/11138
 
 ### Infra Language Improvements
 
