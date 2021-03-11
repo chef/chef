@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "tiny_server"
 
 describe Chef::Knife::CookbookDelete do

@@ -21,7 +21,7 @@
 module KnifeSpecs
 end
 
-require "spec_helper"
+require "knife_spec_helper"
 require "uri"
 require "chef/knife/core/gem_glob_loader"
 

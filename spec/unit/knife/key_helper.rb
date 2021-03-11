@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 shared_examples_for "a knife key command" do
   let(:stderr) { StringIO.new }

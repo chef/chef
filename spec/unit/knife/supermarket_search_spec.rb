@@ -17,7 +17,7 @@
 #
 
 require "chef/knife/supermarket_search"
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::SupermarketSearch do
   let(:knife) { described_class.new }

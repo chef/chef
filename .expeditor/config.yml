@@ -16,6 +16,7 @@ rubygems:
   - chef-config
   - chef-bin
   - chef-utils
+  - knife
 
 pipelines:
   - verify:

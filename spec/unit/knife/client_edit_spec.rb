@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/api_client_v1"
 
 describe Chef::Knife::ClientEdit do

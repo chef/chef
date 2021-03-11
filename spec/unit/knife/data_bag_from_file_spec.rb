@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 require "chef/data_bag_item"
 require "chef/encrypted_data_bag_item"

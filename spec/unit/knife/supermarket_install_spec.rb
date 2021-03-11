@@ -16,8 +16,9 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/supermarket_install"
+require "mixlib/archive"
 
 describe Chef::Knife::SupermarketInstall do
   let(:knife) { Chef::Knife::SupermarketInstall.new }

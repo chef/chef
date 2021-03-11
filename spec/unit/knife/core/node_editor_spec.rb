@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/core/node_editor"
 
 describe Chef::Knife::NodeEditor do

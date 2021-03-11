@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::SubcommandLoader do
   let(:loader) { Chef::Knife::SubcommandLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands")) }

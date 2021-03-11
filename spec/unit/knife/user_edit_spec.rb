@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::UserEdit do
   let(:knife) { Chef::Knife::UserEdit.new }

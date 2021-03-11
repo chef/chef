@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "ostruct"
 require "chef/knife/bootstrap/train_connector"
 

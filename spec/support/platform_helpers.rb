@@ -2,6 +2,8 @@ require "fcntl"
 require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
+# MPTD - why has nobody had to do this before now?
+require "spec/support/chef_helpers"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
