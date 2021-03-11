@@ -13,7 +13,6 @@ This section serves to track things we should later document here for 17.0
 - Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
 - Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158
 
-
 ### Infra Language Improvements
 
 - New effortless? helper - https://github.com/chef/chef/pull/11150
@@ -29,6 +28,7 @@ This section serves to track things we should later document here for 17.0
 - Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
 - Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
+- file: only run verifiers when the contents changed - https://github.com/chef/chef/pull/11171
 
 ### Ohai 
 - Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
