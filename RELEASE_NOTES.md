@@ -40,6 +40,7 @@ This section serves to track things we should later document here for 17.0
 - Improved Docker container detection - https://github.com/chef/ohai/pull/1627
 - don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
+- Removed detection of discontinued antergos and Pidora distros - https://github.com/chef/ohai/pull/1633 / https://github.com/chef/ohai/pull/1634
 
 ## What's New in 16.10.17
 
