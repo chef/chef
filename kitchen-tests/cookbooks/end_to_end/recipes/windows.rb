@@ -86,22 +86,23 @@ windows_audit_policy "Update Some Advanced Audit Policies to No Auditing" do
   failure false
 end
 
-users_from_databag = search("users", "*:*")
-
-users_manage "remove sysadmin" do
-  group_name "sysadmin"
-  group_id 2300
-  users users_from_databag
-  action [:remove]
-end
-
-# FIXME: create is not idempotent. it fails with a windows error if this already exists.
-users_manage "create sysadmin" do
-  group_name "sysadmin"
-  group_id 2300
-  users users_from_databag
-  action [:create]
-end
+# FIXME: upstream users cookbooks is currently broken on windows
+# users_from_databag = search("users", "*:*")
+#
+# users_manage "remove sysadmin" do
+#   group_name "sysadmin"
+#   group_id 2300
+#   users users_from_databag
+#   action [:remove]
+# end
+#
+# # FIXME: create is not idempotent. it fails with a windows error if this already exists.
+# users_manage "create sysadmin" do
+#   group_name "sysadmin"
+#   group_id 2300
+#   users users_from_databag
+#   action [:create]
+# end
 
 include_recipe "::_chef_client_config"
 include_recipe "::_chef_client_trusted_certificate"
