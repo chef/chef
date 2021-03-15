@@ -28,15 +28,19 @@ resolver_config "/etc/resolv.conf" do
   search [ "chef.io" ]
 end
 
+users_from_databag = search("users", "*:*")
+
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:remove]
 end
 
 users_manage "create sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 

@@ -66,9 +66,12 @@ windows_audit_policy "Update Some Advanced Audit Policies to No Auditing" do
   failure false
 end
 
+users_from_databag = search("users", "*:*")
+
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:remove]
 end
 
@@ -76,6 +79,7 @@ end
 users_manage "create sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 
