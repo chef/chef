@@ -28,11 +28,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.150)
+    chef (17.0.151)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.150)
-      chef-utils (= 17.0.150)
+      chef-config (= 17.0.151)
+      chef-utils (= 17.0.151)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -64,11 +64,11 @@ PATH
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.0.150-universal-mingw32)
+    chef (17.0.151-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.150)
-      chef-utils (= 17.0.150)
+      chef-config (= 17.0.151)
+      chef-utils (= 17.0.151)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -115,15 +115,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.150)
-      chef (= 17.0.150)
+    chef-bin (17.0.151)
+      chef (= 17.0.151)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.150)
+    chef-config (17.0.151)
       addressable
-      chef-utils (= 17.0.150)
+      chef-utils (= 17.0.151)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -132,7 +132,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.150)
+    chef-utils (17.0.151)
 
 GEM
   remote: https://rubygems.org/
