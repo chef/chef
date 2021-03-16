@@ -87,7 +87,7 @@ platforms:
     image: dokken/centos-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install e2fsprogs
+      - RUN dnf -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
@@ -103,8 +103,8 @@ platforms:
     image: dokken/oraclelinux-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN yum -y reinstall systemd
+      - RUN dnf -y install e2fsprogs
+      - RUN dnf -y reinstall systemd
       - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
