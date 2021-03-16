@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.153 -->
-## [v17.0.153](https://github.com/chef/chef/tree/v17.0.153) (2021-03-16)
+<!-- latest_release 17.0.154 -->
+## [v17.0.154](https://github.com/chef/chef/tree/v17.0.154) (2021-03-16)
 
 #### Merged Pull Requests
-- Fix users_manage usage in kitchen-tests [#11181](https://github.com/chef/chef/pull/11181) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `daeb384` to `f903311` in /omnibus [#11191](https://github.com/chef/chef/pull/11191) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `daeb384` to `f903311` in /omnibus [#11191](https://github.com/chef/chef/pull/11191) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.154 -->
 - Fix users_manage usage in kitchen-tests [#11181](https://github.com/chef/chef/pull/11181) ([ramereth](https://github.com/ramereth)) <!-- 17.0.153 -->
 - Bump train-core to 3.5.4 [#11186](https://github.com/chef/chef/pull/11186) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.152 -->
 - Bump chef/ohai to 771a034fdc9c9860d8c8d5d289615056ea74e8f6 [#11185](https://github.com/chef/chef/pull/11185) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.151 -->
