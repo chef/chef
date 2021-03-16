@@ -172,11 +172,11 @@ class Chef
           end
 
           unless chef_config[:file_cache_path].nil?
-            client_rb << "file_cache_path \"#{chef_config[:file_cache_path]}\"\n"
+            client_rb << "file_cache_path \"#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: false))}/cache\"\n"
           end
 
           unless chef_config[:file_backup_path].nil?
-            client_rb << "file_backup_path \"#{chef_config[:file_backup_path]}\"\n"
+            client_rb << "file_backup_path \"#{ChefConfig::PathHelper.escapepath(ChefConfig::Config.var_chef_dir(windows: false))}/backup\"\n"
           end
 
           client_rb

@@ -81,16 +81,16 @@ describe Chef::Knife::Core::BootstrapContext do
   end
 
   describe "when file_cache_path is set" do
-    let(:chef_config) { { file_cache_path: "/home/opscode/cache" } }
+    let(:chef_config) { { file_cache_path: "/var/chef/cache" } }
     it "sets file_cache_path in the generated config file" do
-      expect(bootstrap_context.config_content).to include("file_cache_path \"/home/opscode/cache\"")
+      expect(bootstrap_context.config_content).to include("file_cache_path \"/var/chef/cache\"")
     end
   end
 
   describe "when file_backup_path is set" do
-    let(:chef_config) { { file_backup_path: "/home/opscode/backup" } }
+    let(:chef_config) { { file_backup_path: "/var/chef/backup" } }
     it "sets file_backup_path in the generated config file" do
-      expect(bootstrap_context.config_content).to include("file_backup_path \"/home/opscode/backup\"")
+      expect(bootstrap_context.config_content).to include("file_backup_path \"/var/chef/backup\"")
     end
   end
 
