@@ -44,8 +44,11 @@ resolver_config "/etc/resolv.conf" do
   search [ "chef.io" ]
 end
 
+users_from_databag = search("users", "*:*")
+
 users_manage "sysadmin" do
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 
