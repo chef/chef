@@ -32,6 +32,7 @@ This section serves to track things we should later document here for 17.0
 - file: only run verifiers when the contents changed - https://github.com/chef/chef/pull/11171
 
 ### Ohai
+
 - Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
 - New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
 - Detect Sangoma Linux in Ohai - https://github.com/chef/ohai/pull/1631
@@ -41,6 +42,36 @@ This section serves to track things we should later document here for 17.0
 - don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - Removed detection of discontinued antergos and Pidora distros - https://github.com/chef/ohai/pull/1633 / https://github.com/chef/ohai/pull/1634
+
+## What's New in 16.11.7
+
+### Native Apple M1 Architecture Packages
+
+We now build and test native Apple M1 architecture builds of Chef Infra Client. These builds are available at [downloads.chef.io](https://downloads.chef.io), our `install.sh` scripts, and the [Omnitruck API](https://docs.chef.io/api_omnitruck/).
+
+### Chef InSpec 4.28
+
+Chef InSpec has been updated from 4.26.4 to 4.28.0
+
+#### New Features
+
+- Added the option to filter out empty profiles from reports.
+- Exposed the `conf_path`, `content`, and `params` properties to the `auditd_conf` resource.
+- Added the ability to specify `--user` when connecting to docker containers.
+
+#### Bug Fixes
+
+- Fixed the `crontab` resource when passing a username to AIX.
+- Stopped a backtrace from occurring when using `cmp` to compare `nil` with a non-existing file.
+- Fixed `skip_control` to work on deeply nested profiles.
+- The `ssh_config` and `sshd_config` resources now correctly use the first value when a setting is repeated.
+
+### Fixes and Improvements
+
+- Upgraded openSSL on macOS from 1.0.2 to 1.1.1 in order to support Apple M1 builds.
+- Resolved an issue that caused the DNF and YUM package helpers to exit with error codes, which would show up in system logs.
+- Added a new attribute to make the upcoming Compliance Phase opt-in: `node['audit']['compliance_phase']`. This should prevent the Compliance Phase from incorrectly running when using named run_lists or override run_lists. If you're currently testing this new phase, make sure to set this attribute to `true`.
+- `chef_client_cron`: the `append_log_file` property now sets up the cron job to use shell redirectio (`>>`) instead of the `-L` flag
 
 ## What's New in 16.10.17
 
