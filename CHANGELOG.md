@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.6 -->
-## [v16.11.6](https://github.com/chef/chef/tree/v16.11.6) (2021-03-17)
+<!-- latest_release 16.11.7 -->
+## [v16.11.7](https://github.com/chef/chef/tree/v16.11.7) (2021-03-17)
 
 #### Merged Pull Requests
-- Update FFI to 1.15 for M1 Macs + libarchive to 3.5.1 [#11197](https://github.com/chef/chef/pull/11197) ([tas50](https://github.com/tas50))
+- Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.10.17 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50)) <!-- 16.11.7 -->
 - Update FFI to 1.15 for M1 Macs + libarchive to 3.5.1 [#11197](https://github.com/chef/chef/pull/11197) ([tas50](https://github.com/tas50)) <!-- 16.11.6 -->
 - Disable compliance phase by default [#11196](https://github.com/chef/chef/pull/11196) ([tas50](https://github.com/tas50)) <!-- 16.11.5 -->
 - Use openssl 1.1.1j on macOS for arm [#11194](https://github.com/chef/chef/pull/11194) ([tas50](https://github.com/tas50)) <!-- 16.11.4 -->
