@@ -178,9 +178,9 @@ GEM
       faraday (~> 1.0)
     fauxhai-ng (8.7.0)
       net-ssh
-    ffi (1.13.1)
-    ffi (1.13.1-x64-mingw32)
-    ffi (1.13.1-x86-mingw32)
+    ffi (1.15.0)
+    ffi (1.15.0-x64-mingw32)
+    ffi (1.15.0-x86-mingw32)
     ffi-libarchive (1.0.17)
       ffi (~> 1.0)
     ffi-win32-extensions (1.0.4)
@@ -429,7 +429,7 @@ DEPENDENCIES
   cheffish (>= 14)
   chefstyle (= 1.5.9)
   fauxhai-ng
-  ffi (= 1.13.1)
+  ffi (>= 1.15)
   inspec-core-bin (~> 4.24)
   ohai!
   pry

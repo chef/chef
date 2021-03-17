@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
-# pin until issues with Windows builds in 1.14.2 are resolved
-gem "ffi", "=1.13.1"
+# 1.15+ is required for M1 mac builds
+gem "ffi", ">=1.15"
 
 # Note we do not use the gemspec DSL which restricts to the
 # gemspec for the current platform and filters out other platforms
