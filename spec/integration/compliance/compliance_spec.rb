@@ -4,7 +4,7 @@ require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 require "chef-utils/dist"
 
-describe "chef-client with audit mode" do
+describe "chef-client with compliance phase" do
 
   include IntegrationSupport
   include Chef::Mixin::ShellOut
@@ -46,6 +46,7 @@ describe "chef-client with audit mode" do
       file "attributes.json", <<~FILE
         {
           "audit": {
+            "compliance_phase": true,
             "json_file": {
               "location": "#{report_file}"
             },
