@@ -30,6 +30,7 @@ This section serves to track things we should later document here for 17.0
 - Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
 - file: only run verifiers when the contents changed - https://github.com/chef/chef/pull/11171
+- execute: Add login property - https://github.com/chef/chef/pull/11201
 
 ### Ohai
 
