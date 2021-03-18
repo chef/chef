@@ -6,8 +6,11 @@ variables:
 
 trigger:
 - master
-# TODO: 20190528 - should we be testing end_to_end on chef-15?
-#- chef-15
+- chef-16
+
+pr:
+- master
+- chef-16
 
 pool:
   vmImage: $(imageName)
