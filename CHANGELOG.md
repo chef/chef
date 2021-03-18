@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.159 -->
-## [v17.0.159](https://github.com/chef/chef/tree/v17.0.159) (2021-03-18)
+<!-- latest_release 17.0.160 -->
+## [v17.0.160](https://github.com/chef/chef/tree/v17.0.160) (2021-03-18)
 
 #### Merged Pull Requests
-- Fix Azure to trigger correctly on PRs [#11202](https://github.com/chef/chef/pull/11202) ([tas50](https://github.com/tas50))
+- Ruby 3.0 fixes and post-bundle-install hook  [#10922](https://github.com/chef/chef/pull/10922) ([lamont-granquist](https://github.com/lamont-granquist))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Ruby 3.0 fixes and post-bundle-install hook  [#10922](https://github.com/chef/chef/pull/10922) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.160 -->
 - Fix Azure to trigger correctly on PRs [#11202](https://github.com/chef/chef/pull/11202) ([tas50](https://github.com/tas50)) <!-- 17.0.159 -->
 - Add login option to execute resource [#11201](https://github.com/chef/chef/pull/11201) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.158 -->
 - Add release notes for Chef Infra Client 16.11 [#11200](https://github.com/chef/chef/pull/11200) ([tas50](https://github.com/tas50)) <!-- 17.0.157 -->
