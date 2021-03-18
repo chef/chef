@@ -70,7 +70,7 @@ Chef InSpec has been updated from 4.26.4 to 4.28.0
 
 - Upgraded openSSL on macOS from 1.0.2 to 1.1.1 in order to support Apple M1 builds.
 - Resolved an issue that caused the DNF and YUM package helpers to exit with error codes, which would show up in system logs.
-- Added a new attribute to make the upcoming Compliance Phase opt-in: `node['audit']['compliance_phase']`. This should prevent the Compliance Phase from incorrectly running when using named run_lists or override run_lists. If you're currently testing this new phase, make sure to set this attribute to `true`.
+- Added a new attribute to make the upcoming Compliance Phase an opt-in feature: `node['audit']['compliance_phase']`. This should prevent the Compliance Phase from incorrectly running when using named run_lists or override run_lists. If you're currently testing this new phase, make sure to set this attribute to `true`.
 - `chef_client_cron`: the `append_log_file` property now sets up the cron job to use shell redirectio (`>>`) instead of the `-L` flag
 
 ## What's New in 16.10.17
