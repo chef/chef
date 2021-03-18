@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 230ac72932fc57346dc588da48ddbc24f803a0cd
+  revision: c48d12b929fde24bb7a319a9df4a328c926e5a8b
   branch: lcg/post-bundle-install-hook
   specs:
     omnibus-software (4.0.0)
