@@ -572,6 +572,10 @@ class Chef
         introduced: "16.2",
         description: "An optional property to set the input sent to the command as STDIN."
 
+      property :login, [ TrueClass, FalseClass ], default: false,
+        introduced: "17.0",
+        description: "Use a login shell to run the commands instead of inheriting the existing execution environment."
+
       alias :env :environment
 
       def self.set_guard_inherited_attributes(*inherited_attributes)
@@ -666,7 +670,8 @@ class Chef
         :group,
         :password,
         :user,
-        :umask
+        :umask,
+        :login
       )
 
     end
