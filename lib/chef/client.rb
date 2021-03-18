@@ -858,8 +858,8 @@ class Chef
 
     def profiling_prereqs!
       require "ruby-prof"
-    rescue LoadError
-      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
+    rescue LoadError => e
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby: #{e.message}"
     end
 
     def start_profiling

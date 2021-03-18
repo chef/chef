@@ -158,8 +158,10 @@ class Chef
       }.freeze
 
       ENUM_METHODS.each do |delegated_method|
-        define_method(delegated_method) do |*args, &block|
-          merged_attributes.send(delegated_method, *args, &block)
+        if Hash.public_method_defined?(delegated_method)
+          define_method(delegated_method) do |*args, &block|
+            merged_attributes.send(delegated_method, *args, &block)
+          end
         end
       end
 

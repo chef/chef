@@ -38,10 +38,10 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
 
 #########################################################################
-  # Tests Ruby 2.7
+  # Tests Ruby 3.0
 #########################################################################
 
-- label: "Chefstyle :ruby: 2.7"
+- label: "Chefstyle :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -49,9 +49,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "Integration Ubuntu 18.04 :ruby: 2.7"
+- label: "Integration Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -59,10 +59,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
         privileged: true
 
-- label: "Functional Ubuntu 18.04 :ruby: 2.7"
+- label: "Functional Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -72,10 +72,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
         privileged: true
 
-- label: "Unit Ubuntu 18.04 :ruby: 2.7"
+- label: "Unit Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -84,9 +84,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "Integration Ubuntu 20.04 :ruby: 2.7"
+- label: "Integration Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -94,10 +94,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:2.7
+        image: rubydistros/ubuntu-20.04:3.0
         privileged: true
 
-- label: "Functional Ubuntu 20.04 :ruby: 2.7"
+- label: "Functional Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -107,10 +107,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:2.7
+        image: rubydistros/ubuntu-20.04:3.0
         privileged: true
 
-- label: "Unit Ubuntu 20.04 :ruby: 2.7"
+- label: "Unit Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -119,9 +119,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-20.04:2.7
+        image: rubydistros/ubuntu-20.04:3.0
 
-- label: "Integration CentOS 7 :ruby: 2.7"
+- label: "Integration CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -129,10 +129,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:2.7
+        image: rubydistros/centos-7:3.0
         privileged: true
 
-- label: "Functional CentOS 7 :ruby: 2.7"
+- label: "Functional CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
@@ -141,10 +141,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:2.7
+        image: rubydistros/centos-7:3.0
         privileged: true
 
-- label: "Unit CentOS 7 :ruby: 2.7"
+- label: "Unit CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -153,9 +153,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/centos-7:2.7
+        image: rubydistros/centos-7:3.0
 
-- label: "Integration openSUSE 15 :ruby: 2.7"
+- label: "Integration openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -164,10 +164,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:2.7
+        image: rubydistros/opensuse-15:3.0
         privileged: true
 
-- label: "Functional openSUSE 15 :ruby: 2.7"
+- label: "Functional openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
@@ -176,10 +176,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:2.7
+        image: rubydistros/opensuse-15:3.0
         privileged: true
 
-- label: "Unit openSUSE 15 :ruby: 2.7"
+- label: "Unit openSUSE 15 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
@@ -189,9 +189,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/opensuse-15:2.7
+        image: rubydistros/opensuse-15:3.0
 
-- label: "Integration Fedora :ruby: 2.7"
+- label: "Integration Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -199,10 +199,10 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:2.7
+        image: rubydistros/fedora-latest:3.0
         privileged: true
 
-- label: "Functional Fedora :ruby: 2.7"
+- label: "Functional Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
@@ -211,13 +211,13 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:2.7
+        image: rubydistros/fedora-latest:3.0
         privileged: true
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Fedora :ruby: 2.7"
+- label: "Unit Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
@@ -226,9 +226,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/fedora-latest:2.7
+        image: rubydistros/fedora-latest:3.0
 
-- label: "Functional Windows :ruby: 2.7"
+- label: "Functional Windows :ruby: 3.0"
   commands:
     - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
@@ -238,37 +238,37 @@ steps:
         single-use: true
         shell: ["powershell", "-Command"]
 
-- label: "Integration Windows :ruby: 2.7"
+- label: "Integration Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:2.7
+        image: rubydistros/windows-2019:3.0
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Chocolatey Windows :ruby: 2.7"
+- label: "Chocolatey Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_run_choco.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:2.7
+        image: rubydistros/windows-2019:3.0
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 2.7"
+- label: "Unit Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
         host_os: windows
-        image: rubydistros/windows-2019:2.7
+        image: rubydistros/windows-2019:3.0
         environment:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
@@ -278,7 +278,7 @@ steps:
   # EXTERNAL GEM TESTING
 #########################################################################
 
-- label: "chef-sugar gem :ruby: 2.7"
+- label: "chef-sugar gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -286,9 +286,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "chef-zero gem :ruby: 2.7"
+- label: "chef-zero gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -296,12 +296,12 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
         environment:
           - PEDANT_OPTS=--skip-oc_id
           - CHEF_FS=true
 
-- label: "cheffish gem :ruby: 2.7"
+- label: "cheffish gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -309,9 +309,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "chefspec gem :ruby: 2.7"
+- label: "chefspec gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -319,9 +319,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "knife-windows gem :ruby: 2.7"
+- label: "knife-windows gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
@@ -329,9 +329,9 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
-- label: "berkshelf gem :ruby: 2.7"
+- label: "berkshelf gem :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
@@ -341,7 +341,7 @@ steps:
   expeditor:
     executor:
       docker:
-        image: rubydistros/ubuntu-18.04:2.7
+        image: rubydistros/ubuntu-18.04:3.0
 
 #########################################################################
   # START TEST KITCHEN ONLY

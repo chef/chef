@@ -189,7 +189,8 @@ class Chef
                 begin
                   rs = dependency_installer.resolve_dependencies gem_dependency.name, gem_dependency.requirement
                   rs.specs.find { |s| s.name == gem_dependency.name }
-                rescue Gem::UnsatisfiableDependencyError
+                  # ruby-3.0.0 versions of rubygems-3.x throws NoMethodError when the dep is not found
+                rescue Gem::UnsatisfiableDependencyError, NoMethodError
                   nil
                 end
               end
