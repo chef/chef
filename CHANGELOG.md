@@ -2,40 +2,38 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.7 -->
-## [v16.11.7](https://github.com/chef/chef/tree/v16.11.7) (2021-03-17)
-
-#### Merged Pull Requests
-- Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.10.17 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50)) <!-- 16.11.7 -->
-- Update FFI to 1.15 for M1 Macs + libarchive to 3.5.1 [#11197](https://github.com/chef/chef/pull/11197) ([tas50](https://github.com/tas50)) <!-- 16.11.6 -->
-- Disable compliance phase by default [#11196](https://github.com/chef/chef/pull/11196) ([tas50](https://github.com/tas50)) <!-- 16.11.5 -->
-- Use openssl 1.1.1j on macOS for arm [#11194](https://github.com/chef/chef/pull/11194) ([tas50](https://github.com/tas50)) <!-- 16.11.4 -->
-- Bump inspec-core-bin to 4.28.0 [#11193](https://github.com/chef/chef/pull/11193) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.11.3 -->
-- Bump omnibus-software from `daeb384` to `f903311` in /omnibus [#11190](https://github.com/chef/chef/pull/11190) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.2 -->
-- Fix users_manage usage in kitchen-tests [#11182](https://github.com/chef/chef/pull/11182) ([ramereth](https://github.com/ramereth)) <!-- 16.11.1 -->
-- Use DNF on Oracle / CentOS kitchen tests [#11188](https://github.com/chef/chef/pull/11188) ([tas50](https://github.com/tas50)) <!-- 16.11.0 -->
-- Produce M1 mac builds and pin win32-certstore [#11187](https://github.com/chef/chef/pull/11187) ([tas50](https://github.com/tas50)) <!-- 16.10.29 -->
-- Bump omnibus from `4a3c044` to `dd57896` in /omnibus [#11175](https://github.com/chef/chef/pull/11175) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.28 -->
-- Bump omnibus-software from `a7ed951` to `daeb384` in /omnibus [#11165](https://github.com/chef/chef/pull/11165) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.27 -->
-- Backport the ability to disable / enable compliance phase [#11147](https://github.com/chef/chef/pull/11147) ([tas50](https://github.com/tas50)) <!-- 16.10.26 -->
-- [Backport to chef-16] DNF package: fix abrt errors [#11139](https://github.com/chef/chef/pull/11139) ([dheerajd-msys](https://github.com/dheerajd-msys)) <!-- 16.10.25 -->
-- Bump omnibus-software from `a1e9c90` to `a7ed951` in /omnibus [#11132](https://github.com/chef/chef/pull/11132) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.24 -->
-- Update our bcrypt_pbkdf dep to allow the final 1.1.0 release [#11136](https://github.com/chef/chef/pull/11136) ([ramereth](https://github.com/ramereth)) <!-- 16.10.23 -->
-- Use shell redirection in chef_client_cron when append_log_file is true [#11125](https://github.com/chef/chef/pull/11125) ([ramereth](https://github.com/ramereth)) <!-- 16.10.22 -->
-- Bump omnibus-software from `fb0fa04` to `a1e9c90` in /omnibus [#11117](https://github.com/chef/chef/pull/11117) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.21 -->
-- Update deps to current and wire up automation [#11102](https://github.com/chef/chef/pull/11102) ([tas50](https://github.com/tas50)) <!-- 16.10.20 -->
-- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11096](https://github.com/chef/chef/pull/11096) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.10.19 -->
-- Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth)) <!-- 16.10.18 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.11.7](https://github.com/chef/chef/tree/v16.11.7) (2021-03-18)
+
+#### Merged Pull Requests
+- Update resolver cookbook usage in test-kitchen tests [#11093](https://github.com/chef/chef/pull/11093) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `9390767` to `fb0fa04` in /omnibus [#11096](https://github.com/chef/chef/pull/11096) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update deps to current and wire up automation [#11102](https://github.com/chef/chef/pull/11102) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `fb0fa04` to `a1e9c90` in /omnibus [#11117](https://github.com/chef/chef/pull/11117) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Use shell redirection in chef_client_cron when append_log_file is true [#11125](https://github.com/chef/chef/pull/11125) ([ramereth](https://github.com/ramereth))
+- Update our bcrypt_pbkdf dep to allow the final 1.1.0 release [#11136](https://github.com/chef/chef/pull/11136) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `a1e9c90` to `a7ed951` in /omnibus [#11132](https://github.com/chef/chef/pull/11132) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- [Backport to chef-16] DNF package: fix abrt errors [#11139](https://github.com/chef/chef/pull/11139) ([dheerajd-msys](https://github.com/dheerajd-msys))
+- Backport the ability to disable / enable compliance phase [#11147](https://github.com/chef/chef/pull/11147) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `a7ed951` to `daeb384` in /omnibus [#11165](https://github.com/chef/chef/pull/11165) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump omnibus from `4a3c044` to `dd57896` in /omnibus [#11175](https://github.com/chef/chef/pull/11175) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Produce M1 mac builds and pin win32-certstore [#11187](https://github.com/chef/chef/pull/11187) ([tas50](https://github.com/tas50))
+- Use DNF on Oracle / CentOS kitchen tests [#11188](https://github.com/chef/chef/pull/11188) ([tas50](https://github.com/tas50))
+- Fix users_manage usage in kitchen-tests [#11182](https://github.com/chef/chef/pull/11182) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `daeb384` to `f903311` in /omnibus [#11190](https://github.com/chef/chef/pull/11190) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump inspec-core-bin to 4.28.0 [#11193](https://github.com/chef/chef/pull/11193) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Use openssl 1.1.1j on macOS for arm [#11194](https://github.com/chef/chef/pull/11194) ([tas50](https://github.com/tas50))
+- Disable compliance phase by default [#11196](https://github.com/chef/chef/pull/11196) ([tas50](https://github.com/tas50))
+- Update FFI to 1.15 for M1 Macs + libarchive to 3.5.1 [#11197](https://github.com/chef/chef/pull/11197) ([tas50](https://github.com/tas50))
+- Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.10.17](https://github.com/chef/chef/tree/v16.10.17) (2021-02-19)
 
 #### Merged Pull Requests
@@ -48,7 +46,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Bump mixlib-archive, mixlib-shellout and omnibus [#11068](https://github.com/chef/chef/pull/11068) ([tas50](https://github.com/tas50))
 - bump openssl-1.0.2y [#11072](https://github.com/chef/chef/pull/11072) ([dheerajd-msys](https://github.com/dheerajd-msys))
 - Stop producing packages for macOS 10.13 [#11078](https://github.com/chef/chef/pull/11078) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.10.8](https://github.com/chef/chef/tree/v16.10.8) (2021-02-05)
 
