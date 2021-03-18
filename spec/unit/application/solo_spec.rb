@@ -108,7 +108,7 @@ describe Chef::Application::Solo do
         tarfile = StringIO.new("remote_tarball_content")
         target_file = StringIO.new
 
-        expect(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
+        expect(URI).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
         expect(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
 
         archive = double(Mixlib::Archive)

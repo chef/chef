@@ -24,6 +24,7 @@ jobs:
 
     steps:
     - script: |
+        brew install coreutils
         curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
         /opt/chef/bin/chef-client -v
         /opt/chef/bin/ohai -v
@@ -34,7 +35,6 @@ jobs:
     - script: |
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
         sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-        sudo /opt/chef/embedded/bin/appbundle-updater chef ohai v${OHAI_VERSION} --tarball --github chef/ohai
         sudo /opt/chef/embedded/bin/appbundle-updater chef chef $BUILD_SOURCEVERSION --tarball --github chef/chef
         echo "Installed Chef / Ohai release:"
         /opt/chef/bin/chef-client -v
@@ -70,7 +70,6 @@ jobs:
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
         gem install appbundler appbundle-updater --no-doc
-        appbundle-updater chef ohai v$env:OHAI_VERSION --tarball --github chef/ohai
         appbundle-updater chef chef $env:BUILD_SOURCEVERSION --tarball --github chef/chef
         Write-Output "Installed Chef / Ohai release:"
         chef-client -v

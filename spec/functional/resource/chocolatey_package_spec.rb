@@ -41,6 +41,19 @@ describe Chef::Resource::ChocolateyPackage, :windows_only, :choco_installed do
     provider
   end
 
+  # This bit of magic ensures that we pass a mixed-case Path var in the env to chocolatey and not PATH
+  # (both ENV["PATH"] and ENV["Path"] are the same thing in ruby-on-windows, and the first created key
+  # is the one that is actually passed to a subprocess, and choco demands it be Path)
+  #
+  # This is not a no-op.
+  #
+  # I don't know how to tell what state we were in to begin with, so we cannot restore.  Nothing else
+  # seems to care.
+  #
+  before(:all) do
+    ENV["Path"] = ENV.delete("Path")
+  end
+
   context "installing a package" do
     after { remove_package }
 

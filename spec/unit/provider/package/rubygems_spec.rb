@@ -113,12 +113,11 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     end
 
     it "finds a matching gem candidate version on rubygems 2.0.0+" do
-      stub_request(:head, "https://rubygems.org/api/v1/dependencies")
-
-      stub_request(:get, "https://rubygems.org/api/v1/dependencies?gems=sexp_processor")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor")))
-
-      stub_request(:get, "https://rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
+      stub_request(:head, "https://index.rubygems.org/")
+        .to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "https://index.rubygems.org/info/sexp_processor")
+        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
+      stub_request(:get, "https://index.rubygems.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
       dep = Gem::Dependency.new("sexp_processor", ">= 0")
@@ -126,21 +125,20 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     end
 
     it "gives the candidate version as nil if none is found" do
-      stub_request(:head, "https://rubygems.org/api/v1/dependencies")
-
-      stub_request(:get, "https://rubygems.org/api/v1/dependencies?gems=nonexistent_gem")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "nonexistent_gem")))
+      stub_request(:head, "https://index.rubygems.org/")
+        .to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "https://index.rubygems.org/info/nonexistent_gem")
+        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "nonexistent_gem-info")))
 
       dep = Gem::Dependency.new("nonexistent_gem", ">= 0")
       expect(@gem_env.candidate_version_from_remote(dep)).to be_nil
     end
 
     it "finds a matching gem from a specific gemserver when explicit sources are given (to a server that doesn't respond to api requests)" do
-      stub_request(:head, "https://rubygems2.org/api/v1/dependencies")
-
-      stub_request(:get, "https://rubygems2.org/api/v1/dependencies?gems=sexp_processor")
-        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor")))
-
+      stub_request(:head, "https://rubygems2.org/")
+        .to_return(status: 200, body: "", headers: {})
+      stub_request(:get, "https://rubygems2.org/info/sexp_processor")
+        .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-info")))
       stub_request(:get, "https://rubygems2.org/quick/Marshal.4.8/sexp_processor-4.15.1.gemspec.rz")
         .to_return(status: 200, body: File.binread(File.join(CHEF_SPEC_DATA, "rubygems.org", "sexp_processor-4.15.1.gemspec.rz")))
 
