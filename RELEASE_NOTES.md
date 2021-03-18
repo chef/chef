@@ -51,7 +51,7 @@ We now build and test native Apple M1 architecture builds of Chef Infra Client. 
 
 ### Chef InSpec 4.28
 
-Chef InSpec has been updated from 4.26.4 to 4.28.0
+Chef InSpec has been updated from 4.26.4 to 4.28.0.
 
 #### New Features
 
