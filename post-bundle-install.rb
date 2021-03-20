@@ -15,6 +15,8 @@ Dir["#{gem_home}/bundler/gems/*"].each do |gempath|
   gem_name = matches[1]
   next unless gem_name
 
+  system "ls -laR #{gempath}"
+
   puts "re-installing #{gem_name}..."
 
   # we can't use "commmand" or "bundle" or "gem" DSL methods here since those are lazy and we need to run commands immediately
