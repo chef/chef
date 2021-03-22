@@ -22,8 +22,18 @@ lifecycle:
     - remote: /opt/chef/embedded/bin/rake --version
     - remote: /opt/chef/embedded/bin/bundle -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+    - remote: scl enable devtoolset-8 '/opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai'
+      includes:
+        - centos-6
+    - remote: scl enable devtoolset-8 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef'
+      includes:
+        - centos-6
     - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
+      excludes:
+        - centos-6
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
+      excludes:
+        - centos-6
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
@@ -76,7 +86,6 @@ platforms:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
       - RUN yum install -y centos-release-scl
       - RUN yum install -y devtoolset-7
-      - RUN scl enable devtoolset-7 bash
 
 - name: centos-7
   driver:

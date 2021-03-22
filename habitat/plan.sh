@@ -95,14 +95,10 @@ do_build() {
   ( cd "$CACHE_PATH" || exit_with "unable to enter hab-cache directory" 1
     build_line "Installing gem dependencies ..."
     bundle install --jobs=3 --retry=3
+    build_line "Installing gems from git repos properly ..."
+    ruby ./post-bundle-install.rb
     build_line "Installing this project's gems ..."
     bundle exec rake install
-    for gem in $GEM_HOME/bundler/gems/*; do
-      ( cd $gem
-        build_line "Installing gems from git repos properly ..."
-        rake install
-      )
-    done
   )
 }
 
