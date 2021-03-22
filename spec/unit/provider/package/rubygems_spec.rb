@@ -103,7 +103,7 @@ describe Chef::Provider::Package::Rubygems::CurrentGemEnvironment do
     expect(Gem.sources).to eq(normal_sources)
   end
 
-  context "new default rubygems behavior" do
+  context "new default rubygems behavior", ruby: ">= 3.0" do
     before do
       Chef::Config[:rubygems_cache_enabled] = false
 
