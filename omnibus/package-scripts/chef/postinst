@@ -97,13 +97,15 @@ ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link che
 # the sample client.rb is only written out of no chef config dir exists yet
 if ! [ -d $CONFIG_DIR ]; then
    mkdir -p $CONFIG_DIR
-   echo -e "# The client.rb file specifies how Chef Infra Client is configured on a node" > "$CONFIG_DIR/client.rb"
-   echo -e "# See https://docs.chef.io/config_rb_client/ for detailed configuration options" >> "$CONFIG_DIR/client.rb"
-   echo -e "#" >> "$CONFIG_DIR/client.rb"
-   echo -e "# Minimal example configuration:"  >> "$CONFIG_DIR/client.rb"
-   echo -e "# node_name  \"THIS_NODE_NAME\""  >> "$CONFIG_DIR/client.rb"
-   echo -e "# chef_server_url  \"https://CHEF.MYCOMPANY.COM/organizations/MY_CHEF_ORG\""  >> "$CONFIG_DIR/client.rb"
-   echo -e "# chef_license  \"accept\""  >> "$CONFIG_DIR/client.rb"
+   cat >"$CONFIG_DIR/client.rb" <<EOF
+# The client.rb file specifies how Chef Infra Client is configured on a node
+# See https://docs.chef.io/config_rb_client/ for detailed configuration options
+#
+# Minimal example configuration:
+# node_name  "THIS_NODE_NAME"
+# chef_server_url  "https://CHEF.MYCOMPANY.COM/organizations/MY_CHEF_ORG"
+# chef_license  "accept"
+EOF
 fi
 
 mkdir -p "$CONFIG_DIR/client.d"
