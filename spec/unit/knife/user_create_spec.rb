@@ -212,5 +212,45 @@ describe Chef::Knife::UserCreate do
       end
     end
 
+    describe "user user_name, --email, --password" do
+      let(:name_args) { %w{some_user} }
+
+      before :each do
+        @user = double("Chef::User")
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
+        @key = "You don't come into cooking to get rich - Ramsay"
+        allow(@user).to receive(:[]).with("private_key").and_return(@key)
+        knife.name_args = name_args
+        knife.config[:email] = "test@email.com"
+        knife.config[:password] = "some_password"
+      end
+
+      it "creates an user" do
+        expect(knife.ui).to receive(:msg).with(@key)
+        knife.run
+      end
+
+      context "with --orgname" do
+        before :each do
+          knife.config[:orgname] = "ramsay"
+          @uri = "http://www.example.com/1"
+          allow(@user).to receive(:[]).with("uri").and_return(@uri)
+        end
+
+        let(:request_body) {
+          { user: "some_user" }
+        }
+
+        it "creates an user, associates a user, and adds it to the admins group" do
+
+          expect(root_rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
+          expect(root_rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
+          knife.run
+        end
+      end
+
+    end
+
   end # when all mandatory fields are validly specified
 end

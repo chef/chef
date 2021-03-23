@@ -54,7 +54,23 @@ class Chef
         short: "-p",
         description: "Prompt for user password"
 
-      banner "knife user create USERNAME DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD (options)"
+      option :first_name,
+        long: "--first-name FIRSTNAME",
+        description: "First name for the user"
+
+      option :last_name,
+        long: "--last-name LASTNAME",
+        description: "Last name for the user"
+
+      option :email,
+        long: "--email EMAIL",
+        description: "Email for the user"
+
+      option :password,
+        long: "--password PASSWORD",
+        description: "Password for the user"
+
+      banner "knife user create USERNAME --email EMAIL --password PASSWORD (options)"
 
       def user
         @user_field ||= Chef::UserV1.new
@@ -64,19 +80,27 @@ class Chef
         test_mandatory_field(@name_args[0], "username")
         user.username @name_args[0]
 
-        test_mandatory_field(@name_args[1], "display name")
-        user.display_name @name_args[1]
+        if @name_args.size > 1
+          ui.warn "[DEPRECATED] DISPLAY_NAME FIRST_NAME LAST_NAME EMAIL PASSWORD options are deprecated and will be removed in future release. Use USERNAME --email --password TAGS option instead."
+          test_mandatory_field(@name_args[1], "display name")
+          user.display_name @name_args[1]
+          test_mandatory_field(@name_args[2], "first name")
+          user.first_name @name_args[2]
+          test_mandatory_field(@name_args[3], "last name")
+          user.last_name @name_args[3]
+          test_mandatory_field(@name_args[4], "email")
+          user.email @name_args[4]
+          password = config[:passwordprompt] ? prompt_for_password : @name_args[5]
+        else
+          test_mandatory_field(config[:email], "email")
+          test_mandatory_field(config[:password], "password") unless config[:passwordprompt]
+          user.display_name user.username
+          user.first_name config[:first_name] || ""
+          user.last_name config[:last_name] || ""
+          user.email config[:email]
+          password = config[:passwordprompt] ? prompt_for_password : config[:password]
+        end
 
-        test_mandatory_field(@name_args[2], "first name")
-        user.first_name @name_args[2]
-
-        test_mandatory_field(@name_args[3], "last name")
-        user.last_name @name_args[3]
-
-        test_mandatory_field(@name_args[4], "email")
-        user.email @name_args[4]
-
-        password = config[:passwordprompt] ? prompt_for_password : @name_args[5]
         unless password
           ui.fatal "You must either provide a password or use the --prompt-for-password (-p) option"
           exit 1
@@ -96,14 +120,25 @@ class Chef
           user.public_key File.read(File.expand_path(config[:user_key]))
         end
 
-        user_hash = {
-          username: user.username,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          display_name: "#{user.first_name} #{user.last_name}",
-          email: user.email,
-          password: password,
-        }
+        if @name_args.size > 1
+          user_hash = {
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            display_name: "#{user.first_name} #{user.last_name}",
+            email: user.email,
+            password: password,
+          }
+        else
+          user_hash = {
+            username: user.username,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            display_name: user.display_name,
+            email: user.email,
+            password: password,
+          }
+        end
 
         # Check the file before creating the user so the api is more transactional.
         if config[:file]

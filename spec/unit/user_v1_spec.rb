@@ -176,8 +176,10 @@ describe Chef::UserV1 do
       expect(@user.to_json).to include(%{"display_name":"get_displayed"})
     end
 
-    it "does not include the display name if not present" do
-      expect(@json).not_to include("display_name")
+    it "does not include the display name if user name not present" do
+      unless @user.username
+        expect(@json).not_to include("display_name")
+      end
     end
 
     it "includes the first name when present" do
