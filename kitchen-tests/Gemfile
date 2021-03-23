@@ -1,10 +1,10 @@
 source "https://rubygems.org"
 
 gem "rake" # required to build some native extensions
-gem "chef", path: ".."
-gem "ohai", git: "https://github.com/chef/ohai.git", branch: "15-stable" # avoids failures when we bump chef major
-gem "berkshelf", git: "https://github.com/berkshelf/berkshelf.git", branch: "master"
+gem "chef", "~> 16.0"
+gem "ohai", "~> 16.0"
+gem "berkshelf"
 gem "kitchen-dokken", "~> 2.0"
-gem "kitchen-inspec", git: "https://github.com/chef/kitchen-inspec.git", branch: "master"
+gem "kitchen-inspec"
 gem "inspec"
-gem "test-kitchen", git: "https://github.com/test-kitchen/test-kitchen.git", branch: "master"
+gem "test-kitchen"
