@@ -18,7 +18,7 @@ Chef Infra is a configuration management tool designed to bring automation to yo
 
 ### Want to try Chef Infra?
 
-For Chef Infra usage, please refer to [Learn Chef](https://learn.chef.io/), our self-paced, entirely free learning platform.  Learn Chef also includes module-based training for Chef Infra, as well as Chef Automate, Chef Habitat, and Chef InSpec.
+For Chef Infra usage, please refer to [Learn Chef](https://learn.chef.io/), our self-paced, entirely free learning platform. Learn Chef also includes module-based training for Chef Infra, as well as Chef Automate, Chef Habitat, and Chef InSpec.
 
 Other useful resources for Chef Infra users:
 
