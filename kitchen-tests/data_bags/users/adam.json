@@ -5,5 +5,5 @@
     "shell": "/bin/zsh",
     "groups": [ "sysadmin" ],
     "comment":  "Adam Jacob",
-    "password": "*"
+    "password": "$6$QQk10qmDjMv.o$wHIjLH9JOxUmaJTsxYFttFhP1jZZtTk/ovhpasmQJS5mfimeFs8HMRWGWM8uBB5dhEmP6svqhRdJE5k1oWRPF1"
 }
