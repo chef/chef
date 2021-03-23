@@ -31,7 +31,7 @@ Dir.mktmpdir("chef-external-test") do |dir|
   shell_out!("git clone #{git_url} #{dir}", live_stream: STDOUT)
   Dir.chdir(dir) do
     shell_out!("git checkout #{git_thing}", live_stream: STDOUT)
-    Bundler.with_unbundled_env do
+    Bundler.with_clean_env do
       shell_out!("bundle install --jobs=3 --retry=3", live_stream: STDOUT, env: env, timeout: 3600)
       shell_out!("bundle exec #{ARGV.join(" ")}", live_stream: STDOUT, env: env)
     end
