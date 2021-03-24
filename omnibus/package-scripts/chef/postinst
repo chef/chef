@@ -94,10 +94,24 @@ ln -sf $INSTALLER_DIR/bin/ohai $PREFIX/bin || error_exit "Cannot link ohai to $P
 ln -sf $INSTALLER_DIR/bin/chef-client $PREFIX/bin || error_exit "Cannot link chef-client to $PREFIX/bin"
 
 # make the base structure for chef to run
-mkdir -p /etc/chef/client.d/
-mkdir -p /etc/chef/accepted_licenses
-mkdir -p /etc/chef/trusted_certs
-mkdir -p /etc/chef/ohai/plugins
+# the sample client.rb is only written out of no chef config dir exists yet
+if ! [ -d $CONFIG_DIR ]; then
+   mkdir -p $CONFIG_DIR
+   cat >"$CONFIG_DIR/client.rb" <<EOF
+# The client.rb file specifies how Chef Infra Client is configured on a node
+# See https://docs.chef.io/config_rb_client/ for detailed configuration options
+#
+# Minimal example configuration:
+# node_name  "THIS_NODE_NAME"
+# chef_server_url  "https://CHEF.MYCOMPANY.COM/organizations/MY_CHEF_ORG"
+# chef_license  "accept"
+EOF
+fi
+
+mkdir -p "$CONFIG_DIR/client.d"
+mkdir -p "$CONFIG_DIR/accepted_licenses"
+mkdir -p "$CONFIG_DIR/trusted_certs"
+mkdir -p "$CONFIG_DIR/ohai/plugins"
 
 echo "Thank you for installing Chef Infra Client! For help getting started visit https://learn.chef.io"
 
