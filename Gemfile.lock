@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 8a1ad4ab1f4e210cc9440f64c9eb5d674ed10b38
+  revision: 6ce904faf8bb4a2d5aa2a7d15db11bf90cbbd317
   branch: master
   specs:
-    chefstyle (1.7.2)
+    chefstyle (1.7.3)
       rubocop (= 1.11.0)
 
 GIT
@@ -175,7 +175,7 @@ GEM
     concurrent-ruby (1.1.8)
     crack (0.4.5)
       rexml
-    debug_inspector (1.0.0)
+    debug_inspector (1.1.0)
     diff-lcs (1.3)
     ed25519 (1.2.4)
     erubi (1.10.0)
