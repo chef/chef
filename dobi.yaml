@@ -1,0 +1,21 @@
+# Chef Expeditor uses this file to build the chef/chef Docker image using Dobi (dnephin/dobi)
+#
+# If you wish to build the chef-infra-client Docker image, you do not need to use this file.
+# You can build the Docker image for yourself by simply running:
+#
+#   docker build .
+#
+# For more information on how this file is used, please check out the Chef Expeditor docs:
+#   https://expeditor.chef.io/docs/pipelines/docker/
+
+image=chef:
+  image: '{env.IMAGE_REGISTRY}/chef'
+  context: .
+  tags:
+    - '{env.EXPEDITOR_VERSION}'
+  args:
+    VERSION: '{env.EXPEDITOR_VERSION}'
+    CHANNEL: unstable
+  annotations:
+    tags:
+      - expeditor:final-channel-tags={{major}},{{major}}.{{minor}}
