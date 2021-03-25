@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6ce904faf8bb4a2d5aa2a7d15db11bf90cbbd317
+  revision: 6d136684438e8809e703feb84c46c69e90e042a7
   branch: master
   specs:
-    chefstyle (1.7.3)
-      rubocop (= 1.11.0)
+    chefstyle (1.7.4)
+      rubocop (= 1.12.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -208,7 +208,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.28.0)
+    inspec-core (4.29.3)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
@@ -231,8 +231,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.28.0)
-      inspec-core (= 4.28.0)
+    inspec-core-bin (4.29.3)
+      inspec-core (= 4.29.3)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -316,7 +316,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.11.0)
+    rubocop (1.12.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
