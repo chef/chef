@@ -17,6 +17,8 @@ sed -i -r "s/^(\s*)VERSION = \".+\"/\1VERSION = \"$(cat VERSION)\"/" chef-utils/
 sed -i -r "s/VersionString\.new\(\".+\"\)/VersionString.new(\"$(cat VERSION)\")/" lib/chef/version.rb
 
 # Update the version inside Gemfile.lock
+asdf install ruby 2.5.7
+asdf global ruby 2.5.7
 bundle update chef chef-config chef-utils --jobs=7 --conservative
 
 # Once Expeditor finishes executing this script, it will commit the changes and push
