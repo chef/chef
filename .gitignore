@@ -9,6 +9,9 @@ tags
 results
 *.swp
 
+# Docker
+.dobi
+
 # You should check in your Gemfile.lock in applications, and not in gems
 external_tests/*.lock
 /Gemfile.local
@@ -83,10 +86,10 @@ ext/win32-eventlog/chef-log.man
 distro/powershell/chef/chef.psm1
 
 # tool logs
-ext/win32-eventlog/mkmf.log
+mkmf.log
 
 # ignore byebug command history file.
 .byebug_history
 
-# our custom dictionary
+# our custom dictionary pulled from https://github.com/chef/chef_dictionary/
 chef_dictionary.txt
