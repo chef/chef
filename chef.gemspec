@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
   s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
 
-  s.add_dependency "license-acceptance", "~> 1.0", ">= 1.0.5"
+  s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
   s.add_dependency "mixlib-cli", ">= 2.1.1", "< 3.0"
   s.add_dependency "mixlib-log", ">= 2.0.3", "< 4.0"
   s.add_dependency "mixlib-authentication", ">= 2.1", "< 4"
@@ -47,7 +47,7 @@ Gem::Specification.new do |s|
   s.add_dependency "highline", ">= 1.6.9", "< 2"
   s.add_dependency "tty-screen", "~> 0.6" # knife list
   s.add_dependency "erubis", "~> 2.7"
-  s.add_dependency "diff-lcs", "~> 1.2", ">= 1.2.4"
+  s.add_dependency "diff-lcs", ">= 1.2.4", "< 1.4.0" # 1.4 breaks output
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3"
   s.add_dependency "chef-zero", ">= 14.0.11"
 
@@ -55,7 +55,7 @@ Gem::Specification.new do |s|
   s.add_dependency "iniparse", "~> 1.4"
   s.add_dependency "addressable"
   s.add_dependency "syslog-logger", "~> 1.6"
-  s.add_dependency "uuidtools", "~> 2.1.5"
+  s.add_dependency "uuidtools", ">= 2.1.5", "< 3.0"
 
   s.add_dependency "proxifier", "~> 1.0"
 
