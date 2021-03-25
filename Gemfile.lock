@@ -32,7 +32,7 @@ PATH
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 2)
+      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       license-acceptance (>= 1.0.5, < 3)
       mixlib-archive (>= 0.4, < 2.0)
@@ -64,7 +64,7 @@ PATH
       ffi (~> 1.9, >= 1.9.25)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 2)
+      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       iso8601 (>= 0.12.1, < 0.14)
       license-acceptance (>= 1.0.5, < 3)
@@ -183,7 +183,7 @@ GEM
       builder (>= 2.1.2)
     hashdiff (1.0.1)
     hashie (3.6.0)
-    highline (1.7.10)
+    highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
     inspec-core (4.28.0)
@@ -419,7 +419,6 @@ PLATFORMS
 
 DEPENDENCIES
   appbundler
-  bcrypt_pbkdf (>= 1.1.0.rc1)
   chef!
   chef-bin!
   chef-config!
@@ -428,7 +427,6 @@ DEPENDENCIES
   chef-vault
   cheffish (~> 14)
   chefstyle (= 1.2.1)
-  ed25519
   fauxhai-ng
   inspec-core (~> 4.18)
   inspec-core-bin (~> 4.24)
