@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.8 -->
-## [v16.11.8](https://github.com/chef/chef/tree/v16.11.8) (2021-03-19)
+<!-- latest_release 16.11.10 -->
+## [v16.11.10](https://github.com/chef/chef/tree/v16.11.10) (2021-03-25)
 
 #### Merged Pull Requests
-- Bump ohai from 16.10.6 to 16.10.7 in /omnibus [#11203](https://github.com/chef/chef/pull/11203) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11239](https://github.com/chef/chef/pull/11239) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.11.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11239](https://github.com/chef/chef/pull/11239) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.10 -->
 - Bump ohai from 16.10.6 to 16.10.7 in /omnibus [#11203](https://github.com/chef/chef/pull/11203) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.8 -->
 <!-- release_rollup -->
 
