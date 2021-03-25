@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.15.4 -->
-## [v15.15.4](https://github.com/chef/chef/tree/v15.15.4) (2021-03-25)
+<!-- latest_release 15.15.5 -->
+## [v15.15.5](https://github.com/chef/chef/tree/v15.15.5) (2021-03-25)
 
 #### Merged Pull Requests
-- Use Dobi for container building [#11242](https://github.com/chef/chef/pull/11242) ([tas50](https://github.com/tas50))
+- Update libarchive to 3.5.1 [#11243](https://github.com/chef/chef/pull/11243) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.15.0 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update libarchive to 3.5.1 [#11243](https://github.com/chef/chef/pull/11243) ([tas50](https://github.com/tas50)) <!-- 15.15.5 -->
 - Use Dobi for container building [#11242](https://github.com/chef/chef/pull/11242) ([tas50](https://github.com/tas50)) <!-- 15.15.4 -->
 - Update gem pins to better match changes in chef 16 [#11237](https://github.com/chef/chef/pull/11237) ([tas50](https://github.com/tas50)) <!-- 15.15.3 -->
 - Use Ruby 2.6.6 in the version script instead [#11236](https://github.com/chef/chef/pull/11236) ([tas50](https://github.com/tas50)) <!-- 15.15.2 -->
