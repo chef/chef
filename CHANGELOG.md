@@ -2,10 +2,11 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 15.15.2 -->
+## [v15.15.2](https://github.com/chef/chef/tree/v15.15.2) (2021-03-25)
 
 #### Merged Pull Requests
+- Use Ruby 2.6.6 in the version script instead [#11236](https://github.com/chef/chef/pull/11236) ([tas50](https://github.com/tas50))
 - Manually install necessary Ruby for verify pipeline [#10872](https://github.com/chef/chef/pull/10872) ([christopher-snapp](https://github.com/christopher-snapp))
 <!-- latest_release -->
 
@@ -13,6 +14,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Use Ruby 2.6.6 in the version script instead [#11236](https://github.com/chef/chef/pull/11236) ([tas50](https://github.com/tas50)) <!-- 15.15.2 -->
 - Manually install necessary Ruby for verify pipeline [#10872](https://github.com/chef/chef/pull/10872) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.15.1 -->
 - Make sure our containers work on RHEL 6 [#10855](https://github.com/chef/chef/pull/10855) ([tas50](https://github.com/tas50)) <!-- 15.15.1 -->
 <!-- release_rollup -->
