@@ -30,8 +30,6 @@ group(:omnibus_package) do
   gem "inspec-core", "~> 4.18"
   gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
   gem "chef-vault"
-  gem "ed25519" # ed25519 ssh key support done here as it's a native gem we can't put in train
-  gem "bcrypt_pbkdf", ">= 1.1.0.rc1" # ed25519 ssh key support done here as it's a native gem we can't put in train
 end
 
 group(:omnibus_package, :pry) do
@@ -84,6 +82,9 @@ eval_gemfile("./Gemfile.local") if File.exist?("./Gemfile.local")
 # For FFI to call into PowerShell we need the binaries and assemblies located
 # in the Ruby bindir.
 # The Powershell DLL source lives here: https://github.com/chef/chef-powershell-shim
+# Every merge into that repo triggers a Habitat build and promotion. Running
+# the rake :update_chef_exec_dll task in this (chef/chef) repo will pull down
+# the built packages and copy the binaries to distro/ruby_bin_folder.
 #
 # We copy (and overwrite) these files every time "bundle <exec|install>" is
 # executed, just in case they have changed.
