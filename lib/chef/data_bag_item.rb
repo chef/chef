@@ -44,8 +44,17 @@ class Chef
       end
     end
 
-    # Define all Hash's instance methods as delegating to @raw_data
-    def_delegators(:@raw_data, *(Hash.instance_methods - Object.instance_methods))
+    # delegate missing methods to the @raw_data Hash
+    def method_missing(method_name, *arguments, &block)
+      @raw_data.send(method_name, *arguments, &block)
+    rescue
+      # throw more sensible errors back at the user
+      super
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      @raw_data.respond_to?(method_name, include_private) || super
+    end
 
     attr_reader :raw_data
 
