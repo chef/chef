@@ -34,58 +34,33 @@ platforms:
     run_list: yum-epel::default
   - name: centos-7
     run_list: yum-epel::default
-  - name: debian-8
-    run_list: apt::default
   - name: debian-9
     run_list: apt::default
   - name: freebsd-11
     run_list: freebsd::portsnap
   - name: ubuntu-16.04
     run_list: apt::default
-  - name: ubuntu-18.04
-    run_list: apt::default
-  # The following (private) boxes are shared via Vagrant Cloud and are only
-  # available to users working for Chef. Sorry, it's about software licensing.
-  #
-  # Chef-internal users, you will need to:
-  # 1.  Create an Vagrant Cloud account:  http://vagrantcloud.com/
-  # 2.  Ping #releng-support with your account name to be added to the relevant team.
-  # 3.  Do `vagrant login` with your creds so that you can download the private boxes.
-  #
-  # The macOS boxes are VMware only also. You can enable VMware Fusion
-  # by activating the `kitchen.vmware.yml` file with the `KITCHEN_LOCAL_YAML`
-  # environment variable:
-  #
-  #   KITCHEN_LOCAL_YAML=kitchen.vmware.yml kitchen converge chef-macosx-1011
-  #
 
-  # OSX
-  <% %w(
-    macosx-10.11
-    macos-10.12
-    macos-10.13
-  ).each do |mac_version| %>
-  - name: <%= mac_version %>
+  # macOS
+  - name: macos-10.15
     driver:
-      provider: vmware_fusion
       customize:
         numvcpus: 4
         memsize: 4096
-      box: chef/macosx-<%= mac_version %> # private
+      box: tas50/macos_10.15
       synced_folders:
       - ['..', '/Users/vagrant/chef']
       - ['../../omnibus', '/Users/vagrant/omnibus']
       - ['../../omnibus-software', '/Users/vagrant/omnibus-software']
-  <% end %>
 
   <% %w(
-    10-enterprise
-    server-2012r2-standard
+    10
+    2012r2
   ).each do |win_version| %>
   # Windows 64-bit
   - name: windows-<%= win_version %>
     driver:
-      box: chef/windows-<%= win_version %> # private
+      box: tas50/windows-<%= win_version %> # private
       synced_folders:
       # We have to mount this repos enclosing folder as the Omnibus build
       # gets cranky if the mounted Chef source folder is a symlink. This
@@ -109,7 +84,7 @@ platforms:
   # will load the 32-bit version of the MinGW toolchain.
   - name: windows-<%= win_version %>-i386
     driver:
-      box: chef/windows-<%= win_version %> # private
+      box: tas50/windows-<%= win_version %> # private
       synced_folders:
       - ['../..', '/vagrant/code']
       communicator: winrm

@@ -1,5 +1,5 @@
 #
-# This file is used to configure the Omnibus projects in this repo. It contains
+# This file is used to configure the Chef Infra Client project. It contains
 # some minimal configuration examples for working with Omnibus. For a full list
 # of configurable options, please see the documentation for +omnibus/config.rb+.
 #

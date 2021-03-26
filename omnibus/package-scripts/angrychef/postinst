@@ -26,14 +26,7 @@ is_darwin()
   uname -a | grep "^Darwin" 2>&1 >/dev/null
 }
 
-is_smartos()
-{
-  uname -v | grep "^joyent" 2>&1 >/dev/null
-}
-
-if is_smartos; then
-    PREFIX="/opt/local"
-elif is_darwin; then
+if is_darwin; then
     PREFIX="/usr/local"
     mkdir -p "$PREFIX/bin"
 else
