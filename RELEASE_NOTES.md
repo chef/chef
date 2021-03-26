@@ -1504,6 +1504,60 @@ Several legacy Windows helpers have been deprecated as they will always return t
 - Chef::Platform.supports_powershell_execution_bypass?
 - Chef::Platform.windows_nano_server?
 
+## What's new in 15.16
+
+### Fixes and Improvements
+
+- Improved license acceptance failure messaging if incorrect values are provided.
+- License acceptance values are no longer case sensitive.
+- Resolved several failures that could occur in the `windows_certificate` resource.
+- Improved handling of WinRM connections when bootstrapping Windows nodes.
+- Switched docker containers back to EL6 packages to prevent failures running the containers with Kitchen Dokken to test RHEL 6 systems.
+- Fixed non-0 exit codes in the Yum and DNF helper scripts which caused errors in system logs.
+- Fixed package failures in FreeBSD due to changed in `pkgng` exit codes.
+- Added support for `client.d` configuration files in `chef-shell`.
+
+### Chef InSpec
+
+Chef InSpec has been updated from 4.24.8 to 4.29.3.
+
+#### New Features
+
+- The JSON metadata pass-through configuration has been moved from the Automate reporter to the JSON Reporter.
+- Added the option to filter out empty profiles from reports.
+- Exposed the `conf_path`, `content`, and `params` properties to the `auditd_conf` resource.
+- You can now directly refer to settings in the `nginx_conf` resource using the `its` syntax. Thanks [@rgeissert](https://github.com/rgeissert)!
+- Plugin settings can now be set programmatically. Thanks [@tecracer-theinen](https:/github.com/tecracer-theinen)!
+- OpenSSH Client on Windows can now be tested with the `ssh_config` and `sshd_config` resources. Thanks [@rgeissert](https://github.com/rgeissert)!
+
+#### Bug Fixes
+
+- The `--reporter-message-truncation` option now also truncates the `code_desc` field, preventing failures when sending large reports to Automate.
+- Fixed `skip_control` to work on deeply nested profiles.
+- The `ssh_config` and `sshd_config` resources now correctly use the first value when a setting is repeated.
+- Fixed the `crontab` resource when passing a username to AIX.
+- Stopped a backtrace from occurring when using `cmp` to compare `nil` with a non-existing file.
+- The `apt` resource now correctly fetches all package repositories using the `-name` flag in an environment where ZSH is the user's default shell.
+- The `--controls` option in `inspec exec` now correctly filters the controls by name.
+- Updates how InSpec profiles are created with GCP or AWS providers so they use `inputs` instead of `attributes`.
+- `inspec exec` will now fetch profiles via Git regardless of the name of the default branch.rces now correctly use the first value when a setting is repeated.
+- Updated the `oracledb_session` to use more general invocation options. Thanks [@pacopal](https://github.com/pacopal)!
+- Fixed an error with the `http` resource in Chef Infra Client by including `faraday_middleware` in the gemspec.
+- Fixed an incompatibility between `parslet` and `toml` in Chef Infra Client.
+- Improved programmatic plugin configuration.
+
+### Security
+
+Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
+
+- [CVE-2021-23841](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23841)
+- [CVE-2021-23839](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23839)
+- [CVE-2021-23840](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23840)
+
+### Platform Updates
+
+With the release of macOS 11, we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
+
 ## What's new in 15.15
 
 ### Chef InSpec 4.24.8
