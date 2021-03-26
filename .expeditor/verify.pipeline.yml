@@ -7,7 +7,7 @@ expeditor:
       retry:
         automatic:
           limit: 1
-      timeout_in_minutes: 30
+      timeout_in_minutes: 45
 
 steps:
 
@@ -575,7 +575,10 @@ steps:
 - label: ":habicat: Windows plan"
   commands:
     - ./scripts/ci/verify-plan.ps1
+  timeout_in_minutes: 60
   expeditor:
     executor:
       windows:
         privileged: true
+        single-use: true
+        shell: ["powershell", "-Command"]

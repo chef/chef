@@ -1,6 +1,6 @@
 # This script gets a container ready to run our various tests in BuildKite
 
-echo "--- preparing..."
+echo "--- Preparing Container..."
 
 export FORCE_FFI_YAJL="ext"
 export CHEF_LICENSE="accept-no-persist"
