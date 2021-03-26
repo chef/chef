@@ -1523,7 +1523,7 @@ Chef InSpec has been updated from 4.24.8 to 4.29.3
 
 #### New Features
 
-- The JSON metadata pass-through configuration has been moved from the Automate reporter to the JSON Reporter
+- The JSON metadata pass-through configuration has been moved from the Automate reporter to the JSON Reporter.
 - Added the option to filter out empty profiles from reports.
 - Exposed the `conf_path`, `content`, and `params` properties to the `auditd_conf` resource.
 - You can now directly refer to settings in the `nginx_conf` resource using the `its` syntax. Thanks [@rgeissert](https://github.com/rgeissert)!
