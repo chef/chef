@@ -1556,7 +1556,7 @@ Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
 
 ### Platform Updates
 
-With the release of macOS 11 we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
+With the release of macOS 11, we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
 
 ## What's new in 15.15
 
