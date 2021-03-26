@@ -8,6 +8,7 @@ Remove-Item -Path C:\ProgramData\chocolatey\bin\choco.exe -ErrorAction SilentlyC
 $ErrorActionPreference = 'Stop'
 
 Write-Output "--- Enable Ruby 2.6"
+
 Write-Output "Add Uru to Environment PATH"
 $env:PATH = "C:\Program Files (x86)\Uru;" + $env:PATH
 [Environment]::SetEnvironmentVariable('PATH', $env:PATH, [EnvironmentVariableTarget]::Machine)
@@ -16,17 +17,16 @@ Write-Output "Register Installed Ruby Version 2.6 With Uru"
 Start-Process "C:\Program Files (x86)\Uru\uru_rt.exe" -ArgumentList 'admin add C:\ruby26\bin' -Wait
 uru 266
 if (-not $?) { throw "Can't Activate Ruby. Did Uru Registration Succeed?" }
+ruby -v
+if (-not $?) { throw "Can't run Ruby. Is it installed?" }
 
 Write-Output "--- configure winrm"
-
 winrm quickconfig -q
-ruby -v
-bundle --version
 
 Write-Output "--- bundle install"
 bundle install --jobs=3 --retry=3 --without omnibus_package
+if (-not $?) { throw "Unable to install gem dependencies" }
 
 Write-Output "+++ bundle exec rake spec:functional"
 bundle exec rake spec:functional
-
-exit $LASTEXITCODE
+if (-not $?) { throw "Chef functional specs failing." }
