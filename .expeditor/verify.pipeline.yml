@@ -15,9 +15,9 @@ steps:
   # Tests Ruby 2.6
 #########################################################################
 
-- label: "Integration Specs Ubuntu :ruby: 2.6"
+- label: "Integration Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -26,9 +26,9 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: "Functional Specs Ubuntu :ruby: 2.6"
+- label: "Functional Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
@@ -39,9 +39,9 @@ steps:
         image: rubydistros/ubuntu-18.04:2.6
         privileged: true
 
-- label: "Unit Specs Ubuntu :ruby: 2.6"
+- label: "Unit Ubuntu :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -50,9 +50,9 @@ steps:
       docker:
         image: rubydistros/ubuntu-18.04:2.6
 
-- label: "Integration Specs CentOS :ruby: 2.6"
+- label: "Integration CentOS :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -61,9 +61,9 @@ steps:
         image: rubydistros/centos-7:2.6
         privileged: true
 
-- label: "Functional Specs CentOS :ruby: 2.6"
+- label: "Functional CentOS :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
@@ -73,9 +73,9 @@ steps:
         image: rubydistros/centos-7:2.6
         privileged: true
 
-- label: "Unit Specs CentOS :ruby: 2.6"
+- label: "Unit CentOS :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -84,9 +84,9 @@ steps:
       docker:
         image: rubydistros/centos-7:2.6
 
-- label: "Integration Specs openSUSE :ruby: 2.6"
+- label: "Integration openSUSE :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
@@ -96,9 +96,9 @@ steps:
         image: rubydistros/opensuse-15:2.6
         privileged: true
 
-- label: "Functional Specs openSUSE :ruby: 2.6"
+- label: "Functional openSUSE :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
@@ -108,9 +108,9 @@ steps:
         image: rubydistros/opensuse-15:2.6
         privileged: true
 
-- label: "Unit Specs openSUSE :ruby: 2.6"
+- label: "Unit openSUSE :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -119,9 +119,9 @@ steps:
       docker:
         image: rubydistros/opensuse-15:2.6
 
-- label: "Integration Specs Fedora :ruby: 2.6"
+- label: "Integration Fedora :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -130,9 +130,9 @@ steps:
         image: rubydistros/fedora-latest:2.6
         privileged: true
 
-- label: "Functional Specs Fedora :ruby: 2.6"
+- label: "Functional Fedora :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs util-linux
     - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:functional
@@ -145,9 +145,9 @@ steps:
           - FORCE_FFI_YAJL=ext
           - CHEF_LICENSE=accept-no-persist
 
-- label: "Unit Specs Fedora :ruby: 2.6"
+- label: "Unit Fedora :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -156,9 +156,9 @@ steps:
       docker:
         image: rubydistros/fedora-latest:2.6
 
-- label: "Integration Specs Windows :ruby: 2.6"
+- label: "Integration Windows :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_win_integration.ps1
+    - /workdir/.expeditor/scripts/bk_win_integration.ps1
   expeditor:
     executor:
       docker:
@@ -169,9 +169,9 @@ steps:
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Functional Specs Windows :ruby: 2.6"
+- label: "Functional Windows :ruby: 2.6"
   commands:
-    - scripts/bk_tests/bk_win_functional.ps1
+    - .expeditor/scripts/bk_win_functional.ps1
   expeditor:
     executor:
       windows:
@@ -179,9 +179,9 @@ steps:
         single-use: true
         shell: ["powershell", "-Command"]
 
-- label: "Chocolatey Specs Windows :ruby: 2.6"
+- label: "Chocolatey Windows :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_run_choco.ps1
+    - /workdir/.expeditor/scripts/bk_run_choco.ps1
   expeditor:
     executor:
       docker:
@@ -189,9 +189,9 @@ steps:
         image: rubydistros/windows-2019:2.6
         shell: ["powershell", "-Command"]
 
-- label: "Unit Specs Windows :ruby: 2.6"
+- label: "Unit Windows :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_win_unit.ps1
+    - /workdir/.expeditor/scripts/bk_win_unit.ps1
   expeditor:
     executor:
       docker:
@@ -204,7 +204,7 @@ steps:
 
 - label: "Chefstyle :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen ruby_prof
     - bundle exec rake style
   expeditor:
@@ -218,7 +218,7 @@ steps:
 
 - label: "Integration Specs :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:integration
   expeditor:
@@ -227,9 +227,9 @@ steps:
         image: ruby:2.5-buster
         privileged: true
 
-- label: "Functional Specs :ruby: 2.5"
+- label: "Functional :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales net-tools # needed for functional tests to pass
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
@@ -240,9 +240,9 @@ steps:
         image: ruby:2.5-buster
         privileged: true
 
-- label: "Unit Specs :ruby: 2.5"
+- label: "Unit :ruby: 2.5"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
@@ -257,7 +257,7 @@ steps:
 
 - label: "chef-sugar gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
   expeditor:
@@ -267,7 +267,7 @@ steps:
 
 - label: "chef-zero gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/chef-zero master rake pedant
   expeditor:
@@ -280,7 +280,7 @@ steps:
 
 - label: "cheffish gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/cheffish master rake spec
   expeditor:
@@ -290,7 +290,7 @@ steps:
 
 - label: "chefspec gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chefspec/chefspec master rake
   expeditor:
@@ -300,7 +300,7 @@ steps:
 
 - label: "knife-windows gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package docgen
     - bundle exec tasks/bin/run_external_test chef/knife-windows master rake spec
   expeditor:
@@ -310,7 +310,7 @@ steps:
 
 - label: "berkshelf gem :ruby: 2.6"
   commands:
-    - /workdir/scripts/bk_tests/bk_container_prep.sh
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y graphviz
     - gem install bundler -v 1.17.3 # necessary for berks Gemfile.lock for now
@@ -327,7 +327,7 @@ steps:
 
 - label: "Kitchen: Amazon Linux 201X"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-amazonlinux
@@ -343,7 +343,7 @@ steps:
 
 - label: "Kitchen: Amazon Linux 2"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-amazonlinux-2
@@ -359,7 +359,7 @@ steps:
 
 - label: "Kitchen: Ubuntu 16.04"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-ubuntu-1604
@@ -376,7 +376,7 @@ steps:
 
 - label: "Kitchen: Ubuntu 18.04"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-ubuntu-1804
@@ -392,7 +392,7 @@ steps:
 
 - label: "Kitchen: Ubuntu 20.04"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-ubuntu-2004
@@ -406,25 +406,9 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Kitchen: Debian 8"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - . /var/lib/buildkite-agent/.asdf/asdf.sh
-    - cd kitchen-tests
-    - bundle exec kitchen test end-to-end-debian-8
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: "Kitchen: Debian 9"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-debian-9
@@ -440,7 +424,7 @@ steps:
 
 - label: "Kitchen: Debian 10"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-debian-10
@@ -456,7 +440,7 @@ steps:
 
 - label: "Kitchen: CentOS 6"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-centos-6
@@ -472,7 +456,7 @@ steps:
 
 - label: "Kitchen: CentOS 7"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-centos-7
@@ -488,7 +472,7 @@ steps:
 
 - label: "Kitchen: CentOS 8"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-centos-8
@@ -504,7 +488,7 @@ steps:
 
 - label: "Kitchen: Oracle Linux 7"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-oraclelinux-7
@@ -520,7 +504,7 @@ steps:
 
 - label: "Kitchen: Fedora latest"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-fedora-latest
@@ -536,7 +520,7 @@ steps:
 
 - label: "Kitchen: openSUSE Leap: 15"
   commands:
-    - scripts/bk_tests/bk_linux_exec.sh
+    - .expeditor/scripts/bk_linux_exec.sh
     - . /var/lib/buildkite-agent/.asdf/asdf.sh
     - cd kitchen-tests
     - bundle exec kitchen test end-to-end-opensuse-leap-15
