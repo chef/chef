@@ -30,6 +30,9 @@ describe Chef::Util::Selinux do
   end
 
   before do
+    allow(ChefUtils).to receive(:windows?).and_return(false)
+    allow(ENV).to receive(:[]).with("PATHEXT").and_return(nil)
+    allow(ENV).to receive(:[]).with("PATH").and_call_original
     TestClass.reset_state
     @test_instance = TestClass.new
   end
