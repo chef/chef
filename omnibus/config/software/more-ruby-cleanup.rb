@@ -52,6 +52,7 @@ build do
       diagrams
       example
       examples
+      ext
       Gemfile.lock
       install.rb
       java
