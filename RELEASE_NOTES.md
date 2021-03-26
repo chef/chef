@@ -1519,7 +1519,7 @@ Several legacy Windows helpers have been deprecated as they will always return t
 
 ### Chef InSpec
 
-Chef InSpec has been updated from 4.24.8 to 4.29.3
+Chef InSpec has been updated from 4.24.8 to 4.29.3.
 
 #### New Features
 
