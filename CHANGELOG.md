@@ -2,30 +2,28 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.16.2 -->
-## [v15.16.2](https://github.com/chef/chef/tree/v15.16.2) (2021-03-25)
-
-#### Merged Pull Requests
-- Resolve failures in testing due to an old rspec_junit_formatter [#11249](https://github.com/chef/chef/pull/11249) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=15.15.0 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Resolve failures in testing due to an old rspec_junit_formatter [#11249](https://github.com/chef/chef/pull/11249) ([tas50](https://github.com/tas50)) <!-- 15.16.2 -->
-- Update InSpec to 4.29.3 [#11248](https://github.com/chef/chef/pull/11248) ([tas50](https://github.com/tas50)) <!-- 15.16.1 -->
-- Backport several fixes and improvements for Chef 16 [#11245](https://github.com/chef/chef/pull/11245) ([tas50](https://github.com/tas50)) <!-- 15.16.0 -->
-- Bump highline and remove duplicate deps [#11244](https://github.com/chef/chef/pull/11244) ([tas50](https://github.com/tas50)) <!-- 15.15.6 -->
-- Update libarchive to 3.5.1 [#11243](https://github.com/chef/chef/pull/11243) ([tas50](https://github.com/tas50)) <!-- 15.15.5 -->
-- Use Dobi for container building [#11242](https://github.com/chef/chef/pull/11242) ([tas50](https://github.com/tas50)) <!-- 15.15.4 -->
-- Update gem pins to better match changes in chef 16 [#11237](https://github.com/chef/chef/pull/11237) ([tas50](https://github.com/tas50)) <!-- 15.15.3 -->
-- Use Ruby 2.6.6 in the version script instead [#11236](https://github.com/chef/chef/pull/11236) ([tas50](https://github.com/tas50)) <!-- 15.15.2 -->
-- Manually install necessary Ruby for verify pipeline [#10872](https://github.com/chef/chef/pull/10872) ([christopher-snapp](https://github.com/christopher-snapp)) <!-- 15.15.1 -->
-- Make sure our containers work on RHEL 6 [#10855](https://github.com/chef/chef/pull/10855) ([tas50](https://github.com/tas50)) <!-- 15.15.1 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v15.16.2](https://github.com/chef/chef/tree/v15.16.2) (2021-03-26)
+
+#### Merged Pull Requests
+- Make sure our containers work on RHEL 6 [#10855](https://github.com/chef/chef/pull/10855) ([tas50](https://github.com/tas50))
+- Manually install necessary Ruby for verify pipeline [#10872](https://github.com/chef/chef/pull/10872) ([christopher-snapp](https://github.com/christopher-snapp))
+- Use Ruby 2.6.6 in the version script instead [#11236](https://github.com/chef/chef/pull/11236) ([tas50](https://github.com/tas50))
+- Update gem pins to better match changes in chef 16 [#11237](https://github.com/chef/chef/pull/11237) ([tas50](https://github.com/tas50))
+- Use Dobi for container building [#11242](https://github.com/chef/chef/pull/11242) ([tas50](https://github.com/tas50))
+- Update libarchive to 3.5.1 [#11243](https://github.com/chef/chef/pull/11243) ([tas50](https://github.com/tas50))
+- Bump highline and remove duplicate deps [#11244](https://github.com/chef/chef/pull/11244) ([tas50](https://github.com/tas50))
+- Backport several fixes and improvements for Chef 16 [#11245](https://github.com/chef/chef/pull/11245) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.29.3 [#11248](https://github.com/chef/chef/pull/11248) ([tas50](https://github.com/tas50))
+- Resolve failures in testing due to an old rspec_junit_formatter [#11249](https://github.com/chef/chef/pull/11249) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v15.15.0](https://github.com/chef/chef/tree/v15.15.0) (2021-01-06)
 
 #### Merged Pull Requests
@@ -42,7 +40,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - locale: Update the locale-gen timeout to 1800s [#10844](https://github.com/chef/chef/pull/10844) ([tas50](https://github.com/tas50))
 - Update InSpec 4.24.8, chef-vault 4.1, mixlibshellout 3.2, plist 3.6 [#10846](https://github.com/chef/chef/pull/10846) ([tas50](https://github.com/tas50))
 - Update the Docker file to use the RHEL 7 package [#10849](https://github.com/chef/chef/pull/10849) ([ramereth](https://github.com/ramereth))
-<!-- latest_stable_release -->
 
 ## [v15.14.0](https://github.com/chef/chef/tree/v15.14.0) (2020-09-11)
 
