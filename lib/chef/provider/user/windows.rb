@@ -62,7 +62,7 @@ class Chef
         # <false>:: If the users are identical
         def compare_user
           @change_desc = []
-          unless @net_user.validate_credentials(new_resource.password)
+          if new_resource.password && !@net_user.validate_credentials(new_resource.password)
             @change_desc << "update password"
           end
 
