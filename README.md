@@ -2,7 +2,7 @@
 [![Code Climate](https://codeclimate.com/github/chef/chef.svg)](https://codeclimate.com/github/chef/chef)
 [![Build status](https://badge.buildkite.com/13b36bf2d9116e3527ff9893e7edd82cb183027941fef3d24e.svg)](https://buildkite.com/chef-oss/chef-chef-chef-15-verify)
 [![Gem Version](https://badge.fury.io/rb/chef.svg)](https://badge.fury.io/rb/chef)
-[![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef/blob/v15.2.21/docs/dev/design_documents/client_release_cadence.md)
+[![](https://img.shields.io/badge/Release%20Policy-Cadence%20Release-brightgreen.svg)](https://github.com/chef/chef/blob/chef-15/docs/dev/design_documents/client_release_cadence.md)
 
 **Umbrella Project**: [Chef Infra](https://github.com/chef/chef-oss-practices/blob/master/projects/chef-infra.md)
 
@@ -26,7 +26,7 @@ Other useful resources for Chef Infra users:
 - Source: <https://github.com/chef/chef/tree/master>
 - Tickets/Issues: <https://github.com/chef/chef/issues>
 - Slack: [Chef Community Slack](https://community-slack.chef.io/)
-- Mailing list/Forum: <https://discourse.chef.io>
+- Mailing list/Forum: <https://discourse.chef.io/>
 
 ## Reporting Issues
 
@@ -46,7 +46,7 @@ We'd love to have your help developing Chef Infra. See our [Contributing Documen
 
 ## License and Copyright
 
-Copyright 2008-2020, Chef Software, Inc.
+Copyright 2008-2021, Chef Software, Inc.
 
 ```
 Licensed under the Apache License, Version 2.0 (the "License");
