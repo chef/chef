@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.174 -->
-## [v17.0.174](https://github.com/chef/chef/tree/v17.0.174) (2021-03-26)
+<!-- latest_release 17.0.175 -->
+## [v17.0.175](https://github.com/chef/chef/tree/v17.0.175) (2021-03-29)
 
 #### Merged Pull Requests
-- Fix windows_user password idempotency [#11233](https://github.com/chef/chef/pull/11233) ([jaymzh](https://github.com/jaymzh))
+- bump powershell shim to 0.3.2 with powershell 7.1.3 deps [#11262](https://github.com/chef/chef/pull/11262) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- bump powershell shim to 0.3.2 with powershell 7.1.3 deps [#11262](https://github.com/chef/chef/pull/11262) ([mwrock](https://github.com/mwrock)) <!-- 17.0.175 -->
 - Fix windows_user password idempotency [#11233](https://github.com/chef/chef/pull/11233) ([jaymzh](https://github.com/jaymzh)) <!-- 17.0.174 -->
 - Bump inspec-core-bin to 4.29.3 [#11246](https://github.com/chef/chef/pull/11246) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.173 -->
 - Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11238](https://github.com/chef/chef/pull/11238) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.172 -->
