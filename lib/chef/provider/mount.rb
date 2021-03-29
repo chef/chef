@@ -175,7 +175,7 @@ class Chef
 
       # Returns the new_resource device as per device_type
       def device_fstab
-        # Removed "/" from the end of str, because it was causing idempotency issue.
+        # Removed "/" from the end of str unless it's a network mount, because it was causing idempotency issue.
         device =
           if @new_resource.device == "/" || @new_resource.device.match?(":/$")
             @new_resource.device
