@@ -22,7 +22,7 @@ describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifies a nameless resource" do
