@@ -20,22 +20,28 @@ require "spec_helper"
 
 describe Chef::Knife::UserEdit do
   let(:knife) { Chef::Knife::UserEdit.new }
+  let(:root_rest) { double("Chef::ServerAPI") }
 
   before(:each) do
     @stderr = StringIO.new
     @stdout = StringIO.new
-
-    Chef::Knife::UserEdit.load_deps
     allow(knife.ui).to receive(:stderr).and_return(@stderr)
     allow(knife.ui).to receive(:stdout).and_return(@stdout)
-    knife.name_args = [ "my_user" ]
+    knife.name_args = [ "my_user2" ]
     knife.config[:disable_editing] = true
   end
 
   it "loads and edits the user" do
-    data = { "username" => "my_user" }
-    allow(Chef::UserV1).to receive(:load).with("my_user").and_return(data)
-    expect(knife).to receive(:edit_hash).with(data).and_return(data)
+    data = { "username" => "my_user2" }
+    edited_data = { "username" => "edit_user2" }
+    result = {}
+    @key = "You don't come into cooking to get rich - Ramsay"
+    allow(result).to receive(:[]).with("private_key").and_return(@key)
+
+    expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+    expect(root_rest).to receive(:get).with("users/my_user2").and_return(data)
+    expect(knife).to receive(:get_updated_user).with(data).and_return(edited_data)
+    expect(root_rest).to receive(:put).with("users/my_user2", edited_data).and_return(result)
     knife.run
   end
 

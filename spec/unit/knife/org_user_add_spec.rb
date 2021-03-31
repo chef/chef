@@ -15,21 +15,25 @@
 # limitations under the License.
 #
 
-require_relative "../user"
+require "spec_helper"
+require "chef/org"
 
-class Chef
-  class Resource
-    class User
-      class DsclUser < Chef::Resource::User
-        unified_mode true
+describe Chef::Knife::OrgUserAdd do
+  context "with --admin" do
+    subject(:knife) { Chef::Knife::OrgUserAdd.new }
+    let(:org) { double("Chef::Org") }
 
-        provides :dscl_user
-        provides :user, platform: "mac_os_x", platform_version: "< 10.14"
+    it "adds the user to admins and billing-admins groups" do
+      allow(Chef::Org).to receive(:new).and_return(org)
 
-        property :iterations, Integer,
-          description: "macOS platform only. The number of iterations for a password with a SALTED-SHA512-PBKDF2 shadow hash.",
-          default: 27855, desired_state: false
-      end
+      knife.config[:admin] = true
+      knife.name_args = %w{testorg testuser}
+
+      expect(org).to receive(:associate_user).with("testuser")
+      expect(org).to receive(:add_user_to_group).with("admins", "testuser")
+      expect(org).to receive(:add_user_to_group).with("billing-admins", "testuser")
+
+      knife.run
     end
   end
 end

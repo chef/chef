@@ -95,7 +95,7 @@ class Chef
         port_name desired.port_name || "IP_#{desired.ipv4_address}"
       end
 
-      action :create do
+      action :create, description: "Create the printer port, if one doesn't already exist" do
         description "Create the new printer port if it does not already exist."
 
         if port_exists?
@@ -107,7 +107,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an existing printer port" do
         description "Delete an existing printer port."
 
         if port_exists?

@@ -90,7 +90,7 @@ class Chef
         name desired.name
       end
 
-      action :create do
+      action :create, description: "Create a new printer and printer port, if one doesn't already" do
         description "Create a new printer and a printer port if one doesn't already exist."
 
         if printer_exists?
@@ -102,7 +102,7 @@ class Chef
         end
       end
 
-      action :delete do
+      action :delete, description: "Delete an existing printer. Note that this resource does not delete the associated printer port." do
         description "Delete an existing printer. Note this does not delete the associated printer port."
 
         if printer_exists?

@@ -171,7 +171,7 @@ class Chef
           end
 
           if current_resource.enabled.nil?
-            logger.trace("#{new_resource.name} enable/disable state unknown")
+            logger.debug("#{new_resource.name} enable/disable state unknown")
             current_resource.enabled false
           end
         end

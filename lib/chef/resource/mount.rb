@@ -34,6 +34,7 @@ class Chef
       property :supports, [Array, Hash],
         description: "Specify a Hash of supported mount features.",
         default: lazy { { remount: false } },
+        default_description: "{ remount: false }",
         coerce: proc { |x| x.is_a?(Array) ? x.each_with_object({}) { |i, m| m[i] = true } : x }
 
       property :password, String,
@@ -45,7 +46,7 @@ class Chef
                description: "The directory (or path) in which the device is to be mounted. Defaults to the name of the resource block if not provided."
 
       property :device, String, identity: true,
-               description: "Required for :umount and :remount actions (for the purpose of checking the mount command output for presence). The special block device or remote node, a label, or a uuid to be mounted."
+               description: "Required for `:umount` and `:remount` actions (for the purpose of checking the mount command output for presence). The special block device or remote node, a label, or a uuid to be mounted."
 
       property :device_type, [String, Symbol],
         description: "The type of device: :device, :label, or :uuid",

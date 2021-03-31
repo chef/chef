@@ -70,17 +70,17 @@ class Chef
       # Specifies which accounts are granted full permission to access the share. Use a comma-separated list to specify multiple accounts. An account may not be specified more than once in the FullAccess, ChangeAccess, or ReadAccess parameter lists, but may be specified once in the FullAccess, ChangeAccess, or ReadAccess parameter list and once in the NoAccess parameter list.
       property :full_users, Array,
         description: "The users that should have 'Full control' permissions on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
+        default: [], coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies which users are granted modify permission to access the share
       property :change_users, Array,
         description: "The users that should have 'modify' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
+        default: [], coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies which users are granted read permission to access the share. Multiple users can be specified by supplying a comma-separated list.
       property :read_users, Array,
         description: "The users that should have 'read' permission on the share in domain\\username format.",
-        default: lazy { [] }, coerce: proc { |u| add_hostname(u).sort }
+        default: [], coerce: proc { |u| add_hostname(u).sort }
 
       # Specifies the lifetime of the new SMB share. A temporary share does not persist beyond the next restart of the computer. By default, new SMB shares are persistent, and non-temporary.
       property :temporary, [TrueClass, FalseClass],

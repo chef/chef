@@ -39,13 +39,13 @@ end
 
 # Everything except AIX
 group(:ruby_prof) do
-  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
-  gem "ruby-prof", "< 1.3.0"
+  gem "ruby-prof"
 end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  gem "ruby-shadow", platforms: :ruby
+  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
+  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
 end
 
 group(:development, :test) do

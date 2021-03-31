@@ -38,13 +38,13 @@ Gem::Specification.new do |s|
   s.add_dependency "ohai", "~> 17.0"
   s.add_dependency "inspec-core", "~> 4.23"
 
-  s.add_dependency "ffi", ">= 1.9.25", "< 1.14.0" # 1.14 breaks i386 windows. It should be fixed in 1.14.3
+  s.add_dependency "ffi", ">= 1.5.0"
   s.add_dependency "ffi-yajl", "~> 2.2"
   s.add_dependency "net-ssh", ">= 5.1", "< 7"
   s.add_dependency "net-ssh-multi", "~> 1.2", ">= 1.2.1"
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0"
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
-  s.add_dependency "bcrypt_pbkdf", "= 1.1.0.rc2" # ed25519 ssh key support
+  s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
   s.add_dependency "highline", ">= 1.6.9", "< 3"
   s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
   s.add_dependency "tty-screen", "~> 0.6" # knife list

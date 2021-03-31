@@ -142,6 +142,21 @@ subscriptions:
   - workload: ruby_gem_published:win32-taskscheduler-*
     actions:
       - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-certstore-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-event-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-mutex-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-eventlog-*
+    actions:
+      - bash:.expeditor/update_dep.sh
+  - workload: ruby_gem_published:win32-api-*
+    actions:
+      - bash:.expeditor/update_dep.sh
   - workload: ruby_gem_published:ffi-yajl-*
     actions:
       - bash:.expeditor/update_dep.sh
@@ -208,3 +223,11 @@ subscriptions:
   - workload: ruby_gem_published:fauxhai-ng-*
     actions:
       - bash:.expeditor/update_dep.sh
+  # NOTE: The branch of Ohai here needs to be updated when setting up a stable branch of chef/chef
+  - workload: chef/ohai:master_completed:pull_request_merged:chef/ohai:master:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh
+  # NOTE: When the stable branch of chef/chef is being cut you probably want to remove this subscription
+  - workload: chef/chefstyle:master_completed:pull_request_merged:chef/chefstyle:master:*
+    actions:
+      - bash:.expeditor/update_bundler_dep.sh

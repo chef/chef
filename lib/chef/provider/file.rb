@@ -152,7 +152,7 @@ class Chef
         unless ::File.exist?(new_resource.path)
           action_create
         else
-          logger.trace("#{new_resource} exists at #{new_resource.path} taking no action.")
+          logger.debug("#{new_resource} exists at #{new_resource.path} taking no action.")
         end
       end
 
@@ -338,7 +338,7 @@ class Chef
           raise Chef::Exceptions::ChecksumMismatch.new(short_cksum(new_resource.checksum), short_cksum(tempfile_checksum))
         end
 
-        if tempfile
+        if tempfile && contents_changed?
           new_resource.verify.each do |v|
             unless v.verify(tempfile.path)
               backupfile = "#{Chef::Config[:file_cache_path]}/failed_validations/#{::File.basename(tempfile.path)}"

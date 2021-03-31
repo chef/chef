@@ -131,11 +131,11 @@ class Chef
         description: "The path to the #{ChefUtils::Dist::Infra::CLIENT} binary."
 
       property :daemon_options, Array,
-        default: lazy { [] }, default_description: "Empty Array",
+        default: [],
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command."
 
       property :environment, Hash,
-        default: lazy { {} }, default_description: "Empty Hash",
+        default: {},
         description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`."
 
       property :nice, [Integer, String],
@@ -213,7 +213,7 @@ class Chef
         #
         def log_command
           if new_resource.append_log_file
-            "-L #{::File.join(new_resource.log_directory, new_resource.log_file_name)}"
+            ">> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           else
             "> #{::File.join(new_resource.log_directory, new_resource.log_file_name)} 2>&1"
           end

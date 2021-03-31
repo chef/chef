@@ -61,7 +61,7 @@ class Chef
 
       property :variables, Hash,
         description: "The variables property of the template resource can be used to reference a partial template file by using a Hash.",
-        default: lazy { {} }
+        default: {}
 
       property :cookbook, String,
         description: "The cookbook in which a file is located (if it is not located in the current cookbook). The default value is the current cookbook.",

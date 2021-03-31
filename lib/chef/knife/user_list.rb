@@ -22,10 +22,6 @@ class Chef
   class Knife
     class UserList < Knife
 
-      deps do
-        require_relative "../user_v1"
-      end
-
       banner "knife user list (options)"
 
       option :with_uri,
@@ -34,9 +30,9 @@ class Chef
         description: "Show corresponding URIs."
 
       def run
-        output(format_list_for_display(Chef::UserV1.list))
+        results = root_rest.get("users")
+        output(format_list_for_display(results))
       end
-
     end
   end
 end

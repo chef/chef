@@ -29,13 +29,12 @@ class Chef
     class User
       # A macOS user provider that is compatible with default TCC restrictions
       # in macOS 10.14. See resource/user/mac_user.rb for complete description
-      # of the mac_user resource and how it differs from the dscl resource used
-      # on previous platforms.
+      # of the mac_user resource
       class MacUser < Chef::Provider::User
         include Chef::Mixin::Which
 
         provides :mac_user
-        provides :user, os: "darwin", platform_version: ">= 10.14"
+        provides :user, os: "darwin"
 
         attr_reader :user_plist, :admin_group_plist
 

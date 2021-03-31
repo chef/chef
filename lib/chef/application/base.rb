@@ -368,7 +368,7 @@ class Chef::Application::Base < Chef::Application
       FileUtils.cp(url, path)
     elsif URI::DEFAULT_PARSER.make_regexp.match?(url)
       File.open(path, "wb") do |f|
-        open(url) do |r|
+        URI.open(url) do |r|
           f.write(r.read)
         end
       end

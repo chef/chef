@@ -109,7 +109,7 @@ class Chef
 
       action :install do
         unless target_version_array.any?
-          logger.trace("#{new_resource} is already installed - nothing to do")
+          logger.debug("#{new_resource} is already installed - nothing to do")
           return
         end
 
@@ -138,7 +138,7 @@ class Chef
 
       action :upgrade do
         unless target_version_array.any?
-          logger.trace("#{new_resource} no versions to upgrade - nothing to do")
+          logger.debug("#{new_resource} no versions to upgrade - nothing to do")
           return
         end
 
@@ -177,7 +177,7 @@ class Chef
             logger.info("#{new_resource} removed")
           end
         else
-          logger.trace("#{new_resource} package does not exist - nothing to do")
+          logger.debug("#{new_resource} package does not exist - nothing to do")
         end
       end
 
@@ -229,7 +229,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} is already locked")
+          logger.debug("#{new_resource} is already locked")
         end
       end
 
@@ -248,7 +248,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} is already unlocked")
+          logger.debug("#{new_resource} is already unlocked")
         end
       end
 

@@ -67,7 +67,7 @@ class Chef
                        password: @new_resource.password)
             logger.trace("#{@new_resource} is mounted at #{@new_resource.mount_point}")
           else
-            logger.trace("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
+            logger.debug("#{@new_resource} is already mounted at #{@new_resource.mount_point}")
           end
         end
 

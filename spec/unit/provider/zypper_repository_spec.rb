@@ -96,7 +96,7 @@ describe Chef::Provider::ZypperRepository do
     it "skips key import if gpgautoimportkeys is false" do
       new_resource.gpgautoimportkeys(false)
       expect(provider).to receive(:declare_resource)
-      expect(logger).to receive(:trace)
+      expect(logger).to receive(:debug)
       provider.run_action(:create)
     end
   end
@@ -169,7 +169,7 @@ describe Chef::Provider::ZypperRepository do
 
   describe "#install_gpg_key" do
     it "skips installing the key if a nil value for key is passed" do
-      expect(logger).to receive(:trace)
+      expect(logger).to receive(:debug)
       provider.install_gpg_key(nil)
     end
   end

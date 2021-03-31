@@ -39,10 +39,16 @@ include_recipe "::_packages"
 
 include_recipe "ntp"
 
-include_recipe "resolver"
+resolver_config "/etc/resolv.conf" do
+  nameservers [ "8.8.8.8", "8.8.4.4" ]
+  search [ "chef.io" ]
+end
+
+users_from_databag = search("users", "*:*")
 
 users_manage "sysadmin" do
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 

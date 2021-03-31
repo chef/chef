@@ -5,18 +5,94 @@ This file holds "in progress" release notes for the current release under develo
 This section serves to track things we should later document here for 17.0
 
 - Dropped support for Ruby 2.6
-- Lazy attribute loading: https://github.com/chef/chef/pull/10861
 - Compliance Phase in GA: https://github.com/chef/chef/pull/10547
-- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
-- remove support for RHEL 6 i386 / Ubuntu 16.04
-- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
-- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
+- remove support for RHEL 6 i386 / Ubuntu 16.04 / macOS 10.13
 - Compliance cli report - https://github.com/chef/chef/pull/10939
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
-- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
-- reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
-- Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - macOS builds now use openSSL 1.1.1
+- Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
+- Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158 / https://github.com/chef/chef/pull/11173
+- macOS m1 packages are now built - https://github.com/chef/chef/pull/11138
+
+### Infra Language Improvements
+
+- New effortless? helper - https://github.com/chef/chef/pull/11150
+- Default values in custom resources are now dup'd - https://github.com/chef/chef/pull/11095
+- Lazy attribute loading: https://github.com/chef/chef/pull/10861
+- reboot_pending? now works on all debian platform_family distros not just Ubuntu specifically - https://github.com/chef/chef/pull/10989
+
+### Resource Improvements
+
+- apt_package allow_downgrades now functions as expected, but also raises on invalid versions - https://github.com/chef/chef/pull/10993
+- Use shell redirection in chef_client_cron when append_log_file is true - https://github.com/chef/chef/pull/11124
+- Improve idempotency debug logging in resources - https://github.com/chef/chef/pull/11149
+- Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
+- Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
+- gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
+- file: only run verifiers when the contents changed - https://github.com/chef/chef/pull/11171
+- execute: Add login property - https://github.com/chef/chef/pull/11201
+
+### Ohai
+
+- Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
+- New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
+- Detect Sangoma Linux in Ohai - https://github.com/chef/ohai/pull/1631
+- Gather additional package information on Windows - https://github.com/chef/ohai/pull/1616
+- Detect guests running in Podman - https://github.com/chef/ohai/pull/1617
+- Improved Docker container detection - https://github.com/chef/ohai/pull/1627
+- don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
+- Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
+- Removed detection of discontinued antergos and Pidora distros - https://github.com/chef/ohai/pull/1633 / https://github.com/chef/ohai/pull/1634
+
+## What's New in 16.11.7
+
+### Native Apple M1 Architecture Packages
+
+We now build and test native Apple M1 architecture builds of Chef Infra Client. These builds are available at [downloads.chef.io](https://downloads.chef.io), our `install.sh` scripts, and the [Omnitruck API](https://docs.chef.io/api_omnitruck/).
+
+### Chef InSpec 4.28
+
+Chef InSpec has been updated from 4.26.4 to 4.28.0.
+
+#### New Features
+
+- Added the option to filter out empty profiles from reports.
+- Exposed the `conf_path`, `content`, and `params` properties to the `auditd_conf` resource.
+- Added the ability to specify `--user` when connecting to docker containers.
+
+#### Bug Fixes
+
+- Fixed the `crontab` resource when passing a username to AIX.
+- Stopped a backtrace from occurring when using `cmp` to compare `nil` with a non-existing file.
+- Fixed `skip_control` to work on deeply nested profiles.
+- The `ssh_config` and `sshd_config` resources now correctly use the first value when a setting is repeated.
+
+### Fixes and Improvements
+
+- Upgraded openSSL on macOS from 1.0.2 to 1.1.1 in order to support Apple M1 builds.
+- Resolved an issue that caused the DNF and YUM package helpers to exit with error codes, which would show up in system logs.
+- Added a new attribute to make the upcoming Compliance Phase an opt-in feature: `node['audit']['compliance_phase']`. This should prevent the Compliance Phase from incorrectly running when using named run_lists or override run_lists. If you're currently testing this new phase, make sure to set this attribute to `true`.
+- `chef_client_cron`: the `append_log_file` property now sets up the cron job to use shell redirection (`>>`) instead of the `-L` flag
+
+## What's New in 16.10.17
+
+### Bugfixes
+
+- Resolved installation failures on some Windows systems
+- Fixed the `mount` resource for network mounts using the root level as the device. Thanks [@ramereth](https://github.com/ramereth)!
+- Resolved a Compliance Phase failure with profile names using the `@` symbol.
+
+### Security
+
+Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
+
+- [CVE-2021-23841](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23841)
+- [CVE-2021-23839](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23839)
+- [CVE-2021-23840](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23840)
+
+### Platform Updates
+
+With the release of macOS 11 we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
 
 ## What's New in 16.10
 
@@ -48,11 +124,11 @@ On AWS instances, we now gather data from the latest metadata API versions, expo
 - placement/region
 - spot/instance-action
 
-#### Alma Linux Support
+#### Alma Linux Detection
 
-Chef Infra Client now maps [Alma Linux](https://almalinux.org/) to the `rhel` `platform_family` value. Alma Linux is a new open-source RHEL fork produced by the CloudLinux team.
+Chef Infra Client now maps [Alma Linux](https://almalinux.org/) to the `rhel` `platform_family` value. Alma Linux is a new open-source RHEL fork produced by the CloudLinux team. Alma Linux falls under Chef's [Community Support](https://docs.chef.io/platforms/#community-support) platform support policy providing community driven support without the extensive testing given to commercially supported platforms in Chef Infra Client.
 
-We've also added support for testing cookbooks on Alma Linux with new [Alma Linux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8) for use in Test Kitchen on VirtualBox, Parallels, and VMware. You can use these images today in Test Kitchen by specifying this new box in your config as follows:
+You can test cookbooks on Alma Linux in Test Kitchen using [Alma Linux 8 Vagrant Images](https://app.vagrantup.com/bento/boxes/almalinux-8 on VirtualBox, Parallels, and VMware hypervisors as follows:
 
 ```yaml
 platforms:
@@ -60,8 +136,6 @@ platforms:
     driver:
       box: bento/almalinux-8
 ```
-
-Note: In the upcoming release of Chef Workstation, you'll be able to skip the `box` config and Test Kitchen will automatically map `almalinux-8` to the appropriate Vagrant image.
 
 #### Knife Bootstrapping Without Sudo
 
@@ -289,7 +363,7 @@ The `zypper_package` resource has been refactored to improve idempotency when sp
 - Performance of system configuration gathering on AIX systems has been improved
 - The `Virtualization` plugin on AIX systems now gathers a state `state` per WPAR and properly gathers LPAR names that include spaces
 
-## Whats New in 16.6
+## What's New in 16.6
 
 ### pwsh Support
 
@@ -389,7 +463,7 @@ The `ifconfig` resource has been updated to no longer add empty blank lines to t
 
 The `windows_audit_policy` resource has been updated to fix a bug on failure-only auditing.
 
-## Ohai Improvements
+### Ohai Improvements
 
 #### Passwd Plugin For Windows
 
@@ -998,7 +1072,7 @@ depends 'windows', '>> 1.0'
 
 #### Logging Improvements May Cause Behavior Changes
 
-We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the locations in `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
+We've made low-level changes to how logging behaves in Chef Infra Client that resolves many complaints we've heard of the years. With these change you'll now see the same logging output when you run `chef-client` on the command line as you will in logs from a daemonized client run. This also corrects often confusing behavior where running `chef-client` on the command line would log to the console, but not to the log file location defined your `client.rb`. In that scenario you'll now see logs in your console and in your log file. We believe this is the expected behavior and will mean that your on-disk log files can always be the source of truth for changes that were made by Chef Infra Client. This may cause unexpected behavior changes for users that relied on using the command line flags to override the `client.rb` log location - in this case logging will be sent to _both_ the location in the `client.rb` and on the command line. If you have daemons running that log using the command line options you want to make sure that `client.rb` log location either matches or isn't defined.
 
 #### Red Hat / CentOS 6 Systems Require C11 GCC for Some Gem Installations
 
@@ -1429,6 +1503,60 @@ Several legacy Windows helpers have been deprecated as they will always return t
 - Chef::Platform.older_than_win_2012_or_8?
 - Chef::Platform.supports_powershell_execution_bypass?
 - Chef::Platform.windows_nano_server?
+
+## What's new in 15.16
+
+### Fixes and Improvements
+
+- Improved license acceptance failure messaging if incorrect values are provided.
+- License acceptance values are no longer case sensitive.
+- Resolved several failures that could occur in the `windows_certificate` resource.
+- Improved handling of WinRM connections when bootstrapping Windows nodes.
+- Switched docker containers back to EL6 packages to prevent failures running the containers with Kitchen Dokken to test RHEL 6 systems.
+- Fixed non-0 exit codes in the Yum and DNF helper scripts which caused errors in system logs.
+- Fixed package failures in FreeBSD due to changed in `pkgng` exit codes.
+- Added support for `client.d` configuration files in `chef-shell`.
+
+### Chef InSpec
+
+Chef InSpec has been updated from 4.24.8 to 4.29.3.
+
+#### New Features
+
+- The JSON metadata pass-through configuration has been moved from the Automate reporter to the JSON Reporter.
+- Added the option to filter out empty profiles from reports.
+- Exposed the `conf_path`, `content`, and `params` properties to the `auditd_conf` resource.
+- You can now directly refer to settings in the `nginx_conf` resource using the `its` syntax. Thanks [@rgeissert](https://github.com/rgeissert)!
+- Plugin settings can now be set programmatically. Thanks [@tecracer-theinen](https:/github.com/tecracer-theinen)!
+- OpenSSH Client on Windows can now be tested with the `ssh_config` and `sshd_config` resources. Thanks [@rgeissert](https://github.com/rgeissert)!
+
+#### Bug Fixes
+
+- The `--reporter-message-truncation` option now also truncates the `code_desc` field, preventing failures when sending large reports to Automate.
+- Fixed `skip_control` to work on deeply nested profiles.
+- The `ssh_config` and `sshd_config` resources now correctly use the first value when a setting is repeated.
+- Fixed the `crontab` resource when passing a username to AIX.
+- Stopped a backtrace from occurring when using `cmp` to compare `nil` with a non-existing file.
+- The `apt` resource now correctly fetches all package repositories using the `-name` flag in an environment where ZSH is the user's default shell.
+- The `--controls` option in `inspec exec` now correctly filters the controls by name.
+- Updates how InSpec profiles are created with GCP or AWS providers so they use `inputs` instead of `attributes`.
+- `inspec exec` will now fetch profiles via Git regardless of the name of the default branch.rces now correctly use the first value when a setting is repeated.
+- Updated the `oracledb_session` to use more general invocation options. Thanks [@pacopal](https://github.com/pacopal)!
+- Fixed an error with the `http` resource in Chef Infra Client by including `faraday_middleware` in the gemspec.
+- Fixed an incompatibility between `parslet` and `toml` in Chef Infra Client.
+- Improved programmatic plugin configuration.
+
+### Security
+
+Upgraded OpenSSL to 1.0.2y, which resolves the following CVEs:
+
+- [CVE-2021-23841](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23841)
+- [CVE-2021-23839](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23839)
+- [CVE-2021-23840](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-23840)
+
+### Platform Updates
+
+With the release of macOS 11, we will no longer produce packages for macOS 10.13 systems. See our [Platform End-of-Life Policy](https://docs.chef.io/platforms/#platform-end-of-life-policy) for details on the platform lifecycle.
 
 ## What's new in 15.15
 

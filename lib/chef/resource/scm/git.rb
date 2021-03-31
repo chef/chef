@@ -112,7 +112,7 @@ class Chef
 
       property :additional_remotes, Hash,
         description: "A Hash of additional remotes that are added to the git repository configuration.",
-        default: lazy { {} }
+        default: {}
 
       property :depth, Integer,
         description: "The number of past revisions to be included in the git shallow clone. Unless specified the default behavior will do a full clone."

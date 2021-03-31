@@ -21,8 +21,12 @@ lifecycle:
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
     - remote: /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
-    - remote: /opt/chef/embedded/bin/appbundle-updater chef ohai <%= File.readlines('../Gemfile.lock', File.expand_path(File.dirname(__FILE__))).find { |l| l =~ /^\s+ohai \((\d+\.\d+\.\d+)\)/ }; 'v' + $1 %> --tarball --github chef/ohai
+    - remote: scl enable devtoolset-8 '/opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef'
+      includes:
+        - centos-6
     - remote: /opt/chef/embedded/bin/appbundle-updater chef chef <%= ENV['BUILDKITE_COMMIT']  || %x(git rev-parse HEAD).chomp %> --tarball --github chef/chef
+      excludes:
+        - centos-6
     - remote: echo "Installed Chef / Ohai release:"
     - remote: /opt/chef/bin/chef-client -v
     - remote: /opt/chef/bin/ohai -v
@@ -71,8 +75,7 @@ platforms:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
       - RUN wget -O /etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-SCLo
       - RUN printf "[centos-sclo-rh]\nname=CentOS-6 - SCLo rh\nbaseurl=http://vault.centos.org/centos/6/sclo/x86_64/rh\ngpgcheck=1\nenabled=1\ngpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-SCLo" > /etc/yum.repos.d/CentOS-SCLo-rh.repo
-      - RUN yum install -y devtoolset-7
-      - RUN scl enable devtoolset-7 bash
+      - RUN yum install -y devtoolset-8
 
 - name: centos-7
   driver:
@@ -87,7 +90,7 @@ platforms:
     image: dokken/centos-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install e2fsprogs
+      - RUN dnf -y install e2fsprogs
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
 - name: oraclelinux-7
@@ -103,8 +106,8 @@ platforms:
     image: dokken/oraclelinux-8
     pid_one_command: /usr/lib/systemd/systemd
     intermediate_instructions:
-      - RUN yum -y install e2fsprogs
-      - RUN yum -y reinstall systemd
+      - RUN dnf -y install e2fsprogs
+      - RUN dnf -y reinstall systemd
       - RUN mkdir /etc/sysconfig/network-scripts # missing from the oracle image
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 

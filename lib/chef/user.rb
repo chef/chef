@@ -36,7 +36,6 @@ require_relative "server_api"
 # should be removed once client support for Open Source Chef Server 11 expires.
 class Chef
   class User
-
     include Chef::Mixin::FromFile
     include Chef::Mixin::ParamsValidate
 

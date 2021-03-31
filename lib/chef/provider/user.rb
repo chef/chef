@@ -172,7 +172,7 @@ class Chef
             logger.info("#{new_resource} locked")
           end
         else
-          logger.trace("#{new_resource} already locked - nothing to do")
+          logger.debug("#{new_resource} already locked - nothing to do")
         end
       end
 
@@ -183,7 +183,7 @@ class Chef
             logger.info("#{new_resource} unlocked")
           end
         else
-          logger.trace("#{new_resource} already unlocked - nothing to do")
+          logger.debug("#{new_resource} already unlocked - nothing to do")
         end
       end
 

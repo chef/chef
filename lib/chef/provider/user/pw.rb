@@ -97,7 +97,7 @@ class Chef
             command = "pw usermod #{new_resource.username} -H 0"
             shell_out!(command, input: new_resource.password.to_s)
           else
-            logger.trace("#{new_resource} no change needed to password")
+            logger.debug("#{new_resource} no change needed to password")
           end
         end
       end

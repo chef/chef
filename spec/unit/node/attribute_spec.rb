@@ -898,7 +898,7 @@ describe Chef::Node::Attribute do
     end
   end
 
-  describe "index" do
+  describe "index", ruby: "< 3.0.0" do
     # Hash#index is deprecated and triggers warnings.
     def silence
       old_verbose = $VERBOSE

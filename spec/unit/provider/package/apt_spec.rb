@@ -579,7 +579,7 @@ describe Chef::Provider::Package::Apt do
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: "irssi"
         ))
-        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already locked")
+        expect(logger).to receive(:debug).with("#{@provider.new_resource} is already locked")
 
         @provider.action_lock
       end
@@ -600,7 +600,7 @@ describe Chef::Provider::Package::Apt do
         ).and_return(instance_double(
           Mixlib::ShellOut, stdout: ""
         ))
-        expect(logger).to receive(:trace).with("#{@provider.new_resource} is already unlocked")
+        expect(logger).to receive(:debug).with("#{@provider.new_resource} is already unlocked")
 
         @provider.action_unlock
       end
