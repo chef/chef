@@ -55,7 +55,6 @@ require "chef/api_client_v1"
 require "chef/mixin/versioned_api"
 require "chef/server_api_versions"
 
-# MPTD relevant for knife?
 if ENV["CHEF_FIPS"] == "1"
   Chef::Config.init_openssl
 end
@@ -68,9 +67,6 @@ require "spec/support/local_gems" if File.exist?(File.join(File.dirname(__FILE__
 require "spec/support/platform_helpers"
 require "spec/support/shared/unit/mock_shellout"
 require "spec/support/recipe_dsl_helper"
-
-# MPTD - I had to add each of these manually, but I'm not clear why they were
-#        _not_ required before splitting the gem.
 require "spec/support/key_helpers"
 require "spec/support/shared/unit/knife_shared"
 require "spec/support/shared/functional/knife"

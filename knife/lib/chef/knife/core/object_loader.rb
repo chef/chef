@@ -40,7 +40,6 @@ class Chef
 
         def load_from(repo_location, *components)
           unless object_file = find_file(repo_location, *components)
-            puts "ZZZ LOoking for: #{repo_location} #{components}"
             ui.error "Could not find or open file '#{components.last}' in current directory or in '#{repo_location}/#{components.join("/")}'"
             exit 1
           end
