@@ -28,17 +28,17 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (17.0.173)
-      chef (= 17.0.173)
+    chef-bin (17.0.178)
+      chef (= 17.0.178)
 
 PATH
   remote: ..
   specs:
-    chef (17.0.173)
+    chef (17.0.178)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.173)
-      chef-utils (= 17.0.173)
+      chef-config (= 17.0.178)
+      chef-utils (= 17.0.178)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -72,20 +72,20 @@ PATH
       uuidtools (>= 2.1.5, < 3.0)
 
 PATH
-  remote: /home/marc/projects/chef/chef-config
+  remote: /workspace/chef-chef-master/chef-config
   specs:
-    chef-config (17.0.173)
+    chef-config (17.0.178)
       addressable
-      chef-utils (= 17.0.173)
+      chef-utils (= 17.0.178)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
       tomlrb (~> 1.2)
 
 PATH
-  remote: /home/marc/projects/chef/chef-utils
+  remote: /workspace/chef-chef-master/chef-utils
   specs:
-    chef-utils (17.0.173)
+    chef-utils (17.0.178)
 
 GEM
   remote: https://rubygems.org/
@@ -344,4 +344,4 @@ DEPENDENCIES
   webmock
 
 BUNDLED WITH
-   2.2.3
+   2.2.4

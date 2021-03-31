@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.177 -->
-## [v17.0.177](https://github.com/chef/chef/tree/v17.0.177) (2021-03-31)
+<!-- latest_release 17.0.178 -->
+## [v17.0.178](https://github.com/chef/chef/tree/v17.0.178) (2021-03-31)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11270](https://github.com/chef/chef/pull/11270) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Convert knife to its own gem [#11180](https://github.com/chef/chef/pull/11180) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Convert knife to its own gem [#11180](https://github.com/chef/chef/pull/11180) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.178 -->
 - Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11270](https://github.com/chef/chef/pull/11270) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.177 -->
 - Fix idempotency issues with network mounts [#11261](https://github.com/chef/chef/pull/11261) ([ramereth](https://github.com/ramereth)) <!-- 17.0.176 -->
 - bump powershell shim to 0.3.2 with powershell 7.1.3 deps [#11262](https://github.com/chef/chef/pull/11262) ([mwrock](https://github.com/mwrock)) <!-- 17.0.175 -->
