@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 Chef::Knife::UserCreate.load_deps
 

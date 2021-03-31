@@ -44,6 +44,7 @@ describe Chef::Provider::Service::Arch, "load_current_resource" do
 
   describe "when first created" do
     it "should set the current resources service name to the new resources service name" do
+      allow(@provider).to receive(:determine_current_status!)
       allow(@provider).to receive(:shell_out).and_return(OpenStruct.new(exitstatus: 0, stdout: ""))
       @provider.load_current_resource
       expect(@provider.current_resource.service_name).to eq("chef")

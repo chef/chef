@@ -2,6 +2,7 @@ require "fcntl"
 require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
+require "spec/support/chef_helpers"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut

@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/core/object_loader"
 
 describe Chef::Knife::Core::ObjectLoader do

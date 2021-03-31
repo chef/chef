@@ -54,7 +54,6 @@ Remove-Item Env:BUNDLER_VERSION -ErrorAction SilentlyContinue
 
 ForEach ($b in
   "chef-client",
-  "knife",
   "chef-solo",
   "ohai"
 ) {

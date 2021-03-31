@@ -65,11 +65,13 @@ Gem::Specification.new do |s|
   s.add_dependency "proxifier", "~> 1.0"
 
   s.bindir       = "bin"
-  s.executables  = %w{ knife }
+  s.executables  = %w{ }
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +
-    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
+    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject do |f|
+      File.directory?(f) || File.path(f).match(/knife*/)
+    end +
     Dir.glob("*.gemspec") +
     Dir.glob("tasks/rspec.rb")
 

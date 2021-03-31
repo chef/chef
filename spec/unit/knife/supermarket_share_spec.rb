@@ -16,10 +16,10 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/supermarket_share"
 require "chef/cookbook_uploader"
-require "chef/cookbook_site_streaming_uploader"
+require "chef/knife/core/cookbook_site_streaming_uploader"
 
 describe Chef::Knife::SupermarketShare do
 
@@ -42,7 +42,7 @@ describe Chef::Knife::SupermarketShare do
     @cookbook_uploader = Chef::CookbookUploader.new("herpderp", rest: "norest")
     allow(Chef::CookbookUploader).to receive(:new).and_return(@cookbook_uploader)
     allow(@cookbook_uploader).to receive(:validate_cookbooks).and_return(true)
-    allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return(Dir.mktmpdir)
+    allow(Chef::Knife::Core::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return(Dir.mktmpdir)
 
     allow(@knife).to receive(:shell_out!).and_return(true)
     @stdout = StringIO.new
@@ -140,7 +140,7 @@ describe Chef::Knife::SupermarketShare do
 
     context "when the --dry-run flag is specified" do
       before do
-        allow(Chef::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return("/var/tmp/dummy")
+        allow(Chef::Knife::Core::CookbookSiteStreamingUploader).to receive(:create_build_dir).and_return("/var/tmp/dummy")
         @knife.config = { dry_run: true }
         @so = instance_double("Mixlib::ShellOut")
         allow(@knife).to receive(:shell_out!).and_return(@so)
@@ -165,7 +165,7 @@ describe Chef::Knife::SupermarketShare do
 
     before(:each) do
       @upload_response = double("Net::HTTPResponse")
-      allow(Chef::CookbookSiteStreamingUploader).to receive(:post).and_return(@upload_response)
+      allow(Chef::Knife::Core::CookbookSiteStreamingUploader).to receive(:post).and_return(@upload_response)
 
       allow(File).to receive(:open).and_return(true)
     end
@@ -174,7 +174,7 @@ describe Chef::Knife::SupermarketShare do
       response_text = Chef::JSONCompat.to_json({ uri: "https://supermarket.chef.io/cookbooks/cookbook_name" })
       allow(@upload_response).to receive(:body).and_return(response_text)
       allow(@upload_response).to receive(:code).and_return(201)
-      expect(Chef::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.chef\.io/, anything, anything, anything)
+      expect(Chef::Knife::Core::CookbookSiteStreamingUploader).to receive(:post).with(/supermarket\.chef\.io/, anything, anything, anything)
       @knife.run
     end
 

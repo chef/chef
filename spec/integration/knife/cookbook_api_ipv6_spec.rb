@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "spec_helper"
+require "knife_spec_helper"
 require "support/shared/integration/integration_helper"
 require "chef/mixin/shell_out"
 
@@ -62,7 +62,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
       Dir.mktmpdir
     end
 
-    let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
+    let(:chef_dir) { File.join(__dir__, "..", "..", "..", "knife", "bin") }
     let(:knife) { "ruby '#{chef_dir}/knife'" }
 
     let(:knife_config_flag) { "-c '#{path_to("config/knife.rb")}'" }
@@ -102,7 +102,7 @@ describe "Knife cookbook API integration with IPv6", :workstation, :not_supporte
           end
 
           it "downloads the cookbook" do
-            shell_out!("knife cookbook download apache2 #{knife_config_flag} -d #{cache_path}", cwd: chef_dir)
+            shell_out!("#{knife} cookbook download apache2 #{knife_config_flag} -d #{cache_path}", cwd: chef_dir)
             expect(Dir["#{cache_path}/*"].map { |entry| File.basename(entry) }).to include("apache2-0.0.1")
           end
         end

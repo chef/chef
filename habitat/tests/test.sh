@@ -28,10 +28,10 @@ echo "--- :mag_right: Testing ${pkg_ident} executables"
 actual_version=$(hab pkg exec "${pkg_ident}" chef-client -- --version | sed 's/.*: //')
 [[ "$package_version" = "$actual_version" ]] || error "chef-client is not the expected version. Expected '$package_version', got '$actual_version'"
 
-for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'knife' 'chef-solo'; do
+for executable in 'chef-client' 'ohai' 'chef-shell' 'chef-apply' 'chef-solo'; do
   echo -en "\t$executable = "
   hab pkg exec "${pkg_ident}" "${executable}" -- --version || error "${executable} failed to execute properly"
 done
 
 echo "--- :mag_right: Testing ${pkg_ident} functionality"
-hab pkg exec "${pkg_ident}" rspec --tag ~executables spec/functional || error 'failures during rspec tests'
+hab pkg exec "${pkg_ident}" rspec --tag ~executables --pattern 'spec/functional/**/*_spec.rb' --exclude-pattern 'spec/functional/knife/**/*.rb' || error 'failures during rspec tests'

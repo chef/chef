@@ -35,12 +35,6 @@ require "rexml/document"
 require "webmock/rspec"
 
 require "chef"
-require "chef/knife"
-
-Dir["lib/chef/knife/**/*.rb"]
-  .map { |f| f.gsub("lib/", "") }
-  .map { |f| f.gsub(/\.rb$/, "") }
-  .each { |f| require f }
 
 require "chef/resource_resolver"
 require "chef/provider_resolver"
@@ -82,6 +76,7 @@ require "spec/support/recipe_dsl_helper"
 Dir["spec/support/**/*.rb"]
   .reject { |f| f =~ %r{^spec/support/platforms} }
   .reject { |f| f =~ %r{^spec/support/pedant} }
+  .reject { |f| f =~ %r{^spec/support/shared/integration/knife_support} }
   .map { |f| f.gsub(/.rb$/, "") }
   .map { |f| f.gsub(%r{spec/}, "") }
   .each { |f| require f }
@@ -231,6 +226,14 @@ RSpec.configure do |config|
     WebMock.allow_net_connect!
 
     Chef.reset!
+
+    # Hack warning:
+    #
+    # Something across gem_installer_spec and mixlib_cli specs are polluting gem state so that the 'unmockening' test in rubygems_spec fails.
+    # This works around that until we can understand root cause.
+    #
+    # To explore the minimal test case around that and see more detailed notes, see branch `mp/broken-gems`
+    Gem.clear_paths
 
     Chef::ChefFS::FileSystemCache.instance.reset!
 

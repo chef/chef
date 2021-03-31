@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::ClientBulkDelete do
   let(:stdout_io) { StringIO.new }

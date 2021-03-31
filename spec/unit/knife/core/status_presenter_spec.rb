@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::Core::StatusPresenter do
   describe "#summarize_json" do

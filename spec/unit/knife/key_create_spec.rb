@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/user_key_create"
 require "chef/knife/client_key_create"
 require "chef/knife/key_create"

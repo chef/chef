@@ -1,4 +1,4 @@
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::TagDelete do
   before(:each) do

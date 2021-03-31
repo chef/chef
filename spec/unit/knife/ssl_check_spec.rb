@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "stringio"
 
 describe Chef::Knife::SslCheck do
