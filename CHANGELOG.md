@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.12 -->
-## [v16.11.12](https://github.com/chef/chef/tree/v16.11.12) (2021-03-30)
+<!-- latest_release 16.11.13 -->
+## [v16.11.13](https://github.com/chef/chef/tree/v16.11.13) (2021-03-31)
 
 #### Merged Pull Requests
-- Chef 16: Fix idempotency issues with network mounts [#11263](https://github.com/chef/chef/pull/11263) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11268](https://github.com/chef/chef/pull/11268) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.11.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11268](https://github.com/chef/chef/pull/11268) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.13 -->
 - Chef 16: Fix idempotency issues with network mounts [#11263](https://github.com/chef/chef/pull/11263) ([ramereth](https://github.com/ramereth)) <!-- 16.11.12 -->
 - Update InSpec to 4.29.3 [#11247](https://github.com/chef/chef/pull/11247) ([tas50](https://github.com/tas50)) <!-- 16.11.11 -->
 - Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11239](https://github.com/chef/chef/pull/11239) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.10 -->
