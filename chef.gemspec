@@ -45,11 +45,7 @@ Gem::Specification.new do |s|
   s.add_dependency "net-sftp", ">= 2.1.2", "< 4.0"
   s.add_dependency "ed25519", "~> 1.2" # ed25519 ssh key support
   s.add_dependency "bcrypt_pbkdf", "~> 1.1" # ed25519 ssh key support
-  s.add_dependency "highline", ">= 1.6.9", "< 3"
-  s.add_dependency "tty-prompt", "~> 0.21" # knife ui.ask prompt
-  s.add_dependency "tty-screen", "~> 0.6" # knife list
-  s.add_dependency "tty-table", "~> 0.11" # knife render table output.
-  s.add_dependency "pastel" # knife ui.color
+  s.add_dependency "pastel" # compliance phase
   s.add_dependency "erubis", "~> 2.7"
   s.add_dependency "diff-lcs", ">= 1.2.4", "< 1.4.0" # 1.4 breaks output
   s.add_dependency "ffi-libarchive", "~> 1.0", ">= 1.0.3"

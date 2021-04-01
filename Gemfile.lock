@@ -27,7 +27,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/ruby-shadow
-  revision: ba25b9349b649435726f1869987657997633c1fb
+  revision: 3b8ea40b0e943b5de721d956741308ce805a5c3c
   branch: lcg/ruby-3.0
   specs:
     ruby-shadow (2.5.0)
@@ -48,7 +48,6 @@ PATH
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
       license-acceptance (>= 1.0.5, < 3)
@@ -67,9 +66,6 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      tty-prompt (~> 0.21)
-      tty-screen (~> 0.6)
-      tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
     chef (17.0.178-universal-mingw32)
       addressable
@@ -84,7 +80,6 @@ PATH
       ffi (>= 1.5.0)
       ffi-libarchive (~> 1.0, >= 1.0.3)
       ffi-yajl (~> 2.2)
-      highline (>= 1.6.9, < 3)
       iniparse (~> 1.4)
       inspec-core (~> 4.23)
       iso8601 (>= 0.12.1, < 0.14)
@@ -104,9 +99,6 @@ PATH
       syslog-logger (~> 1.6)
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
-      tty-prompt (~> 0.21)
-      tty-screen (~> 0.6)
-      tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
       win32-api (~> 1.5.3)
       win32-certstore (~> 0.5.0)
@@ -205,7 +197,6 @@ GEM
       builder (>= 2.1.2)
     hashdiff (1.0.1)
     hashie (4.1.0)
-    highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
     inspec-core (4.29.3)
@@ -376,7 +367,7 @@ GEM
     unicode-display_width (2.0.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.1)
+    webmock (3.12.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)

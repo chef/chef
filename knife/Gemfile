@@ -8,17 +8,6 @@ group(:development, :test) do
   gem "chef-bin", path: "../chef-bin"
 end
 
-group(:ruby_prof) do
-  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
-  gem "ruby-prof", "< 1.3.0"
-end
-
-group(:omnibus_package, :pry) do
-  gem "pry"
-  gem "pry-byebug"
-  gem "pry-stack_explorer"
-end
-
 group(:chefstyle) do
   gem "chefstyle", git: "https://github.com/chef/chefstyle.git", branch: "master"
 end
