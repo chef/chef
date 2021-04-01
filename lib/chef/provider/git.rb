@@ -281,12 +281,10 @@ class Chef
 
       def target_revision
         @target_revision ||=
-          begin
-            if sha_hash?(new_resource.revision)
-              @target_revision = new_resource.revision
-            else
-              @target_revision = remote_resolve_reference
-            end
+          if sha_hash?(new_resource.revision)
+            @target_revision = new_resource.revision
+          else
+            @target_revision = remote_resolve_reference
           end
       end
 

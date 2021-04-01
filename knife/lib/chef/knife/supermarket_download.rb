@@ -75,9 +75,7 @@ class Chef
       end
 
       def current_cookbook_data
-        @current_cookbook_data ||= begin
-                                     noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
-                                   end
+        @current_cookbook_data ||= noauth_rest.get "#{cookbooks_api_url}/#{@name_args[0]}"
       end
 
       def current_cookbook_deprecated?

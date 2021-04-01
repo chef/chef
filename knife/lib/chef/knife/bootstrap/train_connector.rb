@@ -115,24 +115,22 @@ class Chef
         #
         # @return [String] the temporary path created on the remote host.
         def temp_dir
-          @tmpdir ||= begin
-            if windows?
-              run_command!(MKTEMP_WIN_COMMAND).stdout.split.last
-            else
-              # Get a 6 chars string using secure random
-              # eg. /tmp/chef_XXXXXX.
-              # Use mkdir to create TEMP dir to get rid of mktemp
-              dir = "#{DEFAULT_REMOTE_TEMP}/chef_#{SecureRandom.alphanumeric(6)}"
-              run_command!("mkdir -p '#{dir}'")
-              # Ensure that dir has the correct owner.  We are possibly
-              # running with sudo right now - so this directory would be owned by root.
-              # File upload is performed over SCP as the current logged-in user,
-              # so we'll set ownership to ensure that works.
-              run_command!("chown #{config[:user]} '#{dir}'") if config[:sudo]
+          @tmpdir ||= if windows?
+                        run_command!(MKTEMP_WIN_COMMAND).stdout.split.last
+                      else
+                        # Get a 6 chars string using secure random
+                        # eg. /tmp/chef_XXXXXX.
+                        # Use mkdir to create TEMP dir to get rid of mktemp
+                        dir = "#{DEFAULT_REMOTE_TEMP}/chef_#{SecureRandom.alphanumeric(6)}"
+                        run_command!("mkdir -p '#{dir}'")
+                        # Ensure that dir has the correct owner.  We are possibly
+                        # running with sudo right now - so this directory would be owned by root.
+                        # File upload is performed over SCP as the current logged-in user,
+                        # so we'll set ownership to ensure that works.
+                        run_command!("chown #{config[:user]} '#{dir}'") if config[:sudo]
 
-              dir
-            end
-          end
+                        dir
+                      end
         end
 
         #

@@ -642,9 +642,7 @@ class Chef
     end
 
     def rest
-      @rest ||= begin
-        Chef::ServerAPI.new(Chef::Config[:chef_server_url])
-      end
+      @rest ||= Chef::ServerAPI.new(Chef::Config[:chef_server_url])
     end
 
     def noauth_rest

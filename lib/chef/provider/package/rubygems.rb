@@ -479,9 +479,7 @@ class Chef
         end
 
         def all_installed_versions
-          @all_installed_versions ||= begin
-                                        @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, ">= 0"))
-                                      end
+          @all_installed_versions ||= @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, ">= 0"))
         end
 
         ##
@@ -521,13 +519,11 @@ class Chef
         end
 
         def candidate_version
-          @candidate_version ||= begin
-                                  if source_is_remote?
-                                    @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
-                                  else
-                                    @gem_env.candidate_version_from_file(gem_dependency, new_resource.source).to_s
-                                  end
-                                end
+          @candidate_version ||= if source_is_remote?
+                                   @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
+                                 else
+                                   @gem_env.candidate_version_from_file(gem_dependency, new_resource.source).to_s
+                                 end
         end
 
         def version_requirement_satisfied?(current_version, new_version)

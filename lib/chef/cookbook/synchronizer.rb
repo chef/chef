@@ -143,11 +143,9 @@ class Chef
     end
 
     def files_remaining_by_cookbook
-      @files_remaining_by_cookbook ||= begin
-        files_by_cookbook.inject({}) do |memo, (cookbook, files)|
-          memo[cookbook] = files.size
-          memo
-        end
+      @files_remaining_by_cookbook ||= files_by_cookbook.inject({}) do |memo, (cookbook, files)|
+        memo[cookbook] = files.size
+        memo
       end
     end
 
