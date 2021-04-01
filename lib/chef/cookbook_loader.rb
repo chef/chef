@@ -195,10 +195,8 @@ class Chef
 
     def all_files_in_repo_paths
       @all_files_in_repo_paths ||=
-        begin
-          repo_paths.inject([]) do |all_children, repo_path|
-            all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
-          end
+        repo_paths.inject([]) do |all_children, repo_path|
+          all_children + Dir[File.join(Chef::Util::PathHelper.escape_glob_dir(repo_path), "*")]
         end
     end
 

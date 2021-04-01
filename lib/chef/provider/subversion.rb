@@ -121,16 +121,14 @@ class Chef
       # up the revision id by asking the server
       # If the specified revision is an integer, trust it.
       def revision_int
-        @revision_int ||= begin
-          if /^\d+$/.match?(new_resource.revision)
-            new_resource.revision
-          else
-            command = scm(:info, new_resource.repository, new_resource.svn_info_args, authentication, "-r#{new_resource.revision}")
-            svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
+        @revision_int ||= if /^\d+$/.match?(new_resource.revision)
+                            new_resource.revision
+                          else
+                            command = scm(:info, new_resource.repository, new_resource.svn_info_args, authentication, "-r#{new_resource.revision}")
+                            svn_info = shell_out!(command, run_options(cwd: cwd, returns: [0, 1])).stdout
 
-            extract_revision_info(svn_info)
-          end
-        end
+                            extract_revision_info(svn_info)
+                          end
       end
 
       alias :revision_slug :revision_int

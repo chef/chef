@@ -271,14 +271,11 @@ class Chef
         # users/groups will have their permissions updated with the same command that
         # sets it, but removes must be performed with Revoke-SmbShareAccess
         def users_to_revoke
-          @users_to_revoke ||= begin
-            # if the resource doesn't exist then nothing needs to be revoked
-            if current_resource.nil?
-              []
-            else # if it exists then calculate the current to new resource diffs
-              (current_resource.full_users + current_resource.change_users + current_resource.read_users) - (new_resource.full_users + new_resource.change_users + new_resource.read_users)
-            end
-          end
+          @users_to_revoke ||= if current_resource.nil?
+                                 []
+                               else # if it exists then calculate the current to new resource diffs
+                                 (current_resource.full_users + current_resource.change_users + current_resource.read_users) - (new_resource.full_users + new_resource.change_users + new_resource.read_users)
+                               end
         end
 
         # update existing permissions on a share

@@ -59,15 +59,13 @@ module Matchers
     end
 
     def profiler
-      @profiler ||= begin
-        if ChefUtils.windows?
-          require File.join(__dir__, "..", "platforms", "prof", "win32")
-          RSpec::Prof::Win32::Profiler.new
-        else
-          require File.join(__dir__, "..", "prof", "gc")
-          RSpec::Prof::GC::Profiler.new
-        end
-      end
+      @profiler ||= if ChefUtils.windows?
+                      require File.join(__dir__, "..", "platforms", "prof", "win32")
+                      RSpec::Prof::Win32::Profiler.new
+                    else
+                      require File.join(__dir__, "..", "prof", "gc")
+                      RSpec::Prof::GC::Profiler.new
+                    end
     end
 
   end

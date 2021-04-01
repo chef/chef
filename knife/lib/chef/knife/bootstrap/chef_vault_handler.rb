@@ -108,13 +108,11 @@ class Chef
         # @return [Hash] deserialized ruby hash with all the vault items
         def vault_json
           @vault_json ||=
-            begin
-              if bootstrap_vault_item
-                bootstrap_vault_item
-              else
-                json = bootstrap_vault_json || File.read(bootstrap_vault_file)
-                Chef::JSONCompat.from_json(json)
-              end
+            if bootstrap_vault_item
+              bootstrap_vault_item
+            else
+              json = bootstrap_vault_json || File.read(bootstrap_vault_file)
+              Chef::JSONCompat.from_json(json)
             end
         end
 

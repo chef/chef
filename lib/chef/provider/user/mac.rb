@@ -393,23 +393,21 @@ class Chef
         # associated group resource. If a group exists we'll modify it, otherwise
         # create it.
         def user_group_info
-          @user_group_info ||= begin
-            if new_resource.gid.is_a?(String)
-              begin
-                g = Etc.getgrnam(new_resource.gid)
-                [g.name, g.gid.to_s, :modify]
-              rescue
-                [new_resource.gid, nil, :create]
-              end
-            else
-              begin
-                g = Etc.getgrgid(new_resource.gid)
-                [g.name, g.gid.to_s, :modify]
-              rescue
-                [g.username, nil, :create]
-              end
-            end
-          end
+          @user_group_info ||= if new_resource.gid.is_a?(String)
+                                 begin
+                                   g = Etc.getgrnam(new_resource.gid)
+                                   [g.name, g.gid.to_s, :modify]
+                                 rescue
+                                   [new_resource.gid, nil, :create]
+                                 end
+                               else
+                                 begin
+                                   g = Etc.getgrgid(new_resource.gid)
+                                   [g.name, g.gid.to_s, :modify]
+                                 rescue
+                                   [g.username, nil, :create]
+                                 end
+                               end
         end
 
         def secure_token_enabled?

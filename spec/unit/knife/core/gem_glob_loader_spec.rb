@@ -71,7 +71,7 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
     ]
     expected_files = [
       "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb",
-      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb"
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb",
     ]
 
     expect($LOAD_PATH).to receive(:map).and_return([])

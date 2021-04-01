@@ -598,12 +598,10 @@ class Chef
       # @return [Array] new_resource.source as an array
       def source_array
         @source_array ||=
-          begin
-            if new_resource.source.nil?
-              package_name_array.map { nil }
-            else
-              [ new_resource.source ].flatten
-            end
+          if new_resource.source.nil?
+            package_name_array.map { nil }
+          else
+            [ new_resource.source ].flatten
           end
       end
 
@@ -612,16 +610,14 @@ class Chef
       # @return [Array] Array of sources with package_names converted to sources
       def resolved_source_array
         @resolved_source_array ||=
-          begin
-            source_array.each_with_index.map do |source, i|
-              package_name = package_name_array[i]
-              # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
-              if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
-                logger.trace("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
-                package_name
-              else
-                source
-              end
+          source_array.each_with_index.map do |source, i|
+            package_name = package_name_array[i]
+            # we require at least one '/' in the package_name to avoid [XXX_]package 'foo' breaking due to a random 'foo' file in cwd
+            if use_package_name_for_source? && source.nil? && package_name.match(/#{::File::SEPARATOR}/) && ::File.exist?(package_name)
+              logger.trace("No package source specified, but #{package_name} exists on filesystem, using #{package_name} as source.")
+              package_name
+            else
+              source
             end
           end
       end
