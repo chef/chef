@@ -50,6 +50,10 @@ class Chef
         description: "An optional property to set the hostname if it differs from the resource block's name.",
         name_property: true
 
+      property :fqdn, String,
+        description: "An optional property to set the fqdn if it differs from the resource block's hostname.",
+        introduced: "17.0"
+
       property :ipaddress, String,
         description: "The IP address to use when configuring the hosts file.",
         default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
@@ -115,7 +119,9 @@ class Chef
 
           # make sure node['fqdn'] resolves via /etc/hosts
           unless new_resource.ipaddress.nil?
-            newline = "#{new_resource.ipaddress} #{new_resource.hostname}"
+            newline = "#{new_resource.ipaddress}"
+            newline << " #{new_resource.fqdn}" unless new_resource.fqdn.to_s.empty?
+            newline << " #{new_resource.hostname}"
             newline << " #{new_resource.aliases.join(" ")}" if new_resource.aliases && !new_resource.aliases.empty?
             newline << " #{new_resource.hostname[/[^\.]*/]}"
             r = append_replacing_matching_lines("/etc/hosts", /^#{new_resource.ipaddress}\s+|\s+#{new_resource.hostname}\s+/, newline)
