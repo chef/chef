@@ -1540,7 +1540,7 @@ Chef InSpec has been updated from 4.24.8 to 4.29.3.
 - The `apt` resource now correctly fetches all package repositories using the `-name` flag in an environment where ZSH is the user's default shell.
 - The `--controls` option in `inspec exec` now correctly filters the controls by name.
 - Updates how InSpec profiles are created with GCP or AWS providers so they use `inputs` instead of `attributes`.
-- `inspec exec` will now fetch profiles via Git regardless of the name of the default branch.rces now correctly use the first value when a setting is repeated.
+- `inspec exec` will now fetch profiles via Git regardless of the name of the default branches now correctly use the first value when a setting is repeated.
 - Updated the `oracledb_session` to use more general invocation options. Thanks [@pacopal](https://github.com/pacopal)!
 - Fixed an error with the `http` resource in Chef Infra Client by including `faraday_middleware` in the gemspec.
 - Fixed an incompatibility between `parslet` and `toml` in Chef Infra Client.
