@@ -122,6 +122,10 @@ def macos?
   RUBY_PLATFORM.include?("darwin")
 end
 
+def macos_gte_11?
+  macos? && !!(ohai[:platform_version].to_i >= 11)
+end
+
 def solaris?
   RUBY_PLATFORM.include?("solaris")
 end
