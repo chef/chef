@@ -9,10 +9,8 @@ This section serves to track things we should later document here for 17.0
 - remove support for RHEL 6 i386 / Ubuntu 16.04 / macOS 10.13
 - Compliance cli report - https://github.com/chef/chef/pull/10939
 - Remove ability to run client as a service on Windows - https://github.com/chef/chef/pull/10928
-- macOS builds now use openSSL 1.1.1
 - Knife Org commands from knife-opc are now part of chef itself - https://github.com/chef/chef/pull/10187
 - Chef packages on *nix now create the /etc/chef directory and subdirectories to make getting started easier - https://github.com/chef/chef/pull/11158 / https://github.com/chef/chef/pull/11173
-- macOS m1 packages are now built - https://github.com/chef/chef/pull/11138
 
 ### Infra Language Improvements
 
@@ -29,20 +27,54 @@ This section serves to track things we should later document here for 17.0
 - Resolve potential failures in chef_client_launchd and macosx_service - https://github.com/chef/chef/pull/11154
 - Improved performance in systemd_unit resource - https://github.com/chef/chef/pull/10925
 - gem resource: assume rubygems 1.8+ now: https://github.com/chef/chef/pull/10379
-- file: only run verifiers when the contents changed - https://github.com/chef/chef/pull/11171
 - execute: Add login property - https://github.com/chef/chef/pull/11201
 
 ### Ohai
 
-- Ohai now detects systems running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']` - https://github.com/chef/ohai/pull/1624
 - New Ohai habitat plugin at `node['habitat']` - https://github.com/chef/ohai/pull/1623
-- Detect Sangoma Linux in Ohai - https://github.com/chef/ohai/pull/1631
-- Gather additional package information on Windows - https://github.com/chef/ohai/pull/1616
 - Detect guests running in Podman - https://github.com/chef/ohai/pull/1617
-- Improved Docker container detection - https://github.com/chef/ohai/pull/1627
 - don't write out node['filesystem2'] data on AIX/Solaris/FreeBSD: https://github.com/chef/ohai/pull/1592
 - Alibaba Cloud support with node['alibaba'] showing metadata, `alibaba?` helper and node['cloud'] returning data now - https://github.com/chef/chef/pull/11004
 - Removed detection of discontinued antergos and Pidora distros - https://github.com/chef/ohai/pull/1633 / https://github.com/chef/ohai/pull/1634
+
+## What's New in 16.12.0
+
+### Chef InSpec 4.28
+
+Chef InSpec has been updated from 4.28 to 4.29.3.
+
+#### New Features
+
+- The JSON metadata pass through configuration has been moved from the Automate reporter to the JSON Reporter. ([#5430](https://github.com/inspec/inspec/pull/5430))
+
+#### Bug Fixes
+
+- The apt resource now correctly fetches all package repositories using the `-name` flag in an environment where ZSH is the user's default shell.  ([#5437](https://github.com/inspec/inspec/pull/5437))
+- Updates how InSpec profiles are created with GCP or AWS providers so they use `inputs` instead of `attributes`. ([#5435](https://github.com/inspec/inspec/pull/5435))
+
+### Resource Improvements
+
+#### service and chef_client_launchd
+
+The `service` and `chef_client_launchd` resources on macOS now use the full path to `launchctl` to avoid potential failures. Thanks [@krackajak](https://github.com/krackajak)!
+
+#### file
+
+Verifiers in the `file` resource are only run if the content actually changes. This can significantly speed execution of Chef Infra Client when no actual changes occur. Thanks [@joshuamiller01](https://github.com/joshuamiller01)!
+
+#### mount
+
+The mount resource now properly handles NFS mounts with a root of `/`. Thanks for reporting this [@eheydrick](https://github.com/eheydrick) and thanks for the fix [@ramereth](https://github.com/ramereth)!
+
+### Improved System Detection
+
+Ohai has been updated to better detect system configuration details:
+
+- Ohai now detects Chef Infra Clients running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']`.
+- Windows packages installed for the current user are now detected in addition to system wide package installations. Thanks [@jaymzh](https://github.com/jaymzh)!
+- `Sangoma Linux` is now detected as part of the `rhel` platform family. Thanks [@hron84](https://github.com/hron84)!
+- Docker is now properly detected even if it's running on a virtualized system. Thanks [@jaymzh](https://github.com/jaymzh)!
+- Alibaba Cloud Linux is now detected as platform `alibabalinux` and platform family `rhel`.
 
 ## What's New in 16.11.7
 
