@@ -155,7 +155,7 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (16.0.12)
+    cheffish (16.0.26)
       chef-zero (>= 14.0)
       net-ssh
     chefstyle (1.5.9)
@@ -365,7 +365,7 @@ GEM
     unicode-display_width (1.7.0)
     unicode_utils (1.4.0)
     uuidtools (2.2.0)
-    webmock (3.12.1)
+    webmock (3.12.2)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
