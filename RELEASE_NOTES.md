@@ -45,7 +45,7 @@ Chef InSpec has been updated from 4.28 to 4.29.3
 
 #### New Features
 
-- The JSON metadata pass through configuration has been moved from the Automate reporter to the JSON Reporter ([#5430](https://github.com/inspec/inspec/pull/5430))
+- The JSON metadata pass through configuration has been moved from the Automate reporter to the JSON Reporter. ([#5430](https://github.com/inspec/inspec/pull/5430))
 
 #### Bug Fixes
 
