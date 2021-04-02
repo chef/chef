@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.16.6 -->
-## [v15.16.6](https://github.com/chef/chef/tree/v15.16.6) (2021-03-31)
+<!-- latest_release 15.16.7 -->
+## [v15.16.7](https://github.com/chef/chef/tree/v15.16.7) (2021-04-02)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11269](https://github.com/chef/chef/pull/11269) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Fix hab package builds [#11288](https://github.com/chef/chef/pull/11288) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.16.4 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix hab package builds [#11288](https://github.com/chef/chef/pull/11288) ([tas50](https://github.com/tas50)) <!-- 15.16.7 -->
 - Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11269](https://github.com/chef/chef/pull/11269) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 15.16.6 -->
 - Update readme [#11254](https://github.com/chef/chef/pull/11254) ([tas50](https://github.com/tas50)) <!-- 15.16.5 -->
 <!-- release_rollup -->
