@@ -325,22 +325,6 @@ steps:
   # START TEST KITCHEN ONLY
 #########################################################################
 
-- label: "Kitchen: Amazon Linux 201X"
-  commands:
-    - scripts/bk_tests/bk_linux_exec.sh
-    - . /var/lib/buildkite-agent/.asdf/asdf.sh
-    - cd kitchen-tests
-    - bundle exec kitchen test end-to-end-amazonlinux
-  artifact_paths:
-    - $PWD/.kitchen/logs/kitchen.log
-  env:
-      KITCHEN_YAML: kitchen.yml
-  expeditor:
-    executor:
-      linux:
-        privileged: true
-        single-use: true
-
 - label: "Kitchen: Amazon Linux 2"
   commands:
     - scripts/bk_tests/bk_linux_exec.sh
