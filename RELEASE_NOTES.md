@@ -41,7 +41,7 @@ This section serves to track things we should later document here for 17.0
 
 ### Chef InSpec 4.28
 
-Chef InSpec has been updated from 4.28 to 4.29.3
+Chef InSpec has been updated from 4.28 to 4.29.3.
 
 #### New Features
 
