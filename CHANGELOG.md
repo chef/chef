@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.19 -->
-## [v16.11.19](https://github.com/chef/chef/tree/v16.11.19) (2021-04-02)
+<!-- latest_release 16.12.0 -->
+## [v16.12.0](https://github.com/chef/chef/tree/v16.12.0) (2021-04-02)
 
 #### Merged Pull Requests
-- use full path for launchctl calls [#11282](https://github.com/chef/chef/pull/11282) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.12.3 [#11284](https://github.com/chef/chef/pull/11284) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.11.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Ohai to 16.12.3 [#11284](https://github.com/chef/chef/pull/11284) ([tas50](https://github.com/tas50)) <!-- 16.12.0 -->
 - use full path for launchctl calls [#11282](https://github.com/chef/chef/pull/11282) ([tas50](https://github.com/tas50)) <!-- 16.11.19 -->
 - only run file verifiers when the contents changed [#11281](https://github.com/chef/chef/pull/11281) ([tas50](https://github.com/tas50)) <!-- 16.11.18 -->
 - Fix Azure to trigger correctly on PRs [#11280](https://github.com/chef/chef/pull/11280) ([tas50](https://github.com/tas50)) <!-- 16.11.17 -->
