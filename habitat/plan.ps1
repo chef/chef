@@ -10,9 +10,6 @@ $pkg_bin_dirs=@(
     "bin"
     "vendor/bin"
 )
-$pkg_build_deps=@(
-  "core/git"
-)
 $pkg_deps=@(
   "core/cacerts"
   "chef/ruby-plus-devkit"
