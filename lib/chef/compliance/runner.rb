@@ -17,6 +17,8 @@ class Chef
       def_delegators :node, :logger
 
       def enabled?
+        return false if @node.nil?
+
         # Did we parse the libraries file from the audit cookbook?  This class dates back to when Chef Automate was
         # renamed from Chef Visibility in 2017, so should capture all modern versions of the audit cookbook.
         audit_cookbook_present = defined?(::Reporter::ChefAutomate)
