@@ -1546,7 +1546,7 @@ Several legacy Windows helpers have been deprecated as they will always return t
 - Improved handling of WinRM connections when bootstrapping Windows nodes.
 - Switched docker containers back to EL6 packages to prevent failures running the containers with Kitchen Dokken to test RHEL 6 systems.
 - Fixed non-0 exit codes in the Yum and DNF helper scripts which caused errors in system logs.
-- Fixed package failures in FreeBSD due to changed in `pkgng` exit codes.
+- Fixed package failures in FreeBSD due to changes in `pkgng` exit codes.
 - Added support for `client.d` configuration files in `chef-shell`.
 
 ### Chef InSpec
