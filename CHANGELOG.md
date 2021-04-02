@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.14 -->
-## [v16.11.14](https://github.com/chef/chef/tree/v16.11.14) (2021-04-02)
+<!-- latest_release 16.11.15 -->
+## [v16.11.15](https://github.com/chef/chef/tree/v16.11.15) (2021-04-02)
 
 #### Merged Pull Requests
-- bump powershell shim to 0.3.2 with powerrshell 7.1.3 deps [#11278](https://github.com/chef/chef/pull/11278) ([tas50](https://github.com/tas50))
+- Update to the latest cheffish [#11277](https://github.com/chef/chef/pull/11277) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.11.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update to the latest cheffish [#11277](https://github.com/chef/chef/pull/11277) ([tas50](https://github.com/tas50)) <!-- 16.11.15 -->
 - bump powershell shim to 0.3.2 with powerrshell 7.1.3 deps [#11278](https://github.com/chef/chef/pull/11278) ([tas50](https://github.com/tas50)) <!-- 16.11.14 -->
 - Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11268](https://github.com/chef/chef/pull/11268) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.13 -->
 - Chef 16: Fix idempotency issues with network mounts [#11263](https://github.com/chef/chef/pull/11263) ([ramereth](https://github.com/ramereth)) <!-- 16.11.12 -->
