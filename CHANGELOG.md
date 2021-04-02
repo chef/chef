@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.11.16 -->
-## [v16.11.16](https://github.com/chef/chef/tree/v16.11.16) (2021-04-02)
+<!-- latest_release 16.11.17 -->
+## [v16.11.17](https://github.com/chef/chef/tree/v16.11.17) (2021-04-02)
 
 #### Merged Pull Requests
-- Fix ruby-prof loading issues [#11279](https://github.com/chef/chef/pull/11279) ([tas50](https://github.com/tas50))
+- Fix Azure to trigger correctly on PRs [#11280](https://github.com/chef/chef/pull/11280) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.11.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix Azure to trigger correctly on PRs [#11280](https://github.com/chef/chef/pull/11280) ([tas50](https://github.com/tas50)) <!-- 16.11.17 -->
 - Fix ruby-prof loading issues [#11279](https://github.com/chef/chef/pull/11279) ([tas50](https://github.com/tas50)) <!-- 16.11.16 -->
 - Update to the latest cheffish [#11277](https://github.com/chef/chef/pull/11277) ([tas50](https://github.com/tas50)) <!-- 16.11.15 -->
 - bump powershell shim to 0.3.2 with powerrshell 7.1.3 deps [#11278](https://github.com/chef/chef/pull/11278) ([tas50](https://github.com/tas50)) <!-- 16.11.14 -->
