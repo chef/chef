@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 74bde1d4b0fafb6192d1e1b135c13a37a80b2fb6
+  revision: 090afb32c74d3275312b2550f41c5ab9d04ac5fa
   branch: master
   specs:
-    ohai (17.0.30)
+    ohai (17.0.31)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
