@@ -72,7 +72,7 @@ Ohai has been updated to better detect system configuration details:
 
 - Ohai now detects Chef Infra Clients running in the Effortless pattern at `node['chef_packages']['chef']['chef_effortless']`.
 - Windows packages installed for the current user are now detected in addition to system wide package installations. Thanks [@jaymzh](https://github.com/jaymzh)!
-- ` Sangoma Linux` is now detected as a the `rhel` platform family. Thanks [@hron84](https://github.com/hron84)!
+- `Sangoma Linux` is now detected as part of the `rhel` platform family. Thanks [@hron84](https://github.com/hron84)!
 - Docker is now properly detected even if it's running on a virtualized system. Thanks [@jaymzh](https://github.com/jaymzh)!
 - Alibaba Cloud Linux is now detected as platform `alibabalinux` and platform family `rhel`.
 
