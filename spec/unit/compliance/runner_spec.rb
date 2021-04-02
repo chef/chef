@@ -12,6 +12,12 @@ describe Chef::Compliance::Runner do
   end
 
   describe "#enabled?" do
+    context "when the node is not available" do
+      let(:runner) { described_class.new }
+      it "is false because it needs the node to answer that question" do
+        expect(runner).not_to be_enabled
+      end
+    end
 
     it "is true if the node attributes have audit profiles and the audit cookbook is not present, and the compliance mode attribute is nil" do
       node.normal["audit"]["profiles"]["ssh"] = { 'compliance': "base/ssh" }
