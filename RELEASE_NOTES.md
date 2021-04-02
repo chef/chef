@@ -66,6 +66,10 @@ Verifiers in the `file` resource are only run if the content actually changes. T
 
 The mount resource now properly handles NFS mounts with a root of `/`. Thanks for reporting this [@eheydrick](https://github.com/eheydrick) and thanks for the fix [@ramereth](https://github.com/ramereth)!
 
+### powershell_script and dsc_script
+
+Our embedded PowerShell libraries have been updated for improved execution of PowerShell and DSC code on Windows systems.
+
 ### Improved System Detection
 
 Ohai has been updated to better detect system configuration details:
@@ -75,6 +79,13 @@ Ohai has been updated to better detect system configuration details:
 - `Sangoma Linux` is now detected as part of the `rhel` platform family. Thanks [@hron84](https://github.com/hron84)!
 - Docker is now properly detected even if it's running on a virtualized system. Thanks [@jaymzh](https://github.com/jaymzh)!
 - Alibaba Cloud Linux is now detected as platform `alibabalinux` and platform family `rhel`.
+
+### Security
+
+Upgraded OpenSSL on macOS hosts to 1.1.1k, which resolves the following CVEs:
+
+- [CVE-2021-3450](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3450)
+- [CVE-2021-3449](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-3449)
 
 ## What's New in 16.11.7
 
