@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.180 -->
-## [v17.0.180](https://github.com/chef/chef/tree/v17.0.180) (2021-04-02)
+<!-- latest_release 17.0.181 -->
+## [v17.0.181](https://github.com/chef/chef/tree/v17.0.181) (2021-04-02)
 
 #### Merged Pull Requests
-- Bump cheffish to 16.0.26 [#11276](https://github.com/chef/chef/pull/11276) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump chef/ohai to 2fc35fbcbcfe7e2f3dad8f425d8307a6f216d011 [#11283](https://github.com/chef/chef/pull/11283) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to 2fc35fbcbcfe7e2f3dad8f425d8307a6f216d011 [#11283](https://github.com/chef/chef/pull/11283) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.181 -->
 - Bump cheffish to 16.0.26 [#11276](https://github.com/chef/chef/pull/11276) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.180 -->
 - Remove more redundant begins detected by rubocop [#11220](https://github.com/chef/chef/pull/11220) ([tas50](https://github.com/tas50)) <!-- 17.0.179 -->
 - Convert knife to its own gem [#11180](https://github.com/chef/chef/pull/11180) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.178 -->
