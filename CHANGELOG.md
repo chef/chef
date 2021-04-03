@@ -2,35 +2,33 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.12.3 -->
-## [v16.12.3](https://github.com/chef/chef/tree/v16.12.3) (2021-04-03)
-
-#### Merged Pull Requests
-- Fix the cron skip on macOS logic [#11298](https://github.com/chef/chef/pull/11298) ([tas50](https://github.com/tas50))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.11.7 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Fix the cron skip on macOS logic [#11298](https://github.com/chef/chef/pull/11298) ([tas50](https://github.com/tas50)) <!-- 16.12.3 -->
-- Update OpenSSL to 1.1.1k on macOS [#11294](https://github.com/chef/chef/pull/11294) ([tas50](https://github.com/tas50)) <!-- 16.12.2 -->
-- Skip the cron integration tests on macOS 11+ [#11293](https://github.com/chef/chef/pull/11293) ([tas50](https://github.com/tas50)) <!-- 16.12.1 -->
-- Update Ohai to 16.12.3 [#11284](https://github.com/chef/chef/pull/11284) ([tas50](https://github.com/tas50)) <!-- 16.12.0 -->
-- use full path for launchctl calls [#11282](https://github.com/chef/chef/pull/11282) ([tas50](https://github.com/tas50)) <!-- 16.11.19 -->
-- only run file verifiers when the contents changed [#11281](https://github.com/chef/chef/pull/11281) ([tas50](https://github.com/tas50)) <!-- 16.11.18 -->
-- Fix Azure to trigger correctly on PRs [#11280](https://github.com/chef/chef/pull/11280) ([tas50](https://github.com/tas50)) <!-- 16.11.17 -->
-- Fix ruby-prof loading issues [#11279](https://github.com/chef/chef/pull/11279) ([tas50](https://github.com/tas50)) <!-- 16.11.16 -->
-- Update to the latest cheffish [#11277](https://github.com/chef/chef/pull/11277) ([tas50](https://github.com/tas50)) <!-- 16.11.15 -->
-- bump powershell shim to 0.3.2 with powerrshell 7.1.3 deps [#11278](https://github.com/chef/chef/pull/11278) ([tas50](https://github.com/tas50)) <!-- 16.11.14 -->
-- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11268](https://github.com/chef/chef/pull/11268) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.13 -->
-- Chef 16: Fix idempotency issues with network mounts [#11263](https://github.com/chef/chef/pull/11263) ([ramereth](https://github.com/ramereth)) <!-- 16.11.12 -->
-- Update InSpec to 4.29.3 [#11247](https://github.com/chef/chef/pull/11247) ([tas50](https://github.com/tas50)) <!-- 16.11.11 -->
-- Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11239](https://github.com/chef/chef/pull/11239) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.10 -->
-- Bump ohai from 16.10.6 to 16.10.7 in /omnibus [#11203](https://github.com/chef/chef/pull/11203) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.11.8 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.12.3](https://github.com/chef/chef/tree/v16.12.3) (2021-04-03)
+
+#### Merged Pull Requests
+- Bump ohai from 16.10.6 to 16.10.7 in /omnibus [#11203](https://github.com/chef/chef/pull/11203) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump test-kitchen from 2.11.1 to 2.11.2 in /omnibus [#11239](https://github.com/chef/chef/pull/11239) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update InSpec to 4.29.3 [#11247](https://github.com/chef/chef/pull/11247) ([tas50](https://github.com/tas50))
+- Chef 16: Fix idempotency issues with network mounts [#11263](https://github.com/chef/chef/pull/11263) ([ramereth](https://github.com/ramereth))
+- Bump omnibus-software from `caf6ae0` to `a0e7438` in /omnibus [#11268](https://github.com/chef/chef/pull/11268) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- bump powershell shim to 0.3.2 with powerrshell 7.1.3 deps [#11278](https://github.com/chef/chef/pull/11278) ([tas50](https://github.com/tas50))
+- Update to the latest cheffish [#11277](https://github.com/chef/chef/pull/11277) ([tas50](https://github.com/tas50))
+- Fix ruby-prof loading issues [#11279](https://github.com/chef/chef/pull/11279) ([tas50](https://github.com/tas50))
+- Fix Azure to trigger correctly on PRs [#11280](https://github.com/chef/chef/pull/11280) ([tas50](https://github.com/tas50))
+- only run file verifiers when the contents changed [#11281](https://github.com/chef/chef/pull/11281) ([tas50](https://github.com/tas50))
+- use full path for launchctl calls [#11282](https://github.com/chef/chef/pull/11282) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.12.3 [#11284](https://github.com/chef/chef/pull/11284) ([tas50](https://github.com/tas50))
+- Skip the cron integration tests on macOS 11+ [#11293](https://github.com/chef/chef/pull/11293) ([tas50](https://github.com/tas50))
+- Update OpenSSL to 1.1.1k on macOS [#11294](https://github.com/chef/chef/pull/11294) ([tas50](https://github.com/tas50))
+- Fix the cron skip on macOS logic [#11298](https://github.com/chef/chef/pull/11298) ([tas50](https://github.com/tas50))
+<!-- latest_stable_release -->
+
 ## [v16.11.7](https://github.com/chef/chef/tree/v16.11.7) (2021-03-18)
 
 #### Merged Pull Requests
@@ -54,7 +52,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Disable compliance phase by default [#11196](https://github.com/chef/chef/pull/11196) ([tas50](https://github.com/tas50))
 - Update FFI to 1.15 for M1 Macs + libarchive to 3.5.1 [#11197](https://github.com/chef/chef/pull/11197) ([tas50](https://github.com/tas50))
 - Fix compliance phase specs [#11199](https://github.com/chef/chef/pull/11199) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.10.17](https://github.com/chef/chef/tree/v16.10.17) (2021-02-19)
 
