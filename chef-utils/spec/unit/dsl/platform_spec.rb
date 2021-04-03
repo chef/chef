@@ -21,34 +21,67 @@ require "fauxhai"
 
 def platform_reports_true_for(*args)
   args.each do |method|
-    it "reports true for #{method} on the module given a node" do
-      expect(described_class.send(method, node)).to be true
-    end
-    it "reports true for #{method} when mixed into a class with a node" do
-      expect(thing_with_a_node.send(method, node)).to be true
-    end
-    it "reports true for #{method} when mixed into a class with a run_context" do
-      expect(thing_with_a_run_context.send(method, node)).to be true
-    end
-    it "reports true for #{method} when mixed into a class with the dsl" do
-      expect(thing_with_the_dsl.send(method, node)).to be true
-    end
-    it "reports true for #{method} on the main class give a node" do
-      expect(ChefUtils.send(method, node)).to be true
+    if method.match?("centos_stream_platform")
+      it "reports true for #{method} on the module given a node" do
+        expect(described_class.send(method)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with a node" do
+        expect(thing_with_a_node.send(method)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with a run_context" do
+        expect(thing_with_a_run_context.send(method)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with the dsl" do
+        expect(thing_with_the_dsl.send(method)).to be true
+      end
+      it "reports true for #{method} on the main class give a node" do
+        expect(ChefUtils.send(method)).to be true
+      end
+    else
+      it "reports true for #{method} on the module given a node" do
+        expect(described_class.send(method, node)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with a node" do
+        expect(thing_with_a_node.send(method, node)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with a run_context" do
+        expect(thing_with_a_run_context.send(method, node)).to be true
+      end
+      it "reports true for #{method} when mixed into a class with the dsl" do
+        expect(thing_with_the_dsl.send(method, node)).to be true
+      end
+      it "reports true for #{method} on the main class give a node" do
+        expect(ChefUtils.send(method, node)).to be true
+      end
     end
   end
-  (PLATFORM_HELPERS - args).each do |method|
-    it "reports false for #{method} on the module given a node" do
-      expect(described_class.send(method, node)).to be false
-    end
-    it "reports false for #{method} when mixed into a class with a node" do
-      expect(thing_with_a_node.send(method, node)).to be false
-    end
-    it "reports false for #{method} when mixed into a class with the dsl" do
-      expect(thing_with_the_dsl.send(method, node)).to be false
-    end
-    it "reports false for #{method} on the main class give a node" do
-      expect(ChefUtils.send(method, node)).to be false
+  (PLATFORM_HELPERS - ChefUtils::DSL::TrainHelpers.methods - args).each do |method|
+    if method.match?("centos_stream_platform")
+      it "reports false for #{method} on the module given a node" do
+        expect(described_class.send(method)).to be false
+      end
+      it "reports false for #{method} when mixed into a class with a node" do
+        expect(thing_with_a_node.send(method)).to be false
+      end
+      it "reports false for #{method} when mixed into a class with the dsl" do
+        expect(thing_with_the_dsl.send(method)).to be false
+      end
+      it "reports false for #{method} on the main class give a node" do
+        expect(ChefUtils.send(method)).to be false
+      end
+    else
+      it "reports false for #{method} on the module given a node" do
+        expect(described_class.send(method, node)).to be false
+      end
+      it "reports false for #{method} when mixed into a class with a node" do
+        expect(thing_with_a_node.send(method, node)).to be false
+      end
+      it "reports false for #{method} when mixed into a class with the dsl" do
+        expect(thing_with_the_dsl.send(method, node)).to be false
+      end
+      it "reports false for #{method} on the main class give a node" do
+        expect(ChefUtils.send(method, node)).to be false
+      end
     end
   end
 end
@@ -93,7 +126,7 @@ RSpec.describe ChefUtils::DSL::Platform do
 
   ( HELPER_MODULES - [ described_class ] ).each do |klass|
     it "does not have methods that collide with #{klass}" do
-      expect((klass.methods - Module.methods) & PLATFORM_HELPERS).to be_empty
+      expect((klass.methods - Module.methods - ChefUtils::DSL::TrainHelpers.methods ) & PLATFORM_HELPERS).to be_empty
     end
   end
 
@@ -235,4 +268,50 @@ RSpec.describe ChefUtils::DSL::Platform do
     platform_reports_true_for(:opensuse_platform?, :opensuseleap_platform?, :opensuse?, :leap_platform?)
   end
 
+end
+
+RSpec.describe ChefUtils::DSL::Platform do
+  class PlatformTestClass
+    include ChefUtils::DSL::Platform
+  end
+
+  let(:test_instance) { PlatformTestClass.new }
+
+  let(:os_release_stream) do
+    <<~OS_RELEASE
+      NAME="CentOS Stream"
+      VERSION="8"
+      ID="centos"
+      ID_LIKE="rhel fedora"
+      VERSION_ID="8"
+      PRETTY_NAME="CentOS Stream 8"
+    OS_RELEASE
+  end
+
+  let(:os_release_centos) do
+    <<~OS_RELEASE
+      NAME="CentOS Linux"
+      VERSION="8"
+      ID="centos"
+      ID_LIKE="rhel fedora"
+      VERSION_ID="8"
+      PRETTY_NAME="CentOS Linux 8"
+    OS_RELEASE
+  end
+
+  context "on centos stream" do
+    it "returns true if on centos_stream_platform?" do
+      expect(File).to receive(:exist?).with("/etc/os-release").and_return(true)
+      expect(File).to receive(:open).with("/etc/os-release").and_return(StringIO.new(os_release_stream))
+      expect(test_instance.centos_stream_platform?).to be true
+    end
+  end
+
+  context "on centos linux" do
+    it "returns false if on centos_stream_platform?" do
+      expect(File).to receive(:exist?).with("/etc/os-release").and_return(true)
+      expect(File).to receive(:open).with("/etc/os-release").and_return(StringIO.new(os_release_centos))
+      expect(test_instance.centos_stream_platform?).to be false
+    end
+  end
 end
