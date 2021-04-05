@@ -124,13 +124,6 @@ platforms:
     intermediate_instructions:
       - RUN sed -i -e "s/Defaults.*requiretty.*/Defaults    !requiretty/g" /etc/sudoers
 
-- name: ubuntu-16.04
-  driver:
-    image: dokken/ubuntu-16.04
-    pid_one_command: /bin/systemd
-    intermediate_instructions:
-      - RUN /usr/bin/apt-get update
-
 - name: ubuntu-18.04
   driver:
     image: dokken/ubuntu-18.04
