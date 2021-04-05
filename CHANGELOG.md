@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.185 -->
-## [v17.0.185](https://github.com/chef/chef/tree/v17.0.185) (2021-04-03)
+<!-- latest_release 17.0.186 -->
+## [v17.0.186](https://github.com/chef/chef/tree/v17.0.186) (2021-04-05)
 
 #### Merged Pull Requests
-- Fix the cron skip on macOS logic [#11297](https://github.com/chef/chef/pull/11297) ([tas50](https://github.com/tas50))
+- Added new property fqdn and made sure hosts entry includes the same [#11273](https://github.com/chef/chef/pull/11273) ([msys-sgarg](https://github.com/msys-sgarg))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Added new property fqdn and made sure hosts entry includes the same [#11273](https://github.com/chef/chef/pull/11273) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.0.186 -->
 - Fix the cron skip on macOS logic [#11297](https://github.com/chef/chef/pull/11297) ([tas50](https://github.com/tas50)) <!-- 17.0.185 -->
 - Update openSSL on macOS to 1.1.1k [#11295](https://github.com/chef/chef/pull/11295) ([tas50](https://github.com/tas50)) <!-- 17.0.184 -->
 - Report compliance runner not enabled if the node is not available [#11290](https://github.com/chef/chef/pull/11290) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.183 -->
