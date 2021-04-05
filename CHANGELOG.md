@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 16.13.0 -->
+## [v16.13.0](https://github.com/chef/chef/tree/v16.13.0) (2021-04-05)
+
+#### Merged Pull Requests
+- Remove soon to be EOL Ubuntu 16.04 packages [#11305](https://github.com/chef/chef/pull/11305) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.12.3 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Remove soon to be EOL Ubuntu 16.04 packages [#11305](https://github.com/chef/chef/pull/11305) ([tas50](https://github.com/tas50)) <!-- 16.13.0 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
