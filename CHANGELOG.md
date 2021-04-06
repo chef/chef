@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.3 -->
-## [v16.13.3](https://github.com/chef/chef/tree/v16.13.3) (2021-04-06)
+<!-- latest_release 16.13.4 -->
+## [v16.13.4](https://github.com/chef/chef/tree/v16.13.4) (2021-04-06)
 
 #### Merged Pull Requests
-- Bump omnibus-software from `8e34218` to `3d331d8` in /omnibus [#11309](https://github.com/chef/chef/pull/11309) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Minor dep bump for parser [#11311](https://github.com/chef/chef/pull/11311) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.12.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Minor dep bump for parser [#11311](https://github.com/chef/chef/pull/11311) ([tas50](https://github.com/tas50)) <!-- 16.13.4 -->
 - Bump omnibus-software from `8e34218` to `3d331d8` in /omnibus [#11309](https://github.com/chef/chef/pull/11309) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.3 -->
 - Update to Ruby 2.7.3 [#11306](https://github.com/chef/chef/pull/11306) ([tas50](https://github.com/tas50)) <!-- 16.13.2 -->
 - Bump omnibus-software from `76b31d1` to `f745eed` in /omnibus [#11303](https://github.com/chef/chef/pull/11303) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.1 -->
