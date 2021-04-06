@@ -17,13 +17,11 @@
 #
 
 require_relative "../internal"
-require_relative "train_helpers"
 
 module ChefUtils
   module DSL
     module Platform
       include Internal
-      include TrainHelpers
 
       # NOTE: if you are adding new platform helpers they should all have the `_platform?` suffix.
       #       DO NOT add new short aliases without the suffix (they will be deprecated in the future)
@@ -127,12 +125,13 @@ module ChefUtils
 
       # Determine if the current node is CentOS Stream.
       #
+      # @param [Chef::Node] node the node to check
       # @since 17.0
       #
       # @return [Boolean]
       #
-      def centos_stream_platform?
-        file_exist?("/etc/os-release") && file_read("/etc/os-release").match?("CentOS Stream")
+      def centos_stream_platform?(node = __getnode)
+        node.dig("lsb", "id") == "CentOSStream"
       end
 
       # Determine if the current node is Oracle Linux.
