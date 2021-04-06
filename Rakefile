@@ -74,6 +74,17 @@ task :install do
   end
 end
 
+namespace :install do
+  task local: "pre_install:all"
+
+  task :local do
+    chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
+    Dir.chdir(chef_bin_path) do
+      sh("rake install:local")
+    end
+  end
+end
+
 task :pedant, :chef_zero_spec
 
 task :build_eventlog do
