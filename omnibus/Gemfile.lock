@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: f745eed68f60b2a0a7e6b90dc8a504f5f720e34a
+  revision: 8e34218adde45372ae13230204c9e820b69a166b
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -64,12 +64,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.11.7)
+    chef (16.12.3)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.11.7)
-      chef-utils (= 16.11.7)
+      chef-config (= 16.12.3)
+      chef-utils (= 16.12.3)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -101,12 +101,12 @@ GEM
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (16.11.7-universal-mingw32)
+    chef (16.12.3-universal-mingw32)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.11.7)
-      chef-utils (= 16.11.7)
+      chef-config (= 16.12.3)
+      chef-utils (= 16.12.3)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -150,9 +150,9 @@ GEM
       win32-taskscheduler (~> 2.0)
       wmi-lite (~> 1.0)
     chef-cleanroom (1.0.2)
-    chef-config (16.11.7)
+    chef-config (16.12.3)
       addressable
-      chef-utils (= 16.11.7)
+      chef-utils (= 16.12.3)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -160,7 +160,7 @@ GEM
     chef-telemetry (1.0.29)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (16.11.7)
+    chef-utils (16.12.3)
     chef-vault (4.1.0)
     chef-zero (15.0.4)
       ffi-yajl (~> 2.2)
