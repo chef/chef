@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.192 -->
-## [v17.0.192](https://github.com/chef/chef/tree/v17.0.192) (2021-04-07)
+<!-- latest_release 17.0.193 -->
+## [v17.0.193](https://github.com/chef/chef/tree/v17.0.193) (2021-04-07)
 
 #### Merged Pull Requests
-- Bump train-core to 3.6.0 [#11319](https://github.com/chef/chef/pull/11319) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `ef7b496` to `56f6321` in /omnibus [#11323](https://github.com/chef/chef/pull/11323) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `ef7b496` to `56f6321` in /omnibus [#11323](https://github.com/chef/chef/pull/11323) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.193 -->
 - Bump train-core to 3.6.0 [#11319](https://github.com/chef/chef/pull/11319) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.192 -->
 - Bump omnibus-software from `3d331d8` to `ef7b496` in /omnibus [#11318](https://github.com/chef/chef/pull/11318) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.191 -->
 - Bump chef/ohai to 4aa4f09fdddbe5ecf212ce16c06cd1d105650298 [#11312](https://github.com/chef/chef/pull/11312) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.190 -->
