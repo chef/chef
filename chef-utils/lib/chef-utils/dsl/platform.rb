@@ -131,7 +131,11 @@ module ChefUtils
       # @return [Boolean]
       #
       def centos_stream_platform?(node = __getnode)
-        node.dig("lsb", "id") == "CentOSStream"
+        if node["os_release"]
+          node.dig("os_release", "name") == "CentOS Stream"
+        else
+          node.dig("lsb", "id") == "CentOSStream"
+        end
       end
 
       # Determine if the current node is Oracle Linux.
