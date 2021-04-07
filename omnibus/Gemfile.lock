@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: ef7b49659c7680b8dedf829eb5af2428e12f6cb0
+  revision: 63456eca286dea74477729671a33981494d50801
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -371,7 +371,7 @@ GEM
     toml-rb (2.0.1)
       citrus (~> 3.0, > 3.0)
     tomlrb (1.3.0)
-    train-core (3.5.5)
+    train-core (3.6.0)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
