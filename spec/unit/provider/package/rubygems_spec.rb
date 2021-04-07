@@ -482,10 +482,10 @@ describe Chef::Provider::Package::Rubygems do
       end
     end
 
-    context "when in omnibus chefdk" do
-      let(:bindir) { "/opt/chefdk/embedded/bin" }
+    context "when in omnibus chef-workstation" do
+      let(:bindir) { "/opt/chef-workstation/embedded/bin" }
 
-      it "recognizes chefdk as omnibus" do
+      it "recognizes chef-workstation as omnibus" do
         expect(provider.is_omnibus?).to be true
       end
     end
