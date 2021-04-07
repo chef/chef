@@ -423,11 +423,11 @@ class Chef
         end
 
         def is_omnibus?
-          if %r{/(opscode|chef|chefdk)/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
+          if %r{/(#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}|#{ChefUtils::Dist::Infra::SHORT}|chefdk)/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
-          elsif RbConfig::CONFIG["bindir"].sub(/^\w:/, "") == "/opscode/chef/embedded/bin"
+          elsif RbConfig::CONFIG["bindir"].sub(/^\w:/, "") == "/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::SHORT}/embedded/bin"
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # windows, with the drive letter removed
             true
