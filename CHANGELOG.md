@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.6 -->
-## [v16.13.6](https://github.com/chef/chef/tree/v16.13.6) (2021-04-07)
+<!-- latest_release 16.13.7 -->
+## [v16.13.7](https://github.com/chef/chef/tree/v16.13.7) (2021-04-07)
 
 #### Merged Pull Requests
-- Bump libyajl2 to 2.1.0 [#11314](https://github.com/chef/chef/pull/11314) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump ffi-yajl to 2.4.0 [#11316](https://github.com/chef/chef/pull/11316) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.12.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ffi-yajl to 2.4.0 [#11316](https://github.com/chef/chef/pull/11316) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.7 -->
 - Bump libyajl2 to 2.1.0 [#11314](https://github.com/chef/chef/pull/11314) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.6 -->
 - Bump omnibus-software from `3d331d8` to `ef7b496` in /omnibus [#11317](https://github.com/chef/chef/pull/11317) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.5 -->
 - Minor dep bump for parser [#11311](https://github.com/chef/chef/pull/11311) ([tas50](https://github.com/tas50)) <!-- 16.13.4 -->
