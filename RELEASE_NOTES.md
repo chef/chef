@@ -66,7 +66,7 @@ We now include a `centos_stream_platform?` helper to determine if your CentOS re
 
 #### dsc_script and dsc_resource
 
-Our PowerShell integration has been improved to better handle failures that were silently occuring when running some DSC code in Chef Infra Client 16.8 and later. Thanks for reporting this problem [@jeremyciak](https://github.com/jeremyciak)!
+Our PowerShell integration has been improved to better handle failures that were silently occurring when running some DSC code in Chef Infra Client 16.8 and later. Thanks for reporting this problem [@jeremyciak](https://github.com/jeremyciak)!
 
 ### Platform Support Updates
 
