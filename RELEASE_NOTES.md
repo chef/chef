@@ -60,7 +60,7 @@ Our Ubuntu packages are now FIPS compliant for all your FedRAMP needs.
 
 ### Chef Language Additions
 
-We now include a `centos_stream_platform?` helper to determine if your CentOS release is a standard [CentOS](https://www.centos.org/centos-linux/) release or a [CentOS Stream](https://www.centos.org/centos-stream/) release. This helper can be used in attributes files, recipes, and custome resources. Thanks for this new helper [@ramereth](https://github.com/ramereth)!
+We now include a `centos_stream_platform?` helper to determine if your CentOS release is a standard [CentOS](https://www.centos.org/centos-linux/) release or a [CentOS Stream](https://www.centos.org/centos-stream/) release. This helper can be used in attributes files, recipes, and custom resources. Thanks for this new helper [@ramereth](https://github.com/ramereth)!
 
 ### Resource Improvements
 
