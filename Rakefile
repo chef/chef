@@ -66,7 +66,7 @@ task :install do
 end
 
 namespace :install do
-  task local: "pre_install:all"
+  task local: "super_install"
 
   task :local do
     chef_bin_path = ::File.join(::File.dirname(__FILE__), "chef-bin")
