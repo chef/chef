@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 056f23b05f5f820bbc1da1bb0d21f96065abaea5
+  revision: 0804257d21af21e96a0e00bc7ea3cce9174dd013
   branch: 16-stable
   specs:
-    ohai (16.12.3)
+    ohai (16.13.0)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -176,7 +176,7 @@ GEM
     faraday-net_http (1.0.1)
     faraday_middleware (1.0.0)
       faraday (~> 1.0)
-    fauxhai-ng (8.7.1)
+    fauxhai-ng (9.0.0)
       net-ssh
     ffi (1.15.0)
     ffi (1.15.0-x64-mingw32)
@@ -273,12 +273,12 @@ GEM
       tty-color (~> 0.5)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.13.1)
+    pry (0.14.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    pry-byebug (3.9.0)
+    pry-byebug (3.8.0)
       byebug (~> 11.0)
-      pry (~> 0.13.0)
+      pry (~> 0.10)
     pry-stack_explorer (0.6.1)
       binding_of_caller (~> 1.0)
       pry (~> 0.13)
