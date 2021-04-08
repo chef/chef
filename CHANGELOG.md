@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.198 -->
-## [v17.0.198](https://github.com/chef/chef/tree/v17.0.198) (2021-04-08)
+<!-- latest_release 17.0.200 -->
+## [v17.0.200](https://github.com/chef/chef/tree/v17.0.200) (2021-04-08)
 
 #### Merged Pull Requests
-- Ruby-3.0 builds [#11336](https://github.com/chef/chef/pull/11336) ([lamont-granquist](https://github.com/lamont-granquist))
+- Produce FIPS builds on Ubuntu as well [#11339](https://github.com/chef/chef/pull/11339) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Produce FIPS builds on Ubuntu as well [#11339](https://github.com/chef/chef/pull/11339) ([tas50](https://github.com/tas50)) <!-- 17.0.200 -->
 - Ruby-3.0 builds [#11336](https://github.com/chef/chef/pull/11336) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.198 -->
 - Add centos_stream_platform? helper [#11296](https://github.com/chef/chef/pull/11296) ([ramereth](https://github.com/ramereth)) <!-- 17.0.197 -->
 - Fix failing Fauxhai related specs [#11329](https://github.com/chef/chef/pull/11329) ([tas50](https://github.com/tas50)) <!-- 17.0.196 -->
