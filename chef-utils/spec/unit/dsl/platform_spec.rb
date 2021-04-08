@@ -145,6 +145,20 @@ RSpec.describe ChefUtils::DSL::Platform do
     platform_reports_true_for(:centos?, :centos_platform?)
   end
 
+  context "on centos stream w/o os_release" do
+    let(:options) { { platform: "centos" } }
+    let(:node) { { "platform" => "centos", "platform_version" => "8", "platform_family" => "rhel", "os" => "linux", "lsb" => { "id" => "CentOSStream" }, "os_release" => nil } }
+
+    platform_reports_true_for(:centos?, :centos_platform?, :centos_stream_platform?)
+  end
+
+  context "on centos stream w/ os_release" do
+    let(:options) { { platform: "centos" } }
+    let(:node) { { "platform" => "centos", "platform_version" => "8", "platform_family" => "rhel", "os" => "linux", "os_release" => { "name" => "CentOS Stream" } } }
+
+    platform_reports_true_for(:centos?, :centos_platform?, :centos_stream_platform?)
+  end
+
   context "on clearos" do
     let(:options) { { platform: "clearos" } }
 
