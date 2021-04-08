@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.15 -->
-## [v16.13.15](https://github.com/chef/chef/tree/v16.13.15) (2021-04-08)
+<!-- latest_release 16.13.16 -->
+## [v16.13.16](https://github.com/chef/chef/tree/v16.13.16) (2021-04-08)
 
 #### Merged Pull Requests
-- Produce FIPS builds on Ubuntu as well [#11328](https://github.com/chef/chef/pull/11328) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.12.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.16 -->
 - Produce FIPS builds on Ubuntu as well [#11328](https://github.com/chef/chef/pull/11328) ([tas50](https://github.com/tas50)) <!-- 16.13.15 -->
 - Update Ohai to 16.13 [#11335](https://github.com/chef/chef/pull/11335) ([tas50](https://github.com/tas50)) <!-- 16.13.14 -->
 - fix powershell exec segfaults on DSC_Resource [#11334](https://github.com/chef/chef/pull/11334) ([tas50](https://github.com/tas50)) <!-- 16.13.13 -->
