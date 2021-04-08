@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.195 -->
-## [v17.0.195](https://github.com/chef/chef/tree/v17.0.195) (2021-04-08)
+<!-- latest_release 17.0.196 -->
+## [v17.0.196](https://github.com/chef/chef/tree/v17.0.196) (2021-04-08)
 
 #### Merged Pull Requests
-- fix powershell exec segfaults on DSC_Resource [#11330](https://github.com/chef/chef/pull/11330) ([mwrock](https://github.com/mwrock))
+- Fix failing Fauxhai related specs [#11329](https://github.com/chef/chef/pull/11329) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Fix failing Fauxhai related specs [#11329](https://github.com/chef/chef/pull/11329) ([tas50](https://github.com/tas50)) <!-- 17.0.196 -->
 - fix powershell exec segfaults on DSC_Resource [#11330](https://github.com/chef/chef/pull/11330) ([mwrock](https://github.com/mwrock)) <!-- 17.0.195 -->
 - Bump fauxhai-ng to 9.0.0 and InSpec to 4.31 [#11325](https://github.com/chef/chef/pull/11325) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.194 -->
 - Bump omnibus-software from `ef7b496` to `56f6321` in /omnibus [#11323](https://github.com/chef/chef/pull/11323) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 17.0.193 -->
