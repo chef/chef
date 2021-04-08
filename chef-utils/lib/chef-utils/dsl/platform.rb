@@ -126,7 +126,7 @@ module ChefUtils
       # Determine if the current node is CentOS Stream.
       #
       # @param [Chef::Node] node the node to check
-      # @since 17.0
+      # @since 16.13
       #
       # @return [Boolean]
       #
