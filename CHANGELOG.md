@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.12 -->
-## [v16.13.12](https://github.com/chef/chef/tree/v16.13.12) (2021-04-08)
+<!-- latest_release 16.13.13 -->
+## [v16.13.13](https://github.com/chef/chef/tree/v16.13.13) (2021-04-08)
 
 #### Merged Pull Requests
-- Update name of macos 11 in expeditor config [#11333](https://github.com/chef/chef/pull/11333) ([tas50](https://github.com/tas50))
+- fix powershell exec segfaults on DSC_Resource [#11334](https://github.com/chef/chef/pull/11334) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.12.3 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix powershell exec segfaults on DSC_Resource [#11334](https://github.com/chef/chef/pull/11334) ([tas50](https://github.com/tas50)) <!-- 16.13.13 -->
 - Update name of macos 11 in expeditor config [#11333](https://github.com/chef/chef/pull/11333) ([tas50](https://github.com/tas50)) <!-- 16.13.12 -->
 - Fix failing Fauxhai related specs [#11332](https://github.com/chef/chef/pull/11332) ([tas50](https://github.com/tas50)) <!-- 16.13.11 -->
 - Chef 16: Add centos_stream_platform? helper [#11331](https://github.com/chef/chef/pull/11331) ([ramereth](https://github.com/ramereth)) <!-- 16.13.10 -->
