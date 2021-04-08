@@ -32,7 +32,7 @@ Other useful resources for Chef Infra users:
 
 Issues can be reported by using [GitHub Issues](https://github.com/chef/chef/issues).
 
-Note that this repository is primarily for reporting issues in the chef-client itself.  For reporting issues against other Chef projects, please look up the appropriate repository. If you're unsure where to submit an issue, please ask in the #chef-dev channel in [Chef Community Slack](https://community-slack.chef.io/).
+Note that this repository is primarily for reporting issues in the chef-client itself. For reporting issues against other Chef projects, please look up the appropriate repository. If you're unsure where to submit an issue, please ask in the #chef-dev channel in [Chef Community Slack](https://community-slack.chef.io/).
 
 ## How We Build & Release Chef
 
