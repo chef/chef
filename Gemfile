@@ -33,7 +33,8 @@ end
 
 group(:omnibus_package, :pry) do
   gem "pry"
-  gem "pry-byebug"
+  # byebug does not install on freebsd on ruby 3.0
+  #gem "pry-byebug"
   gem "pry-stack_explorer"
 end
 
