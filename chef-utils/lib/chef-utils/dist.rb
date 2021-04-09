@@ -88,7 +88,7 @@ module ChefUtils
     end
 
     class Workstation
-      # The suffix for Chef Workstion's /opt/chef-workstation or C:\\opscode\chef-workstation
+      # The suffix for Chef Workstation's /opt/chef-workstation or C:\\opscode\chef-workstation
       DIR_SUFFIX = "chef-workstation"
     end
 
