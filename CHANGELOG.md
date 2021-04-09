@@ -2,10 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release -->
+<!-- latest_release 16.13.17 -->
+## [v16.13.17](https://github.com/chef/chef/tree/v16.13.17) (2021-04-09)
+
+#### Merged Pull Requests
+- Chef 16: Use dist constants in rubygems provider for is_omnibus? method [#11348](https://github.com/chef/chef/pull/11348) ([ramereth](https://github.com/ramereth))
 <!-- latest_release -->
 
-<!-- release_rollup -->
+<!-- release_rollup since=16.13.16 -->
+### Changes not yet released to stable
+
+#### Merged Pull Requests
+- Chef 16: Use dist constants in rubygems provider for is_omnibus? method [#11348](https://github.com/chef/chef/pull/11348) ([ramereth](https://github.com/ramereth)) <!-- 16.13.17 -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
