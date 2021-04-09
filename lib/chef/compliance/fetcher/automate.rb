@@ -46,13 +46,6 @@ class Chef
 
             config["token"] = Chef::Config[:data_collector][:token]
 
-            if config["token"].nil?
-              raise Inspec::FetcherFailure,
-                "No data-collector token set, which is required by the chef-automate fetcher. " \
-                "Set the `data_collector.token` configuration parameter in your client.rb " \
-                'or use the "chef-server-automate" reporter which does not require any ' \
-                "data-collector settings and uses #{ChefUtils::Dist::Server::PRODUCT} to fetch profiles."
-            end
           end
 
           new(profile_fetch_url, config)

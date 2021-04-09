@@ -1,4 +1,5 @@
 require "spec_helper"
+require "chef/compliance/reporter/compliance_enforcer"
 
 describe Chef::Compliance::Reporter::AuditEnforcer do
   let(:reporter) { Chef::Compliance::Reporter::AuditEnforcer.new }
