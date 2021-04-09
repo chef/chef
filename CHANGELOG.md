@@ -2,37 +2,35 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.16 -->
-## [v16.13.16](https://github.com/chef/chef/tree/v16.13.16) (2021-04-08)
-
-#### Merged Pull Requests
-- Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_release -->
 <!-- latest_release -->
 
-<!-- release_rollup since=16.12.3 -->
-### Changes not yet released to stable
-
-#### Merged Pull Requests
-- Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.16 -->
-- Produce FIPS builds on Ubuntu as well [#11328](https://github.com/chef/chef/pull/11328) ([tas50](https://github.com/tas50)) <!-- 16.13.15 -->
-- Update Ohai to 16.13 [#11335](https://github.com/chef/chef/pull/11335) ([tas50](https://github.com/tas50)) <!-- 16.13.14 -->
-- fix powershell exec segfaults on DSC_Resource [#11334](https://github.com/chef/chef/pull/11334) ([tas50](https://github.com/tas50)) <!-- 16.13.13 -->
-- Update name of macos 11 in expeditor config [#11333](https://github.com/chef/chef/pull/11333) ([tas50](https://github.com/tas50)) <!-- 16.13.12 -->
-- Fix failing Fauxhai related specs [#11332](https://github.com/chef/chef/pull/11332) ([tas50](https://github.com/tas50)) <!-- 16.13.11 -->
-- Chef 16: Add centos_stream_platform? helper [#11331](https://github.com/chef/chef/pull/11331) ([ramereth](https://github.com/ramereth)) <!-- 16.13.10 -->
-- Bump inspec-core-bin to 4.31.0 [#11324](https://github.com/chef/chef/pull/11324) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.9 -->
-- Bump omnibus-software from `ef7b496` to `56f6321` in /omnibus [#11322](https://github.com/chef/chef/pull/11322) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.8 -->
-- Bump ffi-yajl to 2.4.0 [#11316](https://github.com/chef/chef/pull/11316) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.7 -->
-- Bump libyajl2 to 2.1.0 [#11314](https://github.com/chef/chef/pull/11314) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.6 -->
-- Bump omnibus-software from `3d331d8` to `ef7b496` in /omnibus [#11317](https://github.com/chef/chef/pull/11317) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.5 -->
-- Minor dep bump for parser [#11311](https://github.com/chef/chef/pull/11311) ([tas50](https://github.com/tas50)) <!-- 16.13.4 -->
-- Bump omnibus-software from `8e34218` to `3d331d8` in /omnibus [#11309](https://github.com/chef/chef/pull/11309) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.3 -->
-- Update to Ruby 2.7.3 [#11306](https://github.com/chef/chef/pull/11306) ([tas50](https://github.com/tas50)) <!-- 16.13.2 -->
-- Bump omnibus-software from `76b31d1` to `f745eed` in /omnibus [#11303](https://github.com/chef/chef/pull/11303) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.1 -->
-- Remove soon to be EOL Ubuntu 16.04 packages [#11305](https://github.com/chef/chef/pull/11305) ([tas50](https://github.com/tas50)) <!-- 16.13.0 -->
+<!-- release_rollup -->
 <!-- release_rollup -->
 
 <!-- latest_stable_release -->
+## [v16.13.16](https://github.com/chef/chef/tree/v16.13.16) (2021-04-09)
+
+#### Merged Pull Requests
+- Remove soon to be EOL Ubuntu 16.04 packages [#11305](https://github.com/chef/chef/pull/11305) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `76b31d1` to `f745eed` in /omnibus [#11303](https://github.com/chef/chef/pull/11303) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Update to Ruby 2.7.3 [#11306](https://github.com/chef/chef/pull/11306) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `8e34218` to `3d331d8` in /omnibus [#11309](https://github.com/chef/chef/pull/11309) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Minor dep bump for parser [#11311](https://github.com/chef/chef/pull/11311) ([tas50](https://github.com/tas50))
+- Bump omnibus-software from `3d331d8` to `ef7b496` in /omnibus [#11317](https://github.com/chef/chef/pull/11317) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump libyajl2 to 2.1.0 [#11314](https://github.com/chef/chef/pull/11314) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump ffi-yajl to 2.4.0 [#11316](https://github.com/chef/chef/pull/11316) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `ef7b496` to `56f6321` in /omnibus [#11322](https://github.com/chef/chef/pull/11322) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
+- Bump inspec-core-bin to 4.31.0 [#11324](https://github.com/chef/chef/pull/11324) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Chef 16: Add centos_stream_platform? helper [#11331](https://github.com/chef/chef/pull/11331) ([ramereth](https://github.com/ramereth))
+- Fix failing Fauxhai related specs [#11332](https://github.com/chef/chef/pull/11332) ([tas50](https://github.com/tas50))
+- Update name of macos 11 in expeditor config [#11333](https://github.com/chef/chef/pull/11333) ([tas50](https://github.com/tas50))
+- fix powershell exec segfaults on DSC_Resource [#11334](https://github.com/chef/chef/pull/11334) ([tas50](https://github.com/tas50))
+- Update Ohai to 16.13 [#11335](https://github.com/chef/chef/pull/11335) ([tas50](https://github.com/tas50))
+- Produce FIPS builds on Ubuntu as well [#11328](https://github.com/chef/chef/pull/11328) ([tas50](https://github.com/tas50))
+- Bump inspec-core-bin to 4.31.1 [#11341](https://github.com/chef/chef/pull/11341) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+<!-- latest_stable_release -->
+
 ## [v16.12.3](https://github.com/chef/chef/tree/v16.12.3) (2021-04-03)
 
 #### Merged Pull Requests
@@ -51,7 +49,6 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 - Skip the cron integration tests on macOS 11+ [#11293](https://github.com/chef/chef/pull/11293) ([tas50](https://github.com/tas50))
 - Update OpenSSL to 1.1.1k on macOS [#11294](https://github.com/chef/chef/pull/11294) ([tas50](https://github.com/tas50))
 - Fix the cron skip on macOS logic [#11298](https://github.com/chef/chef/pull/11298) ([tas50](https://github.com/tas50))
-<!-- latest_stable_release -->
 
 ## [v16.11.7](https://github.com/chef/chef/tree/v16.11.7) (2021-03-18)
 
