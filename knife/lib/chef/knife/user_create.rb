@@ -55,11 +55,11 @@ class Chef
         description: "Prompt for user password"
 
       option :first_name,
-        long: "--first-name FIRSTNAME",
+        long: "--first-name FIRST_NAME",
         description: "First name for the user"
 
       option :last_name,
-        long: "--last-name LASTNAME",
+        long: "--last-name LAST_NAME",
         description: "Last name for the user"
 
       option :email,
