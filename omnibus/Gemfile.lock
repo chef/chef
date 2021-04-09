@@ -18,7 +18,7 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 438a681cc2a98be4848a938501f21e4cdf964888
+  revision: 730b793b451e2e0e97f8212d37ea514fc4960650
   branch: lcg/nobupatches
   specs:
     omnibus-software (4.0.0)
