@@ -18,8 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
-  revision: 0dcaeb1940283bcb98c00dcfe9bb2821726ffa0a
-  branch: master
+  revision: 438a681cc2a98be4848a938501f21e4cdf964888
+  branch: lcg/nobupatches
   specs:
     omnibus-software (4.0.0)
       omnibus (>= 8.0.0)
@@ -32,7 +32,7 @@ GEM
     artifactory (3.0.15)
     awesome_print (1.9.2)
     aws-eventstream (1.1.1)
-    aws-partitions (1.442.0)
+    aws-partitions (1.443.0)
     aws-sdk-core (3.113.1)
       aws-eventstream (~> 1, >= 1.0.2)
       aws-partitions (~> 1, >= 1.239.0)
@@ -286,7 +286,7 @@ GEM
     octokit (4.20.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.12.3)
+    ohai (16.13.0)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -465,4 +465,4 @@ DEPENDENCIES
   winrm-fs (~> 1.0)
 
 BUNDLED WITH
-   2.1.4
+   2.2.3
