@@ -234,7 +234,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         resource.run_action(:create)
       end
 
-      it "succeeds with the main certificate's thumbprint" do
+      it "succeeds with the main certificate's thumbprint", :focus do
         expect(Chef::Log).to receive(:info).with("Certificate is valid")
 
         resource.source = p7b_thumbprint

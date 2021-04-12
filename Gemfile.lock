@@ -1,10 +1,18 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
+<<<<<<< HEAD
   revision: def330761a328caecf463b684c0648dfca582f72
   branch: master
   specs:
     chefstyle (1.7.5)
       rubocop (= 1.12.1)
+=======
+  revision: 6d136684438e8809e703feb84c46c69e90e042a7
+  branch: master
+  specs:
+    chefstyle (1.7.4)
+      rubocop (= 1.12.0)
+>>>>>>> ee0114abeb... uploading this for others to review
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -207,7 +215,11 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
+<<<<<<< HEAD
     inspec-core (4.32.0)
+=======
+    inspec-core (4.29.3)
+>>>>>>> ee0114abeb... uploading this for others to review
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
@@ -230,8 +242,13 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
+<<<<<<< HEAD
     inspec-core-bin (4.32.0)
       inspec-core (= 4.32.0)
+=======
+    inspec-core-bin (4.29.3)
+      inspec-core (= 4.29.3)
+>>>>>>> ee0114abeb... uploading this for others to review
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -312,7 +329,11 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
+<<<<<<< HEAD
     rubocop (1.12.1)
+=======
+    rubocop (1.12.0)
+>>>>>>> ee0114abeb... uploading this for others to review
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
@@ -340,7 +361,11 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
+<<<<<<< HEAD
     train-core (3.6.2)
+=======
+    train-core (3.5.5)
+>>>>>>> ee0114abeb... uploading this for others to review
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
