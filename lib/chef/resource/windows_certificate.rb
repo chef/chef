@@ -80,6 +80,8 @@ class Chef
         description: "Use the `CurrentUser` store instead of the default `LocalMachine` store. Note: Prior to #{ChefUtils::Dist::Infra::CLIENT}. 16.10 this property was ignored.",
         default: false
 
+      deprecated_property_alias :cert_path, :output_path, 'The cert_path property was renamed output_path in the 17.0 release of this cookbook. Please update your cookbooks to use the new property name.'
+
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
         description: "Ensure that sensitive resource data is not logged by the #{ChefUtils::Dist::Infra::CLIENT}.",
@@ -92,11 +94,9 @@ class Chef
 
       property :output_path, String,
         description: "A path on the node where a certificate object (pfx, pem, cer, key, etc) can be exported to.",
-        introduced: "16.10"
+        introduced: "17.0"
 
-      action :create do
-        description "Creates or updates a certificate."
-
+      action :create, description: "Creates or updates a certificate." do
         ext = get_file_extension(new_resource.source)
 
         # PFX certificates contains private keys and we import them with some other approach
@@ -104,8 +104,7 @@ class Chef
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
-      action :acl_add do
-        description "Adds read-only entries to a certificate's private key ACL."
+      action :acl_add, description: "Adds read-only entries to a certificate's private key ACL." do
 
         if ::File.exist?(new_resource.source)
           hash = "$cert.GetCertHashString()"
@@ -128,9 +127,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Deletes a certificate."
-
+      action :delete, description: "Deletes a certificate." do
         cert_obj = fetch_cert
 
         if cert_obj
@@ -142,9 +139,7 @@ class Chef
         end
       end
 
-      action :fetch do
-        description "Fetches a certificate."
-
+      action :fetch, description: "Fetches a certificate." do
         if !new_resource.output_path
           raise Chef::Exceptions::ResourceNotFound, "You must include an output_path parameter when calling the fetch action"
         end
@@ -164,9 +159,7 @@ class Chef
         end
       end
 
-      action :verify do
-        description "Verifies a certificate and logs the result"
-
+      action :verify, description: "Verifies a certificate and logs the result" do
         out = verify_cert
         if !!out == out
           out = out ? "Certificate is valid" : "Certificate not valid"
