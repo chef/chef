@@ -150,10 +150,7 @@ class Chef
           raise Chef::Exceptions::ResourceNotFound, "You must include an output_path parameter when calling the fetch action"
         end
 
-        puts "Output path is #{new_resource.output_path}"
-
         if ::File.extname(new_resource.output_path) == ".pfx"
-          puts "Thumbprint is : #{resolve_thumbprint(new_resource.source)}"
           powershell_exec!(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
         else
           cert_obj = fetch_cert
@@ -216,12 +213,6 @@ class Chef
           directory = ::File.dirname(new_resource.output_path)
           pfx_file = file_name + ".pfx"
           new_pfx_output_path = ::File.join(Chef::FileCache.create_cache_path('pfx_files'), pfx_file)
-          puts "In Key Fetch"
-          # puts "Thumbprint is #{resolve_thumbprint(new_resource.source)}"
-          # puts "Store Location : #{ps_cert_location}"
-          # puts "Store Name : #{new_resource.store_name}"
-          # puts "Output Path : #{new_pfx_output_path}"
-          # puts "Password : #{new_resource.pfx_password}"
           powershell_exec(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_pfx_output_path, password: new_resource.pfx_password ))
           pkcs12 = OpenSSL::PKCS12.new(::File.binread(new_pfx_output_path), new_resource.pfx_password)
           f = ::File.open(new_resource.output_path, "w")
@@ -312,16 +303,10 @@ class Chef
         end
 
         def pfx_ps_cmd(thumbprint, store_location: "LocalMachine", store_name: "My", output_path:, password: )
-          puts "My thumbprint is : #{thumbprint}"
-          puts "My store location is : #{store_location}"
-          puts "My store name is : #{store_name}"
-          puts "My output path is : #{output_path}"
-          puts  "My password is : #{password}"
-          require "pry"
-          binding.pry
+          # require "pry"
+          # binding.pry
           <<-CMD
             $mypwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
-            Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse
             $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint.upcase}" }
             # | Export-PfxCertificate -FilePath #{output_path} -Password $mypwd
             Export-PfxCertificate -Cert $cert -FilePath "#{output_path}" -Password $mypwd
