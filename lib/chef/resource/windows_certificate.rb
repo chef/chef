@@ -303,8 +303,6 @@ class Chef
         end
 
         def pfx_ps_cmd(thumbprint, store_location: "LocalMachine", store_name: "My", output_path:, password: )
-          # require "pry"
-          # binding.pry
           <<-CMD
             $mypwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
             $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint.upcase}" }

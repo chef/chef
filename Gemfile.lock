@@ -207,7 +207,11 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
+<<<<<<< HEAD
     inspec-core (4.31.1)
+=======
+    inspec-core (4.29.3)
+>>>>>>> ee0114abeba034d57630f2ac555fd480b733a9e0
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
@@ -230,8 +234,13 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
+<<<<<<< HEAD
     inspec-core-bin (4.31.1)
       inspec-core (= 4.31.1)
+=======
+    inspec-core-bin (4.29.3)
+      inspec-core (= 4.29.3)
+>>>>>>> ee0114abeba034d57630f2ac555fd480b733a9e0
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -340,7 +349,11 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
+<<<<<<< HEAD
     train-core (3.6.0)
+=======
+    train-core (3.5.5)
+>>>>>>> ee0114abeba034d57630f2ac555fd480b733a9e0
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
