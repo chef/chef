@@ -40,6 +40,18 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
     EOC
   end
 
+  def list_certificates(store_location: "LocalMachine", store_name: store)
+    powershell_exec(<<~EOC)
+      Get-ChildItem -Force -Path Cert:\\#{store_location}\\#{store_name} -Recurse
+    EOC
+  end
+
+  def refresh_certstore(store_location: "LocalMachine")
+    powershell_exec(<<~EOC)
+      Get-ChildItem -Force -Path Cert:\\#{store_location} -Recurse
+    EOC
+  end
+
   let(:password) { "P@ssw0rd!" }
   let(:store) { "Chef-Functional-Test" }
   let(:store_name) { "MY" }
@@ -74,12 +86,16 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
       .and_return(true)
 
     create_store
+
   end
 
   after { delete_store }
 
   describe "action: create" do
     it "starts with no certificates" do
+      delete_store
+      create_store
+      foo = list_certificates
       expect(certificate_count).to eq(0)
     end
 
@@ -171,9 +187,13 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
 
       expect { resource.run_action(:create) }.to raise_error(OpenSSL::PKCS12::PKCS12Error)
     end
+    after { delete_store }
   end
 
   describe "action: verify" do
+    before do
+      create_store
+    end
     it "fails with no certificates in the store" do
       expect(Chef::Log).to receive(:info).with("Certificate not found")
 
@@ -214,7 +234,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         resource.run_action(:create)
       end
 
-      it "succeeds with the main certificate's thumbprint", :focus do
+      it "succeeds with the main certificate's thumbprint" do
         expect(Chef::Log).to receive(:info).with("Certificate is valid")
 
         resource.source = p7b_thumbprint
@@ -284,13 +304,15 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
 
     context "with a pfx/pkcs12 object in the store" do
       before do
+        create_store
+        refresh_certstore
         resource.source = pfx_path
         resource.pfx_password = password
         resource.exportable = true
         resource.run_action(:create)
       end
 
-      it "exports a PFX file with a valid thumbprint", :focus do
+      it "exports a PFX file with a valid thumbprint" do
         resource.source = tests_thumbprint
         resource.pfx_password = password
         resource.output_path = pfx_output_path
@@ -311,41 +333,11 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         resource.pfx_password = password
         expect { resource.run_action :fetch }.to raise_error(::Chef::Exceptions::ResourceNotFound)
       end
+
+      after { delete_store }
+
     end
   end
-
-  # describe "action: fetch pfx objects" do
-  #   before do
-  #     resource.source = pfx_path
-  #     resource.pfx_password = password
-  #     resource.exportable = true
-  #     resource.run_action(:create)
-  #   end
-
-  #   context "with a pfx/pkcs12 object in the store" do
-  #     it "exports a PFX file with a valid thumbprint" do
-  #       resource.source = tests_thumbprint
-  #       resource.pfx_password = password
-  #       resource.output_path = pfx_output_path
-  #       resource.run_action(:fetch)
-  #       expect(File.exist?(pfx_output_path)).to be_truthy
-  #     end
-
-  #     it "exports a key file with a valid thumbprint" do
-  #       resource.source = tests_thumbprint
-  #       resource.pfx_password = password
-  #       resource.output_path = key_output_path
-  #       resource.run_action(:fetch)
-  #       expect(File.exist?(key_output_path)).to be_truthy
-  #     end
-
-  #     it "throws an exception when output_path is not specified" do
-  #       resource.source = tests_thumbprint
-  #       resource.pfx_password = password
-  #       expect { resource.run_action :fetch }.to raise_error(::Chef::Exceptions::ResourceNotFound)
-  #     end
-  #   end
-  # end
 
   describe "action: delete" do
     it "throws an argument error when attempting to delete a certificate that doesn't exist" do
