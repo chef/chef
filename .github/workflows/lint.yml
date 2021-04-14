@@ -1,5 +1,5 @@
 ---
-name: ci
+name: lint
 
 "on":
   pull_request:
