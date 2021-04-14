@@ -234,7 +234,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         resource.run_action(:create)
       end
 
-      it "succeeds with the main certificate's thumbprint", :focus do
+      it "succeeds with the main certificate's thumbprint" do
         expect(Chef::Log).to receive(:info).with("Certificate is valid")
 
         resource.source = p7b_thumbprint
@@ -310,7 +310,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
         resource.run_action(:create)
       end
 
-      it "exports a PFX file with a valid thumbprint", :focus do
+      it "exports a PFX file with a valid thumbprint" do
         resource.source = tests_thumbprint
         resource.pfx_password = password
         resource.output_path = pfx_output_path
