@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 0804257d21af21e96a0e00bc7ea3cce9174dd013
+  revision: f02500255550d96181c7707dfa7f7ce8a32983b0
   branch: 16-stable
   specs:
     ohai (16.13.0)
@@ -333,7 +333,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
-    train-core (3.6.0)
+    train-core (3.6.2)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
