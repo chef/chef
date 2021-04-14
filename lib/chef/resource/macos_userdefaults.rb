@@ -101,25 +101,25 @@ class Chef
         default: false,
         desired_state: false
 
-      load_current_value do |desired|
-        Chef::Log.debug "#load_current_value: shelling out \"#{defaults_export_cmd(desired).join(" ")}\" to determine state"
-        state = shell_out(defaults_export_cmd(desired), user: desired.user)
+      load_current_value do |new_resource|
+        Chef::Log.debug "#load_current_value: shelling out \"#{defaults_export_cmd(new_resource).join(" ")}\" to determine state"
+        state = shell_out(defaults_export_cmd(new_resource), user: new_resource.user)
 
         if state.error? || state.stdout.empty?
-          Chef::Log.debug "#load_current_value: #{defaults_export_cmd(desired).join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
+          Chef::Log.debug "#load_current_value: #{defaults_export_cmd(new_resource).join(" ")} returned stdout: #{state.stdout} and stderr: #{state.stderr}"
           current_value_does_not_exist!
         end
 
         plist_data = ::Plist.parse_xml(state.stdout)
 
         # handle the situation where the key doesn't exist in the domain
-        if plist_data.key?(desired.key)
-          key desired.key
+        if plist_data.key?(new_resource.key)
+          key new_resource.key
         else
           current_value_does_not_exist!
         end
 
-        value plist_data[desired.key]
+        value plist_data[new_resource.key]
       end
 
       #

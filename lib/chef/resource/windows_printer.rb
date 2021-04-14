@@ -86,8 +86,8 @@ class Chef
       PRINTERS_REG_KEY = 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Print\Printers\\'.freeze unless defined?(PRINTERS_REG_KEY)
 
       # @todo Set @current_resource printer properties from registry
-      load_current_value do |desired|
-        name desired.name
+      load_current_value do |new_resource|
+        name new_resource.name
       end
 
       action :create, description: "Create a new printer and printer port, if one doesn't already" do

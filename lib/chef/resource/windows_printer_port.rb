@@ -89,10 +89,10 @@ class Chef
       PORTS_REG_KEY = 'HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Monitors\Standard TCP/IP Port\Ports\\'.freeze unless defined?(PORTS_REG_KEY)
 
       # @todo Set @current_resource port properties from registry
-      load_current_value do |desired|
-        name desired.name
-        ipv4_address desired.ipv4_address
-        port_name desired.port_name || "IP_#{desired.ipv4_address}"
+      load_current_value do |new_resource|
+        name new_resource.name
+        ipv4_address new_resource.ipv4_address
+        port_name new_resource.port_name || "IP_#{new_resource.ipv4_address}"
       end
 
       action :create, description: "Create the printer port, if one doesn't already exist" do

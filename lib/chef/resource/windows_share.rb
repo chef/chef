@@ -118,11 +118,11 @@ class Chef
       # Specifies which files and folders in the SMB share are visible to users. AccessBased: SMB does not the display the files and folders for a share to a user unless that user has rights to access the files and folders. By default, access-based enumeration is disabled for new SMB shares. Unrestricted: SMB displays files and folders to a user even when the user does not have permission to access the items.
       # property :folder_enumeration_mode, String, equal_to: %(AccessBased Unrestricted)
 
-      load_current_value do |desired|
+      load_current_value do |new_resource|
         # this command selects individual objects because EncryptData & CachingMode have underlying
         # types that get converted to their Integer values by ConvertTo-Json & we need to make sure
         # those get written out as strings
-        share_state_cmd = "Get-SmbShare -Name '#{desired.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData"
+        share_state_cmd = "Get-SmbShare -Name '#{new_resource.share_name}' | Select-Object Name,Path, Description, Temporary, CATimeout, ContinuouslyAvailable, ConcurrentUserLimit, EncryptData"
 
         Chef::Log.debug("Running '#{share_state_cmd}' to determine share state'")
         ps_results = powershell_exec(share_state_cmd)
@@ -146,14 +146,14 @@ class Chef
         encrypt_data results["EncryptData"]
         # folder_enumeration_mode results['FolderEnumerationMode']
 
-        perm_state_cmd = %{Get-SmbShareAccess -Name "#{desired.share_name}" | Select-Object AccountName,AccessControlType,AccessRight}
+        perm_state_cmd = %{Get-SmbShareAccess -Name "#{new_resource.share_name}" | Select-Object AccountName,AccessControlType,AccessRight}
 
         Chef::Log.debug("Running '#{perm_state_cmd}' to determine share permissions state'")
         ps_perm_results = powershell_exec(perm_state_cmd)
 
         # we raise here instead of warning like above because we'd only get here if the above Get-SmbShare
         # command was successful and that continuing would leave us with 1/2 known state
-        raise "Could not determine #{desired.share_name} share permissions by running '#{perm_state_cmd}'" if ps_perm_results.error?
+        raise "Could not determine #{new_resource.share_name} share permissions by running '#{perm_state_cmd}'" if ps_perm_results.error?
 
         Chef::Log.debug("The Get-SmbShareAccess results were #{ps_perm_results.result}")
 
