@@ -295,9 +295,9 @@ class Chef
 
         def pfx_ps_cmd(thumbprint, store_location: "LocalMachine", store_name: "My", output_path:, password: )
           <<-CMD
-            $mypwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
+            $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
             $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint.upcase}" }
-            Export-PfxCertificate -Cert $cert -FilePath "#{output_path}" -Password $mypwd
+            Export-PfxCertificate -Cert $cert -FilePath "#{output_path}" -Password $my_pwd
           CMD
         end
 
@@ -387,7 +387,7 @@ class Chef
               ::File.exist?(new_resource.source)
               contents = ::File.binread(new_resource.source)
             rescue => exception
-              message = "Unable to load the certificate object from the specified localpath : #{new_resource.source}\n"
+              message = "Unable to load the certificate object from the specified local path : #{new_resource.source}\n"
               message << exception.message
               raise Chef::Exceptions::FileNotFound, message
             end
