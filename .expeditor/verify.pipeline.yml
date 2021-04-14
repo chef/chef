@@ -41,16 +41,6 @@ steps:
   # Tests Ruby 3.0
 #########################################################################
 
-- label: "Chefstyle :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake style
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.0
-
 - label: "Integration Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
