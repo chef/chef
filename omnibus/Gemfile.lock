@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/chef/omnibus
-  revision: dd5789621fa32da5846b9cb92ea902015265734c
+  revision: 0780fb3b48cf1a96800a4aaef9e8bbbad97a51e4
   branch: master
   specs:
-    omnibus (8.1.3)
+    omnibus (8.1.5)
       aws-sdk-s3 (~> 1)
       chef-cleanroom (~> 1.0)
       chef-utils (>= 15.4)
@@ -18,7 +18,11 @@ GIT
 
 GIT
   remote: https://github.com/chef/omnibus-software
+<<<<<<< HEAD
   revision: 810a6c469aefab77a577e222317e796159ee81ca
+=======
+  revision: 8d91dc6a566aba77c864678680d4142561b2f655
+>>>>>>> 919f31634b... updated the gems to reflect the correct version of win32-certstore to use
   branch: master
   specs:
     omnibus-software (4.0.0)
@@ -64,12 +68,12 @@ GEM
       solve (~> 4.0)
       thor (>= 0.20)
     builder (3.2.4)
-    chef (16.11.7)
+    chef (16.13.16)
       addressable
       bcrypt_pbkdf (~> 1.1)
       bundler (>= 1.10)
-      chef-config (= 16.11.7)
-      chef-utils (= 16.11.7)
+      chef-config (= 16.13.16)
+      chef-utils (= 16.13.16)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -101,10 +105,61 @@ GEM
       tty-screen (~> 0.6)
       tty-table (~> 0.11)
       uuidtools (>= 2.1.5, < 3.0)
-    chef-cleanroom (1.0.2)
-    chef-config (16.11.7)
+<<<<<<< HEAD
+=======
+    chef (16.13.16-universal-mingw32)
       addressable
-      chef-utils (= 16.11.7)
+      bcrypt_pbkdf (~> 1.1)
+      bundler (>= 1.10)
+      chef-config (= 16.13.16)
+      chef-utils (= 16.13.16)
+      chef-vault
+      chef-zero (>= 14.0.11)
+      diff-lcs (>= 1.2.4, < 1.4.0)
+      ed25519 (~> 1.2)
+      erubis (~> 2.7)
+      ffi (>= 1.9.25)
+      ffi-libarchive (~> 1.0, >= 1.0.3)
+      ffi-yajl (~> 2.2)
+      highline (>= 1.6.9, < 3)
+      iniparse (~> 1.4)
+      inspec-core (~> 4.23)
+      iso8601 (>= 0.12.1, < 0.14)
+      license-acceptance (>= 1.0.5, < 3)
+      mixlib-archive (>= 0.4, < 2.0)
+      mixlib-authentication (>= 2.1, < 4)
+      mixlib-cli (>= 2.1.1, < 3.0)
+      mixlib-log (>= 2.0.3, < 4.0)
+      mixlib-shellout (>= 3.1.1, < 4.0)
+      net-sftp (>= 2.1.2, < 4.0)
+      net-ssh (>= 5.1, < 7)
+      net-ssh-multi (~> 1.2, >= 1.2.1)
+      ohai (~> 16.0)
+      pastel
+      plist (~> 3.2)
+      proxifier (~> 1.0)
+      syslog-logger (~> 1.6)
+      train-core (~> 3.2, >= 3.2.28)
+      train-winrm (>= 0.2.5)
+      tty-prompt (~> 0.21)
+      tty-screen (~> 0.6)
+      tty-table (~> 0.11)
+      uuidtools (>= 2.1.5, < 3.0)
+      win32-api (~> 1.5.3)
+      win32-certstore (~> 0.5.0)
+      win32-event (~> 0.6.1)
+      win32-eventlog (= 0.6.3)
+      win32-mmap (~> 0.4.1)
+      win32-mutex (~> 0.4.2)
+      win32-process (~> 0.9)
+      win32-service (>= 2.1.5, < 3.0)
+      win32-taskscheduler (~> 2.0)
+      wmi-lite (~> 1.0)
+>>>>>>> 919f31634b... updated the gems to reflect the correct version of win32-certstore to use
+    chef-cleanroom (1.0.2)
+    chef-config (16.13.16)
+      addressable
+      chef-utils (= 16.13.16)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -112,7 +167,7 @@ GEM
     chef-telemetry (1.0.29)
       chef-config
       concurrent-ruby (~> 1.0)
-    chef-utils (16.11.7)
+    chef-utils (16.13.16)
     chef-vault (4.1.0)
     chef-zero (15.0.4)
       ffi-yajl (~> 2.2)
@@ -152,7 +207,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.29.3)
+    inspec-core (4.32.0)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
@@ -230,7 +285,7 @@ GEM
     octokit (4.20.0)
       faraday (>= 0.9)
       sawyer (~> 0.8.0, >= 0.5.3)
-    ohai (16.12.3)
+    ohai (16.13.0)
       chef-config (>= 12.8, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
@@ -255,7 +310,7 @@ GEM
       zhexdump (>= 0.0.2)
     plist (3.6.0)
     proxifier (1.0.3)
-    pry (0.14.0)
+    pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
     public_suffix (4.0.6)
