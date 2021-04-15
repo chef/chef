@@ -551,15 +551,6 @@ steps:
         privileged: true
         single-use: true
 
-- label: "Spellcheck"
-  commands:
-    - npm install -g cspell
-    - rake -f tasks/spellcheck.rb spellcheck
-  soft_fail: true
-  expeditor:
-    executor:
-      docker:
-
 - label: ":habicat: Linux plan"
   commands:
     - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux'
