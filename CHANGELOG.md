@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Test running spellcheck in Github Actions [#11373](https://github.com/chef/chef/pull/11373) ([tas50](https://github.com/tas50))
 - Move some testing to GitHub Actions [#11364](https://github.com/chef/chef/pull/11364) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test running spellcheck in Github Actions [#11373](https://github.com/chef/chef/pull/11373) ([tas50](https://github.com/tas50)) <!-- 17.0.205 -->
 - Move some testing to GitHub Actions [#11364](https://github.com/chef/chef/pull/11364) ([tas50](https://github.com/tas50)) <!-- 17.0.205 -->
 - Use new_resource for load_current_value blocks [#11368](https://github.com/chef/chef/pull/11368) ([jasonwbarnett](https://github.com/jasonwbarnett)) <!-- 17.0.205 -->
 - Allow FIPS 140-2 OpenSSL FOM to build on PPC EL platforms [#11358](https://github.com/chef/chef/pull/11358) ([btm](https://github.com/btm)) <!-- 17.0.204 -->
