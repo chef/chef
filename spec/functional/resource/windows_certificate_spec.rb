@@ -304,37 +304,6 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
 
     context "with a pfx/pkcs12 object in the store" do
       before do
-        resource.source = pfx_path
-        resource.pfx_password = password
-        resource.exportable = true
-        resource.run_action(:create)
-      end
-
-      it "exports a PFX file with a valid thumbprint" do
-        resource.source = tests_thumbprint
-        resource.pfx_password = password
-        resource.output_path = pfx_output_path
-        resource.run_action(:fetch)
-        expect(File.exist?(pfx_output_path)).to be_truthy
-      end
-
-      it "exports a key file with a valid thumbprint" do
-        resource.source = tests_thumbprint
-        resource.pfx_password = password
-        resource.output_path = key_output_path
-        resource.run_action(:fetch)
-        expect(File.exist?(key_output_path)).to be_truthy
-      end
-
-      it "throws an exception when output_path is not specified" do
-        resource.source = tests_thumbprint
-        resource.pfx_password = password
-        expect { resource.run_action :fetch }.to raise_error(::Chef::Exceptions::ResourceNotFound)
-      end
-    end
-
-    context "with a pfx/pkcs12 object in the store" do
-      before do
         create_store
         refresh_certstore
         resource.source = pfx_path
