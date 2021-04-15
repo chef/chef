@@ -241,19 +241,6 @@ steps:
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Unit Windows :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_win_unit.ps1
-  expeditor:
-    executor:
-      docker:
-        host_os: windows
-        image: rubydistros/windows-2019:3.0
-        environment:
-          - FORCE_FFI_YAJL=ext
-          - CHEF_LICENSE=accept-no-persist
-        shell: ["powershell", "-Command"]
-
 #########################################################################
   # EXTERNAL GEM TESTING
 #########################################################################
