@@ -1,0 +1,21 @@
+---
+name: lint
+
+"on":
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  chefstyle:
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_WITHOUT: ruby_shadow:ruby_prof:omnibus_package
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 2.7
+        bundler-cache: true
+    - run: bundle exec rake style
