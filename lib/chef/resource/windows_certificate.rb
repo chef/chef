@@ -80,7 +80,7 @@ class Chef
         description: "Use the `CurrentUser` store instead of the default `LocalMachine` store. Note: Prior to #{ChefUtils::Dist::Infra::CLIENT}. 16.10 this property was ignored.",
         default: false
 
-      deprecated_property_alias :cert_path, :output_path, "The cert_path property was renamed output_path in the 17.0 release of this cookbook. Please update your cookbooks to use the new property name."
+      deprecated_property_alias :cert_path, :output_path, "The cert_path property was renamed output_path in the 17.0 release of #{ChefUtils::Dist::Infra::CLIENT}. Please update your cookbooks to use the new property name."
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
