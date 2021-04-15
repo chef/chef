@@ -193,7 +193,7 @@ class Chef
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
           if new_resource.output_path && ::File.extname(new_resource.output_path) == ".key"
             fetch_key
-            # store.get_key(resolve_thumbprint(new_resource.source), store_name: new_resource.store_name, store_location: ps_cert_location)
+
           else
             store.get(resolve_thumbprint(new_resource.source), store_name: new_resource.store_name, store_location: native_cert_location)
           end
