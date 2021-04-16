@@ -63,7 +63,7 @@ class Chef
       DOC
 
       property :source, String,
-        description: "The source file (for create and acl_add), thumbprint (for delete, export and acl_add) or subject (for delete or export) if it differs from the resource block's name.",
+        description: "The source file (for `create` and `acl_add`), thumbprint (for `delete`, `export`, and `acl_add`), or subject (for `delete` or `export`) if it differs from the resource block's name.",
         name_property: true
 
       property :pfx_password, String,
