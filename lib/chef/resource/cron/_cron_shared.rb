@@ -61,7 +61,7 @@ property :user, String,
 
 property :environment, Hash,
   description: "A Hash containing additional arbitrary environment variables under which the cron job will be run in the form of `({'ENV_VARIABLE' => 'VALUE'})`. **Note**: These variables must exist for a command to be run successfully.",
-  default: lazy { {} }
+  default: {}
 
 property :time_out, Hash,
   description: "A Hash of timeouts in the form of `({'OPTION' => 'VALUE'})`. Accepted valid options are:
@@ -69,7 +69,7 @@ property :time_out, Hash,
   - `foreground` (BOOL, default: 'false'),
   - `kill-after` (in seconds),
   - `signal` (a name like 'HUP' or a number)",
-  default: lazy { {} },
+  default: {},
   introduced: "15.7",
   coerce: proc { |h|
     if h.is_a?(Hash)

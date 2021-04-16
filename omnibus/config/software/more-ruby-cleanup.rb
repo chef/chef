@@ -72,6 +72,8 @@ build do
     Dir.glob("#{target_dir}/*/{#{files.join(",")}}").each do |f|
       # chef stores the powershell dlls in the ext dir
       next if File.basename(File.expand_path("..", f)).start_with?("chef-")
+      # ruby-prof has issues/bugs with needing the so in the ext dir
+      next if File.basename(File.expand_path("..", f)).start_with?("ruby-prof-")
 
       puts "Deleting #{f}"
       FileUtils.rm_rf(f)
@@ -82,7 +84,6 @@ build do
     # find the embedded ruby gems dir and clean it up for globbing
     target_dir = "#{install_dir}/embedded/lib/ruby/gems/*/gems".tr('\\', "/")
     files = %w{
-      *.gemspec
       Gemfile
       Rakefile
       tasks

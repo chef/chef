@@ -27,26 +27,26 @@ gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
-  gem "inspec-core", "~> 4.18"
-  gem "inspec-core-bin", "~> 4.18" # need to provide the binaries for inspec
+  gem "inspec-core-bin", "~> 4.24" # need to provide the binaries for inspec
   gem "chef-vault"
 end
 
 group(:omnibus_package, :pry) do
   gem "pry"
-  gem "pry-byebug"
+  # byebug does not install on freebsd on ruby 3.0
+  # gem "pry-byebug"
   gem "pry-stack_explorer"
 end
 
 # Everything except AIX
 group(:ruby_prof) do
-  # ruby-prof 1.3.0 does not compile on our centos6 builders/kitchen testers
-  gem "ruby-prof", "< 1.3.0"
+  gem "ruby-prof"
 end
 
 # Everything except AIX and Windows
 group(:ruby_shadow) do
-  gem "ruby-shadow", platforms: :ruby
+  # if ruby-shadow does a release that supports ruby-3.0 this can be removed
+  gem "ruby-shadow", git: "https://github.com/chef/ruby-shadow", branch: "lcg/ruby-3.0", platforms: :ruby
 end
 
 group(:development, :test) do

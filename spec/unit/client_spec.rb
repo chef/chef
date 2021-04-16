@@ -129,6 +129,7 @@ shared_context "a client run" do
     expect(client.events).to receive(:register).with(instance_of(Chef::DataCollector::Reporter))
     expect(client.events).to receive(:register).with(instance_of(Chef::ResourceReporter))
     expect(client.events).to receive(:register).with(instance_of(Chef::ActionCollection))
+    expect(client.events).to receive(:register).with(instance_of(Chef::Compliance::Runner))
   end
 
   def stub_for_node_load

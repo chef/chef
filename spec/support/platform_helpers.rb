@@ -2,6 +2,7 @@ require "fcntl"
 require "chef/mixin/shell_out"
 require "ohai/mixin/http_helper"
 require "ohai/mixin/gce_metadata"
+require "spec/support/chef_helpers"
 
 class ShellHelpers
   extend Chef::Mixin::ShellOut
@@ -92,14 +93,6 @@ def windows_user_right?(right)
   Chef::ReservedNames::Win32::Security.get_account_right(ENV["USERNAME"]).include?(right)
 end
 
-def macos_1013?
-  macos? && Gem::Requirement.new("~> 10.13.0").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
-end
-
-def macos_gte_1014?
-  macos? && Gem::Requirement.new(">= 10.14").satisfied_by?(Gem::Version.new(ohai[:platform_version]))
-end
-
 # detects if the hardware is 64-bit (evaluates to true in "WOW64" mode in a 32-bit app on a 64-bit system)
 def windows64?
   windows? && ( ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64" )
@@ -120,6 +113,10 @@ end
 
 def macos?
   RUBY_PLATFORM.include?("darwin")
+end
+
+def macos_gte_11?
+  macos? && !!(ohai[:platform_version].to_i >= 11)
 end
 
 def solaris?

@@ -42,7 +42,7 @@ class Chef
             logger.info("#{new_resource} mounted")
           end
         else
-          logger.trace("#{new_resource} is already mounted")
+          logger.debug("#{new_resource} is already mounted")
         end
       end
 
@@ -53,7 +53,7 @@ class Chef
             logger.info("#{new_resource} unmounted")
           end
         else
-          logger.trace("#{new_resource} is already unmounted")
+          logger.debug("#{new_resource} is already unmounted")
         end
       end
 
@@ -76,7 +76,7 @@ class Chef
             end
           end
         else
-          logger.trace("#{new_resource} not mounted, nothing to remount")
+          logger.debug("#{new_resource} not mounted, nothing to remount")
         end
       end
 
@@ -87,7 +87,7 @@ class Chef
             logger.info("#{new_resource} enabled")
           end
         else
-          logger.trace("#{new_resource} already enabled")
+          logger.debug("#{new_resource} already enabled")
         end
       end
 
@@ -98,7 +98,7 @@ class Chef
             logger.info("#{new_resource} disabled")
           end
         else
-          logger.trace("#{new_resource} already disabled")
+          logger.debug("#{new_resource} already disabled")
         end
       end
 
@@ -175,8 +175,13 @@ class Chef
 
       # Returns the new_resource device as per device_type
       def device_fstab
-        # Removed "/" from the end of str, because it was causing idempotency issue.
-        device = @new_resource.device == "/" ? @new_resource.device : @new_resource.device.chomp("/")
+        # Removed "/" from the end of str unless it's a network mount, because it was causing idempotency issue.
+        device =
+          if @new_resource.device == "/" || @new_resource.device.match?(":/$")
+            @new_resource.device
+          else
+            @new_resource.device.chomp("/")
+          end
         case @new_resource.device_type
         when :device
           device

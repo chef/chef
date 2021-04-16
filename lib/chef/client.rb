@@ -57,6 +57,8 @@ require "ohai" unless defined?(Ohai::System)
 require "rbconfig" unless defined?(RbConfig)
 require "forwardable" unless defined?(Forwardable)
 
+require_relative "compliance/runner"
+
 class Chef
   # == Chef::Client
   # The main object in a Chef run. Preps a Chef::Node and Chef::RunContext,
@@ -235,6 +237,7 @@ class Chef
 
         events.register(Chef::DataCollector::Reporter.new(events))
         events.register(Chef::ActionCollection.new(events))
+        events.register(Chef::Compliance::Runner.new)
 
         run_status.run_id = request_id = Chef::RequestID.instance.request_id
 
@@ -855,8 +858,8 @@ class Chef
 
     def profiling_prereqs!
       require "ruby-prof"
-    rescue LoadError
-      raise "You must have the ruby-prof gem installed in order to use --profile-ruby"
+    rescue LoadError => e
+      raise "You must have the ruby-prof gem installed in order to use --profile-ruby: #{e.message}"
     end
 
     def start_profiling

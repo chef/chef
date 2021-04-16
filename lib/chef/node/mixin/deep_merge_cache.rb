@@ -15,6 +15,8 @@
 # limitations under the License.
 #
 
+require_relative "../../delayed_evaluator"
+
 class Chef
   class Node
     module Mixin
@@ -46,13 +48,15 @@ class Chef
         alias :reset :reset_cache
 
         def [](key)
-          if deep_merge_cache.key?(key.to_s)
-            # return the cache of the deep merged values by top-level key
-            deep_merge_cache[key.to_s]
-          else
-            # save all the work of computing node[key]
-            deep_merge_cache[key.to_s] = merged_attributes(key)
-          end
+          ret = if deep_merge_cache.key?(key.to_s)
+                  # return the cache of the deep merged values by top-level key
+                  deep_merge_cache[key.to_s]
+                else
+                  # save all the work of computing node[key]
+                  deep_merge_cache[key.to_s] = merged_attributes(key)
+                end
+          ret = ret.call while ret.is_a?(::Chef::DelayedEvaluator)
+          ret
         end
 
       end

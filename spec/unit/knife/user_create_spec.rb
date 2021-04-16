@@ -17,12 +17,14 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 Chef::Knife::UserCreate.load_deps
 
 describe Chef::Knife::UserCreate do
+
   let(:knife) { Chef::Knife::UserCreate.new }
+  let(:root_rest) { double("Chef::ServerAPI") }
 
   let(:stderr) do
     StringIO.new
@@ -37,6 +39,8 @@ describe Chef::Knife::UserCreate do
     allow(knife.ui).to receive(:stderr).and_return(stderr)
     allow(knife.ui).to receive(:warn)
   end
+
+  let(:chef_root_rest_v0) { double("Chef::ServerAPI") }
 
   context "when USERNAME isn't specified" do
     # from spec/support/shared/unit/knife_shared.rb
@@ -70,34 +74,42 @@ describe Chef::Knife::UserCreate do
     end
   end
 
-  context "when PASSWORD isn't specified" do
-    # from spec/support/shared/unit/knife_shared.rb
-    it_should_behave_like "mandatory field missing" do
-      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name some_email} }
-      let(:fieldname) { "password" }
+  describe "with prompt password" do
+    let(:name_args) { %w{some_user some_display_name some_first_name some_last_name test@email.com} }
+
+    before :each do
+      @user = double("Chef::User")
+      @key = "You don't come into cooking to get rich - Ramsay"
+      allow(@user).to receive(:[]).with("private_key").and_return(@key)
+      knife.config[:passwordprompt] = true
+      knife.name_args = name_args
+    end
+
+    it "creates an user" do
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+      expect(root_rest).to receive(:post).and_return(@user)
+      expect(knife.ui).to receive(:ask).with("Please enter the user's password: ", echo: false).and_return("password")
+      knife.run
     end
   end
 
   context "when all mandatory fields are validly specified" do
     before do
+      @user = double("Chef::User")
+      @key = "You don't come into cooking to get rich - Ramsay"
+      allow(@user).to receive(:[]).with("private_key").and_return(@key)
       knife.name_args = %w{some_user some_display_name some_first_name some_last_name some_email some_password}
-      allow(knife).to receive(:edit_hash).and_return(knife.user.to_hash)
-      allow(knife).to receive(:create_user_from_hash).and_return(knife.user)
-    end
-
-    before(:each) do
-      # reset the user field every run
-      knife.user_field = nil
     end
 
     it "sets all the mandatory fields" do
+      expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+      expect(root_rest).to receive(:post).and_return(@user)
       knife.run
       expect(knife.user.username).to eq("some_user")
       expect(knife.user.display_name).to eq("some_display_name")
       expect(knife.user.first_name).to eq("some_first_name")
       expect(knife.user.last_name).to eq("some_last_name")
       expect(knife.user.email).to eq("some_email")
-      expect(knife.user.password).to eq("some_password")
     end
 
     context "when user_key and prevent_keygen are passed" do
@@ -105,6 +117,7 @@ describe Chef::Knife::UserCreate do
         knife.config[:user_key] = "some_key"
         knife.config[:prevent_keygen] = true
       end
+
       it "prints the usage" do
         expect(knife).to receive(:show_usage)
         expect { knife.run }.to raise_error(SystemExit)
@@ -122,6 +135,8 @@ describe Chef::Knife::UserCreate do
       end
 
       it "does not set user.create_key" do
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.create_key).to be_falsey
       end
@@ -129,6 +144,8 @@ describe Chef::Knife::UserCreate do
 
     context "when --prevent-keygen is not passed" do
       it "sets user.create_key to true" do
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.create_key).to be_truthy
       end
@@ -142,6 +159,8 @@ describe Chef::Knife::UserCreate do
       end
 
       it "sets user.public_key" do
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.public_key).to eq("some_key")
       end
@@ -149,35 +168,88 @@ describe Chef::Knife::UserCreate do
 
     context "when --user-key is not passed" do
       it "does not set user.public_key" do
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
         knife.run
         expect(knife.user.public_key).to be_nil
       end
     end
 
-    context "when a private_key is returned" do
-      before do
-        allow(knife).to receive(:create_user_from_hash).and_return(Chef::UserV1.from_hash(knife.user.to_hash.merge({ "private_key" => "some_private_key" })))
+    describe "with user_name, first_name, last_name, email and password" do
+      let(:name_args) { %w{some_user some_display_name some_first_name some_last_name test@email.com some_password} }
+
+      before :each do
+        @user = double("Chef::User")
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
+        @key = "You don't come into cooking to get rich - Ramsay"
+        allow(@user).to receive(:[]).with("private_key").and_return(@key)
+        knife.name_args = name_args
       end
 
-      context "when --file is passed" do
-        before do
-          knife.config[:file] = "/some/path"
+      it "creates an user" do
+        expect(knife.ui).to receive(:msg).with(@key)
+        knife.run
+      end
+
+      context "with --orgname" do
+        before :each do
+          knife.config[:orgname] = "ramsay"
+          @uri = "http://www.example.com/1"
+          allow(@user).to receive(:[]).with("uri").and_return(@uri)
         end
 
-        it "creates a new file of the path passed" do
-          filehandle = double("filehandle")
-          expect(filehandle).to receive(:print).with("some_private_key")
-          expect(File).to receive(:open).with("/some/path", "w").and_yield(filehandle)
+        let(:request_body) {
+          { user: "some_user" }
+        }
+
+        it "creates an user, associates a user, and adds it to the admins group" do
+
+          expect(root_rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
+          expect(root_rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
+          knife.run
+        end
+      end
+    end
+
+    describe "user user_name, --email, --password" do
+      let(:name_args) { %w{some_user} }
+
+      before :each do
+        @user = double("Chef::User")
+        expect(Chef::ServerAPI).to receive(:new).with(Chef::Config[:chef_server_root]).and_return(root_rest)
+        expect(root_rest).to receive(:post).and_return(@user)
+        @key = "You don't come into cooking to get rich - Ramsay"
+        allow(@user).to receive(:[]).with("private_key").and_return(@key)
+        knife.name_args = name_args
+        knife.config[:email] = "test@email.com"
+        knife.config[:password] = "some_password"
+      end
+
+      it "creates an user" do
+        expect(knife.ui).to receive(:msg).with(@key)
+        knife.run
+      end
+
+      context "with --orgname" do
+        before :each do
+          knife.config[:orgname] = "ramsay"
+          @uri = "http://www.example.com/1"
+          allow(@user).to receive(:[]).with("uri").and_return(@uri)
+        end
+
+        let(:request_body) {
+          { user: "some_user" }
+        }
+
+        it "creates an user, associates a user, and adds it to the admins group" do
+
+          expect(root_rest).to receive(:post).with("organizations/ramsay/association_requests", request_body).and_return(@user)
+          expect(root_rest).to receive(:put).with("users/some_user/association_requests/1", { response: "accept" })
           knife.run
         end
       end
 
-      context "when --file is not passed" do
-        it "prints the private key to stdout" do
-          expect(knife.ui).to receive(:msg).with("some_private_key")
-          knife.run
-        end
-      end
     end
 
   end # when all mandatory fields are validly specified

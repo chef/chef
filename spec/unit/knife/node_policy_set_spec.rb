@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::NodePolicySet do
   let(:node) do

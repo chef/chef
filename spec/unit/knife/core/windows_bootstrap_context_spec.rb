@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/core/windows_bootstrap_context"
 describe Chef::Knife::Core::WindowsBootstrapContext do
   let(:config) { {} }

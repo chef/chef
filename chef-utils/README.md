@@ -120,6 +120,7 @@ Architecture Helpers allow you to determine the processor architecture of your n
 ### Cloud Helpers
 
 * `cloud?` - if the node is running in any cloud, including internal ones
+* `alibaba?` - if the node is running in alibaba cloud
 * `ec2?` - if the node is running in ec2
 * `gce?` - if the node is running in gce
 * `rackspace?` - if the node is running in rackspace

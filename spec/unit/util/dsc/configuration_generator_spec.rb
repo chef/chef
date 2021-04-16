@@ -25,6 +25,85 @@ describe Chef::Util::DSC::ConfigurationGenerator do
     Chef::Util::DSC::ConfigurationGenerator.new(node, "tmp")
   end
 
+  describe "#validate_switch_name!" do
+    it "should not raise an error if a name contains all upper case letters" do
+      conf_man.send(:validate_switch_name!, "HELLO")
+    end
+
+    it "should not raise an error if the name contains all lower case letters" do
+      conf_man.send(:validate_switch_name!, "hello")
+    end
+
+    it "should not raise an error if no special characters are used except _" do
+      conf_man.send(:validate_switch_name!, "hello_world")
+    end
+
+    %w{! @ # $ % ^ & * & * ( ) - = + \{ \} . ? < > \\ /}.each do |sym|
+      it "raises an ArgumentError if configuration name contains #{sym}" do
+        expect do
+          conf_man.send(:validate_switch_name!, "Hello#{sym}")
+        end.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe "#escape_parameter_value" do
+    # Is this list really complete?
+    %w{` " # '}.each do |c|
+      it "escapes #{c}" do
+        expect(conf_man.send(:escape_parameter_value, "stuff #{c}")).to eql("stuff `#{c}")
+      end
+    end
+
+    it "does not do anything to a string without special characters" do
+      expect(conf_man.send(:escape_parameter_value, "stuff")).to eql("stuff")
+    end
+  end
+
+  describe "#escape_string_parameter_value" do
+    it "surrounds a string with ''" do
+      expect(conf_man.send(:escape_string_parameter_value, "stuff")).to eql("'stuff'")
+    end
+  end
+
+  describe "#command_switches_string" do
+    it "raises an ArgumentError if the key is not a symbol" do
+      expect do
+        conf_man.send(:command_switches_string, { "foo" => "bar" })
+      end.to raise_error(ArgumentError)
+    end
+
+    it "does not allow invalid switch names" do
+      expect do
+        conf_man.send(:command_switches_string, { foo!: "bar" })
+      end.to raise_error(ArgumentError)
+    end
+
+    it "ignores switches with a false value" do
+      expect(conf_man.send(:command_switches_string, { foo: false })).to eql("")
+    end
+
+    it "should correctly handle a value type of string" do
+      expect(conf_man.send(:command_switches_string, { foo: "bar" })).to eql("-foo 'bar'")
+    end
+
+    it "should correctly handle a value type of string even when it is 0 length" do
+      expect(conf_man.send(:command_switches_string, { foo: "" })).to eql("-foo ''")
+    end
+
+    it "should not quote integers" do
+      expect(conf_man.send(:command_switches_string, { foo: 1 })).to eql("-foo 1")
+    end
+
+    it "should not quote floats" do
+      expect(conf_man.send(:command_switches_string, { foo: 1.0 })).to eql("-foo 1.0")
+    end
+
+    it "has just the switch when the value is true" do
+      expect(conf_man.send(:command_switches_string, { foo: true })).to eql("-foo")
+    end
+  end
+
   describe "#validate_configuration_name!" do
     it "should not raise an error if a name contains all upper case letters" do
       conf_man.send(:validate_configuration_name!, "HELLO")

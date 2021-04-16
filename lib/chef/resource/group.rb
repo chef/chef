@@ -37,11 +37,11 @@ class Chef
       property :gid, [ String, Integer ],
         description: "The identifier for the group."
 
-      property :members, [String, Array], default: lazy { [] },
+      property :members, [String, Array], default: [],
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
                description: "Which users should be set or appended to a group. When more than one group member is identified, the list of members should be an array: members ['user1', 'user2']."
 
-      property :excluded_members, [String, Array], default: lazy { [] },
+      property :excluded_members, [String, Array], default: [],
                coerce: proc { |arg| arg.is_a?(String) ? arg.split(/\s*,\s*/) : arg },
                description: "Remove users from a group. May only be used when append is set to true."
 

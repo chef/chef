@@ -23,17 +23,24 @@ timezone "America/Los_Angeles"
 
 include_recipe "ntp"
 
-include_recipe "resolver"
+resolver_config "/etc/resolv.conf" do
+  nameservers [ "8.8.8.8", "8.8.4.4" ]
+  search [ "chef.io" ]
+end
+
+users_from_databag = search("users", "*:*")
 
 users_manage "remove sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:remove]
 end
 
 users_manage "create sysadmin" do
   group_name "sysadmin"
   group_id 2300
+  users users_from_databag
   action [:create]
 end
 
@@ -90,11 +97,13 @@ homebrew_update "update" do
   action :update
 end
 
-homebrew_package "vim"
+homebrew_package "nethack"
 
-homebrew_package "vim" do
+homebrew_package "nethack" do
   action :purge
 end
+
+homebrew_cask "do-not-disturb"
 
 include_recipe "::_dmg_package"
 include_recipe "::_macos_userdefaults"

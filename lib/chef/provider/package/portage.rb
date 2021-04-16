@@ -28,13 +28,13 @@ class Chef
         provides :package, platform: "gentoo"
         provides :portage_package
 
-        PACKAGE_NAME_PATTERN = %r{(?:([^/]+)/)?([^/]+)}.freeze
+        PACKAGE_NAME_PATTERN = %r{^(?:([^/]+)/)?([^/]+)$}.freeze
 
         def load_current_resource
           @current_resource = Chef::Resource::PortagePackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
 
-          category, pkg = /^#{PACKAGE_NAME_PATTERN}$/.match(new_resource.package_name)[1, 2]
+          category, pkg = PACKAGE_NAME_PATTERN.match(new_resource.package_name)[1, 2]
 
           globsafe_category = category ? Chef::Util::PathHelper.escape_glob_dir(category) : nil
           globsafe_pkg = Chef::Util::PathHelper.escape_glob_dir(pkg)

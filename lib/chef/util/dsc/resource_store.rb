@@ -16,14 +16,14 @@
 # limitations under the License.
 #
 
-require_relative "../powershell/cmdlet"
-require_relative "../powershell/cmdlet_result"
+require_relative "../../mixin/powershell_exec"
 require_relative "../../exceptions"
 
 class Chef
   class Util
     class DSC
       class ResourceStore
+        include Chef::Mixin::PowershellExec
 
         def self.instance
           @@instance ||= ResourceStore.new.tap do |store|
@@ -83,19 +83,13 @@ class Chef
 
         # Returns a list of dsc resources
         def query_resources
-          cmdlet = Chef::Util::Powershell::Cmdlet.new(nil, "get-dscresource",
-            :object)
-          result = cmdlet.run
-          result.return_value
+          powershell_exec("get-dscresource").result
         end
 
         # Returns a list of dsc resources matching the provided name
         def query_resource(resource_name)
-          cmdlet = Chef::Util::Powershell::Cmdlet.new(nil, "get-dscresource #{resource_name}",
-            :object)
-          result = cmdlet.run
-          ret_val = result.return_value
-          if ret_val.nil?
+          ret_val = powershell_exec("get-dscresource #{resource_name}").result
+          if ret_val.empty?
             []
           elsif ret_val.is_a? Array
             ret_val

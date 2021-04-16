@@ -176,8 +176,10 @@ describe Chef::UserV1 do
       expect(@user.to_json).to include(%{"display_name":"get_displayed"})
     end
 
-    it "does not include the display name if not present" do
-      expect(@json).not_to include("display_name")
+    it "does not include the display name if user name not present" do
+      unless @user.username
+        expect(@json).not_to include("display_name")
+      end
     end
 
     it "includes the first name when present" do
@@ -314,7 +316,7 @@ describe Chef::UserV1 do
     let(:response_406) { OpenStruct.new(code: "406") }
     let(:exception_406) { Net::HTTPClientException.new("406 Not Acceptable", response_406) }
 
-    before (:each) do
+    before(:each) do
       @user = Chef::UserV1.new
       allow(@user).to receive(:chef_root_rest_v0).and_return(double("chef rest root v0 object"))
       allow(@user).to receive(:chef_root_rest_v1).and_return(double("chef rest root v1 object"))
@@ -535,7 +537,7 @@ describe Chef::UserV1 do
   end # Versioned API Interactions
 
   describe "API Interactions" do
-    before (:each) do
+    before(:each) do
       @user = Chef::UserV1.new
       @user.username "foobar"
       @http_client = double("Chef::ServerAPI mock")

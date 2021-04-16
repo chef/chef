@@ -25,6 +25,7 @@ require "pp" unless defined?(PP)
 require "etc" unless defined?(Etc)
 require "mixlib/cli" unless defined?(Mixlib::CLI)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "chef-config/mixin/dot_d"
 
 require_relative "../chef"
 require_relative "version"
@@ -211,6 +212,7 @@ module Shell
 
   class Options
     include Mixlib::CLI
+    include ChefConfig::Mixin::DotD
 
     def self.footer(text = nil)
       @footer = text if text
@@ -341,14 +343,43 @@ module Shell
       # We have to nuke ARGV to make sure irb's option parser never sees it.
       # otherwise, IRB complains about command line switches it doesn't recognize.
       ARGV.clear
+
+      # This code should not exist.
+      # We should be using Application::Client and then calling load_config_file
+      # which does all this properly. However this will do for now.
       config[:config_file] = config_file_for_shell_mode(environment)
       config_msg = config[:config_file] || "none (standalone session)"
       puts "loading configuration: #{config_msg}"
-      Chef::Config.from_file(config[:config_file]) if !config[:config_file].nil? && File.exist?(config[:config_file]) && File.readable?(config[:config_file])
+
+      # load the config (if we have one)
+      unless config[:config_file].nil?
+        if File.exist?(config[:config_file]) && File.readable?(config[:config_file])
+          Chef::Config.from_file(config[:config_file])
+        end
+
+        # even if we couldn't load that, we need to tell Chef::Config what
+        # the file was so it sets conf dir and d_dir and such properly
+        Chef::Config[:config_file] = config[:config_file]
+
+        # now attempt to load any relevant dot-dirs
+        load_dot_d(Chef::Config[:client_d_dir]) if Chef::Config[:client_d_dir]
+      end
+
+      # finally merge command-line options in
       Chef::Config.merge!(config)
     end
 
     private
+
+    # shamelessly lifted from application.rb
+    def apply_config(config_content, config_file_path)
+      Chef::Config.from_string(config_content, config_file_path)
+    rescue Exception => error
+      logger.fatal("Configuration error #{error.class}: #{error.message}")
+      filtered_trace = error.backtrace.grep(/#{Regexp.escape(config_file_path)}/)
+      filtered_trace.each { |line| logger.fatal("  " + line ) }
+      raise Chef::Exceptions::ConfigurationError.new("Aborting due to error in '#{config_file_path}': #{error}")
+    end
 
     def config_file_for_shell_mode(environment)
       dot_chef_dir = Chef::Util::PathHelper.home(".chef")

@@ -72,7 +72,6 @@ class Chef
           # A rubygems specification object containing the list of gemspecs for all
           # available gems in the gem installation.
           # Implemented by subclasses
-          # For rubygems >= 1.8.0
           #
           # @return [Gem::Specification]
           #
@@ -107,10 +106,8 @@ class Chef
               # This isn't sorting before returning because the only code that
               # uses this method calls `max_by` so it doesn't need to be sorted.
               stubs
-            elsif rubygems_version >= Gem::Version.new("1.8.0")
+            else # >= rubygems 1.8 behavior
               gem_specification.find_all_by_name(gem_dep.name, gem_dep.requirement)
-            else
-              gem_source_index.search(gem_dep)
             end
           end
 
@@ -192,7 +189,8 @@ class Chef
                 begin
                   rs = dependency_installer.resolve_dependencies gem_dependency.name, gem_dependency.requirement
                   rs.specs.find { |s| s.name == gem_dependency.name }
-                rescue Gem::UnsatisfiableDependencyError
+                  # ruby-3.0.0 versions of rubygems-3.x throws NoMethodError when the dep is not found
+                rescue Gem::UnsatisfiableDependencyError, NoMethodError
                   nil
                 end
               end
@@ -423,11 +421,11 @@ class Chef
         end
 
         def is_omnibus?
-          if %r{/(opscode|chef|chefdk)/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
+          if %r{/(#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}|#{ChefUtils::Dist::Infra::SHORT}|#{ChefUtils::Dist::Workstation::DIR_SUFFIX})/embedded/bin}.match?(RbConfig::CONFIG["bindir"])
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # Omnibus installs to a static path because of linking on unix, find it.
             true
-          elsif RbConfig::CONFIG["bindir"].sub(/^\w:/, "") == "/opscode/chef/embedded/bin"
+          elsif RbConfig::CONFIG["bindir"].sub(/^\w:/, "") == "/#{ChefUtils::Dist::Org::LEGACY_CONF_DIR}/#{ChefUtils::Dist::Infra::SHORT}/embedded/bin"
             logger.trace("#{new_resource} detected omnibus installation in #{RbConfig::CONFIG["bindir"]}")
             # windows, with the drive letter removed
             true
@@ -481,9 +479,7 @@ class Chef
         end
 
         def all_installed_versions
-          @all_installed_versions ||= begin
-                                        @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, ">= 0"))
-                                      end
+          @all_installed_versions ||= @gem_env.installed_versions(Gem::Dependency.new(gem_dependency.name, ">= 0"))
         end
 
         ##
@@ -523,13 +519,11 @@ class Chef
         end
 
         def candidate_version
-          @candidate_version ||= begin
-                                  if source_is_remote?
-                                    @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
-                                  else
-                                    @gem_env.candidate_version_from_file(gem_dependency, new_resource.source).to_s
-                                  end
-                                end
+          @candidate_version ||= if source_is_remote?
+                                   @gem_env.candidate_version_from_remote(gem_dependency, *gem_sources).to_s
+                                 else
+                                   @gem_env.candidate_version_from_file(gem_dependency, new_resource.source).to_s
+                                 end
         end
 
         def version_requirement_satisfied?(current_version, new_version)

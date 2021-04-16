@@ -95,7 +95,7 @@ class Chef
       property :ftp_active_mode, [ TrueClass, FalseClass ], default: false,
         description: "Whether #{ChefUtils::Dist::Infra::PRODUCT} uses active or passive FTP. Set to `true` to use active FTP."
 
-      property :headers, Hash, default: lazy { {} },
+      property :headers, Hash, default: {},
         description: "A Hash of custom HTTP headers."
 
       property :show_progress, [ TrueClass, FalseClass ], default: false

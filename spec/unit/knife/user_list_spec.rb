@@ -16,21 +16,58 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
+
+Chef::Knife::UserList.load_deps
 
 describe Chef::Knife::UserList do
-  let(:knife) { Chef::Knife::UserList.new }
-  let(:stdout) { StringIO.new }
 
-  before(:each) do
-    Chef::Knife::UserList.load_deps
-    allow(knife.ui).to receive(:stderr).and_return(stdout)
-    allow(knife.ui).to receive(:stdout).and_return(stdout)
+  let(:knife) { Chef::Knife::UserList.new }
+  let(:users) do
+    {
+      "user1" => "http//test/users/user1",
+      "user2" => "http//test/users/user2",
+    }
+  end
+
+  before :each do
+    @rest = double("Chef::ServerAPI")
+    allow(Chef::ServerAPI).to receive(:new).and_return(@rest)
+    allow(@rest).to receive(:get).with("users").and_return(users)
+  end
+
+  describe "with no arguments" do
+    it "lists all non users" do
+      expect(knife.ui).to receive(:output).with(%w{user1 user2})
+      knife.run
+    end
+
+  end
+
+  describe "with all_users argument" do
+    before do
+      knife.config[:all_users] = true
+    end
+
+    it "lists all users including hidden users" do
+      expect(knife.ui).to receive(:output).with(%w{user1 user2})
+      knife.run
+    end
   end
 
   it "lists the users" do
-    expect(Chef::UserV1).to receive(:list)
     expect(knife).to receive(:format_list_for_display)
     knife.run
+  end
+
+  describe "with options with_uri argument" do
+    before do
+      knife.config[:with_uri] = true
+    end
+
+    it "lists all users including hidden users" do
+      expect(knife.ui).to receive(:output).with(users)
+      knife.run
+    end
   end
 end

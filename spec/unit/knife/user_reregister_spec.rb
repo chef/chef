@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::UserReregister do
   let(:knife) { Chef::Knife::UserReregister.new }

@@ -108,7 +108,7 @@ describe Chef::Application::Solo do
         tarfile = StringIO.new("remote_tarball_content")
         target_file = StringIO.new
 
-        expect(app).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
+        expect(URI).to receive(:open).with("http://junglist.gen.nz/recipes.tgz").and_yield(tarfile)
         expect(File).to receive(:open).with("#{Dir.tmpdir}/chef-solo/recipes.tgz", "wb").and_yield(target_file)
 
         archive = double(Mixlib::Archive)
@@ -202,7 +202,7 @@ describe Chef::Application::Solo do
       expect(Chef::Config).to receive(:find_chef_repo_path).and_return(root_path)
       app.reconfigure
       expect(Chef::Config.key?(:chef_repo_path)).to be_truthy
-      expect(Chef::Config[:chef_repo_path]).to eq (root_path)
+      expect(Chef::Config[:chef_repo_path]).to eq(root_path)
     end
 
     it "runs chef-client in local mode" do

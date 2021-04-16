@@ -15,7 +15,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-require_relative "../util/powershell/cmdlet"
+require "timeout" unless defined?(Timeout)
+require_relative "../mixin/powershell_exec"
 require_relative "../util/dsc/local_configuration_manager"
 require_relative "../mixin/powershell_type_coercions"
 require_relative "../util/dsc/resource_store"
@@ -130,27 +131,27 @@ class Chef
       def test_resource
         result = invoke_resource(:test)
         add_dsc_verbose_log(result)
-        return_dsc_resource_result(result, "InDesiredState")
+        result.result["InDesiredState"]
       end
 
       def set_resource
         result = invoke_resource(:set)
         add_dsc_verbose_log(result)
-        create_reboot_resource if return_dsc_resource_result(result, "RebootRequired")
-        result.return_value
+        create_reboot_resource if result.result["RebootRequired"]
+        result
       end
 
       def add_dsc_verbose_log(result)
         # We really want this information from the verbose stream,
         # however in some versions of WMF, Invoke-DscResource is not correctly
         # writing to that stream and instead just dumping to stdout
-        verbose_output = result.stream(:verbose)
-        verbose_output = result.stdout if verbose_output.empty?
+        verbose_output = result.verbose.join("\n")
+        verbose_output = result.result if verbose_output.empty?
 
         if @converge_description.nil? || @converge_description.empty?
           @converge_description = verbose_output
         else
-          @converge_description << "\n"
+          @converge_description << "\n\n"
           @converge_description << verbose_output
         end
       end
@@ -159,26 +160,13 @@ class Chef
         @module_version.nil? ? module_name : "@{ModuleName='#{module_name}';ModuleVersion='#{@module_version}'}"
       end
 
-      def invoke_resource(method, output_format = :object)
+      def invoke_resource(method)
         properties = translate_type(new_resource.properties)
         switches = "-Method #{method} -Name #{new_resource.resource}"\
                    " -Property #{properties} -Module #{module_info_object} -Verbose"
-        cmdlet = Chef::Util::Powershell::Cmdlet.new(
-          node,
-          "Invoke-DscResource #{switches}",
-          output_format
-        )
-        cmdlet.run!({}, { timeout: new_resource.timeout })
-      end
-
-      def return_dsc_resource_result(result, property_name)
-        if result.return_value.is_a?(Array)
-          # WMF Feb 2015 Preview
-          result.return_value[0][property_name]
-        else
-          # WMF April 2015 Preview
-          result.return_value[property_name]
-        end
+        Timeout.timeout(new_resource.timeout) {
+          powershell_exec!("Invoke-DscResource #{switches}")
+        }
       end
 
       def create_reboot_resource

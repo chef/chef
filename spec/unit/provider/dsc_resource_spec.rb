@@ -85,14 +85,13 @@ describe Chef::Provider::DscResource do
       node.automatic[:languages][:powershell][:version] = "5.0.10018.0"
       node
     end
-    let(:resource_result) { double("CmdletResult", return_value: { "InDesiredState" => true }, stream: "description") }
-    let(:invoke_dsc_resource) { double("cmdlet", run!: resource_result) }
+    let(:resource_result) { double("PowerShell", result: { "InDesiredState" => true }, verbose: ["description"]) }
     let(:store) { double("ResourceStore", find: resource_records) }
     let(:resource_records) { [] }
 
     before do
       allow(Chef::Util::DSC::ResourceStore).to receive(:instance).and_return(store)
-      allow(Chef::Util::Powershell::Cmdlet).to receive(:new).and_return(invoke_dsc_resource)
+      allow(provider).to receive(:powershell_exec!).and_return(resource_result)
       allow(provider).to receive(:dsc_refresh_mode_disabled?).and_return(true)
     end
 
@@ -112,9 +111,8 @@ describe Chef::Provider::DscResource do
     it "flags the resource as reboot required when required" do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource)
-        .and_return(double(stdout: "", return_value: nil))
+        .and_return(double(result: { "RebootRequired" => true }))
       expect(provider).to receive(:add_dsc_verbose_log)
-      expect(provider).to receive(:return_dsc_resource_result).and_return(true)
       expect(provider).to receive(:create_reboot_resource)
       provider.run_action(:run)
     end
@@ -122,9 +120,8 @@ describe Chef::Provider::DscResource do
     it "does not flag the resource as reboot required when not required" do
       expect(provider).to receive(:test_resource).and_return(false)
       expect(provider).to receive(:invoke_resource)
-        .and_return(double(stdout: "", return_value: nil))
+        .and_return(double(stdout: "", result: {}))
       expect(provider).to receive(:add_dsc_verbose_log)
-      expect(provider).to receive(:return_dsc_resource_result).and_return(false)
       expect(provider).to_not receive(:create_reboot_resource)
       provider.run_action(:run)
     end
@@ -142,9 +139,7 @@ describe Chef::Provider::DscResource do
         let(:resource_records) { [{}] }
 
         it "returns the default dsc resource module" do
-          expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
-            expect(cmdlet).to match(/Module PSDesiredStateConfiguration /)
-          end.and_return(invoke_dsc_resource)
+          expect(provider).to receive(:powershell_exec!).with(/Module PSDesiredStateConfiguration /).and_return(resource_result)
           provider.run_action(:run)
         end
       end
@@ -153,9 +148,7 @@ describe Chef::Provider::DscResource do
         let(:resource_records) { [{ "Module" => { "Name" => "ModuleName" } }] }
 
         it "returns the default dsc resource module" do
-          expect(Chef::Util::Powershell::Cmdlet).to receive(:new) do |node, cmdlet, format|
-            expect(cmdlet).to match(/Module ModuleName /)
-          end.and_return(invoke_dsc_resource)
+          expect(provider).to receive(:powershell_exec!).with(/Module ModuleName /).and_return(resource_result)
           provider.run_action(:run)
         end
       end
@@ -286,8 +279,6 @@ describe Chef::Provider::DscResource do
   end
 
   describe "invoke_resource" do
-    let(:cmdlet) { double(run!: nil) }
-
     before(:each) do
       allow(provider).to receive(:translate_type).and_return("my_properties")
       provider.instance_variable_set(:@new_resource, double(
@@ -301,12 +292,8 @@ describe Chef::Provider::DscResource do
       end
 
       it "invokes Invoke-DscResource command with module name" do
-        expect(Chef::Util::Powershell::Cmdlet).to receive(:new).with(
-          node,
-          "Invoke-DscResource -Method my_method -Name my_resource -Property my_properties -Module my_module -Verbose",
-          "my_output_format"
-        ).and_return(cmdlet)
-        provider.send(:invoke_resource, "my_method", "my_output_format")
+        expect(provider).to receive(:powershell_exec!).with("Invoke-DscResource -Method my_method -Name my_resource -Property my_properties -Module my_module -Verbose").and_return(nil)
+        provider.send(:invoke_resource, "my_method")
       end
     end
 
@@ -318,12 +305,8 @@ describe Chef::Provider::DscResource do
       end
 
       it "invokes Invoke-DscResource command with module info object" do
-        expect(Chef::Util::Powershell::Cmdlet).to receive(:new).with(
-          node,
-          "Invoke-DscResource -Method my_method -Name my_resource -Property my_properties -Module @{ModuleName='my_module';ModuleVersion='my_module_version'} -Verbose",
-          "my_output_format"
-        ).and_return(cmdlet)
-        provider.send(:invoke_resource, "my_method", "my_output_format")
+        expect(provider).to receive(:powershell_exec!).with("Invoke-DscResource -Method my_method -Name my_resource -Property my_properties -Module @{ModuleName='my_module';ModuleVersion='my_module_version'} -Verbose").and_return(nil)
+        provider.send(:invoke_resource, "my_method")
       end
     end
   end

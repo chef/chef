@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/supermarket_unshare"
 
 describe Chef::Knife::SupermarketUnshare do

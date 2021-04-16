@@ -45,6 +45,10 @@ RSpec.describe ChefUtils::DSL::Cloud do
     end
   end
 
+  context "on alibaba" do
+    cloud_reports_true_for(:cloud?, :alibaba?, node: { "alibaba" => {}, "cloud" => {} })
+  end
+
   context "on ec2" do
     cloud_reports_true_for(:cloud?, :ec2?, node: { "ec2" => {}, "cloud" => {} })
   end

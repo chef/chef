@@ -412,6 +412,7 @@ class Chef
             # Otherwise, we have to validate it now.
             value = input_to_stored_value(resource, default, is_default: true)
           end
+          value = deep_dup(value)
           value = stored_value_to_output(resource, value)
 
           # If the value is mutable (non-frozen), we set it on the instance
@@ -747,6 +748,23 @@ class Chef
       validate(resource, result)
 
       result
+    end
+
+    # recursively dup the value
+    def deep_dup(value)
+      return value if value.is_a?(DelayedEvaluator)
+
+      visitor = lambda do |obj|
+        obj = obj.dup rescue obj
+        case obj
+        when Hash
+          obj.each { |k, v| obj[k] = visitor.call(v) }
+        when Array
+          obj.each_with_index { |v, i| obj[i] = visitor.call(v) }
+        end
+        obj
+      end
+      visitor.call(value)
     end
   end
 end

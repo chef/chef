@@ -366,9 +366,9 @@ class Chef::Application::Base < Chef::Application
     Chef::Log.trace("Download recipes tarball from #{url} to #{path}")
     if File.exist?(url)
       FileUtils.cp(url, path)
-    elsif URI.regexp.match?(url)
+    elsif URI::DEFAULT_PARSER.make_regexp.match?(url)
       File.open(path, "wb") do |f|
-        open(url) do |r|
+        URI.open(url) do |r|
           f.write(r.read)
         end
       end

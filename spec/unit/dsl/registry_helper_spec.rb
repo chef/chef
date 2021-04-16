@@ -21,7 +21,7 @@ require "spec_helper"
 
 describe Chef::Resource::RegistryKey do
 
-  before (:all) do
+  before(:all) do
     events = Chef::EventDispatch::Dispatcher.new
     node = Chef::Node.new
     node.consume_external_attrs(OHAI_SYSTEM.data, {})

@@ -94,7 +94,7 @@ class Chef
           enable_submodules
           add_remotes
         else
-          logger.trace "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
+          logger.debug "#{new_resource} checkout destination #{cwd} already exists or is a non-empty directory"
         end
       end
 
@@ -281,12 +281,10 @@ class Chef
 
       def target_revision
         @target_revision ||=
-          begin
-            if sha_hash?(new_resource.revision)
-              @target_revision = new_resource.revision
-            else
-              @target_revision = remote_resolve_reference
-            end
+          if sha_hash?(new_resource.revision)
+            @target_revision = new_resource.revision
+          else
+            @target_revision = remote_resolve_reference
           end
       end
 

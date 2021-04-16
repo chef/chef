@@ -80,4 +80,16 @@ describe Chef::Resource::WindowsCertificate do
     resource.store_name "MY"
     expect { resource.action :create }.not_to raise_error
   end
+
+  it "the exportable property defaults to false" do
+    expect(resource.exportable).to be false
+  end
+
+  it "doesn't raise error if exportable option is passed" do
+    resource.pfx_password "chef$123"
+    resource.source "C:\\certs\\test-cert.pfx"
+    resource.store_name "MY"
+    resource.exportable true
+    expect { resource.action :create }.not_to raise_error
+  end
 end

@@ -17,6 +17,7 @@
 #
 
 require_relative "../resource"
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -85,7 +86,7 @@ class Chef
         end
       end
 
-      action :periodic do
+      action :periodic, description: "Update the Apt repository at the interval specified by the `frequency` property" do
         return unless debian?
 
         unless apt_up_to_date?
@@ -95,7 +96,7 @@ class Chef
         end
       end
 
-      action :update do
+      action :update, description: "Update the Apt repository at the start of a #{ChefUtils::Dist::Infra::PRODUCT} run" do
         return unless debian?
 
         converge_by "force update new lists of packages" do

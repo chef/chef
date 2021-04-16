@@ -66,6 +66,7 @@ describe Chef::Provider::Mount::Mount do
 
     describe "when dealing with network mounts" do
       { "nfs" => "nfsserver:/vol/path",
+        "cephfs" => "cephserver:6789:/",
         "cifs" => "//cifsserver/share" }.each do |type, fs_spec|
           it "should detect network fs_spec (#{type})" do
             @new_resource.device fs_spec
@@ -502,6 +503,57 @@ describe Chef::Provider::Mount::Mount do
         expect(::File).not_to receive(:open).and_yield(@fstab)
 
         @provider.disable_fs
+      end
+    end
+
+    context "network mount" do
+      before(:each) do
+        @node = Chef::Node.new
+        @events = Chef::EventDispatch::Dispatcher.new
+        @run_context = Chef::RunContext.new(@node, {}, @events)
+
+        @new_resource = Chef::Resource::Mount.new("/tmp/bar")
+        @new_resource.device      "cephserver:6789:/"
+        @new_resource.device_type :device
+        @new_resource.fstype      "cephfs"
+
+        @new_resource.supports remount: false
+
+        @provider = Chef::Provider::Mount::Mount.new(@new_resource, @run_context)
+
+        allow(::File).to receive(:exists?).with("cephserver:6789:/").and_return true
+        allow(::File).to receive(:exists?).with("/tmp/bar").and_return true
+        allow(::File).to receive(:realpath).with("cephserver:6789:/").and_return "cephserver:6789:/"
+        allow(::File).to receive(:realpath).with("/tmp/bar").and_return "/tmp/foo"
+      end
+
+      before do
+        @current_resource = Chef::Resource::Mount.new("/tmp/foo")
+        @current_resource.device       "cephserver:6789:/"
+        @current_resource.device_type  :device
+        @current_resource.fstype       "cephfs"
+
+        @provider.current_resource = @current_resource
+      end
+
+      it "should enable network mount if enabled isn't true" do
+        @current_resource.enabled(false)
+
+        @fstab = StringIO.new
+        allow(::File).to receive(:open).with("/etc/fstab", "a").and_yield(@fstab)
+        @provider.enable_fs
+        expect(@fstab.string).to match(%r{^cephserver:6789:/\s+/tmp/bar\s+cephfs\s+defaults\s+0\s+2\s*$})
+      end
+
+      it "should not enable network if enabled is true and resources match" do
+        @current_resource.enabled(true)
+        @current_resource.fstype("cephfs")
+        @current_resource.options(["defaults"])
+        @current_resource.dump(0)
+        @current_resource.pass(2)
+        expect(::File).not_to receive(:open).with("/etc/fstab", "a")
+
+        @provider.enable_fs
       end
     end
 

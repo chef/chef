@@ -130,27 +130,21 @@ class Chef
         # The variable name used in /etc/rc.conf for enabling this service
         def service_enable_variable_name
           @service_enable_variable_name ||=
-            begin
-              # Look for name="foo" in the shell script @init_command. Use this for determining the variable name in /etc/rc.conf
-              # corresponding to this service
-              # For example: to enable the service mysql-server with the init command /usr/local/etc/rc.d/mysql-server, you need
-              # to set mysql_enable="YES" in /etc/rc.conf$
-              if init_command
-                ::File.open(init_command) do |rcscript|
-                  rcscript.each_line do |line|
-                    if line =~ /^name="?(\w+)"?/
-                      return $1 + "_enable"
-                    end
+            if init_command
+              ::File.open(init_command) do |rcscript|
+                rcscript.each_line do |line|
+                  if line =~ /^name="?(\w+)"?/
+                    return $1 + "_enable"
                   end
                 end
-                # some scripts support multiple instances through symlinks such as openvpn.
-                # We should get the service name from rcvar.
-                logger.trace("name=\"service\" not found at #{init_command}. falling back to rcvar")
-                shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
-              else
-                # for why-run mode when the rcd_script is not there yet
-                new_resource.service_name
               end
+              # some scripts support multiple instances through symlinks such as openvpn.
+              # We should get the service name from rcvar.
+              logger.trace("name=\"service\" not found at #{init_command}. falling back to rcvar")
+              shell_out!("#{init_command} rcvar").stdout[/(\w+_enable)=/, 1]
+            else
+              # for why-run mode when the rcd_script is not there yet
+              new_resource.service_name
             end
         end
 
@@ -161,9 +155,9 @@ class Chef
               case line
               when /^#{Regexp.escape(var_name)}="(\w+)"/
                 enabled_state_found!
-                if $1 =~ /^yes$/i
+                if $1.casecmp?("yes")
                   current_resource.enabled true
-                elsif $1 =~ /^(no|none)$/i
+                elsif $1.casecmp?("no") || $1.casecmp?("none")
                   current_resource.enabled false
                 end
               end
@@ -171,7 +165,7 @@ class Chef
           end
 
           if current_resource.enabled.nil?
-            logger.trace("#{new_resource.name} enable/disable state unknown")
+            logger.debug("#{new_resource.name} enable/disable state unknown")
             current_resource.enabled false
           end
         end

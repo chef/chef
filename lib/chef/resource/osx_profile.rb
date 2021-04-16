@@ -65,13 +65,13 @@ class Chef
                   {
                     'mcx_preference_settings' => {
                       'idleTime' => 0,
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        ]
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        ],
       }
 
       osx_profile 'Install screensaver profile' do

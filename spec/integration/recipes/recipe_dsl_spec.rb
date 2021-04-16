@@ -204,7 +204,7 @@ describe "Recipe DSL methods" do
               another_no_name_thingy3("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy3)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy3)
           end
         end
 
@@ -234,7 +234,7 @@ describe "Recipe DSL methods" do
               another_no_name_thingy4("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy4)
           end
 
           it "and platform_family = foo, another_no_name_thingy4 works" do
@@ -244,7 +244,7 @@ describe "Recipe DSL methods" do
               another_no_name_thingy4("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy4)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy4)
           end
         end
 
@@ -273,7 +273,7 @@ describe "Recipe DSL methods" do
               another_no_name_thingy5("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy5)
           end
 
           it "the new resource name can be used in a recipe" do
@@ -281,7 +281,7 @@ describe "Recipe DSL methods" do
               another_thingy_name_for_another_no_name_thingy5("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy5)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy5)
           end
         end
 
@@ -310,7 +310,7 @@ describe "Recipe DSL methods" do
               another_no_name_thingy6("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy6)
           end
 
           it "the new resource name can be used in a recipe" do
@@ -318,7 +318,7 @@ describe "Recipe DSL methods" do
               another_thingy_name_for_another_no_name_thingy6("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy6)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy6)
           end
         end
 
@@ -339,7 +339,7 @@ describe "Recipe DSL methods" do
               another_thingy_name_for_another_no_name_thingy7("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy7)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy7)
           end
 
           it "and os = blarghle, another_thingy_name_for_another_no_name_thingy7 works" do
@@ -349,7 +349,7 @@ describe "Recipe DSL methods" do
               another_thingy_name_for_another_no_name_thingy7("blah") {}
             end
             expect(recipe.logged_warnings).to eq ""
-            expect(BaseThingy.created_resource).to eq (AnotherNoNameThingy7)
+            expect(BaseThingy.created_resource).to eq(AnotherNoNameThingy7)
           end
 
           it "the old resource name does not work" do

@@ -1,34 +1,3 @@
 #!/usr/bin/env ruby
 #
-# Author:: Jay Mundrawala (<jdm@chef.io>)
-#
-# Copyright:: 2014-2018, Chef Software, Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-# Note:
-# The file is used by appbundler to generate a ruby file that
-# we can execute using the correct gems. The batch file we
-# generate will call that file, and will be registered as
-# a windows service.
-
-$:.unshift(File.join(__dir__, "..", "lib"))
-require "chef"
-require "chef/application/windows_service"
-
-if Chef::Platform.windows?
-  Chef::Application::WindowsService.mainloop
-else
-  puts "chef-windows-service is only available on Windows platforms."
-end
+puts "As of Chef Infra Client 17 the chef-windows-service is no longer available. Please run Chef Infra Client as a scheduled task instead for more reliable operation with lower memory and CPU overhead."

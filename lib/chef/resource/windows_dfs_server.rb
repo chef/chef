@@ -65,9 +65,7 @@ class Chef
         sync_interval_secs results["SyncIntervalSec"]
       end
 
-      action :configure do
-        description "Configure DFS settings."
-
+      action :configure, description: "Configure DFS settings" do
         converge_if_changed do
           dfs_cmd = "Set-DfsnServerConfiguration -ComputerName '#{ENV["COMPUTERNAME"]}' -UseFqdn $#{new_resource.use_fqdn} -LdapTimeoutSec #{new_resource.ldap_timeout_secs} -SyncIntervalSec #{new_resource.sync_interval_secs}"
           dfs_cmd << " -EnableSiteCostedReferrals $#{new_resource.enable_site_costed_referrals}" if new_resource.enable_site_costed_referrals != current_resource.enable_site_costed_referrals

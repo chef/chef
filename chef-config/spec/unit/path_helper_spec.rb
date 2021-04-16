@@ -355,14 +355,14 @@ RSpec.describe ChefConfig::PathHelper do
     end
 
     context "on windows" do
-      let (:is_windows) { true }
+      let(:is_windows) { true }
     end
 
     context "on unix" do
-      let (:is_windows) { false }
+      let(:is_windows) { false }
 
       context "when HOME is not set" do
-        let (:env) { {} }
+        let(:env) { {} }
         it "returns an empty array" do
           expect(path_helper.all_homes).to eq([])
         end

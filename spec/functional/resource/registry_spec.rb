@@ -127,12 +127,12 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     @new_resource.cookbook_version(@cookbook_version)
   end
 
-  after (:all) do
+  after(:all) do
     clean_registry
   end
 
   context "when action is create" do
-    before (:all) do
+    before(:all) do
       reset_registry
     end
     it "creates registry key, value if the key is missing" do
@@ -290,7 +290,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     context "while running in whyrun mode" do
-      before (:each) do
+      before(:each) do
         Chef::Config[:why_run] = true
       end
 
@@ -342,7 +342,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
   end
 
   context "when action is create_if_missing" do
-    before (:all) do
+    before(:all) do
       reset_registry
     end
 
@@ -454,7 +454,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     context "while running in whyrun mode" do
-      before (:each) do
+      before(:each) do
         Chef::Config[:why_run] = true
       end
 
@@ -576,7 +576,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
     end
 
     context "while running in whyrun mode" do
-      before (:each) do
+      before(:each) do
         Chef::Config[:why_run] = true
       end
       it "does nothing if the action is delete" do
@@ -591,7 +591,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
   end
 
   context "when the action is delete_key" do
-    before (:all) do
+    before(:all) do
       reset_registry
       create_deletable_keys
     end
@@ -653,7 +653,7 @@ describe Chef::Resource::RegistryKey, :windows_only, broken: true do
       expect(@report["total_res_count"]).to eq("1")
     end
     context "while running in whyrun mode" do
-      before (:each) do
+      before(:each) do
         Chef::Config[:why_run] = true
       end
 

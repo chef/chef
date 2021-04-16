@@ -17,7 +17,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 Chef::Knife::Bootstrap.load_deps
 
@@ -185,7 +185,7 @@ describe Chef::Knife::Bootstrap do
     context "when :bootstrap_template config is set to a template name" do
       let(:bootstrap_template) { "example" }
 
-      let(:builtin_template_path) { File.expand_path(File.join(__dir__, "../../../lib/chef/knife/bootstrap/templates", "example.erb")) }
+      let(:builtin_template_path) { File.expand_path(File.join(__dir__, "../../../knife/lib/chef/knife/bootstrap/templates", "example.erb")) }
 
       let(:chef_config_dir_template_path) { "/knife/chef/config/bootstrap/example.erb" }
 
@@ -320,7 +320,7 @@ describe Chef::Knife::Bootstrap do
 
     context "with bootstrap_attribute options" do
       let(:jsonfile) do
-        file = Tempfile.new (["node", ".json"])
+        file = Tempfile.new(["node", ".json"])
         File.open(file.path, "w") { |f| f.puts '{"foo":{"bar":"baz"}}' }
         file
       end
@@ -472,21 +472,13 @@ describe Chef::Knife::Bootstrap do
   end
 
   describe "when transferring trusted certificates" do
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
-
     let(:rendered_template) do
       knife.merge_configs
       knife.render_template
     end
 
     before do
-      Chef::Config[:trusted_certs_dir] = trusted_certs_dir
-      allow(IO).to receive(:read).and_call_original
-      allow(IO).to receive(:read).with(File.expand_path(Chef::Config[:validation_key])).and_return("")
-    end
-
-    def certificates
-      Dir[File.join(trusted_certs_dir, "*.{crt,pem}")]
+      Chef::Config[:trusted_certs_dir] = Chef::Util::PathHelper.cleanpath(File.join(CHEF_SPEC_DATA, "trusted_certs"))
     end
 
     it "creates /etc/chef/trusted_certs" do
@@ -494,27 +486,23 @@ describe Chef::Knife::Bootstrap do
     end
 
     it "copies the certificates in the directory" do
-      certificates.each do |cert|
-        expect(IO).to receive(:read).with(File.expand_path(cert))
-      end
+      certificates = Dir[File.join(Chef::Config[:trusted_certs_dir], "*.{crt,pem}")]
 
       certificates.each do |cert|
         expect(rendered_template).to match(%r{cat > /etc/chef/trusted_certs/#{File.basename(cert)} <<'EOP'})
       end
     end
 
-    context "when :trusted_cets_dir is empty" do
-      let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs_empty")) }
-      it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+    it "doesn't create /etc/chef/trusted_certs if :trusted_certs_dir is empty" do
+      Dir.mktmpdir do |dir|
+        Chef::Config[:trusted_certs_dir] = dir
         expect(rendered_template).not_to match(%r{mkdir -p /etc/chef/trusted_certs})
       end
     end
-
   end
 
   context "when doing fips things" do
     let(:template_file) { File.expand_path(File.join(CHEF_SPEC_DATA, "bootstrap", "no_proxy.erb")) }
-    let(:trusted_certs_dir) { Chef::Util::PathHelper.cleanpath(File.join(__dir__, "../../data/trusted_certs")) }
 
     before do
       Chef::Config[:knife][:bootstrap_template] = template_file
@@ -1738,7 +1726,8 @@ describe Chef::Knife::Bootstrap do
 
   describe "#perform_bootstrap" do
     let(:exit_status) { 0 }
-    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message") }
+    let(:stdout) { "" }
+    let(:result_mock) { double("result", exit_status: exit_status, stderr: "A message", stdout: stdout) }
 
     before do
       allow(connection).to receive(:hostname).and_return "testhost"
@@ -1751,12 +1740,13 @@ describe Chef::Knife::Bootstrap do
       expect(connection)
         .to receive(:run_command)
         .with("sh /path.sh")
-        .and_yield("output here")
+        .and_yield("output here", nil)
         .and_return result_mock
 
       expect(knife.ui).to receive(:msg).with(/testhost/)
       knife.perform_bootstrap("/path.sh")
     end
+
     context "when the remote command fails" do
       let(:exit_status) { 1 }
       it "shows an error and exits" do
@@ -1766,6 +1756,25 @@ describe Chef::Knife::Bootstrap do
           .and_return("sh /path.sh")
         expect(connection).to receive(:run_command).with("sh /path.sh").and_return result_mock
         expect { knife.perform_bootstrap("/path.sh") }.to raise_error(SystemExit)
+      end
+    end
+
+    context "when the remote command failed due to su auth error" do
+      let(:exit_status) { 1 }
+      let(:stdout) { "su: Authentication failure" }
+      let(:connection_obj) { double("connection", transport_options: {}) }
+      it "shows an error and exits" do
+        allow(connection).to receive(:connection).and_return(connection_obj)
+        expect(knife.ui).to receive(:info).with(/Bootstrapping.*/)
+        expect(knife).to receive(:bootstrap_command)
+          .with("/path.sh")
+          .and_return("su - USER -c 'sh /path.sh'")
+        expect(connection)
+          .to receive(:run_command)
+          .with("su - USER -c 'sh /path.sh'")
+          .and_yield("output here", nil)
+          .and_raise(Train::UserError)
+        expect { knife.perform_bootstrap("/path.sh") }.to raise_error(Train::UserError)
       end
     end
   end
@@ -1976,7 +1985,25 @@ describe Chef::Knife::Bootstrap do
     context "under Linux" do
       let(:linux_test) { true }
       it "prefixes the command to run under sh" do
-        expect(knife.bootstrap_command("bootstrap")).to eq "sh bootstrap"
+        expect(knife.bootstrap_command("bootstrap.sh")).to eq "sh bootstrap.sh"
+      end
+
+      context "with --su-user option" do
+        let(:connection_obj) { double("connection", transport_options: {}) }
+        before do
+          knife.config[:su_user] = "root"
+          allow(connection).to receive(:connection).and_return(connection_obj)
+        end
+        it "prefixes the command to run using su -USER -c" do
+          expect(knife.bootstrap_command("bootstrap.sh")).to eq "su - #{knife.config[:su_user]} -c 'sh bootstrap.sh'"
+          expect(connection_obj.transport_options.key?(:pty)).to eq true
+        end
+
+        it "sudo appended if --sudo option enabled" do
+          knife.config[:use_sudo] = true
+          expect(knife.bootstrap_command("bootstrap.sh")).to eq "sudo su - #{knife.config[:su_user]} -c 'sh bootstrap.sh'"
+          expect(connection_obj.transport_options.key?(:pty)).to eq true
+        end
       end
     end
   end

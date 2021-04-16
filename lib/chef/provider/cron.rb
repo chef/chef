@@ -101,7 +101,7 @@ class Chef
 
         if @cron_exists
           unless cron_different?
-            logger.trace("Skipping existing cron entry '#{new_resource.name}'")
+            logger.debug("#{new_resource}: Skipping existing cron entry")
             return
           end
           read_crontab.each_line do |line|

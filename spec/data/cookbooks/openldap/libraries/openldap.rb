@@ -1,4 +1,4 @@
-require_relative './openldap/version.rb'
+require_relative './openldap/version'
 
 class OpenLDAP
 end

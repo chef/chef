@@ -28,12 +28,12 @@ class Chef
 
             action :reconfig do
               if current_resource.version.nil?
-                logger.trace("#{new_resource} is NOT installed - nothing to do")
+                logger.debug("#{new_resource} is NOT installed - nothing to do")
                 return
               end
 
               unless new_resource.response_file
-                logger.trace("#{new_resource} no response_file provided - nothing to do")
+                logger.debug("#{new_resource} no response_file provided - nothing to do")
                 return
               end
 
@@ -46,7 +46,7 @@ class Chef
                   logger.info("#{new_resource} reconfigured")
                 end
               else
-                logger.trace("#{new_resource} preseeding has not changed - nothing to do")
+                logger.debug("#{new_resource} preseeding has not changed - nothing to do")
               end
             end
 

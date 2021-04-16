@@ -66,7 +66,7 @@ describe Chef::Mixin::PowershellExec, :windows_only do
       execution = object.powershell_exec("this-should-error")
       expect(execution.errors).to be_a_kind_of(Array)
       expect(execution.errors[0]).to be_a_kind_of(String)
-      expect(execution.errors[0]).to include("Runtime exception: this-should-error")
+      expect(execution.errors[0]).to include("The term 'this-should-error' is not recognized")
     end
 
     it "raises an error if the interpreter is invalid" do

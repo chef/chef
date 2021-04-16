@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::SubcommandLoader::GemGlobLoader do
   let(:loader) { Chef::Knife::SubcommandLoader::GemGlobLoader.new(File.join(CHEF_SPEC_DATA, "knife-site-subcommands")) }
@@ -24,11 +24,11 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
 
   before do
     allow(ChefUtils).to receive(:windows?) { false }
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, home)
+    ChefConfig::PathHelper.class_variable_set(:@@home_dir, home)
   end
 
   after do
-    Chef::Util::PathHelper.class_variable_set(:@@home_dir, nil)
+    ChefConfig::PathHelper.class_variable_set(:@@home_dir, nil)
   end
 
   it "builds a list of the core subcommand file require paths" do
@@ -60,11 +60,41 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
       expect(Dir).to receive(:[]).with("/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb").and_return(gem_files)
     end
     expect(loader).to receive(:find_subcommands_via_dirglob).and_return({})
-    expect(loader.subcommand_files.select { |file| file =~ /knife-ec2/ }.sort).to eq(gem_files)
+    expect(loader.subcommand_files.select { |file| file.include?("knife-ec2") }.sort).to eq(gem_files)
+  end
+  it "excludes knife version file if loaded from a gem" do
+    gems = [ double("knife-ec2-0.5.12") ]
+    gem_files = [
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb",
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb",
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/version.rb",
+    ]
+    expected_files = [
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_base.rb",
+      "/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/ec2_otherstuff.rb",
+    ]
+
+    expect($LOAD_PATH).to receive(:map).and_return([])
+    if Gem::Specification.respond_to? :latest_specs
+      expect(Gem::Specification).to receive(:latest_specs).with(true).and_return(gems)
+      expect(gems[0]).to receive(:matches_for_glob).with(%r{chef/knife/\*\.rb\{(.*),\.rb,(.*)\}}).and_return(gem_files)
+    else
+      expect(Gem.source_index).to receive(:latest_specs).with(true).and_return(gems)
+      expect(gems[0]).to receive(:require_paths).twice.and_return(["lib"])
+      expect(gems[0]).to receive(:full_gem_path).and_return("/usr/lib/ruby/gems/knife-ec2-0.5.12")
+      expect(Dir).to receive(:[]).with("/usr/lib/ruby/gems/knife-ec2-0.5.12/lib/chef/knife/*.rb").and_return(gem_files)
+    end
+    expect(loader).to receive(:find_subcommands_via_dirglob).and_return({})
+    expect(loader.subcommand_files.select { |file| file.include?("knife-ec2") }.sort).to eq(expected_files)
   end
 
   it "finds files using a dirglob when rubygems is not available" do
     expect(loader.find_subcommands_via_dirglob).to include("chef/knife/node_create")
+    loader.find_subcommands_via_dirglob.each_value { |abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
+  end
+
+  it "excludes chef/knife/version.rb using a dirglob when rubygems is not available" do
+    expect(loader.find_subcommands_via_dirglob).to_not include("chef/knife/version")
     loader.find_subcommands_via_dirglob.each_value { |abs_path| expect(abs_path).to match(%r{chef/knife/.+}) }
   end
 
@@ -86,6 +116,9 @@ describe Chef::Knife::SubcommandLoader::GemGlobLoader do
   # source tree of the "primary" chef install, it can be loaded and cause an
   # error. We also want to ensure that we only load builtin commands from the
   # "primary" chef install.
+  #
+  # NOTE - we need to revisit coverage now that we're moving knife to its own gem;
+  # or remove this test if it's no longer a supported scenario.
   context "when a different version of chef is also installed as a gem" do
 
     let(:all_found_commands) do

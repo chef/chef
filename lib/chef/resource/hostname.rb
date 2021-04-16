@@ -50,6 +50,10 @@ class Chef
         description: "An optional property to set the hostname if it differs from the resource block's name.",
         name_property: true
 
+      property :fqdn, String,
+        description: "An optional property to set the fqdn if it differs from the resource block's hostname.",
+        introduced: "17.0"
+
       property :ipaddress, String,
         description: "The IP address to use when configuring the hosts file.",
         default: lazy { node["ipaddress"] }, default_description: "The node's IP address as determined by Ohai."
@@ -99,9 +103,7 @@ class Chef
         end
       end
 
-      action :set do
-        description "Sets the node's hostname."
-
+      action :set, description: "Sets the node's hostname" do
         if !windows?
           ohai "reload hostname" do
             plugin "hostname"
@@ -109,7 +111,7 @@ class Chef
           end
 
           # set the hostname via /bin/hostname
-          declare_resource(:execute, "set hostname to #{new_resource.hostname}") do
+          execute "set hostname to #{new_resource.hostname}" do
             command "/bin/hostname #{new_resource.hostname}"
             not_if { shell_out!("hostname").stdout.chomp == new_resource.hostname }
             notifies :reload, "ohai[reload hostname]"
@@ -117,7 +119,9 @@ class Chef
 
           # make sure node['fqdn'] resolves via /etc/hosts
           unless new_resource.ipaddress.nil?
-            newline = "#{new_resource.ipaddress} #{new_resource.hostname}"
+            newline = "#{new_resource.ipaddress}"
+            newline << " #{new_resource.fqdn}" unless new_resource.fqdn.to_s.empty?
+            newline << " #{new_resource.hostname}"
             newline << " #{new_resource.aliases.join(" ")}" if new_resource.aliases && !new_resource.aliases.empty?
             newline << " #{new_resource.hostname[/[^\.]*/]}"
             r = append_replacing_matching_lines("/etc/hosts", /^#{new_resource.ipaddress}\s+|\s+#{new_resource.hostname}\s+/, newline)
@@ -127,22 +131,22 @@ class Chef
 
           # setup the hostname to persist on a reboot
           case
-          when ::File.exist?("/usr/sbin/scutil")
+          when darwin?
             # darwin
-            declare_resource(:execute, "set HostName via scutil") do
+            execute "set HostName via scutil" do
               command "/usr/sbin/scutil --set HostName #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
+              not_if { shell_out("/usr/sbin/scutil --get HostName").stdout.chomp == new_resource.hostname }
               notifies :reload, "ohai[reload hostname]"
             end
-            declare_resource(:execute, "set ComputerName via scutil") do
+            execute "set ComputerName via scutil" do
               command "/usr/sbin/scutil --set ComputerName  #{new_resource.hostname}"
-              not_if { shell_out!("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname }
+              not_if { shell_out("/usr/sbin/scutil --get ComputerName").stdout.chomp == new_resource.hostname }
               notifies :reload, "ohai[reload hostname]"
             end
             shortname = new_resource.hostname[/[^\.]*/]
-            declare_resource(:execute, "set LocalHostName via scutil") do
+            execute "set LocalHostName via scutil" do
               command "/usr/sbin/scutil --set LocalHostName #{shortname}"
-              not_if { shell_out!("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
+              not_if { shell_out("/usr/sbin/scutil --get LocalHostName").stdout.chomp == shortname }
               notifies :reload, "ohai[reload hostname]"
             end
           when linux?
@@ -150,7 +154,7 @@ class Chef
             when ::File.exist?("/usr/bin/hostnamectl") && !docker?
               # use hostnamectl whenever we find it on linux (as systemd takes over the world)
               # this must come before other methods like /etc/hostname and /etc/sysconfig/network
-              declare_resource(:execute, "hostnamectl set-hostname #{new_resource.hostname}") do
+              execute "hostnamectl set-hostname #{new_resource.hostname}" do
                 notifies :reload, "ohai[reload hostname]"
                 not_if { shell_out!("hostnamectl status", returns: [0, 1]).stdout =~ /Static hostname:\s*#{new_resource.hostname}\s*$/ }
               end
@@ -160,7 +164,7 @@ class Chef
               # the "platform: iox_xr, platform_family: wrlinux, os: linux" platform also hits this
               # the "platform: nexus, platform_family: wrlinux, os: linux" platform also hits this
               # this is also fallback for any linux systemd host in a docker container (where /usr/bin/hostnamectl will fail)
-              declare_resource(:file, "/etc/hostname") do
+              file "/etc/hostname" do
                 atomic_update false if docker?
                 content "#{new_resource.hostname}\n"
                 owner "root"
@@ -172,7 +176,7 @@ class Chef
               append_replacing_matching_lines("/etc/sysconfig/network", /^HOSTNAME\s*=/, "HOSTNAME=#{new_resource.hostname}")
             when ::File.exist?("/etc/HOSTNAME")
               # SuSE/openSUSE uses /etc/HOSTNAME
-              declare_resource(:file, "/etc/HOSTNAME") do
+              file "/etc/HOSTNAME" do
                 content "#{new_resource.hostname}\n"
                 owner "root"
                 group node["root_group"]
@@ -180,7 +184,7 @@ class Chef
               end
             when ::File.exist?("/etc/conf.d/hostname")
               # Gentoo
-              declare_resource(:file, "/etc/conf.d/hostname") do
+              file "/etc/conf.d/hostname" do
                 content "hostname=\"#{new_resource.hostname}\"\n"
                 owner "root"
                 group node["root_group"]
@@ -196,23 +200,23 @@ class Chef
             # *BSD systems with /etc/rc.conf + /etc/myname
             append_replacing_matching_lines("/etc/rc.conf", /^\s+hostname\s+=/, "hostname=#{new_resource.hostname}")
 
-            declare_resource(:file, "/etc/myname") do
+            file "/etc/myname" do
               content "#{new_resource.hostname}\n"
               owner "root"
               group node["root_group"]
               mode "0644"
             end
           when ::File.exist?("/usr/sbin/svccfg") # solaris 5.11
-            declare_resource(:execute, "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'") do
+            execute "svccfg -s system/identity:node setprop config/nodename=\'#{new_resource.hostname}\'" do
               notifies :run, "execute[svcadm refresh]", :immediately
               notifies :run, "execute[svcadm restart]", :immediately
               not_if { shell_out!("svccfg -s system/identity:node listprop config/nodename").stdout.chomp =~ %r{config/nodename\s+astring\s+#{new_resource.hostname}} }
             end
-            declare_resource(:execute, "svcadm refresh") do
+            execute "svcadm refresh" do
               command "svcadm refresh system/identity:node"
               action :nothing
             end
-            declare_resource(:execute, "svcadm restart") do
+            execute "svcadm restart" do
               command "svcadm restart system/identity:node"
               action :nothing
             end

@@ -66,7 +66,7 @@ describe Chef::Provider::Package::Freebsd::Port do
     end
 
     it "should query pkg database" do
-      expect(@provider).to receive(:shell_out_compacted!).with("pkg", "info", "zsh", env: nil, returns: [0, 70], timeout: 900).and_return(@pkg_info)
+      expect(@provider).to receive(:shell_out_compacted!).with("pkg", "info", "zsh", env: nil, returns: [0, 1, 70], timeout: 900).and_return(@pkg_info)
       expect(@provider.current_installed_version).to eq("3.1.7")
     end
   end

@@ -99,7 +99,7 @@ describe Chef::Provider::DscScript do
       it "should noop if neither code or command are provided" do
         allow(provider).to receive(:load_current_resource)
         generator = double("Chef::Util::DSC::ConfigurationGenerator")
-        expect(generator).to receive(:configuration_document_from_script_code).with("", anything, anything, anything)
+        expect(generator).to receive(:configuration_document_from_script_code).with("", anything, anything)
         allow(Chef::Util::DSC::ConfigurationGenerator).to receive(:new).and_return(generator)
         provider.send(:generate_configuration_document, "tmp", nil)
       end

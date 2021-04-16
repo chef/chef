@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 Chef::Knife::NodeEdit.load_deps
 
 describe Chef::Knife::NodeEdit do

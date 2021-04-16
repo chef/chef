@@ -24,6 +24,7 @@ class Chef
 
     attr_reader :result
     attr_reader :errors
+    attr_reader :verbose
 
     # Run a command under PowerShell via FFI
     # This implementation requires the managed dll and native wrapper to be in the library search
@@ -72,6 +73,7 @@ class Chef
       hashed_outcome = Chef::JSONCompat.parse(execution)
       @result = Chef::JSONCompat.parse(hashed_outcome["result"])
       @errors = hashed_outcome["errors"]
+      @verbose = hashed_outcome["verbose"]
     end
   end
 end

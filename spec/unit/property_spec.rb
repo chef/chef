@@ -541,13 +541,16 @@ describe "Chef::Resource.property" do
         it "when x is not set, it returns ''" do
           expect(resource.x).to eq ""
         end
-        it "x is immutable" do
-          expect { resource.x << "foo" }.to raise_error(FrozenError, /can't modify frozen String/)
+        it "setting x does not mutate the default" do
+          expect(resource.x).to eq ""
+          resource.x << "foo"
+          expect(resource.x).to eq "foo"
+          expect(resource_class.new("other").x).to eq ""
         end
       end
 
       with_property ":x, default: lazy { '' }" do
-        it "x is immutable" do
+        it "setting x does not mutate the default" do
           expect(resource.x).to eq ""
           resource.x << "foo"
           expect(resource.x).to eq "foo"
@@ -561,16 +564,14 @@ describe "Chef::Resource.property" do
         it "when x is not set, it returns {}" do
           expect(resource.x).to eq({})
         end
-        it "x is immutable" do
-          expect { resource.x["foo"] = "bar" }.to raise_error(FrozenError, /can't modify frozen Hash/)
+        it "setting x does not mutate the default" do
+          expect(resource.x).to eq({})
+          resource.x["plants"] = "zombies"
+          expect(resource.x).to eq({ "plants" => "zombies" })
+          expect(resource_class.new("other").x).to eq({})
         end
-        it "The same exact value is returned multiple times in a row" do
-          value = resource.x
-          expect(value).to eq({})
-          expect(resource.x.object_id).to eq(value.object_id)
-        end
-        it "Multiple instances of x receive the exact same value" do
-          expect(resource.x.object_id).to eq(resource_class.new("blah2").x.object_id)
+        it "Multiple instances of x receive different values" do
+          expect(resource.x.object_id).not_to eq(resource_class.new("blah2").x.object_id)
         end
       end
 
@@ -594,14 +595,14 @@ describe "Chef::Resource.property" do
         it "when x is not set, it returns [{foo: 'bar'}]" do
           expect(resource.x).to eq([{ foo: "bar" }])
         end
-        it "x is immutable" do
-          expect { resource.x << :other }.to raise_error(FrozenError, /can't modify frozen Array/)
+        it "setting x does not mutate the default" do
+          expect(resource.x).to eq([{ foo: "bar" }])
+          resource.x[0][:foo] << "baz"
+          expect(resource.x).to eq([{ foo: "barbaz" }])
+          expect(resource_class.new("other").x).to eq([{ foo: "bar" }])
         end
-        it "x.first is immutable" do
-          expect { resource.x.first[:foo] = "other" }.to raise_error(FrozenError, /can't modify frozen Hash/)
-        end
-        it "x.first[:foo] is immutable" do
-          expect { resource.x.first[:foo] << "other" }.to raise_error(FrozenError, /can't modify frozen String/)
+        it "Multiple instances of x receive different values" do
+          expect(resource.x.object_id).not_to eq(resource_class.new("blah2").x.object_id)
         end
       end
     end
@@ -708,10 +709,10 @@ describe "Chef::Resource.property" do
           expect(resource.x).to eq "hi1"
           expect(Namer.current_index).to eq 1
         end
-        it "when x is retrieved, coercion is run each time" do
+        it "when x is retrieved, coercion is run exactly once" do
           expect(resource.x).to eq "101"
-          expect(resource.x).to eq "102"
-          expect(Namer.current_index).to eq 2
+          expect(resource.x).to eq "101"
+          expect(Namer.current_index).to eq 1
         end
       end
 

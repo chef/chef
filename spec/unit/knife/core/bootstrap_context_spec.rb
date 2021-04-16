@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require "spec_helper"
+require "knife_spec_helper"
 require "chef/knife/core/bootstrap_context"
 
 describe Chef::Knife::Core::BootstrapContext do

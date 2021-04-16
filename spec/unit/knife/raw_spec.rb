@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-require "spec_helper"
+require "knife_spec_helper"
 
 describe Chef::Knife::Raw do
   let(:rest) do

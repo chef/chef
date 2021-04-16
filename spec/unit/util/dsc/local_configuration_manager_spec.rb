@@ -49,23 +49,22 @@ describe Chef::Util::DSC::LocalConfigurationManager do
     EOH
   end
 
-  let(:lcm_status) do
-    double("LCM cmdlet status", stderr: lcm_standard_error, return_value: lcm_standard_output, succeeded?: lcm_cmdlet_success)
+  let(:powershell) do
+    double("Chef::PowerShell", errors: lcm_errors, error?: !lcm_errors.empty?, result: lcm_result)
   end
 
   describe "test_configuration method invocation" do
     context "when interacting with the LCM using a PowerShell cmdlet" do
       before(:each) do
-        allow(lcm).to receive(:run_configuration_cmdlet).and_return(lcm_status)
+        allow(lcm).to receive(:run_configuration_cmdlet).and_return(powershell)
         allow(lcm).to receive(:ps_version_gte_5?).and_return(false)
       end
       context "that returns successfully" do
-        let(:lcm_standard_output) { normal_lcm_output }
-        let(:lcm_standard_error) { nil }
-        let(:lcm_cmdlet_success) { true }
+        let(:lcm_result) { normal_lcm_output }
+        let(:lcm_errors) { [] }
 
         it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
-          test_configuration_result = lcm.test_configuration("config", {})
+          test_configuration_result = lcm.test_configuration("config")
           expect(test_configuration_result.class).to be(Array)
           expect(test_configuration_result.length).to be > 0
           expect(Chef::Log).not_to receive(:warn)
@@ -73,13 +72,12 @@ describe Chef::Util::DSC::LocalConfigurationManager do
       end
 
       context "when running on PowerShell version 5" do
-        let(:lcm_standard_output) { normal_lcm_output }
-        let(:lcm_standard_error) { nil }
-        let(:lcm_cmdlet_success) { true }
+        let(:lcm_result) { normal_lcm_output }
+        let(:lcm_errors) { [] }
 
         it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
           allow(lcm).to receive(:ps_version_gte_5?).and_return(true)
-          test_configuration_result = lcm.test_configuration("config", {})
+          test_configuration_result = lcm.test_configuration("config")
           expect(test_configuration_result.class).to be(Array)
           expect(test_configuration_result.length).to be > 0
           expect(Chef::Log).not_to receive(:warn)
@@ -87,13 +85,12 @@ describe Chef::Util::DSC::LocalConfigurationManager do
       end
 
       context "when running on PowerShell version less than 5" do
-        let(:lcm_standard_output) { normal_lcm_output }
-        let(:lcm_standard_error) { nil }
-        let(:lcm_cmdlet_success) { true }
+        let(:lcm_result) { normal_lcm_output }
+        let(:lcm_errors) { [] }
 
         it "successfully returns resource information for normally formatted output when cmdlet the cmdlet succeeds" do
           allow(lcm).to receive(:ps_version_gte_5?).and_return(false)
-          test_configuration_result = lcm.test_configuration("config", {})
+          test_configuration_result = lcm.test_configuration("config")
           expect(test_configuration_result.class).to be(Array)
           expect(test_configuration_result.length).to be > 0
           expect(Chef::Log).not_to receive(:warn)
@@ -104,10 +101,9 @@ describe Chef::Util::DSC::LocalConfigurationManager do
         let(:common_command_prefix) { "$ProgressPreference = 'SilentlyContinue';" }
         let(:ps4_base_command) { "#{common_command_prefix} Start-DscConfiguration -path tmp -wait -erroraction 'stop' -force" }
         let(:lcm_command_ps4) { ps4_base_command + " -whatif; if (! $?) { exit 1 }" }
-        let(:lcm_command_ps5) { "#{common_command_prefix} Test-DscConfiguration -path tmp | format-list" }
-        let(:lcm_standard_output) { normal_lcm_output }
-        let(:lcm_standard_error) { nil }
-        let(:lcm_cmdlet_success) { true }
+        let(:lcm_command_ps5) { "#{common_command_prefix} Test-DscConfiguration -path tmp | format-list | Out-String" }
+        let(:lcm_result) { normal_lcm_output }
+        let(:lcm_errors) { [] }
 
         it "successfully returns command when apply_configuration true" do
           expect(lcm.send(:lcm_command, true)).to eq(ps4_base_command)
@@ -125,9 +121,8 @@ describe Chef::Util::DSC::LocalConfigurationManager do
       end
 
       context "that fails due to missing what-if switch in DSC resource cmdlet implementation" do
-        let(:lcm_standard_output) { "" }
-        let(:lcm_standard_error) { no_whatif_lcm_output }
-        let(:lcm_cmdlet_success) { false }
+        let(:lcm_result) { "" }
+        let(:lcm_errors) { [no_whatif_lcm_output] }
 
         it "returns true when passed to #whatif_not_supported?" do
           expect(lcm.send(:whatif_not_supported?, no_whatif_lcm_output)).to be_truthy
@@ -137,40 +132,38 @@ describe Chef::Util::DSC::LocalConfigurationManager do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:whatif_not_supported?).and_call_original
           test_configuration_result = nil
-          expect { test_configuration_result = lcm.test_configuration("config", {}) }.not_to raise_error
+          expect { test_configuration_result = lcm.test_configuration("config") }.not_to raise_error
           expect(test_configuration_result.class).to be(Array)
         end
       end
 
       context "that fails due to a DSC resource not being imported before StartDSCConfiguration -whatif is executed" do
-        let(:lcm_standard_output) { "" }
-        let(:lcm_standard_error) { dsc_resource_import_failure_output }
-        let(:lcm_cmdlet_success) { false }
+        let(:lcm_result) { "" }
+        let(:lcm_errors) { [dsc_resource_import_failure_output] }
 
         it "logs a warning if the message is formatted as expected when a resource import failure occurs" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
           test_configuration_result = nil
-          expect { test_configuration_result = lcm.test_configuration("config", {}) }.not_to raise_error
+          expect { test_configuration_result = lcm.test_configuration("config") }.not_to raise_error
         end
 
         it "returns a (possibly empty) array of ResourceInfo instances" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           test_configuration_result = nil
-          expect { test_configuration_result = lcm.test_configuration("config", {}) }.not_to raise_error
+          expect { test_configuration_result = lcm.test_configuration("config") }.not_to raise_error
           expect(test_configuration_result.class).to be(Array)
         end
       end
 
       context "that fails due to an unknown PowerShell cmdlet error" do
-        let(:lcm_standard_output) { "some output" }
-        let(:lcm_standard_error) { "Abort, Retry, Fail?" }
-        let(:lcm_cmdlet_success) { false }
+        let(:lcm_result) { "some output" }
+        let(:lcm_errors) { ["Abort, Retry, Fail?"] }
 
         it "logs a warning" do
           expect(Chef::Log).to receive(:warn).at_least(:once)
           expect(lcm).to receive(:dsc_module_import_failure?).and_call_original
-          expect { lcm.test_configuration("config", {}) }.not_to raise_error
+          expect { lcm.test_configuration("config") }.not_to raise_error
         end
       end
     end
@@ -188,12 +181,11 @@ describe Chef::Util::DSC::LocalConfigurationManager do
     end
   end
 
-  describe "#run_configuration_cmdlet" do
+  describe "#run_configuration_cmdlet", :windows_powershell_dsc_only do
     context "when invalid dsc script is given" do
       it "raises exception" do
         configuration_document = "invalid-config"
-        shellout_flags = { cwd: nil, environment: nil, timeout: nil }
-        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true, shellout_flags) }.to raise_error(Chef::Exceptions::PowershellCmdletException)
+        expect { lcm.send(:run_configuration_cmdlet, configuration_document, true) }.to raise_error(Chef::PowerShell::CommandFailed)
       end
     end
   end

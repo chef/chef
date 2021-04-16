@@ -188,13 +188,17 @@ else:
 
 try:
     while 1:
-        # kill self if we get orphaned (tragic)
+        # stop the process if the parent proc goes away
         ppid = os.getppid()
         if ppid == 1:
             raise RuntimeError("orphaned")
 
         setup_exit_handler()
         line = inpipe.readline()
+
+        # only way to detect EOF in python
+        if line == "":
+            break
 
         try:
             command = json.loads(line)

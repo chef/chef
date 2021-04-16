@@ -32,7 +32,7 @@ class Chef
 
       provides :file
 
-      description "Use the **file** resource to manage files directly on a node."
+      description "Use the **file** resource to manage files directly on a node. Note: Use the **cookbook_file** resource to copy a file from a cookbook's `/files` directory. Use the **template** resource to create a file based on a template in a cookbook's `/templates` directory. And use the **remote_file** resource to transfer a file to a node from a remote location."
 
       if ChefUtils.windows?
         # Use Windows rights instead of standard *nix permissions
@@ -81,7 +81,7 @@ class Chef
       property :manage_symlink_source, [ TrueClass, FalseClass ], desired_state: false,
         description: "Change the behavior of the file resource if it is pointed at a symlink. When this value is set to true, #{ChefUtils::Dist::Infra::PRODUCT} will manage the symlink's permissions or will replace the symlink with a normal file if the resource has content. When this value is set to false, #{ChefUtils::Dist::Infra::PRODUCT} will follow the symlink and will manage the permissions and content of symlink's target file. The default behavior is true but emits a warning that the default value will be changed to false in a future version; setting this explicitly to true or false suppresses this warning."
 
-      property :verifications, Array, default: lazy { [] }
+      property :verifications, Array, default: lazy { [] }, desired_state: false, skip_docs: true
 
       def verify(command = nil, opts = {}, &block)
         unless command.nil? || [String, Symbol].include?(command.class)
