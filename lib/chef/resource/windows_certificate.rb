@@ -67,7 +67,7 @@ class Chef
         name_property: true
 
       property :pfx_password, String,
-        description: "The password to access the object with if it is a pfx file."
+        description: "The password to access the object with if it is a PFX file."
 
       property :private_key_acl, Array,
         description: "An array of 'domain\\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
