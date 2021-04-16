@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 15.17.1 -->
-## [v15.17.1](https://github.com/chef/chef/tree/v15.17.1) (2021-04-08)
+<!-- latest_release 15.17.2 -->
+## [v15.17.2](https://github.com/chef/chef/tree/v15.17.2) (2021-04-16)
 
 #### Merged Pull Requests
-- Trigger a new build of 15.x [#11344](https://github.com/chef/chef/pull/11344) ([tas50](https://github.com/tas50))
+- Update InSpec to 4.32 [#11385](https://github.com/chef/chef/pull/11385) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=15.16.7 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update InSpec to 4.32 [#11385](https://github.com/chef/chef/pull/11385) ([tas50](https://github.com/tas50)) <!-- 15.17.2 -->
 - Trigger a new build of 15.x [#11344](https://github.com/chef/chef/pull/11344) ([tas50](https://github.com/tas50)) <!-- 15.17.1 -->
 - Update to Ruby 2.6.7 and InSpec 4.31.1 [#11343](https://github.com/chef/chef/pull/11343) ([tas50](https://github.com/tas50)) <!-- 15.17.0 -->
 <!-- release_rollup -->
