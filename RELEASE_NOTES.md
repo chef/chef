@@ -1618,6 +1618,33 @@ Several legacy Windows helpers have been deprecated as they will always return t
 - Chef::Platform.supports_powershell_execution_bypass?
 - Chef::Platform.windows_nano_server?
 
+## What's new in 15.17
+
+### Chef InSpec 4.32
+
+Chef InSpec has been updated from 4.29.3 to 4.32
+
+#### New Features
+
+- Commands can now be set to timeout using the [command resource](https://docs.chef.io/inspec/resources/command/) or the [`--command-timeout`](https://docs.chef.io/inspec/cli/) option in the CLI. Commands timeout by default after one hour.
+- Added the [`--docker-url`](https://docs.chef.io/inspec/cli/) CLI option, which can be used to specify the URI to connect to the Docker Engine.
+- Added support for targeting Linux and Windows containers running on Docker for Windows.
+- Added ability to pass inputs to InSpec shell using input file and cli. For more information, see [How can I set Inputs?](https://docs.chef.io/inspec/inputs/#how-can-i-set-inputs) in the InSpec documentation.
+
+#### Bug Fixes
+
+- Hash inputs will now be loaded consistently and accessed as strings or symbols. ([#5446](https://github.com/inspec/inspec/pull/5446))
+
+### Security
+
+#### Ruby
+
+We updated Ruby from 2.6.6 to 2.6.7 to resolve a large number of bugs as well as the following CVEs:
+
+- [CVE-2021-28966](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28966)
+- [CVE-2021-28965](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-28965)
+- [CVE-2020-25613](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-25613)
+
 ## What's new in 15.16
 
 ### Fixes and Improvements
