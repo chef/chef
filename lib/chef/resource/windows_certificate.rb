@@ -93,7 +93,7 @@ class Chef
         introduced: "16.8"
 
       property :output_path, String,
-        description: "A path on the node where a certificate object (pfx, pem, cer, key, etc) can be exported to.",
+        description: "A path on the node where a certificate object (PFX, PEM, CER, KEY, etc) can be exported to.",
         introduced: "17.0"
 
       action :create, description: "Creates or updates a certificate." do
