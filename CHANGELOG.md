@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.207 -->
-## [v17.0.207](https://github.com/chef/chef/tree/v17.0.207) (2021-04-16)
+<!-- latest_release 17.0.208 -->
+## [v17.0.208](https://github.com/chef/chef/tree/v17.0.208) (2021-04-17)
 
 #### Merged Pull Requests
-- Bump chef/ohai to db08809916c84e74ec914bab3d313ec9dfc10195 [#11379](https://github.com/chef/chef/pull/11379) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump tty-prompt to 0.23.1 [#11389](https://github.com/chef/chef/pull/11389) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump tty-prompt to 0.23.1 [#11389](https://github.com/chef/chef/pull/11389) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.208 -->
 - Bump chef/ohai to db08809916c84e74ec914bab3d313ec9dfc10195 [#11379](https://github.com/chef/chef/pull/11379) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.207 -->
 - Add problem matchers for our Chefstyle run in GH [#11374](https://github.com/chef/chef/pull/11374) ([tas50](https://github.com/tas50)) <!-- 17.0.206 -->
 - Test running spellcheck in Github Actions [#11373](https://github.com/chef/chef/pull/11373) ([tas50](https://github.com/tas50)) <!-- 17.0.205 -->
