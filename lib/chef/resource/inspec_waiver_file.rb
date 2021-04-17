@@ -130,10 +130,19 @@ class Chef
 
       action_class do
         def load_waiver_file_to_hash(file_name)
-          if ::File.exist?(file_name)
-            ::YAML.load_file(file_name)
+          if file_name =~ %r{(/|C:\\).*(.yaml|.yml)}i
+            if ::File.exist?(file_name)
+              hash = ::YAML.load_file(file_name)
+              if hash == false || hash.nil? || hash == ''
+                {}
+              else
+                ::YAML.load_file(file_name)
+              end
+            else
+              {}
+            end
           else
-            {}
+            raise "Waiver files needs to be a YAML file which should have a .yaml or .yml extension -\"#{file_name}\" does not have an appropriate extension"
           end
         end
       end
