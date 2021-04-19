@@ -46,7 +46,7 @@ class Chef
       end
 
       def converge_start(run_context)
-        # With all attributes - including cookook - loaded, we now have enough data to validate
+        # With all attributes - including cookbook - loaded, we now have enough data to validate
         # configuration.  Because the converge is best coupled with the associated compliance run, these validations
         # will raise (and abort the converge) if the compliance phase configuration is incorrect/will
         # prevent compliance phase from completing and submitting its report to all configured reporters.

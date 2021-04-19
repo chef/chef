@@ -42,8 +42,8 @@ class Chef
       "quiet" => true,
 
       # Chef Inspec Compliance profiles to be used for scan of node.
-      # See README.md for details
-      # MPTD - ^there is no README.md anymore^
+      # See Compliance Phase documentation for further details:
+      # https://docs.chef.io/chef_compliance_phase/#compliance-phase-configuration
       "profiles" => {},
 
       # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
