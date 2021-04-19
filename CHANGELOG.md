@@ -2,17 +2,18 @@
 
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 16.13.20 -->
-## [v16.13.20](https://github.com/chef/chef/tree/v16.13.20) (2021-04-17)
+<!-- latest_release 16.13.21 -->
+## [v16.13.21](https://github.com/chef/chef/tree/v16.13.21) (2021-04-19)
 
 #### Merged Pull Requests
-- Bump tty-prompt to 0.23.1 [#11390](https://github.com/chef/chef/pull/11390) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- Bump omnibus-software from `56f6321` to `810a6c4` in /omnibus [#11395](https://github.com/chef/chef/pull/11395) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.13.16 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump omnibus-software from `56f6321` to `810a6c4` in /omnibus [#11395](https://github.com/chef/chef/pull/11395) ([dependabot-preview[bot]](https://github.com/dependabot-preview[bot])) <!-- 16.13.21 -->
 - Bump tty-prompt to 0.23.1 [#11390](https://github.com/chef/chef/pull/11390) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.20 -->
 - Bump train-core to 3.6.2 [#11363](https://github.com/chef/chef/pull/11363) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.19 -->
 - Bump inspec-core-bin to 4.32.0 [#11365](https://github.com/chef/chef/pull/11365) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 16.13.18 -->
