@@ -56,7 +56,7 @@ describe Chef::Resource::WindowsCertificate, :windows_only do
   let(:store) { "Chef-Functional-Test" }
   let(:store_name) { "MY" }
   let(:store_location) { "LocalMachine" }
-  let(:download_cert_url) { "https://testingchef.blob.core.windows.net/files/test.cer?sv=2020-02-10&ss=b&srt=sco&sp=rlax&se=2022-03-20T01:20:15Z&st=2021-03-19T17:20:15Z&spr=https&sig=nMmvTTXp%2Fn0%2FYizBV8BzhjRJ%2Bmk%2BxYZ9529yOfqDxjQ%3D" }
+  let(:download_cert_url) { 'https://testingchef.blob.core.windows.net/files/test.cer?sv=2020-02-10&ss=b&srt=sco&sp=rlax&se=2022-03-20T01:20:15Z&st=2021-03-19T17:20:15Z&spr=https&sig=nMmvTTXp%2Fn0%2FYizBV8BzhjRJ%2Bmk%2BxYZ9529yOfqDxjQ%3D' }
   let(:cert_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.cer") }
   let(:pfx_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.pfx") }
   let(:key_output_path) { ::File.join(Chef::Config[:file_cache_path], "output.key") }
