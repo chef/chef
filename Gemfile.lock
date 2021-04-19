@@ -8,10 +8,10 @@ GIT
 
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: 7fc8c0ed0297cdb04d062edab79eca6cfb881987
+  revision: addb3b4e3ba539ee8a5df53e3ff87796d5bf8e2c
   branch: master
   specs:
-    ohai (17.0.36)
+    ohai (17.0.37)
       chef-config (>= 12.8, < 18)
       chef-utils (>= 16.0, < 18)
       ffi (~> 1.9)
@@ -20,7 +20,7 @@ GIT
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
       mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (>= 2.0, < 4.0)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
