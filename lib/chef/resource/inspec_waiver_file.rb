@@ -133,7 +133,7 @@ class Chef
           if file_name =~ %r{(/|C:\\).*(.yaml|.yml)}i
             if ::File.exist?(file_name)
               hash = ::YAML.load_file(file_name)
-              if hash == false || hash.nil? || hash == ''
+              if hash == false || hash.nil? || hash == ""
                 {}
               else
                 ::YAML.load_file(file_name)
