@@ -63,11 +63,11 @@ class Chef
       DOC
 
       property :source, String,
-        description: "The source file (for create and acl_add), thumbprint (for delete, export and acl_add) or subject (for delete or export) if it differs from the resource block's name.",
+        description: "The source file (for `create` and `acl_add`), thumbprint (for `delete`, `export`, and `acl_add`), or subject (for `delete` or `export`) if it differs from the resource block's name.",
         name_property: true
 
       property :pfx_password, String,
-        description: "The password to access the object with if it is a pfx file."
+        description: "The password to access the object with if it is a PFX file."
 
       property :private_key_acl, Array,
         description: "An array of 'domain\\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
@@ -93,7 +93,7 @@ class Chef
         introduced: "16.8"
 
       property :output_path, String,
-        description: "A path on the node where a certificate object (pfx, pem, cer, key, etc) can be exported to.",
+        description: "A path on the node where a certificate object (PFX, PEM, CER, KEY, etc) can be exported to.",
         introduced: "17.0"
 
       action :create, description: "Creates or updates a certificate." do
