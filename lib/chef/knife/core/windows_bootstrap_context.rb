@@ -294,11 +294,10 @@ class Chef
           "%TEMP%\\#{ChefUtils::Dist::Infra::CLIENT}-latest.msi"
         end
 
-        # Build a URL to query www.chef.io that will redirect to the correct
-        # Chef Infra msi download.
+        # Build a URL that will redirect to the correct Chef Infra msi download.
         def msi_url(machine_os = nil, machine_arch = nil, download_context = nil)
           if config[:msi_url].nil? || config[:msi_url].empty?
-            url = "https://www.chef.io/chef/download?p=windows"
+            url = "https://omnitruck.chef.io/chef/download?p=windows"
             url += "&pv=#{machine_os}" unless machine_os.nil?
             url += "&m=#{machine_arch}" unless machine_arch.nil?
             url += "&DownloadContext=#{download_context}" unless download_context.nil?
