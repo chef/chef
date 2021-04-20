@@ -16,7 +16,7 @@ class Chef
 
         def validate_config!
           if @path.nil? || @path.class != String || @path.empty?
-            raise "CMPL007: json_file reporter: node['audit']['json_file']['location'] must contain a file path"
+            raise "CMPL009: json_file reporter: node['audit']['json_file']['location'] must contain a file path"
           end
         end
       end
