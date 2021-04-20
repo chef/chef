@@ -204,19 +204,19 @@ describe Chef::Knife::Core::WindowsBootstrapContext do
       end
 
       it "returns a chef.io msi url with minimal url parameters" do
-        reference_url = "https://www.chef.io/chef/download?p=windows&channel=stable&v=something"
+        reference_url = "https://omnitruck.chef.io/chef/download?p=windows&channel=stable&v=something"
         expect(bootstrap_context.msi_url).to eq(reference_url)
       end
 
       it "returns a chef.io msi url with provided url parameters substituted" do
-        reference_url = "https://www.chef.io/chef/download?p=windows&pv=machine&m=arch&DownloadContext=ctx&channel=stable&v=something"
+        reference_url = "https://omnitruck.chef.io/chef/download?p=windows&pv=machine&m=arch&DownloadContext=ctx&channel=stable&v=something"
         expect(bootstrap_context.msi_url("machine", "arch", "ctx")).to eq(reference_url)
       end
 
       context "when a channel is provided in config" do
         let(:config) { { channel: "current" } }
         it "returns a chef.io msi url with the requested channel" do
-          reference_url = "https://www.chef.io/chef/download?p=windows&channel=current&v=something"
+          reference_url = "https://omnitruck.chef.io/chef/download?p=windows&channel=current&v=something"
           expect(bootstrap_context.msi_url).to eq(reference_url)
         end
       end
