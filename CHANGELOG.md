@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.214 -->
-## [v17.0.214](https://github.com/chef/chef/tree/v17.0.214) (2021-04-20)
+<!-- latest_release 17.0.215 -->
+## [v17.0.215](https://github.com/chef/chef/tree/v17.0.215) (2021-04-20)
 
 #### Merged Pull Requests
-- Update the download URL for windows msi [#11400](https://github.com/chef/chef/pull/11400) ([marcparadise](https://github.com/marcparadise))
+- Move most compliance validation to pre-run [#11377](https://github.com/chef/chef/pull/11377) ([marcparadise](https://github.com/marcparadise))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move most compliance validation to pre-run [#11377](https://github.com/chef/chef/pull/11377) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.215 -->
 - Update the download URL for windows msi [#11400](https://github.com/chef/chef/pull/11400) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.214 -->
 - Bump chef/ohai to 2a0da607d2d80c74adb9798c3bae1d2702ba05fd [#11399](https://github.com/chef/chef/pull/11399) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.213 -->
 - Update tests to handle local omnibus packages from Buildkite artifacts api [#11382](https://github.com/chef/chef/pull/11382) ([nkierpiec](https://github.com/nkierpiec)) <!-- 17.0.212 -->
