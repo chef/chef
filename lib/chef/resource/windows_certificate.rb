@@ -397,8 +397,11 @@ class Chef
             state = uri.is_a?(URI::HTTP) && !uri.host.nil? ? true : false
             if state
               begin
-                output_file = get_file_name(new_resource.source)
-                local_path = ::File.join(Chef::Config[:file_cache_path], output_file)
+                output_file_name = get_file_name(new_resource.source)
+                unless Dir.exist?(Chef::Config[:file_cache_path])
+                  Dir.mkdir(Chef::Config[:file_cache_path])
+                end
+                local_path = ::File.join(Chef::Config[:file_cache_path], output_file_name)
                 @local_pfx_path = local_path
                 ::File.open(local_path, "wb") do |file|
                   file.write URI.open(new_resource.source).read
