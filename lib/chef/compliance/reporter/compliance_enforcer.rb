@@ -14,6 +14,10 @@ class Chef
           end
           true
         end
+
+        def validate_config!
+          true
+        end
       end
     end
   end

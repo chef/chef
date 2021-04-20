@@ -1,7 +1,9 @@
 require "spec_helper"
+require "chef/compliance/reporter/chef_server_automate"
 
 describe Chef::Compliance::Reporter::ChefServerAutomate do
   before do
+    # Isn't this already done globally in
     WebMock.disable_net_connect!
 
     Chef::Config[:client_key] = File.expand_path("../../../data/ssl/private_key.pem", __dir__)
@@ -174,4 +176,22 @@ describe Chef::Compliance::Reporter::ChefServerAutomate do
 
     expect(report_stub).to have_been_requested
   end
+
+  describe "#validate_config!" do
+    it "raises CMPL007 when entity_uuid is not present" do
+      opts.delete(:entity_uuid)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL007/)
+    end
+
+    it "raises CMPL008 when run_id is not present" do
+      opts.delete(:run_id)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL008/)
+    end
+
+    it "otherwise passes" do
+      reporter.validate_config!
+    end
+
+  end
+
 end

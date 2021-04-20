@@ -130,7 +130,7 @@ describe Chef::Compliance::Runner do
       expect(runner.inspec_profiles).to eq(expected)
     end
 
-    it "raises an error when the profiles are in the old audit-cookbook format" do
+    it "raises a CMPL010 message when the profiles are in the old audit-cookbook format" do
       node.normal["audit"]["profiles"] = [
         {
           name: "Windows 2019 Baseline",
@@ -138,7 +138,7 @@ describe Chef::Compliance::Runner do
         },
       ]
 
-      expect { runner.inspec_profiles }.to raise_error(/profiles specified in an unrecognized format, expected a hash of hashes./)
+      expect { runner.inspec_profiles }.to raise_error(/CMPL010:/)
     end
   end
 
@@ -186,9 +186,29 @@ describe Chef::Compliance::Runner do
       end
     end
 
-    it "fails with unexpected reporter value" do
-      expect { runner.reporter("tacos") }.to raise_error(/'tacos' is not a supported reporter for Compliance Phase/)
+  end
+
+  describe "#load_and_validate! when compliance is enabled" do
+    before do
+      allow(runner).to receive(:enabled?).and_return(true)
     end
+
+    it "raises CMPL003 when the reporter is not a supported reporter type" do
+      node.normal["audit"]["reporter"] = [ "invalid" ]
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL003:/)
+    end
+    it "raises CMPL002 if the configured fetcher is not supported" do
+      node.normal["audit"]["fetcher"] = "invalid"
+      expect { runner.load_and_validate! }.to raise_error(/^CMPL002:/)
+    end
+
+    it "validates configured reporters" do
+      node.normal["audit"]["reporter"] = [ "chef-automate" ]
+      reporter_double = double("reporter", validate_config!: nil)
+      expect(runner).to receive(:reporter).with("chef-automate").and_return(reporter_double)
+      runner.load_and_validate!
+    end
+
   end
 
   describe "#inspec_opts" do
