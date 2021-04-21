@@ -1,4 +1,17 @@
-# git config merge.ignore.name 'ignore changes merge driver'
-# git config merge.ignore.driver 'touch %A'
-lib/chef/version.rb merge=ignore
-*.reg text eol=crlf
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and converted
+# to native line endings on checkout.
+*.rb text
+
+# Declare files that will always have CRLF/LF line endings on checkout.
+*.sln text eol=crlf
+*.rb text eol=lf
+Gemfile eol=lf
+*.erb eol=lf
+Rakefile eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.png binary
+*.jpg binary

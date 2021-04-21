@@ -19,6 +19,7 @@
 
 require_relative "../util/path_helper"
 require_relative "../resource"
+require_relative "../exceptions"
 module Win32
   autoload :Certstore, "win32-certstore" if Chef::Platform.windows?
 end
@@ -62,11 +63,11 @@ class Chef
       DOC
 
       property :source, String,
-        description: "The source file (for create and acl_add), thumbprint (for delete and acl_add) or subject (for delete) if it differs from the resource block's name.",
+        description: "The source file (for `create` and `acl_add`), thumbprint (for `delete`, `export`, and `acl_add`), or subject (for `delete` or `export`) if it differs from the resource block's name.",
         name_property: true
 
       property :pfx_password, String,
-        description: "The password to access the source if it is a pfx file."
+        description: "The password to access the object with if it is a PFX file."
 
       property :private_key_acl, Array,
         description: "An array of 'domain\\account' entries to be granted read-only access to the certificate's private key. Not idempotent."
@@ -79,8 +80,7 @@ class Chef
         description: "Use the `CurrentUser` store instead of the default `LocalMachine` store. Note: Prior to #{ChefUtils::Dist::Infra::CLIENT}. 16.10 this property was ignored.",
         default: false
 
-      property :cert_path, String,
-        description: "The path to the certificate."
+      deprecated_property_alias :cert_path, :output_path, "The cert_path property was renamed output_path in the 17.0 release of #{ChefUtils::Dist::Infra::CLIENT}. Please update your cookbooks to use the new property name."
 
       # lazy used to set default value of sensitive to true if password is set
       property :sensitive, [TrueClass, FalseClass],
@@ -92,16 +92,19 @@ class Chef
         default: false,
         introduced: "16.8"
 
-      action :create, description: "Creates or updates a certificate" do
-        # Extension of the certificate
-        ext = ::File.extname(new_resource.source)
+      property :output_path, String,
+        description: "A path on the node where a certificate object (PFX, PEM, CER, KEY, etc) can be exported to.",
+        introduced: "17.0"
+
+      action :create, description: "Creates or updates a certificate." do
+        ext = get_file_extension(new_resource.source)
 
         # PFX certificates contains private keys and we import them with some other approach
         import_certificates(fetch_cert_object(ext), (ext == ".pfx"))
       end
 
       # acl_add is a modify-if-exists operation : not idempotent
-      action :acl_add, description: "Adds read-only entries to a certificate's private key ACL" do
+      action :acl_add, description: "Adds read-only entries to a certificate's private key ACL." do
 
         if ::File.exist?(new_resource.source)
           hash = "$cert.GetCertHashString()"
@@ -124,8 +127,9 @@ class Chef
         end
       end
 
-      action :delete, description: "Deletes a certificate" do
+      action :delete, description: "Deletes a certificate." do
         cert_obj = fetch_cert
+
         if cert_obj
           converge_by("Deleting certificate #{new_resource.source} from Store #{new_resource.store_name}") do
             delete_cert
@@ -135,10 +139,21 @@ class Chef
         end
       end
 
-      action :fetch, description: "Fetches a certificate" do
-        cert_obj = fetch_cert
+      action :fetch, description: "Fetches a certificate." do
+        unless new_resource.output_path
+          raise Chef::Exceptions::ResourceNotFound, "You must include an output_path parameter when calling the fetch action"
+        end
+
+        if ::File.extname(new_resource.output_path) == ".pfx"
+          powershell_exec!(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_resource.output_path, password: new_resource.pfx_password ))
+        else
+          cert_obj = fetch_cert
+        end
+
         if cert_obj
-          show_or_store_cert(cert_obj)
+          converge_by("Fetching certificate #{new_resource.source} from Store \\#{ps_cert_location}\\#{new_resource.store_name}") do
+            export_cert(cert_obj, output_path: new_resource.output_path, store_name: new_resource.store_name , store_location: ps_cert_location, pfx_password: new_resource.pfx_password)
+          end
         else
           Chef::Log.debug("Certificate not found")
         end
@@ -153,6 +168,7 @@ class Chef
       end
 
       action_class do
+        @local_pfx_path = ""
 
         CERT_SYSTEM_STORE_LOCAL_MACHINE                    = 0x00020000
         CERT_SYSTEM_STORE_CURRENT_USER                     = 0x00010000
@@ -162,10 +178,10 @@ class Chef
           store.add(cert_obj)
         end
 
-        def add_pfx_cert
+        def add_pfx_cert(path)
           exportable = new_resource.exportable ? 1 : 0
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          store.add_pfx(new_resource.source, new_resource.pfx_password, exportable)
+          store.add_pfx(path, new_resource.pfx_password, exportable)
         end
 
         def delete_cert
@@ -175,12 +191,71 @@ class Chef
 
         def fetch_cert
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          store.get(resolve_thumbprint(new_resource.source))
+          if new_resource.output_path && ::File.extname(new_resource.output_path) == ".key"
+            fetch_key
+
+          else
+            store.get(resolve_thumbprint(new_resource.source), store_name: new_resource.store_name, store_location: native_cert_location)
+          end
+        end
+
+        def fetch_key
+          require "openssl" unless defined?(OpenSSL)
+          file_name = ::File.basename(new_resource.output_path, ::File.extname(new_resource.output_path))
+          directory = ::File.dirname(new_resource.output_path)
+          pfx_file = file_name + ".pfx"
+          new_pfx_output_path = ::File.join(Chef::FileCache.create_cache_path("pfx_files"), pfx_file)
+          powershell_exec(pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: ps_cert_location, store_name: new_resource.store_name, output_path: new_pfx_output_path, password: new_resource.pfx_password ))
+          pkcs12 = OpenSSL::PKCS12.new(::File.binread(new_pfx_output_path), new_resource.pfx_password)
+          f = ::File.open(new_resource.output_path, "w")
+          f.write(pkcs12.key.to_s)
+          f.flush
+          f.close
+        end
+
+        def get_file_extension(file_name)
+          type = url_or_file?(file_name)
+
+          if type == "file"
+            ::File.extname(file_name)
+          elsif type == "url"
+            require "open-uri" unless defined?(OpenURI)
+            uri = URI.parse(file_name)
+            output_file = ::File.basename(uri.path)
+            ::File.extname(output_file)
+          end
+        end
+
+        def get_file_name(path_name)
+          type = url_or_file?(path_name)
+
+          if type == "file"
+            ::File.extname(path_name)
+          elsif type == "url"
+            require "open-uri" unless defined?(OpenURI)
+            uri = URI.parse(path_name)
+            ::File.basename(uri.path)
+          end
+        end
+
+        # did I get passed a file, a url, or a mistake?
+        def url_or_file?(source)
+          require "uri" unless defined?(URI)
+
+          uri = URI.parse(source)
+
+          if source == uri.is_a?(URI::HTTP) || uri.is_a?(URI::HTTPS)
+            "url"
+          elsif ::File.file?(source)
+            "file"
+          else
+            raise Chef::Exceptions::FileNotFound, "Invalid Source File"
+          end
         end
 
         # Thumbprints should be exactly 40 Hex characters
         def valid_thumbprint?(string)
-          string.scan(/\H/).empty? && string.length == 40
+          string.match?(/[0-9A-Fa-f]/) && string.length == 40
         end
 
         def get_thumbprint(store_name, location, source)
@@ -205,51 +280,25 @@ class Chef
 
         def verify_cert(thumbprint = new_resource.source)
           store = ::Win32::Certstore.open(new_resource.store_name, store_location: native_cert_location)
-          store.valid?(resolve_thumbprint(thumbprint))
-        end
-
-        def show_or_store_cert(cert_obj)
-          if new_resource.cert_path
-            export_cert(cert_obj, new_resource.cert_path)
-            if ::File.size(new_resource.cert_path) > 0
-              Chef::Log.info("Certificate export in #{new_resource.cert_path}")
-            else
-              ::File.delete(new_resource.cert_path)
-            end
+          if new_resource.pfx_password.nil?
+            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name )
           else
-            Chef::Log.info(cert_obj.display)
+            store.valid?(resolve_thumbprint(thumbprint), store_location: native_cert_location, store_name: new_resource.store_name)
           end
-        end
-
-        def export_cert(cert_obj, cert_path)
-          out_file = ::File.new(cert_path, "w+")
-          case ::File.extname(cert_path)
-          when ".pem"
-            out_file.puts(cert_obj.to_pem)
-          when ".der"
-            out_file.puts(cert_obj.to_der)
-          when ".cer"
-            cert_out = shell_out("openssl x509 -text -inform DER -in #{cert_obj.to_pem} -outform CER").stdout
-            out_file.puts(cert_out)
-          when ".crt"
-            cert_out = shell_out("openssl x509 -text -inform DER -in #{cert_obj.to_pem} -outform CRT").stdout
-            out_file.puts(cert_out)
-          when ".pfx"
-            cert_out = shell_out("openssl pkcs12 -export -nokeys -in #{cert_obj.to_pem} -outform PFX").stdout
-            out_file.puts(cert_out)
-          when ".p7b"
-            cert_out = shell_out("openssl pkcs7 -export -nokeys -in #{cert_obj.to_pem} -outform P7B").stdout
-            out_file.puts(cert_out)
-          else
-            Chef::Log.info("Supported certificate format .pem, .der, .cer, .crt, .pfx and .p7b")
-          end
-          out_file.close
         end
 
         # this array structure is solving 2 problems. The first is that we need to have support for both the CurrentUser AND LocalMachine stores
         # Secondly, we need to pass the proper constant name for each store to win32-certstore but also pass the short name to powershell scripts used here
         def ps_cert_location
           new_resource.user_store ? "CurrentUser" : "LocalMachine"
+        end
+
+        def pfx_ps_cmd(thumbprint, store_location: "LocalMachine", store_name: "My", output_path:, password: )
+          <<-CMD
+            $my_pwd = ConvertTo-SecureString -String "#{password}" -Force -AsPlainText
+            $cert = Get-ChildItem -path cert:\\#{store_location}\\#{store_name} -Recurse | Where { $_.Thumbprint -eq "#{thumbprint.upcase}" }
+            Export-PfxCertificate -Cert $cert -FilePath "#{output_path}" -Password $my_pwd
+          CMD
         end
 
         def native_cert_location
@@ -331,7 +380,44 @@ class Chef
         # @raise [OpenSSL::PKCS12::PKCS12Error] When incorrect password is provided for PFX certificate
         #
         def fetch_cert_object(ext)
-          contents = ::File.binread(new_resource.source)
+          type = url_or_file?(new_resource.source)
+
+          if type == "file"
+            begin
+              ::File.exist?(new_resource.source)
+              contents = ::File.binread(new_resource.source)
+            rescue => exception
+              message = "Unable to load the certificate object from the specified local path : #{new_resource.source}\n"
+              message << exception.message
+              raise Chef::Exceptions::FileNotFound, message
+            end
+          elsif type == "url"
+            require "uri" unless defined?(URI)
+            uri = URI(new_resource.source)
+            state = uri.is_a?(URI::HTTP) && !uri.host.nil? ? true : false
+            if state
+              begin
+                output_file_name = get_file_name(new_resource.source)
+                unless Dir.exist?(Chef::Config[:file_cache_path])
+                  Dir.mkdir(Chef::Config[:file_cache_path])
+                end
+                local_path = ::File.join(Chef::Config[:file_cache_path], output_file_name)
+                @local_pfx_path = local_path
+                ::File.open(local_path, "wb") do |file|
+                  file.write URI.open(new_resource.source).read
+                end
+              rescue => exception
+                message = "Not Able to Download Certificate Object at the URL specified : #{new_resource.source}\n"
+                message << exception.message
+                raise Chef::Exceptions::FileNotFound, message
+              end
+
+              contents = ::File.binread(local_path)
+
+            else
+              raise Chef::Exceptions::InvalidRemoteFileURI, "Not Able to Download Certificate Object at the URL specified : #{new_resource.source}"
+            end
+          end
 
           case ext
           when ".pfx"
@@ -348,24 +434,76 @@ class Chef
           end
         end
 
+        def export_cert(cert_obj, output_path:, store_name:, store_location:, pfx_password:)
+          # Delete the cert if it exists. This is non-destructive in that it only removes the file and not the entire path.
+          # We want to ensure we're not randomly loading an old stinky cert.
+          if ::File.exists?(output_path)
+            ::File.delete(output_path)
+          end
+
+          unless ::File.directory?(::File.dirname(output_path))
+            FileUtils.mkdir_p(::File.dirname(output_path))
+          end
+
+          out_file = ::File.new(output_path, "w+")
+
+          case ::File.extname(output_path)
+          when ".pem"
+            out_file.puts(cert_obj)
+          when ".der"
+            out_file.puts(cert_obj.to_der)
+          when ".cer"
+            cert_out = shell_out("openssl x509 -text -inform DER -in #{cert_obj.to_pem} -outform CER").stdout
+            out_file.puts(cert_out)
+          when ".crt"
+            cert_out = shell_out("openssl x509 -text -inform DER -in #{cert_obj} -outform CRT").stdout
+            out_file.puts(cert_out)
+          when ".pfx"
+            pfx_ps_cmd(resolve_thumbprint(new_resource.source), store_location: store_location, store_name: store_name, output_path: output_path, password: pfx_password )
+          when ".p7b"
+            cert_out = shell_out("openssl pkcs7 -export -nokeys -in #{cert_obj.to_pem} -outform P7B").stdout
+            out_file.puts(cert_out)
+          when ".key"
+            out_file.puts(cert_obj)
+          else
+            Chef::Log.info("Supported certificate format .pem, .der, .cer, .crt, and .p7b")
+          end
+
+          out_file.close
+        end
+
         # Imports the certificate object into cert store
         #
         # @param cert_objs [OpenSSL::X509::Certificate] Object containing certificate's attributes
         #
         # @param is_pfx [Boolean] true if we want to import a PFX certificate
         #
-        def import_certificates(cert_objs, is_pfx)
+        def import_certificates(cert_objs, is_pfx, store_name: new_resource.store_name, store_location: native_cert_location)
           [cert_objs].flatten.each do |cert_obj|
-            thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s # Fetch its thumbprint
-            # Need to check if return value is Boolean:true
-            # If not then the given certificate should be added in certstore
-            if verify_cert(thumbprint) == true
-              Chef::Log.debug("Certificate is already present")
+            # thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s
+            # pkcs = OpenSSL::PKCS12.new(cert_obj, new_resource.pfx_password)
+            # cert = OpenSSL::X509::Certificate.new(pkcs.certificate.to_pem)
+            thumbprint = OpenSSL::Digest.new("SHA1", cert_obj.to_der).to_s
+            if is_pfx
+              if verify_cert(thumbprint) == true
+                Chef::Log.debug("Certificate is already present")
+              else
+                type = url_or_file?(new_resource.source)
+                if type == "file"
+                  converge_by("Creating a PFX #{new_resource.source} for Store #{new_resource.store_name}") do
+                    add_pfx_cert(new_resource.source)
+                  end
+                elsif type == "url"
+                  converge_by("Creating a PFX #{@local_pfx_path} for Store #{new_resource.store_name}") do
+                    add_pfx_cert(@local_pfx_path)
+                  end
+                end
+              end
             else
-              converge_by("Adding certificate #{new_resource.source} into #{ps_cert_location} Store #{new_resource.store_name}") do
-                if is_pfx
-                  add_pfx_cert
-                else
+              if verify_cert(thumbprint) == true
+                Chef::Log.debug("Certificate is already present")
+              else
+                converge_by("Creating a certificate #{new_resource.source} for Store #{new_resource.store_name}") do
                   add_cert(cert_obj)
                 end
               end

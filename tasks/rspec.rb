@@ -43,7 +43,7 @@ begin
   desc "Run all chef specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
-    t.rspec_opts = %w{--profile}
+    t.rspec_opts = %w{--profile --format doc}
     t.pattern = FileList["spec/**/*_spec.rb"].reject do |path|
       path =~ /knife.*/
     end
@@ -78,8 +78,8 @@ begin
     %i{unit functional integration stress}.each do |sub|
       desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
-        t.verbose = false
-        t.rspec_opts = %w{--profile}
+        t.verbose = true
+        t.rspec_opts = %w{--profile --format doc}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"].reject do |path|
           path =~ /knife.*/
         end
