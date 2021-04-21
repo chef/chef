@@ -19,6 +19,9 @@
 require_relative "file_system"
 require_relative "file_system/exceptions"
 require_relative "../util/diff"
+require "chef-utils/parallel_map" unless defined?(ChefUtils::ParallelMap)
+
+using ChefUtils::ParallelMap
 
 class Chef
   module ChefFS
@@ -140,7 +143,7 @@ class Chef
       end
 
       def self.diff(pattern, old_root, new_root, recurse_depth, get_content)
-        Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.list_pairs(pattern, old_root, new_root)) do |old_entry, new_entry|
+        Chef::ChefFS::FileSystem.list_pairs(pattern, old_root, new_root).parallel_map do |old_entry, new_entry|
           diff_entries(old_entry, new_entry, recurse_depth, get_content)
         end.flatten(1)
       end
@@ -153,7 +156,7 @@ class Chef
             if recurse_depth == 0
               [ [ :common_subdirectories, old_entry, new_entry ] ]
             else
-              Chef::ChefFS::Parallelizer.parallelize(Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry)) do |old_child, new_child|
+              Chef::ChefFS::FileSystem.child_pairs(old_entry, new_entry).parallel_map do |old_child, new_child|
                 Chef::ChefFS::CommandLine.diff_entries(old_child, new_child, recurse_depth ? recurse_depth - 1 : nil, get_content)
               end.flatten(1)
             end
