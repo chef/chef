@@ -28,17 +28,17 @@ GIT
 PATH
   remote: ../chef-bin
   specs:
-    chef-bin (17.0.216)
-      chef (= 17.0.216)
+    chef-bin (17.0.217)
+      chef (= 17.0.217)
 
 PATH
   remote: ..
   specs:
-    chef (17.0.216)
+    chef (17.0.217)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.216)
-      chef-utils (= 17.0.216)
+      chef-config (= 17.0.217)
+      chef-utils (= 17.0.217)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -74,9 +74,9 @@ PATH
 PATH
   remote: /workspace/chef-chef-master/chef-config
   specs:
-    chef-config (17.0.216)
+    chef-config (17.0.217)
       addressable
-      chef-utils (= 17.0.216)
+      chef-utils (= 17.0.217)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -85,7 +85,7 @@ PATH
 PATH
   remote: /workspace/chef-chef-master/chef-utils
   specs:
-    chef-utils (17.0.216)
+    chef-utils (17.0.217)
 
 GEM
   remote: https://rubygems.org/
@@ -143,7 +143,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.32.0)
+    inspec-core (4.33.1)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
