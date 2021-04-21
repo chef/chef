@@ -15,8 +15,8 @@
   // words - list of words to be always considered correct
   "words": [
     "THREADSIZE",
+    "eipv",
     "passwordprompt",
-    "northwindbaking",
     "abcz",
     "Abdulin",
     "ABORTIFHUNG",

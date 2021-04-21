@@ -20,7 +20,7 @@ Chef Infra Client 17 packages now ship with embedded Ruby 3.0. This new release 
 
 ### Knife Moved to Workstation
 
-For historical packaging reasons the Chef Infra Client packages have always shipped with the `knife` command for managing your Chef Infra nodes. With Chef Workstation there's no benefit to shipping knife in the Chef Infra Client package and there are several downsides. Shipping management tooling within the client is seen as a security risk to many and increases the side of the Chef Infra Client codebase by adding a large number of management dependenices. With Chef Infra Client 17 we've split knife into it own Ruby Gem, which will continue to ship in Chef Workstation, but will no longer come bundled with Chef Infra Client. We hope you'll enjoy the new faster and smaller Chef Infra Client while continuing to use knife in Chef Workstation uninterupted.
+For historical packaging reasons the Chef Infra Client packages have always shipped with the `knife` command for managing your Chef Infra nodes. With Chef Workstation there's no benefit to shipping knife in the Chef Infra Client package and there are several downsides. Shipping management tooling within the client is seen as a security risk to many and increases the side of the Chef Infra Client codebase by adding a large number of management dependencies. With Chef Infra Client 17 we've split knife into it own Ruby Gem, which will continue to ship in Chef Workstation, but will no longer come bundled with Chef Infra Client. We hope you'll enjoy the new faster and smaller Chef Infra Client while continuing to use knife in Chef Workstation uninterrupted.
 
 ### Breaking Changes
 
@@ -72,10 +72,10 @@ default['myapp']['dir'] = '/opt/myapp'
 default['myapp']['bindir'] = lazy { "#{node['myapp']['dir']}/bin" }
 ```
 
-The wrapper cookboook can then override the base attribute and the derived attribute will change:
+The wrapper cookbook can then override the base attribute and the derived attribute will change:
 
 ```ruby
-default['myapp']['dir'] = "/opt/mybetterapp" # this also changes the bindir attribute correctly
+default['myapp']['dir'] = "/opt/my_better_app" # this also changes the bindir attribute correctly
 ```
 
 The use of this helper is not limited to declarations in attribute files and can be used whenever attributes are being assigned, but it is better left to this pattern.
@@ -84,7 +84,7 @@ For a complete description of the capabilities of lazy attribute evaluation see 
 
 #### Custom Resource Property Defaults
 
-Chef Infra Client's handling of default property values in Custom Resources has been improved to avoid potential Ruby errors. These values are now duplicated internally allowing them to be modified by the user in their recipess without potentially receiving fatal frozen value modificatio errors.
+Chef Infra Client's handling of default property values in Custom Resources has been improved to avoid potential Ruby errors. These values are now duplicated internally allowing them to be modified by the user in their recipes without potentially receiving fatal frozen value modification errors.
 
 #### effortless? helper
 
@@ -114,7 +114,7 @@ The `systemd_unit` resource has been improved to only shell out a single time to
 
 #### execute
 
-The `execute` resource inclues a new `login` property allowing you to run commands with a login shell. This is useful to ensure you have all potential environment variables defined in the user's shell.
+The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This is useful to ensure you have all potential environment variables defined in the user's shell.
 
 ### Ohai
 
