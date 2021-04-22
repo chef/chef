@@ -247,7 +247,7 @@ Sample `node['cloud'] values:
 }
 ```
 
-The Chef Infra Lanugage now includes an `alibaba?` helper method to check for instances running on Alibaba as well.
+The Chef Infra Language now includes an `alibaba?` helper method to check for instances running on Alibaba as well.
 
 ### Improved Linux CPU Data
 
