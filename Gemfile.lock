@@ -168,7 +168,8 @@ GEM
       rack (~> 2.0, >= 2.0.6)
       uuidtools (~> 2.1)
       webrick
-    cheffish (16.0.26)
+    cheffish (17.0.0)
+      chef-utils (>= 17.0)
       chef-zero (>= 14.0)
       net-ssh
     coderay (1.1.3)
