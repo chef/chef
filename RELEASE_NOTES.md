@@ -259,6 +259,10 @@ Data collection in the `:Cpu` plugin on Linux has been greatly expanded to give 
 
 We now produce FIPS capable packages for RHEL on PowerPC
 
+### FreeBSD 13 packages
+
+We are now producing packages for the new FreeBSD's new 13.0 release. See [downloads.chef.io](https://downloads.chef.io/tools/infra-client?os=freebsd) for the new packages.
+
 ### Sample client.rb on *nix Platforms
 
 On AIX, Solaris, macOS, and Linux platforms the Chef Infra Client packages will now create the various configuration directories under `/etc/chef` as well as a sample `/etc/chef/client.rb` file to make it easier to get started running the client.
