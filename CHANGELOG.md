@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.222 -->
-## [v17.0.222](https://github.com/chef/chef/tree/v17.0.222) (2021-04-22)
+<!-- latest_release 17.0.224 -->
+## [v17.0.224](https://github.com/chef/chef/tree/v17.0.224) (2021-04-22)
 
 #### Merged Pull Requests
-- Produce packages for FreeBSD 13 [#11424](https://github.com/chef/chef/pull/11424) ([tas50](https://github.com/tas50))
+- fix uninitialized Win32 constant [#11430](https://github.com/chef/chef/pull/11430) ([mwrock](https://github.com/mwrock))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- fix uninitialized Win32 constant [#11430](https://github.com/chef/chef/pull/11430) ([mwrock](https://github.com/mwrock)) <!-- 17.0.224 -->
 - Produce packages for FreeBSD 13 [#11424](https://github.com/chef/chef/pull/11424) ([tas50](https://github.com/tas50)) <!-- 17.0.222 -->
 - Lock cheffish to 17 [#11420](https://github.com/chef/chef/pull/11420) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.221 -->
 -  Replace the ChefFS parallelizer with parallel_map helper [#11397](https://github.com/chef/chef/pull/11397) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.220 -->
