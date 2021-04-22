@@ -134,6 +134,12 @@ class Chef
         boolean: true,
         default: false
 
+      option :ssh_pty,
+        long: "--[no-]ssh-pty",
+        description: "Request a PTY, enabled by default.",
+        boolean: true,
+        default: true
+
       def session
         ssh_error_handler = Proc.new do |server|
           if config[:on_error]
@@ -358,21 +364,22 @@ class Chef
         subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        begin
-          open_session(subsession, command)
-        rescue => e
-          open_session(subsession, command, true)
-        end
+        open_session(subsession, command)
       end
 
-      def open_session(subsession, command, pty = false)
+      def open_session(subsession, command)
         stderr = ""
         exit_status = 0
         subsession.open_channel do |chan|
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            chan.request_pty if pty
+            if config[:ssh_pty]
+              chan.request_pty do |ch, success|
+                ui.error("Requesting PTY failed. If a PTY is not required use --no-ssh-pty") unless success
+              end
+            end
+
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
 
@@ -385,7 +392,7 @@ class Chef
               end
 
               ch.on_extended_data do |_, _type, data|
-                raise ArgumentError if data.eql?("sudo: no tty present and no askpass program specified\n")
+                ui.error("No PTY present. If a PTY is required use --ssh-pty") if data.eql?("sudo: no tty present and no askpass program specified\n")
 
                 stderr += data
               end
