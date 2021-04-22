@@ -41,6 +41,10 @@ Gem::Specification.new do |spec|
   # ABSOLUTELY NO EXCEPTIONS
   #
 
+  # concurrent-ruby is: 1. lightweight, 2. has zero deps, 3. is external to chef
+  # this is used for the parallel_map enumerable extension for lightweight threading
+  spec.add_dependency "concurrent-ruby"
+
   spec.files = %w{Rakefile LICENSE} + Dir.glob("*.gemspec") +
     Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 end
