@@ -398,6 +398,8 @@ class Chef
         end
         session.loop
         exit_status
+      ensure
+        subsession.close
       end
 
       def get_password
