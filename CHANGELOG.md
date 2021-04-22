@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.0.227 -->
+## [v17.0.227](https://github.com/chef/chef/tree/v17.0.227) (2021-04-22)
 
 #### Merged Pull Requests
+- Bump chef/ohai to cfeba80b1f2c8d0cb520b2c80e459325c5cf41a9 [#11436](https://github.com/chef/chef/pull/11436) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 - Add macos unit testing with GitHub actions [#11422](https://github.com/chef/chef/pull/11422) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump chef/ohai to cfeba80b1f2c8d0cb520b2c80e459325c5cf41a9 [#11436](https://github.com/chef/chef/pull/11436) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.227 -->
 - Add macos unit testing with GitHub actions [#11422](https://github.com/chef/chef/pull/11422) ([tas50](https://github.com/tas50)) <!-- 17.0.226 -->
 - Disable FreeBSD builds for now [#11435](https://github.com/chef/chef/pull/11435) ([tas50](https://github.com/tas50)) <!-- 17.0.226 -->
 - Compliance Phase preflight validation updates [#11404](https://github.com/chef/chef/pull/11404) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.225 -->
