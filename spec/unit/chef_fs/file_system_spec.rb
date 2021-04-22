@@ -20,7 +20,7 @@ require "spec_helper"
 require "chef/chef_fs/file_system"
 require "chef/chef_fs/file_pattern"
 
-describe Chef::ChefFS::FileSystem do
+describe Chef::ChefFS::FileSystem, ruby: ">= 3.0" do
   include FileSystemSupport
 
   context "with empty filesystem" do
