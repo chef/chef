@@ -249,6 +249,10 @@ Sample `node['cloud'] values:
 
 The Chef Infra Lanugage now includes an `alibaba?` helper method to check for instances running on Alibaba as well.
 
+### Improved Linux CPU Data
+
+Data collection in the `:Cpu` plugin on Linux has been greatly expanded to give enhanced information on architecture, cache, virtualization status, and overall model and configuration data. Thanks for this addition [@ramereth](https://github.com/ramereth)!
+
 ### Packaging Improvements
 
 ### PowerPC RHEL FIPS Support
