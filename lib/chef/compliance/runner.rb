@@ -57,7 +57,7 @@ class Chef
       def run_completed(_node, _run_status)
         return unless enabled?
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -68,7 +68,7 @@ class Chef
         # because we're still not configured correctly.
         return unless enabled? && @validation_passed
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -94,7 +94,9 @@ class Chef
         end
       end
 
-      def report(report = generate_report)
+      def report(report = nil)
+        logger.info "Starting Chef Infra Compliance Phase"
+        report ||= generate_report
         # This is invoked at report-time instead of with the normal validations at node loaded,
         # because we want to ensure that it is visible in the output - and not lost in back-scroll.
         warn_for_deprecated_config_values!
@@ -108,6 +110,7 @@ class Chef
           logger.info "Reporting to #{reporter_type}"
           @reporters[reporter_type].send_report(report)
         end
+        logger.info "Chef Infra Compliance Phase Complete"
       end
 
       def inspec_opts
@@ -249,7 +252,6 @@ class Chef
         when "json-file"
           require_relative "reporter/json_file"
           path = node.dig("audit", "json_file", "location")
-          logger.info "Writing compliance report to #{path}"
           Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
           require_relative "reporter/compliance_enforcer"

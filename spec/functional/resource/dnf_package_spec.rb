@@ -19,7 +19,10 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 # run this test only for following platforms.
-exclude_test = !(%w{rhel fedora amazon}.include?(ohai[:platform_family]) && File.exist?("/usr/bin/dnf"))
+# TODO: 2021-04-23 we removed 'fedora' from this list because our fedora functional tests
+#                  are consistently timing out in BuildKite.  Once we've addressed this (see issue chef/11414)
+#                  we will re-add the platform.
+exclude_test = !(%w{rhel amazon}.include?(ohai[:platform_family]) && File.exist?("/usr/bin/dnf"))
 describe Chef::Resource::DnfPackage, :requires_root, external: exclude_test do
   include Chef::Mixin::ShellOut
 
