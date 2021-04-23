@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.233 -->
-## [v17.0.233](https://github.com/chef/chef/tree/v17.0.233) (2021-04-23)
+<!-- latest_release 17.0.234 -->
+## [v17.0.234](https://github.com/chef/chef/tree/v17.0.234) (2021-04-23)
 
 #### Merged Pull Requests
-- Disable Dnf tests for fedora [#11444](https://github.com/chef/chef/pull/11444) ([marcparadise](https://github.com/marcparadise))
+- Add back the windows deps [#11449](https://github.com/chef/chef/pull/11449) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add back the windows deps [#11449](https://github.com/chef/chef/pull/11449) ([tas50](https://github.com/tas50)) <!-- 17.0.234 -->
 - Disable Dnf tests for fedora [#11444](https://github.com/chef/chef/pull/11444) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.233 -->
 - Add start/end of compliance phase logging [#11443](https://github.com/chef/chef/pull/11443) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.232 -->
 - windows_certificate: properly add/remove pfx and private keys, change… [#11405](https://github.com/chef/chef/pull/11405) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.0.231 -->
