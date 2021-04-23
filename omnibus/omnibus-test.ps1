@@ -11,35 +11,9 @@ Invoke-WebRequest "https://github.com/PowerShell/PowerShell/releases/download/v7
 Start-Process msiexec.exe -Wait -ArgumentList "/package PowerShell.msi /quiet"
 $env:path += ";C:\Program Files\PowerShell\7"
 
-$channel = "$Env:CHANNEL"
-If ([string]::IsNullOrEmpty($channel)) { $channel = "unstable" }
-
-$product = "$Env:PRODUCT"
-If ([string]::IsNullOrEmpty($product)) { $product = "chef" }
-
-$version = "$Env:VERSION"
-If ([string]::IsNullOrEmpty($version)) { $version = "latest" }
-
-$package_file = "$Env:PACKAGE_FILE"
-If ([string]::IsNullOrEmpty($package_file)) { $package_file = "" }
-
-If ($package_file -eq "") {
-  Write-Output "--- Installing $channel $product $version"
-  $package_file = $(.omnibus-buildkite-plugin\install-omnibus-product.ps1 -Product "$product" -Channel "$channel" -Version "$version" | Select-Object -Last 1)
-} 
-Else {
-  Write-Output "--- Installing $product $version"
-  $package_file = $(.omnibus-buildkite-plugin\install-omnibus-product.ps1 -Package "$package_file" -Product "$product" -Version "$version" | Select-Object -Last 1)
-}
-
-Write-Output "--- Verifying omnibus package is signed"
-C:\opscode\omnibus-toolchain\bin\check-omnibus-package-signed.ps1 "$package_file"
-
-Write-Output "--- Running verification for $channel $product $version"
-
 # We don't want to add the embedded bin dir to the main PATH as this
 # could mask issues in our binstub shebangs.
-$embedded_bin_dir = "C:\opscode\$product\embedded\bin"
+$embedded_bin_dir = "C:\opscode\chef\embedded\bin"
 
 # Set TEMP and TMP environment variables to a short path because buildkite-agent user's default path is so long it causes tests to fail
 $Env:TEMP = "C:\cheftest"
@@ -69,7 +43,7 @@ ForEach ($b in
 ) {
   Write-Output "Checking for existence of binfile $b..."
 
-  If (Test-Path -PathType Leaf -Path "C:\opscode\$product\bin\$b") {
+  If (Test-Path -PathType Leaf -Path "C:\opscode\chef\bin\$b") {
     Write-Output "Found $b!"
   }
   Else {
@@ -78,7 +52,7 @@ ForEach ($b in
   }
 }
 
-$Env:PATH = "C:\opscode\$product\bin;$Env:PATH"
+$Env:PATH = "C:\opscode\chef\bin;$Env:PATH"
 
 chef-client --version
 
@@ -88,7 +62,7 @@ chef-client --version
 & $embedded_bin_dir\bundle.bat --version
 & $embedded_bin_dir\rspec.bat --version
 
-$Env:PATH = "C:\opscode\$product\bin;C:\opscode\$product\embedded\bin;$Env:PATH"
+$Env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;$Env:PATH"
 
 # Test against the vendored chef gem (cd into the output of "gem which chef")
 $chefdir = gem which chef
