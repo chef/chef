@@ -108,13 +108,25 @@ The `apt_package` resource now properly handles downgrading package versions. Pl
 
 The `chef_client_launchd` and `macosx_service` resources have been updated to use the full path to the `launchctl` command. This avoids failures running these resources with incorrect PATH environment variables. Thanks for this improvement [@krackajak](https://github.com/krackajak)!
 
+#### execute
+
+The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This is useful to ensure you have all potential environment variables defined in the user's shell.
+
+#### hostname
+
+The `hostname` resource now includes a new `fqdn` property to allow you to set a custom fqdn in the hostname file in addition to the system's hostname. Thanks for suggesting this improvement [@evandam](https://github.com/evandam)!
+
 #### systemd_unit
 
 The `systemd_unit` resource has been improved to only shell out a single time to determine the state of the systemd unit. This optimization can result in significant performance improvements when using large numbers of `systemd_unit` resources. Thanks [@joshuamiller01](https://github.com/joshuamiller01)!
 
-#### execute
+#### windows_certificate
 
-The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This is useful to ensure you have all potential environment variables defined in the user's shell.
+The `windows_certificate` resource has seen a large overhaul with improved support for importing and exporting certificate objects, the ability to create certificates objects from a URL and a new `output_path` property used when exporting.
+
+#### windows_task
+
+The `windows_task` resource now has a new `backup` property that allows you to control the number of XML backups that will be kept of your Windows Scheduled Task definition when modified. This default to `5` and can be disabled by setting the property to `false`. Thanks [@ kimbernator](https://github.com/kimbernator)!
 
 ### Ohai
 
