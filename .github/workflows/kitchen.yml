@@ -31,7 +31,7 @@ jobs:
         $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
         $env:OHAI_VERSION = ( Select-String -Path .\Gemfile.lock -Pattern '(?<=ohai \()\d.*(?=\))' | ForEach-Object { $_.Matches[0].Value } )
         gem install appbundler appbundle-updater --no-doc
-        appbundle-updater chef chef $env:BUILD_SOURCEVERSION --tarball --github chef/chef
+        appbundle-updater chef chef $env:GITHUB_SHA --tarball --github chef/chef
         Write-Output "Installed Chef / Ohai release:"
         chef-client -v
         ohai -v
@@ -51,3 +51,39 @@ jobs:
         # restore the default warning level
         $env:RUBYOPT="-W1"
         chef-client -z -o end_to_end --chef-license accept-no-persist
+
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-10.15] # macos-11.0 is not public for now
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: 'Install Chef/Ohai from Omnitruck'
+      id: install_chef
+      run: |
+        brew install coreutils
+        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
+        /opt/chef/bin/chef-client -v
+        /opt/chef/bin/ohai -v
+        /opt/chef/embedded/bin/rake --version
+        /opt/chef/embedded/bin/bundle -v
+    - name: 'Upgrade Chef/Ohai via Appbundler'
+      id: upgrade
+      run: |
+        OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
+        sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+        sudo /opt/chef/embedded/bin/appbundle-updater chef chef $GITHUB_SHA --tarball --github chef/chef
+        echo "Installed Chef / Ohai release:"
+        /opt/chef/bin/chef-client -v
+        /opt/chef/bin/ohai -v
+    - name: 'Run end_to_end::default recipe'
+      id: run
+      run: |
+        cd kitchen-tests
+        sudo /opt/chef/embedded/bin/bundle config set without 'omnibus_package ruby_prof'
+        sudo /opt/chef/embedded/bin/bundle install --jobs=3 --retry=3 --path=vendor/bundle
+        sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
+        sudo /opt/chef/embedded/bin/berks vendor cookbooks
+        sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
