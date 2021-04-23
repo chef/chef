@@ -31,9 +31,7 @@ class Chef
         description: "An optional property for specifying the repository name if it differs from the resource block's name.",
         name_property: true
 
-      action :enable do
-        description "Enable a RHSM repository."
-
+      action :enable, description: "Enable a RHSM repository." do
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --enable=#{new_resource.repo_name}"
           default_env true
@@ -42,9 +40,7 @@ class Chef
         end
       end
 
-      action :disable do
-        description "Disable a RHSM repository."
-
+      action :disable, description: "Disable a RHSM repository." do
         execute "Enable repository #{new_resource.repo_name}" do
           command "subscription-manager repos --disable=#{new_resource.repo_name}"
           default_env true
