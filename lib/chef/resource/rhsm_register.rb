@@ -31,7 +31,7 @@ class Chef
         **Register a node with RHSM*
 
         ```ruby
-        rhsm_register 'myhost' do
+        rhsm_register 'my-host' do
           activation_key 'ABCD1234'
           organization 'my_org'
         end
