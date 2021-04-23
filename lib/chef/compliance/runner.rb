@@ -249,7 +249,6 @@ class Chef
         when "json-file"
           require_relative "reporter/json_file"
           path = node.dig("audit", "json_file", "location")
-          logger.info "Writing compliance report to #{path}"
           Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
           require_relative "reporter/compliance_enforcer"
