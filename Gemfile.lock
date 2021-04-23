@@ -35,11 +35,11 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.0.232)
+    chef (17.0.233)
       addressable
       bcrypt_pbkdf (~> 1.1)
-      chef-config (= 17.0.232)
-      chef-utils (= 17.0.232)
+      chef-config (= 17.0.233)
+      chef-utils (= 17.0.233)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -75,15 +75,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.0.232)
-      chef (= 17.0.232)
+    chef-bin (17.0.233)
+      chef (= 17.0.233)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.0.232)
+    chef-config (17.0.233)
       addressable
-      chef-utils (= 17.0.232)
+      chef-utils (= 17.0.233)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -92,7 +92,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.0.232)
+    chef-utils (17.0.233)
       concurrent-ruby
 
 GEM
