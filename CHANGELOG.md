@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.0.229 -->
+## [v17.0.229](https://github.com/chef/chef/tree/v17.0.229) (2021-04-23)
 
 #### Merged Pull Requests
+- Move macOS Test Kitchen tests to GitHub Actions [#11439](https://github.com/chef/chef/pull/11439) ([tas50](https://github.com/tas50))
 - Add Test Kitchen tests in GitHub Actions for Windows [#11438](https://github.com/chef/chef/pull/11438) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Move macOS Test Kitchen tests to GitHub Actions [#11439](https://github.com/chef/chef/pull/11439) ([tas50](https://github.com/tas50)) <!-- 17.0.229 -->
 - Add Test Kitchen tests in GitHub Actions for Windows [#11438](https://github.com/chef/chef/pull/11438) ([tas50](https://github.com/tas50)) <!-- 17.0.228 -->
 - Update the habitat plan for Linux to Ruby 3 [#11437](https://github.com/chef/chef/pull/11437) ([tas50](https://github.com/tas50)) <!-- 17.0.228 -->
 - Bump chef/ohai to cfeba80b1f2c8d0cb520b2c80e459325c5cf41a9 [#11436](https://github.com/chef/chef/pull/11436) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.227 -->
