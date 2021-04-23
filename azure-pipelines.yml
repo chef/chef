@@ -35,6 +35,8 @@ jobs:
     - script: |
         OHAI_VERSION=$(sed -n '/ohai .[0-9]/{s/.*(//;s/)//;p;}' Gemfile.lock)
         sudo /opt/chef/embedded/bin/gem install appbundler appbundle-updater --no-doc
+        echo "BUILD_SOURCEVERSION:"
+        echo $BUILD_SOURCEVERSION
         sudo /opt/chef/embedded/bin/appbundle-updater chef chef $BUILD_SOURCEVERSION --tarball --github chef/chef
         echo "Installed Chef / Ohai release:"
         /opt/chef/bin/chef-client -v
