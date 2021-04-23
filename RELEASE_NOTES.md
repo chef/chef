@@ -210,7 +210,7 @@ Sample `node['alibaba']` values:
     "hibernation_": "configured",
     "hostname": "1234",
     "image_id": "aliyun_2_1903_x64_20G_alibase_20210120.vhd",
-    "instance_id": "i-rj996x25ht5omuhhzod7",
+    "instance_id": "i-12345",
     "instance_": {
       "instance_type": "ecs.t6-c2m1.large",
       "last_host_landing_time": "2021-02-07 19:10:04",
