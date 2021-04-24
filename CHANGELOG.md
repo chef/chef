@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.0.235 -->
+## [v17.0.235](https://github.com/chef/chef/tree/v17.0.235) (2021-04-24)
 
 #### Merged Pull Requests
+- Improve the auto generated docs [#11448](https://github.com/chef/chef/pull/11448) ([tas50](https://github.com/tas50))
 - Cache all our gems during spec runs [#11450](https://github.com/chef/chef/pull/11450) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Improve the auto generated docs [#11448](https://github.com/chef/chef/pull/11448) ([tas50](https://github.com/tas50)) <!-- 17.0.235 -->
 - Cache all our gems during spec runs [#11450](https://github.com/chef/chef/pull/11450) ([tas50](https://github.com/tas50)) <!-- 17.0.234 -->
 - Add back the windows deps [#11449](https://github.com/chef/chef/pull/11449) ([tas50](https://github.com/tas50)) <!-- 17.0.234 -->
 - Disable Dnf tests for fedora [#11444](https://github.com/chef/chef/pull/11444) ([marcparadise](https://github.com/marcparadise)) <!-- 17.0.233 -->
