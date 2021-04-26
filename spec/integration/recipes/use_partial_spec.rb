@@ -37,6 +37,7 @@ describe "notifying_block" do
           end
         EOM
         file "resources/thing.rb", <<-EOM
+          unified_mode true
           provides :thing
           use "shared_properties"
           action_class do
@@ -80,6 +81,8 @@ describe "notifying_block" do
         EOM
         # this tests relative pathing, including the underscore and including the trailing .rb all work
         file "resources/thing.rb", <<-EOM
+          unified_mode true
+
           provides :thing
           use "../partials/_shared_properties.rb"
           action_class do

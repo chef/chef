@@ -1,3 +1,4 @@
+unified_mode true
 
 property :monkey
 
