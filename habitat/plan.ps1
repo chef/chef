@@ -12,7 +12,7 @@ $pkg_bin_dirs=@(
 )
 $pkg_deps=@(
   "core/cacerts"
-  "chef/ruby27-plus-devkit"
+  "chef/ruby30-plus-devkit"
   "chef/chef-powershell-shim"
 )
 
