@@ -129,7 +129,7 @@ The `windows_certificate` resource has undergone a large overhaul, with improved
 
 #### windows_task
 
-The `windows_task` resource now has a new `backup` property that allows you to control the number of XML backups that will be kept of your Windows Scheduled Task definition when modified. This default to `5` and can be disabled by setting the property to `false`. Thanks [@ kimbernator](https://github.com/kimbernator)!
+The `windows_task` resource now has a new `backup` property that allows you to control the number of XML backups that will be kept of your Windows Scheduled Task definition. This default for this setting is `5` and can be disabled by setting the property to `false`. Thanks [@ kimbernator](https://github.com/kimbernator)!
 
 ### Ohai
 
