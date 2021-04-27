@@ -26,6 +26,7 @@ require_relative "../exceptions"
 require_relative "../mixin/convert_to_class_name"
 require_relative "../mixin/from_file"
 require_relative "../mixin/params_validate" # for DelayedEvaluator
+require "chef-utils/dist" unless defined?(ChefUtils::Dist)
 
 class Chef
   class Resource
@@ -54,7 +55,7 @@ class Chef
           resource_class.class_from_file(filename)
 
           unless resource_class.unified_mode
-            Chef.deprecated :unified_mode, "The #{resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`"
+            Chef.deprecated :unified_mode, "The #{resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true` or `unified_mode false`. In a future release of #{ChefUtils::Dist::Infra::PRODUCT} Unified Mode will be on by default."
           end
 
           # Make a useful string for the class (rather than <Class:312894723894>)
