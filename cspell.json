@@ -14,9 +14,12 @@
   "dictionaries": ["chef"],
   // words - list of words to be always considered correct
   "words": [
+    "aliyun",
+    "netbw",
+    "alibase",
     "THREADSIZE",
+    "eipv",
     "passwordprompt",
-    "northwindbaking",
     "abcz",
     "Abdulin",
     "ABORTIFHUNG",
