@@ -122,7 +122,7 @@ The `systemd_unit` resource has been improved to only shell out once to determin
 
 #### windows_certificate
 
-The `windows_certificate` resource has seen a large overhaul with improved support for importing and exporting certificate objects, the ability to create certificates objects from a URL and a new `output_path` property used when exporting.
+The `windows_certificate` resource has undergone a large overhaul, with improved support for importing and exporting certificate objects, the ability to create certificate objects from a URL, and a new `output_path` property for use with exporting.
 
 #### windows_task
 
