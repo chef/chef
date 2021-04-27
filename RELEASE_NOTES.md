@@ -81,9 +81,7 @@ With the lazy helper the wrapper cookbook can then override the base attribute a
 default['myapp']['dir'] = "/opt/my_better_app" # this also changes the bindir attribute correctly
 ```
 
-The use of this helper is not limited to declarations in attribute files and can be used whenever attributes are being assigned, but it is better left to this pattern.
-
-For a complete description of the capabilities of lazy attribute evaluation see https://github.com/chef/chef/pull/10861
+The use of this helper is not limited to declarations in attribute files and can be used whenever attributes are being assigned. For a complete description of the capabilities of lazy attribute evaluation see https://github.com/chef/chef/pull/10861
 
 #### Custom Resource Property Defaults
 
