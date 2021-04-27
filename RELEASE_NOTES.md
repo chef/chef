@@ -50,7 +50,7 @@ The legacy `node['filesystem2']` attributes leftover from our multi-year migrati
 
 #### Removed Antergos and Pidora Detection
 
-Ohai detection of the end of life Antergos and Pidora distributions has been removed. Antergos ended releases and downloads of the distribution in May 2019 and Pidora stops receiving updates in 2014.
+Ohai detection of the end-of-life Antergos and Pidora distributions has been removed. Antergos ended releases and downloads of the distribution in May 2019 and Pidora stopped receiving updates in 2014.
 
 ### Infra Language Improvements
 
