@@ -1,4 +1,5 @@
 # Starting with Chef 12 reloading an LWRP shouldn't reload the file anymore
+unified_mode true
 
 actions :never_execute
 

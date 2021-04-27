@@ -1,3 +1,4 @@
+unified_mode true
 
 provides :buck_passer
 

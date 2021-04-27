@@ -68,6 +68,7 @@ describe "notifying_block" do
     before do
       directory "cookbooks/x" do
         file "resources/nb_test.rb", <<-EOM
+          unified_mode true
           default_action :run
           provides :nb_test
           resource_name :nb_test
