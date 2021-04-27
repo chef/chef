@@ -165,7 +165,7 @@ Thanks for this addition [@ramereth](https://github.com/ramereth)!
 
 #### Habitat Support
 
-Ohai includes a new `:Habitat` plugin that gathers information on the Habitat installation including the version of Habitat installed, installed packages, and running services.
+Ohai includes a new `:Habitat` plugin that gathers information about the Habitat installation, including installed Habitat version, installed packages, and running services.
 
 Sample Habitat attribute output:
 
