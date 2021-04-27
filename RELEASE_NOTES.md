@@ -1,6 +1,6 @@
 This file holds "in progress" release notes for the current release under development and is intended for consumption by the Chef Documentation team. Please see <https://docs.chef.io/release_notes/> for the official Chef release notes.
 
-## ## What's New in 17.0
+## What's New in 17.0
 
 Chef Infra Client 17.0 is our yearly release for 2021. These yearly releases include new functionality, an update to the underlying Ruby release, as well as potentially breaking changes. These notes outline what's new and what you should be aware of as part of your upgrade process.
 
