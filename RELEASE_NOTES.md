@@ -30,7 +30,7 @@ The Ohai :Virtualization plugin on AIX systems will now properly return the `lpa
 
 #### 32bit RHEL/CentOS 6 Support
 
-Chef Infra Client 17 packages will no longer be produced for 32bit RHEL/CentOS 6 systems. RHEL/CentOS 6 became EOL November 2020. We are extending support for 64 bit RHEL/CentOS 6 until Chef Infra Client 18 (April 2022) or when upstream platform or library changes prohibit us from building on these EOL systems.
+We will not produce Chef Infra Client 17 packages for 32bit RHEL/CentOS 6 systems. RHEL/CentOS 6 reached EOL in November 2020. We are extending support for 64 bit RHEL/CentOS 6 until Chef Infra Client 18 (April 2022) or when upstream platform or library changes prevent us from building on these systems that are at the end of their lifecycle.
 
 #### Chef Client As A Service on Windows
 
