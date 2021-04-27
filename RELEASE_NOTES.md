@@ -42,7 +42,7 @@ Chef Infra Client can be configured to run as a scheduled task using the [chef-c
 
 #### Gem Resource Ruby 1.9+
 
-The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 or below have been end of life for nearly 7 years we believe there is little to no impact in this change.
+The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached end of life almost 7 years ago, we believe there is little to no impact in this change.
 
 #### Legacy node['filesystem2'] removed on AIX/Solaris/FreeBSD
 
