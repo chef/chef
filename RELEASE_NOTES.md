@@ -61,13 +61,6 @@ Ohai detection of the end-of-life Antergos and Pidora distributions has been rem
 
 A common problem when using the "wrapper cookbook" pattern is when the wrapped cookbook declares what are called "derived attributes", which are attributes that refer to other attributes. Because of the order that attribute files are parsed in, this does not work as intended when the base attribute is changed in a wrapper cookbook. By extending the use of the `lazy {}` helper to the declaration of node attributes, it makes it possible for the wrapped cookbook to cleanly allow wrapper cookbooks to override base attributes as intended.
 
-Instead of:
-
-```ruby
-default['myapp']['dir'] = '/opt/myapp'
-default['myapp']['bindir'] = "#{node['myapp']['dir']}/bin"
-```
-
 Use the lazy helper:
 
 ```ruby
@@ -75,7 +68,14 @@ default['myapp']['dir'] = '/opt/myapp'
 default['myapp']['bindir'] = lazy { "#{node['myapp']['dir']}/bin" }
 ```
 
-The wrapper cookbook can then override the base attribute and the derived attribute will change:
+Instead of:
+
+```ruby
+default['myapp']['dir'] = '/opt/myapp'
+default['myapp']['bindir'] = "#{node['myapp']['dir']}/bin"
+```
+
+With the lazy helper the wrapper cookbook can then override the base attribute and the derived attribute will change:
 
 ```ruby
 default['myapp']['dir'] = "/opt/my_better_app" # this also changes the bindir attribute correctly
