@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.239 -->
-## [v17.0.239](https://github.com/chef/chef/tree/v17.0.239) (2021-04-27)
+<!-- latest_release 17.0.240 -->
+## [v17.0.240](https://github.com/chef/chef/tree/v17.0.240) (2021-04-27)
 
 #### Merged Pull Requests
-- Add warning for resources not running in unified_mode [#11453](https://github.com/chef/chef/pull/11453) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump ohai to 17.0.42 [#11459](https://github.com/chef/chef/pull/11459) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=16.8.14 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump ohai to 17.0.42 [#11459](https://github.com/chef/chef/pull/11459) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.240 -->
 - Add warning for resources not running in unified_mode [#11453](https://github.com/chef/chef/pull/11453) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.239 -->
 - Bump chef/ohai to e2dd316c2380bd2a06c8bf928357169e089a401e [#11455](https://github.com/chef/chef/pull/11455) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.0.238 -->
 - Update omnibus gemfile.lock [#11454](https://github.com/chef/chef/pull/11454) ([tas50](https://github.com/tas50)) <!-- 17.0.237 -->
