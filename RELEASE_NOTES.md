@@ -6,7 +6,7 @@ Chef Infra Client 17.0 is our yearly release for 2021. These yearly releases inc
 
 ### Compliance Phase
 
-Chef Infra Client's new Compliance Phase allows users to automatically execute compliance audits and view the results in Chef Automate as part of any Chef Infra Client Run. This new phase of the Chef Infra Client run replaces the legacy [audit cookbook](https://supermarket.chef.io/cookbooks/audit) and works using the existing audit cookbook attributes. With this new phase you'll always have the latest compliance capabilities out of the box without the need to manage cookbook dependencies or juggle versions during Chef Infra Client updates.
+Chef Infra Client's new Compliance Phase allows users to automatically execute compliance audits and view the results in Chef Automate as part of any Chef Infra Client Run. This new phase of the Chef Infra Client run replaces the legacy [audit cookbook](https://supermarket.chef.io/cookbooks/audit) and works using the existing audit cookbook attributes. With this new phase, you'll always have the latest compliance capabilities out of the box without the need to manage cookbook dependencies or juggle versions during Chef Infra Client updates.
 
 The Compliance Phase also features a new compliance reporter: `cli`. This reporter mimics the InSpec command line output giving you a visual indication of your system's compliance status. Thanks for this new reporter [@aknarts](https://github.com/aknarts/).
 
@@ -20,21 +20,21 @@ Chef Infra Client 17 packages now ship with embedded Ruby 3.0. This new release 
 
 ### Knife Moved to Workstation
 
-For historical packaging reasons the Chef Infra Client packages have always shipped with the `knife` command for managing your Chef Infra nodes. With Chef Workstation there's no benefit to shipping knife in the Chef Infra Client package and there are several downsides. Shipping management tooling within the client is seen as a security risk to many and increases the side of the Chef Infra Client codebase by adding a large number of management dependencies. With Chef Infra Client 17 we've split knife into it own Ruby Gem, which will continue to ship in Chef Workstation, but will no longer come bundled with Chef Infra Client. We hope you'll enjoy the new faster and smaller Chef Infra Client while continuing to use knife in Chef Workstation uninterrupted.
+For historical packaging reasons the Chef Infra Client packages have always shipped with the `knife` command for managing your Chef Infra nodes. With Chef Workstation there's no benefit to shipping knife in the Chef Infra Client package and there are several downsides. Shipping management tooling within the client is seen as a security risk to many and increases the side of the Chef Infra Client codebase by adding a large number of management dependencies. With Chef Infra Client 17 we've split knife into its own Ruby Gem, which will continue to ship in Chef Workstation, but will no longer come bundled with Chef Infra Client. We hope you'll enjoy the new faster and smaller Chef Infra Client while continuing to use knife in Chef Workstation uninterrupted.
 
 ### Breaking Changes
 
 #### AIX Virtualization Improvements
 
-The Ohai :Virtualization plugin on AIX systems will now properly return the `lpar_no` and `wpar_no` values as Integers instead of Strings. This makes the data much easier to work with in cookbooks, but may be a breaking change depending on how AIX users consumed these values.
+The Ohai :Virtualization plugin on AIX systems will now properly return the `lpar_no` and `wpar_no` values as Integers instead of Strings. This makes the data much easier to work within cookbooks, but may be a breaking change depending on how AIX users consumed these values.
 
 #### 32bit RHEL/CentOS 6 Support
 
-We will not produce Chef Infra Client 17 packages for 32bit RHEL/CentOS 6 systems. RHEL/CentOS 6 reached EOL in November 2020. We are extending support for 64 bit RHEL/CentOS 6 until Chef Infra Client 18 (April 2022) or when upstream platform or library changes prevent us from building on these systems that are at the end of their lifecycle.
+We will not produce Chef Infra Client 17 packages for 32bit RHEL/CentOS 6 systems. RHEL/CentOS 6 reached EOL in November 2020. We are extending support for 64-bit RHEL/CentOS 6 until Chef Infra Client 18 (April 2022) or when an upstream platform or library changes prevent us from building on these systems that are at the end of their lifecycle.
 
 #### Chef Client As A Service on Windows
 
-Based on customer feedback and observations in the field we've removed the ability to run the Chef Infra Client as a service on Windows nodes. We've seen the service manager for the Chef Infra Client consume excessive memory, hang preventing runs, or prevent nodes from updating to new client releases properly. We've always seen significantly better reliability by running Chef Infra Client as a scheduled task on Windows and in July of 2006 we introduced warnings to the [chef-client cookbook](https://supermarket.chef.io/cookbooks/chef-client) when running as a service. The ability to setup the client as a service was later removed from the cookbook entirely in October of 2017.
+Based on customer feedback and observations in the field we've removed the ability to run the Chef Infra Client as a service on Windows nodes. We've seen the service manager for the Chef Infra Client consume excessive memory, hang preventing runs, or prevent nodes from updating to new client releases properly. We've always seen significantly better reliability by running Chef Infra Client as a scheduled task on Windows and in July of 2006 we introduced warnings to the [chef-client cookbook](https://supermarket.chef.io/cookbooks/chef-client) when running as a service. The ability to set up the client as a service was later removed from the cookbook entirely in October of 2017.
 
 For customers currently running Chef Infra Client as a service, we advise migrating to scheduled task-based execution. This allows for complex scheduling scenarios not possible with simple services, such as skipping Chef Infra Client execution on systems running on battery power or running the Chef Infra Client immediately after a system boot to ensure configuration.
 
@@ -42,7 +42,7 @@ Chef Infra Client can be configured to run as a scheduled task using the [chef-c
 
 #### Gem Resource Ruby 1.9+
 
-The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached end of life almost 7 years ago, we believe there is little to no impact in this change.
+The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached endof life almost 7 years ago, we believe there is little to no impact in this change.
 
 #### Legacy node['filesystem2'] removed on AIX/Solaris/FreeBSD
 
@@ -105,7 +105,7 @@ A large number of resources have seen improvements to the logging available in t
 
 #### apt_package
 
-The `apt_package` resource now properly handles downgrading package versions. Please note that full versions must be provided in the `version` property and invalid version strings will now raise and error. Thanks for this improvement [@jaymzh](https://github.com/jaymzh)!
+The `apt_package` resource now properly handles downgrading package versions. Please note that full versions must be provided in the `version` property and invalid version strings will now raise an error. Thanks for this improvement [@jaymzh](https://github.com/jaymzh)!
 
 #### chef_client_launchd / macosx_service
 
