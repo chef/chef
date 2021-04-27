@@ -113,7 +113,7 @@ The `chef_client_launchd` and `macosx_service` resources have been updated to us
 
 #### execute
 
-The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This is useful to ensure you have all potential environment variables defined in the user's shell.
+The `execute` resource includes a new `login` property allowing you to run commands with a login shell. This helps ensure you have all potential environment variables defined in the user's shell.
 
 #### hostname
 
