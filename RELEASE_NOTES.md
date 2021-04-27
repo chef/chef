@@ -118,7 +118,7 @@ The `hostname` resource now includes a new `fqdn` property to allow you to set a
 
 #### systemd_unit
 
-The `systemd_unit` resource has been improved to only shell out a single time to determine the state of the systemd unit. This optimization can result in significant performance improvements when using large numbers of `systemd_unit` resources. Thanks [@joshuamiller01](https://github.com/joshuamiller01)!
+The `systemd_unit` resource has been improved to only shell out once to determine the state of the systemd unit. This optimization should result in significant performance improvements when using large numbers of `systemd_unit` resources. Thanks [@joshuamiller01](https://github.com/joshuamiller01)!
 
 #### windows_certificate
 
