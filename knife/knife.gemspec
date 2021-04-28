@@ -5,15 +5,15 @@ Gem::Specification.new do |s|
   s.name = "knife"
   s.version = Chef::Knife::VERSION
   s.platform = Gem::Platform::RUBY
-  s.extra_rdoc_files = ["README.md", "LICENSE" ]
-  s.summary = "Let's find a good description."
+  s.extra_rdoc_files = ["LICENSE"]
+  s.summary = "The knife CLI for Chef Infra."
   s.description = s.summary
   s.license = "Apache-2.0"
   s.author = "Adam Jacob"
   s.email = "adam@chef.io" # These seem a bit out of date, and this address probably doesn't go anywhere anymore?
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  s.required_ruby_version = ">= 2.7.0"
 
   s.add_dependency "chef-config", "= #{Chef::Knife::VERSION}"
   s.add_dependency "chef-utils", "= #{Chef::Knife::VERSION}"
@@ -45,7 +45,7 @@ Gem::Specification.new do |s|
   s.executables  = %w{ knife }
 
   s.require_paths = %w{ lib }
-  s.files = %w{Gemfile Rakefile LICENSE README.md knife.gemspec} +
+  s.files = %w{Gemfile Rakefile LICENSE knife.gemspec} +
     Dir.glob("lib/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
     Dir.glob("../spec/**/*", File::FNM_DOTMATCH).reject do |f|
       File.directory?(f) || (
