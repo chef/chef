@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/ohai.git
-  revision: f02500255550d96181c7707dfa7f7ce8a32983b0
+  revision: 540a973112d2473b9496c0f41027ca67df835f3c
   branch: 16-stable
   specs:
-    ohai (16.13.0)
-      chef-config (>= 12.8, < 17)
+    ohai (16.13.2)
+      chef-config (>= 14.12, < 17)
       chef-utils (>= 16.0, < 17)
       ffi (~> 1.9)
       ffi-yajl (~> 2.2)
@@ -12,7 +12,7 @@ GIT
       mixlib-cli (>= 1.7.0)
       mixlib-config (>= 2.0, < 4.0)
       mixlib-log (>= 2.0.1, < 4.0)
-      mixlib-shellout (>= 2.0, < 4.0)
+      mixlib-shellout (~> 3.2, >= 3.2.5)
       plist (~> 3.1)
       train-core
       wmi-lite (~> 1.0)
@@ -197,7 +197,7 @@ GEM
     highline (2.0.3)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.32.0)
+    inspec-core (4.33.1)
       addressable (~> 2.4)
       chef-telemetry (~> 1.0)
       faraday (>= 0.9.0, < 1.4)
@@ -220,8 +220,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.32.0)
-      inspec-core (= 4.32.0)
+    inspec-core-bin (4.33.1)
+      inspec-core (= 4.33.1)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -333,7 +333,7 @@ GEM
     syslog-logger (1.6.8)
     thor (1.1.0)
     tomlrb (1.3.0)
-    train-core (3.6.2)
+    train-core (3.7.0)
       addressable (~> 2.5)
       ffi (!= 1.13.0)
       json (>= 1.8, < 3.0)
