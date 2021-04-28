@@ -42,7 +42,7 @@ Chef Infra Client can be configured to run as a scheduled task using the [chef-c
 
 #### Gem Resource Ruby 1.9+
 
-The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached endof life almost 7 years ago, we believe there is little to no impact in this change.
+The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached end of life almost 7 years ago, we believe there is little to no impact in this change.
 
 #### Legacy node['filesystem2'] removed on AIX/Solaris/FreeBSD
 
@@ -50,7 +50,7 @@ The legacy `node['filesystem2']` attributes leftover from our multi-year migrati
 
 #### node['filesystem'] Uses Updated Format
 
-In Chef Infra Client 16 we introduced `node['filesytem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
+In Chef Infra Client 16 we introduced `node['filesystem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
 
 #### Removed Antergos and Pidora Detection
 
