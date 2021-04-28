@@ -42,7 +42,7 @@ Chef Infra Client can be configured to run as a scheduled task using the [chef-c
 
 #### Gem Resource Ruby 1.9+
 
-The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached endof life almost 7 years ago, we believe there is little to no impact in this change.
+The `gem` resource used to install Ruby Gems into the system's Ruby installation will now assume Ruby 1.9 or later. As Ruby 1.8 and below reached end of life almost 7 years ago, we believe there is little to no impact in this change.
 
 #### Legacy node['filesystem2'] removed on AIX/Solaris/FreeBSD
 
@@ -50,7 +50,7 @@ The legacy `node['filesystem2']` attributes leftover from our multi-year migrati
 
 #### node['filesystem'] Uses Updated Format
 
-In Chef Infra Client 16 we introduced `node['filesytem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
+In Chef Infra Client 16 we introduced `node['filesystem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
 
 #### Removed Antergos and Pidora Detection
 
@@ -276,6 +276,12 @@ We now produce FIPS capable packages for RHEL on PowerPC
 ### Sample client.rb on *nix Platforms
 
 On AIX, Solaris, macOS, and Linux platforms the Chef Infra Client packages will now create the various configuration directories under `/etc/chef` as well as a sample `/etc/chef/client.rb` file to make it easier to get started running the client.
+
+### New Deprecations
+
+### Unified Mode in Custom Resources
+
+In Chef Infra Client 16 we introduced Unified Mode allowing you to collapse the sometimes confusing compile and converge phases into a single unified phase. Unified mode makes it easier to write and troubleshoot failures in custom resources and for Chef Infra Client 18 we plan to make this the default execution phase for custom resources. We've backported the unified mode feature to the Chef Infra Client 14 and 15 systems and for Chef Infra Client 17 we will now begin warning if resources don't explicitly set this new mode. Enabling unified mode now lets you validate that resources will continue to function as expected in Chef Infra Client 18. To enable unified  mode in your resource add `unified_mode true` to the file.
 
 ## What's New in 16.13
 
