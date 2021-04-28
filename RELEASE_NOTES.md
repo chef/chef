@@ -48,7 +48,7 @@ The `gem` resource used to install Ruby Gems into the system's Ruby installation
 
 The legacy `node['filesystem2']` attributes leftover from our multi-year migration of filesystem data on AIX, Solaris, and FreeBSD systems has been removed. This same data is now available at `node['filesystem']`
 
-#### node['filesystem'] Uses Updated Format
+#### node['filesystem'] Uses Updated Format on Windows
 
 In Chef Infra Client 16 we introduced `node['filesystem2']` on Windows to complete our migration to a unified structure for filesystem data regardless of platform. In Chef Infra Client 17 we are updating `node['filesystem']` on Windows with this same unified format. Both node attributes now have the same data allowing users to more easily migrate `filesystem2` to `filesystem` in their cookbooks. In Chef Infra Client 18, we will remove `node['filesystem2']` completely finishing our multi-year migration of Ohai filesystem data format.
 
