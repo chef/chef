@@ -56,7 +56,8 @@ class Chef
         # Print out deprecations.
         unless deprecations.empty?
           puts_line ""
-          puts_line "Deprecated features used!"
+          puts_line "Deprecation warnings that must be addressed before upgrading to Chef Infra #{Chef::VERSION.to_i + 1}:"
+          puts_line ""
           deprecations.each do |message, details|
             locations = details[:locations]
             if locations.size == 1
