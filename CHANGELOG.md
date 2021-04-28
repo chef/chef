@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.0.245 -->
-## [v17.0.245](https://github.com/chef/chef/tree/v17.0.245) (2021-04-28)
+<!-- latest_release 17.0.246 -->
+## [v17.0.246](https://github.com/chef/chef/tree/v17.0.246) (2021-04-28)
 
 #### Merged Pull Requests
-- Make deprecation warning message more explicit [#11470](https://github.com/chef/chef/pull/11470) ([lamont-granquist](https://github.com/lamont-granquist))
+- Loosen the chef deps in knife and remove the Gemfile.lock [#11471](https://github.com/chef/chef/pull/11471) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Loosen the chef deps in knife and remove the Gemfile.lock [#11471](https://github.com/chef/chef/pull/11471) ([tas50](https://github.com/tas50)) <!-- 17.0.246 -->
 - Make deprecation warning message more explicit [#11470](https://github.com/chef/chef/pull/11470) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.245 -->
 - Fix location and resource_name of unified_mode deprecation message [#11469](https://github.com/chef/chef/pull/11469) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.0.244 -->
 - Fix building knife and make it require Ruby 2.7 [#11463](https://github.com/chef/chef/pull/11463) ([tas50](https://github.com/tas50)) <!-- 17.0.243 -->
