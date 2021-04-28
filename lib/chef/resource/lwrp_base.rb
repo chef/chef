@@ -54,7 +54,7 @@ class Chef
           resource_class.class_from_file(filename)
 
           unless resource_class.unified_mode
-            Chef.deprecated :unified_mode, "The #{resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`"
+            Chef.deprecated :unified_mode, "The #{resource_class.resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`", filename
           end
 
           # Make a useful string for the class (rather than <Class:312894723894>)
