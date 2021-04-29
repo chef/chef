@@ -54,6 +54,11 @@ spec/data/nodes
 spec/data/chef_guid
 /config/
 
+# Same for knife
+knife/spec/data/test-dir
+knife/spec/data/nodes
+knife/spec/data/chef_guid
+
 vendor/
 kitchen-tests/vendor
 
@@ -77,6 +82,12 @@ chef-bin/pkg
 chef-utils/.bundle
 chef-utils/Gemfile.lock
 chef-utils/pkg
+
+# knife
+knife/.bundle
+knife/Gemfile.lock
+knife/pkg
+
 
 # auto generated docs from the docs.rb rake task
 docs_site
