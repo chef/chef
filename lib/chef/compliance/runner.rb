@@ -288,7 +288,7 @@ class Chef
         # supports it.
         Array(node["audit"]["reporter"]).each do |type|
           unless SUPPORTED_REPORTERS.include? type
-            raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporter"
+            raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporters"
           end
 
           @reporters[type] = reporter(type)
@@ -297,7 +297,7 @@ class Chef
 
         unless (fetcher = node["audit"]["fetcher"]).nil?
           unless SUPPORTED_FETCHERS.include? fetcher
-            raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] = #{fetcher}). Supported fetchers are: #{SUPPORTED_FETCHERS.join(", ")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase/#fetchers"
+            raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] = #{fetcher}). Supported fetchers are: #{SUPPORTED_FETCHERS.join(", ")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#fetch-profiles"
           end
         end
         @validation_passed = true
