@@ -111,6 +111,18 @@ steps:
       docker:
         image: rubydistros/ubuntu-20.04:3.0
 
+## TEMP - do not need once we re-add knife to component_tess
+- label: "Knife Ubuntu 20.04 :ruby: 3.0"
+  commands:
+    - /workdir/.expeditor/scripts/bk_container_prep.sh
+    - cd /workdir/knife
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle exec rake spec
+  expeditor:
+    executor:
+      docker:
+        image: rubydistros/ubuntu-20.04:3.0
+
 # - label: "Integration CentOS 7 :ruby: 3.0"
 #   commands:
 #     - /workdir/.expeditor/scripts/bk_container_prep.sh
