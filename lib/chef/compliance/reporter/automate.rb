@@ -44,7 +44,7 @@ class Chef
           end
 
           unless @url && @token
-            raise "CMPL006: data_collector.token and data_collector.server_url must be configured in client.rb! Further information: https://docs.chef.io/chef_compliance_phase/#direct-reporting-to-chef-automate"
+            raise "CMPL006: data_collector.token and data_collector.server_url must be configured in client.rb! Further information: https://docs.chef.io/automate/data_collection/#configure-your-chef-infra-client-to-send-data-to-chef-automate-without-chef-infra-server"
           end
         end
 
