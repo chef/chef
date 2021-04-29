@@ -25,7 +25,7 @@ begin
 
   desc "Run specs for Chef's Gem Components"
   task :component_specs do
-    %w{chef-utils chef-config knife}.each do |gem|
+    %w{chef-utils chef-config}.each do |gem|
       Dir.chdir(gem) do
         puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
