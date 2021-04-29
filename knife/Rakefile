@@ -25,12 +25,7 @@ begin
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
     t.rspec_opts = %w{--profile}
-    t.pattern = FileList["../spec/unit/knife/**/*_spec.rb"] +
-      FileList["../spec/unit/knife_spec.rb"] +
-      FileList["../spec/unit/application/knife_spec.rb"] +
-      FileList["../spec/integration/knife/*_spec.rb"] +
-      FileList["../spec/functional/knife/*_spec.rb"]
-    t.ruby_opts = "-I ../spec"
+    t.pattern = FileList["spec/**/*_spec.rb"]
 
   end
 rescue LoadError
