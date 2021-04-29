@@ -93,3 +93,6 @@ mkmf.log
 
 # our custom dictionary pulled from https://github.com/chef/chef_dictionary/
 chef_dictionary.txt
+
+# ignore any gems we build locally
+*.gem
