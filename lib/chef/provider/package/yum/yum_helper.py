@@ -75,8 +75,6 @@ except NameError:
         return False
 
 def query(base, command):
-    base = get_base()
-
     enabled_repos = base.repos.listEnabled()
 
     # Handle any repocontrols passed in with our options
