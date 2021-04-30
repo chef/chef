@@ -69,9 +69,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE README.md} +
-    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject do |f|
-      File.directory?(f) || File.path(f).match(/knife*/)
-    end +
+    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
     Dir.glob("*.gemspec") +
     Dir.glob("tasks/rspec.rb")
 
