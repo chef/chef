@@ -217,6 +217,8 @@ try:
         elif command['action'] == "closerpmdb":
             base.closeRpmDB()
             base = None
+            outpipe.write('nil nil nil\n')
+            outpipe.flush()
         else:
             raise RuntimeError("bad command")
 finally:
