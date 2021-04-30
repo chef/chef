@@ -55,8 +55,6 @@ class Chef
         end
 
         def load_current_resource
-          flushcache if new_resource.flush_cache[:before]
-
           @current_resource = Chef::Resource::YumPackage.new(new_resource.name)
           current_resource.package_name(new_resource.package_name)
           current_resource.version(get_current_versions)
@@ -120,7 +118,6 @@ class Chef
             resolved_names = names.each_with_index.map { |name, i| available_version(i).to_s unless name.nil? }
             yum(options, "-y", method, resolved_names)
           end
-          flushcache
         end
 
         # yum upgrade does not work on uninstalled packaged, while install will upgrade
@@ -129,13 +126,12 @@ class Chef
         def remove_package(names, versions)
           resolved_names = names.each_with_index.map { |name, i| installed_version(i).to_s unless name.nil? }
           yum(options, "-y", "remove", resolved_names)
-          flushcache
         end
 
         alias purge_package remove_package
 
         action :flush_cache do
-          flushcache
+          Chef.deprecation(:yum_flush_cache, "The yum :flush_cache action is no longer required and can be removed")
         end
 
         # NB: the yum_package provider manages individual single packages, please do not submit issues or PRs to try to add wildcard
@@ -235,13 +231,6 @@ class Chef
                                           python_helper.package_query(:whatinstalled, package_name_array[index], arch: safe_arch_array[index], options: options)
                                         end
           @installed_version[index]
-        end
-
-        # cache flushing is accomplished by simply restarting the python helper.  this produces a roughly
-        # 15% hit to the runtime of installing/removing/upgrading packages.  correctly using multipackage
-        # array installs (and the multipackage cookbook) can produce 600% improvements in runtime.
-        def flushcache
-          python_helper.restart
         end
 
         def yum_binary

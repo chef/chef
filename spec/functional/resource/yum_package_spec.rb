@@ -24,19 +24,10 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   include RecipeDSLHelper
   include Chef::Mixin::ShellOut
 
-  # NOTE: every single test here either needs to explicitly call flush_cache or needs to explicitly
-  # call preinstall (which explicitly calls flush_cache).  It is your responsibility to do one or the
-  # other in order to minimize calling flush_cache a half dozen times per test.
-
-  def flush_cache
-    Chef::Resource::YumPackage.new("shouldnt-matter", run_context).run_action(:flush_cache)
-  end
-
   def preinstall(*rpms)
     rpms.each do |rpm|
       shell_out!("rpm -ivh #{CHEF_SPEC_ASSETS}/yumrepo/#{rpm}")
     end
-    flush_cache
   end
 
   def expect_matching_installed_version(version)
@@ -78,7 +69,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   describe ":install" do
     context "vanilla use case" do
       it "installs if the package is not installed" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
         end.should_be_updated
@@ -94,7 +84,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "does not install twice" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
         end.should_be_updated
@@ -134,7 +123,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with versions or globs in the name" do
       it "works with a version" do
-        flush_cache
         yum_package("chef_rpm-1.10") do
           options default_options
         end.should_be_updated
@@ -142,7 +130,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "works with an older version" do
-        flush_cache
         yum_package("chef_rpm-1.2") do
           options default_options
         end.should_be_updated
@@ -150,7 +137,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "works with an evra" do
-        flush_cache
         yum_package("chef_rpm-0:1.2-1.#{pkg_arch}") do
           options default_options
         end.should_be_updated
@@ -158,7 +144,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "works with version and release" do
-        flush_cache
         yum_package("chef_rpm-1.2-1") do
           options default_options
         end.should_be_updated
@@ -166,7 +151,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "works with a version glob" do
-        flush_cache
         yum_package("chef_rpm-1*") do
           options default_options
         end.should_be_updated
@@ -174,7 +158,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "works with a name glob + version glob" do
-        flush_cache
         yum_package("chef_rp*-1*") do
           options default_options
         end.should_be_updated
@@ -202,7 +185,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     # version only matches the actual yum version, does not work with epoch or release or combined evr
     context "with version property" do
       it "matches the full version" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("1.10")
@@ -214,7 +196,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
         # we are unlikely to ever fix this.  if you've found this comment you should use e.g. "tcpdump-4*" in
         # the name field rather than trying to use a name of "tcpdump" and a version of "4*".
         pending "this does not work, is not easily supported by the underlying yum libraries, but does work in the new dnf_package provider"
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("1*")
@@ -223,7 +204,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "matches the vr" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("1.10-1")
@@ -232,7 +212,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "matches the evr" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("0:1.10-1")
@@ -242,7 +221,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "matches with a vr glob" do
         pending "doesn't work on command line either"
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("1.10-1*")
@@ -252,7 +230,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "matches with an evr glob" do
         pending "doesn't work on command line either"
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           version("0:1.10-1*")
@@ -263,7 +240,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "downgrades" do
       it "downgrades the package when allow_downgrade" do
-        flush_cache
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm")
         yum_package("chef_rpm") do
           options default_options
@@ -276,7 +252,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with arches", :intel_64bit do
       it "installs with 64-bit arch in the name" do
-        flush_cache
         yum_package("chef_rpm.#{pkg_arch}") do
           options default_options
         end.should_be_updated
@@ -284,7 +259,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "installs with 32-bit arch in the name" do
-        flush_cache
         yum_package("chef_rpm.i686") do
           options default_options
         end.should_be_updated
@@ -292,7 +266,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "installs with 64-bit arch in the property" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           arch((pkg_arch).to_s)
@@ -301,7 +274,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "installs with 32-bit arch in the property" do
-        flush_cache
         yum_package("chef_rpm") do
           options default_options
           arch("i686")
@@ -312,7 +284,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with constraints" do
       it "with nothing installed, it installs the latest version" do
-        flush_cache
         yum_package("chef_rpm >= 1.2") do
           options default_options
         end.should_be_updated
@@ -336,7 +307,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "with nothing intalled, it installs the latest version" do
-        flush_cache
         yum_package("chef_rpm > 1.2") do
           options default_options
         end.should_be_updated
@@ -376,7 +346,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "when there is no solution to the constraint" do
-        flush_cache
         expect {
           yum_package("chef_rpm > 2.0") do
             options default_options
@@ -394,7 +363,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "with a less than constraint, when nothing is installed, it installs" do
-        flush_cache
         yum_package("chef_rpm < 1.10") do
           allow_downgrade true
           options default_options
@@ -423,7 +391,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with source arguments" do
       it "raises an exception when the package does not exist" do
-        flush_cache
         expect {
           yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm") do
             options default_options
@@ -433,14 +400,12 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "does not raise a hard exception in why-run mode when the package does not exist" do
         Chef::Config[:why_run] = true
-        flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/this-file-better-not-exist.rpm") do
           options default_options
         end
       end
 
       it "installs the package when using the source argument" do
-        flush_cache
         yum_package "something" do
           package_name "somethingelse"
           source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
@@ -449,7 +414,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "installs the package when the name is a path to a file" do
-        flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
           options default_options
         end.should_be_updated
@@ -531,7 +495,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
-        flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
           options default_options
         end.should_be_updated
@@ -541,7 +504,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "multipackage with arches", :intel_64bit do
       it "installs two rpms" do
-        flush_cache
         yum_package([ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] ) do
           options default_options
         end.should_be_updated
@@ -551,7 +513,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "does nothing if both are installed" do
         preinstall("chef_rpm-1.10-1.#{pkg_arch}.rpm", "chef_rpm-1.10-1.i686.rpm")
-        flush_cache
         yum_package([ "chef_rpm.#{pkg_arch}", "chef_rpm.i686" ] ) do
           options default_options
         end.should_not_be_updated
@@ -577,7 +538,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       # unlikely to work consistently correct, okay to deprecate the arch-array in favor of the arch in the name
       it "installs two rpms with multi-arch" do
-        flush_cache
         yum_package %w{chef_rpm chef_rpm} do
           options default_options
           arch [pkg_arch, "i686"]
@@ -620,7 +580,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "repo controls" do
       it "should fail with the repo disabled" do
-        flush_cache
         expect {
           yum_package "chef_rpm" do
             options "--nogpgcheck --disablerepo=chef-yum-localtesting"
@@ -629,7 +588,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "should work with disablerepo first" do
-        flush_cache
         yum_package "chef_rpm" do
           options "--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting"
         end.should_be_updated
@@ -638,13 +596,11 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "should work to enable a disabled repo" do
         shell_out!("yum-config-manager --disable chef-yum-localtesting")
-        flush_cache
         expect {
           yum_package "chef_rpm" do
             options "--nogpgcheck"
           end
         }.to raise_error(Chef::Exceptions::Package, /No candidate version available/)
-        flush_cache
         yum_package "chef_rpm" do
           options "--nogpgcheck --enablerepo=chef-yum-localtesting"
         end.should_be_updated
@@ -652,7 +608,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "when an idempotent install action is run, does not leave repos disabled" do
-        flush_cache
         # this is a bit tricky -- we need this action to be idempotent, so that it doesn't recycle any
         # caches, but need it to hit whatavailable with the repo disabled.  using :upgrade like this
         # accomplishes both those goals (it would be easier if we had other rpms in this repo, but with
@@ -677,7 +632,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with source arguments" do
       it "installs the package when using the source argument" do
-        flush_cache
         yum_package "something" do
           package_name "somethingelse"
           source("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm")
@@ -687,7 +641,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "installs the package when the name is a path to a file" do
-        flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
           options default_options
           action :upgrade
@@ -737,7 +690,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
       it "works with a local source" do
         FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
-        flush_cache
         yum_package("#{CHEF_SPEC_ASSETS}/yumrepo/chef_rpm-1.2-1.#{pkg_arch}.rpm") do
           options default_options
           action :upgrade
@@ -786,7 +738,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "with a > pin in the name and no rpm installed it installs" do
-        flush_cache
         yum_package("chef_rpm > 1.2") do
           options default_options
           action :upgrade
@@ -795,7 +746,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
       end
 
       it "with a < pin in the name and no rpm installed it installs" do
-        flush_cache
         yum_package("chef_rpm < 1.10") do
           options default_options
           action :upgrade
@@ -845,7 +795,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   describe ":remove" do
     context "vanilla use case" do
       it "does nothing if the package is not installed" do
-        flush_cache
         yum_package "chef_rpm" do
           options default_options
           action :remove
@@ -908,7 +857,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
 
     context "with 64-bit arch", :intel_64bit do
       it "does nothing if the package is not installed" do
-        flush_cache
         yum_package "chef_rpm.#{pkg_arch}" do
           options default_options
           action :remove
@@ -987,7 +935,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "locks an rpm" do
-      flush_cache
       yum_package("chef_rpm") do
         options default_options
         action :lock
@@ -996,7 +943,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "does not lock if its already locked" do
-      flush_cache
       shell_out!("yum versionlock add chef_rpm")
       yum_package("chef_rpm") do
         options default_options
@@ -1006,7 +952,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "unlocks an rpm" do
-      flush_cache
       shell_out!("yum versionlock add chef_rpm")
       yum_package("chef_rpm") do
         options default_options
@@ -1016,7 +961,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "does not unlock an already locked rpm" do
-      flush_cache
       yum_package("chef_rpm") do
         options default_options
         action :unlock
@@ -1025,7 +969,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "check that we can lock based on provides" do
-      flush_cache
       yum_package("chef_rpm_provides") do
         options default_options
         action :lock
@@ -1034,7 +977,6 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     end
 
     it "check that we can unlock based on provides" do
-      flush_cache
       shell_out!("yum versionlock add chef_rpm")
       yum_package("chef_rpm_provides") do
         options default_options
