@@ -1915,6 +1915,7 @@
     "**/*.toml",
     "**/Berksfile",
     "spec/data/**/*",
+    "knife/spec/data/**/*",
     "lib/chef/provider/package/yum/simplejson/**/*",
     "lib/chef/provider/package/yum/simplejson/*",
     "omnibus/resources/chef/**/*",
