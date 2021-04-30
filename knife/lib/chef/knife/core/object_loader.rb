@@ -40,6 +40,7 @@ class Chef
 
         def load_from(repo_location, *components)
           unless object_file = find_file(repo_location, *components)
+            puts "Could not find or open file from #{components} '#{components.last}' in current directory or in '#{repo_location}/#{components.join("/")}'"
             ui.error "Could not find or open file '#{components.last}' in current directory or in '#{repo_location}/#{components.join("/")}'"
             exit 1
           end
@@ -48,13 +49,19 @@ class Chef
 
         # When someone makes this awesome, please update the above error message.
         def find_file(repo_location, *components)
+          puts "AAAA #{Dir.pwd} + #{File.expand_path(components.last)}"
           if file_exists_and_is_readable?(File.expand_path( components.last ))
+            puts "AAAA <"
             File.expand_path( components.last )
           else
+          puts "AAAB #{Dir.pwd} + #{File.expand_path(components.last)}"
             relative_path = File.join(Dir.pwd, repo_location, *components)
+            puts "AAAB #{Dir.pwd} + #{relative_path}"
             if file_exists_and_is_readable?(relative_path)
+              puts "AAAC #{relative_path}"
               relative_path
             else
+              puts "AAAD nil"
               nil
             end
           end
@@ -106,6 +113,8 @@ class Chef
         end
 
         def file_exists_and_is_readable?(file)
+          puts "AABA: #{file} #{File.exist?(file)} #{File.readable?(file)}"
+          puts "AABB: #{Dir["/workdir/knife/spec/**/*"]}"
           File.exist?(file) && File.readable?(file)
         end
 
