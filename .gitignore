@@ -56,6 +56,7 @@ spec/data/chef_guid
 
 # Same for knife
 knife/spec/data/test-dir
+knife/spec/data/nodes
 knife/spec/data/chef_guid
 
 vendor/
