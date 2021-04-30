@@ -2,8 +2,8 @@
 # vim: tabstop=8 expandtab shiftwidth=4 softtabstop=4
 
 #
-# NOTE: this actually needs to run under python2.4 and centos 5.x through python3 and centos 7.x
-# please manually test changes on centos5 boxes or you will almost certainly break things.
+# NOTE: this actually needs to run under python2.7 and centos 6.x through python3 and centos 7.x
+# please manually test changes on centos6 boxes or you will almost certainly break things.
 #
 
 import sys
@@ -11,23 +11,11 @@ import yum
 import signal
 import os
 import fcntl
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'simplejson'))
-try: import json
-except ImportError: import simplejson as json
+import json
 import re
 from rpmUtils.miscutils import stringToVersion,compareEVR
 from rpmUtils.arch import getBaseArch, getArchList
-
-
-try: from yum.misc import string_to_prco_tuple
-except ImportError:
-    # RHEL5 compat
-    def string_to_prco_tuple(prcoString):
-        prco_split = prcoString.split()
-        n, f, v = prco_split
-        (prco_e, prco_v, prco_r) = stringToVersion(v)
-        return (n, f, (prco_e, prco_v, prco_r))
+from yum.misc import string_to_prco_tuple
 
 # hack to work around https://github.com/chef/chef/issues/7126
 # see https://bugzilla.redhat.com/show_bug.cgi?id=1396248
@@ -63,16 +51,6 @@ def install_only_packages(base, name):
     else:
         outpipe.write('False')
     outpipe.flush()
-
-# python2.4 / centos5 compat
-try:
-    any
-except NameError:
-    def any(s):
-        for v in s:
-            if v:
-                return True
-        return False
 
 def query(base, command):
     enabled_repos = base.repos.listEnabled()
