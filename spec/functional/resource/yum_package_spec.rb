@@ -39,6 +39,8 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   end
 
   before(:each) do
+    # force retries in the yum helper to become errors
+    ENV["YUMHELPER_NO_RETRIES"] = "true"
     File.open("/etc/yum.repos.d/chef-yum-localtesting.repo", "w+") do |f|
       f.write <<~EOF
         [chef-yum-localtesting]
