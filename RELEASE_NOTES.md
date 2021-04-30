@@ -5,6 +5,7 @@ This file holds "in progress" release notes for the current release under develo
 - CLI reporter default in Compliance Phase: https://github.com/chef/chef/pull/11481
 - Fix windows failures: https://github.com/chef/chef/pull/11472
 - Bump InSpec to 4.36: https://github.com/chef/chef/pull/11474
+- Yum improvements: https://github.com/chef/chef/pull/11486
 
 ## What's New in 17.0
 
