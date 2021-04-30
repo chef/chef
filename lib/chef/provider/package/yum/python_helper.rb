@@ -163,7 +163,7 @@ class Chef
               outpipe.syswrite json + "\n"
               output = inpipe.sysread(4096).chomp
               Chef::Log.trace "got '#{output}' from python helper"
-              return output
+              output
             end
           end
 
