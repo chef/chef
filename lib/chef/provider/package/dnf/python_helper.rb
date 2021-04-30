@@ -115,12 +115,12 @@ class Chef
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
-            # XXX: for now we close the rpmdb before and after every query with an enablerepo/disablerepo to clean the helpers internal state
-            close_rpmdb unless repo_opts.empty?
+            # XXX: for now we restart before and after every query with an enablerepo/disablerepo to clean the helpers internal state
+            restart unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
             Chef::Log.trace "parsed #{version} from python helper"
-            close_rpmdb unless repo_opts.empty?
+            restart unless repo_opts.empty?
             version
           end
 
