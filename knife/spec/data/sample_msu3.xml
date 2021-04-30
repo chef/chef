@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend">
+    <servicing>
+        <package action="install">
+            <assemblyIdentity  name="Package_for_KB2859903" version="10.2.1.0" language="neutral" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35"/>
+            <source location="%configsetroot%\IE10-Windows6.1-KB2859903-x86.CAB" />
+        </package>
+     </servicing>
+     <servicing>
+        <package action="install">
+            <assemblyIdentity  name="Package_for_abc" version="10.2.1.0" language="neutral" processorArchitecture="x86" publicKeyToken="31bf3856ad364e35"/>
+            <source location="%configsetroot%\abc.CAB" />
+        </package>
+     </servicing>
+</unattend>
+

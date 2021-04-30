@@ -44,9 +44,7 @@ begin
   RSpec::Core::RakeTask.new(:spec) do |t|
     t.verbose = false
     t.rspec_opts = %w{--profile}
-    t.pattern = FileList["spec/**/*_spec.rb"].reject do |path|
-      path =~ /knife.*/
-    end
+    t.pattern = FileList["spec/**/*_spec.rb"]
   end
 
   namespace :spec do
@@ -55,9 +53,6 @@ begin
       t.verbose = false
       t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
-      t.pattern = FileList["spec/**/*_spec.rb"].reject do |path|
-        path =~ /knife.*/
-      end
     end
 
     desc "Print Specdoc for all specs"
@@ -80,9 +75,7 @@ begin
       RSpec::Core::RakeTask.new(sub) do |t|
         t.verbose = false
         t.rspec_opts = %w{--profile}
-        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"].reject do |path|
-          path =~ /knife.*/
-        end
+        t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
     end
   end
