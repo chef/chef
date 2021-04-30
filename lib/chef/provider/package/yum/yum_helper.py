@@ -177,7 +177,7 @@ def set_blocking(fd):
 
 if len(sys.argv) < 3:
     inpipe = sys.stdin
-  outpipe = sys.stdout
+    outpipe = sys.stdout
 else:
     set_blocking(int(sys.argv[1]))
     set_blocking(int(sys.argv[2]))
