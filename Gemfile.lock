@@ -329,8 +329,6 @@ GEM
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.4.1)
       parser (>= 2.7.1.5)
-    ruby-prof (1.4.3)
-    ruby-prof (1.4.3-x64-mingw32)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.4)
     rubyntlm (0.6.3)
@@ -449,7 +447,6 @@ DEPENDENCIES
   rake
   rb-readline
   rspec
-  ruby-prof
   ruby-shadow!
   webmock
 
