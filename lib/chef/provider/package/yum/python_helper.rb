@@ -51,6 +51,8 @@ class Chef
           end
 
           def start
+            # For some reason we have to force python to unbuffered here, and then force the input pipe back to line
+            # buffered in the python code.  XXX: I tried to remove this but hit more issues in the python side.
             ENV["PYTHONUNBUFFERED"] = "1"
             @inpipe, inpipe_write = IO.pipe
             outpipe_read, @outpipe = IO.pipe
@@ -121,7 +123,7 @@ class Chef
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
-            # XXX: for now we  before and after every query with an enablerepo/disablerepo to clean the helpers internal state
+            # XXX: for now we close the rpmdb before and after every query with an enablerepo/disablerepo to clean the helpers internal state
             close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
