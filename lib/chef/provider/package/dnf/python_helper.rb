@@ -205,7 +205,7 @@ class Chef
               Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
-          rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
+          rescue => e
             output = drain_fds
             if ( max_retries -= 1 ) > 0 && !ENV["YUM_HELPER_NO_RETRIES"]
               unless output.empty?
@@ -214,6 +214,7 @@ class Chef
               restart
               retry
             else
+              restart
               raise e if output.empty?
 
               raise "dnf-helper.py had stderr/stdout output:\n\n#{output}"
