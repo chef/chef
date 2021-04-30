@@ -38,11 +38,6 @@ group(:omnibus_package, :pry) do
   gem "pry-stack_explorer"
 end
 
-# Everything except AIX
-group(:ruby_prof) do
-  gem "ruby-prof"
-end
-
 # Everything except AIX and Windows
 group(:ruby_shadow) do
   # if ruby-shadow does a release that supports ruby-3.0 this can be removed

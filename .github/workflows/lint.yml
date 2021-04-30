@@ -11,7 +11,7 @@ jobs:
   chefstyle:
     runs-on: ubuntu-latest
     env:
-      BUNDLE_WITHOUT: ruby_shadow:ruby_prof:omnibus_package
+      BUNDLE_WITHOUT: ruby_shadow:omnibus_package
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
