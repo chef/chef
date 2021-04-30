@@ -46,7 +46,7 @@ Gem::Specification.new do |s|
 
   s.require_paths = %w{ lib }
   s.files = %w{Gemfile Rakefile LICENSE knife.gemspec} +
-    Dir.glob("lib/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
+    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   s.metadata = {
     "bug_tracker_uri"   => "https://github.com/chef/chef/issues",
