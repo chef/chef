@@ -81,8 +81,8 @@ class Chef
             start if stdin.nil?
           end
 
-          def closerpmdb
-            query("closerpmdb", {})
+          def close_rpmdb
+            query("close_rpmdb", {})
           end
 
           def compare_versions(version1, version2)
@@ -122,11 +122,11 @@ class Chef
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
             # XXX: for now we  before and after every query with an enablerepo/disablerepo to clean the helpers internal state
-            closerpmdb unless repo_opts.empty?
+            close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
             Chef::Log.trace "parsed #{version} from python helper"
-            closerpmdb unless repo_opts.empty?
+            close_rpmdb unless repo_opts.empty?
             version
           end
 
@@ -213,7 +213,7 @@ class Chef
             ret
           rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
             output = drain_fds
-            if ( max_retries -= 1 ) > 0 && !ENV["YUMHELPER_NO_RETRIES"]
+            if ( max_retries -= 1 ) > 0 && !ENV["YUM_HELPER_NO_RETRIES"]
               unless output.empty?
                 Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end

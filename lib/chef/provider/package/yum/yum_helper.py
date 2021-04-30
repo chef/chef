@@ -214,7 +214,7 @@ try:
             versioncompare(command['versions'])
         elif command['action'] == "installonlypkgs":
             install_only_packages(base, command['package'])
-        elif command['action'] == "closerpmdb":
+        elif command['action'] == "close_rpmdb":
             base.closeRpmDB()
             base = None
             outpipe.write('nil nil nil\n')

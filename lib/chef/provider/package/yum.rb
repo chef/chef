@@ -238,7 +238,7 @@ class Chef
         end
 
         def flushcache
-          python_helper.closerpmdb
+          python_helper.close_rpmdb
         end
 
         def yum_binary
