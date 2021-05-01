@@ -29,7 +29,9 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   # other in order to minimize calling flush_cache a half dozen times per test.
 
   def flush_cache
-    Chef::Resource::YumPackage.new("shouldnt-matter", run_context).run_action(:flush_cache)
+    yum = Chef::Resource::YumPackage.new("shouldnt-matter", run_context)
+    yum.options("--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting")
+    yum.run_action(:flush_cache)
   end
 
   def preinstall(*rpms)
@@ -71,7 +73,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
     FileUtils.rm_f "/etc/yum.repos.d/chef-yum-localtesting.repo"
   end
 
-  let(:default_options) { "--nogpgcheck" } #  --disablerepo=* --enablerepo=chef-yum-localtesting' }
+  let(:default_options) { "--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting" }
 
   def pkg_arch
     OHAI_SYSTEM[:kernel][:machine]
