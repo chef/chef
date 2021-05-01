@@ -29,9 +29,7 @@ describe Chef::Resource::YumPackage, :requires_root, external: exclude_test do
   # other in order to minimize calling flush_cache a half dozen times per test.
 
   def flush_cache
-    yum = Chef::Resource::YumPackage.new("shouldnt-matter", run_context)
-    yum.options("--nogpgcheck --disablerepo=* --enablerepo=chef-yum-localtesting")
-    yum.run_action(:flush_cache)
+    Chef::Resource::YumPackage.new("shouldnt-matter", run_context).run_action(:flush_cache)
   end
 
   def preinstall(*rpms)

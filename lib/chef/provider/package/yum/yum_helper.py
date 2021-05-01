@@ -181,6 +181,16 @@ try:
         except ValueError, e:
             raise RuntimeError("bad json parse")
 
+        # handle closing the rpmdb early before we open it
+        # so that we don't reopen it on successive close_rpmdb calls
+        if command['action'] == "close_rpmdb":
+            if base is not None:
+                base.closeRpmDB()
+            base = None
+            outpipe.write('nil nil nil\n')
+            outpipe.flush()
+            continue
+
         if base is None:
             base = yum.YumBase()
 
@@ -192,11 +202,6 @@ try:
             versioncompare(command['versions'])
         elif command['action'] == "installonlypkgs":
             install_only_packages(base, command['package'])
-        elif command['action'] == "close_rpmdb":
-            base.closeRpmDB()
-            base = None
-            outpipe.write('nil nil nil\n')
-            outpipe.flush()
         else:
             raise RuntimeError("bad command")
 finally:
