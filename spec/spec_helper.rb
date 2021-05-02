@@ -24,6 +24,9 @@ module Shell
   IRB = nil unless defined? IRB
 end
 
+# show the deprecation warnings
+Warning[:deprecated] = true
+
 $LOAD_PATH.unshift File.expand_path("..", __dir__)
 
 $LOAD_PATH.unshift File.expand_path("../chef-config/lib", __dir__)
