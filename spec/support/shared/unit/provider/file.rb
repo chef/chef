@@ -43,7 +43,6 @@ end
 def setup_normal_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(true)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(true)
@@ -57,7 +56,6 @@ def setup_missing_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_return(resource_path)
-    allow(File).to receive(:exists?).with(path).and_return(false)
     allow(File).to receive(:exist?).with(path).and_return(false)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
@@ -70,7 +68,6 @@ def setup_symlink
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(true)
     allow(File).to receive(:realpath?).with(path).and_return(normalized_path)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(true)
@@ -84,7 +81,6 @@ def setup_unwritable_file
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_raise(Errno::ENOENT)
-    allow(File).to receive(:exists?).with(path).and_return(true)
     allow(File).to receive(:exist?).with(path).and_return(true)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
@@ -97,7 +93,6 @@ def setup_missing_enclosing_directory
   [ resource_path, normalized_path, windows_path].each do |path|
     allow(File).to receive(:file?).with(path).and_return(false)
     allow(File).to receive(:realpath?).with(path).and_raise(Errno::ENOENT)
-    allow(File).to receive(:exists?).with(path).and_return(false)
     allow(File).to receive(:exist?).with(path).and_return(false)
     allow(File).to receive(:directory?).with(path).and_return(false)
     allow(File).to receive(:writable?).with(path).and_return(false)
