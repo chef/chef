@@ -160,13 +160,13 @@ class Chef
       def metadata_filenames
         return @metadata_filenames unless @metadata_filenames.empty?
 
-        if File.exists?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
+        if File.exist?(File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE))
           @uploaded_cookbook_version_file = File.join(cookbook_path, UPLOADED_COOKBOOK_VERSION_FILE)
         end
 
-        if File.exists?(File.join(cookbook_path, "metadata.json"))
+        if File.exist?(File.join(cookbook_path, "metadata.json"))
           @metadata_filenames << File.join(cookbook_path, "metadata.json")
-        elsif File.exists?(File.join(cookbook_path, "metadata.rb"))
+        elsif File.exist?(File.join(cookbook_path, "metadata.rb"))
           @metadata_filenames << File.join(cookbook_path, "metadata.rb")
         elsif uploaded_cookbook_version_file
           @metadata_filenames << uploaded_cookbook_version_file
