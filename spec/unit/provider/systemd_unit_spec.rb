@@ -814,7 +814,7 @@ describe Chef::Provider::SystemdUnit, :linux_only do
 
       def with_systemctl_show(systemctl_path, instance, opts, stdout)
         systemctl_show = [systemctl_path, instance, "show", "-p", "UnitFileState", "-p", "ActiveState", unit_name]
-        expect(provider).to receive(:shell_out).with(*systemctl_show, opts).and_return(double(stdout: stdout, exitstatus: 0, error?: false))
+        expect(provider).to receive(:shell_out).with(*systemctl_show, **opts).and_return(double(stdout: stdout, exitstatus: 0, error?: false))
       end
 
       describe "systemd_unit_status" do
@@ -841,7 +841,7 @@ describe Chef::Provider::SystemdUnit, :linux_only do
           current_resource.unit_name("foo@.service")
           template_error = "Failed to get properties: Unit name foo@.service is neither a valid invocation ID nor unit name."
           systemctl_show = [systemctl_path, "--system", "show", "-p", "UnitFileState", "-p", "ActiveState", "foo@.service"]
-          expect(provider).to receive(:shell_out).with(*systemctl_show, {}).and_return(double(stdout: "", stderr: template_error, exitstatus: 1, error?: true))
+          expect(provider).to receive(:shell_out).with(*systemctl_show).and_return(double(stdout: "", stderr: template_error, exitstatus: 1, error?: true))
           expect(provider.systemd_unit_status).to eql({})
         end
       end
