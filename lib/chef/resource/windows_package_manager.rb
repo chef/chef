@@ -45,7 +45,7 @@ class Chef
 
       ```ruby
       windows_package_manager "Add New Source" do
-        source_name "xyzpackages"
+        source_name "my_package_source"
         url  https://foo/bar.com/packages
         action :register
       end
@@ -55,7 +55,7 @@ class Chef
 
       ```ruby
       windows_package_manager "Add New Source" do
-        source_name "xyzpackages"
+        source_name "my_package_source"
         action :unregister
       end
       ```
@@ -65,7 +65,7 @@ class Chef
       ```ruby
       windows_package_manager "Install 7zip from new source" do
         package_name  7zip
-        source_name "xyzpackages"
+        source_name "my_package_source"
         scope 'User'
         location "C:\\Foo\\7Zip"
         override "-o, -q, -h"
@@ -81,14 +81,14 @@ class Chef
 
       property :source_name, String,
         description: "The name of a custom installation source."
-        # default: "winget"
+        default: "winget"
 
       property :url, String,
         description: "The url to a package or source"
 
       property :scope, String,
         description: "Install the package for the current user or the whole machine.",
-        default: "user", equal_to: ["user", "machine"]
+        default: "user", equal_to: %w["user", "machine"]
 
       property :location, String,
         description: "The location on the local system to install the package to. For example 'c:\foo\'."
