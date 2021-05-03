@@ -80,7 +80,7 @@ class Chef
         description: "The name of a single package to be installed."
 
       property :source_name, String,
-        description: "The name of a custom installation source."
+        description: "The name of a custom installation source.",
         default: "winget"
 
       property :url, String,
