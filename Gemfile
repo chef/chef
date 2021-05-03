@@ -22,8 +22,6 @@ end
 
 gem "cheffish", ">= 17"
 
-gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
-
 group(:omnibus_package) do
   gem "appbundler"
   gem "rb-readline"
