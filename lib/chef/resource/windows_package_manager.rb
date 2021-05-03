@@ -88,7 +88,7 @@ class Chef
 
       property :scope, String,
         description: "Install the package for the current user or the whole machine.",
-        default: "user", equal_to: %w["user", "machine"]
+        default: "user", equal_to: %w[user machine]
 
       property :location, String,
         description: "The location on the local system to install the package to. For example 'c:\foo\'."
