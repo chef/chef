@@ -29,6 +29,7 @@ begin
       Dir.chdir(gem) do
         puts "--- Running #{gem} specs"
         Bundler.with_unbundled_env do
+          puts "Executing tests in #{Dir.pwd}:"
           sh("bundle install --jobs=3 --retry=3 --path=../vendor/bundle")
           sh("bundle exec rake spec")
         end
@@ -73,6 +74,7 @@ begin
     %i{unit functional integration stress}.each do |sub|
       desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
+        puts "--- Running chef #{sub} specs"
         t.verbose = false
         t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
