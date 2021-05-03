@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.10 -->
-## [v17.1.10](https://github.com/chef/chef/tree/v17.1.10) (2021-05-03)
+<!-- latest_release 17.1.11 -->
+## [v17.1.11](https://github.com/chef/chef/tree/v17.1.11) (2021-05-03)
 
 #### Merged Pull Requests
-- Remove knife deps from the chef gemspec [#11488](https://github.com/chef/chef/pull/11488) ([tas50](https://github.com/tas50))
+- Add back windows deps to omnibus [#11509](https://github.com/chef/chef/pull/11509) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add back windows deps to omnibus [#11509](https://github.com/chef/chef/pull/11509) ([tas50](https://github.com/tas50)) <!-- 17.1.11 -->
 - Remove knife deps from the chef gemspec [#11488](https://github.com/chef/chef/pull/11488) ([tas50](https://github.com/tas50)) <!-- 17.1.10 -->
 - Fix systemd service state detection [#11497](https://github.com/chef/chef/pull/11497) ([ramereth](https://github.com/ramereth)) <!-- 17.1.9 -->
 - Bump chef/ohai to 947a97d47daa1dce6aa7b91f2057b15451805b25 [#11503](https://github.com/chef/chef/pull/11503) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.1.8 -->
