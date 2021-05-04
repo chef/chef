@@ -76,6 +76,7 @@ class Chef
               stderr.close unless stderr.nil?
               inpipe.close unless inpipe.nil?
               outpipe.close unless outpipe.nil?
+              stdin = stdout = stderr = inpipe = outpipe = wait_thr = nil
             end
           end
 
