@@ -21,6 +21,7 @@ require "spec_helper"
 
 describe Chef::Provider::Package::Yum::PythonHelper do
   let(:helper) { Chef::Provider::Package::Yum::PythonHelper.instance }
+  before(:each) { Singleton.__init__(Chef::Provider::Package::Yum::PythonHelper) }
 
   it "propagates stacktraces on stderr from the forked subprocess", :rhel do
     allow(helper).to receive(:yum_command).and_return("ruby -e 'raise \"your hands in the air\"'")
