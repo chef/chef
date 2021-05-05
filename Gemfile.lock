@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6b08692b230b9766b9e730c57aca8a94b0749782
+  revision: 6973acfd0219f73892de67ecfadce0e8c05770ac
   branch: master
   specs:
-    chefstyle (2.0.1)
-      rubocop (= 1.13.0)
+    chefstyle (2.0.2)
+      rubocop (= 1.14.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -190,9 +190,9 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.36.4)
+    inspec-core (4.37.0)
       addressable (~> 2.4)
-      chef-telemetry (~> 1.0)
+      chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
       faraday_middleware (~> 1.0)
       hashie (>= 3.4, < 5.0)
@@ -213,8 +213,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.36.4)
-      inspec-core (= 4.36.4)
+    inspec-core-bin (4.37.0)
+      inspec-core (= 4.37.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)
@@ -290,13 +290,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.13.0)
+    rubocop (1.14.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.2.0, < 2.0)
+      rubocop-ast (>= 1.5.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.5.0)
