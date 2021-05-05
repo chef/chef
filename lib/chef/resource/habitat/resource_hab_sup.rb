@@ -20,7 +20,7 @@ require 'chef/resource'
 class Chef
   class Resource
     class HabSup < Resource
-      provides :hab_sup do |_node|
+      provides :habitat_sup do |_node|
         false
       end
 

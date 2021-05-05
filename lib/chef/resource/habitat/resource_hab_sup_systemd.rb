@@ -20,8 +20,8 @@ require_relative 'resource_hab_sup'
 class Chef
   class Resource
     class HabSupSystemd < HabSup
-      provides :hab_sup_systemd
-      provides :hab_sup do |_node|
+      provides :habitat_sup_systemd
+      provides :habitat_sup do |_node|
         Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
       end
 
