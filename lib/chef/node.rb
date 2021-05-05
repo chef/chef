@@ -761,7 +761,7 @@ class Chef
       path = File.expand_path(Chef::Config[:chef_guid_path])
       dir = File.dirname(path)
 
-      unless File.exists?(path)
+      unless File.exist?(path)
         FileUtils.mkdir_p(dir)
         File.write(path, SecureRandom.uuid)
       end
