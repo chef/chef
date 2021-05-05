@@ -42,6 +42,7 @@ require_relative "mixin/deprecation"
 require_relative "mixin/properties"
 require_relative "mixin/provides"
 require_relative "dsl/universal"
+require_relative "constants"
 
 class Chef
   class Resource
@@ -1362,8 +1363,9 @@ class Chef
     #
     # @param arg [String] version constraint to match against (e.g. "> 14")
     #
-    def self.chef_version_for_provides(constraint)
-      @chef_version_for_provides = constraint
+    def self.chef_version_for_provides(constraint = NOT_PASSED)
+      @chef_version_for_provides = constraint unless constraint == NOT_PASSED
+      @chef_version_for_provides ||= nil
     end
 
     # Mark this resource as providing particular DSL.
@@ -1376,14 +1378,11 @@ class Chef
     def self.provides(name, **options, &block)
       name = name.to_sym
 
-      # quell warnings
-      @chef_version_for_provides = nil unless defined?(@chef_version_for_provides)
-
       # deliberately do not go through the accessor here
       @resource_name = name if resource_name.nil?
 
-      if @chef_version_for_provides && !options.include?(:chef_version)
-        options[:chef_version] = @chef_version_for_provides
+      if chef_version_for_provides && !options.include?(:chef_version)
+        options[:chef_version] = chef_version_for_provides
       end
 
       result = Chef.resource_handler_map.set(name, self, **options, &block)
