@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.15 -->
-## [v17.1.15](https://github.com/chef/chef/tree/v17.1.15) (2021-05-05)
+<!-- latest_release 17.1.17 -->
+## [v17.1.17](https://github.com/chef/chef/tree/v17.1.17) (2021-05-05)
 
 #### Merged Pull Requests
-- Suppress unified mode deprecation warning for deprecated resources [#11520](https://github.com/chef/chef/pull/11520) ([lamont-granquist](https://github.com/lamont-granquist))
+- Bump inspec-core-bin to 4.37.0 [#11525](https://github.com/chef/chef/pull/11525) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Bump inspec-core-bin to 4.37.0 [#11525](https://github.com/chef/chef/pull/11525) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.1.17 -->
 - Suppress unified mode deprecation warning for deprecated resources [#11520](https://github.com/chef/chef/pull/11520) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.15 -->
 - Fix edit_resource usage in unified_mode [#11519](https://github.com/chef/chef/pull/11519) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.14 -->
 - Fix bug causing systemd units to always re-enable and re-start [#11512](https://github.com/chef/chef/pull/11512) ([gene1wood](https://github.com/gene1wood)) <!-- 17.1.13 -->
