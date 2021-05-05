@@ -156,15 +156,7 @@ class Chef
       def edit_resource(type, name, created_at: nil, run_context: self.run_context, &resource_attrs_block)
         edit_resource!(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
       rescue Chef::Exceptions::ResourceNotFound
-        resource = declare_resource(type, name, created_at: created_at, run_context: run_context)
-        if resource_attrs_block
-          if defined?(new_resource)
-            resource.instance_exec(new_resource, &resource_attrs_block)
-          else
-            resource.instance_exec(&resource_attrs_block)
-          end
-        end
-        resource
+        declare_resource(type, name, created_at: created_at, run_context: run_context, &resource_attrs_block)
       end
 
       # Find existing resources by searching the list of existing resources.  Possible
@@ -306,6 +298,8 @@ class Chef
 
         enclosing_provider ||= self if is_a?(Chef::Provider)
 
+        nr = new_resource if defined?(new_resource)
+
         Chef::ResourceBuilder.new(
           type:                type,
           name:                name,
@@ -314,7 +308,8 @@ class Chef
           run_context:         run_context,
           cookbook_name:       cookbook_name,
           recipe_name:         recipe_name,
-          enclosing_provider:  enclosing_provider
+          enclosing_provider:  enclosing_provider,
+          new_resource:        nr
         ).build(&resource_attrs_block)
       end
 
