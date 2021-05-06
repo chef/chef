@@ -15,9 +15,9 @@
 #
 
 require_relative "../package"
-require_relative "../http/simple"
+require_relative "../../http/simple"
 require_relative "../../json_compat"
-require_relative "../exceptions"
+require_relative "../../exceptions"
 require_relative "../../resource"
 # Bring in needed shared methods
 include Habitat::Shared
