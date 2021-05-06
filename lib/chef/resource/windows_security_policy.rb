@@ -28,6 +28,7 @@ class Chef
 
       # The valid policy_names options found here
       # https://github.com/ChrisAWalker/cSecurityOptions under 'AccountSettings'
+      # This needs to be revisited - the list at the link above is non-exhaustive and is missing a couple of items
       policy_names = %w{LockoutDuration
                         MaximumPasswordAge
                         MinimumPasswordAge
