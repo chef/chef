@@ -15,19 +15,19 @@
 # limitations under the License.
 #
 
-require 'win32/service' if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-require_relative 'resource_hab_sup'
+require "win32/service" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
+require_relative "resource_hab_sup"
 
 class Chef
   class Resource
     class HabitatSupWindows < HabitatSup
       provides :habitat_sup_windows
       provides :habitat_sup do |node|
-        node['platform_family'] == 'windows'
+        node["platform_family"] == "windows"
       end
 
-      service_file = 'windows/HabService.dll.config.erb'
-      win_service_config = 'C:/hab/svc/windows-service/HabService.dll.config'
+      service_file = "windows/HabService.dll.config.erb"
+      win_service_config = "C:/hab/svc/windows-service/HabService.dll.config"
 
       action :run do
         super()
@@ -35,37 +35,37 @@ class Chef
         # TODO: There has to be a better way to handle auth token on windows
         # than the system wide environment variable
         auth_action = new_resource.auth_token ? :create : :delete
-        env 'HAB_AUTH_TOKEN' do
+        env "HAB_AUTH_TOKEN" do
           value new_resource.auth_token if new_resource.auth_token
           action auth_action
         end
 
         gateway_auth_action = new_resource.gateway_auth_token ? :create : :delete
-        env 'HAB_SUP_GATEWAY_AUTH_TOKEN' do
+        env "HAB_SUP_GATEWAY_AUTH_TOKEN" do
           value new_resource.gateway_auth_token if new_resource.gateway_auth_token
           action gateway_auth_action
         end
 
         bldr_action = new_resource.bldr_url ? :create : :delete
-        env 'HAB_BLDR_URL' do
+        env "HAB_BLDR_URL" do
           value new_resource.bldr_url if new_resource.bldr_url
           action bldr_action
         end
 
-        hab_package 'core/windows-service' do
+        hab_package "core/windows-service" do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.service_version if new_resource.service_version
         end
 
-        execute 'hab pkg exec core/windows-service install' do
-          not_if { ::Win32::Service.exists?('Habitat') }
+        execute "hab pkg exec core/windows-service install" do
+          not_if { ::Win32::Service.exists?("Habitat") }
         end
 
         # win_version = `dir /D /B C:\\hab\\pkgs\\core\\hab-launcher`.split().last
 
         template win_service_config.to_s do
           source service_file.to_s
-          cookbook 'habitat'
+          cookbook "habitat"
           variables exec_start_options: exec_start_options,
                     bldr_url: new_resource.bldr_url,
                     auth_token: new_resource.auth_token,
@@ -74,16 +74,16 @@ class Chef
           action :touch
         end
 
-        service 'Habitat' do
-          subscribes :restart, 'env[HAB_AUTH_TOKEN]'
-          subscribes :restart, 'env[HAB_SUP_GATEWAY_AUTH_TOKEN]'
-          subscribes :restart, 'env[HAB_BLDR_URL]'
+        service "Habitat" do
+          subscribes :restart, "env[HAB_AUTH_TOKEN]"
+          subscribes :restart, "env[HAB_SUP_GATEWAY_AUTH_TOKEN]"
+          subscribes :restart, "env[HAB_BLDR_URL]"
           subscribes :restart, "template[#{win_service_config}]"
-          subscribes :restart, 'hab_package[core/hab-sup]'
-          subscribes :restart, 'hab_package[core/hab-launcher]'
-          subscribes :restart, 'template[C:/hab/sup/default/config/sup.toml]'
-          action [:enable, :start]
-          not_if { node['chef_packages']['chef']['chef_root'].include?('/pkgs/chef/chef-infra-client') }
+          subscribes :restart, "hab_package[core/hab-sup]"
+          subscribes :restart, "hab_package[core/hab-launcher]"
+          subscribes :restart, "template[C:/hab/sup/default/config/sup.toml]"
+          action %i{enable start}
+          not_if { node["chef_packages"]["chef"]["chef_root"].include?("/pkgs/chef/chef-infra-client") }
         end
       end
     end

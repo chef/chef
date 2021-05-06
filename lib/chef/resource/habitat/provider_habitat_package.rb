@@ -14,10 +14,10 @@
 # limitations under the License.
 #
 
-require_relative '../package'
-require_relative '../http/simple'
-require_relative '../../json_compat'
-require_relative '../exceptions'
+require_relative "../package"
+require_relative "../http/simple"
+require_relative "../../json_compat"
+require_relative "../exceptions"
 
 # Bring in needed shared methods
 include Habitat::Shared
@@ -68,11 +68,11 @@ class Chef
 
         def install_package(names, versions)
           names.zip(versions).map do |n, v|
-            opts = ['pkg', 'install', '--channel', new_resource.channel, '--url', new_resource.bldr_url]
-            opts += ['--auth', new_resource.auth_token] if new_resource.auth_token
+            opts = ["pkg", "install", "--channel", new_resource.channel, "--url", new_resource.bldr_url]
+            opts += ["--auth", new_resource.auth_token] if new_resource.auth_token
             opts += ["#{strip_version(n)}/#{v}", new_resource.options]
-            opts += ['--binlink'] if new_resource.binlink
-            opts += ['--force'] if new_resource.binlink.eql? :force
+            opts += ["--binlink"] if new_resource.binlink
+            opts += ["--force"] if new_resource.binlink.eql? :force
             hab(opts)
           end
         end
@@ -82,11 +82,11 @@ class Chef
         def remove_package(names, versions)
           # raise 'It is too dangerous to :remove packages with the hab_package resource right now. This functionality should be deferred to the hab cli.'
           names.zip(versions).map do |n, v|
-            opts = %w(pkg uninstall)
-            opts += ['--keep-latest', new_resource.keep_latest ] if new_resource.keep_latest
-            opts += ["#{strip_version(n).chomp('/')}#{v}", new_resource.options]
-            opts += ['--exclude'] if new_resource.exclude
-            opts += ['--no-deps'] if new_resource.no_deps
+            opts = %w{pkg uninstall}
+            opts += ["--keep-latest", new_resource.keep_latest ] if new_resource.keep_latest
+            opts += ["#{strip_version(n).chomp("/")}#{v}", new_resource.options]
+            opts += ["--exclude"] if new_resource.exclude
+            opts += ["--no-deps"] if new_resource.no_deps
             hab(opts)
             # action :remove
           end
@@ -98,23 +98,23 @@ class Chef
       private
 
       def validate_name!(name)
-        raise ArgumentError, "package name must be specified as 'origin/name', use the 'version' property to specify a version" unless name.squeeze('/').count('/') < 2
+        raise ArgumentError, "package name must be specified as 'origin/name', use the 'version' property to specify a version" unless name.squeeze("/").count("/") < 2
       end
 
       def strip_version(name)
         validate_name!(name)
-        n = name.squeeze('/').chomp('/').sub(%r{^\/}, '')
-        n = n[0..(n.rindex('/') - 1)] while n.count('/') >= 2
+        n = name.squeeze("/").chomp("/").sub(%r{^\/}, "")
+        n = n[0..(n.rindex("/") - 1)] while n.count("/") >= 2
         n
       end
 
       def platform_target
-        if platform_family?('windows')
-          'target=x86_64-windows'
-        elsif node['kernel']['release'].to_i < 3
-          'target=x86_64-linux-kernel2'
+        if platform_family?("windows")
+          "target=x86_64-windows"
+        elsif node["kernel"]["release"].to_i < 3
+          "target=x86_64-linux-kernel2"
         else
-          ''
+          ""
         end
       end
 
@@ -122,18 +122,18 @@ class Chef
         @depot_package ||= {}
         @depot_package[name] ||=
           begin
-            origin, pkg_name = name.split('/')
-            name_version = [pkg_name, version].compact.join('/').squeeze('/').chomp('/').sub(%r{^\/}, '')
-            url = if new_resource.bldr_url.include?('/v1/')
-                    "#{new_resource.bldr_url.chomp('/')}/depot/channels/#{origin}/#{new_resource.channel}/pkgs/#{name_version}"
+            origin, pkg_name = name.split("/")
+            name_version = [pkg_name, version].compact.join("/").squeeze("/").chomp("/").sub(%r{^\/}, "")
+            url = if new_resource.bldr_url.include?("/v1/")
+                    "#{new_resource.bldr_url.chomp("/")}/depot/channels/#{origin}/#{new_resource.channel}/pkgs/#{name_version}"
                   else
-                    "#{new_resource.bldr_url.chomp('/')}/v1/depot/channels/#{origin}/#{new_resource.channel}/pkgs/#{name_version}"
+                    "#{new_resource.bldr_url.chomp("/")}/v1/depot/channels/#{origin}/#{new_resource.channel}/pkgs/#{name_version}"
                   end
-            url << '/latest' unless name_version.count('/') >= 2
+            url << "/latest" unless name_version.count("/") >= 2
             url << "?#{platform_target}" unless platform_target.empty?
 
             headers = {}
-            headers['Authorization'] = "Bearer #{new_resource.auth_token}" if new_resource.auth_token
+            headers["Authorization"] = "Bearer #{new_resource.auth_token}" if new_resource.auth_token
 
             Chef::JSONCompat.parse(http.get(url, headers))
           rescue Net::HTTPServerException
@@ -143,7 +143,7 @@ class Chef
 
       def package_version(name, version = nil)
         p = depot_package(name, version)
-        "#{p['ident']['version']}/#{p['ident']['release']}" unless p.nil?
+        "#{p["ident"]["version"]}/#{p["ident"]["release"]}" unless p.nil?
       end
 
       def http
@@ -164,7 +164,7 @@ class Chef
       end
 
       def installed_version(ident)
-        hab('pkg', 'path', ident).stdout.chomp.split(platform_family?('windows') ? '\\' : '/')[-2..-1].join('/')
+        hab("pkg", "path", ident).stdout.chomp.split(platform_family?("windows") ? '\\' : "/")[-2..-1].join("/")
       rescue Mixlib::ShellOut::ShellCommandFailed
         nil
       end
@@ -173,12 +173,12 @@ class Chef
       def version_requirement_satisfied?(current_version, new_version)
         return false if new_version.nil? || current_version.nil?
 
-        nv_parts = new_version.squeeze('/').split('/')
+        nv_parts = new_version.squeeze("/").split("/")
 
         if nv_parts.count < 2
-          current_version.squeeze('/').split('/')[0] == new_version.squeeze('/')
+          current_version.squeeze("/").split("/")[0] == new_version.squeeze("/")
         else
-          current_version.squeeze('/') == new_resource.version.squeeze('/')
+          current_version.squeeze("/") == new_resource.version.squeeze("/")
         end
       end
 
@@ -187,8 +187,8 @@ class Chef
         return unless Chef::Provider::Package.methods.include?(:version_compare)
 
         # Convert the package version (X.Y.Z/DATE) into a version that Mixlib::Versioning understands (X.Y.Z+DATE)
-        hab_v1 = Mixlib::Versioning.parse(v1.tr('/', '+'))
-        hab_v2 = Mixlib::Versioning.parse(v2.tr('/', '+'))
+        hab_v1 = Mixlib::Versioning.parse(v1.tr("/", "+"))
+        hab_v2 = Mixlib::Versioning.parse(v2.tr("/", "+"))
 
         hab_v1 <=> hab_v2
       end

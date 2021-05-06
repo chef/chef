@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-
 class Chef
   class Resource
     class HabitatService < Chef::Resource
@@ -25,20 +24,20 @@ class Chef
       property :running, [true, false], default: false
 
       # hab svc options which get included based on the action of the resource
-      property :strategy, [Symbol, String], equal_to: [:none, 'none', :'at-once', 'at-once', :rolling, 'rolling'], default: :none, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :topology, [Symbol, String], equal_to: [:standalone, 'standalone', :leader, 'leader'], default: :standalone, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :bldr_url, String, default: 'https://bldr.habitat.sh/'
+      property :strategy, [Symbol, String], equal_to: [:none, "none", :'at-once', "at-once", :rolling, "rolling"], default: :none, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
+      property :topology, [Symbol, String], equal_to: [:standalone, "standalone", :leader, "leader"], default: :standalone, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
+      property :bldr_url, String, default: "https://bldr.habitat.sh/"
       property :channel, [Symbol, String], default: :stable, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
       property :bind, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }, default: []
-      property :binding_mode, [Symbol, String], equal_to: [:strict, 'strict', :relaxed, 'relaxed'], default: :strict, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :service_group, String, default: 'default'
+      property :binding_mode, [Symbol, String], equal_to: [:strict, "strict", :relaxed, "relaxed"], default: :strict, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
+      property :service_group, String, default: "default"
       property :shutdown_timeout, Integer, default: 8
       property :health_check_interval, Integer, default: 30
-      property :remote_sup, String, default: '127.0.0.1:9632', desired_state: false
+      property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false
       # Http port needed for querying/comparing current config value
-      property :remote_sup_http, String, default: '127.0.0.1:9631', desired_state: false
+      property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false
       property :gateway_auth_token, String, desired_state: false
-      property :update_condition, [Symbol, String], equal_to: [:latest, 'latest', :'track-channel', 'track-channel'], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
+      property :update_condition, [Symbol, String], equal_to: [:latest, "latest", :'track-channel', "track-channel"], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
 
       load_current_value do
         service_details = get_service_details(service_name)
@@ -103,21 +102,21 @@ class Chef
 
         begin
           headers = {}
-          headers['Authorization'] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
-          svcs = Chef::HTTP::SimpleJSON.new(http_uri).get('/services', headers)
+          headers["Authorization"] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
+          svcs = Chef::HTTP::SimpleJSON.new(http_uri).get("/services", headers)
         rescue
           Chef::Log.debug("Could not connect to #{http_uri}/services to retrieve status for #{service_name}")
           return false
         end
 
-        origin, name, _version, _release = svc_name.split('/')
+        origin, name, _version, _release = svc_name.split("/")
         svcs.find do |s|
-          s['pkg']['origin'] == origin && s['pkg']['name'] == name
+          s["pkg"]["origin"] == origin && s["pkg"]["name"] == name
         end
       end
 
       def service_up?(service_details)
-        service_details['process']['state'] == 'up'
+        service_details["process"]["state"] == "up"
       rescue
         Chef::Log.debug("#{service_name} not found on the Habitat supervisor")
         false
@@ -132,77 +131,77 @@ class Chef
       end
 
       def get_spec_identifier(service_details)
-        service_details['spec_ident']['spec_identifier']
+        service_details["spec_ident"]["spec_identifier"]
       rescue
         Chef::Log.debug("#{service_name} not found on the Habitat supervisor")
         nil
       end
 
       def get_update_strategy(service_details)
-        service_details['update_strategy'].to_sym
+        service_details["update_strategy"].to_sym
       rescue
         Chef::Log.debug("Update Strategy for #{service_name} not found on Supervisor API")
-        'none'
+        "none"
       end
 
       def get_update_condition(service_details)
-        service_details['update_condition'].to_sym
+        service_details["update_condition"].to_sym
       rescue
         Chef::Log.debug("Update condition #{service_name} not found on Supervisor API")
-        'latest'
+        "latest"
       end
 
       def get_topology(service_details)
-        service_details['topology'].to_sym
+        service_details["topology"].to_sym
       rescue
         Chef::Log.debug("Topology for #{service_name} not found on Supervisor API")
-        'standalone'
+        "standalone"
       end
 
       def get_builder_url(service_details)
-        service_details['bldr_url']
+        service_details["bldr_url"]
       rescue
         Chef::Log.debug("Builder URL for #{service_name} not found on Supervisor API")
-        'https://bldr.habitat.sh'
+        "https://bldr.habitat.sh"
       end
 
       def get_channel(service_details)
-        service_details['channel'].to_sym
+        service_details["channel"].to_sym
       rescue
         Chef::Log.debug("Channel for #{service_name} not found on Supervisor API")
-        'stable'
+        "stable"
       end
 
       def get_binds(service_details)
-        service_details['binds']
+        service_details["binds"]
       rescue
         Chef::Log.debug("Update Strategy for #{service_name} not found on Supervisor API")
         []
       end
 
       def get_binding_mode(service_details)
-        service_details['binding_mode'].to_sym
+        service_details["binding_mode"].to_sym
       rescue
         Chef::Log.debug("Binding mode for #{service_name} not found on Supervisor API")
-        'strict'
+        "strict"
       end
 
       def get_service_group(service_details)
-        service_details['service_group'].split('.').last
+        service_details["service_group"].split(".").last
       rescue
         Chef::Log.debug("Service Group for #{service_name} not found on Supervisor API")
-        'default'
+        "default"
       end
 
       def get_shutdown_timeout(service_details)
-        service_details['pkg']['shutdown_timeout']
+        service_details["pkg"]["shutdown_timeout"]
       rescue
         Chef::Log.debug("Shutdown Timeout for #{service_name} not found on Supervisor API")
         8
       end
 
       def get_health_check_interval(service_details)
-        service_details['health_check_interval']['secs']
+        service_details["health_check_interval"]["secs"]
       rescue
         Chef::Log.debug("Health Check Interval for #{service_name} not found on Supervisor API")
         30
@@ -247,12 +246,12 @@ class Chef
         options = svc_options
         if current_resource.loaded && modified
           Chef::Log.debug("Reloading #{current_resource.service_name} using --force due to parameter change")
-          options << '--force'
+          options << "--force"
         end
 
         unless current_resource.loaded && !modified
-          execute 'test' do
-            command "hab svc load #{new_resource.service_name} #{options.join(' ')}"
+          execute "test" do
+            command "hab svc load #{new_resource.service_name} #{options.join(" ")}"
             retry_delay 10
             retries 5
           end
@@ -261,7 +260,7 @@ class Chef
 
       action :unload do
         if current_resource.loaded
-          execute "hab svc unload #{new_resource.service_name} #{svc_options.join(' ')}"
+          execute "hab svc unload #{new_resource.service_name} #{svc_options.join(" ")}"
           wait_for_service_unloaded
         end
       end
@@ -272,7 +271,7 @@ class Chef
           raise "No service named #{new_resource.service_name} is loaded on the Habitat supervisor"
         end
 
-        execute "hab svc start #{new_resource.service_name} #{svc_options.join(' ')}" unless current_resource.running
+        execute "hab svc start #{new_resource.service_name} #{svc_options.join(" ")}" unless current_resource.running
       end
 
       action :stop do
@@ -282,7 +281,7 @@ class Chef
         end
 
         if current_resource.running
-          execute "hab svc stop #{new_resource.service_name} #{svc_options.join(' ')}"
+          execute "hab svc stop #{new_resource.service_name} #{svc_options.join(" ")}"
           wait_for_service_stopped
         end
       end
@@ -324,7 +323,7 @@ class Chef
         end
 
         def wait_for_service_unloaded
-          ruby_block 'wait-for-service-unloaded' do
+          ruby_block "wait-for-service-unloaded" do
             block do
               raise "#{new_resource.service_name} still loaded" if service_loaded?(get_service_details(new_resource.service_name))
             end
@@ -332,29 +331,29 @@ class Chef
             retry_delay 1
           end
 
-          ruby_block 'update current_resource' do
+          ruby_block "update current_resource" do
             block do
               current_resource.loaded = service_loaded?(get_service_details(new_resource.service_name))
             end
             action :nothing
-            subscribes :run, 'ruby_block[wait-for-service-unloaded]', :immediately
+            subscribes :run, "ruby_block[wait-for-service-unloaded]", :immediately
           end
         end
 
         def wait_for_service_stopped
-          ruby_block 'wait-for-service-stopped' do
+          ruby_block "wait-for-service-stopped" do
             block do
               raise "#{new_resource.service_name} still running" if service_up?(get_service_details(new_resource.service_name))
             end
             retries get_shutdown_timeout(new_resource.service_name) + 1
             retry_delay 1
 
-            ruby_block 'update current_resource' do
+            ruby_block "update current_resource" do
               block do
                 current_resource.running = service_up?(get_service_details(new_resource.service_name))
               end
               action :nothing
-              subscribes :run, 'ruby_block[wait-for-service-stopped]', :immediately
+              subscribes :run, "ruby_block[wait-for-service-stopped]", :immediately
             end
           end
         end

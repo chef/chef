@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-
+require_relative "../../resource"
 
 class Chef
   class Resource
@@ -29,7 +29,7 @@ class Chef
       property :listen_ctl, String
       property :listen_gossip, String
       property :listen_http, String
-      property :org, String, default: 'default'
+      property :org, String, default: "default"
       property :peer, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }
       property :ring, String
       property :hab_channel, String
@@ -38,7 +38,7 @@ class Chef
       property :gateway_auth_token, String
       property :update_condition, String
       property :limit_no_files, String
-      property :license, String, equal_to: ['accept']
+      property :license, String, equal_to: ["accept"]
       property :health_check_interval, [String, Integer], coerce: proc { |h| h.is_a?(String) ? h : h.to_s }
       property :event_stream_application, String
       property :event_stream_environment, String
@@ -56,32 +56,32 @@ class Chef
         habitat_install new_resource.name do
           license new_resource.license
           hab_version new_resource.sup_version if new_resource.sup_version
-          not_if { ::File.exist?('/bin/hab') }
-          not_if { ::File.exist?('/usr/bin/hab') }
-          not_if { ::File.exist?('c:/habitat/hab.exe') }
-          not_if { ::File.exist?('c:/ProgramData/Habitat/hab.exe') }
+          not_if { ::File.exist?("/bin/hab") }
+          not_if { ::File.exist?("/usr/bin/hab") }
+          not_if { ::File.exist?("c:/habitat/hab.exe") }
+          not_if { ::File.exist?("c:/ProgramData/Habitat/hab.exe") }
         end
 
-        habitat_package 'core/hab-sup' do
+        habitat_package "core/hab-sup" do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.sup_version if new_resource.sup_version
         end
 
-        habitat_package 'core/hab-launcher' do
+        habitat_package "core/hab-launcher" do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.launcher_version if new_resource.launcher_version
         end
 
-        if platform_family?('windows')
-          directory 'C:/hab/sup/default/config' do
+        if platform_family?("windows")
+          directory "C:/hab/sup/default/config" do
             recursive true
-            only_if { ::Dir.exist?('C:/hab') }
-            only_if { use_toml_config() }
+            only_if { ::Dir.exist?("C:/hab") }
+            only_if { use_toml_config }
             action :create
           end
 
-          template 'C:/hab/sup/default/config/sup.toml' do
-            source 'sup/sup.toml.erb'
+          template "C:/hab/sup/default/config/sup.toml" do
+            source "sup/sup.toml.erb"
             sensitive true
             variables(
               bldr_url: new_resource.bldr_url,
@@ -103,20 +103,20 @@ class Chef
               event_stream_server_certificate: new_resource.event_stream_cert,
               keep_latest_packages: new_resource.keep_latest
             )
-            only_if { use_toml_config() }
-            only_if { ::Dir.exist?('C:/hab/sup/default/config') }
+            only_if { use_toml_config }
+            only_if { ::Dir.exist?("C:/hab/sup/default/config") }
           end
         else
-          directory '/hab/sup/default/config' do
-            mode '0755'
+          directory "/hab/sup/default/config" do
+            mode "0755"
             recursive true
-            only_if { use_toml_config() }
-            only_if { ::Dir.exist?('/hab') }
+            only_if { use_toml_config }
+            only_if { ::Dir.exist?("/hab") }
             action :create
           end
 
-          template '/hab/sup/default/config/sup.toml' do
-            source 'sup/sup.toml.erb'
+          template "/hab/sup/default/config/sup.toml" do
+            source "sup/sup.toml.erb"
             sensitive true
             variables(
               bldr_url: new_resource.bldr_url,
@@ -138,8 +138,8 @@ class Chef
               event_stream_server_certificate: new_resource.event_stream_cert,
               keep_latest_packages: new_resource.keep_latest
             )
-            only_if { use_toml_config() }
-            only_if { ::Dir.exist?('/hab/sup/default/config') }
+            only_if { use_toml_config }
+            only_if { ::Dir.exist?("/hab/sup/default/config") }
           end
         end
       end
@@ -152,7 +152,7 @@ class Chef
             peer_list = []
             new_resource.peer.each do |p|
               peer_list << if p !~ /.*:.*/
-                             p + ':9632'
+                             p + ":9632"
                            else
                              p
                            end
@@ -168,16 +168,16 @@ class Chef
 
         def exec_start_options
           # Populate exec_start_options which will pass to 'hab sup run' for platforms if use_toml_config is not 'true'
-          unless use_toml_config()
+          unless use_toml_config
             opts = []
-            opts << '--permanent-peer' if new_resource.permanent_peer
+            opts << "--permanent-peer" if new_resource.permanent_peer
             opts << "--listen-ctl #{new_resource.listen_ctl}" if new_resource.listen_ctl
             opts << "--listen-gossip #{new_resource.listen_gossip}" if new_resource.listen_gossip
             opts << "--listen-http #{new_resource.listen_http}" if new_resource.listen_http
-            opts << "--org #{new_resource.org}" unless new_resource.org == 'default'
+            opts << "--org #{new_resource.org}" unless new_resource.org == "default"
             opts.push(*new_resource.peer.map { |b| "--peer #{b}" }) if new_resource.peer
             opts << "--ring #{new_resource.ring}" if new_resource.ring
-            opts << '--auto-update' if new_resource.auto_update
+            opts << "--auto-update" if new_resource.auto_update
             opts << "--update-condition #{new_resource.update_condition}" if new_resource.update_condition
             opts << "--health-check-interval #{new_resource.health_check_interval}" if new_resource.health_check_interval
             opts << "--event-stream-application #{new_resource.event_stream_application}" if new_resource.event_stream_application
@@ -187,7 +187,7 @@ class Chef
             opts << "--event-stream-token #{new_resource.event_stream_token}" if new_resource.event_stream_token
             opts << "--event-stream-server-certificate #{new_resource.event_stream_cert}" if new_resource.event_stream_cert
             opts << "--keep-latest-packages #{new_resource.keep_latest}" if new_resource.keep_latest
-            opts.join(' ')
+            opts.join(" ")
           end
         end
       end

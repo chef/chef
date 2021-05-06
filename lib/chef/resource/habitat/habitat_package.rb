@@ -16,8 +16,7 @@
 # limitations under the License.
 #
 
-require_relative '../../package'
-
+require_relative "../package"
 
 class Chef
   class Resource
@@ -25,7 +24,7 @@ class Chef
       resource_name :habitat_package
       provides :habitat_package
 
-      description 'Install the specified Habitat package from builder. Requires that Habitat is installed'
+      description "Install the specified Habitat package from builder. Requires that Habitat is installed"
       example <<~DOC
       ```ruby
       hab_package 'core/redis'
@@ -71,8 +70,8 @@ class Chef
       ```
       DOC
 
-      property :bldr_url, String, default: 'https://bldr.habitat.sh'
-      property :channel, String, default: 'stable'
+      property :bldr_url, String, default: "https://bldr.habitat.sh"
+      property :channel, String, default: "stable"
       property :auth_token, String
       property :binlink, [true, false, :force], default: false
       property :keep_latest, String
