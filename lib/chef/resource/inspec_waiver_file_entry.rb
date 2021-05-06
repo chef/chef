@@ -93,6 +93,9 @@ class Chef
         default: false
 
       action :add do
+        if new_resource.justification.nil? || new_resource.justification == ""
+          raise Chef::Exceptions::ValidationFailed, "Entries in the InSpec waiver file must have a justification given, this parameter must have a value."
+        end
         filename = new_resource.file_path
         waiver_hash = load_waiver_file_to_hash(filename)
         control_hash = {}
