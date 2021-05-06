@@ -65,8 +65,8 @@ class Chef
 
       property :file_path, String,
         required: true,
-        description: "The path to the waiver file being modified"
-        default: "#{ChefConfig::Config.etc_chef_dir}/inspec_waivers.yml"
+        description: "The path to the waiver file being modified",
+        default: "#{ChefConfig::Config.etc_chef_dir}/inspec_waivers.yml",
         default_description: "`/etc/chef/inspec_waivers.yml` on Linux/Unix and `C:\\chef\\inspec_waivers.yml` on Windows"
 
       property :expiration, String,
