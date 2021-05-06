@@ -53,7 +53,7 @@ class Chef
       property :toml_config, [true, false], default: false
 
       action :run do
-        hab_install new_resource.name do
+        habitat_install new_resource.name do
           license new_resource.license
           hab_version new_resource.sup_version if new_resource.sup_version
           not_if { ::File.exist?('/bin/hab') }
@@ -62,12 +62,12 @@ class Chef
           not_if { ::File.exist?('c:/ProgramData/Habitat/hab.exe') }
         end
 
-        hab_package 'core/hab-sup' do
+        habitat_package 'core/hab-sup' do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.sup_version if new_resource.sup_version
         end
 
-        hab_package 'core/hab-launcher' do
+        habitat_package 'core/hab-launcher' do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.launcher_version if new_resource.launcher_version
         end
