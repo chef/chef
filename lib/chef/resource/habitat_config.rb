@@ -15,60 +15,65 @@
 #
 require_relative '../http'
 require 'json'
-require_relative "../helpers/toml_dumper"
+require_relative '../helpers/toml_dumper'
 
-resource_name :habitat_config
-provides :habitat_config
+class Chef
+  class Resource
+    class HabitatConfig < Chef::Resource
+      provides :habitat_config
 
-property :config, Mash,
-         required: true,
-         coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
-property :service_group, String, name_property: true, desired_state: false
-property :remote_sup, String, default: '127.0.0.1:9632', desired_state: false
-# Http port needed for querying/comparing current config value
-property :remote_sup_http, String, default: '127.0.0.1:9631', desired_state: false
-property :gateway_auth_token, String, desired_state: false
-property :user, String, desired_state: false
+      property :config, Mash,
+               required: true,
+               coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
+      property :service_group, String, name_property: true, desired_state: false
+      property :remote_sup, String, default: '127.0.0.1:9632', desired_state: false
+      # Http port needed for querying/comparing current config value
+      property :remote_sup_http, String, default: '127.0.0.1:9631', desired_state: false
+      property :gateway_auth_token, String, desired_state: false
+      property :user, String, desired_state: false
 
-load_current_value do
-  http_uri = "http://#{remote_sup_http}"
+      load_current_value do
+        http_uri = "http://#{remote_sup_http}"
 
-  begin
-    headers = {}
-    headers['Authorization'] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
-    census = Mash.new(Chef::HTTP::SimpleJSON.new(http_uri).get('/census', headers))
-    sc = census['census_groups'][service_group]['service_config']['value']
-  rescue
-    # Default to a blank config if anything (http error, json parsing, finding
-    # the config object) goes wrong
-    sc = {}
-  end
-  config sc
-end
+        begin
+          headers = {}
+          headers['Authorization'] = "Bearer #{gateway_auth_token}" if property_is_set?(:gateway_auth_token)
+          census = Mash.new(Chef::HTTP::SimpleJSON.new(http_uri).get('/census', headers))
+          sc = census['census_groups'][service_group]['service_config']['value']
+        rescue
+          # Default to a blank config if anything (http error, json parsing, finding
+          # the config object) goes wrong
+          sc = {}
+        end
+        config sc
+      end
 
-action :apply do
-  converge_if_changed do
-    # Use the current timestamp as the serial number/incarnation
-    incarnation = Time.now.tv_sec
+      action :apply do
+        converge_if_changed do
+          # Use the current timestamp as the serial number/incarnation
+          incarnation = Time.now.tv_sec
 
-    opts = []
-    # opts gets flattened by shell_out_compact later
-    opts << ['--remote-sup', new_resource.remote_sup] if new_resource.remote_sup
-    opts << ['--user', new_resource.user] if new_resource.user
+          opts = []
+          # opts gets flattened by shell_out_compact later
+          opts << ['--remote-sup', new_resource.remote_sup] if new_resource.remote_sup
+          opts << ['--user', new_resource.user] if new_resource.user
 
-    tempfile = Tempfile.new(['hab_config', '.toml'])
-    begin
-      tempfile.write(toml_dump(new_resource.config))
-      tempfile.close
+          tempfile = Tempfile.new(['hab_config', '.toml'])
+          begin
+            tempfile.write(toml_dump(new_resource.config))
+            tempfile.close
 
-      hab('config', 'apply', opts, new_resource.service_group, incarnation, tempfile.path)
-    ensure
-      tempfile.close
-      tempfile.unlink
+            hab('config', 'apply', opts, new_resource.service_group, incarnation, tempfile.path)
+          ensure
+            tempfile.close
+            tempfile.unlink
+          end
+        end
+      end
+
+      action_class do
+        include Habitat::Shared
+      end
     end
   end
-end
-
-action_class do
-  include Habitat::Shared
 end
