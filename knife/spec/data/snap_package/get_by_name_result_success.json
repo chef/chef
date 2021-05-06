@@ -1,0 +1,38 @@
+{
+  "type": "sync",
+  "status-code": 200,
+  "status": "OK",
+  "result": {
+    "id": "CRrJViJiSuDcCkU31G0xpNRVNaj4P960",
+    "summary": "Universal Command Line Interface for Amazon Web Services",
+    "description": "This package provides a unified command line interface to Amazon Web\nServices.\n",
+    "installed-size": 15851520,
+    "name": "aws-cli",
+    "publisher": {
+      "id": "S7iQ7mKDXBDliQqRcgefvc2TKXIH9pYk",
+      "username": "aws",
+      "display-name": "Amazon Web Services",
+      "validation": "verified"
+    },
+    "developer": "aws",
+    "status": "active",
+    "type": "app",
+    "version": "1.15.71",
+    "channel": "",
+    "tracking-channel": "stable",
+    "ignore-validation": false,
+    "revision": "135",
+    "confinement": "classic",
+    "private": false,
+    "devmode": false,
+    "jailmode": false,
+    "apps": [{
+      "snap": "aws-cli",
+      "name": "aws"
+    }
+    ],
+    "contact": "",
+    "mounted-from": "/var/lib/snapd/snaps/aws-cli_135.snap",
+    "install-date": "2018-09-17T20:39:38.516Z"
+  }
+}

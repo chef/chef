@@ -169,13 +169,11 @@ class Chef
       action_class do
         # @return [String] the path to the dmg file
         def dmg_file
-          @dmg_file ||= begin
-            if new_resource.file.nil?
-              "#{Chef::Config[:file_cache_path]}/#{new_resource.dmg_name}.dmg"
-            else
-              new_resource.file
-            end
-          end
+          @dmg_file ||= if new_resource.file.nil?
+                          "#{Chef::Config[:file_cache_path]}/#{new_resource.dmg_name}.dmg"
+                        else
+                          new_resource.file
+                        end
         end
 
         # @return [String] the hdiutil flag for handling DMGs with a password

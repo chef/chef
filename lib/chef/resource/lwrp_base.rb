@@ -26,6 +26,7 @@ require_relative "../exceptions"
 require_relative "../mixin/convert_to_class_name"
 require_relative "../mixin/from_file"
 require_relative "../mixin/params_validate" # for DelayedEvaluator
+require_relative "../version"
 
 class Chef
   class Resource
@@ -52,6 +53,10 @@ class Chef
           resource_class = Class.new(self)
           resource_class.run_context = run_context
           resource_class.class_from_file(filename)
+
+          if !resource_class.unified_mode && !deprecated_class(resource_class)
+            Chef.deprecated :unified_mode, "The #{resource_class.resource_name} resource in the #{cookbook_name} cookbook should declare `unified_mode true`", filename
+          end
 
           # Make a useful string for the class (rather than <Class:312894723894>)
           resource_class.instance_eval do
@@ -116,6 +121,20 @@ class Chef
           return default if superclass == Chef::Resource::LWRPBase
 
           superclass.respond_to?(m) ? superclass.send(m) : default
+        end
+
+        # Return true if the resource has been deprecated on this version.
+        #
+        # XXX: for now we only look at chef_version_for_provides, reversing the
+        # resource node_map to determine if the resource provides anything which is
+        # wired up is difficult.
+        #
+        def deprecated_class(resource_class)
+          if resource_class.chef_version_for_provides && Chef::VERSION !~ resource_class.chef_version_for_provides
+            return true
+          end
+
+          false
         end
       end
     end

@@ -18,4 +18,5 @@ image=chef:
     CHANNEL: unstable
   annotations:
     tags:
-      - expeditor:final-channel-tags={{major}},{{major}}.{{minor}}
+      - expeditor:default-tags={{channel}}
+      - expeditor:final-channel-tags=latest,{{major}},{{major}}.{{minor}}

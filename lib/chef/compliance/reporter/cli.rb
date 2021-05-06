@@ -22,6 +22,10 @@ class Chef
           puts output.join("\n")
         end
 
+        def validate_config!
+          true
+        end
+
         private
 
         # pastel.decorate is a lightweight replacement for highline.color

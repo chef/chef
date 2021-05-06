@@ -123,6 +123,21 @@ module ChefUtils
       # chef-sugar backcompat method
       alias_method :centos?, :centos_platform?
 
+      # Determine if the current node is CentOS Stream.
+      #
+      # @param [Chef::Node] node the node to check
+      # @since 17.0
+      #
+      # @return [Boolean]
+      #
+      def centos_stream_platform?(node = __getnode)
+        if node["os_release"]
+          node.dig("os_release", "name") == "CentOS Stream"
+        else
+          node.dig("lsb", "id") == "CentOSStream"
+        end
+      end
+
       # Determine if the current node is Oracle Linux.
       #
       # @param [Chef::Node] node the node to check

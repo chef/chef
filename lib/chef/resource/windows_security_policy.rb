@@ -83,19 +83,19 @@ class Chef
       property :secvalue, String, required: true,
       description: "Policy value to be set for policy name."
 
-      load_current_value do |desired|
+      load_current_value do |new_resource|
         current_state = load_security_options
 
-        if desired.secoption == "ResetLockoutCount"
-          if desired.secvalue.to_i > 30
+        if new_resource.secoption == "ResetLockoutCount"
+          if new_resource.secvalue.to_i > 30
             raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than 30 minutes"
           end
         end
-        if (desired.secoption == "ResetLockoutCount" || desired.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"
-          raise Chef::Exceptions::ValidationFailed, "#{desired.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
+        if (new_resource.secoption == "ResetLockoutCount" || new_resource.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"
+          raise Chef::Exceptions::ValidationFailed, "#{new_resource.secoption} cannot be set unless the \"LockoutBadCount\" security policy has been set to a non-zero value"
         end
 
-        secvalue current_state[desired.secoption.to_s]
+        secvalue current_state[new_resource.secoption.to_s]
       end
 
       action :set, description: "Set the Windows security policy" do

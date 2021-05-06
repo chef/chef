@@ -41,16 +41,6 @@ steps:
   # Tests Ruby 3.0
 #########################################################################
 
-- label: "Chefstyle :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
-    - bundle exec rake style
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.0
-
 - label: "Integration Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
@@ -67,7 +57,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -78,7 +68,7 @@ steps:
 - label: "Unit Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -102,7 +92,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -113,7 +103,7 @@ steps:
 - label: "Unit Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -136,7 +126,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -147,7 +137,7 @@ steps:
 - label: "Unit CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -171,7 +161,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -183,7 +173,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -206,7 +196,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -220,7 +210,7 @@ steps:
 - label: "Unit Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -251,16 +241,6 @@ steps:
           - CHEF_LICENSE=accept-no-persist
         shell: ["powershell", "-Command"]
 
-- label: "Chocolatey Windows :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_run_choco.ps1
-  expeditor:
-    executor:
-      docker:
-        host_os: windows
-        image: rubydistros/windows-2019:3.0
-        shell: ["powershell", "-Command"]
-
 - label: "Unit Windows :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_win_unit.ps1
@@ -277,16 +257,6 @@ steps:
 #########################################################################
   # EXTERNAL GEM TESTING
 #########################################################################
-
-- label: "chef-sugar gem :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.0
 
 - label: "chef-zero gem :ruby: 3.0"
   commands:
@@ -570,15 +540,6 @@ steps:
       linux:
         privileged: true
         single-use: true
-
-- label: "Spellcheck"
-  commands:
-    - npm install -g cspell
-    - rake -f tasks/spellcheck.rb spellcheck
-  soft_fail: true
-  expeditor:
-    executor:
-      docker:
 
 - label: ":habicat: Linux plan"
   commands:

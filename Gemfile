@@ -20,9 +20,7 @@ else
   gem "chef-bin" # rubocop:disable Bundler/DuplicatedGem
 end
 
-gem "cheffish", ">= 14"
-
-gem "chef-telemetry", ">=1.0.8" # 1.0.8 removes the http dep
+gem "cheffish", ">= 17"
 
 group(:omnibus_package) do
   gem "appbundler"
@@ -33,13 +31,9 @@ end
 
 group(:omnibus_package, :pry) do
   gem "pry"
-  gem "pry-byebug"
+  # byebug does not install on freebsd on ruby 3.0
+  # gem "pry-byebug"
   gem "pry-stack_explorer"
-end
-
-# Everything except AIX
-group(:ruby_prof) do
-  gem "ruby-prof"
 end
 
 # Everything except AIX and Windows

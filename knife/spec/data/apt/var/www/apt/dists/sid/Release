@@ -1,0 +1,19 @@
+Origin: localhost
+Label: apt repository
+Codename: sid
+Date: Thu, 30 Sep 2010 16:33:01 UTC
+Architectures: amd64
+Components: main
+Description: Apt repository
+MD5Sum:
+ 92ed2cc14e37e9ab23466b27857d29ac 596 main/binary-amd64/Packages
+ c7726773341137b71cc971d44ddec4f5 394 main/binary-amd64/Packages.gz
+ 46cd71c965ce0813c94ef78c836cc7d3 104 main/binary-amd64/Release
+SHA1:
+ cde25071c5fcee59cee8dcd773ca419dcb40d946 596 main/binary-amd64/Packages
+ ce04daff75d4b27371d691d645282b198045544a 394 main/binary-amd64/Packages.gz
+ 91ca9531e3afa7a540cabdc6030c6f75d315fec7 104 main/binary-amd64/Release
+SHA256:
+ af601ce143f33405425746462973adc0fda3aceb381d1c739851b95ee0814ca3 596 main/binary-amd64/Packages
+ 15e98119705a08018d4583caabc91d36ba12e6f1c8af0f799a3ec8ca5bfaa80d 394 main/binary-amd64/Packages.gz
+ 098c599ac5b0a98785336afb2bc9c47002570ffa07dd62321c6f70b9fdb74325 104 main/binary-amd64/Release

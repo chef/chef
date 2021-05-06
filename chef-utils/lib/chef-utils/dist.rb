@@ -87,6 +87,11 @@ module ChefUtils
       EXEC = "chef-solo"
     end
 
+    class Workstation
+      # The suffix for Chef Workstation's /opt/chef-workstation or C:\\opscode\chef-workstation
+      DIR_SUFFIX = "chef-workstation"
+    end
+
     class Zero
       # chef-zero executable
       PRODUCT = "Chef Infra Zero"

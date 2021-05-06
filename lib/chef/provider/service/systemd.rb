@@ -80,7 +80,7 @@ class Chef::Provider::Service::Systemd < Chef::Provider::Service::Simple
     @systemd_service_status ||= begin
       # Collect all the status information for a service and returns it at once
       options, args = get_systemctl_options_args
-      s = shell_out!(systemctl_path, args, "show", "-p", "UnitFileState", "-p", "ActiveState", new_resource.service_name, options)
+      s = shell_out!(systemctl_path, args, "show", "-p", "UnitFileState", "-p", "ActiveState", new_resource.service_name, **options)
       # e.g. /bin/systemctl --system show  -p UnitFileState -p ActiveState sshd.service
       # Returns something like:
       # ActiveState=active

@@ -6,7 +6,7 @@ describe "LWRPs" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -24,6 +24,8 @@ describe "LWRPs" do
       directory "cookbooks/l-w-r-p" do
 
         file "resources/foo.rb", <<~EOM
+          unified_mode true
+
           default_action :create
         EOM
         file "providers/foo.rb", <<~EOM

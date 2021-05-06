@@ -90,13 +90,13 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on centos6" do
-    let(:options) { { platform: "centos", version: "6.10" } }
+    let(:options) { { platform: "centos", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on centos7" do
-    let(:options) { { platform: "centos", version: "7.7.1908" } }
+    let(:options) { { platform: "centos", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -108,7 +108,7 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on clearos7" do
-    let(:options) { { platform: "clearos", version: "7.4" } }
+    let(:options) { { platform: "clearos", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
@@ -156,25 +156,25 @@ RSpec.describe ChefUtils::DSL::PlatformFamily do
   end
 
   context "on oracle6" do
-    let(:options) { { platform: "oracle", version: "6.10" } }
+    let(:options) { { platform: "oracle", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on oracle7" do
-    let(:options) { { platform: "oracle", version: "7.6" } }
+    let(:options) { { platform: "oracle", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end
 
   context "on redhat6" do
-    let(:options) { { platform: "redhat", version: "6.10" } }
+    let(:options) { { platform: "redhat", version: "6" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel6?)
   end
 
   context "on redhat7" do
-    let(:options) { { platform: "redhat", version: "7.6" } }
+    let(:options) { { platform: "redhat", version: "7" } }
 
     pf_reports_true_for(:rhel?, :rpm_based?, :fedora_derived?, :redhat_based?, :el?, :rhel7?)
   end

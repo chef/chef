@@ -1,0 +1,70 @@
+{
+  "type": "sync",
+  "status-code": 200,
+  "status": "OK",
+  "result": [{
+    "id": "mVyGrEwiqSi5PugCwyH7WgpoQLemtTd6",
+    "title": "hello",
+    "summary": "GNU Hello, the \"hello world\" snap",
+    "description": "GNU hello prints a friendly greeting. This is part of the snapcraft tour at https://snapcraft.io/",
+    "download-size": 65536,
+    "name": "hello",
+    "publisher": {
+      "id": "canonical",
+      "username": "canonical",
+      "display-name": "Canonical",
+      "validation": "verified"
+    },
+    "developer": "canonical",
+    "status": "available",
+    "type": "app",
+    "version": "2.10",
+    "channel": "stable",
+    "ignore-validation": false,
+    "revision": "20",
+    "confinement": "strict",
+    "private": false,
+    "devmode": false,
+    "jailmode": false,
+    "contact": "mailto:snaps@canonical.com",
+    "license": "GPL-3.0",
+    "channels": {
+      "latest/beta": {
+        "revision": "29",
+        "confinement": "strict",
+        "version": "2.10.1",
+        "channel": "beta",
+        "epoch": "0",
+        "size": 65536
+      },
+      "latest/candidate": {
+        "revision": "20",
+        "confinement": "strict",
+        "version": "2.10",
+        "channel": "candidate",
+        "epoch": "0",
+        "size": 65536
+      },
+      "latest/edge": {
+        "revision": "34",
+        "confinement": "strict",
+        "version": "2.10.42",
+        "channel": "edge",
+        "epoch": "0",
+        "size": 65536
+      },
+      "latest/stable": {
+        "revision": "20",
+        "confinement": "strict",
+        "version": "2.10",
+        "channel": "stable",
+        "epoch": "0",
+        "size": 65536
+      }
+    },
+    "tracks": ["latest"]
+  }
+  ],
+  "sources": ["store"],
+  "suggested-currency": "USD"
+}

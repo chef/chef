@@ -81,8 +81,8 @@ class Chef
       property :allow_unicast_response, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Allow unicast responses to multicast and broadcast messages"
       property :display_notification, [true, false, String], equal_to: [true, false, "NotConfigured"], description: "Display a notification when firewall blocks certain activity"
 
-      load_current_value do |desired|
-        ps_get_net_fw_profile = load_firewall_state(desired.profile)
+      load_current_value do |new_resource|
+        ps_get_net_fw_profile = load_firewall_state(new_resource.profile)
         output = powershell_exec(ps_get_net_fw_profile)
         if output.result.empty?
           current_value_does_not_exist!

@@ -6,7 +6,7 @@ describe "Accumulators" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
 
   # Invoke `chef-client` as `ruby PATH/TO/chef-client`. This ensures the
   # following constraints are satisfied:
@@ -31,6 +31,8 @@ describe "Accumulators" do
     before do
       directory "cookbooks/x" do
         file "resources/email_alias.rb", <<-EOM
+          unified_mode true
+
           provides :email_alias
           resource_name :email_alias
 
@@ -54,6 +56,8 @@ describe "Accumulators" do
         EOM
 
         file "resources/nested.rb", <<-EOM
+          unified_mode true
+
           provides :nested
           resource_name :nested
 
@@ -70,6 +74,8 @@ describe "Accumulators" do
         EOM
 
         file "resources/doubly_nested.rb", <<-EOM
+          unified_mode true
+
           provides :doubly_nested
           resource_name :doubly_nested
 
@@ -133,6 +139,8 @@ describe "Accumulators" do
     before do
       directory "cookbooks/x" do
         file "resources/email_alias.rb", <<-EOM
+          unified_mode true
+
           provides :email_alias
           resource_name :email_alias
 
@@ -156,6 +164,8 @@ describe "Accumulators" do
         EOM
 
         file "resources/nested.rb", <<-EOM
+          unified_mode true
+
           provides :nested
           resource_name :nested
 
@@ -172,6 +182,8 @@ describe "Accumulators" do
         EOM
 
         file "resources/doubly_nested.rb", <<-EOM
+          unified_mode true
+
           provides :doubly_nested
           resource_name :doubly_nested
 

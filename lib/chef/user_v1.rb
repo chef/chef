@@ -145,11 +145,11 @@ class Chef
         payload = {
           username: @username,
           display_name: @display_name,
-          first_name: @first_name,
-          last_name: @last_name,
           email: @email,
-          password: @password,
         }
+        payload[:first_name] = @first_name unless @first_name.nil?
+        payload[:last_name] = @last_name unless @last_name.nil?
+        payload[:password] = @password unless @password.nil?
         payload[:public_key] = @public_key unless @public_key.nil?
         payload[:create_key] = @create_key unless @create_key.nil?
         payload[:middle_name] = @middle_name unless @middle_name.nil?
@@ -258,7 +258,6 @@ class Chef
     end
 
     # Class Methods
-
     def self.from_hash(user_hash)
       user = Chef::UserV1.new
       user.username user_hash["username"]

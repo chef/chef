@@ -64,7 +64,7 @@ describe Chef::ChefFS::FileSystem::Repository::Directory do
   end
 
   let(:file_double) do
-    double(TestFile, create: true, exists?: false)
+    double(TestFile, create: true, exist?: false, exists?: false)
   end
 
   context "#make_child_entry" do

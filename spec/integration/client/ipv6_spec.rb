@@ -74,7 +74,7 @@ describe "chef-client" do
     basic_config_file
   end
 
-  let(:chef_dir) { File.join(__dir__, "..", "..", "..", "bin") }
+  let(:chef_dir) { File.join(__dir__, "..", "..", "..") }
 
   let(:chef_client_cmd) { %Q{bundle exec chef-client --minimal-ohai -c "#{path_to("config/client.rb")}" -lwarn} }
 

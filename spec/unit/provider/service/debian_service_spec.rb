@@ -33,6 +33,7 @@ describe Chef::Provider::Service::Debian do
 
     @pid, @stdin, @stdout, @stderr = nil, nil, nil, nil
     allow(File).to receive(:exist?).with("/etc/init.d/chef").and_return true
+    allow(@provider).to receive(:determine_current_status!)
   end
 
   let(:init_lines) do

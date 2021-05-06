@@ -1,0 +1,7 @@
+{
+  /* testing that we support c-style comments */
+  // testing that we support c++-style comments as well
+  "name": "test",
+  "description": "prod",
+  "run_list": []
+}

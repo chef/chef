@@ -6,7 +6,7 @@ describe "Unified Mode" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
 
   let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
@@ -871,6 +871,76 @@ describe "Unified Mode" do
       # in recipe mode we should still run normally with a compile/converge mode
       expect(result.stdout).to include("first: bar")
       expect(result.stdout).not_to include("first: foo")
+      result.error!
+    end
+  end
+
+  when_the_repository "has a resource that uses edit_resource to create a subresource" do
+    before do
+      directory "cookbooks/x" do
+        file "recipes/default.rb", <<~EOM
+          my_resource "doit"
+        EOM
+
+        file "resources/my_resource.rb", <<~EOM
+          unified_mode true
+          provides :my_resource
+
+          action :doit do
+            edit_resource(:log, "name") do
+              message "GOOD"
+              level :warn
+            end
+          end
+        EOM
+      end
+    end
+
+    it "recipes should still have a compile/converge mode" do
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        log_level :warn
+      EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      # in recipe mode we should still run normally with a compile/converge mode
+      expect(result.stdout).to include("GOOD")
+      result.error!
+    end
+  end
+
+  when_the_repository "has a resource that uses find_resource to create a subresource" do
+    before do
+      directory "cookbooks/x" do
+        file "recipes/default.rb", <<~EOM
+          my_resource "doit"
+        EOM
+
+        file "resources/my_resource.rb", <<~EOM
+          unified_mode true
+          provides :my_resource
+
+          action :doit do
+            find_resource(:log, "name") do
+              message "GOOD"
+              level :warn
+            end
+          end
+        EOM
+      end
+    end
+
+    it "recipes should still have a compile/converge mode" do
+      file "config/client.rb", <<~EOM
+        local_mode true
+        cookbook_path "#{path_to("cookbooks")}"
+        log_level :warn
+      EOM
+
+      result = shell_out("#{chef_client} -c \"#{path_to("config/client.rb")}\" --no-color -F doc -o 'x::default'", cwd: chef_dir)
+      # in recipe mode we should still run normally with a compile/converge mode
+      expect(result.stdout).to include("GOOD")
       result.error!
     end
   end

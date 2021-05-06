@@ -22,7 +22,7 @@ describe "notifications" do
   include IntegrationSupport
   include Chef::Mixin::ShellOut
 
-  let(:chef_dir) { File.expand_path("../../../bin", __dir__) }
+  let(:chef_dir) { File.expand_path("../../..", __dir__) }
   let(:chef_client) { "bundle exec chef-client --minimal-ohai" }
 
   when_the_repository "notifies a nameless resource" do
@@ -63,6 +63,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -105,6 +107,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -152,6 +156,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -237,6 +243,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -278,6 +286,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -319,6 +329,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/notifying_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :notifying_test
           resource_name :notifying_test
@@ -357,6 +369,8 @@ describe "notifications" do
       directory "cookbooks/x" do
 
         file "resources/cloning_test.rb", <<~EOM
+          unified_mode true
+
           default_action :run
           provides :cloning_test
           resource_name :cloning_test

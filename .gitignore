@@ -54,6 +54,7 @@ spec/data/nodes
 spec/data/chef_guid
 /config/
 
+
 vendor/
 kitchen-tests/vendor
 
@@ -78,6 +79,14 @@ chef-utils/.bundle
 chef-utils/Gemfile.lock
 chef-utils/pkg
 
+# knife
+knife/.bundle
+knife/Gemfile.lock
+knife/pkg
+knife/spec/data/test-dir
+knife/spec/data/nodes
+knife/spec/data/chef_guid
+
 # auto generated docs from the docs.rb rake task
 docs_site
 
@@ -93,3 +102,6 @@ mkmf.log
 
 # our custom dictionary pulled from https://github.com/chef/chef_dictionary/
 chef_dictionary.txt
+
+# ignore any gems we build locally
+*.gem

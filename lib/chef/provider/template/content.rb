@@ -29,9 +29,7 @@ class Chef
         include Chef::Mixin::Template
 
         def template_location
-          @template_file_cache_location ||= begin
-            template_finder.find(new_resource.source, local: new_resource.local, cookbook: new_resource.cookbook)
-          end
+          @template_file_cache_location ||= template_finder.find(new_resource.source, local: new_resource.local, cookbook: new_resource.cookbook)
         end
 
         private
@@ -84,9 +82,7 @@ class Chef
         end
 
         def template_finder
-          @template_finder ||= begin
-            TemplateFinder.new(run_context, new_resource.cookbook_name, run_context.node)
-          end
+          @template_finder ||= TemplateFinder.new(run_context, new_resource.cookbook_name, run_context.node)
         end
       end
     end
