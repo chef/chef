@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+require_relative "../resource"
+
 class Chef
   class Resource
     class HabitatService < Chef::Resource

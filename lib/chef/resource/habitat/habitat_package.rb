@@ -17,7 +17,7 @@
 #
 
 require_relative "../package"
-
+require_relative "../../resource"
 class Chef
   class Resource
     class HartPackage < Chef::Resource::Package
@@ -25,7 +25,7 @@ class Chef
       provides :habitat_package
 
       description "Install the specified Habitat package from builder. Requires that Habitat is installed"
-      example <<~DOC
+      examples <<~DOC
       ```ruby
       hab_package 'core/redis'
 

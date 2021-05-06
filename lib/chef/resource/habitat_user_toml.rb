@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing
 require_relative "helpers/toml_dumper"
-
+require_relative "../resource"
 class Chef
   class Resource
     class HabitatUserToml < Chef::Resource
