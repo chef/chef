@@ -47,6 +47,7 @@ end
 %w{001 002 003}.each do |control|
   inspec_waiver_file_entry "fake_inspec_control_#{control}" do
     expiration "2025-07-01"
+    justification "Waiving this control for the purposes of testing"
     action :add
   end
 end
