@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Chef::Resource::HabitatPackage do
-  cached(:chef_run) do
-    ChefSpec::ServerRunner.new(
-      platform: 'ubuntu'
-    ).converge(described_recipe)
-  end
 
   context 'when compiling the package recipe' do
     it 'installs core/redis' do

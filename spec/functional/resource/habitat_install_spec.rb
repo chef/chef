@@ -1,11 +1,6 @@
 require 'spec_helper'
 
 describe Chef::Resource::HabitatInstall do
-  cached(:chef_run) do
-    ChefSpec::ServerRunner.new(
-      platform: 'ubuntu'
-    ).converge(described_recipe)
-  end
 
   context 'when compiling the install recipe for chefspec' do
     it 'install habitat' do

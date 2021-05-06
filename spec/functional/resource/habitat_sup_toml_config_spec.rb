@@ -2,13 +2,6 @@ require 'spec_helper'
 
 describe Chef::Resource::HabitatSup do
   context 'When toml_config flag is set to true for hab_sup' do
-    cached(:chef_run) do
-      ChefSpec::ServerRunner.new(
-        step_into: ['habitat_sup'],
-        platform: 'ubuntu',
-        version: '16.04'
-      ).converge(described_recipe)
-    end
 
     before(:each) do
       allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return([:systemd])
