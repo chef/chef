@@ -20,7 +20,7 @@ require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../../resource"
 # Bring in needed shared methods
-include Habitat::Shared
+require_relative "habitat_shared"
 
 class Chef
   class Provider
