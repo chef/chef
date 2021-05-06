@@ -27,6 +27,16 @@ class Chef
 
       description "Use the **rhsm_register** resource to register a node with the Red Hat Subscription Manager or a local Red Hat Satellite server."
       introduced "14.0"
+      examples <<~DOC
+        **Register a node with RHSM*
+
+        ```ruby
+        rhsm_register 'my-host' do
+          activation_key 'ABCD1234'
+          organization 'my_org'
+        end
+        ```
+      DOC
 
       property :activation_key, [String, Array],
         coerce: proc { |x| Array(x) },
@@ -69,9 +79,7 @@ class Chef
         default: false, desired_state: false,
         introduced: "15.9"
 
-      action :register do
-        description "Register the node with RHSM."
-
+      action :register, description: "Register the node with RHSM." do
         package "subscription-manager"
 
         unless new_resource.satellite_host.nil? || registered_with_rhsm?
@@ -106,9 +114,7 @@ class Chef
         end
       end
 
-      action :unregister do
-        description "Unregister the node from RHSM."
-
+      action :unregister, description: "Unregister the node from RHSM." do
         execute "Unregister from RHSM" do
           command "subscription-manager unregister"
           default_env true

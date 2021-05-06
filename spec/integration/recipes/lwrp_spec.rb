@@ -24,6 +24,8 @@ describe "LWRPs" do
       directory "cookbooks/l-w-r-p" do
 
         file "resources/foo.rb", <<~EOM
+          unified_mode true
+
           default_action :create
         EOM
         file "providers/foo.rb", <<~EOM

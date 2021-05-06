@@ -19,6 +19,9 @@
 require_relative "../knife"
 require "pathname" unless defined?(Pathname)
 require "chef-utils/dist" unless defined?(ChefUtils::Dist)
+require "chef-utils/parallel_map" unless defined?(ChefUtils::ParallelMap)
+
+using ChefUtils::ParallelMap
 
 class Chef
   module ChefFS
@@ -27,7 +30,6 @@ class Chef
       def self.deps
         super do
           require "chef/config" unless defined?(Chef::Config)
-          require "chef/chef_fs/parallelizer" unless defined?(Chef::ChefFS::Parallelizer)
           require "chef/chef_fs/config" unless defined?(Chef::ChefFS::Config)
           require "chef/chef_fs/file_pattern" unless defined?(Chef::ChefFS::FilePattern)
           require "chef/chef_fs/path_utils" unless defined?(Chef::ChefFS::PathUtils)
@@ -70,7 +72,7 @@ class Chef
 
         @chef_fs_config = Chef::ChefFS::Config.new(Chef::Config, Dir.pwd, config, ui)
 
-        Chef::ChefFS::Parallelizer.threads = (Chef::Config[:concurrency] || 10) - 1
+        ChefUtils::DefaultThreadPool.instance.threads = (Chef::Config[:concurrency] || 10) - 1
       end
 
       def chef_fs
@@ -140,7 +142,7 @@ class Chef
       end
 
       def parallelize(inputs, options = {}, &block)
-        Chef::ChefFS::Parallelizer.parallelize(inputs, options, &block)
+        inputs.parallel_map(&block)
       end
 
       def discover_repo_dir(dir)

@@ -1,16 +1,14 @@
 autoload :Inspec, "inspec"
 
 require_relative "default_attributes"
-require_relative "reporter/automate"
-require_relative "reporter/chef_server_automate"
-require_relative "reporter/compliance_enforcer"
-require_relative "reporter/cli"
-require_relative "reporter/json_file"
 
 class Chef
   module Compliance
     class Runner < EventDispatch::Base
       extend Forwardable
+
+      SUPPORTED_REPORTERS = %w{chef-automate chef-server-automate json-file audit-enforcer cli}.freeze
+      SUPPORTED_FETCHERS = %w{chef-automate chef-server}.freeze
 
       attr_accessor :run_id
       attr_reader :node
@@ -47,18 +45,30 @@ class Chef
         self.run_id = run_status.run_id
       end
 
+      def converge_start(run_context)
+        # With all attributes - including cookbook - loaded, we now have enough data to validate
+        # configuration.  Because the converge is best coupled with the associated compliance run, these validations
+        # will raise (and abort the converge) if the compliance phase configuration is incorrect/will
+        # prevent compliance phase from completing and submitting its report to all configured reporters.
+        # can abort the converge if the compliance phase configuration (node attributes and client config)
+        load_and_validate!
+      end
+
       def run_completed(_node, _run_status)
         return unless enabled?
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
 
       def run_failed(_exception, _run_status)
-        return unless enabled?
+        # If the run has failed because our own validation of compliance
+        # phase configuration has failed, we don't want to submit a report
+        # because we're still not configured correctly.
+        return unless enabled? && @validation_passed
 
-        logger.info("#{self.class}##{__method__}: enabling Compliance Phase")
+        logger.debug("#{self.class}##{__method__}: enabling Compliance Phase")
 
         report
       end
@@ -84,7 +94,11 @@ class Chef
         end
       end
 
-      def report(report = generate_report)
+      def report(report = nil)
+        logger.info "Starting Chef Infra Compliance Phase"
+        report ||= generate_report
+        # This is invoked at report-time instead of with the normal validations at node loaded,
+        # because we want to ensure that it is visible in the output - and not lost in back-scroll.
         warn_for_deprecated_config_values!
 
         if report.empty?
@@ -92,9 +106,11 @@ class Chef
           return
         end
 
-        Array(node["audit"]["reporter"]).each do |reporter|
-          send_report(reporter, report)
+        Array(node["audit"]["reporter"]).each do |reporter_type|
+          logger.info "Reporting to #{reporter_type}"
+          @reporters[reporter_type].send_report(report)
         end
+        logger.info "Chef Infra Compliance Phase Complete"
       end
 
       def inspec_opts
@@ -119,10 +135,8 @@ class Chef
 
       def inspec_profiles
         profiles = node["audit"]["profiles"]
-
-        # TODO: Custom exception class here?
         unless profiles.respond_to?(:map) && profiles.all? { |_, p| p.respond_to?(:transform_keys) && p.respond_to?(:update) }
-          raise "#{Inspec::Dist::PRODUCT_NAME} profiles specified in an unrecognized format, expected a hash of hashes."
+          raise "CMPL010: #{Inspec::Dist::PRODUCT_NAME} profiles specified in an unrecognized format, expected a hash of hashes."
         end
 
         profiles.map do |name, profile|
@@ -138,8 +152,6 @@ class Chef
           require_relative "fetcher/chef_server"
         when nil
           # intentionally blank
-        else
-          raise "Invalid value specified for Compliance Phase's fetcher: '#{node["audit"]["fetcher"]}'. Valid values are 'chef-automate', 'chef-server', or nil."
         end
       end
 
@@ -212,17 +224,10 @@ class Chef
         }
       end
 
-      def send_report(reporter_type, report)
-        logger.info "Reporting to #{reporter_type}"
-
-        reporter = reporter(reporter_type)
-
-        reporter.send_report(report) if reporter
-      end
-
       def reporter(reporter_type)
         case reporter_type
         when "chef-automate"
+          require_relative "reporter/automate"
           opts = {
             control_results_limit: node["audit"]["control_results_limit"],
             entity_uuid: node["chef_guid"],
@@ -233,6 +238,7 @@ class Chef
           }
           Chef::Compliance::Reporter::Automate.new(opts)
         when "chef-server-automate"
+          require_relative "reporter/chef_server_automate"
           opts = {
             control_results_limit: node["audit"]["control_results_limit"],
             entity_uuid: node["chef_guid"],
@@ -244,15 +250,15 @@ class Chef
           }
           Chef::Compliance::Reporter::ChefServerAutomate.new(opts)
         when "json-file"
-          path = node["audit"]["json_file"]["location"]
-          logger.info "Writing compliance report to #{path}"
+          require_relative "reporter/json_file"
+          path = node.dig("audit", "json_file", "location")
           Chef::Compliance::Reporter::JsonFile.new(file: path)
         when "audit-enforcer"
+          require_relative "reporter/compliance_enforcer"
           Chef::Compliance::Reporter::ComplianceEnforcer.new
         when "cli"
+          require_relative "reporter/cli"
           Chef::Compliance::Reporter::Cli.new
-        else
-          raise "'#{reporter_type}' is not a supported reporter for Compliance Phase."
         end
       end
 
@@ -268,6 +274,33 @@ class Chef
         org = Chef::Config[:chef_server_url].split("/").last
         url.path = File.join(url.path, "organizations/#{org}/data-collector")
         url
+      end
+
+      # Load the resources required for this runner, and validate configuration
+      # is correct to proceed. Requires node state to be loaded.
+      # Will raise exception if fetcher is not valid, if a reporter is not valid,
+      # or the configuration required by a reporter is not provided.
+      def load_and_validate!
+        return unless enabled?
+
+        @reporters = {}
+        # Note that the docs don't say you can use an array, but our implementation
+        # supports it.
+        Array(node["audit"]["reporter"]).each do |type|
+          unless SUPPORTED_REPORTERS.include? type
+            raise "CMPL003: '#{type}' found in node['audit']['reporter'] is not a supported reporter for Compliance Phase. Supported reporters are: #{SUPPORTED_REPORTERS.join(", ")}. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#reporters"
+          end
+
+          @reporters[type] = reporter(type)
+          @reporters[type].validate_config!
+        end
+
+        unless (fetcher = node["audit"]["fetcher"]).nil?
+          unless SUPPORTED_FETCHERS.include? fetcher
+            raise "CMPL002: Unrecognized Compliance Phase fetcher (node['audit']['fetcher'] = #{fetcher}). Supported fetchers are: #{SUPPORTED_FETCHERS.join(", ")}, or nil. For more information, see the documentation at https://docs.chef.io/chef_compliance_phase#fetch-profiles"
+          end
+        end
+        @validation_passed = true
       end
     end
   end

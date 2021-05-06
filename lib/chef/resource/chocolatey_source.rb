@@ -107,7 +107,7 @@ class Chef
         end
       end
 
-      action :disable, description: "Disables a Chocolatey source." do
+      action :disable, description: "Disables a Chocolatey source. **New in Chef Infra Client 15.1.**" do
         if current_resource.disabled != true
           converge_by("disable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("disable"))
@@ -115,7 +115,7 @@ class Chef
         end
       end
 
-      action :enable, description: "Enables a Chocolatey source." do
+      action :enable, description: "Enables a Chocolatey source. **New in Chef Infra Client 15.1.**" do
         if current_resource.disabled == true
           converge_by("enable Chocolatey source '#{new_resource.source_name}'") do
             shell_out!(choco_cmd("enable"))

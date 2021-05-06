@@ -31,9 +31,7 @@ class Chef
         description: "An optional property for specifying the Pool ID if it differs from the resource block's name.",
         name_property: true
 
-      action :attach do
-        description "Attach the node to a subscription pool."
-
+      action :attach, description: "Attach the node to a subscription pool." do
         execute "Attach subscription pool #{new_resource.pool_id}" do
           command "subscription-manager attach --pool=#{new_resource.pool_id}"
           default_env true
@@ -42,9 +40,7 @@ class Chef
         end
       end
 
-      action :remove do
-        description "Remove the node from a subscription pool."
-
+      action :remove, description: "Remove the node from a subscription pool." do
         execute "Remove subscription pool #{new_resource.pool_id}" do
           command "subscription-manager remove --serial=#{pool_serial(new_resource.pool_id)}"
           default_env true

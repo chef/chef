@@ -237,11 +237,8 @@ class Chef
           @installed_version[index]
         end
 
-        # cache flushing is accomplished by simply restarting the python helper.  this produces a roughly
-        # 15% hit to the runtime of installing/removing/upgrading packages.  correctly using multipackage
-        # array installs (and the multipackage cookbook) can produce 600% improvements in runtime.
         def flushcache
-          python_helper.restart
+          python_helper.close_rpmdb
         end
 
         def yum_binary

@@ -29,14 +29,6 @@ describe Chef::Compliance::Fetcher::Automate do
         expect(res.target).to eq(expected)
       end
 
-      it "raises an exception with no data collector token" do
-        Chef::Config[:data_collector].delete(:token)
-
-        expect {
-          Chef::Compliance::Fetcher::Automate.resolve("compliance://namespace/profile_name")
-        }.to raise_error(/No data-collector token set/)
-      end
-
       it "includes the data collector token" do
         expect(Chef::Compliance::Fetcher::Automate).to receive(:new).with(
           "https://automate.test/compliance/profiles/namespace/profile_name/tar",
@@ -106,14 +98,6 @@ describe Chef::Compliance::Fetcher::Automate do
         expect(res).to be_kind_of(Chef::Compliance::Fetcher::Automate)
         expected = "https://profile.server.test/profiles/profile_name/1.2.3"
         expect(res.target).to eq(expected)
-      end
-
-      it "raises an exception with no data collector token" do
-        Chef::Config[:data_collector].delete(:token)
-
-        expect {
-          Chef::Compliance::Fetcher::Automate.resolve(compliance: "namespace/profile_name")
-        }.to raise_error(Inspec::FetcherFailure, /No data-collector token set/)
       end
 
       it "includes the data collector token" do

@@ -20,7 +20,7 @@ require "spec_helper"
 require "chef/chef_fs/file_pattern"
 require "chef/chef_fs/command_line"
 
-describe "diff", uses_diff: true do
+describe "diff", uses_diff: true, ruby: ">= 3.0" do
   include FileSystemSupport
 
   # Removes the date stamp from the diff and replaces it with ' DATE'

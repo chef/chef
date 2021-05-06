@@ -25,6 +25,15 @@ class Chef
 
       description "Use the **rhsm_errata_level** resource to install all packages of a specified errata level from the Red Hat Subscription Manager. For example, you can ensure that all packages associated with errata marked at a 'Critical' security level are installed."
       introduced "14.0"
+      examples <<~DOC
+        **Specify an errata level that differs from the resource name**
+
+        ```ruby
+        rhsm_errata_level 'example_install_moderate' do
+          errata_level 'moderate'
+        end
+        ```
+      DOC
 
       property :errata_level, String,
         coerce: proc { |x| x.downcase },
@@ -32,7 +41,7 @@ class Chef
         description: "An optional property for specifying the errata level of packages to install if it differs from the resource block's name.",
         name_property: true
 
-      action :install do
+      action :install, description: "Install all packages of the specified errata level." do
         description "Install all packages of the specified errata level."
 
         if rhel6?

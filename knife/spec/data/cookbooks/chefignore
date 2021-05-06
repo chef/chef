@@ -1,0 +1,8 @@
+#
+# The ignore file allows you to skip files in cookbooks with the same name that appear
+# later in the search path.
+#
+
+recipes/ignoreme.rb
+  # comments can be indented
+ignored

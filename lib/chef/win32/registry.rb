@@ -22,7 +22,9 @@ require_relative "../mixin/wide_string"
 
 if RUBY_PLATFORM.match?(/mswin|mingw32|windows/)
   require "win32/api"
-  Win32.autoload :Registry, File.expand_path("../monkey_patches/win32/registry", __dir__)
+  module Win32
+    autoload :Registry, File.expand_path("../monkey_patches/win32/registry", __dir__)
+  end
   require_relative "api/registry"
 end
 

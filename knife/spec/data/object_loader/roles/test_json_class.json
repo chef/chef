@@ -1,0 +1,8 @@
+{
+  /* testing that we support c-style comments */
+  // testing that we support c++-style comments as well
+  "name": "test",
+  "json_class": "Chef::Role",
+  "description": "prod",
+  "run_list": []
+}

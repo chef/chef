@@ -57,7 +57,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -68,7 +68,7 @@ steps:
 - label: "Unit Ubuntu 18.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -92,7 +92,7 @@ steps:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - apt-get update -y
     - apt-get install -y cron locales # needed for functional tests to pass
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -103,7 +103,7 @@ steps:
 - label: "Unit Ubuntu 20.04 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -126,7 +126,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - yum install -y crontabs e2fsprogs
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -137,7 +137,7 @@ steps:
 - label: "Unit CentOS 7 :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -161,7 +161,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cronie insserv-compat
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -173,7 +173,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - zypper install -y cron insserv-compat
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -196,7 +196,7 @@ steps:
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
     - dnf install -y crontabs e2fsprogs
-    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - cd /workdir; bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:functional
   expeditor:
     executor:
@@ -210,7 +210,7 @@ steps:
 - label: "Unit Fedora :ruby: 3.0"
   commands:
     - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package ruby_prof
+    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
     - bundle exec rake spec:unit
     - bundle exec rake component_specs
   expeditor:
@@ -257,16 +257,6 @@ steps:
 #########################################################################
   # EXTERNAL GEM TESTING
 #########################################################################
-
-- label: "chef-sugar gem :ruby: 3.0"
-  commands:
-    - /workdir/.expeditor/scripts/bk_container_prep.sh
-    - bundle install --jobs=3 --retry=3 --path=vendor/bundle --without omnibus_package
-    - bundle exec tasks/bin/run_external_test chef/chef-sugar master rake
-  expeditor:
-    executor:
-      docker:
-        image: rubydistros/ubuntu-18.04:3.0
 
 - label: "chef-zero gem :ruby: 3.0"
   commands:

@@ -1,6 +1,7 @@
 require "spec_helper"
 require "json" # For .to_json
 
+require "chef/compliance/reporter/automate"
 describe Chef::Compliance::Reporter::Automate do
   let(:reporter) { Chef::Compliance::Reporter::Automate.new(opts) }
 
@@ -264,11 +265,34 @@ describe Chef::Compliance::Reporter::Automate do
       expect(metasearch_stub).to have_been_requested
       expect(report_stub).to have_been_requested
     end
+  end
 
-    it "does not send report when entity_uuid is missing" do
+  describe "#validate_config!" do
+    it "raises CMPL004 when entity_uuid is not present" do
       opts.delete(:entity_uuid)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL004/)
+    end
+
+    it "raises CMPL005 when run_id is not present" do
+      opts.delete(:run_id)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL005/)
+    end
+
+    it "raises CMPL006 when data collector URL is missing" do
+      Chef::Config[:data_collector] = { token: "not_nil", server_url: nil }
       reporter = Chef::Compliance::Reporter::Automate.new(opts)
-      expect(reporter.send_report(inspec_report)).to eq(false)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL006/)
+    end
+
+    it "raises CMPL006 when data collector token is missing" do
+      Chef::Config[:data_collector] = { token: nil, server_url: "not_nil" }
+      reporter = Chef::Compliance::Reporter::Automate.new(opts)
+      expect { reporter.validate_config! }.to raise_error(/^CMPL006/)
+    end
+
+    it "otherwise passes" do
+      Chef::Config[:data_collector] = { token: "not_nil", server_url: "not_nil" }
+      reporter.validate_config!
     end
   end
 

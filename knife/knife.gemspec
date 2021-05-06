@@ -5,19 +5,19 @@ Gem::Specification.new do |s|
   s.name = "knife"
   s.version = Chef::Knife::VERSION
   s.platform = Gem::Platform::RUBY
-  s.extra_rdoc_files = ["README.md", "LICENSE" ]
-  s.summary = "Let's find a good description."
+  s.extra_rdoc_files = ["LICENSE"]
+  s.summary = "The knife CLI for Chef Infra."
   s.description = s.summary
   s.license = "Apache-2.0"
   s.author = "Adam Jacob"
   s.email = "adam@chef.io" # These seem a bit out of date, and this address probably doesn't go anywhere anymore?
   s.homepage = "https://www.chef.io"
 
-  s.required_ruby_version = ">= 2.6.0"
+  s.required_ruby_version = ">= 2.7.0"
 
-  s.add_dependency "chef-config", "= #{Chef::Knife::VERSION}"
-  s.add_dependency "chef-utils", "= #{Chef::Knife::VERSION}"
-  s.add_dependency "chef", "= #{Chef::Knife::VERSION}"
+  s.add_dependency "chef-config", ">= #{Chef::Knife::VERSION.split(".").first}"
+  s.add_dependency "chef-utils", ">= #{Chef::Knife::VERSION.split(".").first}"
+  s.add_dependency "chef", ">= #{Chef::Knife::VERSION.split(".").first}"
   s.add_dependency "train-core", "~> 3.2", ">= 3.2.28" # 3.2.28 fixes sudo prompts. See https://github.com/chef/chef/pull/9635
   s.add_dependency "train-winrm", ">= 0.2.5"
   s.add_dependency "license-acceptance", ">= 1.0.5", "< 3"
@@ -45,14 +45,8 @@ Gem::Specification.new do |s|
   s.executables  = %w{ knife }
 
   s.require_paths = %w{ lib }
-  s.files = %w{Gemfile Rakefile LICENSE README.md knife.gemspec} +
-    Dir.glob("lib/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) } +
-    Dir.glob("../spec/**/*", File::FNM_DOTMATCH).reject do |f|
-      File.directory?(f) || (
-        !File.path(f).match(/knife*/) &&
-        !File.path(f).match(/spec.data*/)
-      )
-    end
+  s.files = %w{Gemfile Rakefile LICENSE knife.gemspec} +
+    Dir.glob("{lib,spec}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   s.metadata = {
     "bug_tracker_uri"   => "https://github.com/chef/chef/issues",

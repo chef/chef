@@ -118,6 +118,8 @@ describe "LWRPs with inline resources" do
       directory "cookbooks/x" do
 
         file "resources/do_nothing.rb", <<-EOM
+          unified_mode true
+
           actions :create, :nothing
           default_action :create
         EOM
@@ -127,6 +129,8 @@ describe "LWRPs with inline resources" do
         EOM
 
         file "resources/my_machine.rb", <<-EOM
+          unified_mode true
+
           actions :create, :nothing
           default_action :create
         EOM

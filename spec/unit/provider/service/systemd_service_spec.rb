@@ -313,7 +313,7 @@ describe Chef::Provider::Service::Systemd do
 
       def with_systemctl_show(systemctl_path, stdout)
         systemctl_show = [systemctl_path, "--system", "show", "-p", "UnitFileState", "-p", "ActiveState", service_name]
-        expect(provider).to receive(:shell_out!).with(*systemctl_show, {}).and_return(double(stdout: stdout, exitstatus: 0, error?: false))
+        expect(provider).to receive(:shell_out!).with(*systemctl_show).and_return(double(stdout: stdout, exitstatus: 0, error?: false))
       end
 
       describe "systemd_service_status" do
@@ -341,7 +341,7 @@ describe Chef::Provider::Service::Systemd do
 
         it "should error if '#{systemctl_path} --system show -p UnitFileState -p ActiveState service_name' returns non 0" do
           systemctl_show = [systemctl_path, "--system", "show", "-p", "UnitFileState", "-p", "ActiveState", service_name]
-          allow(provider).to receive(:shell_out!).with(*systemctl_show, {}).and_return(shell_out_failure)
+          allow(provider).to receive(:shell_out!).with(*systemctl_show).and_return(shell_out_failure)
           expect { provider.systemd_service_status }.to raise_error(Chef::Exceptions::Service)
         end
       end

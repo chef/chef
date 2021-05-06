@@ -1,0 +1,98 @@
+afield:[* TO *]
+content:afield__=__*
+
+afield:[a TO *]
+content:[afield__=__a TO afield__=__\ufff0]
+
+afield:[* TO b]
+content:[afield__=__ TO afield__=__b]
+
+*:*
+*:*
+
+role:mon
+content:role__=__mon
+
+role:mon AND role:prod
+content:role__=__mon AND content:role__=__prod
+
+run_list:role\[rubberband\] AND run_list:role\[whale\]
+content:run_list__=__role\[rubberband\] AND content:run_list__=__role\[whale\]
+
+sharable_server:[* TO *]
+content:sharable_server__=__*
+
+run_list:role\[nfs_server\] AND sharable_server:[* TO *]
+content:run_list__=__role\[nfs_server\] AND content:sharable_server__=__*
+
+run_list:role\[nfs_server\] AND sharable_server:[* TO *]
+content:run_list__=__role\[nfs_server\] AND content:sharable_server__=__*
+
+(role:prod AND x_y:true)
+(content:role__=__prod AND content:x_y__=__true)
+
+hostname:[* TO *] AND role:prod
+content:hostname__=__* AND content:role__=__prod
+
+role:t_mem AND role:prod NOT hostname:ip-1-2-3-4
+content:role__=__t_mem AND content:role__=__prod NOT content:hostname__=__ip-1-2-3-4
+
+ohai_time:[1234.567 TO *]
+content:[ohai_time__=__1234.567 TO ohai_time__=__\ufff0]
+
+ohai_time:{1234.567 TO *}
+content:{ohai_time__=__1234.567 TO ohai_time__=__\ufff0}
+
+ohai_time:[* TO baz]
+content:[ohai_time__=__ TO ohai_time__=__baz]
+
+ohai_time:{* TO baz}
+content:{ohai_time__=__ TO ohai_time__=__baz}
+
+tags:apples*.for.eating.com
+content:tags__=__apples*.for.eating.com
+
+role:safe AND ohai_time:[1234.567 TO *] AND whiz_bang:x5
+content:role__=__safe AND content:[ohai_time__=__1234.567 TO ohai_time__=__\ufff0] AND content:whiz_bang__=__x5
+
+role:safe AND ohai_time:[* TO 1234.567] AND whiz_bang:x5
+content:role__=__safe AND content:[ohai_time__=__ TO ohai_time__=__1234.567] AND content:whiz_bang__=__x5
+
+animal:[ape TO zebra]
+content:[animal__=__ape TO animal__=__zebra]
+
+animal:{ape TO zebra}
+content:{animal__=__ape TO animal__=__zebra}
+
+((value:[1 TO 3] OR nested_b1_a2_a3:B1_A2_A3-c) OR value:[5 TO *])
+((content:[value__=__1 TO value__=__3] OR content:nested_b1_a2_a3__=__B1_A2_A3-c) OR content:[value__=__5 TO value__=__\ufff0])
+
+((value:{1 TO 3} OR value:{1 TO 3}) OR run_list:recipe\[alpha\])
+((content:{value__=__1 TO value__=__3} OR content:{value__=__1 TO value__=__3}) OR content:run_list__=__recipe\[alpha\])
+
+words:"one two three"
+content:"words__=__one two three"
+
+words:"one \"two\" three"
+content:"words__=__one \"two\" three"
+
+words:"\"one two\" three"
+content:"words__=__\"one two\" three"
+
+words:"one two \"three\""
+content:"words__=__one two \"three\""
+
+words:"one two \"three\"" OR words:"\"one two\" three" AND words:"one \"two\" three"
+content:"words__=__one two \"three\"" OR content:"words__=__\"one two\" three" AND content:"words__=__one \"two\" three"
+
+words:\"*
+content:words__=__\"*
+
+-version:0.9.12
+-content:version__=__0.9.12
+
+!version:0.9.12
+NOT content:version__=__0.9.12
+
+ec2:*
+content:ec2__=__*

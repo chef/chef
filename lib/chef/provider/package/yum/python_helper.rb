@@ -51,6 +51,8 @@ class Chef
           end
 
           def start
+            # For some reason we have to force python to unbuffered here, and then force the input pipe back to line
+            # buffered in the python code.  XXX: I tried to remove this but hit more issues in the python side.
             ENV["PYTHONUNBUFFERED"] = "1"
             @inpipe, inpipe_write = IO.pipe
             outpipe_read, @outpipe = IO.pipe
@@ -74,11 +76,16 @@ class Chef
               stderr.close unless stderr.nil?
               inpipe.close unless inpipe.nil?
               outpipe.close unless outpipe.nil?
+              stdin = stdout = stderr = inpipe = outpipe = wait_thr = nil
             end
           end
 
           def check
             start if stdin.nil?
+          end
+
+          def close_rpmdb
+            query("close_rpmdb", {})
           end
 
           def compare_versions(version1, version2)
@@ -117,12 +124,12 @@ class Chef
             parameters = { "provides" => provides, "version" => version, "arch" => arch }
             repo_opts = options_params(options || {})
             parameters.merge!(repo_opts)
-            # XXX: for now we restart before and after every query with an enablerepo/disablerepo to clean the helpers internal state
-            restart unless repo_opts.empty?
+            # XXX: for now we close the rpmdb before and after every query with an enablerepo/disablerepo to clean the helpers internal state
+            close_rpmdb unless repo_opts.empty?
             query_output = query(action, parameters)
             version = parse_response(query_output.lines.last)
             Chef::Log.trace "parsed #{version} from python helper"
-            restart unless repo_opts.empty?
+            close_rpmdb unless repo_opts.empty?
             version
           end
 
@@ -159,7 +166,7 @@ class Chef
               outpipe.syswrite json + "\n"
               output = inpipe.sysread(4096).chomp
               Chef::Log.trace "got '#{output}' from python helper"
-              return output
+              output
             end
           end
 
@@ -209,7 +216,7 @@ class Chef
             ret
           rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
             output = drain_fds
-            if ( max_retries -= 1 ) > 0
+            if ( max_retries -= 1 ) > 0 && !ENV["YUM_HELPER_NO_RETRIES"]
               unless output.empty?
                 Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end

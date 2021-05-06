@@ -28,7 +28,7 @@ class Chef
       # Controls what is done with the resulting report after the Chef InSpec run.
       # Accepts a single string value or an array of multiple values.
       # Accepted values: 'chef-server-automate', 'chef-automate', 'json-file', 'audit-enforcer', 'cli'
-      "reporter" => "json-file",
+      "reporter" => %w{json-file cli},
 
       # Controls if Chef InSpec profiles should be fetched from Chef Automate or Chef Infra Server
       # in addition to the default fetch locations provided by Chef Inspec.
@@ -38,11 +38,12 @@ class Chef
       # Allow for connections to HTTPS endpoints using self-signed ssl certificates.
       "insecure" => nil,
 
-      # Controls verbosity of Chef InSpec runner.
+      # Controls verbosity of Chef InSpec runner. See less output when true.
       "quiet" => true,
 
       # Chef Inspec Compliance profiles to be used for scan of node.
-      # See README.md for details
+      # See Compliance Phase documentation for further details:
+      # https://docs.chef.io/chef_compliance_phase/#compliance-phase-configuration
       "profiles" => {},
 
       # Extra inputs passed to Chef InSpec to allow finer-grained control over behavior.
