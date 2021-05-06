@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-require_relative '../package'
+require_relative '../../package'
 
 
 class Chef
