@@ -974,7 +974,7 @@ class Chef
           # Reference: https://github.com/chef/chef/blob/master/lib/chef/knife/ssh.rb#L272
           opts[:keys_only] = config.key?(:connection_password) == false
         else
-          opts[:key_files] = []
+          opts[:key_files] = nil
           opts[:keys_only] = false
         end
 
