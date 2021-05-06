@@ -17,6 +17,7 @@
 #
 
 require_relative 'package'
+require_relative "../resource"
 
 class Chef
   class Resource
