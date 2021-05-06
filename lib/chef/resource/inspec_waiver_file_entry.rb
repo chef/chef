@@ -21,22 +21,22 @@ require "date"
 
 class Chef
   class Resource
-    class InspecWaiverFile < Chef::Resource
-      provides :inspec_waiver_file
+    class InspecWaiverFileEntry < Chef::Resource
+      provides :inspec_waiver_file_entry
       unified_mode true
 
-      description "Use the **inspec_waiver_file** resource to add or remove entries from an inspec waiver file. This can be used in conjunction with the audit cookbook."
-      introduced "16.6"
+      description "Use the **inspec_waiver_file_entry** resource to add or remove entries from an inspec waiver file. This can be used in conjunction with the Compliance Phase."
+      introduced "17.1"
       examples <<~DOC
       **Add an InSpec waiver entry to a given waiver file**:
 
       ```ruby
-        inspec_waiver_file 'Add waiver entry for control' do
-          file 'C:\\chef\\inspec_waiver.yml'
+        inspec_waiver_file_entry 'Add waiver entry for control' do
+          file_path 'C:\\chef\\inspec_waiver_file.yml'
           control 'my_inspec_control_01'
           run_test false
           justification "The subject of this control is not managed by Chef on the systems in policy group \#{node['policy_group']}"
-          expiration '2021-01-01'
+          expiration '2022-01-01'
           action :add
         end
       ```
@@ -44,8 +44,7 @@ class Chef
       **Add an InSpec waiver entry to a given waiver file using the 'name' property to identify the control**:
 
       ```ruby
-        inspec_waiver_file 'my_inspec_control_01' do
-          file 'C:\\chef\\inspec_waiver.yml'
+        inspec_waiver_file_entry 'my_inspec_control_01' do
           justification "The subject of this control is not managed by Chef on the systems in policy group \#{node['policy_group']}"
           action :add
         end
@@ -54,8 +53,7 @@ class Chef
       **Remove an InSpec waiver entry to a given waiver file**:
 
       ```ruby
-        inspec_waiver_file "my_inspec_control_01" do
-          file '/etc/chef/inspec_waiver.yml'
+        inspec_waiver_file_entry "my_inspec_control_01" do
           action :remove
         end
       ```
@@ -65,9 +63,11 @@ class Chef
         name_property: true,
         description: "The name of the control being added or removed to the waiver file"
 
-      property :file, String,
+      property :file_path, String,
         required: true,
         description: "The path to the waiver file being modified"
+        default: "#{ChefConfig::Config.etc_chef_dir}/inspec_waivers.yml"
+        default_description: "`/etc/chef/inspec_waivers.yml` on Linux/Unix and `C:\\chef\\inspec_waivers.yml` on Windows"
 
       property :expiration, String,
         description: "The expiration date of the given waiver - provided in YYYY-MM-DD format",

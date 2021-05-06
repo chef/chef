@@ -18,12 +18,12 @@
 
 require "spec_helper"
 
-describe Chef::Resource::InspecWaiverFile do
+describe Chef::Resource::InspecWaiverFileEntry do
   let(:log_str) { "this is my string to log" }
-  let(:resource) { Chef::Resource::InspecWaiverFile.new("fakey_fakerton") }
+  let(:resource) { Chef::Resource::InspecWaiverFileEntry.new("fakey_fakerton") }
 
-  it "has a name of inspec_waiver_file" do
-    expect(resource.resource_name).to eq(:inspec_waiver_file)
+  it "has a name of inspec_waiver_file_entry" do
+    expect(resource.resource_name).to eq(:inspec_waiver_file_entry)
   end
 
   it "setting the control property to a string does not raise error" do
