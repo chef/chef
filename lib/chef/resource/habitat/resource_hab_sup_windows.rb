@@ -20,7 +20,7 @@ require_relative 'resource_hab_sup'
 
 class Chef
   class Resource
-    class HabSupWindows < HabSup
+    class HabitatSupWindows < HabitatSup
       provides :habitat_sup_windows
       provides :habitat_sup do |node|
         node['platform_family'] == 'windows'
