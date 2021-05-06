@@ -11,6 +11,8 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing
+require_relative "../helpers/toml_dumper"
+
 resource_name :habitat_user_toml
 provides :habitat_user_toml
 
@@ -44,7 +46,7 @@ action :delete do
 end
 
 action_class do
-  include Habitat::Toml
+
 
   def config_directory
     platform_family?('windows') ? "C:/hab/user/#{new_resource.service_name}/config" : "/hab/user/#{new_resource.service_name}/config"

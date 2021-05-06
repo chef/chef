@@ -15,6 +15,7 @@
 #
 require_relative '../http'
 require 'json'
+require_relative "../helpers/toml_dumper"
 
 resource_name :habitat_config
 provides :habitat_config
@@ -70,5 +71,4 @@ end
 
 action_class do
   include Habitat::Shared
-  include Habitat::Toml
 end

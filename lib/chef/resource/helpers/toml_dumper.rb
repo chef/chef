@@ -1,7 +1,6 @@
-
-module Habitat
-  module Toml
-    class Dumper
+class Chef
+  module ResourceHelpers
+    module TomlDumper
       attr_reader :toml_str
 
       def initialize(hash)
