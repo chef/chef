@@ -93,7 +93,7 @@ class Chef
         default: false
 
       action :add do
-        filename = new_resource.file
+        filename = new_resource.file_path
         waiver_hash = load_waiver_file_to_hash(filename)
         control_hash = {}
         control_hash["expiration_date"] = new_resource.expiration.to_s unless new_resource.expiration.nil?
@@ -104,8 +104,8 @@ class Chef
           waiver_hash[new_resource.control] = control_hash
           waiver_hash = waiver_hash.sort.to_h
 
-          file "Update Waiver File #{new_resource.file} to update waiver for control #{new_resource.control}" do
-            path new_resource.file
+          file "Update Waiver File #{new_resource.file_path} to update waiver for control #{new_resource.control}" do
+            path new_resource.file_path
             content waiver_hash.to_yaml
             backup new_resource.backup
             action :create
@@ -114,13 +114,13 @@ class Chef
       end
 
       action :remove do
-        filename = new_resource.file
+        filename = new_resource.file_path
         waiver_hash = load_waiver_file_to_hash(filename)
         if waiver_hash.key?(new_resource.control)
           waiver_hash.delete(new_resource.control)
           waiver_hash = waiver_hash.sort.to_h
-          file "Update Waiver File #{new_resource.file} to remove waiver for control #{new_resource.control}" do
-            path new_resource.file
+          file "Update Waiver File #{new_resource.file_path} to remove waiver for control #{new_resource.control}" do
+            path new_resource.file_path
             content waiver_hash.to_yaml
             backup new_resource.backup
             action :create
