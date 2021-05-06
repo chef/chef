@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Chef::Resource::habitat_service do
+describe Chef::Resource::HabitatService do
   cached(:chef_run) do
     ChefSpec::ServerRunner.new(
       platform: 'ubuntu'
@@ -13,31 +13,31 @@ describe Chef::Resource::habitat_service do
 
   context 'when compiling the service recipe for chefspec' do
     it 'loads service' do
-      expect(chef_run).to load_hab_service('core/nginx')
+      expect(chef_run).to load_habitat_service('core/nginx')
     end
 
     it 'stops service' do
-      expect(chef_run).to stop_hab_service('core/redis stop')
+      expect(chef_run).to stop_habitat_service('core/redis stop')
     end
 
     it 'unloads service' do
-      expect(chef_run).to unload_hab_service('core/nginx unload')
+      expect(chef_run).to unload_habitat_service('core/nginx unload')
     end
 
     it 'loads a service with version' do
-      expect(chef_run).to load_hab_service('core/vault version change').with(
+      expect(chef_run).to load_habitat_service('core/vault version change').with(
         service_name: 'core/vault/1.1.5'
       )
     end
 
     it 'loads a service with version and release' do
-      expect(chef_run).to load_hab_service('core/grafana full identifier').with(
+      expect(chef_run).to load_habitat_service('core/grafana full identifier').with(
         service_name: 'core/grafana/6.4.3/20191105024430'
       )
     end
 
     it 'loads a service with options' do
-      expect(chef_run).to load_hab_service('core/grafana property change from custom values').with(
+      expect(chef_run).to load_habitat_service('core/grafana property change from custom values').with(
         service_group: 'test',
         bldr_url: 'https://bldr-test.habitat.sh',
         channel: :'bldr-1321420393699319808',
@@ -52,7 +52,7 @@ describe Chef::Resource::habitat_service do
     end
 
     it 'loads a service with a single bind' do
-      expect(chef_run).to load_hab_service('core/grafana binding').with(
+      expect(chef_run).to load_habitat_service('core/grafana binding').with(
         bind: [
           'prom:prometheus.default',
         ]
@@ -60,7 +60,7 @@ describe Chef::Resource::habitat_service do
     end
 
     it 'loads a service with multiple binds' do
-      expect(chef_run).to load_hab_service('core/sensu').with(
+      expect(chef_run).to load_habitat_service('core/sensu').with(
         bind: [
           'rabbitmq:rabbitmq.default',
           'redis:redis.default',
@@ -69,7 +69,7 @@ describe Chef::Resource::habitat_service do
     end
 
     it 'reloads a service' do
-      expect(chef_run).to reload_hab_service('core/consul reload')
+      expect(chef_run).to reload_habitat_service('core/consul reload')
     end
 
     it 'restarts a service' do

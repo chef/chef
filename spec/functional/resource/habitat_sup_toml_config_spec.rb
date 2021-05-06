@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Chef::Resource::habitat_sup do
+describe Chef::Resource::HabitatSup do
   context 'When toml_config flag is set to true for hab_sup' do
     cached(:chef_run) do
       ChefSpec::ServerRunner.new(
-        step_into: ['hab_sup'],
+        step_into: ['habitat_sup'],
         platform: 'ubuntu',
         version: '16.04'
       ).converge(described_recipe)

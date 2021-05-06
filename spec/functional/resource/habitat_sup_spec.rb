@@ -1,14 +1,14 @@
 require 'spec_helper'
 
-describe Chef::Resource::habitat_sup do
+describe Chef::Resource::HabitatSup do
   context 'when compiling the sup recipe for chefspec' do
     shared_examples_for 'any platform' do
       it 'runs hab sup' do
-        expect(chef_run).to run_hab_sup('tester')
+        expect(chef_run).to run_habitat_sup('tester')
       end
 
       it 'runs hab sup with a custom org' do
-        expect(chef_run).to run_hab_sup('test-options')
+        expect(chef_run).to run_habitat_sup('test-options')
           .with(
             listen_http: '0.0.0.0:9999',
             listen_gossip: '0.0.0.0:9998'
@@ -16,7 +16,7 @@ describe Chef::Resource::habitat_sup do
       end
 
       it 'runs hab sup with a auth options' do
-        expect(chef_run).to run_hab_sup('test-auth-token')
+        expect(chef_run).to run_habitat_sup('test-auth-token')
           .with(
             listen_http: '0.0.0.0:10001',
             listen_gossip: '0.0.0.0:10000',
@@ -25,7 +25,7 @@ describe Chef::Resource::habitat_sup do
       end
 
       it 'runs hab sup with a gateway auth token' do
-        expect(chef_run).to run_hab_sup('test-gateway-auth-token')
+        expect(chef_run).to run_habitat_sup('test-gateway-auth-token')
           .with(
             listen_http: '0.0.0.0:10001',
             listen_gossip: '0.0.0.0:10000',
@@ -34,13 +34,13 @@ describe Chef::Resource::habitat_sup do
       end
 
       it 'run hab sup with a single peer' do
-        expect(chef_run).to run_hab_sup('single_peer').with(
+        expect(chef_run).to run_habitat_sup('single_peer').with(
           peer: ['127.0.0.2']
         )
       end
 
       it 'runs hab sup with multiple peers' do
-        expect(chef_run).to run_hab_sup('multiple_peers')
+        expect(chef_run).to run_habitat_sup('multiple_peers')
           .with(
             peer: ['127.0.0.2', '127.0.0.3']
           )
@@ -75,7 +75,7 @@ describe Chef::Resource::habitat_sup do
       it_behaves_like 'any platform'
 
       it 'runs hab sup with a set file limit' do
-        expect(chef_run).to run_hab_sup('set_file_limit')
+        expect(chef_run).to run_habitat_sup('set_file_limit')
           .with(
             limit_no_files: '65536'
           )
