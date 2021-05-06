@@ -18,7 +18,6 @@
 # limitations under the License.
 #
 require_relative '../http/simple'
-require_relative "../resource"
 
 class Chef
   class Resource

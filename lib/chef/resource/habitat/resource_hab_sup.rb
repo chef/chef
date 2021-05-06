@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative "../resource"
+
 
 class Chef
   class Resource
