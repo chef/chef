@@ -36,6 +36,8 @@ class Chef
                         PasswordHistorySize
                         LockoutBadCount
                         ResetLockoutCount
+                        AuditPolicyChange
+                        LockoutDuration
                         RequireLogonToChangePassword
                         ForceLogoffWhenHourExpire
                         NewAdministratorName
