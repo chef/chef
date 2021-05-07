@@ -75,7 +75,7 @@ begin
       desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
         puts "--- Running chef #{sub} specs"
-        t.verbose = false
+        t.verbose = true
         t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end

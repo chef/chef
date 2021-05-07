@@ -244,6 +244,7 @@ class Chef
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             converge_by "set hostname to #{new_resource.hostname}" do
+              puts "What username is being used : #{new_resource.domain_user}"
               powershell_exec! <<~EOH
                 $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
                 $sysInfo.Rename("#{new_resource.hostname}")
