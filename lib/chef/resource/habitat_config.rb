@@ -16,7 +16,7 @@
 require_relative "../http"
 require "json" unless defined?(JSON)
 require_relative "../resource"
-require_relative "../helpers/toml_dumper"
+require_relative "helpers/toml_dumper"
 
 class Chef
   class Resource

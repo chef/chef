@@ -14,20 +14,20 @@
 # See the License for the specific language governing permissions and
 # li
 
-    def hab(*command)
-      # Windows shell_out does not support arrays, so manually cleaning and joining
-      hab_cmd = if platform_family?("windows")
-                  (["hab"] + command).flatten.compact.join(" ")
-                else
-                  (["hab"] + command)
-                end
+def hab(*command)
+  # Windows shell_out does not support arrays, so manually cleaning and joining
+  hab_cmd = if platform_family?("windows")
+              (["hab"] + command).flatten.compact.join(" ")
+            else
+              (["hab"] + command)
+            end
 
-      if Gem::Requirement.new(">= 14.3.20").satisfied_by?(Gem::Version.new(Chef::VERSION))
-        shell_out!(hab_cmd)
-      else
-        shell_out_compact!(hab_cmd)
-      end
-    rescue Errno::ENOENT
-      Chef::Log.fatal("'hab' binary not found, use the 'hab_install' resource to install it first")
-      raise
-    end
+  if Gem::Requirement.new(">= 14.3.20").satisfied_by?(Gem::Version.new(Chef::VERSION))
+    shell_out!(hab_cmd)
+  else
+    shell_out_compact!(hab_cmd)
+  end
+rescue Errno::ENOENT
+  Chef::Log.fatal("'hab' binary not found, use the 'hab_install' resource to install it first")
+  raise
+end
