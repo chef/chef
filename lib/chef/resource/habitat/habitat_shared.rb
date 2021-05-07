@@ -27,7 +27,7 @@ module Habitat
       if Gem::Requirement.new(">= 14.3.20").satisfied_by?(Gem::Version.new(Chef::VERSION))
         shell_out!(hab_cmd)
       else
-        shell_out_compact!(hab_cmd) # cookstyle: disable ChefDeprecations/DeprecatedShelloutMethods
+        shell_out_compact!(hab_cmd)
       end
     rescue Errno::ENOENT
       Chef::Log.fatal("'hab' binary not found, use the 'hab_install' resource to install it first")
