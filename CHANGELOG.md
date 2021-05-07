@@ -5,6 +5,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ## Unreleased
 
 #### Merged Pull Requests
+- Test more platforms in Dokken / GH Actions [#11546](https://github.com/chef/chef/pull/11546) ([tas50](https://github.com/tas50))
 - Run Linux dokken tests in GitHub Actions [#11515](https://github.com/chef/chef/pull/11515) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Test more platforms in Dokken / GH Actions [#11546](https://github.com/chef/chef/pull/11546) ([tas50](https://github.com/tas50)) <!-- 17.1.23 -->
 - Run Linux dokken tests in GitHub Actions [#11515](https://github.com/chef/chef/pull/11515) ([tas50](https://github.com/tas50)) <!-- 17.1.23 -->
 - Fix a typo setting up cookbook_name value in templates [#11540](https://github.com/chef/chef/pull/11540) ([tas50](https://github.com/tas50)) <!-- 17.1.23 -->
 - Add introduced to the new hostname properties [#11539](https://github.com/chef/chef/pull/11539) ([tas50](https://github.com/tas50)) <!-- 17.1.22 -->
