@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.23 -->
-## [v17.1.23](https://github.com/chef/chef/tree/v17.1.23) (2021-05-07)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Fix a typo setting up cookbook_name value in templates [#11540](https://github.com/chef/chef/pull/11540) ([tas50](https://github.com/tas50))
+- Run Linux dokken tests in GitHub Actions [#11515](https://github.com/chef/chef/pull/11515) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Run Linux dokken tests in GitHub Actions [#11515](https://github.com/chef/chef/pull/11515) ([tas50](https://github.com/tas50)) <!-- 17.1.23 -->
 - Fix a typo setting up cookbook_name value in templates [#11540](https://github.com/chef/chef/pull/11540) ([tas50](https://github.com/tas50)) <!-- 17.1.23 -->
 - Add introduced to the new hostname properties [#11539](https://github.com/chef/chef/pull/11539) ([tas50](https://github.com/tas50)) <!-- 17.1.22 -->
 - Use buffered i/o for yum and disable repos in testing [#11538](https://github.com/chef/chef/pull/11538) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.21 -->
