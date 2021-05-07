@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-require_relative "resource_hab_sup"
+require_relative "habitat_sup"
 
 class Chef
   class Resource
