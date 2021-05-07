@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 require_relative "../http"
-require "json" unless defined?(JSON)
+require_relative "../json_compat"
 require_relative "../resource"
 require_relative "helpers/toml_dumper"
 
