@@ -87,3 +87,38 @@ jobs:
         sudo /opt/chef/embedded/bin/gem install berkshelf --no-doc
         sudo /opt/chef/embedded/bin/berks vendor cookbooks
         sudo /opt/chef/bin/chef-client -z -o end_to_end --chef-license accept-no-persist
+
+  linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - 'amazonlinux-2'
+          - 'centos-7'
+          - 'centos-8'
+          - 'debian-9'
+          - 'debian-10'
+          - 'fedora-latest'
+          - 'opensuse-leap-15'
+          - 'ubuntu-1804'
+          - 'ubuntu-2004'
+    runs-on: ubuntu-latest
+    env:
+      BUNDLE_GEMFILE: kitchen-tests/Gemfile
+      FORCE_FFI_YAJL: ext
+      CHEF_LICENSE: accept-no-persist
+    steps:
+      - name: Install FFI
+        run: "sudo apt-get update; sudo apt-get install libffi-dev build-essential libssl-dev libreadline-dev zlib1g-dev -y"
+      - name: Check out code
+        uses: actions/checkout@master
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.7
+          bundler-cache: false
+      - name: Run Test Kitchen
+        run:  |
+          cd kitchen-tests
+          sudo bundle install
+          sudo bundle exec kitchen test end-to-end-${{ matrix.os }}
