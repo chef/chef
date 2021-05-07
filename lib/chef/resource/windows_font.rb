@@ -43,7 +43,7 @@ class Chef
 
       property :source, String,
         description: "A local filesystem path or URI that is used to source the font file.",
-        coerce: proc { |x| /^.:.*/.match?(x) ? x.tr('\\', "/").gsub("//", "/") : x }
+        coerce: proc { |x| /^.:.*/.match?(x) ? x.tr("\\", "/").gsub("//", "/") : x }
 
       action :install, description: "Install a font to the system fonts directory" do
         if font_exists?

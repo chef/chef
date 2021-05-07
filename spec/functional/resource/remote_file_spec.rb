@@ -155,7 +155,7 @@ describe Chef::Resource::RemoteFile do
       before do
         shell_out("net.exe share #{smb_share_name} /delete")
         File.write(smb_file_local_path, smb_file_content )
-        shell_out!("net.exe share #{smb_share_name}=\"#{smb_share_root_directory.tr("/", '\\')}\" /grant:\"authenticated users\",read")
+        shell_out!("net.exe share #{smb_share_name}=\"#{smb_share_root_directory.tr("/", "\\")}\" /grant:\"authenticated users\",read")
       end
 
       after do

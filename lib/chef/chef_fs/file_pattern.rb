@@ -255,7 +255,7 @@ class Chef
       end
 
       def self.regexp_escape_characters
-        [ "[", '\\', "^", "$", ".", "|", "?", "*", "+", "(", ")", "{", "}" ]
+        [ "[", "\\", "^", "$", ".", "|", "?", "*", "+", "(", ")", "{", "}" ]
       end
 
       def self.pattern_to_regexp(pattern)
@@ -281,7 +281,7 @@ class Chef
               exact = nil
               regexp << "."
             else
-              if part[0, 1] == '\\' && part.length == 2
+              if part[0, 1] == "\\" && part.length == 2
                 # backslash escapes are only supported on Unix, and are handled here by leaving the escape on (it means the same thing in a regex)
                 exact << part[1, 1] unless exact.nil?
                 if regexp_escape_characters.include?(part[1, 1])

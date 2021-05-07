@@ -56,7 +56,7 @@ RSpec.describe ChefConfig::PathHelper do
   context "forcing windows/non-windows" do
     context "forcing windows" do
       it "path_separator is \\" do
-        expect(path_helper.path_separator(windows: true)).to eq('\\')
+        expect(path_helper.path_separator(windows: true)).to eq("\\")
       end
 
       context "platform-specific #join behavior" do
@@ -133,7 +133,7 @@ RSpec.describe ChefConfig::PathHelper do
     end
 
     it "path_separator is \\" do
-      expect(path_helper.path_separator).to eq('\\')
+      expect(path_helper.path_separator).to eq("\\")
     end
 
     context "platform-specific #join behavior" do

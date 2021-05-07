@@ -173,7 +173,7 @@ class Chef
     # Mutex name is case-sensitive contrary to other things in
     # windows. "\" is the only invalid character.
     def acquire_win32_mutex
-      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.tr('\\', "/").downcase}")
+      @mutex = Chef::ReservedNames::Win32::Mutex.new("Global\\#{runlock_file.tr("\\", "/").downcase}")
       mutex.test
     end
 
