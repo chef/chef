@@ -20,13 +20,13 @@ require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../../resource"
 # Bring in needed shared methods
-include "habitat_shared"
 
 class Chef
   class Provider
     class Package
       class Hart < Chef::Provider::Package
         use_multipackage_api
+        use "habitat_shared"
 
         provides :habitat_package
 
