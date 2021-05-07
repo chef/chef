@@ -20,9 +20,9 @@ require_relative '../package'
 
 class Chef
   class Resource
-    class HartPackage < Chef::Resource::Package
-      resource_name :habitat_package
+    class HabitatPackage < Chef::Resource::Package
       provides :habitat_package
+
 
       description 'Install the specified Habitat package from builder. Requires that Habitat is installed'
       examples <<~DOC
