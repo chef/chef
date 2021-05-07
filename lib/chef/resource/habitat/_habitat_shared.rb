@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # li
 
-module Habitat
-  module Shared
     def hab(*command)
       # Windows shell_out does not support arrays, so manually cleaning and joining
       hab_cmd = if platform_family?("windows")
@@ -33,5 +31,3 @@ module Habitat
       Chef::Log.fatal("'hab' binary not found, use the 'hab_install' resource to install it first")
       raise
     end
-  end
-end

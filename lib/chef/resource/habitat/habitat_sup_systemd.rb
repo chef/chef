@@ -19,7 +19,7 @@ require_relative "habitat_sup"
 
 class Chef
   class Resource
-    class HabitatSupSystemd < Chef::Resource::HabitatSup
+    class HabitatSupSystemd < HabitatSup
       provides :habitat_sup_systemd
       provides :habitat_sup do |_node|
         Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)

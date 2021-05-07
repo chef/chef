@@ -73,7 +73,7 @@ class Chef
       end
 
       action_class do
-        include Habitat::Shared
+        use "habitat_shared"
       end
     end
   end

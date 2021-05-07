@@ -20,6 +20,7 @@ require_relative "../../resource"
 class Chef
   class Resource
     class HabitatSup < Chef::Resource
+
       provides :habitat_sup do |_node|
         false
       end
@@ -145,7 +146,7 @@ class Chef
       end
 
       action_class do
-        include Habitat::Shared
+        use "habitat_shared"
         # validate that peers have been passed with a port # for toml file
         def peer_list_with_port
           if new_resource.peer
