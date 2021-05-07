@@ -47,9 +47,9 @@ def versioncompare(versions):
 
 def install_only_packages(base, name):
     if name in base.conf.installonlypkgs:
-        outpipe.write('True')
+        outpipe.write('True\n')
     else:
-        outpipe.write('False')
+        outpipe.write('False\n')
     outpipe.flush()
 
 def query(base, command):

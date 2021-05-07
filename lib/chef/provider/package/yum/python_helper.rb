@@ -51,9 +51,6 @@ class Chef
           end
 
           def start
-            # For some reason we have to force python to unbuffered here, and then force the input pipe back to line
-            # buffered in the python code.  XXX: I tried to remove this but hit more issues in the python side.
-            ENV["PYTHONUNBUFFERED"] = "1"
             @inpipe, inpipe_write = IO.pipe
             outpipe_read, @outpipe = IO.pipe
             @stdin, @stdout, @stderr, @wait_thr = Open3.popen3("#{yum_command} #{outpipe_read.fileno} #{inpipe_write.fileno}", outpipe_read.fileno => outpipe_read, inpipe_write.fileno => inpipe_write, close_others: false)
@@ -76,7 +73,7 @@ class Chef
               stderr.close unless stderr.nil?
               inpipe.close unless inpipe.nil?
               outpipe.close unless outpipe.nil?
-              stdin = stdout = stderr = inpipe = outpipe = wait_thr = nil
+              @stdin = @stdout = @stderr = @inpipe = @outpipe = @wait_thr = nil
             end
           end
 
@@ -163,8 +160,9 @@ class Chef
             with_helper do
               json = build_query(action, parameters)
               Chef::Log.trace "sending '#{json}' to python helper"
-              outpipe.syswrite json + "\n"
-              output = inpipe.sysread(4096).chomp
+              outpipe.puts json
+              outpipe.flush
+              output = inpipe.readline.chomp
               Chef::Log.trace "got '#{output}' from python helper"
               output
             end
@@ -214,13 +212,13 @@ class Chef
               Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
             end
             ret
-          rescue EOFError, Errno::EPIPE, Timeout::Error, Errno::ESRCH => e
+          rescue => e
             output = drain_fds
+            restart
             if ( max_retries -= 1 ) > 0 && !ENV["YUM_HELPER_NO_RETRIES"]
               unless output.empty?
                 Chef::Log.trace "discarding output on stderr/stdout from python helper: #{output}"
               end
-              restart
               retry
             else
               raise e if output.empty?
