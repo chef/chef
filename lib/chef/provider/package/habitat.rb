@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-
 require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"

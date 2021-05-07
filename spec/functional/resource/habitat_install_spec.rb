@@ -21,7 +21,6 @@ describe Chef::Resource::HabitatInstall do
     new_resource
   end
 
-
   describe ":install" do
     include RecipeDSLHelper
     include Chef::Mixin::ShellOut

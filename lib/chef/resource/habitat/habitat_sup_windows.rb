@@ -23,7 +23,6 @@ class Chef
     class HabitatSupWindows < HabitatSup
       provides :habitat_sup_windows
       provides :habitat_sup, os: "windows"
-      end
 
       service_file = "windows/HabService.dll.config.erb"
       win_service_config = "C:/hab/svc/windows-service/HabService.dll.config"
