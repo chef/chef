@@ -4,7 +4,7 @@ class Chef
       attr_reader :toml_str
 
       def initialize(hash)
-        @toml_str = ''
+        @toml_str = ""
 
         visit(hash, [])
       end
@@ -79,7 +79,7 @@ class Chef
       end
 
       def print_prefix(prefix, array = false)
-        new_prefix = prefix.join('.')
+        new_prefix = prefix.join(".")
         new_prefix = "[#{new_prefix}]" if array
 
         @toml_str += "[#{new_prefix}]\n"
@@ -87,9 +87,9 @@ class Chef
 
       def to_toml(obj)
         if obj.is_a?(Time) || obj.is_a?(DateTime)
-          obj.strftime('%Y-%m-%dT%H:%M:%SZ')
+          obj.strftime("%Y-%m-%dT%H:%M:%SZ")
         elsif obj.is_a?(Date)
-          obj.strftime('%Y-%m-%d')
+          obj.strftime("%Y-%m-%d")
         elsif obj.is_a? Regexp
           obj.inspect.inspect
         elsif obj.is_a? String
