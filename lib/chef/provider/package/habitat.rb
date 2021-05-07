@@ -27,7 +27,7 @@ class Chef
     class Package
       class Hart < Chef::Provider::Package
         use_multipackage_api
-        use "../resources/habitat/habitat_shared"
+        use "../../resources/habitat/habitat_shared"
 
         provides :package
         provides :habitat_package

@@ -21,9 +21,7 @@ class Chef
   class Resource
     class HabitatSupSystemd < HabitatSup
       provides :habitat_sup_systemd
-      provides :habitat_sup do |_node|
-        Chef::Platform::ServiceHelpers.service_resource_providers.include?(:systemd)
-      end
+      provides :habitat_sup, os: "linux"
 
       action :run do
         super()
