@@ -94,22 +94,25 @@ jobs:
       matrix:
         os:
           - 'amazonlinux-2'
+          - 'centos-6'
           - 'centos-7'
           - 'centos-8'
           - 'debian-9'
           - 'debian-10'
+          - 'debian-11'
           - 'fedora-latest'
           - 'opensuse-leap-15'
+          - 'oraclelinux-7'
+          - 'oraclelinux-8'
           - 'ubuntu-1804'
           - 'ubuntu-2004'
+          - 'ubuntu-2104'
     runs-on: ubuntu-latest
     env:
       BUNDLE_GEMFILE: kitchen-tests/Gemfile
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
     steps:
-      - name: Install FFI
-        run: "sudo apt-get update; sudo apt-get install libffi-dev build-essential libssl-dev libreadline-dev zlib1g-dev -y"
       - name: Check out code
         uses: actions/checkout@master
       - name: Setup Ruby
