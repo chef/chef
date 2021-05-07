@@ -19,7 +19,7 @@ require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
 require_relative "../package"
-require_relative "../resource/habitat/habitat_package"
+require_relative "../../resource/habitat/habitat_package"
 # Bring in needed shared methods
 
 class Chef
