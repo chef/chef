@@ -15,7 +15,7 @@ describe Chef::Resource::HabitatInstall do
   subject do
     new_resource = Chef::Resource::HabitatInstall.new("clean install", run_context)
     new_resource.license lic
-    new_resource.version version if version
+    new_resource.hab_version version if version
     new_resource.tmp_dir tmp_dir
     new_resource.bldr_url bldr if bldr
     new_resource
