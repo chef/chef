@@ -1,4 +1,5 @@
 require "spec_helper"
+require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatInstall do
 
@@ -9,6 +10,8 @@ describe Chef::Resource::HabitatInstall do
   let(:verify_hab) { proc { shell_out!("hab -v").stdout.chomp } }
 
   describe ":install" do
+    include RecipeDSLHelper
+    include Chef::Mixin::ShellOut
     context "install habitat" do
       it "installs habitat when missing" do
         habitat_install("clean install") do
