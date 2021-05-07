@@ -16,7 +16,7 @@
 #
 
 require "win32/service" if RUBY_PLATFORM =~ /mswin|mingw32|windows/
-require_relative "resource_hab_sup"
+require_relative "habitat_sup"
 
 class Chef
   class Resource
