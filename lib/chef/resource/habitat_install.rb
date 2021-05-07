@@ -217,7 +217,7 @@ class Chef
       # end
 
       action_class do
-        use "habitat_shared"
+        use "/habitat/habitat_shared"
 
         def hab_path
           if platform_family?("mac_os_x")

@@ -73,7 +73,7 @@ class Chef
       end
 
       action_class do
-        use "habitat_shared"
+        use "/habitat/habitat_shared"
       end
     end
   end
