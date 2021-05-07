@@ -5,10 +5,6 @@
 # Copyright:: Copyright (c) Chef Software Inc.
 #
 
-# hostnames on windows cannot contain a '.'
-# hostname on windows requires a reboot
-# hostname "chef-bk-ci"
-
 chef_sleep "2"
 
 execute "dir"
