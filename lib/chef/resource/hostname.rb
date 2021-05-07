@@ -44,6 +44,24 @@ class Chef
           ipaddress '198.51.100.2'
         end
         ```
+
+        **Change the hostname of a Windows, Non-Domain joined node**:
+
+        ```ruby
+        hostname 'renaming a workgroup computer' do
+          hostname 'Foo'
+        end
+        ```
+
+        **Change the hostname of a Windows, Domain-joined node**:
+
+        ```ruby
+        hostname 'renaming a domain-joined computer' do
+          hostname 'Foo'
+          domain_user 'Domain\Someone'
+          domain_password 'SomePassword'
+        end
+        ```
       DOC
 
       property :hostname, String,
@@ -70,6 +88,12 @@ class Chef
       property :windows_reboot, [ TrueClass, FalseClass ],
         description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
         default: true
+
+      property :domain_user, String,
+        description: "The domain username with permissions to change the local hostname. Specified in the form of 'Domain\User'"
+
+      property :domain_password, String,
+        description: "The password associated with the domain user account"
 
       action_class do
         def append_replacing_matching_lines(path, regex, string)
@@ -245,8 +269,15 @@ class Chef
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             converge_by "set hostname to #{new_resource.hostname}" do
               powershell_exec! <<~EOH
-                $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
-                $sysInfo.Rename("#{new_resource.hostname}")
+                if ([string]::IsNullOrEmpty(#{new_resource.domain_user})){
+                  Rename-Computer -NewName #{new_resource.hostname}
+                }
+                else {
+                  $user = #{new_resource.domain_user}
+                  $secure_password = #{new_resource.domain_password} | Convertto-SecureString -AsPlainText -Force
+                  $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
+                  Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
+                }
               EOH
             end
 

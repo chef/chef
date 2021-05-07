@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.1.16)
+    chef (17.1.20)
       addressable
-      chef-config (= 17.1.16)
-      chef-utils (= 17.1.16)
+      chef-config (= 17.1.20)
+      chef-utils (= 17.1.20)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.1.16-universal-mingw32)
+    chef (17.1.20-universal-mingw32)
       addressable
-      chef-config (= 17.1.16)
-      chef-utils (= 17.1.16)
+      chef-config (= 17.1.20)
+      chef-utils (= 17.1.20)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.1.16)
-      chef (= 17.1.16)
+    chef-bin (17.1.20)
+      chef (= 17.1.20)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.1.16)
+    chef-config (17.1.20)
       addressable
-      chef-utils (= 17.1.16)
+      chef-utils (= 17.1.20)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.1.16)
+    chef-utils (17.1.20)
       concurrent-ruby
 
 GEM
@@ -190,9 +190,9 @@ GEM
     hashie (4.1.0)
     httpclient (2.8.3)
     iniparse (1.5.0)
-    inspec-core (4.36.4)
+    inspec-core (4.37.0)
       addressable (~> 2.4)
-      chef-telemetry (~> 1.0)
+      chef-telemetry (~> 1.0, >= 1.0.8)
       faraday (>= 0.9.0, < 1.5)
       faraday_middleware (~> 1.0)
       hashie (>= 3.4, < 5.0)
@@ -213,8 +213,8 @@ GEM
       train-core (~> 3.0)
       tty-prompt (~> 0.17)
       tty-table (~> 0.10)
-    inspec-core-bin (4.36.4)
-      inspec-core (= 4.36.4)
+    inspec-core-bin (4.37.0)
+      inspec-core (= 4.37.0)
     ipaddress (0.8.3)
     iso8601 (0.13.0)
     json (2.5.1)

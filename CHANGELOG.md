@@ -1,17 +1,21 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.15 -->
-## [v17.1.15](https://github.com/chef/chef/tree/v17.1.15) (2021-05-05)
+<!-- latest_release 17.1.20 -->
+## [v17.1.20](https://github.com/chef/chef/tree/v17.1.20) (2021-05-07)
 
 #### Merged Pull Requests
-- Suppress unified mode deprecation warning for deprecated resources [#11520](https://github.com/chef/chef/pull/11520) ([lamont-granquist](https://github.com/lamont-granquist))
+- Update Hostname resource to account for newer versions of PowerShell being standard [#11537](https://github.com/chef/chef/pull/11537) ([johnmccrae](https://github.com/johnmccrae))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Update Hostname resource to account for newer versions of PowerShell being standard [#11537](https://github.com/chef/chef/pull/11537) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.1.20 -->
+- DNF provider update [#11535](https://github.com/chef/chef/pull/11535) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.19 -->
+- windows_security_policy: Add AuditPolicyChange and LockoutDuration capabilities [#11533](https://github.com/chef/chef/pull/11533) ([johnmccrae](https://github.com/johnmccrae)) <!-- 17.1.18 -->
+- Bump inspec-core-bin to 4.37.0 [#11525](https://github.com/chef/chef/pull/11525) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.1.17 -->
 - Suppress unified mode deprecation warning for deprecated resources [#11520](https://github.com/chef/chef/pull/11520) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.15 -->
 - Fix edit_resource usage in unified_mode [#11519](https://github.com/chef/chef/pull/11519) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.14 -->
 - Fix bug causing systemd units to always re-enable and re-start [#11512](https://github.com/chef/chef/pull/11512) ([gene1wood](https://github.com/gene1wood)) <!-- 17.1.13 -->
