@@ -2,23 +2,38 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatInstall do
-
-  let(:bldr) { "https://localhost" }
-  let(:tmp_dir) { "/foo/bar" }
-  let(:lic) { "accept" }
-  let(:version) { "1.5.50" }
+  include Chef::Mixin::ShellOut
+  let(:bldr) { nil }
+  let(:tmp_dir) { nil }
+  let(:lic) { nil }
+  let(:version) { nil }
   let(:verify_hab) { proc { shell_out!("hab -v").stdout.chomp } }
+  let(:run_context) do
+    Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
+  end
+
+  subject do
+    new_resource = Chef::Resource::HabitatInstall.new("clean install", run_context)
+    new_resource.license lic
+    new_resource.version version if version
+    new_resource.tmp_dir tmp_dir
+    new_resource.bldr_url bldr if bldr
+    new_resource
+  end
+
 
   describe ":install" do
     include RecipeDSLHelper
     include Chef::Mixin::ShellOut
+    let(:bldr) { "https://localhost" }
+    let(:tmp_dir) { "/foo/bar" }
+    let(:lic) { "accept" }
+    let(:version) { "1.5.50" }
+
     context "install habitat" do
       it "installs habitat when missing" do
-        habitat_install("clean install") do
-          license lic
-          bldr_url bldr
-          hab_version version
-        end.should_be_updated
+        subject.run_action(:install)
+        expect(subject).to be_updated_by_last_action
         expect(verify_hab.call).to eq("1.5.50")
       end
     end
