@@ -60,13 +60,6 @@ describe Chef::Resource::HabitatSup do
     end
 
     context 'a Systemd platform' do
-      cached(:chef_run) do
-        ChefSpec::ServerRunner.new(
-          step_into: ['hab_sup'],
-          platform: 'ubuntu',
-          version: '16.04'
-        ).converge(described_recipe)
-      end
 
       before(:each) do
         allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return([:systemd])
