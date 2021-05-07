@@ -1,9 +1,6 @@
 require "spec_helper"
-require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatInstall do
-  include RecipeDSLHelper
-  include Chef::Mixin::ShellOut
 
   let(:bldr) { "https://localhost" }
   let(:tmp_dir) { "/foo/bar" }
