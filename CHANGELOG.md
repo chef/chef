@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.29 -->
-## [v17.1.29](https://github.com/chef/chef/tree/v17.1.29) (2021-05-08)
+<!-- latest_release unreleased -->
+## Unreleased
 
 #### Merged Pull Requests
-- Silence `bundle install` warning when installing gems for cookbooks [#11551](https://github.com/chef/chef/pull/11551) ([nvwls](https://github.com/nvwls))
+- Remove comment no longer relevant [#11550](https://github.com/chef/chef/pull/11550) ([deivid-rodriguez](https://github.com/deivid-rodriguez))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Remove comment no longer relevant [#11550](https://github.com/chef/chef/pull/11550) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.1.29 -->
 - Silence `bundle install` warning when installing gems for cookbooks [#11551](https://github.com/chef/chef/pull/11551) ([nvwls](https://github.com/nvwls)) <!-- 17.1.29 -->
 - Build RHEL 8 packages on RHEL 8 boxes [#11544](https://github.com/chef/chef/pull/11544) ([tas50](https://github.com/tas50)) <!-- 17.1.27 -->
 - Treat 32bit-on-64bit the same as 32bit [#11547](https://github.com/chef/chef/pull/11547) ([lamont-granquist](https://github.com/lamont-granquist)) <!-- 17.1.25 -->
