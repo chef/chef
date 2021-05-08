@@ -16,15 +16,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
-    - name: 'Install Chef/Ohai from Omnitruck'
-      id: install_chef
-      run: |
-        . { Invoke-WebRequest -useb https://omnitruck.chef.io/install.ps1 } | Invoke-Expression; Install-Project -project chef -channel current
-        $env:PATH = "C:\opscode\chef\bin;C:\opscode\chef\embedded\bin;" + $env:PATH
-        chef-client -v
-        ohai -v
-        rake --version
-        bundle -v
+    - name: Install Infra Client from current channel
+      uses: actionshub/chef-install@master
+      with:
+        channel: current
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
@@ -55,15 +50,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
-    - name: 'Install Chef/Ohai from Omnitruck'
-      id: install_chef
-      run: |
-        brew install coreutils
-        curl -L https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current
-        /opt/chef/bin/chef-client -v
-        /opt/chef/bin/ohai -v
-        /opt/chef/embedded/bin/rake --version
-        /opt/chef/embedded/bin/bundle -v
+    - name: Install Infra Client from current channel
+      uses: actionshub/chef-install@master
+      with:
+        channel: current
     - name: 'Upgrade Chef/Ohai via Appbundler'
       id: upgrade
       run: |
