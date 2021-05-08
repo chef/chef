@@ -43,7 +43,7 @@ class Chef
 
         host.ffi_convention :stdcall
 
-        win64 = ENV["PROCESSOR_ARCHITECTURE"] == "AMD64" || ENV["PROCESSOR_ARCHITEW6432"] == "AMD64"
+        win64 = ENV["PROCESSOR_ARCHITECTURE"] == "AMD64"
 
         # Windows-specific type defs (ms-help://MS.MSDNQTR.v90.en/winprog/winprog/windows_data_types.htm):
         host.typedef :ushort,  :ATOM # Atom ~= Symbol: Atom table stores strings and corresponding identifiers. Application
