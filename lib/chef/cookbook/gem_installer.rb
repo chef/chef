@@ -72,7 +72,7 @@ class Chef
                   cmd = [ "bundle", "install", Chef::Config[:gem_installer_bundler_options] ]
                   env = {
                     "PATH" => path_with_prepended_ruby_bin,
-                    "BUNDLE_SILENCE_ROOT_WARNING" => "1"
+                    "BUNDLE_SILENCE_ROOT_WARNING" => "1",
                   }
                   so = shell_out!(cmd, cwd: dir, env: env)
                   Chef::Log.info(so.stdout)
