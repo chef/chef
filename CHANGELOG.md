@@ -1,10 +1,11 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release unreleased -->
-## Unreleased
+<!-- latest_release 17.1.30 -->
+## [v17.1.30](https://github.com/chef/chef/tree/v17.1.30) (2021-05-08)
 
 #### Merged Pull Requests
+- Creating the `inspec_waiver_file_entry` resource for managing and formatting a waiver file [#10098](https://github.com/chef/chef/pull/10098) ([chef-davin](https://github.com/chef-davin))
 - Remove comment no longer relevant [#11550](https://github.com/chef/chef/pull/11550) ([deivid-rodriguez](https://github.com/deivid-rodriguez))
 <!-- latest_release -->
 
@@ -12,6 +13,7 @@ This changelog lists individual merged pull requests to Chef Infra Client and ge
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Creating the `inspec_waiver_file_entry` resource for managing and formatting a waiver file [#10098](https://github.com/chef/chef/pull/10098) ([chef-davin](https://github.com/chef-davin)) <!-- 17.1.30 -->
 - Remove comment no longer relevant [#11550](https://github.com/chef/chef/pull/11550) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.1.29 -->
 - Silence `bundle install` warning when installing gems for cookbooks [#11551](https://github.com/chef/chef/pull/11551) ([nvwls](https://github.com/nvwls)) <!-- 17.1.29 -->
 - Build RHEL 8 packages on RHEL 8 boxes [#11544](https://github.com/chef/chef/pull/11544) ([tas50](https://github.com/tas50)) <!-- 17.1.27 -->
