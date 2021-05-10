@@ -20,8 +20,6 @@ describe Chef::Resource::HabitatInstall do
     FileUtils.rm_rf(file_cache_path)
   end
 
-
-
   let(:bldr) { nil }
   let(:tmp_dir) { nil }
   let(:lic) { nil }
@@ -54,8 +52,7 @@ describe Chef::Resource::HabitatInstall do
         expect(verify_hab.call).to include("1.5.50")
       end
 
-
-    it "does not install habitat when installed" do
+      it "does not install habitat when installed" do
         subject.run_action(:install)
         expect(subject).not_to be_updated_by_last_action
       end
