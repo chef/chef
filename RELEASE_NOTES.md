@@ -41,7 +41,7 @@ The `service` resource on systemd hosts will now properly load the state of the 
 
 #### systemd_unit
 
-The `systemd_unit` resource has been updated to resolve a regression in Chef Infra Client 17.0 that would re-enable and restart unit files on each Chef Infra Client run. Thanks for this fix [@gene1wood](https://github.com/gene1wood)!
+We updated the `systemd_unit` resource to resolve a regression in Chef Infra Client 17.0 that would re-enable and restart unit files on each Chef Infra Client run. Thanks for this fix [@gene1wood](https://github.com/gene1wood)!
 
 #### template
 
