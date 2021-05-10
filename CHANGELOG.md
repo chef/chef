@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.31 -->
-## [v17.1.31](https://github.com/chef/chef/tree/v17.1.31) (2021-05-10)
+<!-- latest_release 17.1.32 -->
+## [v17.1.32](https://github.com/chef/chef/tree/v17.1.32) (2021-05-10)
 
 #### Merged Pull Requests
-- Bump chef/chefstyle to 9e9864d3839e1a78703e6662b0dbe7a04af05fd1 [#11527](https://github.com/chef/chef/pull/11527) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot]))
+- mount: Fix idempotentency for loopback mounts [#11376](https://github.com/chef/chef/pull/11376) ([msys-sgarg](https://github.com/msys-sgarg))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- mount: Fix idempotentency for loopback mounts [#11376](https://github.com/chef/chef/pull/11376) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.1.32 -->
 - Bump chef/chefstyle to 9e9864d3839e1a78703e6662b0dbe7a04af05fd1 [#11527](https://github.com/chef/chef/pull/11527) ([chef-expeditor[bot]](https://github.com/chef-expeditor[bot])) <!-- 17.1.31 -->
 - Creating the `inspec_waiver_file_entry` resource for managing and formatting a waiver file [#10098](https://github.com/chef/chef/pull/10098) ([chef-davin](https://github.com/chef-davin)) <!-- 17.1.30 -->
 - Remove comment no longer relevant [#11550](https://github.com/chef/chef/pull/11550) ([deivid-rodriguez](https://github.com/deivid-rodriguez)) <!-- 17.1.29 -->
