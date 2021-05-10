@@ -84,7 +84,7 @@ describe Chef::Resource::Link do
   end
 
   def canonicalize(path)
-    windows? ? path.tr("/", '\\') : path
+    windows? ? path.tr("/", "\\") : path
   end
 
   def symlink(a, b)

@@ -186,7 +186,7 @@ class Chef
           if environment_variables && environment_variables.length > 0
             environment_variables.each do |env|
               @env_obj = env.wmi_ole_object
-              return @env_obj if @env_obj.username.split('\\').last.casecmp(new_resource.user) == 0
+              return @env_obj if @env_obj.username.split("\\").last.casecmp(new_resource.user) == 0
             end
           end
           @env_obj = nil

@@ -83,7 +83,7 @@ class Chef
         username = new_resource.user
 
         if new_resource.domain
-          username = new_resource.domain + '\\' + new_resource.user
+          username = new_resource.domain + "\\" + new_resource.user
         end
 
         # Create an ACE that allows the alternate user read access to the script

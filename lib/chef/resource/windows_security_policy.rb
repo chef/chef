@@ -118,13 +118,13 @@ class Chef
             policy_line = "#{security_option} = \"#{security_value}\""
             file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
             file.close
-            file_path = file.path.tr("/", '\\')
+            file_path = file.path.tr("/", "\\")
             cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
           else
             policy_line = "#{security_option} = #{security_value}"
             file.write("[Unicode]\r\nUnicode=yes\r\n[System Access]\r\n#{policy_line}\r\n[Version]\r\nsignature=\"$CHICAGO$\"\r\nRevision=1\r\n")
             file.close
-            file_path = file.path.tr("/", '\\')
+            file_path = file.path.tr("/", "\\")
             cmd = "C:\\Windows\\System32\\secedit /configure /db C:\\windows\\security\\new.sdb /cfg #{file_path} /areas SECURITYPOLICY"
           end
           shell_out!(cmd)
