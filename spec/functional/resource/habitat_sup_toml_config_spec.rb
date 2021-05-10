@@ -52,9 +52,9 @@ describe Chef::Resource::HabitatSup do
 
       it "installs supervisor with toml configuration file" do
         subject.run_action(:run)
-        expect(subject2).to be_updated_by_last_action
-        expect(subject2).to create_directory("/hab/sup/default/config")
-        expect(subject2).to create_template("/hab/sup/default/config/sup.toml")
+        expect(subject).to be_updated_by_last_action
+        expect(subject).to create_directory("/hab/sup/default/config")
+        expect(subject).to create_template("/hab/sup/default/config/sup.toml")
       end
     end
   end
