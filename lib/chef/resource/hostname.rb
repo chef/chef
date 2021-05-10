@@ -243,12 +243,25 @@ class Chef
           end
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
-            converge_by "set hostname to #{new_resource.hostname}" do
-              puts "What username is being used : #{new_resource.domain_user}"
-              powershell_exec! <<~EOH
-                $sysInfo = Get-WmiObject -Class Win32_ComputerSystem
-                $sysInfo.Rename("#{new_resource.hostname}")
-              EOH
+            if is_domain_joined?
+              if new_resource.domain_user.nil? || new_resource.domain_password.nil?
+                raise "Domain Username and Password are required parameters"
+              else
+                converge_by "set hostname to #{new_resource.hostname}" do
+                  powershell_exec! <<~EOH
+                    $user = #{new_resource.domain_user}
+                    $secure_password = #{new_resource.domain_password} | Convertto-SecureString -AsPlainText -Force
+                    $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
+                    Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
+                  EOH
+                end
+              end
+            else
+              converge_by "set hostname to #{new_resource.hostname}" do
+                powershell_exec! <<~EOH
+                  Rename-Computer -NewName #{new_resource.hostname}
+                EOH
+              end
             end
 
             # reboot because $windows
