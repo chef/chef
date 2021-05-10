@@ -54,7 +54,7 @@ describe Chef::Resource::HabitatSup do
         subject.run_action(:run)
         expect(subject).to be_updated_by_last_action
         expect(subject).to create_directory("/hab/sup/default/config")
-        expect(subject).to create_template("/hab/sup/default/config/sup.toml")
+        expect(subject).to create_file("/hab/sup/default/config/sup.toml")
       end
     end
   end
