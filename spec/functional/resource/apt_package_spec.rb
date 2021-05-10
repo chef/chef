@@ -227,7 +227,7 @@ describe Chef::Resource::AptPackage, metadata do
               # Code here is duplicated from the implementation. Not great, but
               # it should at least fail if the code gets out of sync.
               source = File.join(CHEF_SPEC_DATA, "cookbooks/preseed/files/default/preseed-file.seed")
-              file_cache_dir = Chef::FileCache.cache_path("preseed/preseed")
+              file_cache_dir = Chef::FileCache.create_cache_path("preseed/preseed")
               dest = "#{file_cache_dir}/chef-integration-test-1.1-1.seed"
               FileUtils.cp(source, dest)
             end

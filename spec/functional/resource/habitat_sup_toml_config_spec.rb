@@ -26,6 +26,8 @@ describe Chef::Resource::HabitatSup do
 
   let(:toml_config) { nil }
   let(:lic) { nil }
+  let(:listen_http) { "0.0.0.0:9999" }
+  let(:listen_gossip) { "0.0.0.0:9998" }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
@@ -34,7 +36,8 @@ describe Chef::Resource::HabitatSup do
     new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config", run_context)
     new_resource.license lic
     new_resource.toml_config toml_config if toml_config
-    new_resource
+    new_resource.listen_http listen_http
+    new_resource.listen_gossip listen_gossip
   end
 
   describe ":run" do
