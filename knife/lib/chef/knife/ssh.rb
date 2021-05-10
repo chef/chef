@@ -134,8 +134,8 @@ class Chef
         boolean: true,
         default: false
 
-      option :ssh_pty,
-        long: "--[no-]ssh-pty",
+      option :require_pty,
+        long: "--[no-]require-pty",
         description: "Request a PTY, enabled by default.",
         boolean: true,
         default: true
@@ -360,26 +360,22 @@ class Chef
       end
 
       def ssh_command(command, subsession = nil)
+        stderr = ""
         exit_status = 0
         subsession ||= session
         command = fixup_sudo(command)
         command.force_encoding("binary") if command.respond_to?(:force_encoding)
-        open_session(subsession, command)
-      end
-
-      def open_session(subsession, command)
-        stderr = ""
-        exit_status = 0
         subsession.open_channel do |chan|
           if config[:on_error] && exit_status != 0
             chan.close
           else
-            if config[:ssh_pty]
-              chan.request_pty do |ch, success|
-                ui.error("Requesting PTY failed. If a PTY is not required use --no-ssh-pty") unless success
+            chan.request_pty do |ch, success|
+              unless success
+                ui.warn("Failed to obtain a PTY from #{ch.connection.host}")
+                raise ArgumentError, "Request for PTY failed" if config[:require_pty]
+
               end
             end
-
             chan.exec command do |ch, success|
               raise ArgumentError, "Cannot execute #{command}" unless success
 
@@ -390,13 +386,11 @@ class Chef
                   ichannel.send_data("#{get_password}\n")
                 end
               end
-
               ch.on_extended_data do |_, _type, data|
-                ui.error("No PTY present. If a PTY is required use --ssh-pty") if data.eql?("sudo: no tty present and no askpass program specified\n")
+                raise ArgumentError, "No PTY present. If a PTY is required use --require-pty" if data.eql?("sudo: no tty present and no askpass program specified\n")
 
                 stderr += data
               end
-
               ch.on_request "exit-status" do |ichannel, data|
                 exit_status = [exit_status, data.read_long].max
               end
