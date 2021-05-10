@@ -31,7 +31,7 @@ describe Chef::Resource::HabitatSup do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
-  subject2 do
+  subject1 do
     new_resource = Chef::Resource::HabitatInstall.new("install supervisor with toml_config", run_context)
     new_resource.license lic
     new_resource
@@ -52,12 +52,12 @@ describe Chef::Resource::HabitatSup do
 
       it "installs habitat" do
         subject1.run_action(:install)
-        expect(subject).to be_updated_by_last_action
+        expect(subject1).to be_updated_by_last_action
       end
 
       it "installs supervisor with toml configuration file" do
         subject2.run_action(:run)
-        expect(subject).to be_updated_by_last_action
+        expect(subject2).to be_updated_by_last_action
         expect(subject2).to create_directory("/hab/sup/default/config")
         expect(subject2).to create_template("/hab/sup/default/config/sup.toml")
       end
