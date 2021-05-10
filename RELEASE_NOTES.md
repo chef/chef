@@ -57,7 +57,7 @@ The `windows_security_policy` resource now supports setting `AuditPolicyChange` 
 
 #### yum_package / dnf_package
 
-We've made multiple improvements to how we interact with the systems RPM database in the `yum_package` and `dnf_package` resources. These changes improve reliability interacting with the rpm database and includes significant performance improvements, especially when no installation or upgrade action is taken by Chef Infra Client.
+We've made multiple improvements to how we interact with the systems RPM database in the `yum_package` and `dnf_package` resources. These changes improve reliability interacting with the RPM database and includes significant performance improvements, especially when no installation or upgrade action is taken by Chef Infra Client.
 
 ### Platform Detection
 
