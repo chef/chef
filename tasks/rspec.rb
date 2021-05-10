@@ -43,7 +43,7 @@ begin
 
   desc "Run all chef specs in spec directory"
   RSpec::Core::RakeTask.new(:spec) do |t|
-    t.verbose = true
+    t.verbose = false
     t.rspec_opts = %w{--profile}
     t.pattern = FileList["spec/**/*_spec.rb"]
   end
@@ -51,21 +51,21 @@ begin
   namespace :spec do
     desc "Run all chef specs in spec directory"
     RSpec::Core::RakeTask.new(:all) do |t|
-      t.verbose = true
+      t.verbose = false
       t.rspec_opts = %w{--profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Print Specdoc for all specs"
     RSpec::Core::RakeTask.new(:doc) do |t|
-      t.verbose = true
+      t.verbose = false
       t.rspec_opts = %w{--format specdoc --dry-run --profile}
       t.pattern = FileList["spec/**/*_spec.rb"]
     end
 
     desc "Run chef's node and role unit specs with activesupport loaded"
     RSpec::Core::RakeTask.new(:activesupport) do |t|
-      t.verbose = true
+      t.verbose = false
       t.rspec_opts = %w{--require active_support/core_ext --profile}
       # Only node_spec and role_spec specifically have issues, target those tests
       t.pattern = FileList["spec/unit/node_spec.rb", "spec/unit/role_spec.rb"]
@@ -75,7 +75,7 @@ begin
       desc "Run the chef specs under spec/#{sub}"
       RSpec::Core::RakeTask.new(sub) do |t|
         puts "--- Running chef #{sub} specs"
-        t.verbose = true
+        t.verbose = false
         t.rspec_opts = %w{--profile}
         t.pattern = FileList["spec/#{sub}/**/*_spec.rb"]
       end
