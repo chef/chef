@@ -980,7 +980,11 @@ class Chef
 
         gateway_identity_file = config[:ssh_gateway] ? config[:ssh_gateway_identity] : nil
         unless gateway_identity_file.nil?
-          opts[:key_files] << gateway_identity_file
+          if opts[:key_files].nil?
+            opts[:key_files] = [gateway_identity_file]
+          else
+            opts[:key_files] << gateway_identity_file
+          end
         end
 
         opts

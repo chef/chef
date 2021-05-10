@@ -1127,7 +1127,7 @@ describe Chef::Knife::Bootstrap do
           let(:expected_result) do
             {
               forward_agent: false,
-              key_files: [],
+              key_files: nil,
               logger: Chef::Log,
               keys_only: false,
               sudo: false,
@@ -1307,7 +1307,7 @@ describe Chef::Knife::Bootstrap do
       context "when no identity file is specified" do
         it "generates the expected configuration (no keys, keys_only false)" do
           expect(knife.ssh_identity_opts).to eq( {
-            key_files: [ ],
+            key_files: nil,
             keys_only: false,
           })
         end
