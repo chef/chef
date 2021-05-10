@@ -37,7 +37,7 @@ The `hostname` resource now supports changing the hostname on Active Directory c
 
 #### service on systemd Hosts
 
-The `service` resource, on systemd hosts, will now properly load the state of the service. Thanks for this fix [@ramereth](https://github.com/ramereth)!
+The `service` resource on systemd hosts will now properly load the state of the service. Thanks for this fix [@ramereth](https://github.com/ramereth)!
 
 #### systemd_unit
 
