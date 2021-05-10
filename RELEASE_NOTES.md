@@ -49,7 +49,7 @@ We updated the `template` resource to allow passing the `cookbook_name` variable
 
 #### Windows Resource
 
-We fixed a failure that could occur in multiple Windows resources due to larger 64bit values that logged the error: `RangeError: bignum too big to convert into 'long'`.
+We fixed a failure that could occur in multiple Windows resources due to larger 64-bit values that logged the error: `RangeError: bignum too big to convert into 'long'`.
 
 #### windows_security_policy
 
