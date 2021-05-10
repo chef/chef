@@ -272,7 +272,9 @@ class Chef
             converge_by "set hostname to #{new_resource.hostname}" do
               puts "What username is being used : #{new_resource.domain_user}"
               powershell_exec! <<~EOH
-                if ([string]::IsNullOrEmpty(#{new_resource.domain_user})){
+                $domain_joined = (Get-WmiObject -Class Win32_ComputerSystem).PartofDomain
+
+                if (-not $domain_joined){
                   Rename-Computer -NewName #{new_resource.hostname}
                 }
                 else {
