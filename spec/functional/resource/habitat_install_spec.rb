@@ -44,7 +44,6 @@ describe Chef::Resource::HabitatInstall do
     include RecipeDSLHelper
     include Chef::Mixin::ShellOut
     let(:bldr) { "https://localhost" }
-    let(:tmp_dir) { "/foo/bar" }
     let(:lic) { "accept" }
     let(:version) { "1.5.50" }
 
