@@ -54,6 +54,21 @@ describe Chef::Resource::HabitatInstall do
         expect(verify_hab.call).to include("1.5.50")
       end
     end
+
+    context "install habitat idempotent" do
+      it "not install habitat when installed" do
+        subject.run_action(:install)
+        expect(subject).to not_be_updated_by_last_action
+      end
+    end
+
+    context "update habitat" do
+      it "updates habitat when already installed" do
+        subject.run_action(:update)
+        expect(subject).to be_updated_by_last_action
+        expect(verify_hab.call).to include("1.6")
+      end
+    end
     # it 'installs habitat with a depot url' do
     #   expect(chef_run).to install_habitat_install('install habitat with depot url')
     #     .with(bldr_url: 'https://localhost')
