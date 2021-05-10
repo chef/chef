@@ -3,6 +3,25 @@ require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatInstall do
   include Chef::Mixin::ShellOut
+  include ChefHTTPShared
+
+  let(:file_cache_path) { Dir.mktmpdir }
+
+  before(:each) do
+    @old_file_cache = Chef::Config[:file_cache_path]
+    Chef::Config[:file_cache_path] = file_cache_path
+    Chef::Config[:rest_timeout] = 2
+    Chef::Config[:http_retry_delay] = 1
+    Chef::Config[:http_retry_count] = 2
+  end
+
+  after(:each) do
+    Chef::Config[:file_cache_path] = @old_file_cache
+    FileUtils.rm_rf(file_cache_path)
+  end
+
+  include_context Chef::Resource::File
+
   let(:bldr) { nil }
   let(:tmp_dir) { nil }
   let(:lic) { nil }
