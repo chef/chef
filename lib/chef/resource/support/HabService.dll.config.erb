@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+  <appSettings>
+    <add key="debug" value="false" />
+    <% if @auth_token %>
+    <add key="ENV_HAB_AUTH_TOKEN" value="<%= @auth_token %>" />
+    <% end %>
+    <% if @gateway_auth_token %>
+    <add key="ENV_HAB_SUP_GATEWAY_AUTH_TOKEN" value="<%= @gateway_auth_token %>" />
+    <% end %>
+    <% if @bldr_url %>
+    <add key="ENV_HAB_BLDR_URL" value="<%= @bldr_url %>" />
+    <% end %>
+    <%if  @exec_start_options %>
+    <add key="launcherArgs" value="--no-color <%= @exec_start_options %>" />
+    <% end %>
+    <add key="launcherPath" value="C:\Hab\pkgs\<%= `hab pkg list core/hab-launcher`.split().last %>\bin\hab-launch.exe"/>
+  </appSettings>
+</configuration>

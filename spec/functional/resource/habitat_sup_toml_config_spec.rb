@@ -26,7 +26,6 @@ describe Chef::Resource::HabitatSup do
 
   let(:toml_config) { nil }
   let(:lic) { nil }
-  let(:version) { nil }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
@@ -40,6 +39,7 @@ describe Chef::Resource::HabitatSup do
 
   describe ":run" do
     include RecipeDSLHelper
+    let(:lic) { "accept" }
     let(:toml_config) { true }
 
     context "When toml_config flag is set to true for hab_sup" do

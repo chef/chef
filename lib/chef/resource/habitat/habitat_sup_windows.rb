@@ -24,7 +24,7 @@ class Chef
       provides :habitat_sup_windows
       provides :habitat_sup, os: "windows"
 
-      service_file = "windows/HabService.dll.config.erb"
+      service_file = ::File.expand_path("../support/HabService.dll.config.erb")
       win_service_config = "C:/hab/svc/windows-service/HabService.dll.config"
 
       action :run do
@@ -62,7 +62,7 @@ class Chef
         # win_version = `dir /D /B C:\\hab\\pkgs\\core\\hab-launcher`.split().last
 
         template win_service_config.to_s do
-          source service_file.to_s
+          source ::File.expand_path("../support/HabService.dll.config.erb")
           cookbook "habitat"
           variables exec_start_options: exec_start_options,
                     bldr_url: new_resource.bldr_url,
