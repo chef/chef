@@ -29,7 +29,6 @@ class Chef
         def initialize(new_resource, run_context)
           super
           @real_device = nil
-          initialize_loop_mounts
         end
         attr_accessor :real_device
 
@@ -39,10 +38,6 @@ class Chef
           @current_resource.device(@new_resource.device)
           mounted?
           enabled?
-        end
-
-        def initialize_loop_mounts
-          @loop_mount_points = shell_out!("losetup --list").stdout
         end
 
         def mountable?
