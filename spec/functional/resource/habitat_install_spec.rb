@@ -35,7 +35,7 @@ describe Chef::Resource::HabitatInstall do
     new_resource = Chef::Resource::HabitatInstall.new("clean install", run_context)
     new_resource.license lic
     new_resource.hab_version version if version
-    new_resource.tmp_dir tmp_dir
+    new_resource.tmp_dir tmp_dir if tmp_dir
     new_resource.bldr_url bldr if bldr
     new_resource
   end
@@ -43,7 +43,7 @@ describe Chef::Resource::HabitatInstall do
   describe ":install" do
     include RecipeDSLHelper
     include Chef::Mixin::ShellOut
-    let(:bldr) { "https://localhost" }
+    let(:bldr) { "https://bldr.habitat.sh" }
     let(:lic) { "accept" }
     let(:version) { "1.5.50" }
 
