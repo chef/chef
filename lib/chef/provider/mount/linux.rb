@@ -45,14 +45,6 @@ class Chef
             when /\A#{Regexp.escape(real_mount_point)}\s+#{device_mount_regex}\s/
               mounted = true
               logger.trace("Special device #{device_logstring} mounted as #{real_mount_point}")
-            # Permalink for loop type devices mount points https://rubular.com/r/a0bS4p2RvXsGxx
-            when %r{\A#{Regexp.escape(real_mount_point)}\s+\/dev\/loop+[0-9]+\s}
-              @loop_mount_points.each_line do |mount_point|
-                if mount_point.include? device_real
-                  mounted = true
-                  break
-                end
-              end
             # Permalink for multiple devices mounted to the same mount point(i.e. '/proc') https://rubular.com/r/a356yzspU7N9TY
             when %r{\A#{Regexp.escape(real_mount_point)}\s+([/\w])+\s}
               mounted = false
