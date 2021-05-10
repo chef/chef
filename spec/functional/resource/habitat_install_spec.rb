@@ -20,7 +20,7 @@ describe Chef::Resource::HabitatInstall do
     FileUtils.rm_rf(file_cache_path)
   end
 
-  include_context Chef::Resource::File
+
 
   let(:bldr) { nil }
   let(:tmp_dir) { nil }
@@ -51,7 +51,7 @@ describe Chef::Resource::HabitatInstall do
       it "installs habitat when missing" do
         subject.run_action(:install)
         expect(subject).to be_updated_by_last_action
-        expect(verify_hab.call).to include?("1.5.50")
+        expect(verify_hab.call).to include("1.5.50")
       end
     end
     # it 'installs habitat with a depot url' do
