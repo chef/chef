@@ -163,7 +163,7 @@ class Chef
       end
 
       def installed_version(ident)
-        hab("pkg", "path", ident).stdout.chomp.split(platform_family?("windows") ? '\\' : "/")[-2..-1].join("/")
+        hab("pkg", "path", ident).stdout.chomp.split(platform_family?("windows") ? "\\" : "/")[-2..-1].join("/")
       rescue Mixlib::ShellOut::ShellCommandFailed
         nil
       end
