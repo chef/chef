@@ -26,7 +26,7 @@ describe Chef::Resource::HabitatInstall do
   let(:tmp_dir) { nil }
   let(:lic) { nil }
   let(:version) { nil }
-  let(:verify_hab) { proc { shell_out!("hab -v").stdout.chomp } }
+  let(:verify_hab) { proc { shell_out!("hab -V").stdout.chomp } }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
@@ -51,7 +51,7 @@ describe Chef::Resource::HabitatInstall do
       it "installs habitat when missing" do
         subject.run_action(:install)
         expect(subject).to be_updated_by_last_action
-        expect(verify_hab.call).to eq("1.5.50")
+        expect(verify_hab.call).to include?("1.5.50")
       end
     end
     # it 'installs habitat with a depot url' do
