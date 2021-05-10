@@ -40,7 +40,7 @@ describe Chef::Resource::HabitatSup do
 
   describe ":run" do
     include RecipeDSLHelper
-    let(:toml_config) { "true" }
+    let(:toml_config) { true }
 
     context "When toml_config flag is set to true for hab_sup" do
       it "Creates Supervisor toml configuration file" do
