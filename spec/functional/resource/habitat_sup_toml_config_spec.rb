@@ -17,6 +17,9 @@ describe Chef::Resource::HabitatSup do
     allow(Dir).to receive(:exist?).and_call_original
     allow(Dir).to receive(:exist?).with("/hab").and_return(true)
     allow(Dir).to receive(:exist?).with("/hab/sup/default/config").and_return(true)
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with("/hab").and_return(true)
+    allow(File).to receive(:exist?).with("/hab/sup/default/config/sup.toml").and_return(true)
   end
 
   after(:each) do
@@ -54,7 +57,7 @@ describe Chef::Resource::HabitatSup do
         subject.run_action(:run)
         expect(subject).to be_updated_by_last_action
         expect(subject).to create_directory("/hab/sup/default/config")
-        expect(subject).to create_template("/hab/sup/default/config/sup.toml")
+        expect(subject).to create_file("/hab/sup/default/config/sup.toml")
       end
     end
   end
