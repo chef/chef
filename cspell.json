@@ -837,6 +837,7 @@
     "logstring",
     "LONGLONG",
     "loopback",
+    "losetup",
     "lowercased",
     "LOWORD",
     "lpar",
