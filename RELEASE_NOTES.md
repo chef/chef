@@ -65,7 +65,7 @@ We've made multiple improvements to how we interact with the systems RPM databas
 
 ### Packaging
 
-### Improved Depedencies
+### Improved Dependencies
 
 Chef Infra Client 17.1 is once again smaller than previous releases thanks to reduced dependencies in the packages.
 
