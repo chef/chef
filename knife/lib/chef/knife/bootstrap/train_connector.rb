@@ -130,7 +130,7 @@ class Chef
                         if config[:sudo]
                           # While using ssh config file user might present in ssh file
                           user = config[:user] || ssh_config_for_host(config[:host])[:user]
-                          run_command!("chown #{config[:user]} '#{dir}'")
+                          run_command!("chown #{user} '#{dir}'")
                         end
                         dir
                       end
