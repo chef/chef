@@ -53,16 +53,22 @@ describe Chef::Resource::HabitatInstall do
         expect(subject).to be_updated_by_last_action
         expect(verify_hab.call).to include("1.5.50")
       end
-    end
 
-    context "install habitat idempotent" do
-      it "not install habitat when installed" do
+
+    it "does not install habitat when installed" do
         subject.run_action(:install)
         expect(subject).not_to be_updated_by_last_action
       end
     end
 
+
     context "update habitat" do
+      it "installs older version of habitat" do
+        subject.run_action(:install)
+        expect(subject).to be_updated_by_last_action
+        expect(verify_hab.call).to include("1.5.50")
+      end
+
       it "updates habitat when already installed" do
         subject.run_action(:upgrade)
         expect(subject).to be_updated_by_last_action
