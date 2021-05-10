@@ -58,7 +58,7 @@ describe Chef::Resource::HabitatInstall do
     context "install habitat idempotent" do
       it "not install habitat when installed" do
         subject.run_action(:install)
-        expect(subject).to not_be_updated_by_last_action
+        expect(subject).not_to be_updated_by_last_action
       end
     end
 
