@@ -64,7 +64,7 @@ describe Chef::Resource::HabitatInstall do
 
     context "update habitat" do
       it "updates habitat when already installed" do
-        subject.run_action(:update)
+        subject.run_action(:upgrade)
         expect(subject).to be_updated_by_last_action
         expect(verify_hab.call).to include("1.6")
       end
