@@ -260,27 +260,8 @@ class Chef
               converge_by "set hostname to #{new_resource.hostname}" do
                 powershell_exec! <<~EOH
                   Rename-Computer -NewName #{new_resource.hostname}
-<<<<<<< HEAD
                 EOH
               end
-=======
-                }
-                else {
-                  $temp_user = #{new_resource.domain_user}
-                  $temp_password = #{new_resource.domain_password}
-                  if ([string]::IsNullOrEmpty($temp_user)){
-                    $temp_user = "Chef"
-                  }
-                  if ([string]::IsNullOrEmpty($temp_password)){
-                    $temp_user = "P@ssw0rd"
-                  }
-                  $user = $temp_user
-                  $secure_password = $temp_password | Convertto-SecureString -AsPlainText -Force
-                  $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
-                  Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
-                }
-              EOH
->>>>>>> 960c3335e4 (adding filler details in the event domain user and domain password are blank. This is being done solely to get past the test framework which is busted)
             end
 
             # reboot because $windows
