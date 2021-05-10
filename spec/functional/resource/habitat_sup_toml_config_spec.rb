@@ -31,7 +31,13 @@ describe Chef::Resource::HabitatSup do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
-  subject do
+  subject2 do
+    new_resource = Chef::Resource::HabitatInstall.new("install supervisor with toml_config", run_context)
+    new_resource.license lic
+    new_resource
+  end
+
+  subject2 do
     new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config", run_context)
     new_resource.license lic
     new_resource.toml_config toml_config if toml_config
@@ -40,15 +46,20 @@ describe Chef::Resource::HabitatSup do
 
   describe ":run" do
     include RecipeDSLHelper
-    include Chef::Resource::Habitatinstall
-    include Chef::Resource::HabitatPackage
     let(:toml_config) { true }
 
     context "When toml_config flag is set to true for hab_sup" do
-      it "Creates Supervisor toml configuration file" do
-        subject.run_action(:run)
-        expect(subject).to create_directory("/hab/sup/default/config")
-        expect(subject).to create_template("/hab/sup/default/config/sup.toml")
+
+      it "installs habitat" do
+        subject1.run_action(:install)
+        expect(subject).to be_updated_by_last_action
+      end
+
+      it "installs supervisor with toml configuration file" do
+        subject2.run_action(:run)
+        expect(subject).to be_updated_by_last_action
+        expect(subject2).to create_directory("/hab/sup/default/config")
+        expect(subject2).to create_template("/hab/sup/default/config/sup.toml")
       end
     end
   end
