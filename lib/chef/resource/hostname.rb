@@ -270,7 +270,8 @@ class Chef
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             converge_by "set hostname to #{new_resource.hostname}" do
-              puts "What username is being used : #{new_resource.domain_user}"
+              # The bogus domain_user and domain_password variables are being used to get past a parsing bug in the test matrix.
+              # in a real-world scenario you could never try to rename a  domain-joined system without a username and password
               powershell_exec! <<~EOH
                 $domain_joined = (Get-WmiObject -Class Win32_ComputerSystem).PartofDomain
 
