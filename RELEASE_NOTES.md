@@ -45,7 +45,7 @@ We updated the `systemd_unit` resource to resolve a regression in Chef Infra Cli
 
 #### template
 
-The `template` resource has been updated to allow passing the `cookbook_name` variable to template files.
+We updated the `template` resource to allow passing the `cookbook_name` variable to template files.
 
 #### Windows Resource
 
