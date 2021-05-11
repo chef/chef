@@ -35,8 +35,7 @@ describe Chef::Resource::HabitatSup do
   end
 
   subject do
-    new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config"
-    run_context)
+    new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config", run_context)
     new_resource.license lic
     new_resource.listen_http listener
     new_resource.listen_gossip gossip
