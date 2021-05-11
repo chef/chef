@@ -31,10 +31,6 @@ We've extended support for Unified Mode to the `edit_resource` helper and also i
 
 ### Resource Improvements
 
-#### hostname
-
-The `hostname` resource now supports changing the hostname on Active Directory connected Windows hosts when using new `domain_user` and `domain_password` properties.
-
 #### service on systemd Hosts
 
 The `service` resource on systemd hosts will now properly load the state of the service. Thanks for this fix [@ramereth](https://github.com/ramereth)!
@@ -65,13 +61,13 @@ We've made multiple improvements to how we interact with the systems RPM databas
 
 ### Packaging
 
-### Improved Dependencies
+#### Improved Dependencies
 
 Chef Infra Client 17.1 is once again smaller than previous releases thanks to reduced dependencies in the packages.
 
-### RHEL 8 Packages
+#### RHEL 8 Packages
 
-We imporved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
 
 ## What's New in 17.0
 
