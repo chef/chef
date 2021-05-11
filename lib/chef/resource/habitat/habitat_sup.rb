@@ -118,6 +118,7 @@ class Chef
 
           template "/hab/sup/default/config/sup.toml" do
             source ::File.expand_path("../support/sup.toml.erb", _dir_)
+            local true
             sensitive true
             variables(
               bldr_url: new_resource.bldr_url,
