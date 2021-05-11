@@ -30,7 +30,7 @@ describe Chef::Resource::HabitatSup do
   let(:lic) { nil }
   let(:listener) { nil }
   let(:gossip) { nil }
-  let(:verify_toml) { proc { shell_out!("ls -a /hab/sup/default.config").stdout.chomp } }
+  let(:verify_toml) { proc { shell_out!("ls -a /hab/sup/default/config/").stdout.chomp } }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
