@@ -17,6 +17,9 @@ describe Chef::Resource::HabitatSup do
     allow(Dir).to receive(:exist?).and_call_original
     allow(Dir).to receive(:exist?).with("/hab").and_return(true)
     allow(Dir).to receive(:exist?).with("/hab/sup/default/config").and_return(true)
+    allow(File).to receive(:exist?).and_call_original
+    allow(File).to receive(:exist?).with("/hab").and_return(true)
+    allow(File).to receive(:exist?).with("/hab/sup/default/config/sup.toml").and_return(true)
   end
 
   after(:each) do
