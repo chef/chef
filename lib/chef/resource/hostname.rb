@@ -71,6 +71,13 @@ class Chef
         description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
         default: true
 
+      property :domain_user, String,
+        description: "A domain account specified in the form of DOMAIN\\user used when renaming a domain-joined device"
+
+      property :domain_password, String,
+        description: "The password to accompany the domain_user parameter",
+        sensitive: true
+
       action_class do
         def append_replacing_matching_lines(path, regex, string)
           text = IO.read(path).split("\n")

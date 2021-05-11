@@ -71,7 +71,7 @@ Chef Infra Client 17.1 is once again smaller than previous releases thanks to re
 
 ### RHEL 8 Packages
 
-We imporved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
+We improved our RHEL 8 packages with additional RHEL 8 optimizations and EL8 in the filename.
 
 ## What's New in 17.0
 
