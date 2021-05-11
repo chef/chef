@@ -25,6 +25,7 @@ describe Chef::Resource::HabitatSup do
   end
 
   include_context Chef::Resource::File
+  let(:file_base) { "habitat_sup_toml_config_spec" }
 
 
   let(:toml_config) { nil }
