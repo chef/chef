@@ -63,6 +63,7 @@ class Chef
 
         template win_service_config.to_s do
           source ::File.expand_path("../support/HabService.dll.config.erb")
+          local true
           cookbook "habitat"
           variables exec_start_options: exec_start_options,
                     bldr_url: new_resource.bldr_url,

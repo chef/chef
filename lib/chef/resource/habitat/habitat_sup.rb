@@ -82,7 +82,8 @@ class Chef
           end
 
           template "C:/hab/sup/default/config/sup.toml" do
-            source "sup/sup.toml.erb"
+            source ::File.expand_path("../support/sup.toml.erb")
+            local true
             sensitive true
             variables(
               bldr_url: new_resource.bldr_url,
@@ -117,7 +118,7 @@ class Chef
           end
 
           template "/hab/sup/default/config/sup.toml" do
-            source ::File.expand_path("../support/sup.toml.erb", _dir_)
+            source ::File.expand_path("../support/sup.toml.erb")
             local true
             sensitive true
             variables(
