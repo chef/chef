@@ -28,7 +28,6 @@ class Chef
         use_multipackage_api
         use "../../resource/habitat/habitat_shared"
         provides :habitat_package
-        provides :hart_package
 
         #
         # TODO list for `hab pkg`:

@@ -22,8 +22,6 @@ class Chef
   class Resource
     class HartPackage < Chef::Resource::Package
       resource_name :habitat_package
-
-      provides :hart_package
       provides :habitat_package
       use "habitat_shared"
       description "Install the specified Habitat package from builder. Requires that Habitat is installed"
