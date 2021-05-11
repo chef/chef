@@ -82,7 +82,7 @@ class Chef
           end
 
           template "C:/hab/sup/default/config/sup.toml" do
-            source ::File.expand_path("../support/sup.toml.erb")
+            source ::File.expand_path("../support/sup.toml.erb", __dir__)
             local true
             sensitive true
             variables(
@@ -118,7 +118,7 @@ class Chef
           end
 
           template "/hab/sup/default/config/sup.toml" do
-            source ::File.expand_path("../support/sup.toml.erb")
+            source ::File.expand_path("../support/sup.toml.erb", __dir__)
             local true
             sensitive true
             variables(
