@@ -72,7 +72,7 @@ class Chef
         env "path" do
           action :modify
           delim ::File::PATH_SEPARATOR
-          value path.tr("/", '\\')
+          value path.tr("/", "\\")
         end
       end
 
@@ -84,7 +84,7 @@ class Chef
         env "path" do
           action :delete
           delim ::File::PATH_SEPARATOR
-          value path.tr("/", '\\')
+          value path.tr("/", "\\")
         end
       end
     end

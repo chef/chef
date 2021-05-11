@@ -1,10 +1,10 @@
 GIT
   remote: https://github.com/chef/chefstyle.git
-  revision: 6b08692b230b9766b9e730c57aca8a94b0749782
+  revision: aabbd0cd0b6ad646e55370277ee5af4eefed148a
   branch: master
   specs:
-    chefstyle (2.0.1)
-      rubocop (= 1.13.0)
+    chefstyle (2.0.3)
+      rubocop (= 1.14.0)
 
 GIT
   remote: https://github.com/chef/ohai.git
@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.1.30)
+    chef (17.1.35)
       addressable
-      chef-config (= 17.1.30)
-      chef-utils (= 17.1.30)
+      chef-config (= 17.1.35)
+      chef-utils (= 17.1.35)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.1.30-universal-mingw32)
+    chef (17.1.35-universal-mingw32)
       addressable
-      chef-config (= 17.1.30)
-      chef-utils (= 17.1.30)
+      chef-config (= 17.1.35)
+      chef-utils (= 17.1.35)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.1.30)
-      chef (= 17.1.30)
+    chef-bin (17.1.35)
+      chef (= 17.1.35)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.1.30)
+    chef-config (17.1.35)
       addressable
-      chef-utils (= 17.1.30)
+      chef-utils (= 17.1.35)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.1.30)
+    chef-utils (17.1.35)
       concurrent-ruby
 
 GEM
@@ -290,13 +290,13 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.10.0)
     rspec-support (3.10.2)
-    rubocop (1.13.0)
+    rubocop (1.14.0)
       parallel (~> 1.10)
       parser (>= 3.0.0.0)
       rainbow (>= 2.2.2, < 4.0)
       regexp_parser (>= 1.8, < 3.0)
       rexml
-      rubocop-ast (>= 1.2.0, < 2.0)
+      rubocop-ast (>= 1.5.0, < 2.0)
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 3.0)
     rubocop-ast (1.5.0)

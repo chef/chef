@@ -549,7 +549,7 @@ class Chef
           if @current_resource.exists
             task.get_task(new_resource.task_name)
             @current_resource.task = task
-            pathed_task_name = new_resource.task_name.start_with?('\\') ? new_resource.task_name : "\\#{new_resource.task_name}"
+            pathed_task_name = new_resource.task_name.start_with?("\\") ? new_resource.task_name : "\\#{new_resource.task_name}"
             @current_resource.task_name(pathed_task_name)
           end
           @current_resource

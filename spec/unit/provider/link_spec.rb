@@ -41,7 +41,7 @@ describe Chef::Resource::Link do
   end
 
   def canonicalize(path)
-    ChefUtils.windows? ? path.tr("/", '\\') : path
+    ChefUtils.windows? ? path.tr("/", "\\") : path
   end
 
   describe "when the target is a symlink" do
