@@ -58,7 +58,7 @@ include_recipe "openssh"
 
 include_recipe "nscd"
 
-include_recipe "logrotate"
+logrotate_package "logrotate"
 
 include_recipe "git"
 
