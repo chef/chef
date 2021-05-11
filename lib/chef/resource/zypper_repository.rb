@@ -31,7 +31,7 @@ class Chef
       examples <<~DOC
         **Add the Apache repo on openSUSE Leap 15**:
 
-        ``` ruby
+        ```ruby
         zypper_repository 'apache' do
           baseurl 'http://download.opensuse.org/repositories/Apache'
           path '/openSUSE_Leap_15.0'

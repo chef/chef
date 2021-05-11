@@ -29,7 +29,7 @@ class Chef
       examples <<~DOC
       **Disable UAC prompts for the admin**:
 
-      ``` ruby
+      ```ruby
       windows_uac 'Disable UAC prompts for the admin' do
         enable_uac true
         prompt_on_secure_desktop false
@@ -39,7 +39,7 @@ class Chef
 
       **Disable UAC entirely**:
 
-      ``` ruby
+      ```ruby
       windows_uac 'Disable UAC entirely' do
         enable_uac false
       end

@@ -49,7 +49,7 @@ class Chef
 
       **Create a scheduled task to run every 2 days**:
 
-      ``` ruby
+      ```ruby
       windows_task 'chef-client' do
         command 'chef-client'
         run_level :highest

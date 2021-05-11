@@ -30,13 +30,13 @@ class Chef
       examples <<~DOC
       **Join a workgroup**:
 
-      ``` ruby
+      ```ruby
       windows_workgroup 'myworkgroup'
       ```
 
       **Join a workgroup using a specific user**:
 
-      ``` ruby
+      ```ruby
       windows_workgroup 'myworkgroup' do
         user 'Administrator'
         password 'passw0rd'
