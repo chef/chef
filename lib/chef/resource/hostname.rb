@@ -58,8 +58,8 @@ class Chef
         ```ruby
         hostname 'renaming a domain-joined computer' do
           hostname 'Foo'
-          domain_user 'Domain\Someone'
-          domain_password 'SomePassword'
+          windows_domain_username 'Domain\Someone'
+          windows_user_password 'SomePassword'
         end
         ```
       DOC
@@ -89,10 +89,10 @@ class Chef
         description: "Determines whether or not Windows should be reboot after changing the hostname, as this is required for the change to take effect.",
         default: true
 
-      property :domain_user, String,
+      property :windows_domain_username, String,
         description: "The domain username with permissions to change the local hostname. Specified in the form of 'Domain\User'"
 
-      property :domain_password, String,
+      property :windows_user_password, String,
         description: "The password associated with the domain user account"
 
       action_class do
@@ -273,10 +273,17 @@ class Chef
                   Rename-Computer -NewName #{new_resource.hostname}
                 }
                 else {
+<<<<<<< HEAD
+                  $user = #{new_resource.windows_domain_username}
+                  $securepassword = #{new_resource.windows_user_password} | Convertto-SecureString -AsPlainText -Force
+                  $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $securepassword)
+                  Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credemtials
+=======
                   $user = #{new_resource.domain_user}
                   $secure_password = #{new_resource.domain_password} | Convertto-SecureString -AsPlainText -Force
                   $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
                   Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
+>>>>>>> a9412d86d0... the spelling mistakes are killing me. Corrected calling the correct property names for the Windows domain user
                 }
               EOH
             end
