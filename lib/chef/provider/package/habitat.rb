@@ -24,7 +24,7 @@ require_relative "../../resource/habitat/habitat_package"
 class Chef
   class Provider
     class Package
-      class Habitat < Chef::Provider::Package
+      class Hart < Chef::Provider::Package
         use_multipackage_api
         use_package_name_for_source
         use "../../resource/habitat/habitat_shared"
