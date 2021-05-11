@@ -279,18 +279,15 @@ class Chef
                   Rename-Computer -NewName #{new_resource.hostname}
                 }
                 else {
-                  $temp_user = #{new_resource.domain_user}
-                  $temp_password = #{new_resource.domain_password}
-                  if ([string]::IsNullOrEmpty($temp_user)){
-                    $temp_user = "Chef"
+                  try {
+                    $user = #{new_resource.domain_user}
+                    $secure_password = #{new_resource.domain_password} | Convertto-SecureString -AsPlainText -Force
+                    $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
+                    Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
                   }
-                  if ([string]::IsNullOrEmpty($temp_password)){
-                    $temp_user = "P@ssw0rd"
+                  catch {
+                    Write-Error "Username or Password parameters are invalid. Please verify them and try again"
                   }
-                  $user = $temp_user
-                  $secure_password = $temp_password | Convertto-SecureString -AsPlainText -Force
-                  $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
-                  Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
                 }
               EOH
             end
