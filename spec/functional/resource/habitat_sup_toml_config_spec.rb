@@ -3,7 +3,6 @@ require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatSup do
   include Chef::Mixin::ShellOut
-  include ChefHTTPShared
 
   let(:file_cache_path) { Dir.mktmpdir }
 
@@ -17,9 +16,6 @@ describe Chef::Resource::HabitatSup do
     allow(Dir).to receive(:exist?).and_call_original
     allow(Dir).to receive(:exist?).with("/hab").and_return(true)
     allow(Dir).to receive(:exist?).with("/hab/sup/default/config").and_return(true)
-    allow(File).to receive(:exist?).and_call_original
-    allow(File).to receive(:exist?).with("/hab").and_return(true)
-    allow(File).to receive(:exist?).with("/hab/sup/default/config/sup.toml").and_return(true)
   end
 
   after(:each) do
@@ -28,9 +24,8 @@ describe Chef::Resource::HabitatSup do
   end
 
   include_context Chef::Resource::File
+
   let(:file_base) { "habitat_sup_toml_config_spec" }
-
-
   let(:toml_config) { nil }
   let(:lic) { nil }
   let(:listener) { nil }
@@ -40,7 +35,8 @@ describe Chef::Resource::HabitatSup do
   end
 
   subject do
-    new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config", run_context)
+    new_resource = Chef::Resource::HabitatSup.new("install supervisor with toml_config"
+    run_context)
     new_resource.license lic
     new_resource.listen_http listener
     new_resource.listen_gossip gossip
