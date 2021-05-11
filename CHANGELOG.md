@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.34 -->
-## [v17.1.34](https://github.com/chef/chef/tree/v17.1.34) (2021-05-11)
+<!-- latest_release 17.1.35 -->
+## [v17.1.35](https://github.com/chef/chef/tree/v17.1.35) (2021-05-11)
 
 #### Merged Pull Requests
-- Strip the __env_path variable in the which helper [#11561](https://github.com/chef/chef/pull/11561) ([tas50](https://github.com/tas50))
+- Revert windows hostname changes for now [#11564](https://github.com/chef/chef/pull/11564) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.0.242 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Revert windows hostname changes for now [#11564](https://github.com/chef/chef/pull/11564) ([tas50](https://github.com/tas50)) <!-- 17.1.35 -->
 - Strip the __env_path variable in the which helper [#11561](https://github.com/chef/chef/pull/11561) ([tas50](https://github.com/tas50)) <!-- 17.1.34 -->
 - Revert &quot;Kept a check in pattern matching for a mount of type loop&quot; [#11557](https://github.com/chef/chef/pull/11557) ([tas50](https://github.com/tas50)) <!-- 17.1.33 -->
 - mount: Fix idempotentency for loopback mounts [#11376](https://github.com/chef/chef/pull/11376) ([msys-sgarg](https://github.com/msys-sgarg)) <!-- 17.1.32 -->
