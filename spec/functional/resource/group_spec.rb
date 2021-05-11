@@ -72,7 +72,7 @@ describe Chef::Resource::Group, :requires_root_or_running_windows do
   end
 
   def windows_domain_user?(user_name)
-    domain, user = user_name.split('\\')
+    domain, user = user_name.split("\\")
 
     if user && domain != "."
       computer_name = ENV["computername"]

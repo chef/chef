@@ -163,7 +163,7 @@ describe Chef::Application::Knife do
         expect(@knife).to receive(:exit).with(0)
         @knife.run
       end
-      expect(Chef::Config[:client_key]).to eq(File.join(ENV["HOME"], ".chef/client.pem").gsub((File::ALT_SEPARATOR || '\\'), File::SEPARATOR))
+      expect(Chef::Config[:client_key]).to eq(File.join(ENV["HOME"], ".chef/client.pem").gsub((File::ALT_SEPARATOR || "\\"), File::SEPARATOR))
     end
 
     it "does not expand a full path" do

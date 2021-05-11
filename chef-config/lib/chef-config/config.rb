@@ -71,8 +71,8 @@ module ChefConfig
         # Some installations will be on different drives so use the drive that
         # the expanded path to __FILE__ is found.
         drive = windows_installation_drive
-        if drive && path[0] == '\\' && path.split('\\')[2] == "chef"
-          path = PathHelper.join(drive, path.split('\\', 3)[2])
+        if drive && path[0] == "\\" && path.split("\\")[2] == "chef"
+          path = PathHelper.join(drive, path.split("\\", 3)[2])
         end
       end
       path

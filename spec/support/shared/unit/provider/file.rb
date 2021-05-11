@@ -36,7 +36,7 @@ end
 
 # forwards-vs-reverse slashes on windows sucks
 def windows_path
-  windows? ? normalized_path.tr('\\', "/") : normalized_path
+  windows? ? normalized_path.tr("\\", "/") : normalized_path
 end
 
 # this is all getting a bit stupid, CHEF-4802 cut to remove all this

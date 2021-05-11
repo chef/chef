@@ -43,7 +43,7 @@ end
 # This is a helper to canonicalize paths that we're using in the file
 # tests.
 def canonicalize_path(path)
-  windows? ? path.tr("/", '\\') : path
+  windows? ? path.tr("/", "\\") : path
 end
 
 # Makes a temp directory with a canonical path on any platform.

@@ -38,7 +38,7 @@ describe Chef::Resource::WindowsEnv, :windows_only do
       if environment_variables && environment_variables.length > 0
         environment_variables.each do |env|
           env_obj = env.wmi_ole_object
-          return env_obj if env_obj.username.split('\\').last.casecmp(test_resource.user) == 0
+          return env_obj if env_obj.username.split("\\").last.casecmp(test_resource.user) == 0
         end
       end
       nil
@@ -93,7 +93,7 @@ describe Chef::Resource::WindowsEnv, :windows_only do
         test_resource.value(env_value1)
         test_resource.user(env_user)
         test_resource.run_action(:create)
-        expect(env_obj.username.split('\\').last.upcase).to eq(env_user)
+        expect(env_obj.username.split("\\").last.upcase).to eq(env_user)
       end
 
       context "when env variable exist with same name" do

@@ -56,7 +56,7 @@ class Chef
       DOC
 
       property :path, String,
-        coerce: proc { |x| x.tr("/", '\\') },
+        coerce: proc { |x| x.tr("/", "\\") },
         description: "An optional property to set the pagefile name if it differs from the resource block's name.",
         name_property: true
 
@@ -220,7 +220,7 @@ class Chef
         end
 
         def get_setting_id(pagefile)
-          split_path = pagefile.split('\\')
+          split_path = pagefile.split("\\")
           "#{split_path[1]} @ #{split_path[0]}"
         end
 
