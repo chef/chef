@@ -24,6 +24,9 @@ describe Chef::Resource::HabitatSup do
     FileUtils.rm_rf(file_cache_path)
   end
 
+  include_context Chef::Resource::File
+
+
   let(:toml_config) { nil }
   let(:lic) { nil }
   let(:listener) { nil }
@@ -47,7 +50,7 @@ describe Chef::Resource::HabitatSup do
     let(:toml_config) { true }
     let(:listener) { "0.0.0.0:9997" }
     let(:gossip) { "0.0.0.0:9998" }
-    let(:file) { "/hab/sup/default/config/sup.toml" }
+    let(:toml) { "/hab/sup/default/config/sup.toml" }
 
     context "When toml_config flag is set to true for hab_sup" do
 
@@ -61,7 +64,7 @@ describe Chef::Resource::HabitatSup do
         subject.run_action(:run)
         expect(subject).to be_updated_by_last_action
         expect(subject).to create_directory("/hab/sup/default/config")
-        expect(file).to be_an_existing_file
+        expect(File).to exist(toml)
       end
     end
   end
