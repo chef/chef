@@ -20,7 +20,7 @@ require_relative "../package"
 
 class Chef
   class Resource
-    class HartPackage < Chef::Resource::Package
+    class HabitatPackage < Chef::Resource::Package
       resource_name :habitat_package
       provides :habitat_package
       use "habitat_shared"
