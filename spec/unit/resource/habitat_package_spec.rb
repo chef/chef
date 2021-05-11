@@ -7,13 +7,13 @@ describe Chef::Resource::HabitatPackage, "initialize" do
     resource: Chef::Resource::HabitatPackage,
     provider: Chef::Provider::Package::Habitat,
     name: :habitat_package,
-    action: :install,
+    action: :install
   )
 
 end
 
 describe Chef::Resource::DnfPackage, "defaults" do
-let(:resource) { Chef::Resource::HabitatPackage.new("core/redis") }
+  let(:resource) { Chef::Resource::HabitatPackage.new("core/redis") }
 
   it "sets the default action as :install" do
     expect(resource.action).to eql([:install])
