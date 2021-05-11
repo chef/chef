@@ -140,10 +140,6 @@ end
 
 include_recipe "::_ohai_hint"
 
-hostname "new-hostname" do
-  windows_reboot false
-end
-
 user "phil" do
   uid "8019"
 end
