@@ -129,6 +129,11 @@ class Chef
         end
       end
 
+      def is_domain_joined?
+          powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).PartofDomain").result
+          # raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.errors}}" if node_domain.error?
+      end
+
       action :set, description: "Sets the node's hostname" do
         if !windows?
           ohai "reload hostname" do
@@ -269,29 +274,26 @@ class Chef
           end
 
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
-            converge_by "set hostname to #{new_resource.hostname}" do
-              # The bogus domain_user and domain_password variables are being used to get past a parsing bug in the test matrix.
-              # in a real-world scenario you could never try to rename a  domain-joined system without a username and password
-              powershell_exec! <<~EOH
-                $domain_joined = (Get-WmiObject -Class Win32_ComputerSystem).PartofDomain
-
-                if (-not $domain_joined){
-                  Rename-Computer -NewName #{new_resource.hostname}
-                }
-                else {
-                  try {
+            if is_domain_joined?
+              if new_resource.domain_user.nil? || new_resource.domain_password.nil?
+                raise "Domain Username and Password are required parameters"
+              else
+                converge_by "set hostname to #{new_resource.hostname}" do
+                  powershell_exec! <<~EOH
                     $user = #{new_resource.domain_user}
                     $secure_password = #{new_resource.domain_password} | Convertto-SecureString -AsPlainText -Force
                     $Credentials = New-Object System.Management.Automation.PSCredential -Argumentlist ($user, $secure_password)
                     Rename-Computer -NewName #{new_resource.hostname} -DomainCredential $Credentials
-                  }
-                  catch {
-                    Write-Error "Username or Password parameters are invalid. Please verify them and try again"
-                  }
-                }
-              EOH
+                  EOH
+                end
+              end
+            else
+              converge_by "set hostname to #{new_resource.hostname}" do
+                powershell_exec! <<~EOH
+                  Rename-Computer -NewName #{new_resource.hostname}
+                EOH
+              end
             end
-
             # reboot because $windows
             reboot "setting hostname" do
               reason "#{ChefUtils::Dist::Infra::PRODUCT} updated system hostname"
