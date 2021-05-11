@@ -63,7 +63,7 @@ describe Chef::Resource::HabitatSup do
         subject.run_action(:run)
         expect(subject).to be_updated_by_last_action
         expect(subject).to create_directory("/hab/sup/default/config")
-        expect(File).to exist(toml)
+        ::File.exist?(toml)
       end
     end
   end
