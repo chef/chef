@@ -1,7 +1,18 @@
 require "spec_helper"
+require "support/shared/unit/resource/static_provider_resolution"
 
-describe Chef::Resource::HabitatPackage do
+describe Chef::Resource::HabitatPackage, "initialize" do
 
+  static_provider_resolution(
+    resource: Chef::Resource::HabitatPackage,
+    provider: Chef::Provider::Package::Habitat,
+    name: :habitat_package,
+    action: :install
+  )
+
+end
+
+describe Chef::Resource::DnfPackage, "defaults" do
   let(:resource) { Chef::Resource::HabitatPackage.new("core/redis") }
 
   it "sets the default action as :install" do
