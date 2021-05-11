@@ -3,7 +3,6 @@ require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatPackage do
   include Chef::Mixin::ShellOut
-  include Chef::Provider::Package::Habitat
   let(:file_cache_path) { Dir.mktmpdir }
 
   before(:each) do
@@ -28,14 +27,26 @@ describe Chef::Resource::HabitatPackage do
   let(:options) { nil }
   let(:keep_latest) { nil }
   let(:no_deps) { nil }
+  let(:provider) do
+    provider = subject.provider_for_action(subject.action)
+    provider
+  end
   let(:verify_toml) { proc { shell_out!("ls -a /hab/sup/default/config/").stdout.chomp } }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
+  subject do
+    new_resource = Chef::Resource::HabitatPackage.new(package_name, run_context)
+    new_resource.bldr_url bldr_url if bldr_url
+    new_resource.channel channel if channel
+    new_resource.auth_token auth_token if auth_token
+    new_resource.binlink binlink if binlink
+    new_resource
+  end
+
   describe ":install" do
     include RecipeDslHelper
-    let(:binlink) { true }
 
     context "Installs habitat packages" do
 
@@ -46,8 +57,8 @@ describe Chef::Resource::HabitatPackage do
       end
 
       it "installs core/redis" do
-        habitat_package("core/redis") do
-        end.should_be_updated
+        subject.run_action(:run)
+        expect(subject).to be_updated_by_last_action
       end
 
       it "installs core/bundler with specified version" do
