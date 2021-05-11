@@ -90,11 +90,11 @@ class Chef
         default: true
 
       property :domain_user, String,
-        description: "The domain username with permissions to change the local hostname. Specified in the form of 'Domain\User'. (Windows hosts only)",
+        description: "The domain username with permissions to change the local hostname. Specified in the form of 'Domain\User'",
         introduced: "17.1"
 
       property :domain_password, String,
-        description: "The password associated with the domain user account. (Windows hosts only)",
+        description: "The password associated with the domain user account",
         introduced: "17.1"
 
       action_class do
