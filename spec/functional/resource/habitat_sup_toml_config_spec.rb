@@ -12,10 +12,6 @@ describe Chef::Resource::HabitatSup do
     Chef::Config[:rest_timeout] = 2
     Chef::Config[:http_retry_delay] = 1
     Chef::Config[:http_retry_count] = 2
-    allow(Chef::Platform::ServiceHelpers).to receive(:service_resource_providers).and_return([:systemd])
-    allow(Dir).to receive(:exist?).and_call_original
-    allow(Dir).to receive(:exist?).with("/hab").and_return(true)
-    allow(Dir).to receive(:exist?).with("/hab/sup/default/config").and_return(true)
   end
 
   after(:each) do
@@ -23,9 +19,6 @@ describe Chef::Resource::HabitatSup do
     FileUtils.rm_rf(file_cache_path)
   end
 
-  include_context Chef::Resource::File
-
-  let(:file_base) { "habitat_sup_toml_config_spec" }
   let(:toml_config) { nil }
   let(:lic) { nil }
   let(:listener) { nil }
