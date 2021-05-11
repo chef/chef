@@ -52,18 +52,12 @@ describe Chef::Resource::Hostname, :windows_only do
     new_resource
   end
 
-
   describe "Changing machine names" do
-
     context "the system does not get renamed when in a domain" do
-
       it "does not change" do
         subject.windows_reboot false
         expect(subject).to_not be_updated_by_last_action
       end
-
     end
-
   end
-
 end
