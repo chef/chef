@@ -103,6 +103,11 @@ class Chef
         end
       end
 
+      def is_domain_joined?
+          powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).PartofDomain").result
+          # raise "Failed to check if the system is joined to the domain #{new_resource.domain_name}: #{node_domain.errors}}" if node_domain.error?
+      end
+
       action :set, description: "Sets the node's hostname" do
         if !windows?
           ohai "reload hostname" do
@@ -263,7 +268,6 @@ class Chef
                 EOH
               end
             end
-
             # reboot because $windows
             reboot "setting hostname" do
               reason "#{ChefUtils::Dist::Infra::PRODUCT} updated system hostname"
