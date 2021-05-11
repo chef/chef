@@ -27,11 +27,6 @@ describe Chef::Resource::HabitatPackage do
   let(:options) { nil }
   let(:keep_latest) { nil }
   let(:no_deps) { nil }
-  let(:provider) do
-    provider = subject.provider_for_action(subject.action)
-    provider
-  end
-  let(:verify_toml) { proc { shell_out!("ls -a /hab/sup/default/config/").stdout.chomp } }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end

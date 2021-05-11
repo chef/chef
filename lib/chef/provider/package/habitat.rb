@@ -28,7 +28,7 @@ class Chef
         use_multipackage_api
         use_package_name_for_source
         use "../../resource/habitat/habitat_shared"
-        provides :package
+        provides :hart_package
         provides :habitat_package
 
         #
