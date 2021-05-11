@@ -46,7 +46,7 @@ describe Chef::Resource::HabitatPackage do
   end
 
   describe ":install" do
-    include RecipeDslHelper
+    include RecipeDSLHelper
 
     context "Installs habitat packages" do
 
