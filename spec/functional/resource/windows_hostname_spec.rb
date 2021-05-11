@@ -27,7 +27,7 @@ describe Chef::Resource::Hostname, :windows_only do
   end
 
   let(:new_hostname) { "New-Hostname" }
-  let(:local_domain_user) { "chef" }
+  let(:local_domain_user) { "DOMAIN\\Groucho" }
   let(:local_domain_password) { "P@ssw0rd" }
   let(:local_windows_reboot) { false }
   let(:domain_status) { get_domain_status }
@@ -44,7 +44,7 @@ describe Chef::Resource::Hostname, :windows_only do
   end
 
   subject do
-    new_resource = Chef::Resource::Hostname.new("fakey-fakerson", run_context)
+    new_resource = Chef::Resource::Hostname.new("oldhostname", run_context)
     new_resource.hostname = "foobar"
     new_resource.domain_user = "chef"
     new_resource.domain_password = "P@ssw0rd"
@@ -53,10 +53,22 @@ describe Chef::Resource::Hostname, :windows_only do
   end
 
   describe "Changing machine names" do
-    context "the system does not get renamed when in a domain" do
-      it "does not change" do
-        subject.windows_reboot false
-        expect(subject).to_not be_updated_by_last_action
+    context "The system can be renamed without a user or password when in a Workgroup" do
+      let(:hostname) { "Cucumber" }
+      it "does change" do
+        subject.run_action(:set)
+        expect(subject).to be_updated_by_last_action
+      end
+    end
+
+    context "the system gets renamed when in a domain" do
+      let(:hostname) { "Gherkin" }
+      it "does change the domain account" do
+        subject.windows_reboot true
+        subject.domain_user local_domain_user
+        subject.domain_password local_domain_password
+        subject.run_action(:set)
+        expect(subject).to be_updated_by_last_action
       end
     end
   end
