@@ -46,8 +46,6 @@ class Chef
         name_property: true
 
       action :install, description: "Install a package for a specific errata ID." do
-        description "Installs a package for a specific errata ID."
-
         execute "Install errata packages for #{new_resource.errata_id}" do
           command "#{package_manager_command} update --advisory #{new_resource.errata_id} -y"
           default_env true

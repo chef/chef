@@ -90,9 +90,7 @@ class Chef
       property :mode, [Integer, String],
         description: "The permission mode of the CRL file."
 
-      action :create do
-        description "Create the CRL file."
-
+      action :create, description: "Create the certificate revocation list (CRL) file." do
         file new_resource.path do
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?

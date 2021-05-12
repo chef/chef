@@ -88,9 +88,7 @@ class Chef
         description: "Force creation of the key even if the same key already exists on the node.",
         default: false, desired_state: false
 
-      action :create do
-        description "Generate the ec private key"
-
+      action :create, description: "Generate the EC private key file." do
         unless new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
           converge_by("Create an EC private key #{new_resource.path}") do
             log "Generating an #{new_resource.key_curve} "\
