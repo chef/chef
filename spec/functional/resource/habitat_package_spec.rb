@@ -28,7 +28,7 @@ describe Chef::Resource::HabitatPackage do
   let(:options) { nil }
   let(:keep_latest) { nil }
   let(:no_deps) { nil }
-  ler(:pkg_ver) { nil }
+  let(:pkg_ver) { nil }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
