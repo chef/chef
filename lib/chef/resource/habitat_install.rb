@@ -140,7 +140,7 @@ class Chef
         execute "hab license accept" if new_resource.license == "accept"
       end
 
-      # TODO: Work out cleanest methode to implement upgrade that will support effortless installs as well as standard chef-client
+      # TODO: Work out cleanest method to implement upgrade that will support effortless installs as well as standard chef-client
       # action :upgrade do
       #   if platform_family?('windows')
       #     # Retrieve version information

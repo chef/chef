@@ -2,7 +2,7 @@ describe command('C:\habitat\hab.exe sup -h') do
   its(:stdout) { should match(/The Habitat Supervisor/) }
 end
 
-describe powershell('(get-service habitat).Status') do
+describe powershell("(get-service habitat).Status") do
   its(:stdout) { should match(/Running/) }
 end
 
@@ -23,7 +23,7 @@ describe port(9999) do
   it { should be_listening }
 end
 
-describe file('C:/hab/sup/default/config/sup.toml') do
+describe file("C:/hab/sup/default/config/sup.toml") do
   it { should exist }
-  its('content') { should match(/bldr_url.*willem.habitat.sh/) }
+  its("content") { should match(/bldr_url.*willem.habitat.sh/) }
 end

@@ -8,13 +8,13 @@ end
 # Works fine if you run a converge and then a verify as two seperate commands
 # For now, hitting hab.exe directly to avoid test failure
 describe command('C:\habitat\hab.exe -V') do
-  its('stdout') { should match(%r{^hab.*/}) }
-  its('exit_status') { should eq 0 }
+  its("stdout") { should match(%r{^hab.*/}) }
+  its("exit_status") { should eq 0 }
 end
 
-splunkserviceapi = '(Invoke-RestMethod http://localhost:9631/services/splunkforwarder/default).cfg | ConvertTo-Json'
+splunkserviceapi = "(Invoke-RestMethod http://localhost:9631/services/splunkforwarder/default).cfg | ConvertTo-Json"
 describe json(command: splunkserviceapi) do
-  its(%w(directories path)) { should eq ['C:/hab/pkgs/.../*.log'] }
+  its(%w{directories path}) { should eq ["C:/hab/pkgs/.../*.log"] }
 end
 
 # This test needs to be re-written to hit the supervisor API

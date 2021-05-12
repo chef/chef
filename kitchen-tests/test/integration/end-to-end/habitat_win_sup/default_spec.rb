@@ -2,7 +2,7 @@ describe command('C:\habitat\hab.exe sup -h') do
   its(:stdout) { should match(/The Habitat Supervisor/) }
 end
 
-describe powershell('(get-service habitat).Status') do
+describe powershell("(get-service habitat).Status") do
   its(:stdout) { should match(/Running/) }
 end
 
