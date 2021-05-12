@@ -19,7 +19,7 @@ describe Chef::Resource::HabitatPackage do
   end
 
   let(:binlink) { nil }
-  let(:package_name) { "core/redis" }
+  let(:package_name) { nil }
   let(:lic) { nil }
   let(:bldr_url) { nil }
   let(:channel) { nil }
@@ -42,9 +42,9 @@ describe Chef::Resource::HabitatPackage do
 
   describe ":install" do
     include RecipeDSLHelper
+    let(:package_name) { "core/redis" }
 
     context "Installs habitat packages" do
-
       it "installs habitat" do
         habitat_install("new") do
           license "accept"
@@ -52,7 +52,7 @@ describe Chef::Resource::HabitatPackage do
       end
 
       it "installs core/redis" do
-        habitat_package.run_action(:install)
+        subject.run_action(:install)
         expect(subject).to be_updated_by_last_action
       end
 
