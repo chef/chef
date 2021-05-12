@@ -49,7 +49,7 @@ describe Chef::DataBag do
       expect { @data_bag.name({}) }.to raise_error(ArgumentError)
     end
 
-    [ ".", "-", "_", "1"].each do |char|
+    ["-", "_", "1"].each do |char|
       it "should allow a '#{char}' character in the data bag name" do
         expect(@data_bag.name("clown#{char}clown")).to eq("clown#{char}clown")
       end
