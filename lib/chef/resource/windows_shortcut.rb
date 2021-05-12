@@ -69,7 +69,7 @@ class Chef
         iconlocation(link.IconLocation)
       end
 
-      action :create, description: "Create or modify a Windows shortcut" do
+      action :create, description: "Create or modify a Windows shortcut." do
         converge_if_changed do
           converge_by "creating shortcut #{new_resource.shortcut_name}" do
             link = WIN32OLE.new("WScript.Shell").CreateShortcut(new_resource.shortcut_name)

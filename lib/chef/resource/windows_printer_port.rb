@@ -95,9 +95,7 @@ class Chef
         port_name new_resource.port_name || "IP_#{new_resource.ipv4_address}"
       end
 
-      action :create, description: "Create the printer port, if one doesn't already exist" do
-        description "Create the new printer port if it does not already exist."
-
+      action :create, description: "Create the printer port, if one doesn't already exist." do
         if port_exists?
           Chef::Log.info "#{@new_resource} already exists - nothing to do."
         else
@@ -107,9 +105,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Delete an existing printer port" do
-        description "Delete an existing printer port."
-
+      action :delete, description: "Delete an existing printer port." do
         if port_exists?
           converge_by("Delete #{@new_resource}") do
             delete_printer_port

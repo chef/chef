@@ -108,15 +108,15 @@ class Chef
         default: 600,
         desired_state: false
 
-      action :install, description: "Install a Windows role / feature" do
+      action :install, description: "Install a Windows role or feature." do
         run_default_subresource :install
       end
 
-      action :remove, description: "Remove a Windows role / feature" do
+      action :remove, description: "Remove a Windows role or feature." do
         run_default_subresource :remove
       end
 
-      action :delete, description: "Remove a Windows role/feature from the image" do
+      action :delete, description: "Remove a Windows role or feature from the image." do
         run_default_subresource :delete
       end
 

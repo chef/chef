@@ -42,11 +42,7 @@ class Chef
         name_property: true
 
       action :install, description: "Install all packages of the specified errata level." do
-        description "Install all packages of the specified errata level."
-
-        if rhel6?
-          yum_package "yum-plugin-security"
-        end
+        yum_package "yum-plugin-security" if rhel6?
 
         execute "Install any #{new_resource.errata_level} errata" do
           command "#{package_manager_command} update --sec-severity=#{new_resource.errata_level.capitalize} -y"

@@ -42,18 +42,14 @@ class Chef
         description: "The amount of time (in minutes) to delay a reboot request.",
         default: 0
 
-      action :request_reboot do
-        description "Reboot a node at the end of a chef-client run."
-
+      action :request_reboot, description: "Reboot a node at the end of a #{ChefUtils::Dist::Infra::PRODUCT} run." do
         converge_by("request a system reboot to occur if the run succeeds") do
           logger.warn "Reboot requested:'#{new_resource.name}'"
           request_reboot
         end
       end
 
-      action :reboot_now do
-        description "Reboot a node so that the chef-client may continue the installation process."
-
+      action :reboot_now, description: "Reboot a node so that the #{ChefUtils::Dist::Infra::PRODUCT} may continue the installation process." do
         converge_by("rebooting the system immediately") do
           logger.warn "Rebooting system immediately, requested by '#{new_resource.name}'"
           request_reboot
@@ -61,9 +57,7 @@ class Chef
         end
       end
 
-      action :cancel do
-        description "Cancel a pending reboot request."
-
+      action :cancel, description: "Cancel a pending reboot request." do
         converge_by("cancel any existing end-of-run reboot request") do
           logger.warn "Reboot canceled: '#{new_resource.name}'"
           node.run_context.cancel_reboot
