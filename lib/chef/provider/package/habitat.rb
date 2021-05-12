@@ -59,7 +59,7 @@ class Chef
         # But we provide no way to handle installation
 
         def load_current_resource
-          @current_resource = Chef::Resource::HartPackage.new(new_resource.name)
+          @current_resource = Chef::Resource::HabitatPackage.new(new_resource.name)
           current_resource.package_name(strip_version(new_resource.package_name))
 
           @candidate_version = candidate_versions

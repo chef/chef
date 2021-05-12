@@ -31,48 +31,54 @@ describe Chef::Resource::HabitatPackage do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
-  let(:habitat_package) do
-    r = Chef::Resource::HabitatPackage.new(package_name, run_context)
-    r
+  subject do
+    new_resource = Chef::Resource::HabitatPackage.new(package_name, run_context)
+    new_resource.bldr_url bldr_url if bldr_url
+    new_resource.channel channel if channel
+    new_resource.auth_token auth_token if auth_token
+    new_resource.binlink binlink if binlink
+    new_resource
   end
 
-  include RecipeDSLHelper
+  describe ":install" do
+    include RecipeDSLHelper
 
-  context "Installs habitat packages" do
+    context "Installs habitat packages" do
 
-    it "installs habitat" do
-      habitat_install("new") do
-        license "accept"
-      end.should_be_updated
-    end
+      it "installs habitat" do
+        habitat_install("new") do
+          license "accept"
+        end.should_be_updated
+      end
 
-    it "installs core/redis" do
-      habitat_package.run_action(:install)
-      expect(subject).to be_updated_by_last_action
-    end
+      it "installs core/redis" do
+        habitat_package.run_action(:install)
+        expect(subject).to be_updated_by_last_action
+      end
 
-    it "installs core/bundler with specified version" do
-      habitat_package("core/bundler") do
-        version "1.13.3/20161011123917"
-      end.should_be_updated
-    end
+      it "installs core/bundler with specified version" do
+        habitat_package("core/bundler") do
+          version "1.13.3/20161011123917"
+        end.should_be_updated
+      end
 
-    it "installs lamont-granquist/ruby with a specific version" do
-      habitat_package("lamanot-granquist/ruby") do
-        version "2.3.1"
-      end.should_be_updated
-    end
+      it "installs lamont-granquist/ruby with a specific version" do
+        habitat_package("lamanot-granquist/ruby") do
+          version "2.3.1"
+        end.should_be_updated
+      end
 
-    it "installs core/hab-sup with a specific depot url" do
-      habitat_package("core/hab_sup") do
-        bldr_url "https://bldr.habitat.sh"
-      end.should_be_updated
-    end
+      it "installs core/hab-sup with a specific depot url" do
+        habitat_package("core/hab_sup") do
+          bldr_url "https://bldr.habitat.sh"
+        end.should_be_updated
+      end
 
-    it "installs core/jq-static with forced binlink" do
-      habitat_package("core/jq-static") do
-        binlink :force
-      end.should_be_updated
+      it "installs core/jq-static with forced binlink" do
+        habitat_package("core/jq-static") do
+          binlink :force
+        end.should_be_updated
+      end
     end
   end
 end
