@@ -162,7 +162,7 @@ class Chef
         action_unload
       end
 
-      action :disable, description: "Disable a kernel module." do
+      action :disable, description: "Disable a kernel module. **New in Chef Infra Client 15.2.**" do
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
