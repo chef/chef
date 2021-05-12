@@ -2,7 +2,6 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatPackage do
-  include RecipeDSLHelper
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
 
@@ -44,6 +43,7 @@ describe Chef::Resource::HabitatPackage do
   end
 
   describe ":install" do
+      include RecipeDSLHelper
 
     context "Installs habitat package" do
       let(:package_name) { "core/redis" }
