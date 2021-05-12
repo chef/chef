@@ -152,7 +152,7 @@ class Chef
       property :audit_base_directories, [true, false],
                description: "Setting this audit policy option to true will force the system to assign a System Access Control List to named objects to enable auditing of container objects such as directories."
 
-      action :set, description: "Configure an audit policy" do
+      action :set, description: "Configure an audit policy." do
         unless new_resource.subcategory.nil?
           new_resource.subcategory.each do |subcategory|
             next if subcategory_configured?(subcategory, new_resource.success, new_resource.failure)

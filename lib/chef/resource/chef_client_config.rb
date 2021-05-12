@@ -227,7 +227,7 @@ class Chef
       property :additional_config, String,
         description: "Additional text to add at the bottom of the client.rb config. This can be used to run custom Ruby or to add less common config options"
 
-      action :create, description: "Create a client.rb config file" do
+      action :create, description: "Create a client.rb config file." do
         unless ::Dir.exist?(new_resource.config_directory)
           directory new_resource.config_directory do
             user new_resource.user unless new_resource.user.nil?
@@ -284,7 +284,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove a client.rb config file" do
+      action :remove, description: "Remove a client.rb config file." do
         file ::File.join(new_resource.config_directory, "client.rb") do
           action :delete
         end

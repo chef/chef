@@ -93,7 +93,7 @@ class Chef
         description: "The modprobe.d directory.",
         default: "/etc/modprobe.d"
 
-      action :install, description: "Load kernel module, and ensure it loads on reboot" do
+      action :install, description: "Load kernel module, and ensure it loads on reboot." do
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
@@ -121,7 +121,7 @@ class Chef
         end
       end
 
-      action :uninstall, description: "Unload a kernel module and remove module config, so it doesn't load on reboot" do
+      action :uninstall, description: "Unload a kernel module and remove module config, so it doesn't load on reboot." do
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
@@ -146,7 +146,7 @@ class Chef
         action_unload
       end
 
-      action :blacklist, description: "Blacklist a kernel module" do
+      action :blacklist, description: "Blacklist a kernel module." do
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
@@ -162,7 +162,7 @@ class Chef
         action_unload
       end
 
-      action :disable, description: "Disable a kernel module" do
+      action :disable, description: "Disable a kernel module." do
         with_run_context :root do
           find_resource(:execute, "update initramfs") do
             command initramfs_command
@@ -178,7 +178,7 @@ class Chef
         action_unload
       end
 
-      action :load, description: "Load a kernel module" do
+      action :load, description: "Load a kernel module." do
         unless module_loaded?
           converge_by("load kernel module #{new_resource.modname}") do
             shell_out!("modprobe #{new_resource.modname}")
@@ -186,7 +186,7 @@ class Chef
         end
       end
 
-      action :unload, description: "Unload kernel module" do
+      action :unload, description: "Unload kernel module." do
         if module_loaded?
           converge_by("unload kernel module #{new_resource.modname}") do
             shell_out!("modprobe -r #{new_resource.modname}")

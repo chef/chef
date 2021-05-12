@@ -87,9 +87,7 @@ class Chef
         description: "Force creation of the key even if the same key already exists on the node.",
         default: false, desired_state: false
 
-      action :create do
-        description "Create the RSA private key."
-
+      action :create, description: "Create the RSA private key." do
         return if new_resource.force || priv_key_file_valid?(new_resource.path, new_resource.key_pass)
 
         converge_by("create #{new_resource.key_length} bit RSA key #{new_resource.path}") do

@@ -57,7 +57,7 @@ class Chef
         introduced: "15.5",
         default: false, desired_state: false # FIXME: make this default to true
 
-      action :install, description: "Install build essential packages" do
+      action :install, description: "Install build essential packages." do
         case
         when debian?
           package %w{ autoconf binutils-doc bison build-essential flex gettext ncurses-dev }

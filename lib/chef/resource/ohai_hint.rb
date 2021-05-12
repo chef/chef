@@ -72,9 +72,7 @@ class Chef
         description: "Determines whether or not the resource is executed during the compile time phase.",
         default: true, desired_state: false
 
-      action :create do
-        description "Create an Ohai hint file."
-
+      action :create, description: "Create an Ohai hint file." do
         directory ::Ohai::Config.ohai.hints_path.first do
           action :create
           recursive true
@@ -86,9 +84,7 @@ class Chef
         end
       end
 
-      action :delete do
-        description "Delete an Ohai hint file."
-
+      action :delete, description: "Delete an Ohai hint file." do
         file ohai_hint_file_path(new_resource.hint_name) do
           action :delete
           notifies :reload, ohai[reload ohai post hint removal]

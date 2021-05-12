@@ -121,14 +121,12 @@ class Chef
         create_template(:create)
       end
 
-      action :create_if_missing do
-        description "Add a cron definition file to /etc/cron.d, but do not update an existing file."
+      action :create_if_missing, description: "Add a cron definition file to /etc/cron.d, but do not update an existing file." do
 
         create_template(:create_if_missing)
       end
 
-      action :delete do
-        description "Remove a cron definition file from /etc/cron.d if it exists."
+      action :delete, description: "Remove a cron definition file from /etc/cron.d if it exists." do
 
         # cleanup the legacy named job if it exists
         file "legacy named cron.d file" do

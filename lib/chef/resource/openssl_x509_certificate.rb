@@ -151,9 +151,7 @@ class Chef
         description: "The number of days before the expiry. The certificate will be automatically renewed when the value is reached.",
         introduced: "15.7"
 
-      action :create do
-        description "Generate a certificate"
-
+      action :create, description: "Generate a certificate." do
         file new_resource.path do
           action :create_if_missing
           owner new_resource.owner unless new_resource.owner.nil?
