@@ -62,7 +62,6 @@ describe Chef::Resource::HabitatPackage do
     context "Installs packages version options" do
       let(:package_name) { "core/bundler" }
       let(:pkg_ver) { "1.13.3/20161011123917" }
-      let { version }
       it "installs core/bundler with specified version" do
         subject.run_action(:install)
         expect(subject).to be_updated_by_last_action
