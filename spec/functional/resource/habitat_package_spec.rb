@@ -2,6 +2,7 @@ require "spec_helper"
 require "chef/mixin/shell_out"
 
 describe Chef::Resource::HabitatPackage do
+  include RecipeDSLHelper
   include Chef::Mixin::ShellOut
   let(:file_cache_path) { Dir.mktmpdir }
 
@@ -27,6 +28,7 @@ describe Chef::Resource::HabitatPackage do
   let(:options) { nil }
   let(:keep_latest) { nil }
   let(:no_deps) { nil }
+  ler(:pkg_ver) { nil }
   let(:run_context) do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
@@ -37,14 +39,14 @@ describe Chef::Resource::HabitatPackage do
     new_resource.channel channel if channel
     new_resource.auth_token auth_token if auth_token
     new_resource.binlink binlink if binlink
+    new_resrouce.version pkg_ver if pkg_ver
     new_resource
   end
 
   describe ":install" do
-    include RecipeDSLHelper
-    let(:package_name) { "core/redis" }
 
-    context "Installs habitat packages" do
+    context "Installs habitat package" do
+      let(:package_name) { "core/redis" }
       it "installs habitat" do
         habitat_install("new") do
           license "accept"
@@ -55,24 +57,25 @@ describe Chef::Resource::HabitatPackage do
         subject.run_action(:install)
         expect(subject).to be_updated_by_last_action
       end
+    end
 
+    context "Installs packages version options" do
+      let(:package_name) { "core/bundler" }
+      let(:pkg_ver) { "1.13.3/20161011123917" }
+      let{version}
       it "installs core/bundler with specified version" do
-        habitat_package("core/bundler") do
-          version "1.13.3/20161011123917"
-        end.should_be_updated
+        subject.run_action(:install)
+        expect(subject).to be_updated_by_last_action
       end
+    end
 
-      it "installs lamont-granquist/ruby with a specific version" do
-        habitat_package("lamanot-granquist/ruby") do
-          version "2.3.1"
-        end.should_be_updated
-      end
-
+    context "install core/hab-sup with options"
       it "installs core/hab-sup with a specific depot url" do
         habitat_package("core/hab_sup") do
           bldr_url "https://bldr.habitat.sh"
         end.should_be_updated
       end
+    end
 
       it "installs core/jq-static with forced binlink" do
         habitat_package("core/jq-static") do
