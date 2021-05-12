@@ -612,6 +612,7 @@
     "listprop",
     "ljust",
     "lltstype",
+    "losetup",
     "LMEM",
     "LMSHARE",
     "LMSTR",
