@@ -106,7 +106,7 @@ class Chef
 
       ```ruby
       windows_audit_policy "Set Audit Policy for 'Credential Validation' actions to 'Success'" do
-        subcategory  'Credential Validation'
+        subcategory 'Credential Validation'
         success true
         failure false
         action :set
