@@ -139,7 +139,7 @@ class Chef
         DESC
 
       property :formatters, Array,
-        description: "",
+        description: "Client logging formatters to load.",
         default: []
 
       property :event_loggers, Array,
