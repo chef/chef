@@ -1,4 +1,4 @@
-hab_sup "default" do
+habitat_sup "default" do
   license "accept"
 end
 
@@ -10,9 +10,9 @@ ruby_block "wait-for-sup-default-startup" do
   retry_delay 1
 end
 
-hab_service "skylerto/splunkforwarder"
+habitat_service "skylerto/splunkforwarder"
 
-hab_config "splunkforwarder.default" do
+habitat_config "splunkforwarder.default" do
   config(
     directories: {
       path: [

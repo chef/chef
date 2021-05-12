@@ -1,4 +1,4 @@
-hab_sup "default" do
+habitat_sup "default" do
   hab_channel "stable"
   license "accept"
   gateway_auth_token "secret"
@@ -12,17 +12,17 @@ ruby_block "wait-for-sup-default-startup" do
   retry_delay 1
 end
 
-hab_package "core/jq-static" do
+habitat_package "core/jq-static" do
   binlink true
 end
 
 # Test 1: Load Service (memcached)
-hab_service "core/memcached" do
+habitat_service "core/memcached" do
   gateway_auth_token "secret"
 end
 
 # Test 2: Load, then Unload Service (nginx)
-hab_service "core/nginx" do
+habitat_service "core/nginx" do
   gateway_auth_token "secret"
 end
 
@@ -34,7 +34,7 @@ ruby_block "wait-for-nginx-load" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/nginx]", :immediately
+  subscribes :run, "habitat_service[core/nginx]", :immediately
 end
 ruby_block "wait-for-nginx-up" do
   block do
@@ -46,14 +46,14 @@ ruby_block "wait-for-nginx-up" do
   subscribes :run, "ruby_block[wait-for-nginx-load]", :immediately
 end
 
-hab_service "core/nginx unload" do
+habitat_service "core/nginx unload" do
   service_name "core/nginx"
   gateway_auth_token "secret"
   action :unload
 end
 
 # Test 3: Load, then stop service (redis)
-hab_service "core/redis" do
+habitat_service "core/redis" do
   strategy :rolling
   topology :standalone
   update_condition "latest"
@@ -72,7 +72,7 @@ ruby_block "wait-for-redis-load" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/redis]", :immediately
+  subscribes :run, "habitat_service[core/redis]", :immediately
 end
 ruby_block "wait-for-redis-started" do
   block do
@@ -85,7 +85,7 @@ ruby_block "wait-for-redis-started" do
   subscribes :run, "ruby_block[wait-for-redis-load]", :immediately
 end
 
-hab_service "core/redis stop" do
+habitat_service "core/redis stop" do
   gateway_auth_token "secret"
   service_name "core/redis"
   action :stop
@@ -99,10 +99,10 @@ ruby_block "wait-for-redis-stopped" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/redis stop]", :immediately
+  subscribes :run, "habitat_service[core/redis stop]", :immediately
 end
 
-hab_service "core/redis start" do
+habitat_service "core/redis start" do
   strategy :rolling
   topology :standalone
   service_name "core/redis"
@@ -113,7 +113,7 @@ hab_service "core/redis start" do
 end
 
 # Test 4: Full Identifier Test (grafana/6.4.3)
-hab_service "core/grafana full identifier" do
+habitat_service "core/grafana full identifier" do
   service_name "core/grafana/6.4.3/20191105024430"
   gateway_auth_token "secret"
 end
@@ -125,16 +125,16 @@ ruby_block "wait-for-grafana-startup" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/grafana full identifier]", :immediately
+  subscribes :run, "habitat_service[core/grafana full identifier]", :immediately
 end
 
-hab_service "core/grafana full identifier idempotence" do
+habitat_service "core/grafana full identifier idempotence" do
   service_name "core/grafana/6.4.3/20191105024430"
   gateway_auth_token "secret"
 end
 
 # Test 5: Change version (core/vault)
-hab_service "core/vault" do
+habitat_service "core/vault" do
   gateway_auth_token "secret"
 end
 
@@ -145,16 +145,16 @@ ruby_block "wait-for-vault-load" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/vault]", :immediately
+  subscribes :run, "habitat_service[core/vault]", :immediately
 end
 
-hab_service "core/vault version change" do
+habitat_service "core/vault version change" do
   service_name "core/vault/1.1.5"
   gateway_auth_token "secret"
 end
 
 # Test 6: Property Changes
-hab_service "core/grafana property change from defaults" do
+habitat_service "core/grafana property change from defaults" do
   action :load
   service_name "core/grafana/6.4.3/20191105024430"
   service_group "test-1"
@@ -166,7 +166,7 @@ hab_service "core/grafana property change from defaults" do
   gateway_auth_token "secret"
 end
 
-hab_service "core/grafana property change from custom values" do
+habitat_service "core/grafana property change from custom values" do
   action :load
   service_name "core/grafana/6.4.3/20191105024430"
   service_group "test"
@@ -182,7 +182,7 @@ hab_service "core/grafana property change from custom values" do
 end
 
 # Test 7: Single Bind
-hab_service "core/prometheus" do
+habitat_service "core/prometheus" do
   gateway_auth_token "secret"
 end
 
@@ -193,10 +193,10 @@ ruby_block "wait-for-prometheus-startup" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/prometheus]", :immediately
+  subscribes :run, "habitat_service[core/prometheus]", :immediately
 end
 
-hab_service "core/grafana binding" do
+habitat_service "core/grafana binding" do
   action :load
   service_name "core/grafana/6.4.3/20191105024430"
   service_group "test"
@@ -213,15 +213,15 @@ hab_service "core/grafana binding" do
 end
 
 # Test 8: Test Service Name Matching & Multiple Binds (sensu-backend & sensu + rabbitmq)
-hab_service "core/rabbitmq" do
+habitat_service "core/rabbitmq" do
   gateway_auth_token "secret"
 end
 
-hab_service "core/sensu-backend" do
+habitat_service "core/sensu-backend" do
   gateway_auth_token "secret"
 end
 
-hab_service "core/sensu" do
+habitat_service "core/sensu" do
   bind [
     "rabbitmq:rabbitmq.default",
     "redis:redis.default",
@@ -230,7 +230,7 @@ hab_service "core/sensu" do
 end
 
 # Test 9: Restart the package
-hab_service "core/consul" do
+habitat_service "core/consul" do
   gateway_auth_token "secret"
 end
 
@@ -241,7 +241,7 @@ ruby_block "wait-for-consul-load" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/consul]", :immediately
+  subscribes :run, "habitat_service[core/consul]", :immediately
 end
 ruby_block "wait-for-consul-startup" do
   block do
@@ -264,7 +264,7 @@ ruby_block "wait-for-consul-up-for-30s" do
   subscribes :run, "ruby_block[wait-for-consul-startup]", :immediately
 end
 
-hab_service "core/consul restart" do
+habitat_service "core/consul restart" do
   service_name "core/consul"
   gateway_auth_token "secret"
   action :restart
@@ -278,7 +278,7 @@ ruby_block "wait-for-consul-restart" do
   retries 60
   retry_delay 1
   action :nothing
-  subscribes :run, "hab_service[core/consul restart]", :immediately
+  subscribes :run, "habitat_service[core/consul restart]", :immediately
 end
 
 # Test 10: Reload the package
@@ -293,7 +293,7 @@ ruby_block "wait-for-consul-up-for-30s" do
   subscribes :run, "ruby_block[wait-for-consul-startup]", :immediately
 end
 
-hab_service "core/consul reload" do
+habitat_service "core/consul reload" do
   service_name "core/consul"
   gateway_auth_token "secret"
   action :reload
@@ -307,5 +307,5 @@ ruby_block "wait-for-consul-restart" do
   retries 5
   retry_delay 10
   action :nothing
-  subscribes :run, "hab_service[core/consul restart]", :immediately
+  subscribes :run, "habitat_service[core/consul restart]", :immediately
 end

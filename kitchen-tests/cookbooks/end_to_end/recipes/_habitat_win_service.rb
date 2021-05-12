@@ -1,4 +1,4 @@
-hab_sup "default" do
+habitat_sup "default" do
   license "accept"
   gateway_auth_token "secret"
 end
@@ -11,7 +11,7 @@ ruby_block "wait-for-sup-default-startup" do
   retry_delay 1
 end
 
-hab_service "skylerto/splunkforwarder" do
+habitat_service "skylerto/splunkforwarder" do
   gateway_auth_token "secret"
 end
 
@@ -23,16 +23,16 @@ ruby_block "wait-for-splunkforwarder-start" do
     sleep 3
   end
   action :nothing
-  subscribes :run, "hab_service[skylerto/splunkforwarder]", :immediately
+  subscribes :run, "habitat_service[skylerto/splunkforwarder]", :immediately
 end
 
-hab_service "skylerto/splunkforwarder unload" do
+habitat_service "skylerto/splunkforwarder unload" do
   service_name "skylerto/splunkforwarder"
   gateway_auth_token "secret"
   action :unload
 end
 
-hab_service "ncr_devops_platform/sensu-agent-win" do
+habitat_service "ncr_devops_platform/sensu-agent-win" do
   strategy "rolling"
   update_condition "latest"
   channel :stable
@@ -48,10 +48,10 @@ ruby_block "wait-for-sensu-agent-win-start" do
     sleep 5
   end
   action :nothing
-  subscribes :run, "hab_service[ncr_devops_platform/sensu-agent-win]", :immediately
+  subscribes :run, "habitat_service[ncr_devops_platform/sensu-agent-win]", :immediately
 end
 
-hab_service "ncr_devops_platform/sensu-agent-win stop" do
+habitat_service "ncr_devops_platform/sensu-agent-win stop" do
   service_name "ncr_devops_platform/sensu-agent-win"
   gateway_auth_token "secret"
   action :stop

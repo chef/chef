@@ -1,4 +1,4 @@
-hab_sup "tester" do
+habitat_sup "tester" do
   license "accept"
   bldr_url "https://willem.habitat.sh"
   listen_http "0.0.0.0:9999"

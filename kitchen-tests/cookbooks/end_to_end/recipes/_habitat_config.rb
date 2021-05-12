@@ -1,6 +1,6 @@
 apt_update
 
-hab_sup "default" do
+habitat_sup "default" do
   gateway_auth_token "secret"
   license "accept"
 end
@@ -13,7 +13,7 @@ ruby_block "wait-for-sup-default-startup" do
   retry_delay 1
 end
 
-hab_package "core/jq-static" do
+habitat_package "core/jq-static" do
   binlink true
 end
 
@@ -26,10 +26,10 @@ ruby_block "wait-for-nginx-startup" do
     sleep 20
   end
   action :nothing
-  subscribes :run, "hab_service[core/nginx]", :immediately
+  subscribes :run, "habitat_service[core/nginx]", :immediately
 end
 
-hab_config "nginx.default" do
+habitat_config "nginx.default" do
   config(
     worker_processes: 2,
     http: {
@@ -39,7 +39,7 @@ hab_config "nginx.default" do
   gateway_auth_token "secret"
 end
 
-hab_service "core/nginx" do
+habitat_service "core/nginx" do
   gateway_auth_token "secret"
 end
 
@@ -49,5 +49,5 @@ ruby_block "wait-for-nginx-config" do
     sleep 3
   end
   action :nothing
-  subscribes :run, "hab_config[nginx.default]", :immediately
+  subscribes :run, "habitat_config[nginx.default]", :immediately
 end
