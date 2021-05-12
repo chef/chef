@@ -58,28 +58,5 @@ describe Chef::Resource::HabitatPackage do
         expect(subject).to be_updated_by_last_action
       end
     end
-
-    context "Installs packages version options" do
-      let(:package_name) { "core/bundler" }
-      let(:pkg_ver) { "1.13.3/20161011123917" }
-      it "installs core/bundler with specified version" do
-        subject.run_action(:install)
-        expect(subject).to be_updated_by_last_action
-      end
-    end
-
-    context "install core/hab-sup with options" do
-      it "installs core/hab-sup with a specific depot url" do
-        habitat_package("core/hab_sup") do
-          bldr_url "https://bldr.habitat.sh"
-        end.should_be_updated
-      end
-    end
-
-    it "installs core/jq-static with forced binlink" do
-      habitat_package("core/jq-static") do
-        binlink :force
-      end.should_be_updated
-    end
   end
 end
