@@ -31,16 +31,11 @@ describe Chef::Resource::HabitatPackage do
     Chef::RunContext.new(Chef::Node.new, {}, Chef::EventDispatch::Dispatcher.new)
   end
 
-  subject do
-    new_resource = Chef::Resource::HabitatPackage.new(package_name, run_context)
-    new_resource.bldr_url bldr_url if bldr_url
-    new_resource.channel channel if channel
-    new_resource.auth_token auth_token if auth_token
-    new_resource.binlink binlink if binlink
-    new_resource
-  end
+let(:habitat_package) do
+  r = Chef::Resource::HabitatPackage.new(package_name, run_context)
+  r
+end
 
-  describe ":install" do
     include RecipeDSLHelper
 
     context "Installs habitat packages" do
@@ -52,7 +47,7 @@ describe Chef::Resource::HabitatPackage do
       end
 
       it "installs core/redis" do
-        subject.run_action(:run)
+        habitat_package.run_action(:install)
         expect(subject).to be_updated_by_last_action
       end
 
