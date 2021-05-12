@@ -21,8 +21,11 @@ require_relative "../package"
 class Chef
   class Resource
     class HartPackage < Chef::Resource::Package
+      unified_mode true
       resource_name :habitat_package
+
       provides :habitat_package
+      provides :package
       use "habitat_shared"
       description "Install the specified Habitat package from builder. Requires that Habitat is installed"
       examples <<~DOC

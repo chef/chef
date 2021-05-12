@@ -20,6 +20,7 @@ require_relative "../../resource"
 class Chef
   class Resource
     class HabitatSup < Chef::Resource
+      unified_mode true
 
       provides :habitat_sup do |_node|
         false

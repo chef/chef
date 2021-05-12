@@ -16,6 +16,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatUserToml < Chef::Resource
+      unified_mode true
       provides :habitat_user_toml
 
       property :config, Mash,

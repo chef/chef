@@ -22,6 +22,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatInstall < Chef::Resource
+      unified_mode true
       provides :habitat_install
 
       description "This resource will install the newest stable version of habitat"

@@ -21,6 +21,7 @@ require_relative "helpers/toml_dumper"
 class Chef
   class Resource
     class HabitatConfig < Chef::Resource
+      unified_mode true
       provides :habitat_config
 
       property :config, Mash,

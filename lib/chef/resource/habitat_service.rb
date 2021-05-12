@@ -19,6 +19,7 @@ require_relative "../resource"
 class Chef
   class Resource
     class HabitatService < Chef::Resource
+      unified_mode true
       provides :habitat_service
 
       property :service_name, String, name_property: true
