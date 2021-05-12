@@ -35,32 +35,32 @@ class Chef
       examples <<~DOC
         **Install an exact version**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm = 10.35.58-8.el8'
         ```
 
         **Install a minimum version**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm >= 10.35.58-8.el8'
         ```
 
         **Install a minimum version using the default action**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm'
         ```
 
         **Install a version without worrying about the exact release**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm-10.35*'
         ```
 
 
         **To install a package**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm' do
           action :install
         end
@@ -68,13 +68,13 @@ class Chef
 
         **To install a partial minimum version**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm >= 10'
         ```
 
         **To install a specific architecture**:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm' do
           arch 'i386'
         end
@@ -82,13 +82,13 @@ class Chef
 
         or:
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm.x86_64'
         ```
 
         **To install a specific version-release**
 
-        ``` ruby
+        ```ruby
         yum_package 'netpbm' do
           version '10.35.58-8.el8'
         end
@@ -101,7 +101,7 @@ class Chef
         to dump the in-memory Yum cache, and then use the repository immediately
         to ensure that the correct package is installed:
 
-        ``` ruby
+        ```ruby
         cookbook_file '/etc/yum.repos.d/custom.repo' do
           source 'custom'
           mode '0755'
