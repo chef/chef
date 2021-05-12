@@ -26,11 +26,10 @@ require_relative "../../resource/habitat/habitat_package"
 class Chef
   class Provider
     class Package
-      class Hart < Chef::Provider::Package
+      class Habitat < Chef::Provider::Package
         use_multipackage_api
         use "../../resource/habitat/habitat_shared"
         provides :package
-        provides :hart_package
         provides :habitat_package
 
         #
