@@ -1,4 +1,7 @@
-# Copyright:: 2016-2018, Chef Software Inc.
+#
+# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: 2016-2020, Virender Khatri
+#
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +16,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 require_relative "../../http/simple"
 require_relative "../../json_compat"
 require_relative "../../exceptions"
