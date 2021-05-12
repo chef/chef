@@ -157,7 +157,6 @@ class Chef
           owner new_resource.owner unless new_resource.owner.nil?
           group new_resource.group unless new_resource.group.nil?
           mode new_resource.mode unless new_resource.mode.nil?
-          sensitive true
           content cert.to_pem
         end
 
