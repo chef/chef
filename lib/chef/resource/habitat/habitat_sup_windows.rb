@@ -62,7 +62,7 @@ class Chef
         # win_version = `dir /D /B C:\\hab\\pkgs\\core\\hab-launcher`.split().last
 
         template win_service_config.to_s do
-          source ::File.expand_path("../support/HabService.dll.config.erb")
+          source ::File.expand_path("../support/HabService.dll.config.erb", __dir__)
           local true
           cookbook "habitat"
           variables exec_start_options: exec_start_options,
