@@ -129,7 +129,7 @@ class Chef
         description: "An array of options to pass to the #{ChefUtils::Dist::Infra::CLIENT} command.",
         default: []
 
-      action :add do
+      action :add, description: "Add a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         # TODO: Replace this with a :create_if_missing action on directory when that exists
         unless Dir.exist?(new_resource.log_directory)
           directory new_resource.log_directory do
@@ -157,7 +157,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a Windows Scheduled Task that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         windows_task new_resource.task_name do
           action :delete
         end
