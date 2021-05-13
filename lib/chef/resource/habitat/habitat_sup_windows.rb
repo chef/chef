@@ -21,8 +21,8 @@ require_relative "habitat_sup"
 class Chef
   class Resource
     class HabitatSupWindows < HabitatSup
-      provides :habitat_sup_windows
       provides :habitat_sup, os: "windows"
+      provides :habitat_sup_windows
 
       service_file = ::File.expand_path("../support/HabService.dll.config.erb")
       win_service_config = "C:/hab/svc/windows-service/HabService.dll.config"

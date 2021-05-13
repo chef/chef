@@ -43,7 +43,7 @@ describe Chef::Resource::HabitatPackage do
   end
 
   describe ":install" do
-      include RecipeDSLHelper
+    include RecipeDSLHelper
 
     context "Installs habitat package" do
       let(:package_name) { "core/redis" }

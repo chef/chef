@@ -20,8 +20,8 @@ require_relative "habitat_sup"
 class Chef
   class Resource
     class HabitatSupSystemd < HabitatSup
-      provides :habitat_sup_systemd
       provides :habitat_sup, os: "linux"
+      provides :habitat_sup_systemd
 
       action :run do
         super()
