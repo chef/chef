@@ -9,8 +9,6 @@ class Chef
         visit(hash, [])
       end
 
-      private
-
       def visit(hash, prefix, extra_brackets = false)
         simple_pairs, nested_pairs, table_array_pairs = sort_pairs hash
 
@@ -111,5 +109,6 @@ class Chef
     def toml_dump(hash)
       Dumper.new(hash).toml_str
     end
+    extend self
   end
 end

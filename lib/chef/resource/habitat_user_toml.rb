@@ -19,6 +19,8 @@ class Chef
       unified_mode true
       provides :habitat_user_toml
 
+      extend Chef::ResourceHelpers::TomlDumper
+
       property :config, Mash,
                required: true,
                coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
@@ -36,7 +38,7 @@ class Chef
           mode "0600"
           owner root_owner
           group node["root_group"]
-          content Chef::ResourceHelpers::TomlDumper.toml_dump(new_resource.config)
+          content toml_dump(new_resource.config)
           sensitive true
         end
       end
