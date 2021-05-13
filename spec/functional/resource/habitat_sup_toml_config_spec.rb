@@ -45,7 +45,7 @@ describe Chef::Resource::HabitatSup do
     let(:gossip) { "0.0.0.0:9998" }
     let(:toml) { "/hab/sup/default/config/sup.toml" }
 
-    context "When toml_config flag is set to true for hab_sup" do
+    context "When toml_config flag is set to true for habitat_sup" do
 
       it "installs habitat" do
         habitat_install("new") do

@@ -50,7 +50,7 @@ class Chef
           action bldr_action
         end
 
-        hab_package "core/windows-service" do
+        habitat_package "core/windows-service" do
           bldr_url new_resource.bldr_url if new_resource.bldr_url
           version new_resource.service_version if new_resource.service_version
         end
@@ -78,8 +78,8 @@ class Chef
           subscribes :restart, "env[HAB_SUP_GATEWAY_AUTH_TOKEN]"
           subscribes :restart, "env[HAB_BLDR_URL]"
           subscribes :restart, "template[#{win_service_config}]"
-          subscribes :restart, "hab_package[core/hab-sup]"
-          subscribes :restart, "hab_package[core/hab-launcher]"
+          subscribes :restart, "habitat_package[core/hab-sup]"
+          subscribes :restart, "habitat_package[core/hab-launcher]"
           subscribes :restart, "template[C:/hab/sup/default/config/sup.toml]"
           action %i{enable start}
           not_if { node["chef_packages"]["chef"]["chef_root"].include?("/pkgs/chef/chef-infra-client") }

@@ -28,6 +28,6 @@ def hab(*command)
     shell_out_compact!(hab_cmd)
   end
 rescue Errno::ENOENT
-  Chef::Log.fatal("'hab' binary not found, use the 'hab_install' resource to install it first")
+  Chef::Log.fatal("'hab' binary not found, use the 'habitat_install' resource to install it first")
   raise
 end

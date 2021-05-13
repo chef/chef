@@ -30,43 +30,43 @@ class Chef
       description "Install the specified Habitat package from builder. Requires that Habitat is installed"
       examples <<~DOC
       ```ruby
-      hab_package 'core/redis'
+      habitat_package 'core/redis'
 
-      hab_package 'core/redis' do
+      habitat_package 'core/redis' do
         version '3.2.3'
         channel 'unstable'
       end
 
-      hab_package 'core/redis' do
+      habitat_package 'core/redis' do
         version '3.2.3/20160920131015'
       end
 
-      hab_package 'core/nginx' do
+      habitat_package 'core/nginx' do
         binlink :force
       end
 
-      hab_package 'core/nginx' do
+      habitat_package 'core/nginx' do
         options '--binlink'
       end
 
       # Remove all
-      hab_package 'core/nginx'
+      habitat_package 'core/nginx'
         action :remove
       end
 
       # Remove specified
-      hab_package 'core/nginx/3.2.3'
+      habitat_package 'core/nginx/3.2.3'
         action :remove
       end
 
       # Remove but retain some versions (only available as of Habitat 1.5.86)
-      hab_package 'core/nginx'
+      habitat_package 'core/nginx'
         keep_latest '2'
         action :remove
       end
 
       # Remove but keep dependencies
-      hab_package 'core/nginx'
+      habitat_package 'core/nginx'
         no_deps false
         action :remove
       end
