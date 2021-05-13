@@ -1,17 +1,18 @@
 <!-- usage documentation: http://expeditor-docs.es.chef.io/configuration/changelog/ -->
 This changelog lists individual merged pull requests to Chef Infra Client and geared towards developers. For a list of significant changes per release see the [Chef Infra Client Release Notes](https://docs.chef.io/release_notes_client/).
 
-<!-- latest_release 17.1.38 -->
-## [v17.1.38](https://github.com/chef/chef/tree/v17.1.38) (2021-05-12)
+<!-- latest_release 17.1.39 -->
+## [v17.1.39](https://github.com/chef/chef/tree/v17.1.39) (2021-05-13)
 
 #### Merged Pull Requests
-- Make sure we have description fields in actions and fix periods [#11573](https://github.com/chef/chef/pull/11573) ([tas50](https://github.com/tas50))
+- Add additional action descriptions for docs [#11575](https://github.com/chef/chef/pull/11575) ([tas50](https://github.com/tas50))
 <!-- latest_release -->
 
 <!-- release_rollup since=17.1.35 -->
 ### Changes not yet released to stable
 
 #### Merged Pull Requests
+- Add additional action descriptions for docs [#11575](https://github.com/chef/chef/pull/11575) ([tas50](https://github.com/tas50)) <!-- 17.1.39 -->
 - Make sure we have description fields in actions and fix periods [#11573](https://github.com/chef/chef/pull/11573) ([tas50](https://github.com/tas50)) <!-- 17.1.38 -->
 - More minor docs fixes [#11568](https://github.com/chef/chef/pull/11568) ([tas50](https://github.com/tas50)) <!-- 17.1.37 -->
 - Fix markdown code blocks [#11567](https://github.com/chef/chef/pull/11567) ([tas50](https://github.com/tas50)) <!-- 17.1.36 -->
