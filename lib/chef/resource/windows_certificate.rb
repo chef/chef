@@ -160,7 +160,7 @@ class Chef
         end
       end
 
-      action :verify, description: "Verifies a certificate and logs the result" do
+      action :verify, description: "Verifies a certificate and logs the result." do
         out = verify_cert
         if !!out == out
           out = out ? "Certificate is valid" : "Certificate not valid"

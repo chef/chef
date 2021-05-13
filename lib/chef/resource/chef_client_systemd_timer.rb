@@ -104,7 +104,7 @@ class Chef
         coerce: proc { |x| Integer(x) },
         callbacks: { "should be a positive Integer" => proc { |v| v > 0 } }
 
-      action :add do
+      action :add, description: "Add a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         systemd_unit "#{new_resource.job_name}.service" do
           content service_content
           action :create
@@ -116,7 +116,7 @@ class Chef
         end
       end
 
-      action :remove do
+      action :remove, description: "Remove a systemd timer that runs #{ChefUtils::Dist::Infra::PRODUCT}." do
         systemd_unit "#{new_resource.job_name}.service" do
           action :delete
         end

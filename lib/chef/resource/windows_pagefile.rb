@@ -73,7 +73,7 @@ class Chef
       property :maximum_size, Integer,
         description: "Maximum size of the pagefile in megabytes."
 
-      action :set, description: "Configures the default pagefile, creating if it doesn't exist" do
+      action :set, description: "Configures the default pagefile, creating if it doesn't exist." do
         pagefile = new_resource.path
         initial_size = new_resource.initial_size
         maximum_size = new_resource.maximum_size
@@ -101,7 +101,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Deletes the specified pagefile" do
+      action :delete, description: "Deletes the specified pagefile." do
         validate_name
         delete(new_resource.path) if exists?(new_resource.path)
       end

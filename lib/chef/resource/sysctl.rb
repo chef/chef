@@ -131,7 +131,7 @@ class Chef
 
       end
 
-      action :apply, description: "Apply a sysctl value" do
+      action :apply, description: "Apply a sysctl value." do
         converge_if_changed do
           # set it temporarily
           set_sysctl_param(new_resource.key, new_resource.value)
@@ -150,7 +150,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove a sysctl value" do
+      action :remove, description: "Remove a sysctl value." do
         # only converge the resource if the file actually exists to delete
         if ::File.exist?("#{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf")
           converge_by "removing sysctl config at #{new_resource.conf_dir}/99-chef-#{new_resource.key.tr("/", ".")}.conf" do

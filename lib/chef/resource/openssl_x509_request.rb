@@ -119,9 +119,7 @@ class Chef
         equal_to: %w{secp384r1 secp521r1 prime256v1}, default: "prime256v1",
         description: "The desired curve of the generated key (if key_type is equal to `ec`). Run `openssl ecparam -list_curves` to see available options."
 
-      action :create do
-        description "Generate a certificate request."
-
+      action :create, description: "Generate a certificate request file." do
         unless ::File.exist? new_resource.path
           converge_by("Create CSR #{@new_resource}") do
             file new_resource.path do

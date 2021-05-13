@@ -409,7 +409,7 @@ class Chef
         end
       end
 
-      action :add, description: "Creates a repository file at `/etc/apt/sources.list.d/` and builds the repository listing" do
+      action :add, description: "Creates a repository file at `/etc/apt/sources.list.d/` and builds the repository listing." do
         return unless debian?
 
         execute "apt-cache gencaches" do
@@ -459,7 +459,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Removes the repository listing" do
+      action :remove, description: "Removes the repository listing." do
         return unless debian?
 
         cleanup_legacy_file!

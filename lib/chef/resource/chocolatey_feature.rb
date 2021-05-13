@@ -65,7 +65,7 @@ class Chef
         data ? data.attribute("enabled").to_s : nil # REXML just returns nil if it can't find anything so avoid an undefined method error
       end
 
-      action :enable, description: "Enables a named Chocolatey feature" do
+      action :enable, description: "Enables a named Chocolatey feature." do
         if current_resource.feature_state != true
           converge_by("enable Chocolatey feature '#{new_resource.feature_name}'") do
             shell_out!(choco_cmd("enable"))
@@ -73,7 +73,7 @@ class Chef
         end
       end
 
-      action :disable, description: "Disables a named Chocolatey feature" do
+      action :disable, description: "Disables a named Chocolatey feature." do
         if current_resource.feature_state == true
           converge_by("disable Chocolatey feature '#{new_resource.feature_name}'") do
             shell_out!(choco_cmd("disable"))

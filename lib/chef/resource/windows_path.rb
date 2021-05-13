@@ -64,7 +64,7 @@ class Chef
         end
       end
 
-      action :add, description: "Add an item to the system path" do
+      action :add, description: "Add an item to the system path." do
         # The windows Env provider does not correctly expand variables in
         # the PATH environment variable. Ruby expects these to be expanded.
         #
@@ -76,7 +76,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove an item from the system path" do
+      action :remove, description: "Remove an item from the system path." do
         # The windows Env provider does not correctly expand variables in
         # the PATH environment variable. Ruby expects these to be expanded.
         #

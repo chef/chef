@@ -98,7 +98,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Removes a Chocolatey source" do
+      action :remove, description: "Removes a Chocolatey source." do
 
         if current_resource
           converge_by("remove Chocolatey source '#{new_resource.source_name}'") do

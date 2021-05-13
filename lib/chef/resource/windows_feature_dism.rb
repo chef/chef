@@ -65,9 +65,7 @@ class Chef
         x.map(&:downcase)
       end
 
-      action :install do
-        description "Install a Windows role/feature using DISM"
-
+      action :install, description: "Install a Windows role/feature using DISM." do
         reload_cached_dism_data unless node["dism_features_cache"]
         fail_if_unavailable # fail if the features don't exist
 
@@ -91,7 +89,7 @@ class Chef
         end
       end
 
-      action :remove, description: "Remove a Windows role / feature using DISM" do
+      action :remove, description: "Remove a Windows role or feature using DISM." do
         reload_cached_dism_data unless node["dism_features_cache"]
 
         logger.trace("Windows features needing removal: #{features_to_remove.empty? ? "none" : features_to_remove.join(",")}")
@@ -106,7 +104,7 @@ class Chef
         end
       end
 
-      action :delete, description: "Remove a Windows role / feature from the image using DISM" do
+      action :delete, description: "Remove a Windows role or feature from the image using DISM." do
         reload_cached_dism_data unless node["dism_features_cache"]
 
         fail_if_unavailable # fail if the features don't exist

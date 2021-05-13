@@ -72,9 +72,7 @@ class Chef
         equal_to: %i{auto_deny secure_prompt_for_creds prompt_for_creds},
         default: :prompt_for_creds
 
-      action :configure, description: "Configures UAC by setting registry keys at `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System`" do
-        description 'Configures UAC by setting registry keys at \'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\''
-
+      action :configure, description: "Configures UAC by setting registry keys at `HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System`." do
         registry_key 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System' do
           values [{ name: "EnableLUA", type: :dword, data: bool_to_reg(new_resource.enable_uac) },
                   { name: "ValidateAdminCodeSignatures", type: :dword, data: bool_to_reg(new_resource.require_signed_binaries) },

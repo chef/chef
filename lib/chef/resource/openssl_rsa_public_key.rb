@@ -75,9 +75,7 @@ class Chef
         description: "The permission mode applied to all files created by the resource.",
         default: "0640"
 
-      action :create do
-        description "Create the RSA public key."
-
+      action :create, description: "Create the RSA public key file." do
         raise ArgumentError, "You cannot specify both 'private_key_path' and 'private_key_content' properties at the same time." if new_resource.private_key_path && new_resource.private_key_content
         raise ArgumentError, "You must specify the private key with either 'private_key_path' or 'private_key_content' properties." unless new_resource.private_key_path || new_resource.private_key_content
         raise "#{new_resource.private_key_path} not a valid private RSA key or password is invalid" unless priv_key_file_valid?((new_resource.private_key_path || new_resource.private_key_content), new_resource.private_key_pass)
