@@ -120,11 +120,12 @@ class Chef
       def quote_key(key)
         '"' + key.gsub('"', '\\"') + '"'
       end
-
-      def toml_dump(hash)
-        Dumper.new(hash).toml_str
-      end
-      extend self
     end
+
+    def toml_dump(hash)
+      Dumper.new(hash).toml_str
+    end
+
+    extend self
   end
 end
