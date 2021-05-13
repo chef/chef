@@ -53,7 +53,7 @@ class Chef
       ```
       DOC
 
-      extend s::CronValidations
+      extend Chef::ResourceHelpers::CronValidations
 
       property :job_name, String,
         default: ChefUtils::Dist::Infra::CLIENT,
