@@ -24,6 +24,8 @@ class Chef
       unified_mode true
       provides :habitat_config
 
+      extend Chef::ResourceHelpers::TomlDumper
+
       property :config, Mash,
                required: true,
                coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
@@ -62,7 +64,7 @@ class Chef
 
           tempfile = Tempfile.new(["habitat_config", ".toml"])
           begin
-            tempfile.write(Chef::ResourceHelpers::TomlDumper.toml_dump(new_resource.config))
+            tempfile.write(toml_dump(new_resource.config))
             tempfile.close
 
             hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)
