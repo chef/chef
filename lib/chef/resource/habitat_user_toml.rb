@@ -17,6 +17,7 @@ class Chef
   class Resource
     class HabitatUserToml < Chef::Resource
       unified_mode true
+      use "helpers/toml_dumper"
       provides :habitat_user_toml
 
       extend Chef::ResourceHelpers::TomlDumper
