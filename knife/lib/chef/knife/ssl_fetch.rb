@@ -28,7 +28,7 @@ class Chef
         require "socket" unless defined?(Socket)
         require "uri" unless defined?(URI)
         require "openssl" unless defined?(OpenSSL)
-        require "chef/mixin/mixin/proxified_socket" unless defined?(Chef::Mixin::ProxifiedSocket)
+        require "chef/mixin/proxified_socket" unless defined?(Chef::Mixin::ProxifiedSocket)
 
         include Chef::Mixin::ProxifiedSocket
       end
