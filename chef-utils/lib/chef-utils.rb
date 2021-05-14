@@ -43,7 +43,6 @@ module ChefUtils
   include ChefUtils::DSL::Platform
   include ChefUtils::DSL::PlatformFamily
   include ChefUtils::DSL::PlatformVersion
-  include ChefUtils::DSL::RenderHelpers
   include ChefUtils::DSL::TrainHelpers
   include ChefUtils::DSL::Virtualization
   include ChefUtils::DSL::Which
