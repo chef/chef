@@ -90,8 +90,8 @@ class Chef
         current_state = load_security_options
 
         if new_resource.secoption == "ResetLockoutCount"
-          if new_resource.secvalue.to_i > 30
-            raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than 30 minutes"
+          if new_resource.secvalue.to_i > current_state["LockoutDuration"].to_i
+            raise Chef::Exceptions::ValidationFailed, "The \"ResetLockoutCount\" value cannot be greater than the value currently set for \"LockoutDuration\""
           end
         end
         if (new_resource.secoption == "ResetLockoutCount" || new_resource.secoption == "LockoutDuration") && current_state["LockoutBadCount"] == "0"

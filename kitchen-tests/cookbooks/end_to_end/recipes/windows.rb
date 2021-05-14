@@ -39,12 +39,12 @@ windows_security_policy "LockoutBadCount" do
 end
 
 windows_security_policy "LockoutDuration" do
-  secvalue "30"
+  secvalue "120"
   action :set
 end
 
 windows_security_policy "ResetLockoutCount" do
-  secvalue "15"
+  secvalue "90"
   action :set
 end
 
