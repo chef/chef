@@ -1,7 +1,8 @@
 require 'date'
 
 # imported from https://github.com/chef-cookbooks/habitat
-module ChefUtils
+class Chef
+module DSL
   module Toml
     class Dumper
       attr_reader :toml_str

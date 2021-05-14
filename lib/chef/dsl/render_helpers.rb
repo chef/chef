@@ -20,7 +20,7 @@ require_relative "toml"
 require "json" unless defined?(JSON)
 require "yaml"
 
-module ChefUtils
+module Chef
   module DSL
     module RenderHelpers
       include Internal
