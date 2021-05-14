@@ -65,7 +65,7 @@ class Chef
 
           tempfile = Tempfile.new(["habitat_config", ".toml"])
           begin
-            tempfile.write(Chef::ResourceHelpers::TomlDumper.toml_dump(new_resource.config))
+            tempfile.write(render_toml(new_resource.config))
             tempfile.close
 
             hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)

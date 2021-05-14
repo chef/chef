@@ -184,6 +184,11 @@ Architecture Helpers allow you to determine the processor architecture of your n
 
 * `sanitized_path`
 
+### Content Rendering Helpers
+
+* `render_json`
+* `render_toml`
+* `render_yaml`
 ## Documentation for Cookbook library authors
 
 To use the helpers in a class or module in a cookbook library file you can include the ChefUtils DSL:
