@@ -22,7 +22,6 @@ class Chef
   class Resource
     class HabitatConfig < Chef::Resource
       unified_mode true
-      use "helpers/toml_dumper"
 
       provides :habitat_config
 
@@ -66,7 +65,7 @@ class Chef
 
           tempfile = Tempfile.new(["habitat_config", ".toml"])
           begin
-            tempfile.write(toml_dump(new_resource.config))
+            tempfile.write(Chef::ResourceHelper::TomlDumper.toml_dump(new_resource.config))
             tempfile.close
 
             hab("config", "apply", opts, new_resource.service_group, incarnation, tempfile.path)
