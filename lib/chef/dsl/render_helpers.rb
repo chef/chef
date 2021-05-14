@@ -15,8 +15,7 @@
 # limitations under the License.
 #
 
-require_relative "../internal"
-require_relative "../toml"
+require_relative "toml"
 
 require 'json'
 require 'yaml'

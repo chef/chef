@@ -10,7 +10,6 @@ HELPER_MODULES = [
   ChefUtils::DSL::DefaultPaths,
   ChefUtils::DSL::Platform,
   ChefUtils::DSL::PlatformFamily,
-  ChefUtils::DSL::RenderHelpers,
   ChefUtils::DSL::Service,
   ChefUtils::DSL::Virtualization,
   ChefUtils::DSL::Which,
@@ -23,7 +22,6 @@ INTROSPECTION_HELPERS = (ChefUtils::DSL::Introspection.methods - Module.methods)
 OS_HELPERS = (ChefUtils::DSL::OS.methods - Module.methods).freeze
 PLATFORM_FAMILY_HELPERS = (ChefUtils::DSL::PlatformFamily.methods - Module.methods).freeze
 PLATFORM_HELPERS = (ChefUtils::DSL::Platform.methods - Module.methods).freeze
-RENDER_HELPERS = (ChefUtils::DSL::RenderHelpers.methods - Module.methods).freeze
 VIRTUALIZATION_HELPERS = (ChefUtils::DSL::Virtualization.methods - Module.methods).freeze
 WINDOWS_HELPERS = (ChefUtils::DSL::Windows.methods - Module.methods).freeze
 
