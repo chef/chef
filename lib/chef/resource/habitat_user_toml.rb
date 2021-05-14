@@ -38,7 +38,7 @@ class Chef
           mode "0600"
           owner root_owner
           group node["root_group"]
-          content Chef::ResourceHelpers::TomlDumper.toml_dump(new_resource.config)
+          content render_toml(new_resource.config)
           sensitive true
         end
       end
