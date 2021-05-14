@@ -17,8 +17,8 @@
 
 require_relative "toml"
 
-require 'json'
-require 'yaml'
+require "json" unless defined?(JSON)
+require "yaml"
 
 module ChefUtils
   module DSL
@@ -38,8 +38,8 @@ module ChefUtils
       # pretty-print a hash as a YAML string
       def render_yaml(hash)
         yaml_content = hash.transform_keys(&:to_s).to_yaml
-        #above replaces first-level keys with strings, below the rest
-        yaml_content.gsub!(' :',' ')
+        # above replaces first-level keys with strings, below the rest
+        yaml_content.gsub!(" :", " ")
       end
 
       extend self
