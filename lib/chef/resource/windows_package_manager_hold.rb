@@ -41,6 +41,15 @@ class Chef
       end
       ```
 
+      **Add several packages on a system**
+
+      ```ruby
+      windows_package_manager 'Install 7zip' do
+        package_name  %[1Password MicroK8s]
+        action :install
+      end
+      ```
+
       **Add a package source to install from**
 
       ```ruby
@@ -76,8 +85,8 @@ class Chef
 
       DOC
 
-      property :package_name, String,
-        description: "The name of a single package to be installed."
+      property :package_name, Array,
+        description: "The name of one or more packages to be installed."
 
       property :source_name, String,
         description: "The name of a custom installation source.",
@@ -88,7 +97,7 @@ class Chef
 
       property :scope, String,
         description: "Install the package for the current user or the whole machine.",
-        default: "user", equal_to: [user, machine]
+        default: "user", equal_to: %w{user machine}
 
       property :location, String,
         description: "The location on the local system to install the package to. For example 'c:\foo\'."
@@ -102,10 +111,12 @@ class Chef
 
       action :install, description: "Installs an item on a Windows node." do
         local_arguments = build_argument_string
-        converge_by("install package: #{new_resource.package_name}") do
-          install_cmd = ps_execute_winget("install", package_name: new_resource.package_name, arguments: local_arguments)
-          res = powershell_exec(install_cmd)
-          raise "Failed to install #{new_resource.package_name}: #{res.errors}" if res.error?
+        new_resource.package_name.each do |package|
+          converge_by("install package: #{package}") do
+            install_cmd = ps_execute_winget("install", package_name: package, arguments: local_arguments)
+            res = powershell_exec(install_cmd)
+            raise "Failed to install #{new_resource.package_name}: #{res.errors}" if res.error?
+          end
         end
       end
 
