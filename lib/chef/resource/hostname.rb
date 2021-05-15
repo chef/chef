@@ -44,6 +44,24 @@ class Chef
           ipaddress '198.51.100.2'
         end
         ```
+
+        **Change the hostname of a Windows, Non-Domain joined node**:
+
+        ```ruby
+        hostname 'renaming a workgroup computer' do
+          hostname 'Foo'
+        end
+        ```
+
+        **Change the hostname of a Windows, Domain-joined node**:
+
+        ```ruby
+        hostname 'renaming a domain-joined computer' do
+          hostname 'Foo'
+          domain_user "Domain\\Someone"
+          domain_password 'SomePassword'
+        end
+        ```
       DOC
 
       property :hostname, String,

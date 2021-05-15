@@ -27,8 +27,8 @@ describe Chef::Resource::Hostname, :windows_only do
   end
 
   let(:new_hostname) { "New-Hostname" }
-  let(:local_domain_user) { "DOMAIN\\Groucho" }
-  let(:local_domain_password) { "P@ssw0rd" }
+  let(:local_domain_user) { "'mydomain\\Groucho'" }
+  let(:local_domain_password) { "'P@ssw0rd'" }
   let(:local_windows_reboot) { false }
   let(:domain_status) { get_domain_status }
 
@@ -45,9 +45,7 @@ describe Chef::Resource::Hostname, :windows_only do
 
   subject do
     new_resource = Chef::Resource::Hostname.new("oldhostname", run_context)
-    new_resource.hostname = "foobar"
-    new_resource.domain_user = "chef"
-    new_resource.domain_password = "P@ssw0rd"
+    new_resource.hostname = "Grendel"
     new_resource.windows_reboot = false
     new_resource
   end
@@ -61,14 +59,32 @@ describe Chef::Resource::Hostname, :windows_only do
       end
     end
 
-    context "the system gets renamed when in a domain" do
-      let(:hostname) { "Gherkin" }
-      it "does change the domain account" do
-        subject.windows_reboot true
-        subject.domain_user local_domain_user
-        subject.domain_password local_domain_password
-        subject.run_action(:set)
-        expect(subject).to be_updated_by_last_action
+    describe "Mocking being joined to a domain" do
+      before do
+        allow(subject).to receive(:is_domain_joined?) { true }
+      end
+      context "the system gets renamed when in a domain" do
+        let(:hostname) { "Gherkin" }
+        it "does change the domain account" do
+          subject.windows_reboot true
+          subject.domain_user local_domain_user
+          subject.domain_password local_domain_password
+          subject.run_action(:set)
+          expect(subject).to be_updated_by_last_action
+        end
+      end
+    end
+
+    describe 'testing for error handling' do
+      before do
+        allow(subject).to receive(:is_domain_joined?) { true }
+      end
+      context "when a node is renamed while in a domain" do
+        it "and fails because of missing credentials" do
+          subject.windows_reboot true
+          subject.domain_user local_domain_user
+          expect { subject.run_action(:set) }.to raise_error(RuntimeError)
+        end
       end
     end
   end
