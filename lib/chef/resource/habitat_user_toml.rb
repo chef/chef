@@ -19,8 +19,6 @@ class Chef
       unified_mode true
       provides :habitat_user_toml
 
-      extend Chef::ResourceHelpers::TomlDumper
-
       property :config, Mash,
                required: true,
                coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
