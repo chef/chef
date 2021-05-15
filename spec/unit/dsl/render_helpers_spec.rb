@@ -17,7 +17,7 @@
 
 require "spec_helper"
 
-RSpec.describe ChefUtils::DSL::RenderHelpers do
+RSpec.describe Chef::DSL::RenderHelpers do
 
   ( HELPER_MODULES - [ described_class ] ).each do |klass|
     it "does not have methods that collide with #{klass}" do
@@ -45,7 +45,7 @@ RSpec.describe ChefUtils::DSL::RenderHelpers do
          }
 
   context "render_json" do
-    json = ChefUtils::DSL::RenderHelpers.render_json(hash)
+    json = Chef::DSL::RenderHelpers.render_json(hash)
     describe "JSON content" do
       it "expected JSON output" do
         expected = <<-EXPECTED
@@ -71,7 +71,7 @@ EXPECTED
   end
 
   context "render_toml" do
-    toml = ChefUtils::DSL::RenderHelpers.render_toml(hash)
+    toml = Chef::DSL::RenderHelpers.render_toml(hash)
     describe "TOML content" do
       it "expected TOML output" do
         expected = <<-EXPECTED
@@ -90,7 +90,7 @@ EXPECTED
   end
 
   context "render_yaml" do
-    yaml = ChefUtils::DSL::RenderHelpers.render_yaml(hash)
+    yaml = Chef::DSL::RenderHelpers.render_yaml(hash)
     describe "YAML content" do
       it "expected YAML output" do
         expected = <<-EXPECTED
