@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-autoload :ChefUtils, "chef-utils/internal"
 require_relative "toml"
 
 require_relative "../json_compat"
@@ -23,7 +22,6 @@ require "yaml"
 class Chef
   module DSL
     module RenderHelpers
-      include Internal
 
       # pretty-print a hash as a JSON string
       def render_json(hash)
