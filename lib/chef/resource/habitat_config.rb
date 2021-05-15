@@ -17,15 +17,12 @@ require_relative "../http"
 require_relative "../json_compat"
 require_relative "../resource"
 
-
 class Chef
   class Resource
     class HabitatConfig < Chef::Resource
       unified_mode true
 
       provides :habitat_config
-
-      extend Chef::ResourceHelpers::TomlDumper
 
       property :config, Mash,
                required: true,
