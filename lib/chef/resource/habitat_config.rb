@@ -16,7 +16,7 @@
 require_relative "../http"
 require_relative "../json_compat"
 require_relative "../resource"
-require_relative "helpers/toml_dumper"
+
 
 class Chef
   class Resource
