@@ -32,7 +32,6 @@ require_relative "chef-utils/dsl/which"
 require_relative "chef-utils/dsl/windows"
 require_relative "chef-utils/mash"
 
-
 # This is the Chef Infra Client DSL, not everything needs to go in here
 module ChefUtils
   include ChefUtils::DSL::Architecture
