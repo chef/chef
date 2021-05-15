@@ -33,15 +33,15 @@ RSpec.describe Chef::DSL::RenderHelpers do
 
   hash = {
           "golf": "hotel",
-          "kilo": ["lima", "mike"],
+          "kilo": %w{lima mike},
           "india": {
-                    "juliett": "blue"
+                    "juliett": "blue",
                    },
           "alpha": {
                     "charlie": true,
                     "bravo": 10,
                    },
-          "echo": "foxtrot"
+          "echo": "foxtrot",
          }
 
   context "render_json" do
@@ -64,7 +64,7 @@ RSpec.describe Chef::DSL::RenderHelpers do
   },
   "echo": "foxtrot"
 }
-EXPECTED
+        EXPECTED
         expect(json).to eq(expected)
       end
     end
@@ -83,7 +83,7 @@ bravo = 10
 charlie = true
 [india]
 juliett = "blue"
-EXPECTED
+        EXPECTED
         expect(toml).to eq(expected)
       end
     end
@@ -105,7 +105,7 @@ alpha:
   charlie: true
   bravo: 10
 echo: foxtrot
-EXPECTED
+        EXPECTED
         expect(yaml).to eq(expected)
       end
     end
