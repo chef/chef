@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+require_relative "../internal"
 require_relative "toml"
 
 require_relative "../json_compat"
@@ -32,7 +32,7 @@ class Chef
 
       # pretty-print a hash as a TOML string
       def render_toml(hash)
-        ChefUtils::Toml::Dumper.new(hash).toml_str
+        Chef::DSL::Toml::Dumper.new(hash).toml_str
       end
 
       # pretty-print a hash as a YAML string
