@@ -274,7 +274,7 @@ class Chef
           unless Socket.gethostbyname(Socket.gethostname).first == new_resource.hostname
             if is_domain_joined?
               if new_resource.domain_user.nil? || new_resource.domain_password.nil?
-                raise "Domain Username and Password are required parameters"
+                raise "The `domain_user` and `domain_password` properties are required to change the hostname of a domain-connected Windows system."
               else
                 converge_by "set hostname to #{new_resource.hostname}" do
                   powershell_exec! <<~EOH

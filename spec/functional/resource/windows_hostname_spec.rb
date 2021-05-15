@@ -75,7 +75,7 @@ describe Chef::Resource::Hostname, :windows_only do
       end
     end
 
-    describe 'testing for error handling' do
+    describe "testing for error handling" do
       before do
         allow(subject).to receive(:is_domain_joined?) { true }
       end
