@@ -17,10 +17,10 @@
 
 require_relative "toml"
 
-require "json" unless defined?(JSON)
+require_relative "../json_compat"
 require "yaml"
 
-module Chef
+class Chef
   module DSL
     module RenderHelpers
       include Internal
