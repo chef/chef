@@ -20,18 +20,6 @@ require "chef/dsl/render_helpers"
 
 describe Chef::DSL::RenderHelpers do
 
-  ( HELPER_MODULES - [ described_class ] ).each do |klass|
-    it "does not have methods that collide with #{klass}" do
-      expect((klass.methods - Module.methods) & RENDER_HELPERS).to be_empty
-    end
-  end
-
-  RENDER_HELPERS.each do |helper|
-    it "has the #{helper} in the Chef DSL" do
-      expect(ChefDSL).to respond_to(helper)
-    end
-  end
-
   hash = {
           "golf": "hotel",
           "kilo": %w{lima mike},
