@@ -123,5 +123,5 @@ jobs:
       - name: Run Test Kitchen
         run:  |
           cd kitchen-tests
-          sudo bundle install
-          sudo bundle exec kitchen test end-to-end-${{ matrix.os }}
+          bundle install
+          bundle exec kitchen test end-to-end-${{ matrix.os }}
