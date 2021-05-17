@@ -44,8 +44,7 @@ class Chef
       ```
       DOC
 
-      property :name, String, default: "",
-      description: ""
+      property :name, String, default: ""
       # The following are only used on *nix
       property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
       description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh)"
