@@ -23,6 +23,7 @@ class Chef
                required: true,
                coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
                description: "Only valid for `:create` action. The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`"
+
       property :service_name, String, name_property: true, desired_state: false,
       description: "The service group to apply the configuration to, for example, `nginx.default`"
 
