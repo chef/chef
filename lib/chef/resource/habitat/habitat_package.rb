@@ -83,7 +83,7 @@ class Chef
       description: "Auth token for installing a package from a private organization on builder"
 
       property :binlink, [true, false, :force], default: false,
-      description: "If habitat should attempt to binlink the package. Acceptable values: `true`, `false`, `:force`. Will faill on binlinking if set to `true` and binary or binlink exists."
+      description: "If habitat should attempt to binlink the package. Acceptable values: `true`, `false`, `:force`. Will fail on binlinking if set to `true` and binary or binlink exists."
 
       property :keep_latest, String,
       description: "Ability to uninstall while retaining a specified version (Default is not set."
