@@ -26,144 +26,33 @@ class Chef
         false
       end
 
-      property :bldr_url, String,
-      description: "The Builder URL for the `hab_package` resource, if needed"
-
-      property :permanent_peer, [true, false], default: false,
-      description: "Only valid for `:run` action, passes `--permanent-peer` to the hab command"
-
-      property :listen_ctl, String,
-      description: "Only valid for `:run` action, passes `--listen-ctl` with the specified address and port, e.g., `0.0.0.0:9632`, to the hab command"
-
-      property :listen_gossip, String,
-      description: "Only valid for `:run` action, passes `--listen-gossip` with the specified address and port, e.g., `0.0.0.0:9638`, to the hab command"
-
-      property :listen_http, String,
-      description: "Only valid for `:run` action, passes `--listen-http` with the specified address and port, e.g., `0.0.0.0:9631`, to the hab command"
-
-      property :org, String, default: "default",
-      description: "Only valid for `:run` action, passes `--org` with the specified org name to the hab command"
-
-      property :peer, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b },
-      description: "Only valid for `:run` action, passes `--peer` with the specified initial peer to the hab command"
-
-      property :ring, String,
-      description: "Only valid for `:run` action, passes `--ring` with the specified ring key name to the hab command"
-
-      property :hab_channel, String,
-      description: "The channel to install Habitat from. Defaults to stable"
-
-      property :auto_update, [true, false], default: false,
-      description: "Passes `--auto-update`. This will set the Habitat supervisor to automatically update itself any time a stable version has been released"
-
-      property :auth_token, String,
-      description: "Auth token for accessing a private organization on bldr. This value is templated into the appropriate service file."
-
-      property :gateway_auth_token, String,
-      description: "Auth token for accessing the supervisor's HTTP gateway. This value is templated into the appropriate service file."
-
-      property :update_condition, String,
-      description: "Passes `--update-condition` dictating when this service should updated. Defaults to `latest`. Options are `latest` or `track-channel` **_Note: This requires a minimum habitat version of 1.5.71_**
-      - `latest`: Runs the latest package that can be found in the configured channel and local packages.
-      - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
-
+      property :bldr_url, String
+      property :permanent_peer, [true, false], default: false
+      property :listen_ctl, String
+      property :listen_gossip, String
+      property :listen_http, String
+      property :org, String, default: "default"
+      property :peer, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }
+      property :ring, String
+      property :hab_channel, String
+      property :auto_update, [true, false], default: false
+      property :auth_token, String
+      property :gateway_auth_token, String
+      property :update_condition, String
       property :limit_no_files, String
-
-      property :license, String, equal_to: ["accept"],
-      description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string)."
-
-      property :health_check_interval, [String, Integer], coerce: proc { |h| h.is_a?(String) ? h : h.to_s },
-      description: "The interval (seconds) on which to run health checks (defaults to 30)"
-
-      property :event_stream_application, String,
-      description: "The name of your application that will be displayed in the Chef Automate Applications Dashboard"
-
-      property :event_stream_environment, String,
-      description: "The application environment for the supervisor, this is for grouping in the Applications Dashboard"
-
-      property :event_stream_site, String,
-      description: "Application Dashboard label for the 'site' of the application - can be filtered in the dashboard"
-
-      property :event_stream_url, String,
-      description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified (can be changed if needed)"
-
-      property :event_stream_token, String,
-      description: "Chef Automate token for sending application event stream data"
-
-      property :event_stream_cert, String,
-      description: "With `Intermediary Certificates` or, Automate 2 being set to use TLS with a valid cert, you will need to provide `Habitat` with your certificate for communication with Automate to work. [Follow these steps!](https://automate.chef.io/docs/applications-setup/#share-the-tls-certificate-with-chef-habitat)"
-
-      property :sup_version, String,
-      description: "Allows you to choose which version of supervisor you would like to install. Defaults to `latest`. (If a version is provided, it will also install that version of habitat if not previously installed)"
-
-      property :launcher_version, String,
-      description: "Allows you to choose which version of launcher to install. Defaults to `latest`"
-
-      property :service_version, String, # Windows only
-      description: "Allows you to choose which version of the **_Windows Service_** to install. Defaults to `latest` (Windows Only)"
-
-      property :keep_latest, String,
-      description: "Automatically cleans up old packages. If this flag is enabled, service startup will initiate an uninstall of all previous versions of the associated package. This also applies when a service is restarted due to an update. If a number is passed to this argument, that number of latest versions will be kept. The same logic applies to the Supervisor package `env:HAB_KEEP_LATEST_PACKAGES=1` (This requires Habitat version `1.5.86+`)"
-
-      property :toml_config, [true, false], default: false,
-      description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, default is `false`. [reference](https://www.habitat.sh/docs/reference/#supervisor-config)"
-
-      description "Runs a Habitat Supervisor for one or more Habitat Services. It is used in conjunction with `hab_service` which will manage the services loaded and started within the supervisor."
-
-      examples <<~DOC
-      ```ruby
-      # set up with just the defaults
-      hab_sup 'default'
-
-      # Update listen ports and use Supervisor toml config
-      hab_sup 'test-options' do
-        listen_http '0.0.0.0:9999'
-        listen_gossip '0.0.0.0:9998'
-        toml_config true
-      end
-
-      # Use with an on-prem Builder
-      # Access to public builder may not be available
-      hab_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-      end
-
-      # Using update_condition
-      hab_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        hab_channel 'dev'
-        update_condition 'track-channel'
-      end
-
-      # Provide event_stream_* information
-      hab_sup 'default' do
-        license 'accept'
-        event_stream_application 'myapp'
-        event_stream_environment 'production'
-        event_stream_site 'MySite'
-        event_stream_url 'automate.private.net:4222'
-        event_stream_token 'myawesomea2clitoken='
-        event_stream_cert '/hab/cache/ssl/mycert.crt'
-      end
-
-      # Provide specific versions
-      hab_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        sup_version '1.5.50'
-        launcher_version '13458'
-        service_version '0.6.0' # WINDOWS ONLY
-      end
-
-      # Set latest version of packages to retain
-      hab_sup 'default' do
-        bldr_url 'https://bldr.private.net'
-        sup_version '1.5.86'
-        launcher_version '13458'
-        service_version '0.6.0' # WINDOWS ONLY
-        keep_latest '2'
-      end
-      ```
-      DOC
+      property :license, String, equal_to: ["accept"]
+      property :health_check_interval, [String, Integer], coerce: proc { |h| h.is_a?(String) ? h : h.to_s }
+      property :event_stream_application, String
+      property :event_stream_environment, String
+      property :event_stream_site, String
+      property :event_stream_url, String
+      property :event_stream_token, String
+      property :event_stream_cert, String
+      property :sup_version, String
+      property :launcher_version, String
+      property :service_version, String # Windows only
+      property :keep_latest, String
+      property :toml_config, [true, false], default: false
 
       action :run do
         habitat_install new_resource.name do

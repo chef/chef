@@ -36,7 +36,6 @@ class Chef
       property :license, String, equal_to: ["accept"]
       property :hab_version, String
 
-
       description "This resource will install the newest stable version of habitat"
       examples <<~DOC
       ```ruby
