@@ -129,7 +129,7 @@ class Chef
       end
 
       def is_domain_joined?
-        powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).PartofDomain").result
+        powershell_exec!("(Get-CIMInstance -Class Win32_ComputerSystem).PartofDomain").result
       end
 
       action :set, description: "Sets the node's hostname." do
