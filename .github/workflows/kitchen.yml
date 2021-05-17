@@ -109,9 +109,9 @@ jobs:
           - 'ubuntu-2104'
     runs-on: ubuntu-latest
     env:
-      BUNDLE_GEMFILE: kitchen-tests/Gemfile
       FORCE_FFI_YAJL: ext
       CHEF_LICENSE: accept-no-persist
+      KITCHEN_YAML: kitchen-tests/kitchen.yml
     steps:
       - name: Check out code
         uses: actions/checkout@master
@@ -120,7 +120,7 @@ jobs:
         with:
           ruby-version: 2.7
           bundler-cache: true
+          working-directory: kitchen-tests
       - name: Run Test Kitchen
         run:  |
-          cd kitchen-tests
           bundle exec kitchen test end-to-end-${{ matrix.os }}
