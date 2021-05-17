@@ -132,7 +132,7 @@ class Chef
         powershell_exec!("(Get-WmiObject -Class Win32_ComputerSystem).PartofDomain").result
       end
 
-      action :set, description: "Sets the node's hostname" do
+      action :set, description: "Sets the node's hostname." do
         if !windows?
           ohai "reload hostname" do
             plugin "hostname"
@@ -287,9 +287,7 @@ class Chef
               end
             else
               converge_by "set hostname to #{new_resource.hostname}" do
-                powershell_exec! <<~EOH
-                  Rename-Computer -NewName #{new_resource.hostname}
-                EOH
+                powershell_exec!("Rename-Computer -NewName #{new_resource.hostname}")
               end
             end
             # reboot because $windows
