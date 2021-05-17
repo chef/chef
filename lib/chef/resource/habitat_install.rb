@@ -1,6 +1,5 @@
 #
-# Author:: Thom May (<thom@chef.io>)
-# Copyright:: 2017-2018 Chef Software, Inc.
+# Copyright:: Chef Software, Inc.
 #
 # Copyright:: Copyright (c) 2016 Chef Software, Inc.
 # License:: Apache License, Version 2.0
@@ -26,6 +25,7 @@ class Chef
       provides :habitat_install
 
       description "This resource will install the newest stable version of habitat"
+      introduced "17.2"
 
       property :name, String, default: ""
       # The following are only used on *nix
@@ -36,33 +36,14 @@ class Chef
       property :license, String, equal_to: ["accept"]
       property :hab_version, String
 
-      description "This resource will install the newest stable version of habitat"
-      examples <<~DOC
-      ```ruby
-      # Nameless Installation
-      hab_install
-
-      # Installation specifying a bldr URL
-      hab_install 'install habitat' do
-        bldr_url 'http://localhost'
-      end
-
-      # Installation specifying version and bldr URL
-      hab_install 'install habitat' do
-        bldr_url 'http://localhost'
-        hab_version '1.5.50'
-      end
-      ```
-      DOC
-
-      action :install do
+      action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
         if ::File.exist?(hab_path)
           cmd = shell_out!([hab_path, "--version"].flatten.compact.join(" "))
           version = %r{hab (\d*\.\d*\.\d[^\/]*)}.match(cmd.stdout)[1]
           return if version == new_resource.hab_version
         end
 
-        if platform_family?("windows")
+        if windows?
           # Retrieve version information
           uri = "https://packages.chef.io/files"
           package_name = "hab-x86_64-windows"
@@ -76,31 +57,11 @@ class Chef
             source download
           end
 
-          if Chef::VERSION.to_i < 15
-            chef_gem "rubyzip" do
-              compile_time false
-              version "< 2.0.0"
-            end
-            ruby_block "#{package_name}.zip" do
-              block do
-                require "zip" unless defined?(Zip)
-                Zip::File.open(zipfile) do |zip_file|
-                  zip_file.each do |f|
-                    fpath = "#{Chef::Config[:file_cache_path]}/habitat/" + f.name
-                    zip_file.extract(f, fpath) # unless ::File.exist?(fpath)
-                  end
-                end
-              end
-              action :run
-              not_if { ::Dir.exist?('c:\habitat') }
-            end
-          else
-            archive_file "#{package_name}.zip" do
-              path zipfile
-              destination "#{Chef::Config[:file_cache_path]}/habitat"
-              action :extract
-              not_if { ::Dir.exist?('c:\habitat') }
-            end
+          archive_file "#{package_name}.zip" do
+            path zipfile
+            destination "#{Chef::Config[:file_cache_path]}/habitat"
+            action :extract
+            not_if { ::Dir.exist?('c:\habitat') }
           end
 
           directory 'c:\habitat' do
@@ -115,17 +76,8 @@ class Chef
           end
 
           # TODO: This won't self heal if missing until the next upgrade
-          if Chef::VERSION.to_i < 14
-            env "PATH_c-habitat" do
-              key_name "PATH"
-              delim ";" # this was missing
-              value 'C:\habitat'
-              action :modify
-            end
-          else
-            windows_path 'C:\habitat' do
-              action :add
-            end
+          windows_path 'C:\habitat' do
+            action :add
           end
         else
           package %w{curl tar gzip}
@@ -240,9 +192,9 @@ class Chef
         use "../resource/habitat/habitat_shared"
 
         def hab_path
-          if platform_family?("mac_os_x")
+          if macos?
             "/usr/local/bin/hab"
-          elsif platform_family?("windows")
+          elsif widnows?
             "C:/habitat/hab.exe"
           else
             "/bin/hab"

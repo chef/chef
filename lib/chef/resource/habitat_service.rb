@@ -1,4 +1,4 @@
-# Copyright:: 2017-2018 Chef Software, Inc.
+# Copyright:: Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -78,6 +78,7 @@ class Chef
 
       Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource.
       "
+      introduced "17.2"
       examples <<~DOC
 
         ```ruby
@@ -287,7 +288,7 @@ class Chef
         30
       end
 
-      action :load do
+      action :load, description: "(default action) runs `hab service load` to load and start the specified application service" do
         modified = false
         converge_if_changed :service_name do
           modified = true
@@ -338,14 +339,14 @@ class Chef
         end
       end
 
-      action :unload do
+      action :unload, description: "runs `hab service unload` to unload and stop the specified application service" do
         if current_resource.loaded
           execute "hab svc unload #{new_resource.service_name} #{svc_options.join(" ")}"
           wait_for_service_unloaded
         end
       end
 
-      action :start do
+      action :start, description: "runs `hab service start` to start the specified application service" do
         unless current_resource.loaded
           Chef::Log.fatal("No service named #{new_resource.service_name} is loaded on the Habitat supervisor")
           raise "No service named #{new_resource.service_name} is loaded on the Habitat supervisor"
@@ -354,7 +355,7 @@ class Chef
         execute "hab svc start #{new_resource.service_name} #{svc_options.join(" ")}" unless current_resource.running
       end
 
-      action :stop do
+      action :stop, description: "runs `hab service stop` to stop the specified application service" do
         unless current_resource.loaded
           Chef::Log.fatal("No service named #{new_resource.service_name} is loaded on the Habitat supervisor")
           raise "No service named #{new_resource.service_name} is loaded on the Habitat supervisor"
@@ -366,12 +367,12 @@ class Chef
         end
       end
 
-      action :restart do
+      action :restart, description: "runs the `:stop` and then `:start` actions" do
         action_stop
         action_start
       end
 
-      action :reload do
+      action :reload, description: "runs the `:unload` and then `:load` actions" do
         action_unload
         action_load
       end

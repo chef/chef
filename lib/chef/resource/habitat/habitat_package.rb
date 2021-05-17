@@ -1,5 +1,5 @@
 #
-# Copyright:: Copyright (c) Chef Software Inc.
+# Copyright:: Chef Software Inc.
 # Copyright:: 2016-2020, Virender Khatri
 #
 # License:: Apache License, Version 2.0
@@ -25,9 +25,10 @@ class Chef
       unified_mode true
 
       provides :habitat_package
-      provides :package
       use "habitat_shared"
       description "Install the specified Habitat package from builder. Requires that Habitat is installed"
+      introduced "17.2"
+
       examples <<~DOC
       ```ruby
       habitat_package 'core/redis'

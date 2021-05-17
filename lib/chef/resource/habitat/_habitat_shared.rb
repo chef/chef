@@ -1,5 +1,5 @@
 #
-# Copyright:: 2017-2\ Chef Software, Inc.
+# Copyright:: Chef Software, Inc.
 # License:: Apache License, Version 2.0
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,17 +16,12 @@
 
 def hab(*command)
   # Windows shell_out does not support arrays, so manually cleaning and joining
-  hab_cmd = if platform_family?("windows")
+  hab_cmd = if windows?
               (["hab"] + command).flatten.compact.join(" ")
             else
               (["hab"] + command)
             end
-
-  if Gem::Requirement.new(">= 14.3.20").satisfied_by?(Gem::Version.new(Chef::VERSION))
-    shell_out!(hab_cmd)
-  else
-    shell_out_compact!(hab_cmd)
-  end
+  shell_out!(hab_cmd)
 rescue Errno::ENOENT
   Chef::Log.fatal("'hab' binary not found, use the 'habitat_install' resource to install it first")
   raise
