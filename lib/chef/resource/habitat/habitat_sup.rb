@@ -83,7 +83,7 @@ class Chef
       description: "The application environment for the supervisor, this is for grouping in the Applications Dashboard"
 
       property :event_stream_site, String,
-      description: "Application Dashboard label for the "site" of the application - can be filtered in the dashboard"
+      description: "Application Dashboard label for the 'site' of the application - can be filtered in the dashboard"
 
       property :event_stream_url, String,
       description: "`AUTOMATE_HOSTNAME:4222` - the Chef Automate URL with port 4222 specified (can be changed if needed)"
@@ -108,7 +108,6 @@ class Chef
 
       property :toml_config, [true, false], default: false,
       description: "Supports using the Supervisor toml configuration instead of passing exec parameters to the service, default is `false`. [reference](https://www.habitat.sh/docs/reference/#supervisor-config)"
-
 
       action :run, description: "The `run` action handles installing Habitat using the `hab_install` resource, ensures that the appropriate versions of the `core/hab-sup` and `core/hab-launcher` packages are installed using `hab_package`, and then drops off the appropriate init system definitions and manages the service." do
         habitat_install new_resource.name do
