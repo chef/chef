@@ -324,6 +324,17 @@ steps:
         privileged: true
         single-use: true
 
+- label: ":habicat: Linux plan (kernel2)"
+  commands:
+    - sudo ./.expeditor/scripts/install-hab.sh 'x86_64-linux-kernel2'
+    - sudo ./.expeditor/scripts/verify-plan.sh
+  timeout_in_minutes: 60
+  expeditor:
+    executor:
+      linux:
+        privileged: true
+        single-use: true
+
 - label: ":habicat: Windows plan"
   commands:
     - ./.expeditor/scripts/verify-plan.ps1
