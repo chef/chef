@@ -22,25 +22,102 @@ class Chef
       unified_mode true
       provides :habitat_service
 
-      property :service_name, String, name_property: true
-      property :loaded, [true, false], default: false
-      property :running, [true, false], default: false
+      property :service_name, String, name_property: true,
+      description: "name property, the name of the service, must be in the form of `origin/name`"
 
+      property :loaded, [true, false], default: false,
+      description: "state property indicating whether the service is loaded in the supervisor"
+
+      property :running, [true, false], default: false,
+      description: "state property indicating whether the service is running in the supervisor"
       # hab svc options which get included based on the action of the resource
-      property :strategy, [Symbol, String], equal_to: [:none, "none", :'at-once', "at-once", :rolling, "rolling"], default: :none, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :topology, [Symbol, String], equal_to: [:standalone, "standalone", :leader, "leader"], default: :standalone, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :bldr_url, String, default: "https://bldr.habitat.sh/"
-      property :channel, [Symbol, String], default: :stable, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :bind, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }, default: []
-      property :binding_mode, [Symbol, String], equal_to: [:strict, "strict", :relaxed, "relaxed"], default: :strict, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
-      property :service_group, String, default: "default"
+      property :strategy, [Symbol, String], equal_to: [:none, "none", :'at-once', "at-once", :rolling, "rolling"], default: :none, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
+      description: "Passes `--strategy` with the specified update strategy to the hab command. Defaults to `:none`. Other options are `:'at-once'` and `:rolling`"
+
+      property :topology, [Symbol, String], equal_to: [:standalone, "standalone", :leader, "leader"], default: :standalone, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
+      description: "Passes `--topology` with the specified service topology to the hab command"
+
+      property :bldr_url, String, default: "https://bldr.habitat.sh/",
+      description: "Passes `--url` with the specified Builder URL to the hab command. Depending on the type of Builder you are connecting to, this URL will look different, here are the **3** current types:
+      - Public Builder (default) - `https://bldr.habitat.sh`
+      - On-Prem Builder installed using the [Source Install Method](https://github.com/habitat-sh/on-prem-builder) - `https://your.bldr.url`
+      - On-Prem Builder installed using the [Automate Installer](https://automate.chef.io/docs/on-prem-builder/) - `https://your.bldr.url/bldr/v1`"
+
+      property :channel, [Symbol, String], default: :stable, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
+      description: "Passes `--channel` with the specified channel to the hab command"
+
+      property :bind, [String, Array], coerce: proc { |b| b.is_a?(String) ? [b] : b }, default: [],
+      description: "Passes `--bind` with the specified services to bind to the hab command. If an array of multiple service binds are specified then a `--bind` flag is added for each."
+
+      property :binding_mode, [Symbol, String], equal_to: [:strict, "strict", :relaxed, "relaxed"], default: :strict, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
+      description: "Passes `--binding-mode` with the specified binding mode. Defaults to `:strict`. Options are `:strict` or `:relaxed`"
+
+      property :service_group, String, default: "default",
+      description: " Passes `--group` with the specified service group to the hab command"
+
       property :shutdown_timeout, Integer, default: 8
-      property :health_check_interval, Integer, default: 30
-      property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false
+
+      property :health_check_interval, Integer, default: 30,
+      description: "The interval (seconds) on which to run health checks (defaults to 30)"
+
+      property :remote_sup, String, default: "127.0.0.1:9632", desired_state: false,
+      description: "Address to a remote Supervisor's Control Gateway [default: 127.0.0.1:9632]"
       # Http port needed for querying/comparing current config value
-      property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false
-      property :gateway_auth_token, String, desired_state: false
-      property :update_condition, [Symbol, String], equal_to: [:latest, "latest", :'track-channel', "track-channel"], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s }
+      property :remote_sup_http, String, default: "127.0.0.1:9631", desired_state: false,
+      description: "Address for remote supervisor http port. Used to pull existing configuration data. If this is invalid, config will be applied on every Chef run."
+
+      property :gateway_auth_token, String, desired_state: false,
+      description: "Auth token for accessing the remote supervisor's http port."
+
+      property :update_condition, [Symbol, String], equal_to: [:latest, "latest", :'track-channel', "track-channel"], default: :latest, coerce: proc { |s| s.is_a?(String) ? s.to_sym : s },
+      description: "Passes `--update-condition` dictating when this service should updated. Defaults to `latest`. Options are `latest` or `track-channel` **_Note: This requires a minimum habitat version of 1.5.71_**
+      - `latest`: Runs the latest package that can be found in the configured channel and local packages.
+      - `track-channel`: Always run what is at the head of a given channel. This enables service rollback where demoting a package from a channel will cause the package to rollback to an older version of the package. A ramification of enabling this condition is packages newer than the package at the head of the channel will be automatically uninstalled during a service rollback."
+
+      description "Manages a Habitat application service using `hab sup`/`hab service`. This requires that `core/hab-sup` be running as a service. See the `hab_sup` resource documentation below for more information about how to set that up with this cookbook.
+
+      Note: Applications may run as a specific user. Often with Habitat, the default is `hab`, or `root`. If the application requires another user, then it should be created with Chef's `user` resource.
+      "
+      examples <<~DOC
+
+        ```ruby
+        # install and load nginx
+        hab_package 'core/nginx'
+        hab_service 'core/nginx'
+
+        hab_service 'core/nginx unload' do
+          service_name 'core/nginx'
+          action :unload
+        end
+
+        # pass the strategy and topology options to hab service commands (load by default)
+        hab_service 'core/redis' do
+          strategy 'rolling'
+          topology 'standalone'
+        end
+
+        # Using update_condition
+        hab_service 'core/redis' do
+          strategy 'rolling'
+          update_condition 'track-channel'
+          topology 'standalone'
+        end
+        ```
+
+        If the service has it's own user specified that is not the `hab` user, don't create the `hab` user on install, and instead create the application user with Chef's `user` resource
+
+        ```ruby
+        hab_install 'install habitat' do
+          create_user false
+        end
+
+        user 'acme-apps' do
+          system true
+        end
+
+        hab_service 'acme/apps'
+        ```
+      DOC
 
       load_current_value do
         service_details = get_service_details(service_name)

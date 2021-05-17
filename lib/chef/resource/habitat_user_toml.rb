@@ -21,8 +21,24 @@ class Chef
 
       property :config, Mash,
                required: true,
-               coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m }
-      property :service_name, String, name_property: true, desired_state: false
+               coerce: proc { |m| m.is_a?(Hash) ? Mash.new(m) : m },
+               description: "Only valid for `:create` action. The configuration to apply as a ruby hash, for example, `{ worker_count: 2, http: { keepalive_timeout: 120 } }`"
+      property :service_name, String, name_property: true, desired_state: false,
+      description: "The service group to apply the configuration to, for example, `nginx.default`"
+
+      description "Templates a user.toml for the specified service. This is written to `/hab/user/<service_name>/config/user.toml`. User.toml can be used to set configuration overriding the default.toml for a given package as an alternative to applying service group level configuration."
+      examples <<~DOC
+      ```ruby
+      hab_user_toml 'nginx' do
+        config({
+          worker_count: 2,
+          http: {
+            keepalive_timeout: 120
+          }
+          })
+        end
+        ```
+      DOC
 
       action :create do
         directory config_directory do
