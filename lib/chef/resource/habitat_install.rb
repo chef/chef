@@ -29,12 +29,23 @@ class Chef
 
       property :name, String, default: ""
       # The following are only used on *nix
-      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh"
-      property :bldr_url, String
-      property :create_user, [true, false], default: true
-      property :tmp_dir, String
-      property :license, String, equal_to: ["accept"]
-      property :hab_version, String
+      property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
+      description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) "
+
+      property :bldr_url, String,
+      description: "Optional URL to an alternate Builder (defaults to the public Builder)"
+
+      property :create_user, [true, false], default: true,
+      description: "Creates the `hab` system user (defaults to `true`)"
+
+      property :tmp_dir, String,
+      description: "Sets TMPDIR environment variable for location to place temp files. (required if `/tmp` and `/var/tmp` are mounted `noexec`)"
+
+      property :license, String, equal_to: ["accept"],
+      description: "Specifies acceptance of habitat license when set to `accept` (defaults to empty string).
+      "
+      property :hab_version, String,
+      description: "Specify the version of `Habitat` you would like to install (defaults to latest)"
 
       action :install, description: "Installs Habitat. Does nothing if the `hab` binary is found in the default location for the system (`/bin/hab` on Linux, `/usr/local/bin/hab` on macOS, `C:/habitat/hab.exe` on Windows)" do
         if ::File.exist?(hab_path)
@@ -194,7 +205,7 @@ class Chef
         def hab_path
           if macos?
             "/usr/local/bin/hab"
-          elsif widnows?
+          elsif windows?
             "C:/habitat/hab.exe"
           else
             "/bin/hab"
