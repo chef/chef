@@ -122,4 +122,5 @@ jobs:
           bundler-cache: true
       - name: Run Test Kitchen
         run:  |
+          cd kitchen-tests
           bundle exec kitchen test end-to-end-${{ matrix.os }}
