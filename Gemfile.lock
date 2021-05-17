@@ -35,10 +35,10 @@ GIT
 PATH
   remote: .
   specs:
-    chef (17.1.40)
+    chef (17.1.41)
       addressable
-      chef-config (= 17.1.40)
-      chef-utils (= 17.1.40)
+      chef-config (= 17.1.41)
+      chef-utils (= 17.1.41)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -62,10 +62,10 @@ PATH
       train-core (~> 3.2, >= 3.2.28)
       train-winrm (>= 0.2.5)
       uuidtools (>= 2.1.5, < 3.0)
-    chef (17.1.40-universal-mingw32)
+    chef (17.1.41-universal-mingw32)
       addressable
-      chef-config (= 17.1.40)
-      chef-utils (= 17.1.40)
+      chef-config (= 17.1.41)
+      chef-utils (= 17.1.41)
       chef-vault
       chef-zero (>= 14.0.11)
       diff-lcs (>= 1.2.4, < 1.4.0)
@@ -104,15 +104,15 @@ PATH
 PATH
   remote: chef-bin
   specs:
-    chef-bin (17.1.40)
-      chef (= 17.1.40)
+    chef-bin (17.1.41)
+      chef (= 17.1.41)
 
 PATH
   remote: chef-config
   specs:
-    chef-config (17.1.40)
+    chef-config (17.1.41)
       addressable
-      chef-utils (= 17.1.40)
+      chef-utils (= 17.1.41)
       fuzzyurl
       mixlib-config (>= 2.2.12, < 4.0)
       mixlib-shellout (>= 2.0, < 4.0)
@@ -121,7 +121,7 @@ PATH
 PATH
   remote: chef-utils
   specs:
-    chef-utils (17.1.40)
+    chef-utils (17.1.41)
       concurrent-ruby
 
 GEM
