@@ -119,9 +119,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 2.7
-          bundler-cache: false
+          bundler-cache: true
       - name: Run Test Kitchen
         run:  |
-          cd kitchen-tests
-          bundle install
           bundle exec kitchen test end-to-end-${{ matrix.os }}
