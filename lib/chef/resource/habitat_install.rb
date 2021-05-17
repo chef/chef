@@ -27,8 +27,9 @@ class Chef
       description "This resource will install the newest stable version of habitat"
       introduced "17.2"
 
-      property :name, String, default: ""
-      # The following are only used on *nix
+      property :name, String, default: "install habitat",
+      description: "name for your resource block"
+
       property :install_url, String, default: "https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh",
       description: "URL to the install script, default is from the [habitat repo](https://raw.githubusercontent.com/habitat-sh/habitat/master/components/hab/install.sh) "
 
